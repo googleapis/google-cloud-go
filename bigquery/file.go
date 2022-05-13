@@ -77,6 +77,9 @@ type FileConfig struct {
 
 	// Additional options for Parquet files.
 	ParquetOptions *ParquetOptions
+
+	// Additional options for Avro files.
+	AvroOptions *AvroOptions
 }
 
 func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
@@ -89,6 +92,7 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 	conf.FieldDelimiter = fc.FieldDelimiter
 	conf.IgnoreUnknownValues = fc.IgnoreUnknownValues
 	conf.MaxBadRecords = fc.MaxBadRecords
+	conf.NullMarker = fc.NullMarker
 	if fc.Schema != nil {
 		conf.Schema = fc.Schema.toBQ()
 	}
@@ -97,6 +101,9 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 			EnumAsString:        fc.ParquetOptions.EnumAsString,
 			EnableListInference: fc.ParquetOptions.EnableListInference,
 		}
+	}
+	if fc.AvroOptions != nil {
+		conf.UseAvroLogicalTypes = fc.AvroOptions.UseAvroLogicalTypes
 	}
 	conf.Quote = fc.quote()
 }
@@ -112,6 +119,7 @@ func bqPopulateFileConfig(conf *bq.JobConfigurationLoad, fc *FileConfig) {
 	fc.AllowQuotedNewlines = conf.AllowQuotedNewlines
 	fc.Encoding = Encoding(conf.Encoding)
 	fc.FieldDelimiter = conf.FieldDelimiter
+	fc.CSVOptions.NullMarker = conf.NullMarker
 	fc.CSVOptions.setQuote(conf.Quote)
 }
 
@@ -130,6 +138,11 @@ func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfigurat
 	}
 	if format == CSV {
 		fc.CSVOptions.populateExternalDataConfig(conf)
+	}
+	if fc.AvroOptions != nil {
+		conf.AvroOptions = &bq.AvroOptions{
+			UseAvroLogicalTypes: fc.AvroOptions.UseAvroLogicalTypes,
+		}
 	}
 	if fc.ParquetOptions != nil {
 		conf.ParquetOptions = &bq.ParquetOptions{

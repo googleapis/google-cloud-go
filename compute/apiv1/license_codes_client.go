@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,12 +86,12 @@ func (c *LicenseCodesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicenseCodesClient) Get(ctx context.Context, req *computepb.GetLicenseCodeRequest, opts ...gax.CallOption) (*computepb.LicenseCode, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicenseCodesClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseCodeRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
@@ -141,7 +141,7 @@ func defaultLicenseCodesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *licenseCodesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -160,44 +160,59 @@ func (c *licenseCodesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licenseCodesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseCodeRequest, opts ...gax.CallOption) (*computepb.LicenseCode, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenseCodes/%v", req.GetProject(), req.GetLicenseCode())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "license_code", url.QueryEscape(req.GetLicenseCode())))
 
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if err = googleapi.CheckResponse(httpRsp); err != nil {
-		return nil, err
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.LicenseCode{}
+	resp := &computepb.LicenseCode{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licenseCodesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseCodeRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
@@ -206,37 +221,52 @@ func (c *licenseCodesRESTClient) TestIamPermissions(ctx context.Context, req *co
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenseCodes/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if err = googleapi.CheckResponse(httpRsp); err != nil {
-		return nil, err
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.TestPermissionsResponse{}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

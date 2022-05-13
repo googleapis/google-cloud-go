@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,18 @@ import (
 func ExampleNewOperationsClient() {
 	ctx := context.Background()
 	c, err := longrunning.NewOperationsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewOperationsRESTClient() {
+	ctx := context.Background()
+	c, err := longrunning.NewOperationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

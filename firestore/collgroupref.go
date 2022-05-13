@@ -54,6 +54,9 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 //
 // If a Collection Group Query would return a large number of documents, this
 // can help to subdivide the query to smaller working units that can be distributed.
+//
+// If the goal is to run the queries across processes or workers, it may be useful to use
+// `Query.Serialize` and `Query.Deserialize` to serialize the query.
 func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partitionCount int) ([]Query, error) {
 	qp, err := cgr.getPartitions(ctx, partitionCount)
 	if err != nil {

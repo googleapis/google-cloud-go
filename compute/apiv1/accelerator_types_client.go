@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ func defaultAcceleratorTypesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *acceleratorTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -189,7 +189,10 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/acceleratorTypes", req.GetProject())
 
 		params := url.Values{}
@@ -214,33 +217,42 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return nil, "", err
-		}
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
 
-		// Set the headers
-		for k, v := range c.xGoogMetadata {
-			httpReq.Header[k] = v
-		}
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
 
-		httpReq.Header["Content-Type"] = []string{"application/json"}
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return nil, "", err
-		}
-		defer httpRsp.Body.Close()
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return nil, "", err
-		}
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return nil, "", err
-		}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
 
-		unm.Unmarshal(buf, resp)
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
 		it.Response = resp
 
 		elems := make([]AcceleratorTypesScopedListPair, 0, len(resp.GetItems()))
@@ -270,39 +282,54 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 
 // Get returns the specified accelerator type.
 func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.GetAcceleratorTypeRequest, opts ...gax.CallOption) (*computepb.AcceleratorType, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorTypes/%v", req.GetProject(), req.GetZone(), req.GetAcceleratorType())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "accelerator_type", url.QueryEscape(req.GetAcceleratorType())))
 
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if err = googleapi.CheckResponse(httpRsp); err != nil {
-		return nil, err
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.AcceleratorType{}
+	resp := &computepb.AcceleratorType{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // List retrieves a list of accelerator types that are available to the specified project.
@@ -320,7 +347,10 @@ func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.Li
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorTypes", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
@@ -342,33 +372,42 @@ func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.Li
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return nil, "", err
-		}
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
 
-		// Set the headers
-		for k, v := range c.xGoogMetadata {
-			httpReq.Header[k] = v
-		}
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
 
-		httpReq.Header["Content-Type"] = []string{"application/json"}
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return nil, "", err
-		}
-		defer httpRsp.Body.Close()
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return nil, "", err
-		}
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return nil, "", err
-		}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
 
-		unm.Unmarshal(buf, resp)
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
 		it.Response = resp
 		return resp.GetItems(), resp.GetNextPageToken(), nil
 	}
@@ -487,14 +526,4 @@ func (it *AcceleratorTypesScopedListPairIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
-}
-
-// Operation represents a long running operation for this API.
-type Operation struct {
-	proto *computepb.Operation
-}
-
-// Proto returns the raw type this wraps.
-func (o *Operation) Proto() *computepb.Operation {
-	return o.proto
 }

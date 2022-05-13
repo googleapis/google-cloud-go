@@ -21,11 +21,21 @@ option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata
 message SimpleMessageProto2 {
     // name is a simple scalar string.
     optional string name = 1;
+
     // value is a simple int64 value.
     optional int64 value = 2;
 }
 
+message SimpleMessageEvolvedProto2 {
+    // name is a simple scalar string.
+    optional string name = 1;
 
+    // value is a simple int64 value.
+    optional int64 value = 2;
+    
+    // other is an additional string.
+    optional string other = 3;
+}
 
 message GithubArchiveEntityProto2 {
     optional int64 id = 1;
@@ -53,3 +63,27 @@ message GithubArchiveMessageProto2 {
     optional string id = 8;
     optional string other = 9;
 }
+
+// ExtEnum is an externally define enum.
+enum ExtEnum {
+    UNDEFINED = 0;
+    THING = 1;
+    OTHER_THING = 2;
+}
+
+// ExternalEnumMessage demonstrates an externally defined enum
+// being present in two different submessages.
+message ExternalEnumMessage {
+    optional EnumMsgA msg_a = 1;
+    optional EnumMsgB msg_b = 2;
+}
+
+message EnumMsgA {
+    optional string foo = 1;
+    optional ExtEnum bar = 2;
+}
+
+message EnumMsgB {
+    optional ExtEnum baz = 1;
+}
+

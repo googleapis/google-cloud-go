@@ -32,6 +32,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
+	pslinternal "cloud.google.com/go/pubsublite/internal"
 	gax "github.com/googleapis/gax-go/v2"
 )
 
@@ -85,7 +86,7 @@ func isRetryableSendCode(code codes.Code) bool {
 func isRetryableRecvCode(code codes.Code) bool {
 	switch code {
 	// Consistent with https://github.com/googleapis/java-pubsublite/blob/master/google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/ErrorCodes.java
-	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown:
+	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown, codes.Canceled:
 		return true
 	default:
 		return false
@@ -193,9 +194,13 @@ func defaultClientOptions(region string) []option.ClientOption {
 }
 
 func streamClientOptions(region string) []option.ClientOption {
-	// To ensure most users don't hit the limit of 100 streams per connection, if
-	// they have a high number of topic partitions.
-	return append(defaultClientOptions(region), option.WithGRPCConnectionPool(8))
+	return append(defaultClientOptions(region),
+		// To ensure most users don't hit the limit of 100 streams per connection, if
+		// they have a high number of topic partitions.
+		option.WithGRPCConnectionPool(8),
+		// Stream reconnections must be handled here in order to reinitialize state,
+		// rather than in grpc-go.
+		option.WithGRPCDialOption(grpc.WithDisableRetry()))
 }
 
 // NewAdminClient creates a new gapic AdminClient for a region.
@@ -257,10 +262,10 @@ func (pm pubsubMetadata) AddSubscriptionRoutingMetadata(subscription subscriptio
 }
 
 func (pm pubsubMetadata) AddClientInfo(framework FrameworkType) {
-	pm.doAddClientInfo(framework, libraryVersion)
+	pm.doAddClientInfo(framework, pslinternal.Version)
 }
 
-func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, getVersion func() (version, bool)) {
+func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, version string) {
 	s := &structpb.Struct{
 		Fields: make(map[string]*structpb.Value),
 	}
@@ -268,7 +273,7 @@ func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, getVersion fun
 	if len(framework) > 0 {
 		s.Fields[frameworkKey] = stringValue(string(framework))
 	}
-	if version, ok := getVersion(); ok {
+	if version, ok := parseVersion(version); ok {
 		s.Fields[majorVersionKey] = stringValue(version.Major)
 		s.Fields[minorVersionKey] = stringValue(version.Minor)
 	}

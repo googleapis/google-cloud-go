@@ -63,6 +63,23 @@ type RowIterator struct {
 	structLoader structLoader // used to populate a pointer to a struct
 }
 
+// SourceJob returns an instance of a Job if the RowIterator is backed by a query,
+// or a nil.
+func (ri *RowIterator) SourceJob() *Job {
+	if ri.src == nil {
+		return nil
+	}
+	if ri.src.j == nil {
+		return nil
+	}
+	return &Job{
+		c:         ri.src.j.c,
+		projectID: ri.src.j.projectID,
+		location:  ri.src.j.location,
+		jobID:     ri.src.j.jobID,
+	}
+}
+
 // We declare a function signature for fetching results.  The primary reason
 // for this is to enable us to swap out the fetch function with alternate
 // implementations (e.g. to enable testing).
@@ -306,7 +323,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	}, nil
 }
 
-var errNoCacheData = errors.New("No rows in rowSource cache")
+var errNoCacheData = errors.New("no rows in rowSource cache")
 
 // fetchCachedPage attempts to service the first page of results.  For the jobs path specifically, we have an
 // opportunity to fetch rows before the iterator is constructed, and thus serve that data as the first request

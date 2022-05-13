@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,6 @@ func defaultProductSearchGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -727,7 +726,7 @@ func (c *productSearchGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *productSearchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -744,6 +743,7 @@ func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *vis
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateProductSet[0:len((*c.CallOptions).CreateProductSet):len((*c.CallOptions).CreateProductSet)], opts...)
 	var resp *visionpb.ProductSet
@@ -760,6 +760,7 @@ func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *vis
 
 func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListProductSets[0:len((*c.CallOptions).ListProductSets):len((*c.CallOptions).ListProductSets)], opts...)
 	it := &ProductSetIterator{}
@@ -809,6 +810,7 @@ func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *vision
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetProductSet[0:len((*c.CallOptions).GetProductSet):len((*c.CallOptions).GetProductSet)], opts...)
 	var resp *visionpb.ProductSet
@@ -830,6 +832,7 @@ func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *vis
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateProductSet[0:len((*c.CallOptions).UpdateProductSet):len((*c.CallOptions).UpdateProductSet)], opts...)
 	var resp *visionpb.ProductSet
@@ -851,6 +854,7 @@ func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *vis
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteProductSet[0:len((*c.CallOptions).DeleteProductSet):len((*c.CallOptions).DeleteProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -868,6 +872,7 @@ func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *vision
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	var resp *visionpb.Product
@@ -884,6 +889,7 @@ func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *vision
 
 func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
@@ -933,6 +939,7 @@ func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *visionpb.Product
@@ -954,6 +961,7 @@ func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *vision
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	var resp *visionpb.Product
@@ -975,6 +983,7 @@ func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *vision
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -992,6 +1001,7 @@ func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateReferenceImage[0:len((*c.CallOptions).CreateReferenceImage):len((*c.CallOptions).CreateReferenceImage)], opts...)
 	var resp *visionpb.ReferenceImage
@@ -1013,6 +1023,7 @@ func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteReferenceImage[0:len((*c.CallOptions).DeleteReferenceImage):len((*c.CallOptions).DeleteReferenceImage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1025,6 +1036,7 @@ func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req 
 
 func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListReferenceImages[0:len((*c.CallOptions).ListReferenceImages):len((*c.CallOptions).ListReferenceImages)], opts...)
 	it := &ReferenceImageIterator{}
@@ -1074,6 +1086,7 @@ func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *vi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetReferenceImage[0:len((*c.CallOptions).GetReferenceImage):len((*c.CallOptions).GetReferenceImage)], opts...)
 	var resp *visionpb.ReferenceImage
@@ -1095,6 +1108,7 @@ func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddProductToProductSet[0:len((*c.CallOptions).AddProductToProductSet):len((*c.CallOptions).AddProductToProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1112,6 +1126,7 @@ func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RemoveProductFromProductSet[0:len((*c.CallOptions).RemoveProductFromProductSet):len((*c.CallOptions).RemoveProductFromProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1124,6 +1139,7 @@ func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Contex
 
 func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListProductsInProductSet[0:len((*c.CallOptions).ListProductsInProductSet):len((*c.CallOptions).ListProductsInProductSet)], opts...)
 	it := &ProductIterator{}
@@ -1173,6 +1189,7 @@ func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *vi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportProductSets[0:len((*c.CallOptions).ImportProductSets):len((*c.CallOptions).ImportProductSets)], opts...)
 	var resp *longrunningpb.Operation
@@ -1196,6 +1213,7 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PurgeProducts[0:len((*c.CallOptions).PurgeProducts):len((*c.CallOptions).PurgeProducts)], opts...)
 	var resp *longrunningpb.Operation

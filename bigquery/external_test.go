@@ -39,7 +39,9 @@ func TestExternalDataConfig(t *testing.T) {
 				FieldDelimiter:      "f",
 				Quote:               "q",
 				SkipLeadingRows:     3,
+				NullMarker:          "marker",
 			},
+			ConnectionID: "connection",
 		},
 		{
 			SourceFormat: GoogleSheets,
@@ -90,6 +92,12 @@ func TestExternalDataConfig(t *testing.T) {
 		{
 			SourceFormat:       Parquet,
 			DecimalTargetTypes: []DecimalTargetType{BigNumericTargetType, NumericTargetType, StringTargetType},
+		},
+		{
+			SourceFormat: Avro,
+			Options: &AvroOptions{
+				UseAvroLogicalTypes: true,
+			},
 		},
 	} {
 		q := want.toBQ()

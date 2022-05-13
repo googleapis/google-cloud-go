@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,7 +76,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -639,7 +638,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -699,6 +698,7 @@ func (c *gRPCClient) CreateEntryGroup(ctx context.Context, req *datacatalogpb.Cr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEntryGroup[0:len((*c.CallOptions).CreateEntryGroup):len((*c.CallOptions).CreateEntryGroup)], opts...)
 	var resp *datacatalogpb.EntryGroup
@@ -720,6 +720,7 @@ func (c *gRPCClient) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Up
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry_group.name", url.QueryEscape(req.GetEntryGroup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEntryGroup[0:len((*c.CallOptions).UpdateEntryGroup):len((*c.CallOptions).UpdateEntryGroup)], opts...)
 	var resp *datacatalogpb.EntryGroup
@@ -741,6 +742,7 @@ func (c *gRPCClient) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEn
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEntryGroup[0:len((*c.CallOptions).GetEntryGroup):len((*c.CallOptions).GetEntryGroup)], opts...)
 	var resp *datacatalogpb.EntryGroup
@@ -762,6 +764,7 @@ func (c *gRPCClient) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.De
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEntryGroup[0:len((*c.CallOptions).DeleteEntryGroup):len((*c.CallOptions).DeleteEntryGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -774,6 +777,7 @@ func (c *gRPCClient) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.De
 
 func (c *gRPCClient) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEntryGroupsRequest, opts ...gax.CallOption) *EntryGroupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEntryGroups[0:len((*c.CallOptions).ListEntryGroups):len((*c.CallOptions).ListEntryGroups)], opts...)
 	it := &EntryGroupIterator{}
@@ -823,6 +827,7 @@ func (c *gRPCClient) CreateEntry(ctx context.Context, req *datacatalogpb.CreateE
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEntry[0:len((*c.CallOptions).CreateEntry):len((*c.CallOptions).CreateEntry)], opts...)
 	var resp *datacatalogpb.Entry
@@ -844,6 +849,7 @@ func (c *gRPCClient) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateE
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry.name", url.QueryEscape(req.GetEntry().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEntry[0:len((*c.CallOptions).UpdateEntry):len((*c.CallOptions).UpdateEntry)], opts...)
 	var resp *datacatalogpb.Entry
@@ -865,6 +871,7 @@ func (c *gRPCClient) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteE
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEntry[0:len((*c.CallOptions).DeleteEntry):len((*c.CallOptions).DeleteEntry)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -882,6 +889,7 @@ func (c *gRPCClient) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEntry[0:len((*c.CallOptions).GetEntry):len((*c.CallOptions).GetEntry)], opts...)
 	var resp *datacatalogpb.Entry
@@ -918,6 +926,7 @@ func (c *gRPCClient) LookupEntry(ctx context.Context, req *datacatalogpb.LookupE
 
 func (c *gRPCClient) ListEntries(ctx context.Context, req *datacatalogpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEntries[0:len((*c.CallOptions).ListEntries):len((*c.CallOptions).ListEntries)], opts...)
 	it := &EntryIterator{}
@@ -967,6 +976,7 @@ func (c *gRPCClient) CreateTagTemplate(ctx context.Context, req *datacatalogpb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTagTemplate[0:len((*c.CallOptions).CreateTagTemplate):len((*c.CallOptions).CreateTagTemplate)], opts...)
 	var resp *datacatalogpb.TagTemplate
@@ -988,6 +998,7 @@ func (c *gRPCClient) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetT
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTagTemplate[0:len((*c.CallOptions).GetTagTemplate):len((*c.CallOptions).GetTagTemplate)], opts...)
 	var resp *datacatalogpb.TagTemplate
@@ -1009,6 +1020,7 @@ func (c *gRPCClient) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.U
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag_template.name", url.QueryEscape(req.GetTagTemplate().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTagTemplate[0:len((*c.CallOptions).UpdateTagTemplate):len((*c.CallOptions).UpdateTagTemplate)], opts...)
 	var resp *datacatalogpb.TagTemplate
@@ -1030,6 +1042,7 @@ func (c *gRPCClient) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTagTemplate[0:len((*c.CallOptions).DeleteTagTemplate):len((*c.CallOptions).DeleteTagTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1047,6 +1060,7 @@ func (c *gRPCClient) CreateTagTemplateField(ctx context.Context, req *datacatalo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTagTemplateField[0:len((*c.CallOptions).CreateTagTemplateField):len((*c.CallOptions).CreateTagTemplateField)], opts...)
 	var resp *datacatalogpb.TagTemplateField
@@ -1068,6 +1082,7 @@ func (c *gRPCClient) UpdateTagTemplateField(ctx context.Context, req *datacatalo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTagTemplateField[0:len((*c.CallOptions).UpdateTagTemplateField):len((*c.CallOptions).UpdateTagTemplateField)], opts...)
 	var resp *datacatalogpb.TagTemplateField
@@ -1089,6 +1104,7 @@ func (c *gRPCClient) RenameTagTemplateField(ctx context.Context, req *datacatalo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RenameTagTemplateField[0:len((*c.CallOptions).RenameTagTemplateField):len((*c.CallOptions).RenameTagTemplateField)], opts...)
 	var resp *datacatalogpb.TagTemplateField
@@ -1110,6 +1126,7 @@ func (c *gRPCClient) DeleteTagTemplateField(ctx context.Context, req *datacatalo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTagTemplateField[0:len((*c.CallOptions).DeleteTagTemplateField):len((*c.CallOptions).DeleteTagTemplateField)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1127,6 +1144,7 @@ func (c *gRPCClient) CreateTag(ctx context.Context, req *datacatalogpb.CreateTag
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTag[0:len((*c.CallOptions).CreateTag):len((*c.CallOptions).CreateTag)], opts...)
 	var resp *datacatalogpb.Tag
@@ -1148,6 +1166,7 @@ func (c *gRPCClient) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTag
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag.name", url.QueryEscape(req.GetTag().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTag[0:len((*c.CallOptions).UpdateTag):len((*c.CallOptions).UpdateTag)], opts...)
 	var resp *datacatalogpb.Tag
@@ -1169,6 +1188,7 @@ func (c *gRPCClient) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTag
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTag[0:len((*c.CallOptions).DeleteTag):len((*c.CallOptions).DeleteTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1181,6 +1201,7 @@ func (c *gRPCClient) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTag
 
 func (c *gRPCClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTags[0:len((*c.CallOptions).ListTags):len((*c.CallOptions).ListTags)], opts...)
 	it := &TagIterator{}
@@ -1230,6 +1251,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -1251,6 +1273,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -1272,6 +1295,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse

@@ -1,0 +1,705 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/domains/apiv1beta1",
+    "version": "0.4.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.domains.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_ConfigureContactSettings_sync",
+      "title": "domains ConfigureContactSettings Sample",
+      "description": "ConfigureContactSettings updates a Registration's contact settings. Some changes require\nconfirmation by the domain’s registrant contact .",
+      "file": "Client/ConfigureContactSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ConfigureContactSettings",
+        "fullName": "google.cloud.domains.v1beta1.Client.ConfigureContactSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.ConfigureContactSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConfigureContactSettingsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ConfigureContactSettings",
+          "fullName": "google.cloud.domains.v1beta1.Domains.ConfigureContactSettings",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_ConfigureDnsSettings_sync",
+      "title": "domains ConfigureDnsSettings Sample",
+      "description": "ConfigureDnsSettings updates a Registration's DNS settings.",
+      "file": "Client/ConfigureDnsSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ConfigureDnsSettings",
+        "fullName": "google.cloud.domains.v1beta1.Client.ConfigureDnsSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.ConfigureDnsSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConfigureDnsSettingsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ConfigureDnsSettings",
+          "fullName": "google.cloud.domains.v1beta1.Domains.ConfigureDnsSettings",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_ConfigureManagementSettings_sync",
+      "title": "domains ConfigureManagementSettings Sample",
+      "description": "ConfigureManagementSettings updates a Registration's management settings.",
+      "file": "Client/ConfigureManagementSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ConfigureManagementSettings",
+        "fullName": "google.cloud.domains.v1beta1.Client.ConfigureManagementSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.ConfigureManagementSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConfigureManagementSettingsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ConfigureManagementSettings",
+          "fullName": "google.cloud.domains.v1beta1.Domains.ConfigureManagementSettings",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_DeleteRegistration_sync",
+      "title": "domains DeleteRegistration Sample",
+      "description": "DeleteRegistration deletes a Registration resource.\n\nThis method works on any Registration resource using Subscription or\nCommitment billing (at /domains/pricing#billing-models), provided that the\nresource was created at least 1 day in the past.\n\nFor Registration resources using\nMonthly billing (at /domains/pricing#billing-models), this method works if: \n\n  state is EXPORTED with expire_time in the past\n\n  state is REGISTRATION_FAILED\n\n  state is TRANSFER_FAILED\n\nWhen an active registration is successfully deleted, you can continue to\nuse the domain in Google Domains (at https: //domains.google/) until it\nexpires. The calling user becomes the domain’s sole owner in Google\nDomains, and permissions for the domain are subsequently managed there. The\ndomain does not renew automatically unless the new owner sets up billing in\nGoogle Domains.",
+      "file": "Client/DeleteRegistration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRegistration",
+        "fullName": "google.cloud.domains.v1beta1.Client.DeleteRegistration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.DeleteRegistrationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRegistrationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteRegistration",
+          "fullName": "google.cloud.domains.v1beta1.Domains.DeleteRegistration",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_ExportRegistration_sync",
+      "title": "domains ExportRegistration Sample",
+      "description": "ExportRegistration exports a Registration resource, such that it is no longer managed by\nCloud Domains.\n\nWhen an active domain is successfully exported, you can continue to use the\ndomain in Google Domains (at https: //domains.google/) until it expires. The\ncalling user becomes the domain’s sole owner in Google Domains, and\npermissions for the domain are subsequently managed there. The domain does\nnot renew automatically unless the new owner sets up billing in Google\nDomains.",
+      "file": "Client/ExportRegistration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportRegistration",
+        "fullName": "google.cloud.domains.v1beta1.Client.ExportRegistration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.ExportRegistrationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportRegistrationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ExportRegistration",
+          "fullName": "google.cloud.domains.v1beta1.Domains.ExportRegistration",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_GetRegistration_sync",
+      "title": "domains GetRegistration Sample",
+      "description": "GetRegistration gets the details of a Registration resource.",
+      "file": "Client/GetRegistration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRegistration",
+        "fullName": "google.cloud.domains.v1beta1.Client.GetRegistration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.GetRegistrationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "domainspb.Registration",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetRegistration",
+          "fullName": "google.cloud.domains.v1beta1.Domains.GetRegistration",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_ListRegistrations_sync",
+      "title": "domains ListRegistrations Sample",
+      "description": "ListRegistrations lists the Registration resources in a project.",
+      "file": "Client/ListRegistrations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRegistrations",
+        "fullName": "google.cloud.domains.v1beta1.Client.ListRegistrations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.ListRegistrationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RegistrationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListRegistrations",
+          "fullName": "google.cloud.domains.v1beta1.Domains.ListRegistrations",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_RegisterDomain_sync",
+      "title": "domains RegisterDomain Sample",
+      "description": "RegisterDomain registers a new domain name and creates a corresponding Registration\nresource.\n\nCall RetrieveRegisterParameters first to check availability of the domain\nname and determine parameters like price that are needed to build a call to\nthis method.\n\nA successful call creates a Registration resource in state\nREGISTRATION_PENDING, which resolves to ACTIVE within 1-2\nminutes, indicating that the domain was successfully registered. If the\nresource ends up in state REGISTRATION_FAILED, it indicates that the\ndomain was not registered successfully, and you can safely delete the\nresource and retry registration.",
+      "file": "Client/RegisterDomain/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RegisterDomain",
+        "fullName": "google.cloud.domains.v1beta1.Client.RegisterDomain",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.RegisterDomainRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RegisterDomainOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RegisterDomain",
+          "fullName": "google.cloud.domains.v1beta1.Domains.RegisterDomain",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_ResetAuthorizationCode_sync",
+      "title": "domains ResetAuthorizationCode Sample",
+      "description": "ResetAuthorizationCode resets the authorization code of the Registration to a new random string.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration.",
+      "file": "Client/ResetAuthorizationCode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResetAuthorizationCode",
+        "fullName": "google.cloud.domains.v1beta1.Client.ResetAuthorizationCode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.ResetAuthorizationCodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "domainspb.AuthorizationCode",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ResetAuthorizationCode",
+          "fullName": "google.cloud.domains.v1beta1.Domains.ResetAuthorizationCode",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_RetrieveAuthorizationCode_sync",
+      "title": "domains RetrieveAuthorizationCode Sample",
+      "description": "RetrieveAuthorizationCode gets the authorization code of the Registration for the purpose of\ntransferring the domain to another registrar.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration.",
+      "file": "Client/RetrieveAuthorizationCode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveAuthorizationCode",
+        "fullName": "google.cloud.domains.v1beta1.Client.RetrieveAuthorizationCode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.RetrieveAuthorizationCodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "domainspb.AuthorizationCode",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RetrieveAuthorizationCode",
+          "fullName": "google.cloud.domains.v1beta1.Domains.RetrieveAuthorizationCode",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_RetrieveRegisterParameters_sync",
+      "title": "domains RetrieveRegisterParameters Sample",
+      "description": "RetrieveRegisterParameters gets parameters needed to register a new domain name, including price and\nup-to-date availability. Use the returned values to call RegisterDomain.",
+      "file": "Client/RetrieveRegisterParameters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveRegisterParameters",
+        "fullName": "google.cloud.domains.v1beta1.Client.RetrieveRegisterParameters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.RetrieveRegisterParametersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "domainspb.RetrieveRegisterParametersResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RetrieveRegisterParameters",
+          "fullName": "google.cloud.domains.v1beta1.Domains.RetrieveRegisterParameters",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_RetrieveTransferParameters_sync",
+      "title": "domains RetrieveTransferParameters Sample",
+      "description": "RetrieveTransferParameters gets parameters needed to transfer a domain name from another registrar to\nCloud Domains. For domains managed by Google Domains, transferring to Cloud\nDomains is not supported.\n\nUse the returned values to call TransferDomain.",
+      "file": "Client/RetrieveTransferParameters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveTransferParameters",
+        "fullName": "google.cloud.domains.v1beta1.Client.RetrieveTransferParameters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.RetrieveTransferParametersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "domainspb.RetrieveTransferParametersResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RetrieveTransferParameters",
+          "fullName": "google.cloud.domains.v1beta1.Domains.RetrieveTransferParameters",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_SearchDomains_sync",
+      "title": "domains SearchDomains Sample",
+      "description": "SearchDomains searches for available domain names similar to the provided query.\n\nAvailability results from this method are approximate; call\nRetrieveRegisterParameters on a domain before registering to confirm\navailability.",
+      "file": "Client/SearchDomains/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchDomains",
+        "fullName": "google.cloud.domains.v1beta1.Client.SearchDomains",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.SearchDomainsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "domainspb.SearchDomainsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchDomains",
+          "fullName": "google.cloud.domains.v1beta1.Domains.SearchDomains",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_TransferDomain_sync",
+      "title": "domains TransferDomain Sample",
+      "description": "TransferDomain transfers a domain name from another registrar to Cloud Domains.  For\ndomains managed by Google Domains, transferring to Cloud Domains is not\nsupported.\n\nBefore calling this method, go to the domain’s current registrar to unlock\nthe domain for transfer and retrieve the domain’s transfer authorization\ncode. Then call RetrieveTransferParameters to confirm that the domain is\nunlocked and to get values needed to build a call to this method.\n\nA successful call creates a Registration resource in state\nTRANSFER_PENDING. It can take several days to complete the transfer\nprocess. The registrant can often speed up this process by approving the\ntransfer through the current registrar, either by clicking a link in an\nemail from the registrar or by visiting the registrar’s website.\n\nA few minutes after transfer approval, the resource transitions to state\nACTIVE, indicating that the transfer was successful. If the transfer is\nrejected or the request expires without being approved, the resource can\nend up in state TRANSFER_FAILED. If transfer fails, you can safely delete\nthe resource and retry the transfer.",
+      "file": "Client/TransferDomain/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TransferDomain",
+        "fullName": "google.cloud.domains.v1beta1.Client.TransferDomain",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.TransferDomainRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferDomainOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "TransferDomain",
+          "fullName": "google.cloud.domains.v1beta1.Domains.TransferDomain",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "domains_v1beta1_generated_Domains_UpdateRegistration_sync",
+      "title": "domains UpdateRegistration Sample",
+      "description": "UpdateRegistration updates select fields of a Registration resource, notably labels. To\nupdate other fields, use the appropriate custom update method: \n\n  To update management settings, see ConfigureManagementSettings\n\n  To update DNS configuration, see ConfigureDnsSettings\n\n  To update contact information, see ConfigureContactSettings",
+      "file": "Client/UpdateRegistration/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRegistration",
+        "fullName": "google.cloud.domains.v1beta1.Client.UpdateRegistration",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "domainspb.UpdateRegistrationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRegistrationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.domains.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateRegistration",
+          "fullName": "google.cloud.domains.v1beta1.Domains.UpdateRegistration",
+          "service": {
+            "shortName": "Domains",
+            "fullName": "google.cloud.domains.v1beta1.Domains"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

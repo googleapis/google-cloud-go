@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build linux && go1.15
-// +build linux,go1.15
+//go:build go1.15
+// +build go1.15
 
 /*Command godocfx generates DocFX YAML for Go code.
 
@@ -148,6 +148,18 @@ func runCmd(dir, name string, args ...string) error {
 }
 
 func process(mod indexEntry, workingDir, outDir string, print bool) error {
+	filter := []string{
+		"cloud.google.com/go/analytics",
+		"cloud.google.com/go/area120",
+		"cloud.google.com/go/gsuiteaddons",
+
+		"google.golang.org/appengine/v2/cmd",
+	}
+	if hasPrefix(mod.Path, filter) {
+		log.Printf("%q filtered out, nothing to do: here is the filter: %q", mod.Path, filter)
+		return nil
+	}
+
 	// Be sure to get the module and run the module loader in the tempDir.
 	if err := runCmd(workingDir, "go", "mod", "tidy"); err != nil {
 		return fmt.Errorf("go mod tidy error: %v", err)
@@ -159,13 +171,6 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 
 	log.Println("Starting to parse")
 	optionalExtraFiles := []string{}
-	filter := []string{
-		"cloud.google.com/go/analytics",
-		"cloud.google.com/go/area120",
-		"cloud.google.com/go/gsuiteaddons",
-
-		"google.golang.org/appengine/v2/cmd",
-	}
 	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter)
 	if err != nil {
 		return fmt.Errorf("parse: %v", err)

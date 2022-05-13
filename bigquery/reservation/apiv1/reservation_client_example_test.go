@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -374,6 +374,32 @@ func ExampleClient_SearchAssignments() {
 	}
 }
 
+func ExampleClient_SearchAllAssignments() {
+	ctx := context.Background()
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.SearchAllAssignmentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SearchAllAssignmentsRequest.
+	}
+	it := c.SearchAllAssignments(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_MoveAssignment() {
 	ctx := context.Background()
 	c, err := reservation.NewClient(ctx)
@@ -387,6 +413,26 @@ func ExampleClient_MoveAssignment() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#MoveAssignmentRequest.
 	}
 	resp, err := c.MoveAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateAssignment() {
+	ctx := context.Background()
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.UpdateAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateAssignmentRequest.
+	}
+	resp, err := c.UpdateAssignment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

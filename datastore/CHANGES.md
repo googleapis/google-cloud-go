@@ -1,5 +1,26 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.6.0...datastore/v1.7.0) (2022-05-09)
+
+
+### Features
+
+* **datastore/admin:** define Datastore -> Firestore in Datastore mode migration long running operation metadata ([d9a0634](https://github.com/googleapis/google-cloud-go/commit/d9a0634042265f8c247e7dcbd8b85323a83c7235))
+* **datastore:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+* **datastore:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.6.0](https://www.github.com/googleapis/google-cloud-go/compare/datastore/v1.5.0...datastore/v1.6.0) (2021-09-17)
+
+
+### Features
+
+* **datastore/admin:** Publish message definitions for new Cloud Datastore migration logging steps. ([528ffc9](https://www.github.com/googleapis/google-cloud-go/commit/528ffc9bd63090129a8b1355cd31273f8c23e34c))
+
+
+### Bug Fixes
+
+* **datastore:** Initialize commit sentinel to avoid cross use of commits ([#4599](https://www.github.com/googleapis/google-cloud-go/issues/4599)) ([fcf13b0](https://www.github.com/googleapis/google-cloud-go/commit/fcf13b0abad4f837d4f4f53fad6c55eba1a0fe56))
+
 ## [1.5.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.4.0...v1.5.0) (2021-03-01)
 
 

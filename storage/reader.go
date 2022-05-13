@@ -30,7 +30,6 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
-	"google.golang.org/protobuf/proto"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -164,7 +163,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		}
 
 		var res *http.Response
-		err = runWithRetry(ctx, func() error {
+		err = run(ctx, func() error {
 			res, err = o.c.hc.Do(req)
 			if err != nil {
 				return err
@@ -211,7 +210,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 				gen = gen64
 			}
 			return nil
-		})
+		}, o.retry, true)
 		if err != nil {
 			return nil, err
 		}
@@ -475,13 +474,16 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		}
 		req.ReadOffset = start
 
-		setRequestConditions(req, o.conds)
+		if err := applyCondsProto("reopenWithGRPC", o.gen, o.conds, req); err != nil {
+			cancel()
+			return nil, nil, err
+		}
 
 		var stream storagepb.Storage_ReadObjectClient
 		var msg *storagepb.ReadObjectResponse
 		var err error
 
-		err = runWithRetry(cc, func() error {
+		err = run(cc, func() error {
 			stream, err = o.c.gc.ReadObject(cc, req)
 			if err != nil {
 				return err
@@ -490,7 +492,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 			msg, err = stream.Recv()
 
 			return err
-		})
+		}, o.retry, true)
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.
@@ -539,8 +541,8 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	}
 
 	// Only support checksums when reading an entire object, not a range.
-	if msg.GetObjectChecksums().Crc32C != nil && offset == 0 && length == 0 {
-		r.wantCRC = msg.GetObjectChecksums().GetCrc32C()
+	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil && offset == 0 && length == 0 {
+		r.wantCRC = checksums.GetCrc32C()
 		r.checkCRC = true
 	}
 
@@ -631,10 +633,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	if leftover > 0 {
 		// Wasn't able to copy all of the data in the message, store for
 		// future Read calls.
-		// TODO: Instead of acquiring a new block of memory, should we reuse
-		// the existing leftovers slice, expanding it if necessary?
-		r.leftovers = make([]byte, leftover)
-		copy(r.leftovers, content[n:])
+		r.leftovers = content[n:]
 	}
 	r.seen += int64(n)
 
@@ -681,29 +680,6 @@ func (r *Reader) reopenStream(seen int64) (*storagepb.ReadObjectResponse, error)
 	r.stream = res.stream
 	r.cancelStream = cancel
 	return res.response, nil
-}
-
-// setRequestConditions is used to apply the given Conditions to a gRPC request
-// message.
-//
-// This is an experimental API and not intended for public use.
-func setRequestConditions(req *storagepb.ReadObjectRequest, conds *Conditions) {
-	if conds == nil {
-		return
-	}
-	if conds.MetagenerationMatch != 0 {
-		req.IfMetagenerationMatch = proto.Int64(conds.MetagenerationMatch)
-	} else if conds.MetagenerationNotMatch != 0 {
-		req.IfMetagenerationNotMatch = proto.Int64(conds.MetagenerationNotMatch)
-	}
-	switch {
-	case conds.GenerationNotMatch != 0:
-		req.IfGenerationNotMatch = proto.Int64(conds.GenerationNotMatch)
-	case conds.GenerationMatch != 0:
-		req.IfGenerationMatch = proto.Int64(conds.GenerationMatch)
-	case conds.DoesNotExist:
-		req.IfGenerationMatch = proto.Int64(0)
-	}
 }
 
 // Size returns the size of the object in bytes.

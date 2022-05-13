@@ -36,7 +36,7 @@ func TestErrorOnObjectsInsertCall(t *testing.T) {
 
 	doWrite := func(mt *mockTransport) *Writer {
 		client := mockClient(t, mt)
-		wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
+		wc := client.Bucket("bucketname").Object("filename1").If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 		wc.ContentType = "text/plain"
 
 		// We can't check that the Write fails, since it depends on the write to the

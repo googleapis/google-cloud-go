@@ -531,7 +531,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 		}
 		aggI = append(aggI, i)
 	}
-	if len(aggI) > 0 {
+	if len(aggI) > 0 || len(sel.GroupBy) > 0 {
 		raw, err := toRawIter(ri)
 		if err != nil {
 			return nil, err

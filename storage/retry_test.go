@@ -15,6 +15,7 @@ package storage_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -32,9 +33,6 @@ import (
 )
 
 func TestIndefiniteRetries(t *testing.T) {
-	if testing.Short() {
-		t.Skip("A long running test for retries")
-	}
 
 	uploadRoute := "/upload"
 
@@ -137,6 +135,9 @@ func TestIndefiniteRetries(t *testing.T) {
 	maxFileSize := 1 << 20
 	w.ChunkSize = maxFileSize / 4
 
+	// Use a shorter retry deadline to speed up the test.
+	w.ChunkRetryDeadline = time.Second
+
 	for i := 0; i < maxFileSize; {
 		nowStr := time.Now().Format(time.RFC3339Nano)
 		n, err := fmt.Fprintf(w, "%s", nowStr)
@@ -152,16 +153,15 @@ func TestIndefiniteRetries(t *testing.T) {
 		closeDone <- w.Close()
 	}()
 
-	// Given that the ExponentialBackoff is 30 seconds from a start of 100ms,
-	// let's wait for a maximum of 5 minutes to account for (2**n) increments
-	// between [100ms, 30s].
-	maxWait := 5 * time.Minute
+	// Given the exponential backoff math and the ChunkRetryDeadline math, use a
+	// max value of 10s. Experimentally this test usually passes in < 5s.
+	maxWait := 10 * time.Second
 	select {
 	case <-time.After(maxWait):
 		t.Fatalf("Test took longer than %s to return", maxWait)
 	case err := <-closeDone:
-		ge, ok := err.(*googleapi.Error)
-		if !ok {
+		var ge *googleapi.Error
+		if !errors.As(err, &ge) {
 			t.Fatalf("Got error (%v) of type %T, expected *googleapi.Error", err, err)
 		}
 		if ge.Code != http.StatusTooManyRequests {

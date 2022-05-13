@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,6 +49,11 @@ type CallOptions struct {
 	PauseTransferOperation  []gax.CallOption
 	ResumeTransferOperation []gax.CallOption
 	RunTransferJob          []gax.CallOption
+	CreateAgentPool         []gax.CallOption
+	UpdateAgentPool         []gax.CallOption
+	GetAgentPool            []gax.CallOption
+	ListAgentPools          []gax.CallOption
+	DeleteAgentPool         []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -58,7 +63,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://storagetransfer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -74,6 +78,11 @@ func defaultCallOptions() *CallOptions {
 		PauseTransferOperation:  []gax.CallOption{},
 		ResumeTransferOperation: []gax.CallOption{},
 		RunTransferJob:          []gax.CallOption{},
+		CreateAgentPool:         []gax.CallOption{},
+		UpdateAgentPool:         []gax.CallOption{},
+		GetAgentPool:            []gax.CallOption{},
+		ListAgentPools:          []gax.CallOption{},
+		DeleteAgentPool:         []gax.CallOption{},
 	}
 }
 
@@ -91,6 +100,11 @@ type internalClient interface {
 	ResumeTransferOperation(context.Context, *storagetransferpb.ResumeTransferOperationRequest, ...gax.CallOption) error
 	RunTransferJob(context.Context, *storagetransferpb.RunTransferJobRequest, ...gax.CallOption) (*RunTransferJobOperation, error)
 	RunTransferJobOperation(name string) *RunTransferJobOperation
+	CreateAgentPool(context.Context, *storagetransferpb.CreateAgentPoolRequest, ...gax.CallOption) (*storagetransferpb.AgentPool, error)
+	UpdateAgentPool(context.Context, *storagetransferpb.UpdateAgentPoolRequest, ...gax.CallOption) (*storagetransferpb.AgentPool, error)
+	GetAgentPool(context.Context, *storagetransferpb.GetAgentPoolRequest, ...gax.CallOption) (*storagetransferpb.AgentPool, error)
+	ListAgentPools(context.Context, *storagetransferpb.ListAgentPoolsRequest, ...gax.CallOption) *AgentPoolIterator
+	DeleteAgentPool(context.Context, *storagetransferpb.DeleteAgentPoolRequest, ...gax.CallOption) error
 }
 
 // Client is a client for interacting with Storage Transfer API.
@@ -137,7 +151,7 @@ func (c *Client) Connection() *grpc.ClientConn {
 // GetGoogleServiceAccount returns the Google service account that is used by Storage Transfer
 // Service to access buckets in the project where transfers
 // run or in other projects. Each Google service account is associated
-// with one Google Cloud Platform Console project. Users
+// with one Google Cloud project. Users
 // should add this service account to the Google Cloud Storage bucket
 // ACLs to grant access to Storage Transfer Service. This service
 // account is created and owned by Storage Transfer Service and can
@@ -154,8 +168,8 @@ func (c *Client) CreateTransferJob(ctx context.Context, req *storagetransferpb.C
 // UpdateTransferJob updates a transfer job. Updating a job’s transfer spec does not affect
 // transfer operations that are running already.
 //
-// Note: The job’s status
-// field can be modified using this RPC (for example, to set a job’s status to
+// Note: The job’s status field can be modified
+// using this RPC (for example, to set a job’s status to
 // DELETED,
 // DISABLED, or
 // ENABLED).
@@ -185,7 +199,7 @@ func (c *Client) ResumeTransferOperation(ctx context.Context, req *storagetransf
 
 // RunTransferJob attempts to start a new TransferOperation for the current TransferJob. A
 // TransferJob has a maximum of one active TransferOperation. If this method
-// is called while a TransferOperation is active, an error wil be returned.
+// is called while a TransferOperation is active, an error will be returned.
 func (c *Client) RunTransferJob(ctx context.Context, req *storagetransferpb.RunTransferJobRequest, opts ...gax.CallOption) (*RunTransferJobOperation, error) {
 	return c.internalClient.RunTransferJob(ctx, req, opts...)
 }
@@ -194,6 +208,31 @@ func (c *Client) RunTransferJob(ctx context.Context, req *storagetransferpb.RunT
 // The name must be that of a previously created RunTransferJobOperation, possibly from a different process.
 func (c *Client) RunTransferJobOperation(name string) *RunTransferJobOperation {
 	return c.internalClient.RunTransferJobOperation(name)
+}
+
+// CreateAgentPool creates an agent pool resource.
+func (c *Client) CreateAgentPool(ctx context.Context, req *storagetransferpb.CreateAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
+	return c.internalClient.CreateAgentPool(ctx, req, opts...)
+}
+
+// UpdateAgentPool updates an existing agent pool resource.
+func (c *Client) UpdateAgentPool(ctx context.Context, req *storagetransferpb.UpdateAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
+	return c.internalClient.UpdateAgentPool(ctx, req, opts...)
+}
+
+// GetAgentPool gets an agent pool.
+func (c *Client) GetAgentPool(ctx context.Context, req *storagetransferpb.GetAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
+	return c.internalClient.GetAgentPool(ctx, req, opts...)
+}
+
+// ListAgentPools lists agent pools.
+func (c *Client) ListAgentPools(ctx context.Context, req *storagetransferpb.ListAgentPoolsRequest, opts ...gax.CallOption) *AgentPoolIterator {
+	return c.internalClient.ListAgentPools(ctx, req, opts...)
+}
+
+// DeleteAgentPool deletes an agent pool.
+func (c *Client) DeleteAgentPool(ctx context.Context, req *storagetransferpb.DeleteAgentPoolRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAgentPool(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Storage Transfer API over gRPC transport.
@@ -284,7 +323,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -296,11 +335,12 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) GetGoogleServiceAccount(ctx context.Context, req *storagetransferpb.GetGoogleServiceAccountRequest, opts ...gax.CallOption) (*storagetransferpb.GoogleServiceAccount, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGoogleServiceAccount[0:len((*c.CallOptions).GetGoogleServiceAccount):len((*c.CallOptions).GetGoogleServiceAccount)], opts...)
 	var resp *storagetransferpb.GoogleServiceAccount
@@ -317,7 +357,7 @@ func (c *gRPCClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 
 func (c *gRPCClient) CreateTransferJob(ctx context.Context, req *storagetransferpb.CreateTransferJobRequest, opts ...gax.CallOption) (*storagetransferpb.TransferJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -337,11 +377,12 @@ func (c *gRPCClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 
 func (c *gRPCClient) UpdateTransferJob(ctx context.Context, req *storagetransferpb.UpdateTransferJobRequest, opts ...gax.CallOption) (*storagetransferpb.TransferJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job_name", url.QueryEscape(req.GetJobName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTransferJob[0:len((*c.CallOptions).UpdateTransferJob):len((*c.CallOptions).UpdateTransferJob)], opts...)
 	var resp *storagetransferpb.TransferJob
@@ -358,11 +399,12 @@ func (c *gRPCClient) UpdateTransferJob(ctx context.Context, req *storagetransfer
 
 func (c *gRPCClient) GetTransferJob(ctx context.Context, req *storagetransferpb.GetTransferJobRequest, opts ...gax.CallOption) (*storagetransferpb.TransferJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job_name", url.QueryEscape(req.GetJobName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTransferJob[0:len((*c.CallOptions).GetTransferJob):len((*c.CallOptions).GetTransferJob)], opts...)
 	var resp *storagetransferpb.TransferJob
@@ -422,11 +464,12 @@ func (c *gRPCClient) ListTransferJobs(ctx context.Context, req *storagetransferp
 
 func (c *gRPCClient) PauseTransferOperation(ctx context.Context, req *storagetransferpb.PauseTransferOperationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PauseTransferOperation[0:len((*c.CallOptions).PauseTransferOperation):len((*c.CallOptions).PauseTransferOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -439,11 +482,12 @@ func (c *gRPCClient) PauseTransferOperation(ctx context.Context, req *storagetra
 
 func (c *gRPCClient) ResumeTransferOperation(ctx context.Context, req *storagetransferpb.ResumeTransferOperationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResumeTransferOperation[0:len((*c.CallOptions).ResumeTransferOperation):len((*c.CallOptions).ResumeTransferOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -456,11 +500,12 @@ func (c *gRPCClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 
 func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.RunTransferJobRequest, opts ...gax.CallOption) (*RunTransferJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job_name", url.QueryEscape(req.GetJobName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RunTransferJob[0:len((*c.CallOptions).RunTransferJob):len((*c.CallOptions).RunTransferJob)], opts...)
 	var resp *longrunningpb.Operation
@@ -475,6 +520,135 @@ func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	return &RunTransferJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) CreateAgentPool(ctx context.Context, req *storagetransferpb.CreateAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateAgentPool[0:len((*c.CallOptions).CreateAgentPool):len((*c.CallOptions).CreateAgentPool)], opts...)
+	var resp *storagetransferpb.AgentPool
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateAgentPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb.UpdateAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent_pool.name", url.QueryEscape(req.GetAgentPool().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateAgentPool[0:len((*c.CallOptions).UpdateAgentPool):len((*c.CallOptions).UpdateAgentPool)], opts...)
+	var resp *storagetransferpb.AgentPool
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateAgentPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetAgentPool(ctx context.Context, req *storagetransferpb.GetAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetAgentPool[0:len((*c.CallOptions).GetAgentPool):len((*c.CallOptions).GetAgentPool)], opts...)
+	var resp *storagetransferpb.AgentPool
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetAgentPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListAgentPools(ctx context.Context, req *storagetransferpb.ListAgentPoolsRequest, opts ...gax.CallOption) *AgentPoolIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListAgentPools[0:len((*c.CallOptions).ListAgentPools):len((*c.CallOptions).ListAgentPools)], opts...)
+	it := &AgentPoolIterator{}
+	req = proto.Clone(req).(*storagetransferpb.ListAgentPoolsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.AgentPool, string, error) {
+		resp := &storagetransferpb.ListAgentPoolsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListAgentPools(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAgentPools(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeleteAgentPool(ctx context.Context, req *storagetransferpb.DeleteAgentPoolRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteAgentPool[0:len((*c.CallOptions).DeleteAgentPool):len((*c.CallOptions).DeleteAgentPool)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteAgentPool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // RunTransferJobOperation manages a long-running operation from RunTransferJob.
@@ -533,6 +707,53 @@ func (op *RunTransferJobOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RunTransferJobOperation) Name() string {
 	return op.lro.Name()
+}
+
+// AgentPoolIterator manages a stream of *storagetransferpb.AgentPool.
+type AgentPoolIterator struct {
+	items    []*storagetransferpb.AgentPool
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*storagetransferpb.AgentPool, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AgentPoolIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AgentPoolIterator) Next() (*storagetransferpb.AgentPool, error) {
+	var item *storagetransferpb.AgentPool
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AgentPoolIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AgentPoolIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // TransferJobIterator manages a stream of *storagetransferpb.TransferJob.

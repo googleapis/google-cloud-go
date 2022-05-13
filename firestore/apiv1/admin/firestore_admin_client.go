@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,6 +51,9 @@ type FirestoreAdminCallOptions struct {
 	ListFields      []gax.CallOption
 	ExportDocuments []gax.CallOption
 	ImportDocuments []gax.CallOption
+	GetDatabase     []gax.CallOption
+	ListDatabases   []gax.CallOption
+	UpdateDatabase  []gax.CallOption
 }
 
 func defaultFirestoreAdminGRPCClientOptions() []option.ClientOption {
@@ -60,7 +63,6 @@ func defaultFirestoreAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://firestore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -137,6 +139,9 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 		},
 		ExportDocuments: []gax.CallOption{},
 		ImportDocuments: []gax.CallOption{},
+		GetDatabase:     []gax.CallOption{},
+		ListDatabases:   []gax.CallOption{},
+		UpdateDatabase:  []gax.CallOption{},
 	}
 }
 
@@ -158,10 +163,40 @@ type internalFirestoreAdminClient interface {
 	ExportDocumentsOperation(name string) *ExportDocumentsOperation
 	ImportDocuments(context.Context, *adminpb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
+	GetDatabase(context.Context, *adminpb.GetDatabaseRequest, ...gax.CallOption) (*adminpb.Database, error)
+	ListDatabases(context.Context, *adminpb.ListDatabasesRequest, ...gax.CallOption) (*adminpb.ListDatabasesResponse, error)
+	UpdateDatabase(context.Context, *adminpb.UpdateDatabaseRequest, ...gax.CallOption) (*UpdateDatabaseOperation, error)
+	UpdateDatabaseOperation(name string) *UpdateDatabaseOperation
 }
 
 // FirestoreAdminClient is a client for interacting with Cloud Firestore API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The Cloud Firestore Admin API.
+//
+// This API provides several administrative services for Cloud Firestore.
+//
+// Project, Database, Namespace, Collection, Collection Group, and Document are
+// used as defined in the Google Cloud Firestore API.
+//
+// Operation: An Operation represents work being performed in the background.
+//
+// The index service manages Cloud Firestore indexes.
+//
+// Index creation is performed asynchronously.
+// An Operation resource is created for each such asynchronous operation.
+// The state of the operation (including any errors encountered)
+// may be queried via the Operation resource.
+//
+// The Operations collection provides a record of actions performed for the
+// specified Project (including any Operations in progress). Operations are not
+// created directly but through calls on other collections or resources.
+//
+// An Operation that is done may be deleted so that it is no longer listed as
+// part of the Operation collection. Operations are garbage collected after
+// 30 days. By default, ListOperations will only return in progress and failed
+// operations. To list completed operation, issue a ListOperations request with
+// the filter done: true.
 //
 // Operations are created by service FirestoreAdmin, but are accessed via
 // service google.longrunning.Operations.
@@ -261,7 +296,7 @@ func (c *FirestoreAdminClient) UpdateFieldOperation(name string) *UpdateFieldOpe
 // Currently, FirestoreAdmin.ListFields only supports listing fields
 // that have been explicitly overridden. To issue this query, call
 // FirestoreAdmin.ListFields with the filter set to
-// indexConfig.usesAncestorConfig:false.
+// indexConfig.usesAncestorConfig:false .
 func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	return c.internalClient.ListFields(ctx, req, opts...)
 }
@@ -274,6 +309,9 @@ func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.List
 // used once the associated operation is done. If an export operation is
 // cancelled before completion it may leave partial data behind in Google
 // Cloud Storage.
+//
+// For more details on export behavior and output format, refer to:
+// https://cloud.google.com/firestore/docs/manage-data/export-import (at https://cloud.google.com/firestore/docs/manage-data/export-import)
 func (c *FirestoreAdminClient) ExportDocuments(ctx context.Context, req *adminpb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
 	return c.internalClient.ExportDocuments(ctx, req, opts...)
 }
@@ -297,6 +335,27 @@ func (c *FirestoreAdminClient) ImportDocuments(ctx context.Context, req *adminpb
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *FirestoreAdminClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return c.internalClient.ImportDocumentsOperation(name)
+}
+
+// GetDatabase gets information about a database.
+func (c *FirestoreAdminClient) GetDatabase(ctx context.Context, req *adminpb.GetDatabaseRequest, opts ...gax.CallOption) (*adminpb.Database, error) {
+	return c.internalClient.GetDatabase(ctx, req, opts...)
+}
+
+// ListDatabases list all the databases in the project.
+func (c *FirestoreAdminClient) ListDatabases(ctx context.Context, req *adminpb.ListDatabasesRequest, opts ...gax.CallOption) (*adminpb.ListDatabasesResponse, error) {
+	return c.internalClient.ListDatabases(ctx, req, opts...)
+}
+
+// UpdateDatabase updates a database.
+func (c *FirestoreAdminClient) UpdateDatabase(ctx context.Context, req *adminpb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+	return c.internalClient.UpdateDatabase(ctx, req, opts...)
+}
+
+// UpdateDatabaseOperation returns a new UpdateDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
+func (c *FirestoreAdminClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
+	return c.internalClient.UpdateDatabaseOperation(name)
 }
 
 // firestoreAdminGRPCClient is a client for interacting with Cloud Firestore API over gRPC transport.
@@ -326,6 +385,32 @@ type firestoreAdminGRPCClient struct {
 
 // NewFirestoreAdminClient creates a new firestore admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// The Cloud Firestore Admin API.
+//
+// This API provides several administrative services for Cloud Firestore.
+//
+// Project, Database, Namespace, Collection, Collection Group, and Document are
+// used as defined in the Google Cloud Firestore API.
+//
+// Operation: An Operation represents work being performed in the background.
+//
+// The index service manages Cloud Firestore indexes.
+//
+// Index creation is performed asynchronously.
+// An Operation resource is created for each such asynchronous operation.
+// The state of the operation (including any errors encountered)
+// may be queried via the Operation resource.
+//
+// The Operations collection provides a record of actions performed for the
+// specified Project (including any Operations in progress). Operations are not
+// created directly but through calls on other collections or resources.
+//
+// An Operation that is done may be deleted so that it is no longer listed as
+// part of the Operation collection. Operations are garbage collected after
+// 30 days. By default, ListOperations will only return in progress and failed
+// operations. To list completed operation, issue a ListOperations request with
+// the filter done: true.
 //
 // Operations are created by service FirestoreAdmin, but are accessed via
 // service google.longrunning.Operations.
@@ -386,7 +471,7 @@ func (c *firestoreAdminGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *firestoreAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -403,6 +488,7 @@ func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateIndex[0:len((*c.CallOptions).CreateIndex):len((*c.CallOptions).CreateIndex)], opts...)
 	var resp *longrunningpb.Operation
@@ -421,6 +507,7 @@ func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 
 func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
@@ -470,6 +557,7 @@ func (c *firestoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	var resp *adminpb.Index
@@ -491,6 +579,7 @@ func (c *firestoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteIndex[0:len((*c.CallOptions).DeleteIndex):len((*c.CallOptions).DeleteIndex)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -508,6 +597,7 @@ func (c *firestoreAdminGRPCClient) GetField(ctx context.Context, req *adminpb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetField[0:len((*c.CallOptions).GetField):len((*c.CallOptions).GetField)], opts...)
 	var resp *adminpb.Field
@@ -529,6 +619,7 @@ func (c *firestoreAdminGRPCClient) UpdateField(ctx context.Context, req *adminpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "field.name", url.QueryEscape(req.GetField().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateField[0:len((*c.CallOptions).UpdateField):len((*c.CallOptions).UpdateField)], opts...)
 	var resp *longrunningpb.Operation
@@ -547,6 +638,7 @@ func (c *firestoreAdminGRPCClient) UpdateField(ctx context.Context, req *adminpb
 
 func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListFields[0:len((*c.CallOptions).ListFields):len((*c.CallOptions).ListFields)], opts...)
 	it := &FieldIterator{}
@@ -596,6 +688,7 @@ func (c *firestoreAdminGRPCClient) ExportDocuments(ctx context.Context, req *adm
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportDocuments[0:len((*c.CallOptions).ExportDocuments):len((*c.CallOptions).ExportDocuments)], opts...)
 	var resp *longrunningpb.Operation
@@ -619,6 +712,7 @@ func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *adm
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportDocuments[0:len((*c.CallOptions).ImportDocuments):len((*c.CallOptions).ImportDocuments)], opts...)
 	var resp *longrunningpb.Operation
@@ -631,6 +725,59 @@ func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *adm
 		return nil, err
 	}
 	return &ImportDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *firestoreAdminGRPCClient) GetDatabase(ctx context.Context, req *adminpb.GetDatabaseRequest, opts ...gax.CallOption) (*adminpb.Database, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
+	var resp *adminpb.Database
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.firestoreAdminClient.GetDatabase(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) ListDatabases(ctx context.Context, req *adminpb.ListDatabasesRequest, opts ...gax.CallOption) (*adminpb.ListDatabasesResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
+	var resp *adminpb.ListDatabasesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.firestoreAdminClient.ListDatabases(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *firestoreAdminGRPCClient) UpdateDatabase(ctx context.Context, req *adminpb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database.name", url.QueryEscape(req.GetDatabase().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateDatabase[0:len((*c.CallOptions).UpdateDatabase):len((*c.CallOptions).UpdateDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.firestoreAdminClient.UpdateDatabase(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDatabaseOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -828,6 +975,75 @@ func (op *ImportDocumentsOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ImportDocumentsOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateDatabaseOperation manages a long-running operation from UpdateDatabase.
+type UpdateDatabaseOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateDatabaseOperation returns a new UpdateDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
+func (c *firestoreAdminGRPCClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
+	return &UpdateDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.Database, error) {
+	var resp adminpb.Database
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.Database, error) {
+	var resp adminpb.Database
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateDatabaseOperation) Metadata() (*adminpb.UpdateDatabaseMetadata, error) {
+	var meta adminpb.UpdateDatabaseMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateDatabaseOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateDatabaseOperation) Name() string {
 	return op.lro.Name()
 }
 

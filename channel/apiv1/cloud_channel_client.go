@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,40 +42,51 @@ var newCloudChannelClientHook clientHook
 
 // CloudChannelCallOptions contains the retry settings for each method of CloudChannelClient.
 type CloudChannelCallOptions struct {
-	ListCustomers                   []gax.CallOption
-	GetCustomer                     []gax.CallOption
-	CheckCloudIdentityAccountsExist []gax.CallOption
-	CreateCustomer                  []gax.CallOption
-	UpdateCustomer                  []gax.CallOption
-	DeleteCustomer                  []gax.CallOption
-	ProvisionCloudIdentity          []gax.CallOption
-	ListEntitlements                []gax.CallOption
-	ListTransferableSkus            []gax.CallOption
-	ListTransferableOffers          []gax.CallOption
-	GetEntitlement                  []gax.CallOption
-	CreateEntitlement               []gax.CallOption
-	ChangeParameters                []gax.CallOption
-	ChangeRenewalSettings           []gax.CallOption
-	ChangeOffer                     []gax.CallOption
-	StartPaidService                []gax.CallOption
-	SuspendEntitlement              []gax.CallOption
-	CancelEntitlement               []gax.CallOption
-	ActivateEntitlement             []gax.CallOption
-	TransferEntitlements            []gax.CallOption
-	TransferEntitlementsToGoogle    []gax.CallOption
-	ListChannelPartnerLinks         []gax.CallOption
-	GetChannelPartnerLink           []gax.CallOption
-	CreateChannelPartnerLink        []gax.CallOption
-	UpdateChannelPartnerLink        []gax.CallOption
-	LookupOffer                     []gax.CallOption
-	ListProducts                    []gax.CallOption
-	ListSkus                        []gax.CallOption
-	ListOffers                      []gax.CallOption
-	ListPurchasableSkus             []gax.CallOption
-	ListPurchasableOffers           []gax.CallOption
-	RegisterSubscriber              []gax.CallOption
-	UnregisterSubscriber            []gax.CallOption
-	ListSubscribers                 []gax.CallOption
+	ListCustomers                       []gax.CallOption
+	GetCustomer                         []gax.CallOption
+	CheckCloudIdentityAccountsExist     []gax.CallOption
+	CreateCustomer                      []gax.CallOption
+	UpdateCustomer                      []gax.CallOption
+	DeleteCustomer                      []gax.CallOption
+	ImportCustomer                      []gax.CallOption
+	ProvisionCloudIdentity              []gax.CallOption
+	ListEntitlements                    []gax.CallOption
+	ListTransferableSkus                []gax.CallOption
+	ListTransferableOffers              []gax.CallOption
+	GetEntitlement                      []gax.CallOption
+	CreateEntitlement                   []gax.CallOption
+	ChangeParameters                    []gax.CallOption
+	ChangeRenewalSettings               []gax.CallOption
+	ChangeOffer                         []gax.CallOption
+	StartPaidService                    []gax.CallOption
+	SuspendEntitlement                  []gax.CallOption
+	CancelEntitlement                   []gax.CallOption
+	ActivateEntitlement                 []gax.CallOption
+	TransferEntitlements                []gax.CallOption
+	TransferEntitlementsToGoogle        []gax.CallOption
+	ListChannelPartnerLinks             []gax.CallOption
+	GetChannelPartnerLink               []gax.CallOption
+	CreateChannelPartnerLink            []gax.CallOption
+	UpdateChannelPartnerLink            []gax.CallOption
+	GetCustomerRepricingConfig          []gax.CallOption
+	ListCustomerRepricingConfigs        []gax.CallOption
+	CreateCustomerRepricingConfig       []gax.CallOption
+	UpdateCustomerRepricingConfig       []gax.CallOption
+	DeleteCustomerRepricingConfig       []gax.CallOption
+	GetChannelPartnerRepricingConfig    []gax.CallOption
+	ListChannelPartnerRepricingConfigs  []gax.CallOption
+	CreateChannelPartnerRepricingConfig []gax.CallOption
+	UpdateChannelPartnerRepricingConfig []gax.CallOption
+	DeleteChannelPartnerRepricingConfig []gax.CallOption
+	LookupOffer                         []gax.CallOption
+	ListProducts                        []gax.CallOption
+	ListSkus                            []gax.CallOption
+	ListOffers                          []gax.CallOption
+	ListPurchasableSkus                 []gax.CallOption
+	ListPurchasableOffers               []gax.CallOption
+	RegisterSubscriber                  []gax.CallOption
+	UnregisterSubscriber                []gax.CallOption
+	ListSubscribers                     []gax.CallOption
 }
 
 func defaultCloudChannelGRPCClientOptions() []option.ClientOption {
@@ -85,7 +96,6 @@ func defaultCloudChannelGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudchannel.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -149,6 +159,17 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteCustomer: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportCustomer: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -248,6 +269,116 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateChannelPartnerLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCustomerRepricingConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCustomerRepricingConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteCustomerRepricingConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListChannelPartnerRepricingConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteChannelPartnerRepricingConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -371,6 +502,7 @@ type internalCloudChannelClient interface {
 	CreateCustomer(context.Context, *channelpb.CreateCustomerRequest, ...gax.CallOption) (*channelpb.Customer, error)
 	UpdateCustomer(context.Context, *channelpb.UpdateCustomerRequest, ...gax.CallOption) (*channelpb.Customer, error)
 	DeleteCustomer(context.Context, *channelpb.DeleteCustomerRequest, ...gax.CallOption) error
+	ImportCustomer(context.Context, *channelpb.ImportCustomerRequest, ...gax.CallOption) (*channelpb.Customer, error)
 	ProvisionCloudIdentity(context.Context, *channelpb.ProvisionCloudIdentityRequest, ...gax.CallOption) (*ProvisionCloudIdentityOperation, error)
 	ProvisionCloudIdentityOperation(name string) *ProvisionCloudIdentityOperation
 	ListEntitlements(context.Context, *channelpb.ListEntitlementsRequest, ...gax.CallOption) *EntitlementIterator
@@ -401,6 +533,16 @@ type internalCloudChannelClient interface {
 	GetChannelPartnerLink(context.Context, *channelpb.GetChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
 	CreateChannelPartnerLink(context.Context, *channelpb.CreateChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
 	UpdateChannelPartnerLink(context.Context, *channelpb.UpdateChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
+	GetCustomerRepricingConfig(context.Context, *channelpb.GetCustomerRepricingConfigRequest, ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error)
+	ListCustomerRepricingConfigs(context.Context, *channelpb.ListCustomerRepricingConfigsRequest, ...gax.CallOption) *CustomerRepricingConfigIterator
+	CreateCustomerRepricingConfig(context.Context, *channelpb.CreateCustomerRepricingConfigRequest, ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error)
+	UpdateCustomerRepricingConfig(context.Context, *channelpb.UpdateCustomerRepricingConfigRequest, ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error)
+	DeleteCustomerRepricingConfig(context.Context, *channelpb.DeleteCustomerRepricingConfigRequest, ...gax.CallOption) error
+	GetChannelPartnerRepricingConfig(context.Context, *channelpb.GetChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
+	ListChannelPartnerRepricingConfigs(context.Context, *channelpb.ListChannelPartnerRepricingConfigsRequest, ...gax.CallOption) *ChannelPartnerRepricingConfigIterator
+	CreateChannelPartnerRepricingConfig(context.Context, *channelpb.CreateChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
+	UpdateChannelPartnerRepricingConfig(context.Context, *channelpb.UpdateChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
+	DeleteChannelPartnerRepricingConfig(context.Context, *channelpb.DeleteChannelPartnerRepricingConfigRequest, ...gax.CallOption) error
 	LookupOffer(context.Context, *channelpb.LookupOfferRequest, ...gax.CallOption) (*channelpb.Offer, error)
 	ListProducts(context.Context, *channelpb.ListProductsRequest, ...gax.CallOption) *ProductIterator
 	ListSkus(context.Context, *channelpb.ListSkusRequest, ...gax.CallOption) *SkuIterator
@@ -580,6 +722,30 @@ func (c *CloudChannelClient) UpdateCustomer(ctx context.Context, req *channelpb.
 //   NOT_FOUND: No Customer resource found for the name in the request.
 func (c *CloudChannelClient) DeleteCustomer(ctx context.Context, req *channelpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteCustomer(ctx, req, opts...)
+}
+
+// ImportCustomer imports a Customer from the Cloud Identity associated with the provided
+// Cloud Identity ID or domain before a TransferEntitlements call. If a
+// linked Customer already exists and overwrite_if_exists is true, it will
+// update that Customer’s data.
+//
+// Possible error codes:
+//
+//   PERMISSION_DENIED: The reseller account making the request is different
+//   from the reseller account in the API request.
+//
+//   NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
+//
+//   INVALID_ARGUMENT: Required parameters are missing, or the auth_token is
+//   expired or invalid.
+//
+//   ALREADY_EXISTS: A customer already exists and has conflicting critical
+//   fields. Requires an overwrite.
+//
+// Return value:
+// The Customer.
+func (c *CloudChannelClient) ImportCustomer(ctx context.Context, req *channelpb.ImportCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	return c.internalClient.ImportCustomer(ctx, req, opts...)
 }
 
 // ProvisionCloudIdentity creates a Cloud Identity for the given customer using the customer’s
@@ -1231,6 +1397,313 @@ func (c *CloudChannelClient) UpdateChannelPartnerLink(ctx context.Context, req *
 	return c.internalClient.UpdateChannelPartnerLink(ctx, req, opts...)
 }
 
+// GetCustomerRepricingConfig gets information about how a Reseller modifies their bill before sending
+// it to a Customer.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   NOT_FOUND: The CustomerRepricingConfig was not found.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the CustomerRepricingConfig resource, otherwise returns
+// an error.
+func (c *CloudChannelClient) GetCustomerRepricingConfig(ctx context.Context, req *channelpb.GetCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	return c.internalClient.GetCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// ListCustomerRepricingConfigs lists information about how a Reseller modifies their bill before sending
+// it to a Customer.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
+//   not associated with the given account.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the CustomerRepricingConfig resources. The
+// data for each resource is displayed in the ascending order of:
+//
+//   customer ID
+//
+//   RepricingConfig.EntitlementGranularity.entitlement
+//
+//   RepricingConfig.effective_invoice_month
+//
+//   CustomerRepricingConfig.update_time
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListCustomerRepricingConfigs(ctx context.Context, req *channelpb.ListCustomerRepricingConfigsRequest, opts ...gax.CallOption) *CustomerRepricingConfigIterator {
+	return c.internalClient.ListCustomerRepricingConfigs(ctx, req, opts...)
+}
+
+// CreateCustomerRepricingConfig creates a CustomerRepricingConfig. Call this method to set modifications
+// for a specific customer’s bill. You can only create configs if the
+// RepricingConfig.effective_invoice_month is a
+// future month. If needed, you can create a config for the current month,
+// with some restrictions.
+//
+// When creating a config for a future month, make sure there are no existing
+// configs for that
+// RepricingConfig.effective_invoice_month.
+//
+// The following restrictions are for creating configs in the current month.
+//
+//   This functionality is reserved for recovering from an erroneous config,
+//   and should not be used for regular business cases.
+//
+//   The new config will not modify exports used with other configs.
+//   Changes to the config may be immediate, but may take up to 24 hours.
+//
+//   There is a limit of ten configs for any
+//   RepricingConfig.EntitlementGranularity.entitlement
+//   or RepricingConfig.effective_invoice_month.
+//
+//   The contained CustomerRepricingConfig.repricing_config vaule must be
+//   different from the value used in the current config for a
+//   RepricingConfig.EntitlementGranularity.entitlement.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   INVALID_ARGUMENT: Missing or invalid required parameters in the
+//   request. Also displays if the updated config is for the current month or
+//   past months.
+//
+//   NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
+//   not associated with the given account.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated CustomerRepricingConfig resource, otherwise
+// returns an error.
+func (c *CloudChannelClient) CreateCustomerRepricingConfig(ctx context.Context, req *channelpb.CreateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	return c.internalClient.CreateCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// UpdateCustomerRepricingConfig updates a CustomerRepricingConfig. Call this method to set modifications
+// for a specific customer’s bill. This method overwrites the existing
+// CustomerRepricingConfig.
+//
+// You can only update configs if the
+// RepricingConfig.effective_invoice_month is a
+// future month. To make changes to configs for the current month, use
+// CreateCustomerRepricingConfig, taking note of its restrictions. You
+// cannot update the RepricingConfig.effective_invoice_month.
+//
+// When updating a config in the future:
+//
+//   This config must already exist.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   INVALID_ARGUMENT: Missing or invalid required parameters in the
+//   request. Also displays if the updated config is for the current month or
+//   past months.
+//
+//   NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
+//   not associated with the given account.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated CustomerRepricingConfig resource, otherwise
+// returns an error.
+func (c *CloudChannelClient) UpdateCustomerRepricingConfig(ctx context.Context, req *channelpb.UpdateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	return c.internalClient.UpdateCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// DeleteCustomerRepricingConfig deletes the given CustomerRepricingConfig permanently. You can only
+// delete configs if their RepricingConfig.effective_invoice_month is set
+// to a date after the current month.
+//
+// Possible error codes:
+//
+//   PERMISSION_DENIED: The account making the request does not own
+//   this customer.
+//
+//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//   FAILED_PRECONDITION: The CustomerRepricingConfig is active or in the
+//   past.
+//
+//   NOT_FOUND: No CustomerRepricingConfig found for the name in the
+//   request.
+func (c *CloudChannelClient) DeleteCustomerRepricingConfig(ctx context.Context, req *channelpb.DeleteCustomerRepricingConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// GetChannelPartnerRepricingConfig gets information about how a Distributor modifies their bill before sending
+// it to a ChannelPartner.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   NOT_FOUND: The ChannelPartnerRepricingConfig was not found.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the ChannelPartnerRepricingConfig resource, otherwise
+// returns an error.
+func (c *CloudChannelClient) GetChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.GetChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	return c.internalClient.GetChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
+// ListChannelPartnerRepricingConfigs lists information about how a Reseller modifies their bill before sending
+// it to a ChannelPartner.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
+//   or is not associated with the given account.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the ChannelPartnerRepricingConfig resources.
+// The data for each resource is displayed in the ascending order of:
+//
+//   channel partner ID
+//
+//   RepricingConfig.effective_invoice_month
+//
+//   ChannelPartnerRepricingConfig.update_time
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListChannelPartnerRepricingConfigs(ctx context.Context, req *channelpb.ListChannelPartnerRepricingConfigsRequest, opts ...gax.CallOption) *ChannelPartnerRepricingConfigIterator {
+	return c.internalClient.ListChannelPartnerRepricingConfigs(ctx, req, opts...)
+}
+
+// CreateChannelPartnerRepricingConfig creates a ChannelPartnerRepricingConfig. Call this method to set
+// modifications for a specific ChannelPartner’s bill. You can only create
+// configs if the RepricingConfig.effective_invoice_month is a future
+// month. If needed, you can create a config for the current month, with some
+// restrictions.
+//
+// When creating a config for a future month, make sure there are no existing
+// configs for that
+// RepricingConfig.effective_invoice_month.
+//
+// The following restrictions are for creating configs in the current month.
+//
+//   This functionality is reserved for recovering from an erroneous config,
+//   and should not be used for regular business cases.
+//
+//   The new config will not modify exports used with other configs.
+//   Changes to the config may be immediate, but may take up to 24 hours.
+//
+//   There is a limit of ten configs for any ChannelPartner or
+//   RepricingConfig.effective_invoice_month.
+//
+//   The contained ChannelPartnerRepricingConfig.repricing_config vaule
+//   must be different from the value used in the current config for a
+//   ChannelPartner.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   INVALID_ARGUMENT: Missing or invalid required parameters in the
+//   request. Also displays if the updated config is for the current month or
+//   past months.
+//
+//   NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
+//   or is not associated with the given account.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated ChannelPartnerRepricingConfig resource,
+// otherwise returns an error.
+func (c *CloudChannelClient) CreateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.CreateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	return c.internalClient.CreateChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
+// UpdateChannelPartnerRepricingConfig updates a ChannelPartnerRepricingConfig. Call this method to set
+// modifications for a specific ChannelPartner’s bill. This method overwrites
+// the existing CustomerRepricingConfig.
+//
+// You can only update configs if the
+// RepricingConfig.effective_invoice_month is a
+// future month. To make changes to configs for the current month, use
+// CreateChannelPartnerRepricingConfig, taking note of its restrictions.
+// You cannot update the RepricingConfig.effective_invoice_month.
+//
+// When updating a config in the future:
+//
+//   This config must already exist.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the account making the request and the account
+//   being queried are different.
+//
+//   INVALID_ARGUMENT: Missing or invalid required parameters in the
+//   request. Also displays if the updated config is for the current month or
+//   past months.
+//
+//   NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
+//   or is not associated with the given account.
+//
+//   INTERNAL: Any non-user error related to technical issues in the
+//   backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated ChannelPartnerRepricingConfig resource,
+// otherwise returns an error.
+func (c *CloudChannelClient) UpdateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.UpdateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	return c.internalClient.UpdateChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
+// DeleteChannelPartnerRepricingConfig deletes the given ChannelPartnerRepricingConfig permanently. You can
+// only delete configs if their RepricingConfig.effective_invoice_month is
+// set to a date after the current month.
+//
+// Possible error codes:
+//
+//   PERMISSION_DENIED: The account making the request does not own
+//   this customer.
+//
+//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//   FAILED_PRECONDITION: The ChannelPartnerRepricingConfig is active or
+//   in the past.
+//
+//   NOT_FOUND: No ChannelPartnerRepricingConfig found for the name in the
+//   request.
+func (c *CloudChannelClient) DeleteChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.DeleteChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
 // LookupOffer returns the requested Offer resource.
 //
 // Possible error codes:
@@ -1490,7 +1963,7 @@ func (c *cloudChannelGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *cloudChannelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -1502,6 +1975,7 @@ func (c *cloudChannelGRPCClient) Close() error {
 
 func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channelpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCustomers[0:len((*c.CallOptions).ListCustomers):len((*c.CallOptions).ListCustomers)], opts...)
 	it := &CustomerIterator{}
@@ -1551,6 +2025,7 @@ func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCustomer[0:len((*c.CallOptions).GetCustomer):len((*c.CallOptions).GetCustomer)], opts...)
 	var resp *channelpb.Customer
@@ -1572,6 +2047,7 @@ func (c *cloudChannelGRPCClient) CheckCloudIdentityAccountsExist(ctx context.Con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CheckCloudIdentityAccountsExist[0:len((*c.CallOptions).CheckCloudIdentityAccountsExist):len((*c.CallOptions).CheckCloudIdentityAccountsExist)], opts...)
 	var resp *channelpb.CheckCloudIdentityAccountsExistResponse
@@ -1593,6 +2069,7 @@ func (c *cloudChannelGRPCClient) CreateCustomer(ctx context.Context, req *channe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCustomer[0:len((*c.CallOptions).CreateCustomer):len((*c.CallOptions).CreateCustomer)], opts...)
 	var resp *channelpb.Customer
@@ -1614,6 +2091,7 @@ func (c *cloudChannelGRPCClient) UpdateCustomer(ctx context.Context, req *channe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer.name", url.QueryEscape(req.GetCustomer().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCustomer[0:len((*c.CallOptions).UpdateCustomer):len((*c.CallOptions).UpdateCustomer)], opts...)
 	var resp *channelpb.Customer
@@ -1635,6 +2113,7 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCustomer[0:len((*c.CallOptions).DeleteCustomer):len((*c.CallOptions).DeleteCustomer)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1645,6 +2124,28 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 	return err
 }
 
+func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channelpb.ImportCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ImportCustomer[0:len((*c.CallOptions).ImportCustomer):len((*c.CallOptions).ImportCustomer)], opts...)
+	var resp *channelpb.Customer
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.ImportCustomer(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req *channelpb.ProvisionCloudIdentityRequest, opts ...gax.CallOption) (*ProvisionCloudIdentityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1652,6 +2153,7 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ProvisionCloudIdentity[0:len((*c.CallOptions).ProvisionCloudIdentity):len((*c.CallOptions).ProvisionCloudIdentity)], opts...)
 	var resp *longrunningpb.Operation
@@ -1670,6 +2172,7 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req
 
 func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *channelpb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEntitlements[0:len((*c.CallOptions).ListEntitlements):len((*c.CallOptions).ListEntitlements)], opts...)
 	it := &EntitlementIterator{}
@@ -1714,6 +2217,7 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 
 func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *channelpb.ListTransferableSkusRequest, opts ...gax.CallOption) *TransferableSkuIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTransferableSkus[0:len((*c.CallOptions).ListTransferableSkus):len((*c.CallOptions).ListTransferableSkus)], opts...)
 	it := &TransferableSkuIterator{}
@@ -1758,6 +2262,7 @@ func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *
 
 func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req *channelpb.ListTransferableOffersRequest, opts ...gax.CallOption) *TransferableOfferIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTransferableOffers[0:len((*c.CallOptions).ListTransferableOffers):len((*c.CallOptions).ListTransferableOffers)], opts...)
 	it := &TransferableOfferIterator{}
@@ -1807,6 +2312,7 @@ func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEntitlement[0:len((*c.CallOptions).GetEntitlement):len((*c.CallOptions).GetEntitlement)], opts...)
 	var resp *channelpb.Entitlement
@@ -1828,6 +2334,7 @@ func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *cha
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEntitlement[0:len((*c.CallOptions).CreateEntitlement):len((*c.CallOptions).CreateEntitlement)], opts...)
 	var resp *longrunningpb.Operation
@@ -1851,6 +2358,7 @@ func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *chan
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ChangeParameters[0:len((*c.CallOptions).ChangeParameters):len((*c.CallOptions).ChangeParameters)], opts...)
 	var resp *longrunningpb.Operation
@@ -1874,6 +2382,7 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ChangeRenewalSettings[0:len((*c.CallOptions).ChangeRenewalSettings):len((*c.CallOptions).ChangeRenewalSettings)], opts...)
 	var resp *longrunningpb.Operation
@@ -1897,6 +2406,7 @@ func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ChangeOffer[0:len((*c.CallOptions).ChangeOffer):len((*c.CallOptions).ChangeOffer)], opts...)
 	var resp *longrunningpb.Operation
@@ -1920,6 +2430,7 @@ func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *chan
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartPaidService[0:len((*c.CallOptions).StartPaidService):len((*c.CallOptions).StartPaidService)], opts...)
 	var resp *longrunningpb.Operation
@@ -1943,6 +2454,7 @@ func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *ch
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SuspendEntitlement[0:len((*c.CallOptions).SuspendEntitlement):len((*c.CallOptions).SuspendEntitlement)], opts...)
 	var resp *longrunningpb.Operation
@@ -1966,6 +2478,7 @@ func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *cha
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelEntitlement[0:len((*c.CallOptions).CancelEntitlement):len((*c.CallOptions).CancelEntitlement)], opts...)
 	var resp *longrunningpb.Operation
@@ -1989,6 +2502,7 @@ func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *c
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ActivateEntitlement[0:len((*c.CallOptions).ActivateEntitlement):len((*c.CallOptions).ActivateEntitlement)], opts...)
 	var resp *longrunningpb.Operation
@@ -2012,6 +2526,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TransferEntitlements[0:len((*c.CallOptions).TransferEntitlements):len((*c.CallOptions).TransferEntitlements)], opts...)
 	var resp *longrunningpb.Operation
@@ -2035,6 +2550,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TransferEntitlementsToGoogle[0:len((*c.CallOptions).TransferEntitlementsToGoogle):len((*c.CallOptions).TransferEntitlementsToGoogle)], opts...)
 	var resp *longrunningpb.Operation
@@ -2053,6 +2569,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Contex
 
 func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, req *channelpb.ListChannelPartnerLinksRequest, opts ...gax.CallOption) *ChannelPartnerLinkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListChannelPartnerLinks[0:len((*c.CallOptions).ListChannelPartnerLinks):len((*c.CallOptions).ListChannelPartnerLinks)], opts...)
 	it := &ChannelPartnerLinkIterator{}
@@ -2102,6 +2619,7 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerLink(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetChannelPartnerLink[0:len((*c.CallOptions).GetChannelPartnerLink):len((*c.CallOptions).GetChannelPartnerLink)], opts...)
 	var resp *channelpb.ChannelPartnerLink
@@ -2123,6 +2641,7 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerLink(ctx context.Context, r
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateChannelPartnerLink[0:len((*c.CallOptions).CreateChannelPartnerLink):len((*c.CallOptions).CreateChannelPartnerLink)], opts...)
 	var resp *channelpb.ChannelPartnerLink
@@ -2144,6 +2663,7 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, r
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateChannelPartnerLink[0:len((*c.CallOptions).UpdateChannelPartnerLink):len((*c.CallOptions).UpdateChannelPartnerLink)], opts...)
 	var resp *channelpb.ChannelPartnerLink
@@ -2158,6 +2678,264 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, r
 	return resp, nil
 }
 
+func (c *cloudChannelGRPCClient) GetCustomerRepricingConfig(ctx context.Context, req *channelpb.GetCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetCustomerRepricingConfig[0:len((*c.CallOptions).GetCustomerRepricingConfig):len((*c.CallOptions).GetCustomerRepricingConfig)], opts...)
+	var resp *channelpb.CustomerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.GetCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) ListCustomerRepricingConfigs(ctx context.Context, req *channelpb.ListCustomerRepricingConfigsRequest, opts ...gax.CallOption) *CustomerRepricingConfigIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListCustomerRepricingConfigs[0:len((*c.CallOptions).ListCustomerRepricingConfigs):len((*c.CallOptions).ListCustomerRepricingConfigs)], opts...)
+	it := &CustomerRepricingConfigIterator{}
+	req = proto.Clone(req).(*channelpb.ListCustomerRepricingConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.CustomerRepricingConfig, string, error) {
+		resp := &channelpb.ListCustomerRepricingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListCustomerRepricingConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCustomerRepricingConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) CreateCustomerRepricingConfig(ctx context.Context, req *channelpb.CreateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateCustomerRepricingConfig[0:len((*c.CallOptions).CreateCustomerRepricingConfig):len((*c.CallOptions).CreateCustomerRepricingConfig)], opts...)
+	var resp *channelpb.CustomerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.CreateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) UpdateCustomerRepricingConfig(ctx context.Context, req *channelpb.UpdateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer_repricing_config.name", url.QueryEscape(req.GetCustomerRepricingConfig().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateCustomerRepricingConfig[0:len((*c.CallOptions).UpdateCustomerRepricingConfig):len((*c.CallOptions).UpdateCustomerRepricingConfig)], opts...)
+	var resp *channelpb.CustomerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.UpdateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) DeleteCustomerRepricingConfig(ctx context.Context, req *channelpb.DeleteCustomerRepricingConfigRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteCustomerRepricingConfig[0:len((*c.CallOptions).DeleteCustomerRepricingConfig):len((*c.CallOptions).DeleteCustomerRepricingConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.cloudChannelClient.DeleteCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudChannelGRPCClient) GetChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.GetChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetChannelPartnerRepricingConfig[0:len((*c.CallOptions).GetChannelPartnerRepricingConfig):len((*c.CallOptions).GetChannelPartnerRepricingConfig)], opts...)
+	var resp *channelpb.ChannelPartnerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.GetChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) ListChannelPartnerRepricingConfigs(ctx context.Context, req *channelpb.ListChannelPartnerRepricingConfigsRequest, opts ...gax.CallOption) *ChannelPartnerRepricingConfigIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListChannelPartnerRepricingConfigs[0:len((*c.CallOptions).ListChannelPartnerRepricingConfigs):len((*c.CallOptions).ListChannelPartnerRepricingConfigs)], opts...)
+	it := &ChannelPartnerRepricingConfigIterator{}
+	req = proto.Clone(req).(*channelpb.ListChannelPartnerRepricingConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerRepricingConfig, string, error) {
+		resp := &channelpb.ListChannelPartnerRepricingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListChannelPartnerRepricingConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetChannelPartnerRepricingConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) CreateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.CreateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateChannelPartnerRepricingConfig[0:len((*c.CallOptions).CreateChannelPartnerRepricingConfig):len((*c.CallOptions).CreateChannelPartnerRepricingConfig)], opts...)
+	var resp *channelpb.ChannelPartnerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.CreateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) UpdateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.UpdateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_partner_repricing_config.name", url.QueryEscape(req.GetChannelPartnerRepricingConfig().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateChannelPartnerRepricingConfig[0:len((*c.CallOptions).UpdateChannelPartnerRepricingConfig):len((*c.CallOptions).UpdateChannelPartnerRepricingConfig)], opts...)
+	var resp *channelpb.ChannelPartnerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.UpdateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) DeleteChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.DeleteChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteChannelPartnerRepricingConfig[0:len((*c.CallOptions).DeleteChannelPartnerRepricingConfig):len((*c.CallOptions).DeleteChannelPartnerRepricingConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.cloudChannelClient.DeleteChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -2165,6 +2943,7 @@ func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entitlement", url.QueryEscape(req.GetEntitlement())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LookupOffer[0:len((*c.CallOptions).LookupOffer):len((*c.CallOptions).LookupOffer)], opts...)
 	var resp *channelpb.Offer
@@ -2224,6 +3003,7 @@ func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelp
 
 func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSkus[0:len((*c.CallOptions).ListSkus):len((*c.CallOptions).ListSkus)], opts...)
 	it := &SkuIterator{}
@@ -2268,6 +3048,7 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 
 func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.ListOffersRequest, opts ...gax.CallOption) *OfferIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOffers[0:len((*c.CallOptions).ListOffers):len((*c.CallOptions).ListOffers)], opts...)
 	it := &OfferIterator{}
@@ -2312,6 +3093,7 @@ func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.
 
 func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *channelpb.ListPurchasableSkusRequest, opts ...gax.CallOption) *PurchasableSkuIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPurchasableSkus[0:len((*c.CallOptions).ListPurchasableSkus):len((*c.CallOptions).ListPurchasableSkus)], opts...)
 	it := &PurchasableSkuIterator{}
@@ -2356,6 +3138,7 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 
 func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPurchasableOffers[0:len((*c.CallOptions).ListPurchasableOffers):len((*c.CallOptions).ListPurchasableOffers)], opts...)
 	it := &PurchasableOfferIterator{}
@@ -2405,6 +3188,7 @@ func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *ch
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RegisterSubscriber[0:len((*c.CallOptions).RegisterSubscriber):len((*c.CallOptions).RegisterSubscriber)], opts...)
 	var resp *channelpb.RegisterSubscriberResponse
@@ -2426,6 +3210,7 @@ func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UnregisterSubscriber[0:len((*c.CallOptions).UnregisterSubscriber):len((*c.CallOptions).UnregisterSubscriber)], opts...)
 	var resp *channelpb.UnregisterSubscriberResponse
@@ -2442,6 +3227,7 @@ func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *
 
 func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSubscribers[0:len((*c.CallOptions).ListSubscribers):len((*c.CallOptions).ListSubscribers)], opts...)
 	it := &StringIterator{}
@@ -3268,6 +4054,53 @@ func (it *ChannelPartnerLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// ChannelPartnerRepricingConfigIterator manages a stream of *channelpb.ChannelPartnerRepricingConfig.
+type ChannelPartnerRepricingConfigIterator struct {
+	items    []*channelpb.ChannelPartnerRepricingConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.ChannelPartnerRepricingConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ChannelPartnerRepricingConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ChannelPartnerRepricingConfigIterator) Next() (*channelpb.ChannelPartnerRepricingConfig, error) {
+	var item *channelpb.ChannelPartnerRepricingConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ChannelPartnerRepricingConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ChannelPartnerRepricingConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // CustomerIterator manages a stream of *channelpb.Customer.
 type CustomerIterator struct {
 	items    []*channelpb.Customer
@@ -3310,6 +4143,53 @@ func (it *CustomerIterator) bufLen() int {
 }
 
 func (it *CustomerIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// CustomerRepricingConfigIterator manages a stream of *channelpb.CustomerRepricingConfig.
+type CustomerRepricingConfigIterator struct {
+	items    []*channelpb.CustomerRepricingConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.CustomerRepricingConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *CustomerRepricingConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CustomerRepricingConfigIterator) Next() (*channelpb.CustomerRepricingConfig, error) {
+	var item *channelpb.CustomerRepricingConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CustomerRepricingConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CustomerRepricingConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

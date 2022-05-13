@@ -118,6 +118,21 @@ func (*CreateIndex) isDDLStmt()        {}
 func (ci *CreateIndex) Pos() Position  { return ci.Position }
 func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 
+// CreateView represents a CREATE [OR REPLACE] VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#view_statements
+type CreateView struct {
+	Name      ID
+	OrReplace bool
+	Query     Query
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cv *CreateView) String() string { return fmt.Sprintf("%#v", cv) }
+func (*CreateView) isDDLStmt()        {}
+func (cv *CreateView) Pos() Position  { return cv.Position }
+func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
+
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
@@ -143,6 +158,19 @@ func (di *DropIndex) String() string { return fmt.Sprintf("%#v", di) }
 func (*DropIndex) isDDLStmt()        {}
 func (di *DropIndex) Pos() Position  { return di.Position }
 func (di *DropIndex) clearOffset()   { di.Position.Offset = 0 }
+
+// DropView represents a DROP VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#drop-view
+type DropView struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dv *DropView) String() string { return fmt.Sprintf("%#v", dv) }
+func (*DropView) isDDLStmt()        {}
+func (dv *DropView) Pos() Position  { return dv.Position }
+func (dv *DropView) clearOffset()   { dv.Position.Offset = 0 }
 
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
@@ -207,13 +235,22 @@ type ColumnAlteration interface {
 
 func (SetColumnType) isColumnAlteration()    {}
 func (SetColumnOptions) isColumnAlteration() {}
+func (SetDefault) isColumnAlteration()       {}
+func (DropDefault) isColumnAlteration()      {}
 
 type SetColumnType struct {
 	Type    Type
 	NotNull bool
+	Default Expr
 }
 
 type SetColumnOptions struct{ Options ColumnOptions }
+
+type SetDefault struct {
+	Default Expr
+}
+
+type DropDefault struct{}
 
 type OnDelete int
 
@@ -292,6 +329,7 @@ type ColumnDef struct {
 	Type    Type
 	NotNull bool
 
+	Default   Expr // set if this column has a default value
 	Generated Expr // set of this is a generated column
 
 	Options ColumnOptions
@@ -359,6 +397,7 @@ const (
 	Bytes
 	Date
 	Timestamp
+	JSON
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.
@@ -609,6 +648,33 @@ type Func struct {
 func (Func) isBoolExpr() {} // possibly bool
 func (Func) isExpr()     {}
 
+// TypedExpr represents a typed expression in the form `expr AS type_name`, e.g. `'17' AS INT64`.
+type TypedExpr struct {
+	Type Type
+	Expr Expr
+}
+
+func (TypedExpr) isBoolExpr() {} // possibly bool
+func (TypedExpr) isExpr()     {}
+
+type ExtractExpr struct {
+	Part string
+	Type Type
+	Expr Expr
+}
+
+func (ExtractExpr) isBoolExpr() {} // possibly bool
+func (ExtractExpr) isExpr()     {}
+
+type AtTimeZoneExpr struct {
+	Expr Expr
+	Type Type
+	Zone string
+}
+
+func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
+func (AtTimeZoneExpr) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr
@@ -635,6 +701,20 @@ type Param string
 func (Param) isBoolExpr()       {} // possibly bool
 func (Param) isExpr()           {}
 func (Param) isLiteralOrParam() {}
+
+type Case struct {
+	Expr        Expr
+	WhenClauses []WhenClause
+	ElseResult  Expr
+}
+
+func (Case) isBoolExpr() {} // possibly bool
+func (Case) isExpr()     {}
+
+type WhenClause struct {
+	Cond   Expr
+	Result Expr
+}
 
 type BoolLiteral bool
 
@@ -690,6 +770,12 @@ func (DateLiteral) isExpr() {}
 type TimestampLiteral time.Time
 
 func (TimestampLiteral) isExpr() {}
+
+// JSONLiteral represents a JSON literal
+// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+type JSONLiteral []byte
+
+func (JSONLiteral) isExpr() {}
 
 type StarExpr int
 

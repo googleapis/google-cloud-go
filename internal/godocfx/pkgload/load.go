@@ -158,7 +158,7 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 			Doc:           docPkg,
 			Fset:          fset,
 			ImportRenames: imports,
-			Status:        pkgStatus(pkgPath, docPkg.Doc),
+			Status:        pkgStatus(pkgPath, docPkg.Doc, idToPkg[pkgPath].Module.Version),
 		})
 	}
 
@@ -170,8 +170,11 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 //
 // pkgStatus does not use repo-metadata-full.json because it's
 // not available for all modules nor all versions.
-func pkgStatus(importPath, doc string) string {
+func pkgStatus(importPath, doc, version string) string {
 	switch {
+	case strings.Contains(version, "-"):
+		return "preview"
+
 	case strings.Contains(doc, "\nDeprecated:"):
 		return "deprecated"
 	case strings.Contains(doc, "This package is in alpha"):

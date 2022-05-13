@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,12 +48,15 @@ func ExampleTargetPoolsClient_AddHealthCheck() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddHealthCheckTargetPoolRequest.
 	}
-	resp, err := c.AddHealthCheck(ctx, req)
+	op, err := c.AddHealthCheck(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_AddInstance() {
@@ -68,12 +71,15 @@ func ExampleTargetPoolsClient_AddInstance() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddInstanceTargetPoolRequest.
 	}
-	resp, err := c.AddInstance(ctx, req)
+	op, err := c.AddInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_AggregatedList() {
@@ -114,12 +120,15 @@ func ExampleTargetPoolsClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetPoolRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_Get() {
@@ -174,12 +183,15 @@ func ExampleTargetPoolsClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetPoolRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_List() {
@@ -220,12 +232,15 @@ func ExampleTargetPoolsClient_RemoveHealthCheck() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveHealthCheckTargetPoolRequest.
 	}
-	resp, err := c.RemoveHealthCheck(ctx, req)
+	op, err := c.RemoveHealthCheck(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_RemoveInstance() {
@@ -240,12 +255,15 @@ func ExampleTargetPoolsClient_RemoveInstance() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveInstanceTargetPoolRequest.
 	}
-	resp, err := c.RemoveInstance(ctx, req)
+	op, err := c.RemoveInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_SetBackup() {
@@ -260,10 +278,13 @@ func ExampleTargetPoolsClient_SetBackup() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetBackupTargetPoolRequest.
 	}
-	resp, err := c.SetBackup(ctx, req)
+	op, err := c.SetBackup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

@@ -1,17 +1,17 @@
 # Default owner for all directories not owned by others
 *                       @googleapis/yoshi-go-admins
 
-/bigtable/              @crwilcox @tritone  @googleapis/api-bigtable @googleapis/yoshi-go-admins
-/bigtable/cmd/cbt       @garye @igorbernstein2 @googleapis/api-bigtable @googleapis/yoshi-go-admins
-/bigtable/cmd/emulator  @garye @igorbernstein2 @googleapis/api-bigtable @googleapis/yoshi-go-admins
-/bigtable/bttest        @garye @igorbernstein2 @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/              @enocom @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/cmd/cbt       @igorbernstein2 @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/cmd/emulator  @igorbernstein2 @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/bttest        @igorbernstein2 @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigquery/              @googleapis/api-bigquery @googleapis/yoshi-go-admins
-/datastore/             @crwilcox @tritone @googleapis/yoshi-go-admins
-/firestore/             @crwilcox @tritone @googleapis/yoshi-go-admins
+/datastore/             @enocom @telpirion @googleapis/yoshi-go-admins
+/firestore/             @enocom @telpirion @googleapis/yoshi-go-admins
 /pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
-/spanner/               @skuruppu @hengfengli @googleapis/yoshi-go-admins
-/storage/               @googleapis/storage-dpe @googleapis/yoshi-go-admins
+/spanner/               @googleapis/api-spanner-go @googleapis/yoshi-go-admins
+/storage/               @googleapis/cloud-storage-dpe @googleapis/yoshi-go-admins
 /errorreporting/        @googleapis/api-logging @googleapis/yoshi-go-admins
 /logging/               @googleapis/api-logging @googleapis/yoshi-go-admins
 /profiler/              @googleapis/api-profiler @googleapis/yoshi-go-admins

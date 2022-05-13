@@ -45,9 +45,19 @@
                 "CreateChannelPartnerLink"
               ]
             },
+            "CreateChannelPartnerRepricingConfig": {
+              "methods": [
+                "CreateChannelPartnerRepricingConfig"
+              ]
+            },
             "CreateCustomer": {
               "methods": [
                 "CreateCustomer"
+              ]
+            },
+            "CreateCustomerRepricingConfig": {
+              "methods": [
+                "CreateCustomerRepricingConfig"
               ]
             },
             "CreateEntitlement": {
@@ -55,9 +65,19 @@
                 "CreateEntitlement"
               ]
             },
+            "DeleteChannelPartnerRepricingConfig": {
+              "methods": [
+                "DeleteChannelPartnerRepricingConfig"
+              ]
+            },
             "DeleteCustomer": {
               "methods": [
                 "DeleteCustomer"
+              ]
+            },
+            "DeleteCustomerRepricingConfig": {
+              "methods": [
+                "DeleteCustomerRepricingConfig"
               ]
             },
             "GetChannelPartnerLink": {
@@ -65,9 +85,19 @@
                 "GetChannelPartnerLink"
               ]
             },
+            "GetChannelPartnerRepricingConfig": {
+              "methods": [
+                "GetChannelPartnerRepricingConfig"
+              ]
+            },
             "GetCustomer": {
               "methods": [
                 "GetCustomer"
+              ]
+            },
+            "GetCustomerRepricingConfig": {
+              "methods": [
+                "GetCustomerRepricingConfig"
               ]
             },
             "GetEntitlement": {
@@ -75,9 +105,24 @@
                 "GetEntitlement"
               ]
             },
+            "ImportCustomer": {
+              "methods": [
+                "ImportCustomer"
+              ]
+            },
             "ListChannelPartnerLinks": {
               "methods": [
                 "ListChannelPartnerLinks"
+              ]
+            },
+            "ListChannelPartnerRepricingConfigs": {
+              "methods": [
+                "ListChannelPartnerRepricingConfigs"
+              ]
+            },
+            "ListCustomerRepricingConfigs": {
+              "methods": [
+                "ListCustomerRepricingConfigs"
               ]
             },
             "ListCustomers": {
@@ -175,9 +220,19 @@
                 "UpdateChannelPartnerLink"
               ]
             },
+            "UpdateChannelPartnerRepricingConfig": {
+              "methods": [
+                "UpdateChannelPartnerRepricingConfig"
+              ]
+            },
             "UpdateCustomer": {
               "methods": [
                 "UpdateCustomer"
+              ]
+            },
+            "UpdateCustomerRepricingConfig": {
+              "methods": [
+                "UpdateCustomerRepricingConfig"
               ]
             }
           }

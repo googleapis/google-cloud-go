@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -196,6 +196,110 @@ func ExampleClient_RunTransferJob() {
 	}
 
 	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_CreateAgentPool() {
+	ctx := context.Background()
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.CreateAgentPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#CreateAgentPoolRequest.
+	}
+	resp, err := c.CreateAgentPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateAgentPool() {
+	ctx := context.Background()
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.UpdateAgentPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#UpdateAgentPoolRequest.
+	}
+	resp, err := c.UpdateAgentPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetAgentPool() {
+	ctx := context.Background()
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.GetAgentPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetAgentPoolRequest.
+	}
+	resp, err := c.GetAgentPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListAgentPools() {
+	ctx := context.Background()
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.ListAgentPoolsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ListAgentPoolsRequest.
+	}
+	it := c.ListAgentPools(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_DeleteAgentPool() {
+	ctx := context.Background()
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.DeleteAgentPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#DeleteAgentPoolRequest.
+	}
+	err = c.DeleteAgentPool(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

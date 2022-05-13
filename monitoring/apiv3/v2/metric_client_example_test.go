@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -205,6 +205,24 @@ func ExampleMetricClient_CreateTimeSeries() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
 	}
 	err = c.CreateTimeSeries(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleMetricClient_CreateServiceTimeSeries() {
+	ctx := context.Background()
+	c, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.CreateTimeSeriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
+	}
+	err = c.CreateServiceTimeSeries(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

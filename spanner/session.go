@@ -29,8 +29,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	octrace "go.opencensus.io/trace"
@@ -72,12 +72,13 @@ func (sh *sessionHandle) recycle() {
 	}
 	p := sh.session.pool
 	tracked := sh.trackedSessionHandle
-	sh.session.recycle()
+	s := sh.session
 	sh.session = nil
 	sh.trackedSessionHandle = nil
 	sh.checkoutTime = time.Time{}
 	sh.stack = nil
 	sh.mu.Unlock()
+	s.recycle()
 	if tracked != nil {
 		p.mu.Lock()
 		p.trackedSessionHandles.Remove(tracked)
@@ -625,7 +626,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		tag.Upsert(tagKeyClientID, sc.id),
 		tag.Upsert(tagKeyDatabase, database),
 		tag.Upsert(tagKeyInstance, instance),
-		tag.Upsert(tagKeyLibVersion, version.Repo),
+		tag.Upsert(tagKeyLibVersion, internal.Version),
 	)
 	if err != nil {
 		logf(pool.sc.logger, "Failed to create tag map, error: %v", err)

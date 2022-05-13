@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ func defaultCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -202,10 +201,6 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 //   UserEventService will only join events with products from branch
 //   {newBranch}.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }
@@ -213,10 +208,6 @@ func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetD
 // GetDefaultBranch get which branch is currently default branch set by
 // CatalogService.SetDefaultBranch
 // method under a specified parent catalog.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
 func (c *CatalogClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
 	return c.internalClient.GetDefaultBranch(ctx, req, opts...)
 }
@@ -291,7 +282,7 @@ func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -303,6 +294,7 @@ func (c *catalogGRPCClient) Close() error {
 
 func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCatalogs[0:len((*c.CallOptions).ListCatalogs):len((*c.CallOptions).ListCatalogs)], opts...)
 	it := &CatalogIterator{}
@@ -352,6 +344,7 @@ func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog.name", url.QueryEscape(req.GetCatalog().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCatalog[0:len((*c.CallOptions).UpdateCatalog):len((*c.CallOptions).UpdateCatalog)], opts...)
 	var resp *retailpb.Catalog
@@ -373,6 +366,7 @@ func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetDefaultBranch[0:len((*c.CallOptions).SetDefaultBranch):len((*c.CallOptions).SetDefaultBranch)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -390,6 +384,7 @@ func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDefaultBranch[0:len((*c.CallOptions).GetDefaultBranch):len((*c.CallOptions).GetDefaultBranch)], opts...)
 	var resp *retailpb.GetDefaultBranchResponse

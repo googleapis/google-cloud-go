@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -158,6 +158,26 @@ func ExampleCloudChannelClient_DeleteCustomer() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleCloudChannelClient_ImportCustomer() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.ImportCustomerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ImportCustomerRequest.
+	}
+	resp, err := c.ImportCustomer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleCloudChannelClient_ProvisionCloudIdentity() {
@@ -613,6 +633,214 @@ func ExampleCloudChannelClient_UpdateChannelPartnerLink() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleCloudChannelClient_GetCustomerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.GetCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#GetCustomerRepricingConfigRequest.
+	}
+	resp, err := c.GetCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_ListCustomerRepricingConfigs() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.ListCustomerRepricingConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListCustomerRepricingConfigsRequest.
+	}
+	it := c.ListCustomerRepricingConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudChannelClient_CreateCustomerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.CreateCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#CreateCustomerRepricingConfigRequest.
+	}
+	resp, err := c.CreateCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_UpdateCustomerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.UpdateCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#UpdateCustomerRepricingConfigRequest.
+	}
+	resp, err := c.UpdateCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_DeleteCustomerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.DeleteCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#DeleteCustomerRepricingConfigRequest.
+	}
+	err = c.DeleteCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleCloudChannelClient_GetChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.GetChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#GetChannelPartnerRepricingConfigRequest.
+	}
+	resp, err := c.GetChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_ListChannelPartnerRepricingConfigs() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.ListChannelPartnerRepricingConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListChannelPartnerRepricingConfigsRequest.
+	}
+	it := c.ListChannelPartnerRepricingConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudChannelClient_CreateChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.CreateChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#CreateChannelPartnerRepricingConfigRequest.
+	}
+	resp, err := c.CreateChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_UpdateChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.UpdateChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#UpdateChannelPartnerRepricingConfigRequest.
+	}
+	resp, err := c.UpdateChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_DeleteChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.DeleteChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#DeleteChannelPartnerRepricingConfigRequest.
+	}
+	err = c.DeleteChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleCloudChannelClient_LookupOffer() {

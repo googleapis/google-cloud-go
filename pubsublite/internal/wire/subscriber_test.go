@@ -14,7 +14,9 @@
 package wire
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"sort"
 	"sync"
 	"testing"
@@ -30,17 +32,22 @@ import (
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
+const (
+	maxMessages int = 10
+	maxBytes    int = 1000
+)
+
 func testSubscriberSettings() ReceiveSettings {
 	settings := testReceiveSettings()
-	settings.MaxOutstandingMessages = 10
-	settings.MaxOutstandingBytes = 1000
+	settings.MaxOutstandingMessages = maxMessages
+	settings.MaxOutstandingBytes = maxBytes
 	return settings
 }
 
 // initFlowControlReq returns the first expected flow control request when
 // testSubscriberSettings are used.
 func initFlowControlReq() *pb.SubscribeRequest {
-	return flowControlSubReq(flowControlTokens{Bytes: 1000, Messages: 10})
+	return flowControlSubReq(flowControlTokens{Bytes: int64(maxBytes), Messages: int64(maxMessages)})
 }
 
 func partitionMsgs(partition int, msgs ...*pb.SequencedMessage) []*ReceivedMessage {
@@ -583,6 +590,36 @@ func TestSubscribeStreamHandleResetError(t *testing.T) {
 	}
 }
 
+func TestSubscribeStreamReceiveLargeMessage(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	const msgSize = 10 * 1024 * 1024 // 10 MiB
+	msg := &pb.SequencedMessage{
+		Cursor:    &pb.Cursor{Offset: 1},
+		SizeBytes: msgSize,
+		Message:   &pb.PubSubMessage{Data: bytes.Repeat([]byte{'0'}, msgSize)},
+	}
+
+	settings := testSubscriberSettings()
+	settings.MaxOutstandingBytes = msgSize
+	expectedFlowControlReq := flowControlSubReq(flowControlTokens{
+		Bytes:    int64(settings.MaxOutstandingBytes),
+		Messages: int64(settings.MaxOutstandingMessages),
+	})
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	stream.Push(expectedFlowControlReq, msgSubResp(msg), nil)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSubscribeStream(t, subscription, settings)
+	sub.Receiver.ValidateMsg(msg)
+	sub.StopVerifyNoError()
+}
+
 type testSinglePartitionSubscriber singlePartitionSubscriber
 
 func (t *testSinglePartitionSubscriber) WaitStopped() error {
@@ -929,6 +966,15 @@ func TestSinglePartitionSubscriberStopDuringAdminSeek(t *testing.T) {
 	}
 }
 
+func verifyPartitionsActive(t *testing.T, sub Subscriber, want bool, partitions ...int) {
+	t.Helper()
+	for _, p := range partitions {
+		if got := sub.PartitionActive(p); got != want {
+			t.Errorf("PartitionActive(%d) got %v, want %v", p, got, want)
+		}
+	}
+}
+
 func newTestMultiPartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscriptionPath string, partitions []int) *multiPartitionSubscriber {
 	ctx := context.Background()
 	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
@@ -994,6 +1040,9 @@ func TestMultiPartitionSubscriberMultipleMessages(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	sub := newTestMultiPartitionSubscriber(t, receiver.onMessage, subscription, []int{1, 2})
+	verifyPartitionsActive(t, sub, true, 1, 2)
+	verifyPartitionsActive(t, sub, false, 0, 3)
+
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -1056,18 +1105,6 @@ func TestMultiPartitionSubscriberPermanentError(t *testing.T) {
 	receiver.VerifyNoMsgs()
 }
 
-func (as *assigningSubscriber) Partitions() []int {
-	as.mu.Lock()
-	defer as.mu.Unlock()
-
-	var partitions []int
-	for p := range as.subscribers {
-		partitions = append(partitions, p)
-	}
-	sort.Ints(partitions)
-	return partitions
-}
-
 func (as *assigningSubscriber) Subscribers() []*singlePartitionSubscriber {
 	as.mu.Lock()
 	defer as.mu.Unlock()
@@ -1088,7 +1125,11 @@ func (as *assigningSubscriber) FlushCommits() {
 	}
 }
 
-func newTestAssigningSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscriptionPath string) *assigningSubscriber {
+func noopReassignmentHandler(_, _ PartitionSet) error {
+	return nil
+}
+
+func newTestAssigningSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, reassignmentHandler ReassignmentHandlerFunc, subscriptionPath string) *assigningSubscriber {
 	ctx := context.Background()
 	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
@@ -1113,7 +1154,7 @@ func newTestAssigningSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, 
 		receiver:         receiverFunc,
 		disableTasks:     true, // Background tasks disabled to control event order
 	}
-	sub, err := newAssigningSubscriber(allClients, assignmentClient, fakeGenerateUUID, f)
+	sub, err := newAssigningSubscriber(allClients, assignmentClient, reassignmentHandler, fakeGenerateUUID, f)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1135,8 +1176,8 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 	// Assignment stream
 	asnStream := test.NewRPCVerifier(t)
 	asnStream.Push(initAssignmentReq(subscription, fakeUUID[:]), assignmentResp([]int64{3, 6}), nil)
-	assignmentBarrier := asnStream.PushWithBarrier(assignmentAckReq(), assignmentResp([]int64{3, 8}), nil)
-	asnStream.Push(assignmentAckReq(), nil, nil)
+	assignmentBarrier1 := asnStream.PushWithBarrier(assignmentAckReq(), assignmentResp([]int64{3, 8}), nil)
+	assignmentBarrier2 := asnStream.PushWithBarrier(assignmentAckReq(), nil, nil)
 	verifiers.AddAssignmentStream(subscription, asnStream)
 
 	// Partition 3
@@ -1179,23 +1220,21 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestAssigningSubscriber(t, receiver.onMessage, subscription)
+	sub := newTestAssigningSubscriber(t, receiver.onMessage, noopReassignmentHandler, subscription)
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
 
 	// Partition assignments are initially {3, 6}.
 	receiver.ValidateMsgs(join(partitionMsgs(3, msg1), partitionMsgs(6, msg3)))
-	if got, want := sub.Partitions(), []int{3, 6}; !testutil.Equal(got, want) {
-		t.Errorf("subscriber partitions: got %d, want %d", got, want)
-	}
+	verifyPartitionsActive(t, sub, true, 3, 6)
+	verifyPartitionsActive(t, sub, false, 1, 8)
 
 	// Partition assignments will now be {3, 8}.
-	assignmentBarrier.Release()
+	assignmentBarrier1.Release()
 	receiver.ValidateMsgs(partitionMsgs(8, msg5))
-	if got, want := sub.Partitions(), []int{3, 8}; !testutil.Equal(got, want) {
-		t.Errorf("subscriber partitions: got %d, want %d", got, want)
-	}
+	verifyPartitionsActive(t, sub, true, 3, 8)
+	verifyPartitionsActive(t, sub, false, 2, 6)
 
 	// msg2 is from partition 3 and should be received. msg4 is from partition 6
 	// (removed) and should be discarded.
@@ -1203,6 +1242,10 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 	msg2Barrier.Release()
 	msg4Barrier.Release()
 	receiver.ValidateMsgs(partitionMsgs(3, msg2))
+
+	// Ensure the second assignment ack is received by the server to avoid test
+	// flakiness.
+	assignmentBarrier2.Release()
 
 	// Stop should flush all commit cursors.
 	sub.Stop()
@@ -1251,7 +1294,7 @@ func TestAssigningSubscriberPermanentError(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestAssigningSubscriber(t, receiver.onMessage, subscription)
+	sub := newTestAssigningSubscriber(t, receiver.onMessage, noopReassignmentHandler, subscription)
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -1294,7 +1337,7 @@ func TestAssigningSubscriberIgnoreOutstandingAcks(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestAssigningSubscriber(t, receiver.onMessage, subscription)
+	sub := newTestAssigningSubscriber(t, receiver.onMessage, noopReassignmentHandler, subscription)
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -1326,6 +1369,116 @@ func TestAssigningSubscriberIgnoreOutstandingAcks(t *testing.T) {
 	}
 }
 
+func TestAssigningSubscriberStoppedWhileReassignmentHandlerActive(t *testing.T) {
+	const subscription = "projects/123456/locations/us-central1-b/subscriptions/my-sub"
+	receiver := newTestMessageReceiver(t)
+
+	verifiers := test.NewVerifiers(t)
+
+	// Assignment stream
+	asnStream := test.NewRPCVerifier(t)
+	asnStream.Push(initAssignmentReq(subscription, fakeUUID[:]), assignmentResp([]int64{1}), nil)
+	verifiers.AddAssignmentStream(subscription, asnStream)
+
+	// Partition 1
+	subStream := test.NewRPCVerifier(t)
+	subStream.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
+	subBarrier := subStream.PushWithBarrier(initFlowControlReq(), nil, nil)
+	verifiers.AddSubscribeStream(subscription, 1, subStream)
+
+	cmtStream := test.NewRPCVerifier(t)
+	cmtBarrier := cmtStream.PushWithBarrier(initCommitReq(subscriptionPartition{Path: subscription, Partition: 1}), initCommitResp(), nil)
+	verifiers.AddCommitStream(subscription, 1, cmtStream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	reassignmentHandlerCalled := test.NewCondition("reassignment handler called")
+	returnReassignmentHandler := test.NewCondition("return reassignment handler")
+	onReassignment := func(before, after PartitionSet) error {
+		if got, want := len(before.SortedInts()), 0; got != want {
+			t.Errorf("len(before): got %v, want %v", got, want)
+		}
+		if got, want := after.SortedInts(), []int{1}; !testutil.Equal(got, want) {
+			t.Errorf("after: got %v, want %v", got, want)
+		}
+		reassignmentHandlerCalled.SetDone()
+		returnReassignmentHandler.WaitUntilDone(t, serviceTestWaitTimeout)
+		return nil
+	}
+
+	sub := newTestAssigningSubscriber(t, receiver.onMessage, onReassignment, subscription)
+	if gotErr := sub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	// Used to control order of execution to ensure the test is deterministic.
+	subBarrier.Release()
+	cmtBarrier.Release()
+
+	// Ensure there are no deadlocks if the reassignment handler blocks and the
+	// subscriber is stopped.
+	reassignmentHandlerCalled.WaitUntilDone(t, serviceTestWaitTimeout)
+	sub.Stop()
+	returnReassignmentHandler.SetDone()
+
+	if gotErr := sub.WaitStopped(); gotErr != nil {
+		t.Errorf("WaitStopped() got err: (%v)", gotErr)
+	}
+}
+
+func TestAssigningSubscriberReassignmentHandlerReturnsError(t *testing.T) {
+	const subscription = "projects/123456/locations/us-central1-b/subscriptions/my-sub"
+	receiver := newTestMessageReceiver(t)
+
+	verifiers := test.NewVerifiers(t)
+
+	// Assignment stream
+	asnStream := test.NewRPCVerifier(t)
+	asnStream.Push(initAssignmentReq(subscription, fakeUUID[:]), assignmentResp([]int64{1}), nil)
+	verifiers.AddAssignmentStream(subscription, asnStream)
+
+	// Partition 1
+	subStream := test.NewRPCVerifier(t)
+	subStream.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
+	subBarrier := subStream.PushWithBarrier(initFlowControlReq(), nil, nil)
+	verifiers.AddSubscribeStream(subscription, 1, subStream)
+
+	cmtStream := test.NewRPCVerifier(t)
+	cmtBarrier := cmtStream.PushWithBarrier(initCommitReq(subscriptionPartition{Path: subscription, Partition: 1}), initCommitResp(), nil)
+	verifiers.AddCommitStream(subscription, 1, cmtStream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	reassignmentErr := errors.New("reassignment handler error")
+	returnReassignmentErr := test.NewCondition("return reassignment error")
+	onAssignment := func(before, after PartitionSet) error {
+		if got, want := len(before.SortedInts()), 0; got != want {
+			t.Errorf("len(before): got %v, want %v", got, want)
+		}
+		if got, want := after.SortedInts(), []int{1}; !testutil.Equal(got, want) {
+			t.Errorf("after: got %v, want %v", got, want)
+		}
+		returnReassignmentErr.WaitUntilDone(t, serviceTestWaitTimeout)
+		return reassignmentErr
+	}
+
+	sub := newTestAssigningSubscriber(t, receiver.onMessage, onAssignment, subscription)
+	if gotErr := sub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	// Used to control order of execution to ensure the test is deterministic.
+	subBarrier.Release()
+	cmtBarrier.Release()
+	returnReassignmentErr.SetDone()
+
+	if gotErr := sub.WaitStopped(); !test.ErrorEqual(gotErr, reassignmentErr) {
+		t.Errorf("WaitStopped() got err: (%v), want err: (%v)", gotErr, reassignmentErr)
+	}
+}
+
 func TestNewSubscriberValidatesSettings(t *testing.T) {
 	const subscription = "projects/123456/locations/us-central1-b/subscriptions/my-sub"
 	const region = "us-central1"
@@ -1333,7 +1486,7 @@ func TestNewSubscriberValidatesSettings(t *testing.T) {
 
 	settings := DefaultReceiveSettings
 	settings.MaxOutstandingMessages = 0
-	if _, err := NewSubscriber(context.Background(), settings, receiver.onMessage, region, subscription); err == nil {
+	if _, err := NewSubscriber(context.Background(), settings, receiver.onMessage, noopReassignmentHandler, region, subscription); err == nil {
 		t.Error("NewSubscriber() did not return error")
 	}
 }

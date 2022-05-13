@@ -92,6 +92,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	nackTicker := time.NewTicker(100 * time.Millisecond)
 	pingTicker := time.NewTicker(30 * time.Second)
 	cctx, cancel := context.WithCancel(context.Background())
+	cctx = withSubscriptionKey(cctx, subName)
 	it := &messageIterator{
 		ctx:                cctx,
 		cancel:             cancel,
@@ -419,22 +420,10 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 					return nil
 				}
 			default:
-				if err == nil {
-					return nil
-				}
-				// This addresses an error where `context deadline exceeded` errors
-				// not captured by the previous case causes fatal errors.
-				// See https://github.com/googleapis/google-cloud-go/issues/3060
-				if strings.Contains(err.Error(), "context deadline exceeded") {
-					// Context deadline exceeded errors here should be transparent
-					// to prevent the iterator from shutting down.
-					if err := gax.Sleep(cctx, bo.Pause()); err != nil {
-						return nil
-					}
-					continue
-				}
-				// Any other error is fatal.
-				return err
+				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
+				// since acks are "fire and forget". Once EOS feature is out, retry these errors
+				// if exactly-once is enabled, which can be determined from StreamingPull response.
+				return nil
 			}
 		}
 	})
@@ -485,18 +474,17 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 				recordStat(it.ctx, ModAckTimeoutCount, 1)
 				return nil
 			default:
-				if err == nil {
-					return nil
-				}
 				// This addresses an error where `context deadline exceeded` errors
 				// not captured by the previous case causes fatal errors.
 				// See https://github.com/googleapis/google-cloud-go/issues/3060
-				if strings.Contains(err.Error(), "context deadline exceeded") {
+				if err != nil && strings.Contains(err.Error(), "context deadline exceeded") {
 					recordStat(it.ctx, ModAckTimeoutCount, 1)
 					return nil
 				}
-				// Any other error is fatal.
-				return err
+				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
+				// since modacks are "fire and forget". Once EOS feature is out, retry these errors
+				// if exactly-once is enabled, which can be determined from StreamingPull response.
+				return nil
 			}
 		}
 	})

@@ -22,6 +22,12 @@ var (
 		{Name: "value", Type: bigquery.IntegerFieldType},
 	}
 
+	SimpleMessageEvolvedSchema bigquery.Schema = bigquery.Schema{
+		{Name: "name", Type: bigquery.StringFieldType, Required: true},
+		{Name: "value", Type: bigquery.IntegerFieldType},
+		{Name: "other", Type: bigquery.StringFieldType},
+	}
+
 	GithubArchiveSchema bigquery.Schema = bigquery.Schema{
 		{Name: "type", Type: bigquery.StringFieldType},
 		{Name: "public", Type: bigquery.BooleanFieldType},
@@ -104,6 +110,24 @@ var (
 			Repeated: true,
 			Schema: bigquery.Schema{
 				{Name: "value", Type: bigquery.StringFieldType},
+			},
+		},
+	}
+
+	ExternalEnumMessageSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "msg_a",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "foo", Type: bigquery.StringFieldType},
+				{Name: "bar", Type: bigquery.IntegerFieldType},
+			},
+		},
+		{
+			Name: "msg_b",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "baz", Type: bigquery.IntegerFieldType},
 			},
 		},
 	}

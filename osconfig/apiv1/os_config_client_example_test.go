@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -230,4 +230,64 @@ func ExampleClient_DeletePatchDeployment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleClient_UpdatePatchDeployment() {
+	ctx := context.Background()
+	c, err := osconfig.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.UpdatePatchDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#UpdatePatchDeploymentRequest.
+	}
+	resp, err := c.UpdatePatchDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_PausePatchDeployment() {
+	ctx := context.Background()
+	c, err := osconfig.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.PausePatchDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#PausePatchDeploymentRequest.
+	}
+	resp, err := c.PausePatchDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ResumePatchDeployment() {
+	ctx := context.Background()
+	c, err := osconfig.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.ResumePatchDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ResumePatchDeploymentRequest.
+	}
+	resp, err := c.ResumePatchDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

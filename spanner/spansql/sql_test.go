@@ -84,6 +84,8 @@ func TestSQL(t *testing.T) {
 					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
 					{Name: "Cl", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)}, Position: line(13)},
 					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
+					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
+					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -105,6 +107,8 @@ func TestSQL(t *testing.T) {
   Ck ARRAY<STRING(MAX)>,
   Cl TIMESTAMP OPTIONS (allow_commit_timestamp = null),
   Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
+  Cn JSON,
+  Co INT64 DEFAULT (1),
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -186,6 +190,35 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateView{
+				Name:      "SingersView",
+				OrReplace: true,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "Singers",
+						}},
+					},
+					Order: []Order{
+						{Expr: ID("LastName")},
+						{Expr: ID("FirstName")},
+					},
+				},
+				Position: line(1),
+			},
+			"CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			reparseDDL,
+		},
+		{
+			&DropView{
+				Name:     "SingersView",
+				Position: line(1),
+			},
+			"DROP VIEW SingersView",
+			reparseDDL,
+		},
+		{
 			&AlterTable{
 				Name:       "Ta",
 				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}, Position: line(1)}},
@@ -239,6 +272,22 @@ func TestSQL(t *testing.T) {
 			&AlterTable{
 				Name: "Ta",
 				Alteration: AlterColumn{
+					Name: "Ch",
+					Alteration: SetColumnType{
+						Type:    Type{Base: String, Len: MaxLen},
+						NotNull: true,
+						Default: StringLiteral("1"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Ch STRING(MAX) NOT NULL DEFAULT (\"1\")",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
 					Name: "Ci",
 					Alteration: SetColumnOptions{
 						Options: ColumnOptions{
@@ -249,6 +298,32 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"ALTER TABLE Ta ALTER COLUMN Ci SET OPTIONS (allow_commit_timestamp = null)",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name: "Cj",
+					Alteration: SetDefault{
+						Default: StringLiteral("1"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Cj SET DEFAULT (\"1\")",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name:       "Ck",
+					Alteration: DropDefault{},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Ck DROP DEFAULT",
 			reparseDDL,
 		},
 		{
@@ -435,6 +510,30 @@ func TestSQL(t *testing.T) {
 			reparseQuery,
 		},
 		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: String}}},
+					}},
+				},
+			},
+			`SELECT CAST(7 AS STRING)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "SAFE_CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: Date}}},
+					}},
+				},
+			},
+			`SELECT SAFE_CAST(7 AS DATE)`,
+			reparseQuery,
+		},
+		{
 			ComparisonOp{LHS: ID("X"), Op: NotBetween, RHS: ID("Y"), RHS2: ID("Z")},
 			`X NOT BETWEEN Y AND Z`,
 			reparseExpr,
@@ -461,6 +560,11 @@ func TestSQL(t *testing.T) {
 			reparseExpr,
 		},
 		{
+			JSONLiteral(`{"a": 1}`),
+			`JSON '{"a": 1}'`,
+			reparseExpr,
+		},
+		{
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -481,6 +585,66 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A",
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("A"), ID("B"),
+					},
+					From: []SelectFrom{
+						SelectFromJoin{
+							Type: InnerJoin,
+							LHS: SelectFromJoin{
+								Type: InnerJoin,
+								LHS:  SelectFromTable{Table: "Table1"},
+								RHS:  SelectFromTable{Table: "Table2"},
+								On: ComparisonOp{
+									LHS: PathExp{"Table1", "A"},
+									Op:  Eq,
+									RHS: PathExp{"Table2", "A"},
+								},
+							},
+							RHS:   SelectFromTable{Table: "Table3"},
+							Using: []ID{"X"},
+						},
+					},
+				},
+			},
+			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A INNER JOIN Table3 USING (X)",
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							Expr: ID("X"),
+							WhenClauses: []WhenClause{
+								{Cond: IntegerLiteral(1), Result: StringLiteral("X")},
+								{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
+							},
+							ElseResult: Null,
+						}},
+				},
+			},
+			`SELECT CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							WhenClauses: []WhenClause{
+								{Cond: True, Result: StringLiteral("X")},
+								{Cond: False, Result: StringLiteral("Y")},
+							},
+						}},
+				},
+			},
+			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
 			reparseQuery,
 		},
 	}

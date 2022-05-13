@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
 	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -36,7 +36,9 @@ var newPredictionClientHook clientHook
 
 // PredictionCallOptions contains the retry settings for each method of PredictionClient.
 type PredictionCallOptions struct {
-	Predict []gax.CallOption
+	Predict    []gax.CallOption
+	RawPredict []gax.CallOption
+	Explain    []gax.CallOption
 }
 
 func defaultPredictionGRPCClientOptions() []option.ClientOption {
@@ -46,7 +48,6 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -54,7 +55,9 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 
 func defaultPredictionCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
-		Predict: []gax.CallOption{},
+		Predict:    []gax.CallOption{},
+		RawPredict: []gax.CallOption{},
+		Explain:    []gax.CallOption{},
 	}
 }
 
@@ -64,6 +67,8 @@ type internalPredictionClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Predict(context.Context, *aiplatformpb.PredictRequest, ...gax.CallOption) (*aiplatformpb.PredictResponse, error)
+	RawPredict(context.Context, *aiplatformpb.RawPredictRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
+	Explain(context.Context, *aiplatformpb.ExplainRequest, ...gax.CallOption) (*aiplatformpb.ExplainResponse, error)
 }
 
 // PredictionClient is a client for interacting with Vertex AI API.
@@ -103,6 +108,33 @@ func (c *PredictionClient) Connection() *grpc.ClientConn {
 // Predict perform an online prediction.
 func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.PredictRequest, opts ...gax.CallOption) (*aiplatformpb.PredictResponse, error) {
 	return c.internalClient.Predict(ctx, req, opts...)
+}
+
+// RawPredict perform an online prediction with an arbitrary HTTP payload.
+//
+// The response includes the following HTTP headers:
+//
+//   X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this
+//   prediction.
+//
+//   X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel
+//   that served this prediction.
+func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	return c.internalClient.RawPredict(ctx, req, opts...)
+}
+
+// Explain perform an online explanation.
+//
+// If deployed_model_id is specified,
+// the corresponding DeployModel must have
+// explanation_spec
+// populated. If deployed_model_id
+// is not specified, all DeployedModels must have
+// explanation_spec
+// populated. Only deployed AutoML tabular Models have
+// explanation_spec.
+func (c *PredictionClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
+	return c.internalClient.Explain(ctx, req, opts...)
 }
 
 // predictionGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
@@ -175,7 +207,7 @@ func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -186,18 +218,48 @@ func (c *predictionGRPCClient) Close() error {
 }
 
 func (c *predictionGRPCClient) Predict(ctx context.Context, req *aiplatformpb.PredictRequest, opts ...gax.CallOption) (*aiplatformpb.PredictResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	var resp *aiplatformpb.PredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.Predict(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RawPredict[0:len((*c.CallOptions).RawPredict):len((*c.CallOptions).RawPredict)], opts...)
+	var resp *httpbodypb.HttpBody
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.RawPredict(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).Explain[0:len((*c.CallOptions).Explain):len((*c.CallOptions).Explain)], opts...)
+	var resp *aiplatformpb.ExplainResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.Explain(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

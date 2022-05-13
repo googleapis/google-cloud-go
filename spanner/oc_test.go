@@ -23,14 +23,18 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"google.golang.org/api/iterator"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 // Check that stats are being exported.
 func TestOCStats(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
 
@@ -47,6 +51,8 @@ func TestOCStats(t *testing.T) {
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
+	skipForPGTest(t)
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	for _, test := range []struct {
 		name    string
 		view    *view.View
@@ -91,6 +97,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 }
 
 func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(v)
 	defer te.Unregister()
 
@@ -141,6 +148,7 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 }
 
 func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(SessionsCountView)
 	defer te.Unregister()
 
@@ -213,6 +221,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 }
 
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()
 
@@ -261,6 +270,91 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	}
 }
 
+func TestOCStats_GFE_Latency(t *testing.T) {
+	te := testutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
+	defer te.Unregister()
+
+	setGFELatencyMetricsFlag(true)
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	if err := server.TestSpanner.PutStatementResult("SELECT email FROM Users", &stestutil.StatementResult{
+		Type: stestutil.StatementResultResultSet,
+		ResultSet: &spannerpb.ResultSet{
+			Metadata: &spannerpb.ResultSetMetadata{
+				RowType: &spannerpb.StructType{
+					Fields: []*spannerpb.StructType_Field{
+						{
+							Name: "email",
+							Type: &spannerpb.Type{Code: spannerpb.TypeCode_STRING},
+						},
+					},
+				},
+			},
+			Rows: []*structpb.ListValue{
+				{Values: []*structpb.Value{{
+					Kind: &structpb.Value_StringValue{StringValue: "test@test.com"},
+				}}},
+			},
+		},
+	}); err != nil {
+		t.Fatalf("could not add result: %v", err)
+	}
+	iter := client.Single().Read(context.Background(), "Users", AllKeys(), []string{"email"})
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err.Error())
+			break
+		}
+	}
+
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
+
+	// Wait until we see data from the view.
+	select {
+	case stat := <-te.Stats:
+		if len(stat.Rows) == 0 {
+			t.Fatal("No metrics are exported")
+		}
+		if stat.View.Measure.Name() != statsPrefix+"gfe_latency" && stat.View.Measure.Name() != statsPrefix+"gfe_header_missing_count" {
+			t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_header_missing_count or "+statsPrefix+"gfe_latency")
+		}
+		row := stat.Rows[0]
+		m := getTagMap(row.Tags)
+		checkCommonTags(t, m)
+		var data string
+		switch row.Data.(type) {
+		default:
+			data = fmt.Sprintf("%v", row.Data)
+		case *view.CountData:
+			data = fmt.Sprintf("%v", row.Data.(*view.CountData).Value)
+		case *view.LastValueData:
+			data = fmt.Sprintf("%v", row.Data.(*view.LastValueData).Value)
+		case *view.DistributionData:
+			data = fmt.Sprintf("%v", row.Data.(*view.DistributionData).Count)
+		}
+		if got, want := fmt.Sprintf("%v", data), "0"; got <= want {
+			t.Fatalf("Incorrect data: got %v, wanted more than %v for metric %v", got, want, stat.View.Measure.Name())
+		}
+	case <-time.After(1 * time.Second):
+		t.Fatal("no stats were exported before timeout")
+	}
+
+}
 func getTagMap(tags []tag.Tag) map[tag.Key]string {
 	m := make(map[tag.Key]string)
 	for _, t := range tags {
@@ -281,7 +375,7 @@ func checkCommonTags(t *testing.T, m map[tag.Key]string) {
 	if m[tagKeyDatabase] != "[DATABASE]" {
 		t.Fatalf("Incorrect database ID: %v", m[tagKeyDatabase])
 	}
-	if m[tagKeyLibVersion] != version.Repo {
+	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }

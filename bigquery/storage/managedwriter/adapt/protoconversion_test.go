@@ -21,7 +21,7 @@ import (
 
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -584,6 +584,118 @@ func TestNormalizeDescriptor(t *testing.T) {
 								JsonName: proto.String("value"),
 								Number:   proto.Int32(1),
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "WithOneOf",
+			in:          (&testdata.WithOneOf{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_WithOneOf"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("int32_value"),
+						JsonName: proto.String("int32Value"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("string_value"),
+						JsonName: proto.String("stringValue"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("double_value"),
+						JsonName: proto.String("doubleValue"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_DOUBLE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+		{
+			description: "WithExternalEnum",
+			in:          (&testdata.ExternalEnumMessage{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_ExternalEnumMessage"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("msg_a"),
+						JsonName: proto.String("msgA"),
+						Number:   proto.Int32(1),
+						TypeName: proto.String("testdata_EnumMsgA"),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("msg_b"),
+						JsonName: proto.String("msgB"),
+						Number:   proto.Int32(2),
+						TypeName: proto.String("testdata_EnumMsgB"),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("testdata_ExtEnum_E"),
+						EnumType: []*descriptorpb.EnumDescriptorProto{
+							{
+								Name: proto.String("ExtEnum"),
+								Value: []*descriptorpb.EnumValueDescriptorProto{
+									{
+										Name:   proto.String("UNDEFINED"),
+										Number: proto.Int32(0),
+									},
+									{
+										Name:   proto.String("THING"),
+										Number: proto.Int32(1),
+									},
+									{
+										Name:   proto.String("OTHER_THING"),
+										Number: proto.Int32(2),
+									},
+								},
+							},
+						},
+					},
+					{
+						Name: proto.String("testdata_EnumMsgA"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("foo"),
+								JsonName: proto.String("foo"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:     proto.String("bar"),
+								JsonName: proto.String("bar"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
+								TypeName: proto.String("testdata_ExtEnum_E.ExtEnum"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("testdata_EnumMsgB"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("baz"),
+								JsonName: proto.String("baz"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
+								TypeName: proto.String("testdata_ExtEnum_E.ExtEnum"),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 							},
 						},

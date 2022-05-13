@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,7 +64,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://secretmanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -345,7 +344,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -357,6 +356,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListSecrets(ctx context.Context, req *secretmanagerpb.ListSecretsRequest, opts ...gax.CallOption) *SecretIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSecrets[0:len((*c.CallOptions).ListSecrets):len((*c.CallOptions).ListSecrets)], opts...)
 	it := &SecretIterator{}
@@ -406,6 +406,7 @@ func (c *gRPCClient) CreateSecret(ctx context.Context, req *secretmanagerpb.Crea
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSecret[0:len((*c.CallOptions).CreateSecret):len((*c.CallOptions).CreateSecret)], opts...)
 	var resp *secretmanagerpb.Secret
@@ -427,6 +428,7 @@ func (c *gRPCClient) AddSecretVersion(ctx context.Context, req *secretmanagerpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddSecretVersion[0:len((*c.CallOptions).AddSecretVersion):len((*c.CallOptions).AddSecretVersion)], opts...)
 	var resp *secretmanagerpb.SecretVersion
@@ -448,6 +450,7 @@ func (c *gRPCClient) GetSecret(ctx context.Context, req *secretmanagerpb.GetSecr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSecret[0:len((*c.CallOptions).GetSecret):len((*c.CallOptions).GetSecret)], opts...)
 	var resp *secretmanagerpb.Secret
@@ -469,6 +472,7 @@ func (c *gRPCClient) UpdateSecret(ctx context.Context, req *secretmanagerpb.Upda
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "secret.name", url.QueryEscape(req.GetSecret().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSecret[0:len((*c.CallOptions).UpdateSecret):len((*c.CallOptions).UpdateSecret)], opts...)
 	var resp *secretmanagerpb.Secret
@@ -490,6 +494,7 @@ func (c *gRPCClient) DeleteSecret(ctx context.Context, req *secretmanagerpb.Dele
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSecret[0:len((*c.CallOptions).DeleteSecret):len((*c.CallOptions).DeleteSecret)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -502,6 +507,7 @@ func (c *gRPCClient) DeleteSecret(ctx context.Context, req *secretmanagerpb.Dele
 
 func (c *gRPCClient) ListSecretVersions(ctx context.Context, req *secretmanagerpb.ListSecretVersionsRequest, opts ...gax.CallOption) *SecretVersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSecretVersions[0:len((*c.CallOptions).ListSecretVersions):len((*c.CallOptions).ListSecretVersions)], opts...)
 	it := &SecretVersionIterator{}
@@ -551,6 +557,7 @@ func (c *gRPCClient) GetSecretVersion(ctx context.Context, req *secretmanagerpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSecretVersion[0:len((*c.CallOptions).GetSecretVersion):len((*c.CallOptions).GetSecretVersion)], opts...)
 	var resp *secretmanagerpb.SecretVersion
@@ -572,6 +579,7 @@ func (c *gRPCClient) AccessSecretVersion(ctx context.Context, req *secretmanager
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AccessSecretVersion[0:len((*c.CallOptions).AccessSecretVersion):len((*c.CallOptions).AccessSecretVersion)], opts...)
 	var resp *secretmanagerpb.AccessSecretVersionResponse
@@ -593,6 +601,7 @@ func (c *gRPCClient) DisableSecretVersion(ctx context.Context, req *secretmanage
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DisableSecretVersion[0:len((*c.CallOptions).DisableSecretVersion):len((*c.CallOptions).DisableSecretVersion)], opts...)
 	var resp *secretmanagerpb.SecretVersion
@@ -614,6 +623,7 @@ func (c *gRPCClient) EnableSecretVersion(ctx context.Context, req *secretmanager
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).EnableSecretVersion[0:len((*c.CallOptions).EnableSecretVersion):len((*c.CallOptions).EnableSecretVersion)], opts...)
 	var resp *secretmanagerpb.SecretVersion
@@ -635,6 +645,7 @@ func (c *gRPCClient) DestroySecretVersion(ctx context.Context, req *secretmanage
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DestroySecretVersion[0:len((*c.CallOptions).DestroySecretVersion):len((*c.CallOptions).DestroySecretVersion)], opts...)
 	var resp *secretmanagerpb.SecretVersion
@@ -656,6 +667,7 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -677,6 +689,7 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -698,6 +711,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse

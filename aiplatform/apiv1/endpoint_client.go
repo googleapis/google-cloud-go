@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@ func defaultEndpointGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -95,6 +94,8 @@ type internalEndpointClient interface {
 
 // EndpointClient is a client for interacting with Vertex AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A service for managing Vertex AI’s Endpoints.
 type EndpointClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEndpointClient
@@ -217,6 +218,8 @@ type endpointGRPCClient struct {
 
 // NewEndpointClient creates a new endpoint service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// A service for managing Vertex AI’s Endpoints.
 func NewEndpointClient(ctx context.Context, opts ...option.ClientOption) (*EndpointClient, error) {
 	clientOpts := defaultEndpointGRPCClientOptions()
 	if newEndpointClientHook != nil {
@@ -274,7 +277,7 @@ func (c *endpointGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *endpointGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -285,12 +288,8 @@ func (c *endpointGRPCClient) Close() error {
 }
 
 func (c *endpointGRPCClient) CreateEndpoint(ctx context.Context, req *aiplatformpb.CreateEndpointRequest, opts ...gax.CallOption) (*CreateEndpointOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEndpoint[0:len((*c.CallOptions).CreateEndpoint):len((*c.CallOptions).CreateEndpoint)], opts...)
 	var resp *longrunningpb.Operation
@@ -308,12 +307,8 @@ func (c *endpointGRPCClient) CreateEndpoint(ctx context.Context, req *aiplatform
 }
 
 func (c *endpointGRPCClient) GetEndpoint(ctx context.Context, req *aiplatformpb.GetEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.Endpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEndpoint[0:len((*c.CallOptions).GetEndpoint):len((*c.CallOptions).GetEndpoint)], opts...)
 	var resp *aiplatformpb.Endpoint
@@ -330,6 +325,7 @@ func (c *endpointGRPCClient) GetEndpoint(ctx context.Context, req *aiplatformpb.
 
 func (c *endpointGRPCClient) ListEndpoints(ctx context.Context, req *aiplatformpb.ListEndpointsRequest, opts ...gax.CallOption) *EndpointIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEndpoints[0:len((*c.CallOptions).ListEndpoints):len((*c.CallOptions).ListEndpoints)], opts...)
 	it := &EndpointIterator{}
@@ -373,12 +369,8 @@ func (c *endpointGRPCClient) ListEndpoints(ctx context.Context, req *aiplatformp
 }
 
 func (c *endpointGRPCClient) UpdateEndpoint(ctx context.Context, req *aiplatformpb.UpdateEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.Endpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint.name", url.QueryEscape(req.GetEndpoint().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEndpoint[0:len((*c.CallOptions).UpdateEndpoint):len((*c.CallOptions).UpdateEndpoint)], opts...)
 	var resp *aiplatformpb.Endpoint
@@ -394,12 +386,8 @@ func (c *endpointGRPCClient) UpdateEndpoint(ctx context.Context, req *aiplatform
 }
 
 func (c *endpointGRPCClient) DeleteEndpoint(ctx context.Context, req *aiplatformpb.DeleteEndpointRequest, opts ...gax.CallOption) (*DeleteEndpointOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEndpoint[0:len((*c.CallOptions).DeleteEndpoint):len((*c.CallOptions).DeleteEndpoint)], opts...)
 	var resp *longrunningpb.Operation
@@ -417,12 +405,8 @@ func (c *endpointGRPCClient) DeleteEndpoint(ctx context.Context, req *aiplatform
 }
 
 func (c *endpointGRPCClient) DeployModel(ctx context.Context, req *aiplatformpb.DeployModelRequest, opts ...gax.CallOption) (*DeployModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeployModel[0:len((*c.CallOptions).DeployModel):len((*c.CallOptions).DeployModel)], opts...)
 	var resp *longrunningpb.Operation
@@ -440,12 +424,8 @@ func (c *endpointGRPCClient) DeployModel(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *endpointGRPCClient) UndeployModel(ctx context.Context, req *aiplatformpb.UndeployModelRequest, opts ...gax.CallOption) (*UndeployModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UndeployModel[0:len((*c.CallOptions).UndeployModel):len((*c.CallOptions).UndeployModel)], opts...)
 	var resp *longrunningpb.Operation

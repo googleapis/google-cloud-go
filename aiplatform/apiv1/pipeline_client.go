@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,6 @@ func defaultPipelineGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -105,7 +104,7 @@ type internalPipelineClient interface {
 //
 // A service for creating and managing Vertex AI’s pipelines. This includes both
 // TrainingPipeline resources (used for AutoML and custom training) and
-// PipelineJob resources (used for Vertex Pipelines).
+// PipelineJob resources (used for Vertex AI Pipelines).
 type PipelineClient struct {
 	// The internal transport-dependent client.
 	internalClient internalPipelineClient
@@ -252,7 +251,7 @@ type pipelineGRPCClient struct {
 //
 // A service for creating and managing Vertex AI’s pipelines. This includes both
 // TrainingPipeline resources (used for AutoML and custom training) and
-// PipelineJob resources (used for Vertex Pipelines).
+// PipelineJob resources (used for Vertex AI Pipelines).
 func NewPipelineClient(ctx context.Context, opts ...option.ClientOption) (*PipelineClient, error) {
 	clientOpts := defaultPipelineGRPCClientOptions()
 	if newPipelineClientHook != nil {
@@ -310,7 +309,7 @@ func (c *pipelineGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *pipelineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -321,12 +320,8 @@ func (c *pipelineGRPCClient) Close() error {
 }
 
 func (c *pipelineGRPCClient) CreateTrainingPipeline(ctx context.Context, req *aiplatformpb.CreateTrainingPipelineRequest, opts ...gax.CallOption) (*aiplatformpb.TrainingPipeline, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTrainingPipeline[0:len((*c.CallOptions).CreateTrainingPipeline):len((*c.CallOptions).CreateTrainingPipeline)], opts...)
 	var resp *aiplatformpb.TrainingPipeline
@@ -342,12 +337,8 @@ func (c *pipelineGRPCClient) CreateTrainingPipeline(ctx context.Context, req *ai
 }
 
 func (c *pipelineGRPCClient) GetTrainingPipeline(ctx context.Context, req *aiplatformpb.GetTrainingPipelineRequest, opts ...gax.CallOption) (*aiplatformpb.TrainingPipeline, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTrainingPipeline[0:len((*c.CallOptions).GetTrainingPipeline):len((*c.CallOptions).GetTrainingPipeline)], opts...)
 	var resp *aiplatformpb.TrainingPipeline
@@ -364,6 +355,7 @@ func (c *pipelineGRPCClient) GetTrainingPipeline(ctx context.Context, req *aipla
 
 func (c *pipelineGRPCClient) ListTrainingPipelines(ctx context.Context, req *aiplatformpb.ListTrainingPipelinesRequest, opts ...gax.CallOption) *TrainingPipelineIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTrainingPipelines[0:len((*c.CallOptions).ListTrainingPipelines):len((*c.CallOptions).ListTrainingPipelines)], opts...)
 	it := &TrainingPipelineIterator{}
@@ -407,12 +399,8 @@ func (c *pipelineGRPCClient) ListTrainingPipelines(ctx context.Context, req *aip
 }
 
 func (c *pipelineGRPCClient) DeleteTrainingPipeline(ctx context.Context, req *aiplatformpb.DeleteTrainingPipelineRequest, opts ...gax.CallOption) (*DeleteTrainingPipelineOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTrainingPipeline[0:len((*c.CallOptions).DeleteTrainingPipeline):len((*c.CallOptions).DeleteTrainingPipeline)], opts...)
 	var resp *longrunningpb.Operation
@@ -430,12 +418,8 @@ func (c *pipelineGRPCClient) DeleteTrainingPipeline(ctx context.Context, req *ai
 }
 
 func (c *pipelineGRPCClient) CancelTrainingPipeline(ctx context.Context, req *aiplatformpb.CancelTrainingPipelineRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelTrainingPipeline[0:len((*c.CallOptions).CancelTrainingPipeline):len((*c.CallOptions).CancelTrainingPipeline)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -448,6 +432,7 @@ func (c *pipelineGRPCClient) CancelTrainingPipeline(ctx context.Context, req *ai
 
 func (c *pipelineGRPCClient) CreatePipelineJob(ctx context.Context, req *aiplatformpb.CreatePipelineJobRequest, opts ...gax.CallOption) (*aiplatformpb.PipelineJob, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreatePipelineJob[0:len((*c.CallOptions).CreatePipelineJob):len((*c.CallOptions).CreatePipelineJob)], opts...)
 	var resp *aiplatformpb.PipelineJob
@@ -464,6 +449,7 @@ func (c *pipelineGRPCClient) CreatePipelineJob(ctx context.Context, req *aiplatf
 
 func (c *pipelineGRPCClient) GetPipelineJob(ctx context.Context, req *aiplatformpb.GetPipelineJobRequest, opts ...gax.CallOption) (*aiplatformpb.PipelineJob, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPipelineJob[0:len((*c.CallOptions).GetPipelineJob):len((*c.CallOptions).GetPipelineJob)], opts...)
 	var resp *aiplatformpb.PipelineJob
@@ -480,6 +466,7 @@ func (c *pipelineGRPCClient) GetPipelineJob(ctx context.Context, req *aiplatform
 
 func (c *pipelineGRPCClient) ListPipelineJobs(ctx context.Context, req *aiplatformpb.ListPipelineJobsRequest, opts ...gax.CallOption) *PipelineJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPipelineJobs[0:len((*c.CallOptions).ListPipelineJobs):len((*c.CallOptions).ListPipelineJobs)], opts...)
 	it := &PipelineJobIterator{}
@@ -524,6 +511,7 @@ func (c *pipelineGRPCClient) ListPipelineJobs(ctx context.Context, req *aiplatfo
 
 func (c *pipelineGRPCClient) DeletePipelineJob(ctx context.Context, req *aiplatformpb.DeletePipelineJobRequest, opts ...gax.CallOption) (*DeletePipelineJobOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeletePipelineJob[0:len((*c.CallOptions).DeletePipelineJob):len((*c.CallOptions).DeletePipelineJob)], opts...)
 	var resp *longrunningpb.Operation
@@ -542,6 +530,7 @@ func (c *pipelineGRPCClient) DeletePipelineJob(ctx context.Context, req *aiplatf
 
 func (c *pipelineGRPCClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelPipelineJob[0:len((*c.CallOptions).CancelPipelineJob):len((*c.CallOptions).CancelPipelineJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
