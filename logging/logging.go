@@ -134,7 +134,10 @@ type Client struct {
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
 func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (*Client, error) {
-	parent = makeParent(parent)
+	parent, err := makeParent(parent)
+	if err != nil {
+		return nil, err
+	}
 	opts = append([]option.ClientOption{
 		option.WithScopes(WriteScope),
 	}, opts...)
@@ -167,11 +170,15 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 	return client, nil
 }
 
-func makeParent(parent string) string {
+func makeParent(parent string) (string, error) {
 	if !strings.ContainsRune(parent, '/') {
-		return "projects/" + parent
+		return "projects/" + parent, nil
 	}
-	return parent
+	prefix := strings.Split(parent, "/")[0]
+	if prefix != "projects" && prefix != "folders" && prefix != "billingAccounts" && prefix != "organizations" {
+		return parent, fmt.Errorf("parent parameter must start with 'projects/' 'folders/' 'billingAccounts/' or 'organizations/'.")
+	}
+	return parent, nil
 }
 
 // Ping reports whether the client's connection to the logging service and the
@@ -815,7 +822,11 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 // to WriteLogEntries method.
 func ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	// We have this method to support logging agents that need a bigger flexibility.
-	return toLogEntryInternal(e, nil, makeParent(parent))
+	parent, err := makeParent(parent)
+	if err != nil {
+		return nil, err
+	}
+	return toLogEntryInternal(e, nil, parent)
 }
 
 func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry, error) {
