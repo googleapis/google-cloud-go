@@ -12,7 +12,8 @@
     "commitMessageAction": "update",
     "groupName": "all",
     "ignoreDeps": [
-        "google.golang.org/genproto"
+        "google.golang.org/genproto",
+        "github.com/google/martian/v3"
     ],
     "ignorePaths": [
         "**/snippets/**"

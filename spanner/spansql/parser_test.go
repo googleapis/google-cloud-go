@@ -427,6 +427,9 @@ func TestParseExpr(t *testing.T) {
 		{`[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
 		{`['x', 'y', 'xy']`, Array{StringLiteral("x"), StringLiteral("y"), StringLiteral("xy")}},
 		{`ARRAY[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
+		// JSON literals:
+		// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+		{`JSON '{"a": 1}'`, JSONLiteral(`{"a": 1}`)},
 
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},
@@ -907,6 +910,29 @@ func TestParseDDL(t *testing.T) {
 							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
 							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
 						},
+					},
+					Position: line(1),
+				},
+			},
+			}},
+		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&AlterDatabase{
+					Name: "dbname",
+					Alteration: SetDatabaseOptions{
+						Options: DatabaseOptions{
+							OptimizerVersion:       func(i int) *int { return &i }(2),
+							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
+							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+						},
+					},
+					Position: line(1),
+				},
+				&CreateTable{Name: "users", Columns: []ColumnDef{
+					{Name: "UserId", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(1)},
+				},
+					PrimaryKey: []KeyPart{
+						{Column: "UserId"},
 					},
 					Position: line(1),
 				},
