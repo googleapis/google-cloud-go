@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"runtime"
 	"strings"
 	"sync"
@@ -105,7 +106,7 @@ type PublishSettings struct {
 	// If MaxOutstandingBytes is set, that value will override BufferedByteLimit.
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
-	// Deprecated: Set `topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
+	// Deprecated: Set `Topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
 	BufferedByteLimit int
 
 	// FlowControlSettings defines publisher flow control settings.
@@ -552,6 +553,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
 	if err != nil {
+		fmt.Printf("got err: %v\n", err)
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 	}
@@ -628,14 +630,16 @@ func (t *Topic) initBundler() {
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	fcs := DefaultPublishSettings.FlowControlSettings
-	if t.PublishSettings.FlowControlSettings.LimitExceededBehavior != FlowControlBlock {
-		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
-	}
+	fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
 		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
 		fcs.MaxOutstandingBytes = b
-		// If MaxOutstandingBytes is set, override BufferedByteLimit.
-		t.PublishSettings.BufferedByteLimit = b
+
+		// If MaxOutstandingBytes is set, disable BufferedByteLimit by setting it to maxint.
+		// This is because there's no way to set "unlimited" for BufferedByteLimit,
+		// and simply setting it to MaxOutstandingBytes occasionally leads to issues where
+		// BufferedByteLimit is reached even though there are resources available.
+		t.PublishSettings.BufferedByteLimit = math.MaxInt64
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
