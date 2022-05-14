@@ -309,9 +309,19 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		fieldMask.Paths = append(fieldMask.Paths, "website")
 	}
 	if uattrs.PredefinedACL != "" {
+		// In cases where PredefinedACL is set, Acl is cleared.
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	if uattrs.PredefinedDefaultObjectACL != "" {
+		// In cases where PredefinedDefaultObjectACL is set, DefaultObjectAcl is cleared.
+		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
+	}
+	if uattrs.acl != nil {
+		// In cases where acl is set by UpdateBucketACL method.
+		fieldMask.Paths = append(fieldMask.Paths, "acl")
+	}
+	if uattrs.defaultObjectACL != nil {
+		// In cases where defaultObjectACL is set by UpdateBucketACL method.
 		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
 	}
 	if uattrs.StorageClass != "" {
@@ -400,7 +410,25 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 // Default Object ACL methods.
 
 func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve BucketAttrs.
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Delete the entity and copy other remaining ACL entities.
+	var acl []ACLRule
+	for _, a := range attrs.DefaultObjectACL {
+		if a.Entity != entity {
+			acl = append(acl, a)
+		}
+	}
+	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
+	// Call UpdateBucket with a MetagenerationMatch precondition set.
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
@@ -416,7 +444,25 @@ func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...
 // Bucket ACL methods.
 
 func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve BucketAttrs.
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Delete the entity and copy other remaining ACL entities.
+	var acl []ACLRule
+	for _, a := range attrs.ACL {
+		if a.Entity != entity {
+			acl = append(acl, a)
+		}
+	}
+	uattrs := &BucketAttrsToUpdate{acl: acl}
+	// Call UpdateBucket with a MetagenerationMatch precondition set.
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
@@ -425,8 +471,24 @@ func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	}
 	return attrs.ACL, nil
 }
+
 func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve BucketAttrs.
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var acl []ACLRule
+	aclRule := ACLRule{Entity: entity, Role: role}
+	acl = append(attrs.ACL, aclRule)
+	uattrs := &BucketAttrsToUpdate{acl: acl}
+	// Call UpdateBucket with a MetagenerationMatch precondition set.
+	_, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &aclRule, err
 }
 
 // Object ACL methods.
