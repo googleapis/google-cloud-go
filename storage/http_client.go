@@ -313,7 +313,7 @@ func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	return run(ctx, func() error {
 		_, err := req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 }
 func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
@@ -394,7 +394,7 @@ func (c *httpStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 	s := callSettings(c.settings, opts...)
 	req := c.raw.DefaultObjectAccessControls.Delete(bucket, string(entity))
 	configureACLCall(ctx, s.userProject, req)
-	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 }
 
 func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
@@ -422,7 +422,7 @@ func (c *httpStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 	s := callSettings(c.settings, opts...)
 	req := c.raw.BucketAccessControls.Delete(bucket, string(entity))
 	configureACLCall(ctx, s.userProject, req)
-	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 }
 
 func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
@@ -448,15 +448,15 @@ func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 		Entity: string(entity),
 		Role:   string(role),
 	}
+	req := c.raw.BucketAccessControls.Update(bucket, string(entity), acl)
+	configureACLCall(ctx, s.userProject, req)
 	var aclRule ACLRule
 	var err error
 	err = run(ctx, func() error {
-		req := c.raw.BucketAccessControls.Update(bucket, string(entity), acl)
-		configureACLCall(ctx, s.userProject, req)
 		acl, err = req.Do()
 		aclRule = toBucketACLRule(acl)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}

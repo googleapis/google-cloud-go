@@ -359,7 +359,7 @@ func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	return run(ctx, func() error {
 		_, err := c.raw.LockBucketRetentionPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 }
 func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
