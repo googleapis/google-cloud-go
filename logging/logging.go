@@ -33,6 +33,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -715,7 +716,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 // and will block, it is intended primarily for debugging or critical errors.
 // Prefer Log for most uses.
 func (l *Logger) LogSync(ctx context.Context, e Entry) error {
-	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
+	ent, err := toLogEntryInternal(e, l.client, l.client.parent, 1)
 	if err != nil {
 		return err
 	}
@@ -730,7 +731,7 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
+	ent, err := toLogEntryInternal(e, l.client, l.client.parent, 1)
 	if err != nil {
 		l.client.error(err)
 		return
@@ -777,7 +778,7 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
 
-var reCloudTraceContext = regexp.MustCompile(
+var validXCloudTraceContext = regexp.MustCompile(
 	// Matches on "TRACE_ID"
 	`([a-f\d]+)?` +
 		// Matches on "/SPAN_ID"
@@ -795,7 +796,7 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	//   * traceID (optional): 			"105445aa7843bc8bf206b120001000"
 	//   * spanID (optional):       	"1"
 	//   * traceSampled (optional): 	true
-	matches := reCloudTraceContext.FindStringSubmatch(s)
+	matches := validXCloudTraceContext.FindStringSubmatch(s)
 
 	traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
 
@@ -826,10 +827,10 @@ func ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	return toLogEntryInternal(e, nil, parent)
+	return toLogEntryInternal(e, nil, parent, 1)
 }
 
-func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry, error) {
+func toLogEntryInternal(e Entry, client *Client, parent string, skipLevels int) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
@@ -840,6 +841,17 @@ func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry
 	ts, err := ptypes.TimestampProto(t)
 	if err != nil {
 		return nil, err
+	}
+	if e.Severity == Severity(Debug) && e.SourceLocation == nil {
+		// filename and line are captured for source code that calls
+		// skipLevels up the goroutine calling stack + 1 for this func.
+		_, filename, line, ok := runtime.Caller(skipLevels + 1)
+		if ok {
+			e.SourceLocation = &logpb.LogEntrySourceLocation{
+				File: filename,
+				Line: int64(line),
+			}
+		}
 	}
 	if e.Trace == "" && e.HTTPRequest != nil && e.HTTPRequest.Request != nil {
 		traceHeader := e.HTTPRequest.Request.Header.Get("X-Cloud-Trace-Context")
