@@ -423,64 +423,74 @@ func TestIterator_SynchronousPullCancel(t *testing.T) {
 }
 
 func TestIterator_BoundedDuration(t *testing.T) {
-	// Use exported fields here so time.Duration fields print nicely.
-	// Otherwise, the durations will print as an integer.
-	// In these test cases, T (which is the 99% percentile)
-	// is already bounded by min/max ack deadline, which are
-	// 10 seconds and 600 seconds respectively.
+	// Use exported fields for time.Duration fields so they
+	// print nicely. Otherwise, they will print as integers.
+	//
+	// In these test cases, T is ack deadline returned
+	// from the 99% percentile in ack distributions.
+	// T is bounded by min/max ack deadline, which are
+	// 10 seconds and 600 seconds respectively. This is
+	// true for the real distribution data points as well.
 	testCases := []struct {
-		T            time.Duration
-		MinExtension time.Duration
-		MaxExtension time.Duration
-		ExactlyOnce  bool
-		Want         time.Duration
+		desc        string
+		T           time.Duration
+		MinDuration time.Duration
+		MaxDuration time.Duration
+		exactlyOnce bool
+		Want        time.Duration
 	}{
 		{
-			T:            time.Duration(10 * time.Second),
-			MinExtension: time.Duration(15 * time.Second),
-			MaxExtension: time.Duration(10 * time.Minute),
-			ExactlyOnce:  false,
-			Want:         time.Duration(15 * time.Second),
+			desc:        "T should be updated to MinDuration per lease extension",
+			T:           time.Duration(10 * time.Second),
+			MinDuration: time.Duration(15 * time.Second),
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: false,
+			Want:        time.Duration(15 * time.Second),
 		},
 		{
-			T:            time.Duration(10 * time.Second),
-			MinExtension: 0,
-			MaxExtension: time.Duration(10 * time.Minute),
-			ExactlyOnce:  true,
-			Want:         time.Duration(1 * time.Minute),
+			desc:        "T should be updated to 1 minute when using exactly once",
+			T:           time.Duration(10 * time.Second),
+			MinDuration: 0,
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: true,
+			Want:        time.Duration(1 * time.Minute),
 		},
 		{
-			T:            time.Duration(10 * time.Second),
-			MinExtension: time.Duration(15 * time.Second),
-			MaxExtension: time.Duration(10 * time.Minute),
-			ExactlyOnce:  true,
-			Want:         time.Duration(15 * time.Second),
+			desc:        "T should not be updated here, even though exactly once is enabled",
+			T:           time.Duration(10 * time.Second),
+			MinDuration: time.Duration(15 * time.Second),
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: true,
+			Want:        time.Duration(15 * time.Second),
 		},
 		{
-			T:            time.Duration(10 * time.Minute),
-			MinExtension: time.Duration(15 * time.Second),
-			MaxExtension: time.Duration(10 * time.Minute),
-			ExactlyOnce:  true,
-			Want:         time.Duration(10 * time.Minute),
+			desc:        "T should not be updated here",
+			T:           time.Duration(10 * time.Minute),
+			MinDuration: time.Duration(15 * time.Second),
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: true,
+			Want:        time.Duration(10 * time.Minute),
 		},
 		{
-			T:            time.Duration(5 * time.Minute),
-			MinExtension: 0,
-			MaxExtension: 0,
-			ExactlyOnce:  false,
-			Want:         time.Duration(5 * time.Minute),
+			desc:        "T should not be updated when both durations are not set",
+			T:           time.Duration(5 * time.Minute),
+			MinDuration: 0,
+			MaxDuration: 0,
+			exactlyOnce: false,
+			Want:        time.Duration(5 * time.Minute),
 		},
 		{
-			T:            time.Duration(5 * time.Minute),
-			MinExtension: time.Duration(1 * time.Minute),
-			MaxExtension: time.Duration(7 * time.Minute),
-			ExactlyOnce:  false,
-			Want:         time.Duration(5 * time.Minute),
+			desc:        "T should should not be updated here since it is within both boundaries",
+			T:           time.Duration(5 * time.Minute),
+			MinDuration: time.Duration(1 * time.Minute),
+			MaxDuration: time.Duration(7 * time.Minute),
+			exactlyOnce: false,
+			Want:        time.Duration(5 * time.Minute),
 		},
 	}
-	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("boundedDuration %d", i), func(t *testing.T) {
-			got := boundedDuration(tc.T, tc.MinExtension, tc.MaxExtension, tc.ExactlyOnce)
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			got := boundedDuration(tc.T, tc.MinDuration, tc.MaxDuration, tc.exactlyOnce)
 			if got != tc.Want {
 				t.Errorf("boundedDuration mismatch:\n%+v\ngot: %v, want: %v", tc, got, tc.Want)
 			}
