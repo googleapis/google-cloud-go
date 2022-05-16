@@ -135,6 +135,9 @@
         "gkehub": {
             "component": "gkehub"
         },
+        "gkemulticloud": {
+            "component": "gkemulticloud"
+        },
         "grafeas": {
             "component": "grafeas"
         },

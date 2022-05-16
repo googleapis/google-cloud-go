@@ -1463,6 +1463,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/06/16
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/gkemulticloud/v1",
+		Pkg:                   "gkemulticloud",
+		ImportPath:            "cloud.google.com/go/gkemulticloud/apiv1",
+		GRPCServiceConfigPath: "gkemulticloud_grpc_service_config.json",
+		ApiServiceConfigPath:  "gkemulticloud_v1.yaml",
+		// GA after 2022/06/16
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
