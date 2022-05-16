@@ -175,7 +175,7 @@ func TestInvoke(t *testing.T) {
 				return test.finalErr
 			}
 			req := &fakeApiaryRequest{header: http.Header{}}
-			got := run(ctx, call, test.retry, test.isIdempotentValue, req)
+			got := run(ctx, call, test.retry, test.isIdempotentValue, setRetryHeaderHTTP(req))
 			if test.expectFinalErr && got != test.finalErr {
 				s.Errorf("got %v, want %v", got, test.finalErr)
 			} else if !test.expectFinalErr && got != test.initialErr {

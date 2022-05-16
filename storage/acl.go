@@ -126,7 +126,7 @@ func (a *ACLHandle) bucketDefaultList(ctx context.Context) ([]ACLRule, error) {
 	err = run(ctx, func() error {
 		acls, err = req.Do()
 		return err
-	}, a.retry, true, req)
+	}, a.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func (a *ACLHandle) bucketDefaultDelete(ctx context.Context, entity ACLEntity) e
 
 	return run(ctx, func() error {
 		return req.Do()
-	}, a.retry, false, req)
+	}, a.retry, false, setRetryHeaderHTTP(req))
 }
 
 func (a *ACLHandle) bucketList(ctx context.Context) ([]ACLRule, error) {
@@ -150,7 +150,7 @@ func (a *ACLHandle) bucketList(ctx context.Context) ([]ACLRule, error) {
 	err = run(ctx, func() error {
 		acls, err = req.Do()
 		return err
-	}, a.retry, true, req)
+	}, a.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func (a *ACLHandle) bucketSet(ctx context.Context, entity ACLEntity, role ACLRol
 	return run(ctx, func() error {
 		_, err := req.Do()
 		return err
-	}, a.retry, false, req)
+	}, a.retry, false, setRetryHeaderHTTP(req))
 }
 
 func (a *ACLHandle) bucketDelete(ctx context.Context, entity ACLEntity) error {
@@ -176,7 +176,7 @@ func (a *ACLHandle) bucketDelete(ctx context.Context, entity ACLEntity) error {
 	a.configureCall(ctx, req)
 	return run(ctx, func() error {
 		return req.Do()
-	}, a.retry, false, req)
+	}, a.retry, false, setRetryHeaderHTTP(req))
 }
 
 func (a *ACLHandle) objectList(ctx context.Context) ([]ACLRule, error) {
@@ -187,7 +187,7 @@ func (a *ACLHandle) objectList(ctx context.Context) ([]ACLRule, error) {
 	err = run(ctx, func() error {
 		acls, err = req.Do()
 		return err
-	}, a.retry, true, req)
+	}, a.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +215,7 @@ func (a *ACLHandle) objectSet(ctx context.Context, entity ACLEntity, role ACLRol
 	return run(ctx, func() error {
 		_, err := req.Do()
 		return err
-	}, a.retry, false, req)
+	}, a.retry, false, setRetryHeaderHTTP(req))
 }
 
 func (a *ACLHandle) objectDelete(ctx context.Context, entity ACLEntity) error {
@@ -223,7 +223,7 @@ func (a *ACLHandle) objectDelete(ctx context.Context, entity ACLEntity) error {
 	a.configureCall(ctx, req)
 	return run(ctx, func() error {
 		return req.Do()
-	}, a.retry, false, req)
+	}, a.retry, false, setRetryHeaderHTTP(req))
 }
 
 func (a *ACLHandle) configureCall(ctx context.Context, call interface{ Header() http.Header }) {

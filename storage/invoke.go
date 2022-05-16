@@ -40,7 +40,7 @@ var xGoogDefaultHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), sinternal
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
-func run(ctx context.Context, call func() error, retry *retryConfig, isIdempotent bool, req interface{ Header() http.Header }) error {
+func run(ctx context.Context, call func() error, retry *retryConfig, isIdempotent bool, setHeader func(string, int)) error {
 	attempts := 1
 	invocationID := uuid.New().String()
 
@@ -48,7 +48,7 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 		retry = defaultRetry
 	}
 	if (retry.policy == RetryIdempotent && !isIdempotent) || retry.policy == RetryNever {
-		setRetryHeader(req, invocationID, attempts)
+		setHeader(invocationID, attempts)
 		return call()
 	}
 	bo := gax.Backoff{}
@@ -63,21 +63,30 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 	}
 
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
-		setRetryHeader(req, invocationID, attempts)
+		setHeader(invocationID, attempts)
 		err = call()
 		attempts++
 		return !errorFunc(err), err
 	})
 }
 
-func setRetryHeader(req interface{ Header() http.Header }, invocationID string, attempts int) {
-	if req == nil {
+func setRetryHeaderHTTP(req interface{ Header() http.Header }) func(string, int) {
+	return func(invocationID string, attempts int) {
+		if req == nil {
+			return
+		}
+		header := req.Header()
+		invocationHeader := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
+		xGoogHeader := strings.Join([]string{invocationHeader, xGoogDefaultHeader}, " ")
+		header.Set("x-goog-api-client", xGoogHeader)
+	}
+}
+
+// TODO: Implement method setting header via context for gRPC
+func setRetryHeaderGRPC(_ context.Context) func(string, int) {
+	return func(_ string, _ int) {
 		return
 	}
-	header := req.Header()
-	invocationHeader := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
-	xGoogHeader := strings.Join([]string{invocationHeader, xGoogDefaultHeader}, " ")
-	header.Set("x-goog-api-client", xGoogHeader)
 }
 
 func shouldRetry(err error) bool {

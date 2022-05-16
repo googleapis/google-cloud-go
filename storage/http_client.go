@@ -145,7 +145,7 @@ func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project strin
 		var err error
 		res, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, call)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
 	if err != nil {
 		return "", err
 	}
@@ -182,7 +182,7 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, at
 		}
 		battrs, err = newBucket(b)
 		return err
-	}, s.retry, s.idempotent, req)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	return battrs, err
 }
 
@@ -206,7 +206,7 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 		err = run(it.ctx, func() error {
 			resp, err = req.Context(it.ctx).Do()
 			return err
-		}, s.retry, s.idempotent, req)
+		}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 		if err != nil {
 			return "", err
 		}
@@ -241,7 +241,7 @@ func (c *httpStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 		req.UserProject(s.userProject)
 	}
 
-	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, req)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 }
 
 func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
@@ -260,7 +260,7 @@ func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	err = run(ctx, func() error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, req)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -294,7 +294,7 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	err = run(ctx, func() error {
 		rawBucket, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, req)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}
@@ -341,7 +341,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		err = run(it.ctx, func() error {
 			resp, err = req.Context(it.ctx).Do()
 			return err
-		}, s.retry, s.idempotent, req)
+		}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 		if err != nil {
 			var e *googleapi.Error
 			if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -392,7 +392,7 @@ func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	err = run(ctx, func() error {
 		acls, err = req.Do()
 		return err
-	}, s.retry, true, req)
+	}, s.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}
@@ -416,7 +416,7 @@ func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	err = run(ctx, func() error {
 		acls, err = req.Do()
 		return err
-	}, s.retry, true, req)
+	}, s.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}
@@ -480,7 +480,7 @@ func (c *httpStorageClient) GetIamPolicy(ctx context.Context, resource string, v
 		var err error
 		rp, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, call)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
 	if err != nil {
 		return nil, err
 	}
@@ -500,7 +500,7 @@ func (c *httpStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 	return run(ctx, func() error {
 		_, err := call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, call)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
 }
 
 func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
@@ -515,7 +515,7 @@ func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource str
 		var err error
 		res, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, call)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
 	if err != nil {
 		return nil, err
 	}
