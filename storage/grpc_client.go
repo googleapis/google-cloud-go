@@ -589,7 +589,9 @@ func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata
 // via the x-goog-user-project system parameter defined at
-// https://cloud.google.com/apis/docs/system-parameters.
+// https://cloud.google.com/apis/docs/system-parameters. This is only for
+// billing purposes, and is generally optional, except for requester-pays
+// buckets.
 func setUserProjectMetadata(ctx context.Context, project string) context.Context {
 	return metadata.AppendToOutgoingContext(ctx, "x-goog-user-project", project)
 }
