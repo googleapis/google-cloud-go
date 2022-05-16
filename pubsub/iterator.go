@@ -37,6 +37,13 @@ import (
 // of the actual deadline.
 const gracePeriod = 5 * time.Second
 
+// These are vars so tests can change them.
+var (
+	maxDurationPerLeaseExtension            = 10 * time.Minute
+	minDurationPerLeaseExtension            = 10 * time.Second
+	minDurationPerLeaseExtensionExactlyOnce = 1 * time.Minute
+)
+
 type messageIterator struct {
 	ctx        context.Context
 	cancel     func() // the function that will cancel ctx; called in stop
@@ -46,7 +53,7 @@ type messageIterator struct {
 	subName    string
 	kaTick     <-chan time.Time // keep-alive (deadline extensions)
 	ackTicker  *time.Ticker     // message acks
-	nackTicker *time.Ticker     // message nacks (more frequent than acks)
+	nackTicker *time.Ticker     // message nacks
 	pingTicker *time.Ticker     //  sends to the stream to keep it open
 	failed     chan struct{}    // closed on stream error
 	drained    chan struct{}    // closed when stopped && no more pending messages
@@ -66,6 +73,7 @@ type messageIterator struct {
 	pendingNacks       map[string]bool
 	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
 	err                error           // error from stream failure
+	enableExactlyOnce  bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -85,7 +93,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	}
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
-	keepAlivePeriod := minAckDeadline / 2
+	keepAlivePeriod := minDurationPerLeaseExtension / 2
 
 	// Ack promptly so users don't lose work if client crashes.
 	ackTicker := time.NewTicker(100 * time.Millisecond)
@@ -565,14 +573,37 @@ func splitRequestIDs(ids []string, maxSize int) (prefix, remainder []string) {
 func (it *messageIterator) ackDeadline() time.Duration {
 	pt := time.Duration(it.ackTimeDist.Percentile(.99)) * time.Second
 
-	if it.po.maxExtensionPeriod > 0 && pt > it.po.maxExtensionPeriod {
-		return it.po.maxExtensionPeriod
+	return boundedDuration(pt, it.po.minExtensionPeriod, it.po.maxExtensionPeriod, it.enableExactlyOnce)
+}
+
+func boundedDuration(t, minExtension, maxExtension time.Duration, exactlyOnce bool) time.Duration {
+	ackDeadline := t
+	// If the user explicitly sets a maxExtensionPeriod, respect it.
+	if maxExtension > 0 {
+		ackDeadline = minDuration(ackDeadline, maxExtension)
 	}
-	if pt > maxAckDeadline {
-		return maxAckDeadline
+
+	// If the user explicitly sets a minExtensionPeriod, respect it.
+	if minExtension > 0 {
+		ackDeadline = maxDuration(ackDeadline, minExtension)
+	} else if exactlyOnce {
+		// Higher minimum ack_deadline for subscriptions with
+		// exactly-once delivery enabled.
+		ackDeadline = maxDuration(ackDeadline, minDurationPerLeaseExtensionExactlyOnce)
 	}
-	if pt < minAckDeadline {
-		return minAckDeadline
+	return ackDeadline
+}
+
+func minDuration(x, y time.Duration) time.Duration {
+	if x < y {
+		return x
 	}
-	return pt
+	return y
+}
+
+func maxDuration(x, y time.Duration) time.Duration {
+	if x > y {
+		return x
+	}
+	return y
 }

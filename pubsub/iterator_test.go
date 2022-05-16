@@ -140,8 +140,8 @@ func TestAckDistribution(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	minAckDeadline = 1 * time.Second
-	pstest.SetMinAckDeadline(minAckDeadline)
+	minDurationPerLeaseExtension = 1 * time.Second
+	pstest.SetMinAckDeadline(minDurationPerLeaseExtension)
 	srv := pstest.NewServer()
 	defer srv.Close()
 	defer pstest.ResetMinAckDeadline()
@@ -190,7 +190,7 @@ func TestAckDistribution(t *testing.T) {
 
 		modacks := modacksByTime(srv.Messages())
 		u := modackDeadlines(modacks)
-		initialDL := int32(minAckDeadline / time.Second)
+		initialDL := int32(minDurationPerLeaseExtension / time.Second)
 		if !setsAreEqual(u, []int32{initialDL, testcase.initialProcessSecs, testcase.finalProcessSecs}) {
 			t.Fatalf("Expected modack deadlines to contain (exactly, and only) %ds, %ds, %ds. Instead, got %v",
 				initialDL, testcase.initialProcessSecs, testcase.finalProcessSecs, toSet(u))
@@ -273,7 +273,7 @@ func startSending(t *testing.T, queuedMsgs chan int32, processTimeSecs *int32, i
 	recvdWg.Add(1)
 	msg++
 	queuedMsgs <- msg
-	<-time.After(minAckDeadline)
+	<-time.After(minDurationPerLeaseExtension)
 
 	t.Logf("Sending some messages to update distribution to %d. This new distribution will be used "+
 		"when the next batch of messages go out.", initialProcessSecs)
@@ -419,5 +419,71 @@ func TestIterator_SynchronousPullCancel(t *testing.T) {
 
 	if _, err := iter.pullMessages(100); err != nil {
 		t.Fatalf("Got error in pullMessages: %v", err)
+	}
+}
+
+func TestIterator_BoundedDuration(t *testing.T) {
+	// Use exported fields here so time.Duration fields print nicely.
+	// Otherwise, the durations will print as an integer.
+	// In these test cases, T (which is the 99% percentile)
+	// is already bounded by min/max ack deadline, which are
+	// 10 seconds and 600 seconds respectively.
+	testCases := []struct {
+		T            time.Duration
+		MinExtension time.Duration
+		MaxExtension time.Duration
+		ExactlyOnce  bool
+		Want         time.Duration
+	}{
+		{
+			T:            time.Duration(10 * time.Second),
+			MinExtension: time.Duration(15 * time.Second),
+			MaxExtension: time.Duration(10 * time.Minute),
+			ExactlyOnce:  false,
+			Want:         time.Duration(15 * time.Second),
+		},
+		{
+			T:            time.Duration(10 * time.Second),
+			MinExtension: 0,
+			MaxExtension: time.Duration(10 * time.Minute),
+			ExactlyOnce:  true,
+			Want:         time.Duration(1 * time.Minute),
+		},
+		{
+			T:            time.Duration(10 * time.Second),
+			MinExtension: time.Duration(15 * time.Second),
+			MaxExtension: time.Duration(10 * time.Minute),
+			ExactlyOnce:  true,
+			Want:         time.Duration(15 * time.Second),
+		},
+		{
+			T:            time.Duration(10 * time.Minute),
+			MinExtension: time.Duration(15 * time.Second),
+			MaxExtension: time.Duration(10 * time.Minute),
+			ExactlyOnce:  true,
+			Want:         time.Duration(10 * time.Minute),
+		},
+		{
+			T:            time.Duration(5 * time.Minute),
+			MinExtension: 0,
+			MaxExtension: 0,
+			ExactlyOnce:  false,
+			Want:         time.Duration(5 * time.Minute),
+		},
+		{
+			T:            time.Duration(5 * time.Minute),
+			MinExtension: time.Duration(1 * time.Minute),
+			MaxExtension: time.Duration(7 * time.Minute),
+			ExactlyOnce:  false,
+			Want:         time.Duration(5 * time.Minute),
+		},
+	}
+	for i, tc := range testCases {
+		t.Run(fmt.Sprintf("boundedDuration %d", i), func(t *testing.T) {
+			got := boundedDuration(tc.T, tc.MinExtension, tc.MaxExtension, tc.ExactlyOnce)
+			if got != tc.Want {
+				t.Errorf("boundedDuration mismatch:\n%+v\ngot: %v, want: %v", tc, got, tc.Want)
+			}
+		})
 	}
 }
