@@ -21,4 +21,8 @@ if [[ `go version` != *"go1.18"* ]]; then
     exit 0
 fi
 
-go run ./internal/apidiff -verbose -repo-metadata=./internal/.repo-metadata-full.json
+# Temporarily disabled while we determine what is going wrong. To follow, please
+# see the following issue:
+# https://github.com/googleapis/google-cloud-go/issues/6038
+# go run ./internal/apidiff -verbose -repo-metadata=./internal/.repo-metadata-full.json
+echo "apidiff is temporarily disabled https://github.com/googleapis/google-cloud-go/issues/6038"

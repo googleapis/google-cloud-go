@@ -302,7 +302,18 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 }
 
 func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+
+	var metageneration int64
+	if conds != nil {
+		metageneration = conds.MetagenerationMatch
+	}
+	req := c.raw.Buckets.LockRetentionPolicy(bucket, metageneration)
+
+	return run(ctx, func() error {
+		_, err := req.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
 }
 func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
@@ -380,7 +391,10 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 // Default Object ACL methods.
 
 func (c *httpStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := c.raw.DefaultObjectAccessControls.Delete(bucket, string(entity))
+	configureACLCall(ctx, s.userProject, req)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
 
 func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
@@ -405,8 +419,12 @@ func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...
 // Bucket ACL methods.
 
 func (c *httpStorageClient) DeleteBucketACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := c.raw.BucketAccessControls.Delete(bucket, string(entity))
+	configureACLCall(ctx, s.userProject, req)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
+
 func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	s := callSettings(c.settings, opts...)
 	var acls *raw.BucketAccessControls
