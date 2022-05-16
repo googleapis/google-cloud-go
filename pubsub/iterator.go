@@ -66,6 +66,7 @@ type messageIterator struct {
 	pendingNacks       map[string]bool
 	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
 	err                error           // error from stream failure
+	enableExactlyOnce  bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -262,6 +263,7 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	if err != nil {
 		return nil, err
 	}
+	it.enableExactlyOnce = res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled()
 	return res.ReceivedMessages, nil
 }
 

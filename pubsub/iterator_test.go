@@ -31,13 +31,16 @@ import (
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
 var (
 	projName                = "some-project"
 	topicName               = "some-topic"
+	subName                 = "some-sub"
 	fullyQualifiedTopicName = fmt.Sprintf("projects/%s/topics/%s", projName, topicName)
+	fullyQualifiedSubName   = fmt.Sprintf("projects/%s/subscriptions/%s", projName, subName)
 )
 
 func TestSplitRequestIDs(t *testing.T) {
@@ -419,5 +422,53 @@ func TestIterator_SynchronousPullCancel(t *testing.T) {
 
 	if _, err := iter.pullMessages(100); err != nil {
 		t.Fatalf("Got error in pullMessages: %v", err)
+	}
+}
+
+func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
+	srv := pstest.NewServer()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	opts := withGRPCHeadersAssertion(t, option.WithGRPCConn(conn))
+	client, err := NewClient(ctx, projName, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	topic := client.Topic(topicName)
+	sc := SubscriptionConfig{
+		Topic:                     topic,
+		EnableMessageOrdering:     true,
+		EnableExactlyOnceDelivery: true,
+	}
+	_, err = client.CreateSubscription(ctx, subName, sc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Make sure to call publish before constructing the iterator.
+	srv.Publish(fullyQualifiedTopicName, []byte("msg"), nil)
+
+	iter := newMessageIterator(client.subc, fullyQualifiedSubName, &pullOptions{
+		synchronous:            false,
+		maxOutstandingMessages: 100,
+		maxOutstandingBytes:    1e6,
+		maxPrefetch:            30,
+		maxExtension:           1 * time.Minute,
+		maxExtensionPeriod:     10 * time.Second,
+	})
+
+	if _, err := iter.receive(10); err != nil {
+		t.Fatalf("Got error in recvMessages: %v", err)
+	}
+
+	if !iter.enableExactlyOnce {
+		t.Fatalf("expected iter.enableExactlyOnce=true")
 	}
 }

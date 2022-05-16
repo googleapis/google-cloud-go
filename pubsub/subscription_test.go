@@ -190,6 +190,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		EnableExactlyOnceDelivery: false,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
 	if !testutil.Equal(cfg, want, opt) {
@@ -208,6 +209,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		EnableExactlyOnceDelivery: true,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -226,6 +228,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		EnableExactlyOnceDelivery: true,
 	}
 	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
