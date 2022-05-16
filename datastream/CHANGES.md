@@ -1,5 +1,12 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.3.0...datastream/v0.4.0) (2022-05-09)
+
+
+### Features
+
+* **datastream:** start generating apiv1 ([#6003](https://github.com/googleapis/google-cloud-go/issues/6003)) ([0c9e0f9](https://github.com/googleapis/google-cloud-go/commit/0c9e0f9d4c7ddfe020b61f0cf8540246c4c9695e)), refs [#5958](https://github.com/googleapis/google-cloud-go/issues/5958)
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.2.0...datastream/v0.3.0) (2022-02-23)
 
 

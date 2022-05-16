@@ -417,6 +417,117 @@ func TestListDefaultObjectACLsEmulated(t *testing.T) {
 	})
 }
 
+func TestUpdateBucketACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:          bucket,
+			PredefinedACL: "authenticatedRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		var listAcls []ACLRule
+		var err error
+		// Assert bucket has two BucketACL entities, including project owner and predefinedACL.
+		if listAcls, err = client.ListBucketACLs(ctx, bucket); err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(listAcls), 2; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", listAcls, want)
+		}
+		entity := AllUsers
+		role := RoleReader
+		want := &ACLRule{Entity: entity, Role: role}
+		got, err := client.UpdateBucketACL(ctx, bucket, entity, role)
+		if err != nil {
+			t.Fatalf("client.UpdateBucketACL: %v", err)
+		}
+		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		// Assert bucket now has three BucketACL entities, including existing ACLs.
+		if listAcls, err = client.ListBucketACLs(ctx, bucket); err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(listAcls), 3; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", listAcls, want)
+		}
+	})
+}
+
+func TestDeleteBucketACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:          bucket,
+			PredefinedACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Assert bucket has two BucketACL entities, including project owner and predefinedACL.
+		acls, err := client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+		// Delete one BucketACL with AllUsers entity.
+		if err := client.DeleteBucketACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteBucketACL: %v", err)
+		}
+		// Assert bucket has one BucketACL.
+		acls, err = client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(acls), 1; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
+
+func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:                       bucket,
+			PredefinedDefaultObjectACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Assert bucket has two DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
+		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
+			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
+		}
+		// Delete one DefaultObjectACL with AllUsers entity.
+		if err := client.DeleteDefaultObjectACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteDefaultObjectACL: %v", err)
+		}
+		// Assert bucket has one DefaultObjectACL entity.
+		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 1; got != want {
+			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
+		}
+	})
+}
+
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
 	if !isEmulatorEnvironmentSet() {
@@ -458,6 +569,34 @@ func initEmulatorClients() func() error {
 		}
 		return verr
 	}
+}
+
+func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		b := &BucketAttrs{
+			Name: bucket,
+			RetentionPolicy: &RetentionPolicy{
+				RetentionPeriod: time.Minute,
+			},
+		}
+		// Create the bucket that will be locked.
+		_, err := client.CreateBucket(context.Background(), project, b)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Lock the bucket's retention policy.
+		err = client.LockBucketRetentionPolicy(context.Background(), b.Name, &BucketConditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatalf("client.LockBucketRetentionPolicy: %v", err)
+		}
+		got, err := client.GetBucket(context.Background(), bucket, nil)
+		if err != nil {
+			t.Fatalf("client.GetBucket: %v", err)
+		}
+		if !got.RetentionPolicy.IsLocked {
+			t.Error("Expected bucket retention policy to be locked, but was not.")
+		}
+	})
 }
 
 // transportClienttest executes the given function with a sub-test, a project name

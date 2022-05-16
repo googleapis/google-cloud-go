@@ -1,13 +1,13 @@
-# {{.Name}}
+# Anthos Multi-Cloud API
 
-[![Go Reference](https://pkg.go.dev/badge/{{.ImportPath}}.svg)](https://pkg.go.dev/{{.ImportPath}})
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/gkemulticloud.svg)](https://pkg.go.dev/cloud.google.com/go/gkemulticloud)
 
-Go Client Library for {{.Name}}.
+Go Client Library for Anthos Multi-Cloud API.
 
 ## Install
 
 ```bash
-go get {{.ImportPath}}
+go get cloud.google.com/go/gkemulticloud
 ```
 
 ## Stability

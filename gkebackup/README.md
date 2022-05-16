@@ -1,13 +1,13 @@
-# {{.Name}}
+# Backup for GKE API
 
-[![Go Reference](https://pkg.go.dev/badge/{{.ImportPath}}.svg)](https://pkg.go.dev/{{.ImportPath}})
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/gkebackup.svg)](https://pkg.go.dev/cloud.google.com/go/gkebackup)
 
-Go Client Library for {{.Name}}.
+Go Client Library for Backup for GKE API.
 
 ## Install
 
 ```bash
-go get {{.ImportPath}}
+go get cloud.google.com/go/gkebackup
 ```
 
 ## Stability
