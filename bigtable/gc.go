@@ -25,10 +25,10 @@ import (
 	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
-type PolicyType = int
+type PolicyType int
 
 const (
-	PolicyTypeNone PolicyType = iota
+	PolicyTypeUnknown PolicyType = iota
 	PolicyTypeMaxAge
 	PolicyTypeMaxVersion
 	PolicyTypeUnion
@@ -229,6 +229,6 @@ func fromPolicyToTypedPolicy(gcPolicy GCPolicy) TypedGCPolicy {
 	case *bttdpb.GcRule_MaxNumVersions:
 		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeMaxVersion}
 	default:
-		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeNone}
+		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeUnknown}
 	}
 }
