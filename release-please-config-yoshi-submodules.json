@@ -126,6 +126,9 @@
         "gaming": {
             "component": "gaming"
         },
+        "gkebackup": {
+            "component": "gkebackup"
+        },
         "gkeconnect": {
             "component": "gkeconnect"
         },
