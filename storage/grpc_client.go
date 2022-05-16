@@ -338,7 +338,24 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	return battrs, err
 }
 func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.LockBucketRetentionPolicyRequest{
+		Bucket: bucketResourceName(globalProjectAlias, bucket),
+	}
+	if err := applyBucketCondsProto("grpcStorageClient.LockBucketRetentionPolicy", conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{
+			UserProject: toProjectResource(s.userProject),
+		}
+	}
+
+	return run(ctx, func() error {
+		_, err := c.raw.LockBucketRetentionPolicy(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+
 }
 func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
