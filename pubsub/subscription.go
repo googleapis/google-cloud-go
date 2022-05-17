@@ -858,7 +858,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 
 	s.checkOrdering(ctx)
 
-	// TODO(hongalex): move this to a helper function to make it more testable
+	// TODO(hongalex): move settings check to a helper function to make it more testable
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
