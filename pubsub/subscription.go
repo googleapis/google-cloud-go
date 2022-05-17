@@ -290,6 +290,23 @@ type SubscriptionConfig struct {
 	// This is an output only field, meaning it will only appear in responses from the backend
 	// and will be ignored if sent in a request.
 	TopicMessageRetentionDuration time.Duration
+
+	// EnableExcactlyOnceDelivery configures Pub/Sub to provide the following guarantees
+	// for the delivery of a message with a given MessageID on this subscription:
+	//
+	// The message sent to a subscriber is guaranteed not to be resent
+	// before the message's acknowledgement deadline expires.
+	// An acknowledged message will not be resent to a subscriber.
+	//
+	// Note that subscribers may still receive multiple copies of a message
+	// when `enable_exactly_once_delivery` is true if the message was published
+	// multiple times by a publisher client. These copies are considered distinct
+	// by Pub/Sub and have distinct MessageID values.
+	//
+	// Lastly, to guarantee messages have been acked or nacked properly, you must
+	// call Message.AckWithResponse() or Message.NackWithResponse(). These return an
+	// AckResponse which will be ready if the message has been acked (or failed to be acked).
+	EnableExactlyOnceDelivery bool
 }
 
 // String returns the globally unique printable name of the subscription config.
@@ -330,19 +347,20 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		pbRetryPolicy = cfg.RetryPolicy.toProto()
 	}
 	return &pb.Subscription{
-		Name:                     name,
-		Topic:                    cfg.Topic.name,
-		PushConfig:               pbPushConfig,
-		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
-		RetainAckedMessages:      cfg.RetainAckedMessages,
-		MessageRetentionDuration: retentionDuration,
-		Labels:                   cfg.Labels,
-		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
-		EnableMessageOrdering:    cfg.EnableMessageOrdering,
-		DeadLetterPolicy:         pbDeadLetter,
-		Filter:                   cfg.Filter,
-		RetryPolicy:              pbRetryPolicy,
-		Detached:                 cfg.Detached,
+		Name:                      name,
+		Topic:                     cfg.Topic.name,
+		PushConfig:                pbPushConfig,
+		AckDeadlineSeconds:        trunc32(int64(cfg.AckDeadline.Seconds())),
+		RetainAckedMessages:       cfg.RetainAckedMessages,
+		MessageRetentionDuration:  retentionDuration,
+		Labels:                    cfg.Labels,
+		ExpirationPolicy:          expirationPolicyToProto(cfg.ExpirationPolicy),
+		EnableMessageOrdering:     cfg.EnableMessageOrdering,
+		DeadLetterPolicy:          pbDeadLetter,
+		Filter:                    cfg.Filter,
+		RetryPolicy:               pbRetryPolicy,
+		Detached:                  cfg.Detached,
+		EnableExactlyOnceDelivery: cfg.EnableExactlyOnceDelivery,
 	}
 }
 
@@ -371,6 +389,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		RetryPolicy:                   rp,
 		Detached:                      pbSub.Detached,
 		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
+		EnableExactlyOnceDelivery:     pbSub.EnableExactlyOnceDelivery,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -662,6 +681,9 @@ type SubscriptionConfigToUpdate struct {
 	// (to redeliver messages as soon as possible) use a pointer to the zero value
 	// for this struct.
 	RetryPolicy *RetryPolicy
+
+	// If set, EnableExactlyOnce is changed.
+	EnableExactlyOnceDelivery optional.Bool
 }
 
 // Update changes an existing subscription according to the fields set in cfg.
@@ -717,6 +739,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.RetryPolicy != nil {
 		psub.RetryPolicy = cfg.RetryPolicy.toProto()
 		paths = append(paths, "retry_policy")
+	}
+	if cfg.EnableExactlyOnceDelivery != nil {
+		psub.EnableExactlyOnceDelivery = optional.ToBool(cfg.EnableExactlyOnceDelivery)
+		paths = append(paths, "enable_exactly_once_delivery")
 	}
 	return &pb.UpdateSubscriptionRequest{
 		Subscription: psub,
