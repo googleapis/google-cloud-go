@@ -880,7 +880,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 
 	minExtPeriod := s.ReceiveSettings.MinExtensionPeriod
-	if minExtPeriod <= 0 {
+	if minExtPeriod < 0 {
 		minExtPeriod = DefaultReceiveSettings.MinExtensionPeriod
 	}
 

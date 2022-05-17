@@ -426,62 +426,60 @@ func TestIterator_BoundedDuration(t *testing.T) {
 	// Use exported fields for time.Duration fields so they
 	// print nicely. Otherwise, they will print as integers.
 	//
-	// In these test cases, T is ack deadline returned
-	// from the 99% percentile in ack distributions.
-	// T is bounded by min/max ack deadline, which are
+	// AckDeadline is bounded by min/max ack deadline, which are
 	// 10 seconds and 600 seconds respectively. This is
 	// true for the real distribution data points as well.
 	testCases := []struct {
 		desc        string
-		T           time.Duration
+		AckDeadline time.Duration
 		MinDuration time.Duration
 		MaxDuration time.Duration
 		exactlyOnce bool
 		Want        time.Duration
 	}{
 		{
-			desc:        "T should be updated to MinDuration per lease extension",
-			T:           time.Duration(10 * time.Second),
+			desc:        "AckDeadline should be updated to MinDuration per lease extension",
+			AckDeadline: time.Duration(10 * time.Second),
 			MinDuration: time.Duration(15 * time.Second),
 			MaxDuration: time.Duration(10 * time.Minute),
 			exactlyOnce: false,
 			Want:        time.Duration(15 * time.Second),
 		},
 		{
-			desc:        "T should be updated to 1 minute when using exactly once",
-			T:           time.Duration(10 * time.Second),
+			desc:        "AckDeadline should be updated to 1 minute when using exactly once",
+			AckDeadline: time.Duration(10 * time.Second),
 			MinDuration: 0,
 			MaxDuration: time.Duration(10 * time.Minute),
 			exactlyOnce: true,
 			Want:        time.Duration(1 * time.Minute),
 		},
 		{
-			desc:        "T should not be updated here, even though exactly once is enabled",
-			T:           time.Duration(10 * time.Second),
+			desc:        "AckDeadline should not be updated here, even though exactly once is enabled",
+			AckDeadline: time.Duration(10 * time.Second),
 			MinDuration: time.Duration(15 * time.Second),
 			MaxDuration: time.Duration(10 * time.Minute),
 			exactlyOnce: true,
 			Want:        time.Duration(15 * time.Second),
 		},
 		{
-			desc:        "T should not be updated here",
-			T:           time.Duration(10 * time.Minute),
+			desc:        "AckDeadline should not be updated here",
+			AckDeadline: time.Duration(10 * time.Minute),
 			MinDuration: time.Duration(15 * time.Second),
 			MaxDuration: time.Duration(10 * time.Minute),
 			exactlyOnce: true,
 			Want:        time.Duration(10 * time.Minute),
 		},
 		{
-			desc:        "T should not be updated when both durations are not set",
-			T:           time.Duration(5 * time.Minute),
+			desc:        "AckDeadline should not be updated when both durations are not set",
+			AckDeadline: time.Duration(5 * time.Minute),
 			MinDuration: 0,
 			MaxDuration: 0,
 			exactlyOnce: false,
 			Want:        time.Duration(5 * time.Minute),
 		},
 		{
-			desc:        "T should should not be updated here since it is within both boundaries",
-			T:           time.Duration(5 * time.Minute),
+			desc:        "AckDeadline should should not be updated here since it is within both boundaries",
+			AckDeadline: time.Duration(5 * time.Minute),
 			MinDuration: time.Duration(1 * time.Minute),
 			MaxDuration: time.Duration(7 * time.Minute),
 			exactlyOnce: false,
@@ -490,7 +488,7 @@ func TestIterator_BoundedDuration(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			got := boundedDuration(tc.T, tc.MinDuration, tc.MaxDuration, tc.exactlyOnce)
+			got := boundedDuration(tc.AckDeadline, tc.MinDuration, tc.MaxDuration, tc.exactlyOnce)
 			if got != tc.Want {
 				t.Errorf("boundedDuration mismatch:\n%+v\ngot: %v, want: %v", tc, got, tc.Want)
 			}
