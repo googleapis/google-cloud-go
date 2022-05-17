@@ -845,11 +845,13 @@ func toLogEntryInternal(e Entry, client *Client, parent string, skipLevels int) 
 	if e.Severity == Severity(Debug) && e.SourceLocation == nil {
 		// filename and line are captured for source code that calls
 		// skipLevels up the goroutine calling stack + 1 for this func.
-		_, filename, line, ok := runtime.Caller(skipLevels + 1)
+		pc, file, line, ok := runtime.Caller(skipLevels + 1)
 		if ok {
+			details := runtime.FuncForPC(pc)
 			e.SourceLocation = &logpb.LogEntrySourceLocation{
-				File: filename,
-				Line: int64(line),
+				File:     file,
+				Function: details.Name(),
+				Line:     int64(line),
 			}
 		}
 	}

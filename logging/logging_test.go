@@ -27,6 +27,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -39,6 +40,8 @@ import (
 	"cloud.google.com/go/logging"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
@@ -835,5 +838,71 @@ func TestSeverityMarshalThenUnmarshal(t *testing.T) {
 
 	if entryU.Severity != logging.Warning {
 		t.Fatalf("Severity: got %v, want %v", entryU.Severity, logging.Warning)
+	}
+}
+
+func TestSourceLocationPopulation(t *testing.T) {
+	tests := []struct {
+		name string
+		in   logging.Entry
+		want *logpb.LogEntrySourceLocation
+	}{
+		{
+			name: "Auto-populate source location for debug entry",
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+			},
+			// want field will be patched to setup actual code line and function name
+			want: nil,
+		}, {
+			name: "Do not auto-populate source location for debug entry with source location",
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+				SourceLocation: &logpb.LogEntrySourceLocation{
+					File:     "test_source_file.go",
+					Function: "testFunction",
+					Line:     65536,
+				},
+			},
+			want: &logpb.LogEntrySourceLocation{
+				File:     "test_source_file.go",
+				Function: "testFunction",
+				Line:     65536,
+			},
+		}, {
+			name: "Do not auto-populate source location for non-debug entry",
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Info),
+			},
+			want: nil,
+		},
+	}
+
+	for index, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// for first test patch the want result
+			if index == 0 {
+				pc, file, line, ok := runtime.Caller(0)
+				if !ok {
+					t.Fatalf("Unexpected error: %+v: failed to call runtime.Caller()", tc.in)
+				}
+				details := runtime.FuncForPC(pc)
+				tc.want = &logpb.LogEntrySourceLocation{
+					File:     file,
+					Function: details.Name(),
+					Line:     int64(line + 11), // 11 code lines between runtime.Caller() and logging.ToLogEntry()
+				}
+			}
+			e, err := logging.ToLogEntry(tc.in, "projects/P")
+			if err != nil {
+				t.Fatalf("Unexpected error: %+v: %v", tc.in, err)
+			}
+
+			if e.SourceLocation != nil && tc.want != nil {
+				if diff := cmp.Diff(e.SourceLocation, tc.want, cmpopts.IgnoreUnexported(logpb.LogEntrySourceLocation{})); diff != "" {
+					t.Errorf("got(-),want(+):\n%s", diff)
+				}
+			}
+		})
 	}
 }
