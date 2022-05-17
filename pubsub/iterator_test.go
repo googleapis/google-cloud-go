@@ -468,7 +468,7 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 		t.Fatalf("Got error in recvMessages: %v", err)
 	}
 
-	if !iter.enableExactlyOnce {
+	if !iter.enableExactlyOnceDelivery {
 		t.Fatalf("expected iter.enableExactlyOnce=true")
 	}
 }

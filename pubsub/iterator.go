@@ -61,12 +61,12 @@ type messageIterator struct {
 	// message arrives, we'll record now+MaxExtension in this table; whenever we have a chance
 	// to update ack deadlines (via modack), we'll consult this table and only include IDs
 	// that are not beyond their deadline.
-	keepAliveDeadlines map[string]time.Time
-	pendingAcks        map[string]bool
-	pendingNacks       map[string]bool
-	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
-	err                error           // error from stream failure
-	enableExactlyOnce  bool
+	keepAliveDeadlines        map[string]time.Time
+	pendingAcks               map[string]bool
+	pendingNacks              map[string]bool
+	pendingModAcks            map[string]bool // ack IDs whose ack deadline is to be modified
+	err                       error           // error from stream failure
+	enableExactlyOnceDelivery bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -263,7 +263,7 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	if err != nil {
 		return nil, err
 	}
-	it.enableExactlyOnce = res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled()
+	it.enableExactlyOnceDelivery = res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled()
 	return res.ReceivedMessages, nil
 }
 
