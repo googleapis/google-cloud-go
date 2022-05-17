@@ -412,9 +412,37 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error {
 	return errMethodNotSupported
 }
-func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.GetObjectRequest{
+		Bucket: bucketResourceName(globalProjectAlias, bucket),
+		Object: object,
+	}
+	if err := applyCondsProto("grpcStorageClient.GetObject", gen, conds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	if encryptionKey != nil {
+		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
+	}
+
+	var attrs *ObjectAttrs
+	err := run(ctx, func() error {
+		res, err := c.raw.GetObject(ctx, req, s.gax...)
+		attrs = newObjectFromProto(res)
+
+		return err
+	}, s.retry, s.idempotent)
+
+	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+		return nil, ErrObjectNotExist
+	}
+
+	return attrs, err
 }
+
 func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
 	return nil, errMethodNotSupported
 }

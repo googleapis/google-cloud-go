@@ -2001,6 +2001,19 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 	return nil
 }
 
+// toProtoCommonObjectRequestParams sets client-side encryption to the proto library's CommonObjectRequestParams.
+func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequestParams {
+	if key == nil {
+		return nil
+	}
+	keyHash := sha256.Sum256(key)
+	return &storagepb.CommonObjectRequestParams{
+		EncryptionAlgorithm:      "AES256",
+		EncryptionKeyBytes:       key,
+		EncryptionKeySha256Bytes: keyHash[:],
+	}
+}
+
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
 	r := c.raw.Projects.ServiceAccount.Get(projectID)

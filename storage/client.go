@@ -57,7 +57,7 @@ type storageClient interface {
 	// Object metadata methods.
 
 	DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error
-	GetObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+	GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
 	UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
 
 	// Default Object ACL methods.
