@@ -409,9 +409,28 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 
 // Object metadata methods.
 
-func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error {
-	return errMethodNotSupported
+func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object string, gen int64, conds *Conditions, opts ...storageOption) error {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.DeleteObjectRequest{
+		Bucket: bucketResourceName(globalProjectAlias, bucket),
+		Object: object,
+	}
+	if err := applyCondsProto("grpcStorageClient.DeleteObject", gen, conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	// Encryption doesn't apply to Delete.
+	err := run(ctx, func() error {
+		return c.raw.DeleteObject(ctx, req, s.gax...)
+	}, s.retry, s.idempotent)
+	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+		return ErrObjectNotExist
+	}
+	return err
 }
+
 func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetObjectRequest{

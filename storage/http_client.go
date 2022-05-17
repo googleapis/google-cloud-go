@@ -378,9 +378,25 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 
 // Object metadata methods.
 
-func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error {
-	return errMethodNotSupported
+func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object string, gen int64, conds *Conditions, opts ...storageOption) error {
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Objects.Delete(bucket, object).Context(ctx)
+	if err := applyConds("Delete", gen, conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+	// Encryption doesn't apply to Delete.
+	setClientHeader(req.Header())
+	err := run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return ErrObjectNotExist
+	}
+	return err
 }
+
 func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := c.raw.Objects.Get(bucket, object).Projection("full").Context(ctx)

@@ -213,6 +213,33 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	})
 }
 
+func TestDeleteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object that will be deleted.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		err = client.DeleteObject(context.Background(), bucket, want.Name, -1, nil)
+		if err != nil {
+			t.Fatalf("client.DeleteBucket: %v", err)
+		}
+	})
+}
+
 func TestGetObjectEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
