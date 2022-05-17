@@ -438,7 +438,7 @@ func TestIterator_BoundedDuration(t *testing.T) {
 		Want        time.Duration
 	}{
 		{
-			desc:        "AckDeadline should be updated to MinDuration per lease extension",
+			desc:        "AckDeadline should be updated to the min duration",
 			AckDeadline: time.Duration(10 * time.Second),
 			MinDuration: time.Duration(15 * time.Second),
 			MaxDuration: time.Duration(10 * time.Minute),
@@ -470,7 +470,7 @@ func TestIterator_BoundedDuration(t *testing.T) {
 			Want:        time.Duration(10 * time.Minute),
 		},
 		{
-			desc:        "AckDeadline should not be updated when both durations are not set",
+			desc:        "AckDeadline should not be updated when neither durations are set",
 			AckDeadline: time.Duration(5 * time.Minute),
 			MinDuration: 0,
 			MaxDuration: 0,

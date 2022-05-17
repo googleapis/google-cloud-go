@@ -156,9 +156,19 @@ func (it *messageIterator) checkDrained() {
 	}
 }
 
+// Given a receiveTime, add the elapsed time to the iterator's ack distribution.
+// These values are bounded by the ModifyAckDeadline limits, which are
+// min/maxDurationPerLeaseExtension.
+func (it *messageIterator) addToDistribution(receiveTime time.Time) {
+	d := time.Since(receiveTime)
+	d = minDuration(d, minDurationPerLeaseExtension)
+	d = maxDuration(d, maxDurationPerLeaseExtension)
+	it.ackTimeDist.Record(int(d / time.Second))
+}
+
 // Called when a message is acked/nacked.
 func (it *messageIterator) done(ackID string, ack bool, receiveTime time.Time) {
-	it.ackTimeDist.Record(int(time.Since(receiveTime) / time.Second))
+	it.addToDistribution(receiveTime)
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	delete(it.keepAliveDeadlines, ackID)
