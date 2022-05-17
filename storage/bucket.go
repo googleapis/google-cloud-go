@@ -1412,7 +1412,7 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 }
 
 func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) {
-	if rp == nil {
+	if rp == nil || rp.EffectiveTime == "" {
 		return nil, nil
 	}
 	t, err := time.Parse(time.RFC3339, rp.EffectiveTime)

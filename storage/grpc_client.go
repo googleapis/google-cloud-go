@@ -25,6 +25,7 @@ import (
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
@@ -217,9 +218,7 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 		return err
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
 	return run(ctx, func() error {
@@ -236,9 +235,7 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 		return nil, err
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
 	var battrs *BucketAttrs
@@ -269,9 +266,7 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		return nil, err
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
 	var paths []string
@@ -343,7 +338,24 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	return battrs, err
 }
 func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.LockBucketRetentionPolicyRequest{
+		Bucket: bucketResourceName(globalProjectAlias, bucket),
+	}
+	if err := applyBucketCondsProto("grpcStorageClient.LockBucketRetentionPolicy", conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{
+			UserProject: toProjectResource(s.userProject),
+		}
+	}
+
+	return run(ctx, func() error {
+		_, err := c.raw.LockBucketRetentionPolicy(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+
 }
 func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
@@ -364,7 +376,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		// ReadMask: q.Projection,
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{UserProject: s.userProject}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	gitr := c.raw.ListObjects(it.ctx, req, s.gax...)
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
@@ -590,4 +602,13 @@ func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc
 }
 func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error {
 	return errMethodNotSupported
+}
+
+// setUserProjectMetadata appends a project ID to the outgoing Context metadata
+// via the x-goog-user-project system parameter defined at
+// https://cloud.google.com/apis/docs/system-parameters. This is only for
+// billing purposes, and is generally optional, except for requester-pays
+// buckets.
+func setUserProjectMetadata(ctx context.Context, project string) context.Context {
+	return metadata.AppendToOutgoingContext(ctx, "x-goog-user-project", project)
 }
