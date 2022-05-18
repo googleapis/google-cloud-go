@@ -83,7 +83,7 @@ type storageClient interface {
 	ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error)
 	RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error)
 
-	OpenReader(ctx context.Context, r *Reader, opts ...storageOption) error
+	OpenReader(ctx context.Context, params *openReaderParams, opts ...storageOption) (*Reader, error)
 	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
 
 	// IAM methods.
@@ -99,6 +99,11 @@ type storageClient interface {
 	UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
 	CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error)
 	DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error
+}
+
+type transportReader interface {
+	Read([]byte) (int, error)
+	Close() error
 }
 
 // settings contains transport-agnostic configuration for API calls made via
@@ -210,6 +215,16 @@ type userProjectOption struct {
 }
 
 func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
+
+type openReaderParams struct {
+	bucket        string
+	conds         *Conditions
+	encryptionKey []byte
+	gen           int64
+	length        int64
+	object        string
+	offset        int64
+}
 
 type composeObjectRequest struct {
 	dstBucket     string
