@@ -85,6 +85,14 @@ const (
 	// ScopeReadWrite grants permissions to manage your
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
+
+	// aes256Algorithm is the AES256 encryption algorithm used with the
+	// Customer-Supplied Encryption Keys feature.
+	aes256Algorithm = "AES256"
+
+	// defaultGen indicates the latest object generation by default,
+	// using a negative value.
+	defaultGen = int64(-1)
 )
 
 var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
@@ -1981,12 +1989,6 @@ func (c composeSourceObj) IfGenerationMatch(gen int64) {
 	}
 }
 
-const (
-	// The AES256 encryption algorithm used with the Customer-Supplied
-	// Encryption Keys feature.
-	aes256Algorithm = "AES256"
-)
-
 func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) error {
 	if key == nil {
 		return nil
@@ -2007,7 +2009,7 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 	return nil
 }
 
-// toProtoCommonObjectRequestParams sets client-side encryption to the proto library's CommonObjectRequestParams.
+// toProtoCommonObjectRequestParams sets customer-supplied encryption to the proto library's CommonObjectRequestParams.
 func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequestParams {
 	if key == nil {
 		return nil
