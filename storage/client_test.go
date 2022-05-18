@@ -233,7 +233,8 @@ func TestDeleteObjectEmulated(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		err = client.DeleteObject(context.Background(), bucket, want.Name, -1, nil)
+		const defaultGen = int64(-1)
+		err = client.DeleteObject(context.Background(), bucket, want.Name, defaultGen, nil)
 		if err != nil {
 			t.Fatalf("client.DeleteBucket: %v", err)
 		}
@@ -260,7 +261,8 @@ func TestGetObjectEmulated(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		got, err := client.GetObject(context.Background(), bucket, want.Name, -1, nil, nil)
+		const defaultGen = int64(-1)
+		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
 		if err != nil {
 			t.Fatal(err)
 		}

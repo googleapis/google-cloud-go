@@ -387,7 +387,6 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	if s.userProject != "" {
 		req.UserProject(s.userProject)
 	}
-	// Encryption doesn't apply to Delete.
 	setClientHeader(req.Header())
 	err := run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 	var e *googleapi.Error
@@ -400,8 +399,7 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := c.raw.Objects.Get(bucket, object).Projection("full").Context(ctx)
-	err := applyConds("Attrs", gen, conds, req)
-	if err != nil {
+	if err := applyConds("Attrs", gen, conds, req); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
@@ -412,6 +410,7 @@ func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string
 	}
 	setClientHeader(req.Header())
 	var obj *raw.Object
+	var err error
 	err = run(ctx, func() error {
 		obj, err = req.Context(ctx).Do()
 		return err

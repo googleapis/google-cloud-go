@@ -421,7 +421,6 @@ func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	// Encryption doesn't apply to Delete.
 	err := run(ctx, func() error {
 		return c.raw.DeleteObject(ctx, req, s.gax...)
 	}, s.retry, s.idempotent)

@@ -1981,6 +1981,12 @@ func (c composeSourceObj) IfGenerationMatch(gen int64) {
 	}
 }
 
+const (
+	// The AES256 encryption algorithm used with the Customer-Supplied
+	// Encryption Keys feature.
+	aes256Algorithm = "AES256"
+)
+
 func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) error {
 	if key == nil {
 		return nil
@@ -1994,7 +2000,7 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 	if copySource {
 		cs = "copy-source-"
 	}
-	headers.Set("x-goog-"+cs+"encryption-algorithm", "AES256")
+	headers.Set("x-goog-"+cs+"encryption-algorithm", aes256Algorithm)
 	headers.Set("x-goog-"+cs+"encryption-key", base64.StdEncoding.EncodeToString(key))
 	keyHash := sha256.Sum256(key)
 	headers.Set("x-goog-"+cs+"encryption-key-sha256", base64.StdEncoding.EncodeToString(keyHash[:]))
@@ -2008,7 +2014,7 @@ func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequest
 	}
 	keyHash := sha256.Sum256(key)
 	return &storagepb.CommonObjectRequestParams{
-		EncryptionAlgorithm:      "AES256",
+		EncryptionAlgorithm:      aes256Algorithm,
 		EncryptionKeyBytes:       key,
 		EncryptionKeySha256Bytes: keyHash[:],
 	}
