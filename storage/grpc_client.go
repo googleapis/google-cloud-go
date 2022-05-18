@@ -122,7 +122,7 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 		var err error
 		resp, err = c.raw.GetServiceAccount(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
 		return "", err
 	}
@@ -154,7 +154,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 		battrs = newBucketFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	return battrs, err
 }
@@ -187,7 +187,7 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 		err = run(it.ctx, func() error {
 			buckets, next, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 		if err != nil {
 			return "", err
 		}
@@ -223,7 +223,7 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 
 	return run(ctx, func() error {
 		return c.raw.DeleteBucket(ctx, req, s.gax...)
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
@@ -245,7 +245,7 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 		battrs = newBucketFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, ErrBucketNotExist
@@ -333,7 +333,7 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		res, err := c.raw.UpdateBucket(ctx, req, s.gax...)
 		battrs = newBucketFromProto(res)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	return battrs, err
 }
@@ -354,7 +354,7 @@ func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	return run(ctx, func() error {
 		_, err := c.raw.LockBucketRetentionPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 }
 func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
@@ -384,7 +384,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		err = run(it.ctx, func() error {
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 		if err != nil {
 			if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound {
 				err = ErrBucketNotExist
@@ -547,7 +547,7 @@ func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, v
 		var err error
 		rp, err = c.raw.GetIamPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	return rp, err
 }
@@ -564,7 +564,7 @@ func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 	return run(ctx, func() error {
 		_, err := c.raw.SetIamPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 
 func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
@@ -579,7 +579,7 @@ func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource str
 		var err error
 		res, err = c.raw.TestIamPermissions(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
 		return nil, err
 	}
