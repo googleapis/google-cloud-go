@@ -177,7 +177,7 @@ func makeParent(parent string) (string, error) {
 	}
 	prefix := strings.Split(parent, "/")[0]
 	if prefix != "projects" && prefix != "folders" && prefix != "billingAccounts" && prefix != "organizations" {
-		return parent, fmt.Errorf("parent parameter must start with 'projects/' 'folders/' 'billingAccounts/' or 'organizations/'.")
+		return parent, fmt.Errorf("parent parameter must start with 'projects/' 'folders/' 'billingAccounts/' or 'organizations/'")
 	}
 	return parent, nil
 }
