@@ -1,0 +1,428 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/binaryauthorization/apiv1",
+    "version": "0.5.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.binaryauthorization.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_CreateAttestor_sync",
+      "title": "binaryauthorization CreateAttestor Sample",
+      "description": "CreateAttestor creates an attestor, and returns a copy of the new\nattestor. Returns NOT_FOUND if the project does not exist,\nINVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the\nattestor already exists.",
+      "file": "BinauthzManagementClient/CreateAttestor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAttestor",
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.CreateAttestor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.CreateAttestorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "binaryauthorizationpb.Attestor",
+        "client": {
+          "shortName": "BinauthzManagementClient",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
+        },
+        "method": {
+          "shortName": "CreateAttestor",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.CreateAttestor",
+          "service": {
+            "shortName": "BinauthzManagementServiceV1",
+            "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_DeleteAttestor_sync",
+      "title": "binaryauthorization DeleteAttestor Sample",
+      "description": "DeleteAttestor deletes an attestor. Returns NOT_FOUND if the\nattestor does not exist.",
+      "file": "BinauthzManagementClient/DeleteAttestor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAttestor",
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.DeleteAttestor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.DeleteAttestorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BinauthzManagementClient",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
+        },
+        "method": {
+          "shortName": "DeleteAttestor",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.DeleteAttestor",
+          "service": {
+            "shortName": "BinauthzManagementServiceV1",
+            "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_GetAttestor_sync",
+      "title": "binaryauthorization GetAttestor Sample",
+      "description": "GetAttestor gets an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
+      "file": "BinauthzManagementClient/GetAttestor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAttestor",
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.GetAttestor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.GetAttestorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "binaryauthorizationpb.Attestor",
+        "client": {
+          "shortName": "BinauthzManagementClient",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
+        },
+        "method": {
+          "shortName": "GetAttestor",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.GetAttestor",
+          "service": {
+            "shortName": "BinauthzManagementServiceV1",
+            "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_GetPolicy_sync",
+      "title": "binaryauthorization GetPolicy Sample",
+      "description": "GetPolicy a policy specifies the attestors that must attest to\na container image, before the project is allowed to deploy that\nimage. There is at most one policy per project. All image admission\nrequests are permitted if a project has no policy.\n\nGets the policy for this project. Returns a default\npolicy if the project does not have one.",
+      "file": "BinauthzManagementClient/GetPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPolicy",
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.GetPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.GetPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "binaryauthorizationpb.Policy",
+        "client": {
+          "shortName": "BinauthzManagementClient",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
+        },
+        "method": {
+          "shortName": "GetPolicy",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.GetPolicy",
+          "service": {
+            "shortName": "BinauthzManagementServiceV1",
+            "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_ListAttestors_sync",
+      "title": "binaryauthorization ListAttestors Sample",
+      "description": "ListAttestors lists attestors.\nReturns INVALID_ARGUMENT if the project does not exist.",
+      "file": "BinauthzManagementClient/ListAttestors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAttestors",
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.ListAttestors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.ListAttestorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AttestorIterator",
+        "client": {
+          "shortName": "BinauthzManagementClient",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
+        },
+        "method": {
+          "shortName": "ListAttestors",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.ListAttestors",
+          "service": {
+            "shortName": "BinauthzManagementServiceV1",
+            "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_UpdateAttestor_sync",
+      "title": "binaryauthorization UpdateAttestor Sample",
+      "description": "UpdateAttestor updates an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
+      "file": "BinauthzManagementClient/UpdateAttestor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAttestor",
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.UpdateAttestor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.UpdateAttestorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "binaryauthorizationpb.Attestor",
+        "client": {
+          "shortName": "BinauthzManagementClient",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
+        },
+        "method": {
+          "shortName": "UpdateAttestor",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdateAttestor",
+          "service": {
+            "shortName": "BinauthzManagementServiceV1",
+            "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_UpdatePolicy_sync",
+      "title": "binaryauthorization UpdatePolicy Sample",
+      "description": "UpdatePolicy creates or updates a project’s policy, and returns a copy of the\nnew policy. A policy is always updated as a whole, to avoid race\nconditions with concurrent policy enforcement (or management!)\nrequests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT\nif the request is malformed.",
+      "file": "BinauthzManagementClient/UpdatePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePolicy",
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.UpdatePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.UpdatePolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "binaryauthorizationpb.Policy",
+        "client": {
+          "shortName": "BinauthzManagementClient",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
+        },
+        "method": {
+          "shortName": "UpdatePolicy",
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy",
+          "service": {
+            "shortName": "BinauthzManagementServiceV1",
+            "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_SystemPolicyV1_GetSystemPolicy_sync",
+      "title": "binaryauthorization GetSystemPolicy Sample",
+      "description": "GetSystemPolicy gets the current system policy in the specified location.",
+      "file": "SystemPolicyClient/GetSystemPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSystemPolicy",
+        "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient.GetSystemPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.GetSystemPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "binaryauthorizationpb.Policy",
+        "client": {
+          "shortName": "SystemPolicyClient",
+          "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient"
+        },
+        "method": {
+          "shortName": "GetSystemPolicy",
+          "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyV1.GetSystemPolicy",
+          "service": {
+            "shortName": "SystemPolicyV1",
+            "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "binaryauthorization_v1_generated_ValidationHelperV1_ValidateAttestationOccurrence_sync",
+      "title": "binaryauthorization ValidateAttestationOccurrence Sample",
+      "description": "ValidateAttestationOccurrence returns whether the given Attestation for the given image URI\nwas signed by the given Attestor",
+      "file": "ValidationHelperClient/ValidateAttestationOccurrence/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateAttestationOccurrence",
+        "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient.ValidateAttestationOccurrence",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "binaryauthorizationpb.ValidateAttestationOccurrenceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "binaryauthorizationpb.ValidateAttestationOccurrenceResponse",
+        "client": {
+          "shortName": "ValidationHelperClient",
+          "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient"
+        },
+        "method": {
+          "shortName": "ValidateAttestationOccurrence",
+          "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperV1.ValidateAttestationOccurrence",
+          "service": {
+            "shortName": "ValidationHelperV1",
+            "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperV1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
