@@ -210,7 +210,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 				gen = gen64
 			}
 			return nil
-		}, o.retry, true)
+		}, o.retry, true, setRetryHeaderHTTP(nil))
 		if err != nil {
 			return nil, err
 		}
@@ -492,7 +492,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 			msg, err = stream.Recv()
 
 			return err
-		}, o.retry, true)
+		}, o.retry, true, setRetryHeaderHTTP(nil))
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.
