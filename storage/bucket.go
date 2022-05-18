@@ -103,7 +103,7 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
-	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true)
+	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // Delete deletes the Bucket.
@@ -116,7 +116,7 @@ func (b *BucketHandle) Delete(ctx context.Context) (err error) {
 		return err
 	}
 
-	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 func (b *BucketHandle) newDeleteCall() (*raw.BucketsDeleteCall, error) {
@@ -184,7 +184,7 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 	err = run(ctx, func() error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
@@ -232,7 +232,7 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 		return err
 	}
 
-	if err := run(ctx, call, b.retry, isIdempotent); err != nil {
+	if err := run(ctx, call, b.retry, isIdempotent, setRetryHeaderHTTP(req)); err != nil {
 		return nil, err
 	}
 	return newBucket(rawBucket)
@@ -1341,7 +1341,7 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	return run(ctx, func() error {
 		_, err := req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // applyBucketConds modifies the provided call using the conditions in conds.
@@ -1412,7 +1412,7 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 }
 
 func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) {
-	if rp == nil {
+	if rp == nil || rp.EffectiveTime == "" {
 		return nil, nil
 	}
 	t, err := time.Parse(time.RFC3339, rp.EffectiveTime)
@@ -1999,7 +1999,7 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.bucket.retry, true)
+	}, it.bucket.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		var e *googleapi.Error
 		if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -2086,7 +2086,7 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.client.retry, true)
+	}, it.client.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return "", err
 	}
