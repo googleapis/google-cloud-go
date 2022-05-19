@@ -12,7 +12,6 @@ cloud.google.com/go/datastore v1.6.0 h1:wZaHIqu1tebvGRYhVgcfNX6jN2q638OGO23JyJck
 cloud.google.com/go/datastore v1.6.0/go.mod h1:q3ZJj1GMQRdU0OCv5XXpCqfLqHHZnI5zcumkvuYDmHI=
 cloud.google.com/go/iam v0.3.0 h1:exkAomrVUuzx9kWFI1wm3KI0uoDeUFPB4kKGzx6x+Gc=
 cloud.google.com/go/iam v0.3.0/go.mod h1:XzJPvDayI+9zsASAFO68Hk07u3z+f+JrT2xXNdp4bnY=
-cloud.google.com/go/storage v1.22.0 h1:NUV0NNp9nkBuW66BFRLuMgldN60C57ET3dhbwLIYio8=
 cloud.google.com/go/storage v1.22.0/go.mod h1:GbaLEoMqbVm6sx3Z0R++gSiBlgMv6yUi2q1DeGFKQgE=
 cloud.google.com/go/storage v1.22.1 h1:F6IlQJZrZM++apn9V5/VfS3gbTUYg98PS3EMQAzqtfg=
 cloud.google.com/go/storage v1.22.1/go.mod h1:S8N1cAStu7BOeFfE8KAQzmyyLkK8p/vmRq6kuBTW58Y=
