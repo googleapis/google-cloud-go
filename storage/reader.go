@@ -209,7 +209,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 				gen = gen64
 			}
 			return nil
-		}, o.retry, true, setRetryHeaderHTTP(nil))
+		}, o.retry, true, setRetryHeaderHTTP(&readerRequestWrapper{req}))
 		if err != nil {
 			return nil, err
 		}
@@ -353,6 +353,16 @@ func setConditionsHeaders(headers http.Header, conds *Conditions) error {
 		headers.Set("x-goog-if-generation-match", "0")
 	}
 	return nil
+}
+
+// Wrap a request to look similar to an apiary library request, in order to
+// be used by run().
+type readerRequestWrapper struct {
+	req *http.Request
+}
+
+func (w *readerRequestWrapper) Header() http.Header {
+	return w.req.Header
 }
 
 var emptyBody = ioutil.NopCloser(strings.NewReader(""))
