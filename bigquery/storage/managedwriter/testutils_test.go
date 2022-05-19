@@ -169,3 +169,47 @@ func withApproxDistinctValues(colname string, approxValues int64, errorBound int
 		}
 	}
 }
+
+// withIntegerValueCount validates how many values in the column have a given integer value.
+func withIntegerValueCount(colname string, wantValue int64, valueCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("integer_value_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(%s = %d) AS %s", colname, wantValue, resultCol),
+			expectedValue: valueCount,
+		}
+	}
+}
+
+// withStringValueCount validates how many values in the column have a given string value.
+func withStringValueCount(colname string, wantValue string, valueCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("string_value_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(%s = \"%s\") AS %s", colname, wantValue, resultCol),
+			expectedValue: valueCount,
+		}
+	}
+}
+
+// withBoolValueCount validates how many values in the column have a given boolean value.
+func withBoolValueCount(colname string, wantValue bool, valueCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("bool_value_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(%s = %t) AS %s", colname, wantValue, resultCol),
+			expectedValue: valueCount,
+		}
+	}
+}
+
+// withBytesValuesCount validates how many values in the column have a given bytes value.
+func withBytesValuesCount(colname string, wantValue []byte, valueCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("bytes_value_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(%s = B\"%s\") AS %s", colname, wantValue, resultCol),
+			expectedValue: valueCount,
+		}
+	}
+}
