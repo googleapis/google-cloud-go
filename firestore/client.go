@@ -299,8 +299,24 @@ func (c *Client) Batch() *WriteBatch {
 }
 
 // BulkWriter returns a BulkWriter instance.
-func (c *Client) BulkWriter() *BulkWriter {
-	return &BulkWriter{c: c, status: OPEN}
+func (c *Client) BulkWriter(version int) (*BulkWriter, error) {
+	var bw BulkWriter
+	var err error
+	ctx := context.Background()
+
+	db := fmt.Sprintf("projects/%s/databases/%s", c.projectID, c.databaseID)
+
+	// TODO(telpirion): Remove version switch once implementation decided.
+	switch version {
+	case 1:
+		bw, err = NewCallersBulkWriter(ctx, db)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &bw, nil
 }
 
 // commit calls the Commit RPC outside of a transaction.

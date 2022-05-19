@@ -1,103 +1,106 @@
 package firestore
 
-import "testing"
+import (
+	"context"
+	"fmt"
+	"os"
+	"testing"
+)
 
-func TestBulkWriter(t *testing.T) {
-	c, srv, cleanup := newMock(t)
-	defer cleanup()
-
-	docPrefix := c.Collection("C").Path + "/"
-	srv.addRPC(
-		&pb.CommitRequest{
-			Database: c.path(),
-			Writes: []*pb.Write{
-				{ // Create
-					Operation: &pb.Write_Update{
-						Update: &pb.Document{
-							Name:   docPrefix + "a",
-							Fields: testFields,
-						},
-					},
-					CurrentDocument: &pb.Precondition{
-						ConditionType: &pb.Precondition_Exists{false},
-					},
-				},
-				{ // Set
-					Operation: &pb.Write_Update{
-						Update: &pb.Document{
-							Name:   docPrefix + "b",
-							Fields: testFields,
-						},
-					},
-				},
-				{ // Delete
-					Operation: &pb.Write_Delete{
-						Delete: docPrefix + "c",
-					},
-				},
-				{ // Update
-					Operation: &pb.Write_Update{
-						Update: &pb.Document{
-							Name:   docPrefix + "f",
-							Fields: map[string]*pb.Value{"*": intval(3)},
-						},
-					},
-					UpdateMask: &pb.DocumentMask{FieldPaths: []string{"`*`"}},
-					CurrentDocument: &pb.Precondition{
-						ConditionType: &pb.Precondition_Exists{true},
-					},
-				},
-			},
-		},
-		&pb.CommitResponse{
-			WriteResults: []*pb.WriteResult{
-				{UpdateTime: aTimestamp},
-				{UpdateTime: aTimestamp2},
-				{UpdateTime: aTimestamp3},
-			},
-		},
-	)
-	gotWRs, err := c.BulkWriter().
-		Create(c.Doc("C/a"), testData).
-		Set(c.Doc("C/b"), testData).
-		Delete(c.Doc("C/c")).
-		Update(c.Doc("C/f"), []Update{{FieldPath: []string{"*"}, Value: 3}}).
-		Commit(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	wantWRs := []*WriteResult{{aTime}, {aTime2}, {aTime3}}
-	if !testEqual(gotWRs, wantWRs) {
-		t.Errorf("got  %+v\nwant %+v", gotWRs, wantWRs)
-	}
+type testBulkwriterCase struct {
+	DocRef    DocumentRef
+	Operation BulkWriterOperation
+	Value     interface{}
 }
 
-func TestBulkWriterErrors(t *testing.T) {
-	ctx := context.Background()
-	c, _, cleanup := newMock(t)
-	defer cleanup()
+var coll *CollectionRef
+var (
+	collectionPath = ""
+	colName        = "bulkwriter-test"
+)
 
-	for _, test := range []struct {
-		desc string
-		bw   *BulkWriter
-	}{
+var (
+	testCases = []testBulkwriterCase{
 		{
-			"empty batch",
-			c.BulkWriter(),
+			DocRef: DocumentRef{
+				Parent: coll,
+				Path:   fmt.Sprintf("%s/doc-1", collectionPath),
+				ID:     "doc-1",
+			},
+			Operation: CREATE,
+			Value: map[string]interface{}{
+				"myval": 1,
+			},
 		},
 		{
-			"bad doc reference",
-			c.BulkWriter().Create(c.Doc("a"), testData),
+			DocRef: DocumentRef{
+				Parent: coll,
+				Path:   fmt.Sprintf("%s/doc-2", collectionPath),
+				ID:     "doc-2",
+			},
+			Operation: CREATE,
+			Value: map[string]interface{}{
+				"myval": 2,
+			},
 		},
 		{
-			"bad data",
-			c.BulkWriter().Create(c.Doc("a/b"), 3),
+			DocRef: DocumentRef{
+				Parent: coll,
+				Path:   fmt.Sprintf("%s/doc-3", collectionPath),
+				ID:     "doc-3",
+			},
+			Operation: CREATE,
+			Value: map[string]interface{}{
+				"myval": 3,
+			},
 		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			if _, err := test.bw.Close(); err == nil {
-				t.Fatal("got nil, want error")
+		{
+			DocRef: DocumentRef{
+				Parent: coll,
+				Path:   fmt.Sprintf("%s/doc-4", collectionPath),
+				ID:     "doc-4",
+			},
+			Operation: CREATE,
+			Value: map[string]interface{}{
+				"myval": 4,
+			},
+		},
+	}
+)
+
+func TestCallersBulkWriter(t *testing.T) {
+	pid := os.Getenv("PROJECT_ID")
+
+	ctx := context.Background()
+	c, err := NewClient(ctx, pid)
+	if err != nil {
+		fmt.Println(fmt.Errorf("can't create new client: n%v", err))
+	}
+
+	// Set up our test cases
+	coll = c.Collection(colName)
+	collectionPath = fmt.Sprintf("projects/%s/databases/default/documents/%s", pid, colName)
+	t.Logf("Project ID is: %s\n", pid)
+	t.Logf("Collection is: %s\n", collectionPath)
+
+	bw, err := c.BulkWriter(1)
+	defer (*bw).Close()
+
+	if err != nil {
+		t.Errorf("can't create CallersBulkWriter: n%v", err)
+	}
+
+	// This is where the caller controls their go routines
+	for _, tc := range testCases {
+		go func(tc testBulkwriterCase) {
+			res, err := (*bw).Do(&tc.DocRef, tc.Operation, tc.Value)
+			if err != nil {
+				fmt.Println(fmt.Errorf("error doing request: n%v", err))
 			}
-		})
+			fmt.Println(<-res)
+			if res == nil {
+				t.Errorf("Got a nil response")
+			}
+		}(tc)
 	}
 }
