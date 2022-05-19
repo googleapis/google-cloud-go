@@ -4,9 +4,9 @@ go 1.15
 
 require (
 	cloud.google.com/go v0.100.2
-	github.com/googleapis/gax-go/v2 v2.3.0
-	google.golang.org/api v0.74.0
-	google.golang.org/genproto v0.0.0-20220407144326-9054f6ed7bac
-	google.golang.org/grpc v1.45.0
+	github.com/googleapis/gax-go/v2 v2.4.0
+	google.golang.org/api v0.78.0
+	google.golang.org/genproto v0.0.0-20220505152158-f39f71e6c8f3
+	google.golang.org/grpc v1.46.0
 	google.golang.org/protobuf v1.28.0
 )
