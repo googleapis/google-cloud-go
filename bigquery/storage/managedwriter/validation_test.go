@@ -152,7 +152,7 @@ func TestValidation_Values(t *testing.T) {
 			},
 		},
 		{
-			description: "proto3 optionals",
+			description: "proto3 optional w/o explicit values",
 			tableSchema: testdata.ValidationBaseSchema,
 			inputRow:    &testdata.ValidationP3Optional{},
 			constraints: []constraintOption{
