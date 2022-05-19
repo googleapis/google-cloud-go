@@ -1,13 +1,13 @@
 # Cloud Vision API
 
-[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/vision.svg)](https://pkg.go.dev/cloud.google.com/go/vision)
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/vision.svg)](https://pkg.go.dev/cloud.google.com/go/vision/v2)
 
 Go Client Library for Cloud Vision API.
 
 ## Install
 
 ```bash
-go get cloud.google.com/go/vision
+go get cloud.google.com/go/vision/v2
 ```
 
 ## Stability
