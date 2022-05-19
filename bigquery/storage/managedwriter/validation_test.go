@@ -151,29 +151,28 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerValueCount("enum_field", int64(testdata.Proto2ExampleEnum_P2_OTHER_THING), 1),
 			},
 		},
-		/*
-			{
-				description: "proto3 optionals",
-				tableSchema: testdata.ValidationBaseSchema,
-				inputRow:    &testdata.ValidationP3Optional{},
-				constraints: []constraintOption{
-					withNullCount("double_field", 1),
-					withNullCount("float_field", 1),
-					withNullCount("int32_field", 1),
-					withNullCount("int64_field", 1),
-					withNullCount("uint32_field", 1),
-					withNullCount("sint32_field", 1),
-					withNullCount("sint64_field", 1),
-					withNullCount("fixed32_field", 1),
-					withNullCount("sfixed32_field", 1),
-					withNullCount("sfixed64_field", 1),
-					withNullCount("bool_field", 1),
-					withNullCount("string_field", 1),
-					withNullCount("bytes_field", 1),
-					withNullCount("enum_field", 1),
-				},
+		{
+			description: "proto3 optionals",
+			tableSchema: testdata.ValidationBaseSchema,
+			inputRow:    &testdata.ValidationP3Optional{},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+				withNullCount("double_field", 1),
+				withNullCount("float_field", 1),
+				withNullCount("int32_field", 1),
+				withNullCount("int64_field", 1),
+				withNullCount("uint32_field", 1),
+				withNullCount("sint32_field", 1),
+				withNullCount("sint64_field", 1),
+				withNullCount("fixed32_field", 1),
+				withNullCount("sfixed32_field", 1),
+				withNullCount("sfixed64_field", 1),
+				withNullCount("bool_field", 1),
+				withNullCount("string_field", 1),
+				withNullCount("bytes_field", 1),
+				withNullCount("enum_field", 1),
 			},
-		*/
+		},
 	}
 
 	// Common setup.
