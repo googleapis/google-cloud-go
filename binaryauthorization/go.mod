@@ -3,6 +3,7 @@ module cloud.google.com/go/binaryauthorization
 go 1.18
 
 require (
+	cloud.google.com/go v0.100.2
 	github.com/googleapis/gax-go/v2 v2.3.0
 	google.golang.org/api v0.78.0
 	google.golang.org/genproto v0.0.0-20220504150022-98cd25cafc72
