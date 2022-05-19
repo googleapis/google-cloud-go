@@ -311,6 +311,11 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
 		resultFDP := protodesc.ToFieldDescriptorProto(inField)
+		// Clear proto3 optional annotation, as the backend converter can
+		// treat this as a proto2 optional.
+		if resultFDP.Proto3Optional != nil {
+			resultFDP.Proto3Optional = nil
+		}
 		if resultFDP.OneofIndex != nil {
 			resultFDP.OneofIndex = nil
 		}
