@@ -25,6 +25,7 @@ import (
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
@@ -121,7 +122,7 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 		var err error
 		resp, err = c.raw.GetServiceAccount(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
 		return "", err
 	}
@@ -153,7 +154,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 		battrs = newBucketFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	return battrs, err
 }
@@ -186,7 +187,7 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 		err = run(it.ctx, func() error {
 			buckets, next, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 		if err != nil {
 			return "", err
 		}
@@ -217,14 +218,12 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 		return err
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
 	return run(ctx, func() error {
 		return c.raw.DeleteBucket(ctx, req, s.gax...)
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
@@ -236,9 +235,7 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 		return nil, err
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
 	var battrs *BucketAttrs
@@ -248,7 +245,7 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 		battrs = newBucketFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, ErrBucketNotExist
@@ -269,9 +266,7 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		return nil, err
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
 	var paths []string
@@ -338,12 +333,24 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		res, err := c.raw.UpdateBucket(ctx, req, s.gax...)
 		battrs = newBucketFromProto(res)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	return battrs, err
 }
 func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.LockBucketRetentionPolicyRequest{
+		Bucket: bucketResourceName(globalProjectAlias, bucket),
+	}
+	if err := applyBucketCondsProto("grpcStorageClient.LockBucketRetentionPolicy", conds, req); err != nil {
+		return err
+	}
+
+	return run(ctx, func() error {
+		_, err := c.raw.LockBucketRetentionPolicy(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+
 }
 func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
@@ -364,7 +371,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		// ReadMask: q.Projection,
 	}
 	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{UserProject: s.userProject}
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	gitr := c.raw.ListObjects(it.ctx, req, s.gax...)
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
@@ -372,7 +379,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		err = run(it.ctx, func() error {
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 		if err != nil {
 			if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound {
 				err = ErrBucketNotExist
@@ -410,7 +417,25 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 // Default Object ACL methods.
 
 func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve BucketAttrs.
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Delete the entity and copy other remaining ACL entities.
+	var acl []ACLRule
+	for _, a := range attrs.DefaultObjectACL {
+		if a.Entity != entity {
+			acl = append(acl, a)
+		}
+	}
+	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
+	// Call UpdateBucket with a MetagenerationMatch precondition set.
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
@@ -426,7 +451,25 @@ func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...
 // Bucket ACL methods.
 
 func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve BucketAttrs.
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Delete the entity and copy other remaining ACL entities.
+	var acl []ACLRule
+	for _, a := range attrs.ACL {
+		if a.Entity != entity {
+			acl = append(acl, a)
+		}
+	}
+	uattrs := &BucketAttrsToUpdate{acl: acl}
+	// Call UpdateBucket with a MetagenerationMatch precondition set.
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
@@ -499,7 +542,7 @@ func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, v
 		var err error
 		rp, err = c.raw.GetIamPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	return rp, err
 }
@@ -516,7 +559,7 @@ func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 	return run(ctx, func() error {
 		_, err := c.raw.SetIamPolicy(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 
 func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
@@ -531,7 +574,7 @@ func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource str
 		var err error
 		res, err = c.raw.TestIamPermissions(ctx, req, s.gax...)
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -554,4 +597,13 @@ func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc
 }
 func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error {
 	return errMethodNotSupported
+}
+
+// setUserProjectMetadata appends a project ID to the outgoing Context metadata
+// via the x-goog-user-project system parameter defined at
+// https://cloud.google.com/apis/docs/system-parameters. This is only for
+// billing purposes, and is generally optional, except for requester-pays
+// buckets.
+func setUserProjectMetadata(ctx context.Context, project string) context.Context {
+	return metadata.AppendToOutgoingContext(ctx, "x-goog-user-project", project)
 }
