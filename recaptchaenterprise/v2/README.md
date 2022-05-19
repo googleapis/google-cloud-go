@@ -1,13 +1,13 @@
 # reCAPTCHA Enterprise API
 
-[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/recaptchaenterprise.svg)](https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise)
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/recaptchaenterprise.svg)](https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2)
 
 Go Client Library for reCAPTCHA Enterprise API.
 
 ## Install
 
 ```bash
-go get cloud.google.com/go/recaptchaenterprise
+go get cloud.google.com/go/recaptchaenterprise/v2
 ```
 
 ## Stability
