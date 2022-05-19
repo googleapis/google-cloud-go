@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.100.2
 	cloud.google.com/go/datacatalog v1.3.0
 	cloud.google.com/go/iam v0.3.0
-	cloud.google.com/go/storage v1.22.0
+	cloud.google.com/go/storage v1.22.1
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.8
 	github.com/googleapis/gax-go/v2 v2.4.0

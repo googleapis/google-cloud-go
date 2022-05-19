@@ -2491,6 +2491,9 @@ items:
     attribute is specified, the content type will be automatically sniffed
     using net/http.DetectContentType.
 
+    Note that each Writer allocates an internal buffer of size Writer.ChunkSize.
+    See the ChunkSize docs for more information.
+
     It is the caller's responsibility to call Close when writing is done. To
     stop writing without saving the data, cancel the context.
   parent: cloud.google.com/go/storage.ObjectHandle
@@ -3503,18 +3506,22 @@ items:
       ChunkSize controls the maximum number of bytes of the object that the\n\t//
       Writer will attempt to send to the server in a single request. Objects\n\t//
       smaller than the size will be sent in a single request, while larger\n\t// objects
-      will be split over multiple requests. The size will be rounded up\n\t// to the
-      nearest multiple of 256K.\n\t//\n\t// ChunkSize will default to a reasonable
-      value. If you perform many\n\t// concurrent writes of small objects (under ~8MB),
-      you may wish set ChunkSize\n\t// to a value that matches your objects' sizes
-      to avoid consuming large\n\t// amounts of memory. See\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/upload#size\n\t//
+      will be split over multiple requests. The value will be rounded up\n\t// to
+      the nearest multiple of 256K. The default ChunkSize is 16MiB.\n\t//\n\t// Each
+      Writer will internally allocate a buffer of size ChunkSize. This is\n\t// used
+      to buffer input data and allow for the input to be sent again if a\n\t// request
+      must be retried.\n\t//\n\t// If you upload small objects (< 16MiB), you should
+      set ChunkSize\n\t// to a value slightly larger than the objects' sizes to avoid
+      memory bloat.\n\t// This is especially important if you are uploading many small
+      objects\n\t// concurrently. See\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/upload#size\n\t//
       for more information about performance trade-offs related to ChunkSize.\n\t//\n\t//
       If ChunkSize is set to zero, chunking will be disabled and the object will\n\t//
       be uploaded in a single request without the use of a buffer. This will\n\t//
       further reduce memory used during uploads, but will also prevent the writer\n\t//
-      from retrying in case of a transient error from the server, since a buffer\n\t//
-      is required in order to retry the failed request.\n\t//\n\t// ChunkSize must
-      be set before the first Write call.\n\tChunkSize <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\n\t//
+      from retrying in case of a transient error from the server or resuming an\n\t//
+      upload that fails midway through, since the buffer is required in order to\n\t//
+      retry the failed request.\n\t//\n\t// ChunkSize must be set before the first
+      Write call.\n\tChunkSize <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\n\t//
       ChunkRetryDeadline sets a per-chunk retry deadline for multi-chunk\n\t// resumable
       uploads.\n\t//\n\t// For uploads of larger files, the Writer will attempt to
       retry if the\n\t// request to upload a particular chunk fails with a transient
