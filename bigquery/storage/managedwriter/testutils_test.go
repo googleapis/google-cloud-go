@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"math"
 	"testing"
 
 	"cloud.google.com/go/bigquery"
@@ -80,7 +81,7 @@ func validateTableConstraints(ctx context.Context, t *testing.T, client *bigquer
 		}
 		if con.allowedError == 0 {
 			if val != con.expectedValue {
-				t.Errorf("%q: constraint %q mismatch, got %d want %d", description, colname, val, con.expectedValue)
+				t.Errorf("%q: constraint %q mismatch, got %d want %d (%s)", description, colname, val, con.expectedValue, it.SourceJob().ID())
 			}
 			continue
 		}
@@ -203,12 +204,34 @@ func withBoolValueCount(colname string, wantValue bool, valueCount int64) constr
 	}
 }
 
-// withBytesValuesCount validates how many values in the column have a given bytes value.
-func withBytesValuesCount(colname string, wantValue []byte, valueCount int64) constraintOption {
+// withBytesValueCount validates how many values in the column have a given bytes value.
+func withBytesValueCount(colname string, wantValue []byte, valueCount int64) constraintOption {
 	return func(vi *validationInfo) {
 		resultCol := fmt.Sprintf("bytes_value_count_%s", colname)
 		vi.constraints[resultCol] = &constraint{
 			projection:    fmt.Sprintf("COUNTIF(%s = B\"%s\") AS %s", colname, wantValue, resultCol),
+			expectedValue: valueCount,
+		}
+	}
+}
+
+// withFloatValueCount validates how many values in the column have a given floating point value, with a
+// reasonable error bound due to precision loss.
+func withFloatValueCount(colname string, wantValue float64, valueCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("float_value_count_%s", colname)
+		projection := fmt.Sprintf("COUNTIF((ABS(%s) - ABS(%f))/ABS(%f) < 0.0001) AS %s", colname, wantValue, wantValue, resultCol)
+		switch wantValue {
+		case math.Inf(0):
+			// special case for infinities.
+			projection = fmt.Sprintf("COUNTIF(IS_INF(%s)) as %s", colname, resultCol)
+		case math.NaN():
+			projection = fmt.Sprintf("COUNTIF(IS_NAN(%s)) as %s", colname, resultCol)
+		case 0:
+			projection = fmt.Sprintf("COUNTIF(SIGN(%s) = 0) as %s", colname, resultCol)
+		}
+		vi.constraints[resultCol] = &constraint{
+			projection:    projection,
 			expectedValue: valueCount,
 		}
 	}

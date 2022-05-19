@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"math"
 	"testing"
 
 	"cloud.google.com/go/bigquery"
@@ -58,7 +59,7 @@ func TestValidation_Values(t *testing.T) {
 			description: "proto2 optionals w/values",
 			tableSchema: testdata.ValidationBaseSchema,
 			inputRow: &testdata.ValidationP2Optional{
-				DoubleField:   proto.Float64(1.0),
+				DoubleField:   proto.Float64(math.Inf(1)),
 				FloatField:    proto.Float32(2.0),
 				Int32Field:    proto.Int32(11),
 				Int64Field:    proto.Int64(-22),
@@ -70,12 +71,13 @@ func TestValidation_Values(t *testing.T) {
 				Sfixed64Field: proto.Int64(33),
 				BoolField:     proto.Bool(true),
 				StringField:   proto.String("test"),
-				BytesField:    []byte("bytedata"),
+				BytesField:    []byte("some byte data"),
 				EnumField:     testdata.Proto2ExampleEnum_P2_THING.Enum(),
 			},
 			constraints: []constraintOption{
 				withExactRowCount(1),
-				withNullCount("double_field", 0),
+				withFloatValueCount("double_field", math.Inf(1), 1),
+				withFloatValueCount("float_field", 2.0, 1),
 				withIntegerValueCount("int32_field", 11, 1),
 				withIntegerValueCount("int64_field", -22, 1),
 				withIntegerValueCount("uint32_field", 365, 1),
@@ -86,14 +88,15 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerValueCount("sfixed64_field", 33, 1),
 				withBoolValueCount("bool_field", true, 1),
 				withStringValueCount("string_field", "test", 1),
-				withBytesValuesCount("bytes_field", []byte("bytedata"), 1),
+				withBytesValueCount("bytes_field", []byte("some byte data"), 1),
+				withIntegerValueCount("enum_field", int64(testdata.Proto2ExampleEnum_P2_THING), 1),
 			},
 		},
 		{
 			description: "proto2 required",
 			tableSchema: testdata.ValidationBaseSchema,
 			inputRow: &testdata.ValidationP2Required{
-				DoubleField:   proto.Float64(1.0),
+				DoubleField:   proto.Float64(math.Inf(1)),
 				FloatField:    proto.Float32(2.0),
 				Int32Field:    proto.Int32(11),
 				Int64Field:    proto.Int64(-22),
@@ -105,12 +108,13 @@ func TestValidation_Values(t *testing.T) {
 				Sfixed64Field: proto.Int64(33),
 				BoolField:     proto.Bool(true),
 				StringField:   proto.String("test"),
-				BytesField:    []byte("bytedata"),
+				BytesField:    []byte("some byte data"),
 				EnumField:     testdata.Proto2ExampleEnum_P2_THING.Enum(),
 			},
 			constraints: []constraintOption{
 				withExactRowCount(1),
-				withNullCount("double_field", 0),
+				withFloatValueCount("double_field", math.Inf(1), 1),
+				withFloatValueCount("float_field", 2.0, 1),
 				withIntegerValueCount("int32_field", 11, 1),
 				withIntegerValueCount("int64_field", -22, 1),
 				withIntegerValueCount("uint32_field", 365, 1),
@@ -121,7 +125,30 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerValueCount("sfixed64_field", 33, 1),
 				withBoolValueCount("bool_field", true, 1),
 				withStringValueCount("string_field", "test", 1),
-				withBytesValuesCount("bytes_field", []byte("bytedata"), 1),
+				withBytesValueCount("bytes_field", []byte("some byte data"), 1),
+				withIntegerValueCount("enum_field", int64(testdata.Proto2ExampleEnum_P2_THING), 1),
+			},
+		},
+		{
+			description: "proto2 default values w/nulls",
+			tableSchema: testdata.ValidationBaseSchema,
+			inputRow:    &testdata.ValidationP2OptionalWithDefaults{},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+				withFloatValueCount("double_field", 1.11, 1),
+				withFloatValueCount("float_field", 2.22, 1),
+				withIntegerValueCount("int32_field", 3, 1),
+				withIntegerValueCount("int64_field", 4, 1),
+				withIntegerValueCount("uint32_field", 5, 1),
+				withIntegerValueCount("sint32_field", 7, 1),
+				withIntegerValueCount("sint64_field", 8, 1),
+				withIntegerValueCount("fixed32_field", 9, 1),
+				withIntegerValueCount("sfixed32_field", 11, 1),
+				withIntegerValueCount("sfixed64_field", 12, 1),
+				withBoolValueCount("bool_field", true, 1),
+				withStringValueCount("string_field", "custom default", 1),
+				withBytesValueCount("bytes_field", []byte("optional bytes"), 1),
+				withIntegerValueCount("enum_field", int64(testdata.Proto2ExampleEnum_P2_OTHER_THING), 1),
 			},
 		},
 		/*
