@@ -461,7 +461,7 @@ func (w *Writer) startResumableUpload() error {
 		return err
 	}
 	upres, err := w.o.c.gc.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-		WriteObjectSpec:     spec,
+		WriteObjectSpec: spec,
 	})
 
 	w.upid = upres.GetUploadId()
