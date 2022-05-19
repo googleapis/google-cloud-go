@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -234,7 +236,16 @@ func (c *revisionsGRPCClient) Close() error {
 }
 
 func (c *revisionsGRPCClient) GetRevision(ctx context.Context, req *runpb.GetRevisionRequest, opts ...gax.CallOption) (*runpb.Revision, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	md := metadata.Pairs("x-goog-request-params", routingHeaders)
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetRevision[0:len((*c.CallOptions).GetRevision):len((*c.CallOptions).GetRevision)], opts...)
@@ -251,7 +262,16 @@ func (c *revisionsGRPCClient) GetRevision(ctx context.Context, req *runpb.GetRev
 }
 
 func (c *revisionsGRPCClient) ListRevisions(ctx context.Context, req *runpb.ListRevisionsRequest, opts ...gax.CallOption) *RevisionIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	md := metadata.Pairs("x-goog-request-params", routingHeaders)
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListRevisions[0:len((*c.CallOptions).ListRevisions):len((*c.CallOptions).ListRevisions)], opts...)
@@ -296,7 +316,16 @@ func (c *revisionsGRPCClient) ListRevisions(ctx context.Context, req *runpb.List
 }
 
 func (c *revisionsGRPCClient) DeleteRevision(ctx context.Context, req *runpb.DeleteRevisionRequest, opts ...gax.CallOption) (*DeleteRevisionOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/[^/]+/locations/(?P<location>[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["location"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	md := metadata.Pairs("x-goog-request-params", routingHeaders)
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteRevision[0:len((*c.CallOptions).DeleteRevision):len((*c.CallOptions).DeleteRevision)], opts...)

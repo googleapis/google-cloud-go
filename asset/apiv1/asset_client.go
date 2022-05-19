@@ -42,19 +42,25 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ExportAssets                []gax.CallOption
-	ListAssets                  []gax.CallOption
-	BatchGetAssetsHistory       []gax.CallOption
-	CreateFeed                  []gax.CallOption
-	GetFeed                     []gax.CallOption
-	ListFeeds                   []gax.CallOption
-	UpdateFeed                  []gax.CallOption
-	DeleteFeed                  []gax.CallOption
-	SearchAllResources          []gax.CallOption
-	SearchAllIamPolicies        []gax.CallOption
-	AnalyzeIamPolicy            []gax.CallOption
-	AnalyzeIamPolicyLongrunning []gax.CallOption
-	AnalyzeMove                 []gax.CallOption
+	ExportAssets                 []gax.CallOption
+	ListAssets                   []gax.CallOption
+	BatchGetAssetsHistory        []gax.CallOption
+	CreateFeed                   []gax.CallOption
+	GetFeed                      []gax.CallOption
+	ListFeeds                    []gax.CallOption
+	UpdateFeed                   []gax.CallOption
+	DeleteFeed                   []gax.CallOption
+	SearchAllResources           []gax.CallOption
+	SearchAllIamPolicies         []gax.CallOption
+	AnalyzeIamPolicy             []gax.CallOption
+	AnalyzeIamPolicyLongrunning  []gax.CallOption
+	AnalyzeMove                  []gax.CallOption
+	CreateSavedQuery             []gax.CallOption
+	GetSavedQuery                []gax.CallOption
+	ListSavedQueries             []gax.CallOption
+	UpdateSavedQuery             []gax.CallOption
+	DeleteSavedQuery             []gax.CallOption
+	BatchGetEffectiveIamPolicies []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -167,8 +173,14 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		AnalyzeIamPolicyLongrunning: []gax.CallOption{},
-		AnalyzeMove:                 []gax.CallOption{},
+		AnalyzeIamPolicyLongrunning:  []gax.CallOption{},
+		AnalyzeMove:                  []gax.CallOption{},
+		CreateSavedQuery:             []gax.CallOption{},
+		GetSavedQuery:                []gax.CallOption{},
+		ListSavedQueries:             []gax.CallOption{},
+		UpdateSavedQuery:             []gax.CallOption{},
+		DeleteSavedQuery:             []gax.CallOption{},
+		BatchGetEffectiveIamPolicies: []gax.CallOption{},
 	}
 }
 
@@ -192,6 +204,12 @@ type internalClient interface {
 	AnalyzeIamPolicyLongrunning(context.Context, *assetpb.AnalyzeIamPolicyLongrunningRequest, ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error)
 	AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPolicyLongrunningOperation
 	AnalyzeMove(context.Context, *assetpb.AnalyzeMoveRequest, ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error)
+	CreateSavedQuery(context.Context, *assetpb.CreateSavedQueryRequest, ...gax.CallOption) (*assetpb.SavedQuery, error)
+	GetSavedQuery(context.Context, *assetpb.GetSavedQueryRequest, ...gax.CallOption) (*assetpb.SavedQuery, error)
+	ListSavedQueries(context.Context, *assetpb.ListSavedQueriesRequest, ...gax.CallOption) *SavedQueryIterator
+	UpdateSavedQuery(context.Context, *assetpb.UpdateSavedQueryRequest, ...gax.CallOption) (*assetpb.SavedQuery, error)
+	DeleteSavedQuery(context.Context, *assetpb.DeleteSavedQueryRequest, ...gax.CallOption) error
+	BatchGetEffectiveIamPolicies(context.Context, *assetpb.BatchGetEffectiveIamPoliciesRequest, ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error)
 }
 
 // Client is a client for interacting with Cloud Asset API.
@@ -236,13 +254,14 @@ func (c *Client) Connection() *grpc.ClientConn {
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location/BigQuery table. For Cloud Storage location destinations, the
 // output format is newline-delimited JSON. Each line represents a
-// google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
-// destinations, the output table stores the fields in asset proto as columns.
-// This API implements the google.longrunning.Operation API
-// , which allows you to keep track of the export. We recommend intervals of
-// at least 2 seconds with exponential retry to poll the export operation
-// result. For regular-size resource parent, the export operation usually
-// finishes within 5 minutes.
+// google.cloud.asset.v1.Asset in the JSON
+// format; for BigQuery table destinations, the output table stores the fields
+// in asset Protobuf as columns. This API implements the
+// google.longrunning.Operation API, which
+// allows you to keep track of the export. We recommend intervals of at least
+// 2 seconds with exponential retry to poll the export operation result. For
+// regular-size resource parent, the export operation usually finishes within
+// 5 minutes.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	return c.internalClient.ExportAssets(ctx, req, opts...)
 }
@@ -322,11 +341,12 @@ func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPo
 // accesses on which resources, and writes the analysis results to a Google
 // Cloud Storage or a BigQuery destination. For Cloud Storage destination, the
 // output format is the JSON format that represents a
-// AnalyzeIamPolicyResponse. This method implements the
-// google.longrunning.Operation, which allows you to track the operation
-// status. We recommend intervals of at least 2 seconds with exponential
-// backoff retry to poll the operation result. The metadata contains the
-// metadata for the long-running operation.
+// AnalyzeIamPolicyResponse.
+// This method implements the
+// google.longrunning.Operation, which allows
+// you to track the operation status. We recommend intervals of at least 2
+// seconds with exponential backoff retry to poll the operation result. The
+// metadata contains the metadata for the long-running operation.
 func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
 	return c.internalClient.AnalyzeIamPolicyLongrunning(ctx, req, opts...)
 }
@@ -344,6 +364,36 @@ func (c *Client) AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPo
 // resource migration takes place.
 func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRequest, opts ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error) {
 	return c.internalClient.AnalyzeMove(ctx, req, opts...)
+}
+
+// CreateSavedQuery creates a saved query in a parent project/folder/organization.
+func (c *Client) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	return c.internalClient.CreateSavedQuery(ctx, req, opts...)
+}
+
+// GetSavedQuery gets details about a saved query.
+func (c *Client) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	return c.internalClient.GetSavedQuery(ctx, req, opts...)
+}
+
+// ListSavedQueries lists all saved queries in a parent project/folder/organization.
+func (c *Client) ListSavedQueries(ctx context.Context, req *assetpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
+	return c.internalClient.ListSavedQueries(ctx, req, opts...)
+}
+
+// UpdateSavedQuery updates a saved query.
+func (c *Client) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	return c.internalClient.UpdateSavedQuery(ctx, req, opts...)
+}
+
+// DeleteSavedQuery deletes a saved query.
+func (c *Client) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSavedQueryRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSavedQuery(ctx, req, opts...)
+}
+
+// BatchGetEffectiveIamPolicies gets effective IAM policies for a batch of resources.
+func (c *Client) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.BatchGetEffectiveIamPoliciesRequest, opts ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error) {
+	return c.internalClient.BatchGetEffectiveIamPolicies(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Asset API over gRPC transport.
@@ -792,6 +842,132 @@ func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateSavedQuery[0:len((*c.CallOptions).CreateSavedQuery):len((*c.CallOptions).CreateSavedQuery)], opts...)
+	var resp *assetpb.SavedQuery
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateSavedQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSavedQuery[0:len((*c.CallOptions).GetSavedQuery):len((*c.CallOptions).GetSavedQuery)], opts...)
+	var resp *assetpb.SavedQuery
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetSavedQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSavedQueries[0:len((*c.CallOptions).ListSavedQueries):len((*c.CallOptions).ListSavedQueries)], opts...)
+	it := &SavedQueryIterator{}
+	req = proto.Clone(req).(*assetpb.ListSavedQueriesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.SavedQuery, string, error) {
+		resp := &assetpb.ListSavedQueriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSavedQueries(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSavedQueries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "saved_query.name", url.QueryEscape(req.GetSavedQuery().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSavedQuery[0:len((*c.CallOptions).UpdateSavedQuery):len((*c.CallOptions).UpdateSavedQuery)], opts...)
+	var resp *assetpb.SavedQuery
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateSavedQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSavedQueryRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteSavedQuery[0:len((*c.CallOptions).DeleteSavedQuery):len((*c.CallOptions).DeleteSavedQuery)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteSavedQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.BatchGetEffectiveIamPoliciesRequest, opts ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchGetEffectiveIamPolicies[0:len((*c.CallOptions).BatchGetEffectiveIamPolicies):len((*c.CallOptions).BatchGetEffectiveIamPolicies)], opts...)
+	var resp *assetpb.BatchGetEffectiveIamPoliciesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BatchGetEffectiveIamPolicies(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // AnalyzeIamPolicyLongrunningOperation manages a long-running operation from AnalyzeIamPolicyLongrunning.
 type AnalyzeIamPolicyLongrunningOperation struct {
 	lro *longrunning.Operation
@@ -1066,6 +1242,53 @@ func (it *ResourceSearchResultIterator) bufLen() int {
 }
 
 func (it *ResourceSearchResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SavedQueryIterator manages a stream of *assetpb.SavedQuery.
+type SavedQueryIterator struct {
+	items    []*assetpb.SavedQuery
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.SavedQuery, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SavedQueryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SavedQueryIterator) Next() (*assetpb.SavedQuery, error) {
+	var item *assetpb.SavedQuery
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SavedQueryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SavedQueryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
