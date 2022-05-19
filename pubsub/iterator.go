@@ -114,7 +114,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pingTicker:         pingTicker,
 		failed:             make(chan struct{}),
 		drained:            make(chan struct{}),
-		ackTimeDist:        distribution.New(int(maxAckDeadline/time.Second) + 1),
+		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension / time.Second)),
 		keepAliveDeadlines: map[string]time.Time{},
 		pendingAcks:        map[string]bool{},
 		pendingNacks:       map[string]bool{},
@@ -599,7 +599,13 @@ func boundedDuration(ackDeadline, minExtension, maxExtension time.Duration, exac
 		// Higher minimum ack_deadline for subscriptions with
 		// exactly-once delivery enabled.
 		ackDeadline = maxDuration(ackDeadline, minDurationPerLeaseExtensionExactlyOnce)
+	} else if ackDeadline < minDurationPerLeaseExtension {
+		// Otherwise, lower bound is min ack extension. This is normally bounded
+		// when adding datapoints to the distribution, but this is needed for
+		// the initial few calls to ackDeadline.
+		ackDeadline = minDurationPerLeaseExtension
 	}
+
 	return ackDeadline
 }
 
