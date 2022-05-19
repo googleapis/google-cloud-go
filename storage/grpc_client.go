@@ -348,11 +348,6 @@ func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	if err := applyBucketCondsProto("grpcStorageClient.LockBucketRetentionPolicy", conds, req); err != nil {
 		return err
 	}
-	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
-	}
 
 	return run(ctx, func() error {
 		_, err := c.raw.LockBucketRetentionPolicy(ctx, req, s.gax...)
