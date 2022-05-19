@@ -148,6 +148,8 @@ func (c *ApplicationsClient) CreateApplicationOperation(name string) *CreateAppl
 //   auth_domain - Google authentication domain for controlling user access to the application.
 //
 //   default_cookie_expiration - Cookie expiration policy for the application.
+//
+//   iap - Identity-Aware Proxy properties for the application.
 func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	return c.internalClient.UpdateApplication(ctx, req, opts...)
 }
