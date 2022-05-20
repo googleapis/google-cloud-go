@@ -34,7 +34,7 @@ type bulkWriterJob struct {
 }
 
 type BulkWriter interface {
-	Do(dr *DocumentRef, op BulkWriterOperation, val ...interface{}) (chan *pb.WriteResult, error)
+	Do(dr *DocumentRef, op BulkWriterOperation, val *interface{}) (chan *pb.WriteResult, error)
 	Close()
 	Flush()
 }
@@ -67,7 +67,7 @@ func NewCallersBulkWriter(ctx context.Context, database string) (*CallersBulkWri
 	if err != nil {
 		return nil, err
 	}
-	return &CallersBulkWriter{ctx: ctx, vc: v, database: database}, nil
+	return &CallersBulkWriter{ctx: ctx, vc: v, database: database, isOpen: true}, nil
 }
 
 // Close sends all enqueued writes in parallel.
@@ -82,19 +82,19 @@ func (b *CallersBulkWriter) Close() {
 // Flush commits all writes that have been enqueued up to this point in parallel.
 func (b *CallersBulkWriter) Flush() {
 	for b.reqs > 0 {
-		time.Sleep(time.Duration(2000)) // Just picked this number out of air
+		time.Sleep(time.Duration(2000)) // TODO: Pick a number not out of thin air; exp back off?
 	}
 }
 
 // Do holds the place of all four required operations: create, update, set, delete.
 // Only do one write per call to Do(), as you can only write to the same document 1x per batch.
 // This method signature is a bad design--be sure to fix
-func (bw *CallersBulkWriter) Do(dr *DocumentRef, op BulkWriterOperation, v ...interface{}) (chan *pb.WriteResult, error) {
+func (bw *CallersBulkWriter) Do(dr *DocumentRef, op BulkWriterOperation, v *interface{}) (chan *pb.WriteResult, error) {
 	if dr == nil {
 		return nil, errors.New("firestore: nil document contents")
 	}
 
-	if op != DELETE && len(v) == 0 {
+	if op != DELETE && v == nil {
 		return nil, errors.New("firestore: too few parameters passed in to BulkWriter operation")
 	}
 
