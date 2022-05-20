@@ -359,11 +359,11 @@ func SourceLocationPopulation(f int) LoggerOption {
 }
 
 const (
-	// doNotPopulateSourceLocation is default for clients when WithSourceLocation is not provided
+	// DoNotPopulateSourceLocation is default for clients when WithSourceLocation is not provided
 	DoNotPopulateSourceLocation = 0
-	// populateSourceLocationForDebugEntries is set when WithSourceLocation(PopulateDebugEntries) is provided
+	// PopulateSourceLocationForDebugEntries is set when WithSourceLocation(PopulateDebugEntries) is provided
 	PopulateSourceLocationForDebugEntries = 1
-	// alwaysPopulateSourceLocation is set when WithSourceLocation(PopulateAllEntries) is provided
+	// AlwaysPopulateSourceLocation is set when WithSourceLocation(PopulateAllEntries) is provided
 	AlwaysPopulateSourceLocation = 2
 )
 
@@ -857,7 +857,7 @@ func ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	return l.ToLogEntry(e, parent)
 }
 
-// Logger.ToLogEntry is the referenced version of the ToLogEntry
+// ToLogEntry for Logger instance
 func (l *Logger) ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	parent, err := makeParent(parent)
 	if err != nil {
