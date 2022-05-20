@@ -36,6 +36,7 @@ var packagePathExceptions = map[string]bool{
 	"cloud.google.com/go/longrunning/autogen":    true,
 	"cloud.google.com/go/firestore/apiv1/admin":  true,
 	"cloud.google.com/go/storage/internal/apiv2": true,
+	"cloud.google.com/go/vision/v2/apiv1":        true,
 }
 
 // TestMicrogenConfigs validates config entries.
