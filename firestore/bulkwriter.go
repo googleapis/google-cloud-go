@@ -34,7 +34,7 @@ type bulkWriterJob struct {
 }
 
 type BulkWriter interface {
-	Do(dr *DocumentRef, op BulkWriterOperation, val *interface{}) (chan *pb.WriteResult, error)
+	Do(dr *DocumentRef, op BulkWriterOperation, val interface{}) (chan *pb.WriteResult, error)
 	Close()
 	Flush()
 }
@@ -89,7 +89,7 @@ func (b *CallersBulkWriter) Flush() {
 // Do holds the place of all four required operations: create, update, set, delete.
 // Only do one write per call to Do(), as you can only write to the same document 1x per batch.
 // This method signature is a bad design--be sure to fix
-func (bw *CallersBulkWriter) Do(dr *DocumentRef, op BulkWriterOperation, v *interface{}) (chan *pb.WriteResult, error) {
+func (bw *CallersBulkWriter) Do(dr *DocumentRef, op BulkWriterOperation, v interface{}) (chan *pb.WriteResult, error) {
 	if dr == nil {
 		return nil, errors.New("firestore: nil document contents")
 	}
