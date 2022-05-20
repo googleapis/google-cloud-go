@@ -1487,7 +1487,8 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/retail/apiv2beta",
 		GRPCServiceConfigPath: "retail_grpc_service_config.json",
 		ApiServiceConfigPath:  "retail_v2beta.yaml",
-		ReleaseLevel:          "ga",
+		// GA after 2022/06/23
+		ReleaseLevel: "beta",
 	},
 
 	// Non-Cloud APIs
