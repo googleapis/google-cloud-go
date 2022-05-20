@@ -1286,6 +1286,15 @@
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/retail/apiv2alpha": {
+    "distribution_name": "cloud.google.com/go/retail/apiv2alpha",
+    "description": "Retail API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2alpha",
+    "release_level": "ga",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/rpcreplay": {
     "distribution_name": "cloud.google.com/go/rpcreplay",
     "description": "RPC Replay",
