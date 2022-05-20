@@ -843,19 +843,30 @@ func TestSeverityMarshalThenUnmarshal(t *testing.T) {
 
 func TestSourceLocationPopulation(t *testing.T) {
 	tests := []struct {
-		name string
-		in   logging.Entry
-		want *logpb.LogEntrySourceLocation
+		name   string
+		logger *logging.Logger
+		in     logging.Entry
+		want   *logpb.LogEntrySourceLocation
 	}{
 		{
-			name: "Auto-populate source location for debug entry",
+			name:   "populate source location for debug entry when allowed",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries)),
 			in: logging.Entry{
 				Severity: logging.Severity(logging.Debug),
 			},
 			// want field will be patched to setup actual code line and function name
 			want: nil,
 		}, {
-			name: "Do not auto-populate source location for debug entry with source location",
+			name:   "populate source location for non-debug entry when allowed",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.AlwaysPopulateSourceLocation)),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Default),
+			},
+			// want field will be patched to setup actual code line and function name
+			want: nil,
+		}, {
+			name:   "do not populate source location for debug entry with source location",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries)),
 			in: logging.Entry{
 				Severity: logging.Severity(logging.Debug),
 				SourceLocation: &logpb.LogEntrySourceLocation{
@@ -870,9 +881,24 @@ func TestSourceLocationPopulation(t *testing.T) {
 				Line:     65536,
 			},
 		}, {
-			name: "Do not auto-populate source location for non-debug entry",
+			name:   "do not populate source location for non-debug entry when only allowed for debug",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries)),
 			in: logging.Entry{
 				Severity: logging.Severity(logging.Info),
+			},
+			want: nil,
+		}, {
+			name:   "do not populate source location when not allowed for any",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.DoNotPopulateSourceLocation)),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+			},
+			want: nil,
+		}, {
+			name:   "do not populate source location by default",
+			logger: client.Logger("test-source-location"),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
 			},
 			want: nil,
 		},
@@ -880,8 +906,8 @@ func TestSourceLocationPopulation(t *testing.T) {
 
 	for index, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			// for first test patch the want result
-			if index == 0 {
+			// patch first two want results to produce correct source info
+			if index < 2 {
 				pc, file, line, ok := runtime.Caller(0)
 				if !ok {
 					t.Fatalf("Unexpected error: %+v: failed to call runtime.Caller()", tc.in)
@@ -893,14 +919,45 @@ func TestSourceLocationPopulation(t *testing.T) {
 					Line:     int64(line + 11), // 11 code lines between runtime.Caller() and logging.ToLogEntry()
 				}
 			}
-			e, err := logging.ToLogEntry(tc.in, "projects/P")
+			e, err := tc.logger.ToLogEntry(tc.in, "projects/P")
 			if err != nil {
 				t.Fatalf("Unexpected error: %+v: %v", tc.in, err)
 			}
 
-			if e.SourceLocation != nil && tc.want != nil {
+			if e.SourceLocation != tc.want {
 				if diff := cmp.Diff(e.SourceLocation, tc.want, cmpopts.IgnoreUnexported(logpb.LogEntrySourceLocation{})); diff != "" {
 					t.Errorf("got(-),want(+):\n%s", diff)
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkSourceLocationPopulation(b *testing.B) {
+	logger := *client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries))
+	tests := []struct {
+		name string
+		in   logging.Entry
+	}{
+		{
+			name: "with source location population",
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+			},
+		}, {
+			name: "without source location population",
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Info),
+			},
+		},
+	}
+	var err error
+	for _, tc := range tests {
+		b.Run(tc.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				_, err = logger.ToLogEntry(tc.in, "projects/P")
+				if err != nil {
+					b.Fatalf("Unexpected error: %+v: %v", tc.in, err)
 				}
 			}
 		})
