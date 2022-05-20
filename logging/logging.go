@@ -33,6 +33,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -134,7 +135,10 @@ type Client struct {
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
 func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (*Client, error) {
-	parent = makeParent(parent)
+	parent, err := makeParent(parent)
+	if err != nil {
+		return nil, err
+	}
 	opts = append([]option.ClientOption{
 		option.WithScopes(WriteScope),
 	}, opts...)
@@ -167,11 +171,15 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 	return client, nil
 }
 
-func makeParent(parent string) string {
+func makeParent(parent string) (string, error) {
 	if !strings.ContainsRune(parent, '/') {
-		return "projects/" + parent
+		return "projects/" + parent, nil
 	}
-	return parent
+	prefix := strings.Split(parent, "/")[0]
+	if prefix != "projects" && prefix != "folders" && prefix != "billingAccounts" && prefix != "organizations" {
+		return parent, fmt.Errorf("parent parameter must start with 'projects/' 'folders/' 'billingAccounts/' or 'organizations/'")
+	}
+	return parent, nil
 }
 
 // Ping reports whether the client's connection to the logging service and the
@@ -229,9 +237,10 @@ type Logger struct {
 	bundler    *bundler.Bundler
 
 	// Options
-	commonResource *mrpb.MonitoredResource
-	commonLabels   map[string]string
-	ctxFunc        func() (context.Context, func())
+	commonResource         *mrpb.MonitoredResource
+	commonLabels           map[string]string
+	ctxFunc                func() (context.Context, func())
+	populateSourceLocation int
 }
 
 // A LoggerOption is a configuration option for a Logger.
@@ -337,6 +346,35 @@ type contextFunc func() (ctx context.Context, afterCall func())
 
 func (c contextFunc) set(l *Logger) { l.ctxFunc = c }
 
+// SourceLocationPopulation is the flag controlling population of the source location info
+// in the ingested entries. This options allows to configure automatic population of the
+// SourceLocation field for all ingested entries, entries with DEBUG severity or disable it.
+// Note that enabling this option can decrease execution time of Logger.Log and Logger.LogSync
+// by the factor of 2 or larger.
+// The default disables source location population.
+//
+// This option is not used when an entry is created using ToLogEntry.
+func SourceLocationPopulation(f int) LoggerOption {
+	return sourceLocationOption(f)
+}
+
+const (
+	// DoNotPopulateSourceLocation is default for clients when WithSourceLocation is not provided
+	DoNotPopulateSourceLocation = 0
+	// PopulateSourceLocationForDebugEntries is set when WithSourceLocation(PopulateDebugEntries) is provided
+	PopulateSourceLocationForDebugEntries = 1
+	// AlwaysPopulateSourceLocation is set when WithSourceLocation(PopulateAllEntries) is provided
+	AlwaysPopulateSourceLocation = 2
+)
+
+type sourceLocationOption int
+
+func (o sourceLocationOption) set(l *Logger) {
+	if o == DoNotPopulateSourceLocation || o == PopulateSourceLocationForDebugEntries || o == AlwaysPopulateSourceLocation {
+		l.populateSourceLocation = int(o)
+	}
+}
+
 // Logger returns a Logger that will write entries with the given log ID, such as
 // "syslog". A log ID must be less than 512 characters long and can only
 // include the following characters: upper and lower case alphanumeric
@@ -348,10 +386,11 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 		r = monitoredResource(c.parent)
 	}
 	l := &Logger{
-		client:         c,
-		logName:        internal.LogPath(c.parent, logID),
-		commonResource: r,
-		ctxFunc:        func() (context.Context, func()) { return context.Background(), nil },
+		client:                 c,
+		logName:                internal.LogPath(c.parent, logID),
+		commonResource:         r,
+		ctxFunc:                func() (context.Context, func()) { return context.Background(), nil },
+		populateSourceLocation: DoNotPopulateSourceLocation,
 	}
 	l.bundler = bundler.NewBundler(&logpb.LogEntry{}, func(entries interface{}) {
 		l.writeLogEntries(entries.([]*logpb.LogEntry))
@@ -708,7 +747,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 // and will block, it is intended primarily for debugging or critical errors.
 // Prefer Log for most uses.
 func (l *Logger) LogSync(ctx context.Context, e Entry) error {
-	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
+	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
 	if err != nil {
 		return err
 	}
@@ -723,7 +762,7 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
+	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
 	if err != nil {
 		l.client.error(err)
 		return
@@ -770,7 +809,7 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
 
-var reCloudTraceContext = regexp.MustCompile(
+var validXCloudTraceContext = regexp.MustCompile(
 	// Matches on "TRACE_ID"
 	`([a-f\d]+)?` +
 		// Matches on "/SPAN_ID"
@@ -788,7 +827,7 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	//   * traceID (optional): 			"105445aa7843bc8bf206b120001000"
 	//   * spanID (optional):       	"1"
 	//   * traceSampled (optional): 	true
-	matches := reCloudTraceContext.FindStringSubmatch(s)
+	matches := validXCloudTraceContext.FindStringSubmatch(s)
 
 	traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
 
@@ -814,11 +853,20 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 // Logger.LogSync are used, it is intended to be used together with direct call
 // to WriteLogEntries method.
 func ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
-	// We have this method to support logging agents that need a bigger flexibility.
-	return toLogEntryInternal(e, nil, makeParent(parent))
+	var l Logger
+	return l.ToLogEntry(e, parent)
 }
 
-func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry, error) {
+// ToLogEntry for Logger instance
+func (l *Logger) ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
+	parent, err := makeParent(parent)
+	if err != nil {
+		return nil, err
+	}
+	return toLogEntryInternal(e, l, parent, 1)
+}
+
+func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
@@ -829,6 +877,22 @@ func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry
 	ts, err := ptypes.TimestampProto(t)
 	if err != nil {
 		return nil, err
+	}
+	if l != nil && l.populateSourceLocation != DoNotPopulateSourceLocation && e.SourceLocation == nil {
+		if l.populateSourceLocation == AlwaysPopulateSourceLocation ||
+			l.populateSourceLocation == PopulateSourceLocationForDebugEntries && e.Severity == Severity(Debug) {
+			// filename and line are captured for source code that calls
+			// skipLevels up the goroutine calling stack + 1 for this func.
+			pc, file, line, ok := runtime.Caller(skipLevels + 1)
+			if ok {
+				details := runtime.FuncForPC(pc)
+				e.SourceLocation = &logpb.LogEntrySourceLocation{
+					File:     file,
+					Function: details.Name(),
+					Line:     int64(line),
+				}
+			}
+		}
 	}
 	if e.Trace == "" && e.HTTPRequest != nil && e.HTTPRequest.Request != nil {
 		traceHeader := e.HTTPRequest.Request.Header.Get("X-Cloud-Trace-Context")
@@ -851,8 +915,8 @@ func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry
 	}
 	req, err := fromHTTPRequest(e.HTTPRequest)
 	if err != nil {
-		if client != nil {
-			client.error(err)
+		if l != nil && l.client != nil {
+			l.client.error(err)
 		} else {
 			return nil, err
 		}
