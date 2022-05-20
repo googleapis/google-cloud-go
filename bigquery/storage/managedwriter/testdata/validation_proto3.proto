@@ -34,11 +34,11 @@ message ValidationP3Defaults {
     int32 int32_field = 3;
     int64 int64_field = 4;
     uint32 uint32_field = 5;
-    uint64 uint64_field = 6;
+    //uint64 uint64_field = 6;  
     sint32 sint32_field = 7;
     sint64 sint64_field = 8;
     fixed32 fixed32_field = 9;
-    fixed64 fixed64_field = 10;
+    //fixed64 fixed64_field = 10;
     sfixed32 sfixed32_field = 11;
     sfixed64 sfixed64_field = 12;
     bool bool_field = 13;
