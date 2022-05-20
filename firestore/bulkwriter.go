@@ -83,6 +83,7 @@ func (b *CallersBulkWriter) Close() {
 func (b *CallersBulkWriter) Flush() {
 	for b.reqs > 0 {
 		time.Sleep(time.Duration(2000)) // TODO: Pick a number not out of thin air; exp back off?
+		b.execute(true)
 	}
 }
 
