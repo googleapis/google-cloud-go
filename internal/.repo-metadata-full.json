@@ -1292,7 +1292,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2alpha",
-    "release_level": "ga",
+    "release_level": "alpha",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/retail/apiv2beta": {

@@ -21,6 +21,8 @@
 // recommendation systems without requiring a high level of expertise in
 // machine learning, recommendation system, or Google Cloud.
 //
+//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//
 // Example usage
 //
 // To get started with this package, create a client.
