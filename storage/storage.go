@@ -1315,7 +1315,7 @@ type ObjectAttrs struct {
 	//
 	// For object downloads using Reader, metadata keys are sent as headers.
 	// Therefore, avoid setting metadata keys using characters that are not valid
-	// for headers. See https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6
+	// for headers. See https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6.
 	Metadata map[string]string
 
 	// Generation is the generation number of the object's content.
