@@ -9,7 +9,7 @@ import (
 
 type testBulkwriterCase struct {
 	DocRef    DocumentRef
-	Operation BulkWriterOperation
+	Operation bulkWriterOperation
 	Value     interface{}
 }
 
@@ -97,7 +97,7 @@ func TestCallersBulkWriter(t *testing.T) {
 			if err != nil {
 				fmt.Println(fmt.Errorf("error doing request: n%v", err))
 			}
-			fmt.Println(<-res)
+			fmt.Println(res)
 			if res == nil {
 				t.Errorf("Got a nil response")
 			}

@@ -161,9 +161,10 @@ func (bw *CallersBulkWriter) execute(isFlushing bool) {
 	}
 
 	// Compose our request
-	bwr := *&pb.BatchWriteRequest{
+	bwr := pb.BatchWriteRequest{
 		Database: bw.database,
 		Writes:   ws,
+		Labels:   map[string]string{},
 	}
 
 	// Send it!
