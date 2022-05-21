@@ -18,25 +18,20 @@ const (
 	RATE_LIMITER_MULTIPLIER_MILLIS          = 5 * 60 * 1000
 )
 
-type BulkWriterOperation int16
+type bulkWriterOperation int16
 
 const (
-	CREATE BulkWriterOperation = iota
+	CREATE bulkWriterOperation = iota
 	UPDATE
 	SET
 	DELETE
 )
 
 type bulkWriterJob struct {
+	err      chan error
 	result   chan *pb.WriteResult
 	write    *pb.Write
 	attempts int
-}
-
-type BulkWriter interface {
-	Do(dr *DocumentRef, op BulkWriterOperation, val interface{}) (chan *pb.WriteResult, error)
-	Close()
-	Flush()
 }
 
 type CallersBulkWriter struct {
@@ -46,18 +41,7 @@ type CallersBulkWriter struct {
 	vc           *vkit.Client    // internal client
 	isOpen       bool            // semaphore
 	backlogQueue []bulkWriterJob // backlog of requests to send
-	batch        []bulkWriterJob // next batch of requests to send
 }
-
-type BulkWriterStatus int
-
-const (
-	SUCCESS  BulkWriterStatus = iota // All writes to the database were successful.
-	OPEN                             // Writes have not yet been sent to the database.
-	SENDING                          // Writes are being sent to the database.
-	RETRYING                         // Some writes to the database failed; some failures are being retried.
-	FAILED                           // Some writes to the database weren't sent to the database.
-)
 
 // NewCallersBulkWriter creates a new instance of the CallersBulkWriter. This
 // version of BulkWriter is intended to be used within go routines by the
@@ -81,8 +65,9 @@ func (b *CallersBulkWriter) Close() {
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
 func (b *CallersBulkWriter) Flush() {
-	for b.reqs > 0 {
-		time.Sleep(time.Duration(2000)) // TODO: Pick a number not out of thin air; exp back off?
+	b.execute(true)
+	for len(b.backlogQueue) > 0 {
+		time.Sleep(time.Millisecond * 5) // TODO: Pick a number not out of thin air; exp back off?
 		b.execute(true)
 	}
 }
@@ -90,7 +75,12 @@ func (b *CallersBulkWriter) Flush() {
 // Do holds the place of all four required operations: create, update, set, delete.
 // Only do one write per call to Do(), as you can only write to the same document 1x per batch.
 // This method signature is a bad design--be sure to fix
-func (bw *CallersBulkWriter) Do(dr *DocumentRef, op BulkWriterOperation, v interface{}) (chan *pb.WriteResult, error) {
+func (bw *CallersBulkWriter) Do(dr *DocumentRef, op bulkWriterOperation, v interface{}) (*pb.WriteResult, error) {
+
+	if !bw.isOpen {
+		return nil, errors.New("firestore: BulkWriter has been closed")
+	}
+
 	if dr == nil {
 		return nil, errors.New("firestore: nil document contents")
 	}
@@ -102,6 +92,7 @@ func (bw *CallersBulkWriter) Do(dr *DocumentRef, op BulkWriterOperation, v inter
 	var w []*pb.Write
 	var err error
 	r := make(chan *pb.WriteResult, 1)
+	e := make(chan error, 1)
 
 	// We can only do one write per document. The new*Writes methods return
 	// an array of Write objects. FOR NOW, just take the first write.
@@ -114,39 +105,59 @@ func (bw *CallersBulkWriter) Do(dr *DocumentRef, op BulkWriterOperation, v inter
 		return nil, err
 	}
 
-	bw.backlogQueue = append(bw.backlogQueue, bulkWriterJob{
+	j := bulkWriterJob{
 		result: r,
 		write:  w[0],
-	})
+		err:    e,
+	}
 
+	bw.backlogQueue = append(bw.backlogQueue, j)
+
+	// NOTE: The space complexity of this pattern is linear. Is that okay?
 	go bw.execute(false)
 
-	return r, nil
+	return <-r, <-e
 }
 
-func (bw *CallersBulkWriter) execute(isFlushing bool) {
+func (bw *CallersBulkWriter) makeBatch() []bulkWriterJob {
 
 	qs := len(bw.backlogQueue)
 	var b []bulkWriterJob
 
-	// Not enough writes queued up and still open; return.
-	if (qs < MAX_BATCH_SIZE) && !isFlushing {
-		return
-		// Flushing out the queue. Note that this means the BulkWriter stays open
-		// until Close() or Flush() is called when the queue is < MAX_BATCH_SIZE.
-	} else if qs < MAX_BATCH_SIZE {
+	if qs < MAX_BATCH_SIZE {
+
+		// We're ready to send or flushing out the queue. Send all the remaining
+		// requests to Firestore.
 		b = bw.backlogQueue[:qs]
 		bw.backlogQueue = []bulkWriterJob{}
-		// We have a full batch; send it.
+
 	} else {
+		// We have a full batch; send it.
 		b = bw.backlogQueue[:MAX_BATCH_SIZE]
 		bw.backlogQueue = bw.backlogQueue[MAX_BATCH_SIZE:]
 	}
+	return b
+}
+
+func (bw *CallersBulkWriter) execute(isFlushing bool) {
+
+	// Guardrail -- Check whether too many reqs open right now
+	if bw.reqs >= DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND {
+		return
+	}
 
 	// Get the writes out of the jobs
+	b := bw.makeBatch()
 	var ws []*pb.Write
-	for _, w := range b {
-		ws = append(ws, w.write)
+	for _, j := range b {
+		if j.attempts < MAX_RETRY_ATTEMPTS {
+			ws = append(ws, j.write)
+		}
+	}
+
+	// Guardrail -- check whether no writes to apply
+	if len(ws) == 0 {
+		return
 	}
 
 	// Compose our request
@@ -159,7 +170,11 @@ func (bw *CallersBulkWriter) execute(isFlushing bool) {
 	bw.reqs++
 	resp, err := bw.vc.BatchWrite(bw.ctx, &bwr)
 	if err != nil {
-		// TODO: Do something about the error
+		// Do we need to be selective about what kind of errors we send?
+		for _, j := range b {
+			j.result <- nil
+			j.err <- err
+		}
 	}
 
 	bw.reqs--
@@ -177,5 +192,6 @@ func (bw *CallersBulkWriter) execute(isFlushing bool) {
 		}
 
 		b[i].result <- res
+		b[i].err <- nil
 	}
 }
