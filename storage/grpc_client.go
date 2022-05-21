@@ -418,7 +418,7 @@ func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	}
 	err := run(ctx, func() error {
 		return c.raw.DeleteObject(ctx, req, s.gax...)
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return ErrObjectNotExist
 	}
@@ -447,7 +447,7 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string
 		attrs = newObjectFromProto(res)
 
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 
 	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 		return nil, ErrObjectNotExist

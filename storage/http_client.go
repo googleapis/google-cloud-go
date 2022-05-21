@@ -387,8 +387,7 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	if s.userProject != "" {
 		req.UserProject(s.userProject)
 	}
-	setClientHeader(req.Header())
-	err := run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
+	err := run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
@@ -408,13 +407,12 @@ func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string
 	if err := setEncryptionHeaders(req.Header(), encryptionKey, false); err != nil {
 		return nil, err
 	}
-	setClientHeader(req.Header())
 	var obj *raw.Object
 	var err error
 	err = run(ctx, func() error {
 		obj, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent)
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
