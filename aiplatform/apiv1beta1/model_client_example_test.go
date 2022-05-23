@@ -153,6 +153,31 @@ func ExampleModelClient_UpdateModel() {
 	_ = resp
 }
 
+func ExampleModelClient_UpdateExplanationDataset() {
+	ctx := context.Background()
+	c, err := aiplatform.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.UpdateExplanationDatasetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateExplanationDatasetRequest.
+	}
+	op, err := c.UpdateExplanationDataset(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleModelClient_DeleteModel() {
 	ctx := context.Background()
 	c, err := aiplatform.NewModelClient(ctx)
