@@ -16,7 +16,7 @@
 
 package recaptchaenterprise
 
-import "cloud.google.com/go/recaptchaenterprise/v2/internal"
+import "cloud.google.com/go/recaptchaenterprise/internal"
 
 func init() {
 	versionClient = internal.Version
