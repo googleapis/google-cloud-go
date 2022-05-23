@@ -1126,6 +1126,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		return resp, errSessionClosed(t.sh)
 	}
 
+	var md metadata.MD
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.CommitRequest{
 		Session: sid,
 		Transaction: &sppb.CommitRequest_TransactionId{
@@ -1134,7 +1135,12 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 		Mutations:         mPb,
 		ReturnCommitStats: options.ReturnCommitStats,
-	})
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "commit"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+		}
+	}
 	if e != nil {
 		return resp, toSpannerErrorWithCommitInfo(e, true)
 	}
