@@ -1074,6 +1074,35 @@ func TestUpdateFilter(t *testing.T) {
 	}
 }
 
+func TestUpdateEnableExactlyOnceDelivery(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds:        sub.AckDeadlineSeconds,
+		Name:                      sub.Name,
+		Topic:                     top.Name,
+		EnableExactlyOnceDelivery: true,
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"enable_exactly_once_delivery"}},
+	})
+
+	if got, want := updated.EnableExactlyOnceDelivery, update.EnableExactlyOnceDelivery; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
 // Test Create, Get, List, and Delete methods for schema client.
 // Updating a schema is not available at this moment.
 func TestSchemaAdminClient(t *testing.T) {
@@ -1194,6 +1223,14 @@ func pubsubMessages(rms map[string]*pb.ReceivedMessage) map[string]*pb.PubsubMes
 
 func mustCreateTopic(ctx context.Context, t *testing.T, pc pb.PublisherClient, topic *pb.Topic) *pb.Topic {
 	top, err := pc.CreateTopic(ctx, topic)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return top
+}
+
+func mustUpdateTopic(ctx context.Context, t *testing.T, pc pb.PublisherClient, req *pb.UpdateTopicRequest) *pb.Topic {
+	top, err := pc.UpdateTopic(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1374,4 +1411,47 @@ func TestPublishResponse(t *testing.T) {
 	srv.AddPublishResponse(&pb.PublishResponse{
 		MessageIds: []string{"3"},
 	}, nil)
+}
+
+func TestTopicRetentionAdmin(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	initialDur := durationpb.New(10 * time.Hour)
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{
+		Name:                     "projects/P/topics/T",
+		MessageRetentionDuration: initialDur,
+	})
+	got := top.MessageRetentionDuration
+	want := initialDur
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("top.MessageRetentionDuration mismatch: %s", diff)
+	}
+
+	updateTopic := &pb.Topic{
+		Name:                     "projects/P/topics/T",
+		MessageRetentionDuration: durationpb.New(5 * time.Hour),
+	}
+	top2 := mustUpdateTopic(ctx, t, pclient, &pb.UpdateTopicRequest{
+		Topic:      updateTopic,
+		UpdateMask: &field_mask.FieldMask{Paths: []string{"message_retention_duration"}},
+	})
+	got = top2.MessageRetentionDuration
+	want = updateTopic.MessageRetentionDuration
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("top2.MessageRetentionDuration mismatch: %s", diff)
+	}
+
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top2.Name,
+	})
+
+	got = sub.TopicMessageRetentionDuration
+	want = top2.MessageRetentionDuration
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("sub.TopicMessageRetentionDuration mismatch: %s", diff)
+	}
 }

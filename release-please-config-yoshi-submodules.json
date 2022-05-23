@@ -45,6 +45,9 @@
         "binaryauthorization": {
             "component": "binaryauthorization"
         },
+        "certificatemanager": {
+            "component": "certificatemanager"
+        },
         "channel": {
             "component": "channel"
         },
@@ -123,11 +126,17 @@
         "gaming": {
             "component": "gaming"
         },
+        "gkebackup": {
+            "component": "gkebackup"
+        },
         "gkeconnect": {
             "component": "gkeconnect"
         },
         "gkehub": {
             "component": "gkehub"
+        },
+        "gkemulticloud": {
+            "component": "gkemulticloud"
         },
         "grafeas": {
             "component": "grafeas"
@@ -183,6 +192,9 @@
         "notebooks": {
             "component": "notebooks"
         },
+        "optimization": {
+            "component": "optimization"
+        },
         "orchestration": {
             "component": "orchestration"
         },
@@ -204,7 +216,7 @@
         "privatecatalog": {
             "component": "privatecatalog"
         },
-        "recaptchaenterprise": {
+        "recaptchaenterprise/v2": {
             "component": "recaptchaenterprise"
         },
         "recommendationengine": {
@@ -224,6 +236,9 @@
         },
         "retail": {
             "component": "retail"
+        },
+        "run": {
+            "component": "run"
         },
         "scheduler": {
             "component": "scheduler"
@@ -279,7 +294,7 @@
         "videointelligence": {
             "component": "videointelligence"
         },
-        "vision": {
+        "vision/v2": {
             "component": "vision"
         },
         "vmmigration": {

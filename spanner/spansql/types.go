@@ -235,13 +235,22 @@ type ColumnAlteration interface {
 
 func (SetColumnType) isColumnAlteration()    {}
 func (SetColumnOptions) isColumnAlteration() {}
+func (SetDefault) isColumnAlteration()       {}
+func (DropDefault) isColumnAlteration()      {}
 
 type SetColumnType struct {
 	Type    Type
 	NotNull bool
+	Default Expr
 }
 
 type SetColumnOptions struct{ Options ColumnOptions }
+
+type SetDefault struct {
+	Default Expr
+}
+
+type DropDefault struct{}
 
 type OnDelete int
 
@@ -320,6 +329,7 @@ type ColumnDef struct {
 	Type    Type
 	NotNull bool
 
+	Default   Expr // set if this column has a default value
 	Generated Expr // set of this is a generated column
 
 	Options ColumnOptions
@@ -692,6 +702,20 @@ func (Param) isBoolExpr()       {} // possibly bool
 func (Param) isExpr()           {}
 func (Param) isLiteralOrParam() {}
 
+type Case struct {
+	Expr        Expr
+	WhenClauses []WhenClause
+	ElseResult  Expr
+}
+
+func (Case) isBoolExpr() {} // possibly bool
+func (Case) isExpr()     {}
+
+type WhenClause struct {
+	Cond   Expr
+	Result Expr
+}
+
 type BoolLiteral bool
 
 const (
@@ -746,6 +770,12 @@ func (DateLiteral) isExpr() {}
 type TimestampLiteral time.Time
 
 func (TimestampLiteral) isExpr() {}
+
+// JSONLiteral represents a JSON literal
+// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+type JSONLiteral []byte
+
+func (JSONLiteral) isExpr() {}
 
 type StarExpr int
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.3.0...dataflow/v0.4.0) (2022-03-28)
+
+
+### Features
+
+* **dataflow:** Add the ability to plumb environment capabilities through v1beta3 protos. ([b01c037](https://github.com/googleapis/google-cloud-go/commit/b01c03783d84cb7a3eba4f69d49d3fb7be1b6353))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.2.0...dataflow/v0.3.0) (2022-02-23)
 
 

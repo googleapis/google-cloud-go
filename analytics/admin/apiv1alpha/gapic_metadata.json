@@ -115,19 +115,9 @@
                 "CreateUserLink"
               ]
             },
-            "CreateWebDataStream": {
-              "methods": [
-                "CreateWebDataStream"
-              ]
-            },
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
-              ]
-            },
-            "DeleteAndroidAppDataStream": {
-              "methods": [
-                "DeleteAndroidAppDataStream"
               ]
             },
             "DeleteConversionEvent": {
@@ -160,11 +150,6 @@
                 "DeleteGoogleAdsLink"
               ]
             },
-            "DeleteIosAppDataStream": {
-              "methods": [
-                "DeleteIosAppDataStream"
-              ]
-            },
             "DeleteMeasurementProtocolSecret": {
               "methods": [
                 "DeleteMeasurementProtocolSecret"
@@ -180,19 +165,9 @@
                 "DeleteUserLink"
               ]
             },
-            "DeleteWebDataStream": {
-              "methods": [
-                "DeleteWebDataStream"
-              ]
-            },
             "GetAccount": {
               "methods": [
                 "GetAccount"
-              ]
-            },
-            "GetAndroidAppDataStream": {
-              "methods": [
-                "GetAndroidAppDataStream"
               ]
             },
             "GetConversionEvent": {
@@ -245,11 +220,6 @@
                 "GetGoogleSignalsSettings"
               ]
             },
-            "GetIosAppDataStream": {
-              "methods": [
-                "GetIosAppDataStream"
-              ]
-            },
             "GetMeasurementProtocolSecret": {
               "methods": [
                 "GetMeasurementProtocolSecret"
@@ -265,11 +235,6 @@
                 "GetUserLink"
               ]
             },
-            "GetWebDataStream": {
-              "methods": [
-                "GetWebDataStream"
-              ]
-            },
             "ListAccountSummaries": {
               "methods": [
                 "ListAccountSummaries"
@@ -278,11 +243,6 @@
             "ListAccounts": {
               "methods": [
                 "ListAccounts"
-              ]
-            },
-            "ListAndroidAppDataStreams": {
-              "methods": [
-                "ListAndroidAppDataStreams"
               ]
             },
             "ListConversionEvents": {
@@ -325,11 +285,6 @@
                 "ListGoogleAdsLinks"
               ]
             },
-            "ListIosAppDataStreams": {
-              "methods": [
-                "ListIosAppDataStreams"
-              ]
-            },
             "ListMeasurementProtocolSecrets": {
               "methods": [
                 "ListMeasurementProtocolSecrets"
@@ -345,11 +300,6 @@
                 "ListUserLinks"
               ]
             },
-            "ListWebDataStreams": {
-              "methods": [
-                "ListWebDataStreams"
-              ]
-            },
             "ProvisionAccountTicket": {
               "methods": [
                 "ProvisionAccountTicket"
@@ -363,11 +313,6 @@
             "UpdateAccount": {
               "methods": [
                 "UpdateAccount"
-              ]
-            },
-            "UpdateAndroidAppDataStream": {
-              "methods": [
-                "UpdateAndroidAppDataStream"
               ]
             },
             "UpdateCustomDimension": {
@@ -405,11 +350,6 @@
                 "UpdateGoogleSignalsSettings"
               ]
             },
-            "UpdateIosAppDataStream": {
-              "methods": [
-                "UpdateIosAppDataStream"
-              ]
-            },
             "UpdateMeasurementProtocolSecret": {
               "methods": [
                 "UpdateMeasurementProtocolSecret"
@@ -423,11 +363,6 @@
             "UpdateUserLink": {
               "methods": [
                 "UpdateUserLink"
-              ]
-            },
-            "UpdateWebDataStream": {
-              "methods": [
-                "UpdateWebDataStream"
               ]
             }
           }

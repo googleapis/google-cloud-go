@@ -1,5 +1,17 @@
 # Changes
 
+### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.0...pubsublite/v1.3.1) (2022-04-27)
+
+
+### Features
+
+* **pubsublite:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+
+### Bug Fixes
+
+* **pubsublite:** retry Cancelled stream errors ([#5943](https://github.com/googleapis/google-cloud-go/issues/5943)) ([bbee3d5](https://github.com/googleapis/google-cloud-go/commit/bbee3d54dc754f424abe48a5a4eed7eac13770b6))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.2...pubsublite/v1.3.0) (2022-02-15)
 
 

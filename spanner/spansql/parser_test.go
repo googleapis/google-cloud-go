@@ -343,6 +343,26 @@ func TestParseExpr(t *testing.T) {
 		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
 		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
 
+		// Conditional expressions
+		{`CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			Case{
+				Expr: ID("X"),
+				WhenClauses: []WhenClause{
+					{Cond: IntegerLiteral(1), Result: StringLiteral("X")},
+					{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
+				},
+				ElseResult: Null,
+			},
+		},
+		{`CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			Case{
+				WhenClauses: []WhenClause{
+					{Cond: True, Result: StringLiteral("X")},
+					{Cond: False, Result: StringLiteral("Y")},
+				},
+			},
+		},
+
 		// String literal:
 		// Accept double quote and single quote.
 		{`"hello"`, StringLiteral("hello")},
@@ -407,6 +427,9 @@ func TestParseExpr(t *testing.T) {
 		{`[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
 		{`['x', 'y', 'xy']`, Array{StringLiteral("x"), StringLiteral("y"), StringLiteral("xy")}},
 		{`ARRAY[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
+		// JSON literals:
+		// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+		{`JSON '{"a": 1}'`, JSONLiteral(`{"a": 1}`)},
 
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},
@@ -531,6 +554,16 @@ func TestParseDDL(t *testing.T) {
 		  generated_date DATE AS (EXTRACT(DATE FROM some_time AT TIME ZONE "CET")) STORED,
 		  shard_id  INT64 AS (MOD(FARM_FINGERPRINT(user_id), 19)) STORED,
 		) PRIMARY KEY(user_id);
+
+		-- Table has a column with a default value.
+		CREATE TABLE DefaultCol (
+			Name STRING(MAX) NOT NULL,
+			Age INT64 DEFAULT (0),
+		) PRIMARY KEY (Name);
+
+		ALTER TABLE DefaultCol ALTER COLUMN Age DROP DEFAULT;
+		ALTER TABLE DefaultCol ALTER COLUMN Age SET DEFAULT (0);
+		ALTER TABLE DefaultCol ALTER COLUMN Age STRING(MAX) DEFAULT ("0");
 
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -775,6 +808,49 @@ func TestParseDDL(t *testing.T) {
 				PrimaryKey: []KeyPart{{Column: "user_id"}},
 				Position:   line(66),
 			},
+
+			&CreateTable{
+				Name: "DefaultCol",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(77)},
+					{
+						Name: "Age", Type: Type{Base: Int64},
+						Default:  IntegerLiteral(0),
+						Position: line(78),
+					},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(76),
+			},
+			&AlterTable{
+				Name: "DefaultCol",
+				Alteration: AlterColumn{
+					Name:       "Age",
+					Alteration: DropDefault{},
+				},
+				Position: line(81),
+			},
+			&AlterTable{
+				Name: "DefaultCol",
+				Alteration: AlterColumn{
+					Name: "Age",
+					Alteration: SetDefault{
+						Default: IntegerLiteral(0),
+					},
+				},
+				Position: line(82),
+			},
+			&AlterTable{
+				Name: "DefaultCol",
+				Alteration: AlterColumn{
+					Name: "Age",
+					Alteration: SetColumnType{
+						Type:    Type{Base: String, Len: MaxLen},
+						Default: StringLiteral("0"),
+					},
+				},
+				Position: line(83),
+			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
 				Text: []string{"This is a comment."}},
@@ -795,9 +871,10 @@ func TestParseDDL(t *testing.T) {
 
 			{Marker: "--", Isolated: true, Start: line(43), End: line(43), Text: []string{"Table with generated column."}},
 			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
+			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(85), End: line(85), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -833,6 +910,29 @@ func TestParseDDL(t *testing.T) {
 							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
 							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
 						},
+					},
+					Position: line(1),
+				},
+			},
+			}},
+		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&AlterDatabase{
+					Name: "dbname",
+					Alteration: SetDatabaseOptions{
+						Options: DatabaseOptions{
+							OptimizerVersion:       func(i int) *int { return &i }(2),
+							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
+							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+						},
+					},
+					Position: line(1),
+				},
+				&CreateTable{Name: "users", Columns: []ColumnDef{
+					{Name: "UserId", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(1)},
+				},
+					PrimaryKey: []KeyPart{
+						{Column: "UserId"},
 					},
 					Position: line(1),
 				},

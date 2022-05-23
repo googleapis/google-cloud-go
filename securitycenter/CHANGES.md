@@ -1,5 +1,27 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.6.0...securitycenter/v1.7.0) (2022-04-20)
+
+
+### Features
+
+* **securitycenter:** Add connection and description field to finding's list of attributes ([689cad9](https://github.com/googleapis/google-cloud-go/commit/689cad94fdcf54cebd22aecfcdad4d8b44f58df9))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.5.0...securitycenter/v1.6.0) (2022-04-14)
+
+
+### Features
+
+* **securitycenter:** Add iam_binding field to findings attributes. It represents particular IAM bindings, which captures a member's role addition, removal, or state ([bb5da6b](https://github.com/googleapis/google-cloud-go/commit/bb5da6b3c34079a01d18b766b67f626cff18d849))
+* **securitycenter:** Add next_steps field to finding's list of attributes ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.4.0...securitycenter/v1.5.0) (2022-03-14)
+
+
+### Features
+
+* **securitycenter:** Add BigQuery export APIs that help you enable writing new/updated findings from  Security Command Center to a BigQuery table in near-real time. You can then integrate the data into existing workflows and create custom analyses. You can enable this feature at the organization, folder, and project levels to export findings based on your requirements ([35d591a](https://github.com/googleapis/google-cloud-go/commit/35d591adf1f98e5707ffe7a7bf5c48a5cc4ae8d4))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.3.0...securitycenter/v1.4.0) (2022-02-23)
 
 

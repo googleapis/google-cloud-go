@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.16
 
 require (
-	cloud.google.com/go v0.100.2
+	cloud.google.com/go v0.101.1
 	cloud.google.com/go/accessapproval v1.0.1
 	cloud.google.com/go/accesscontextmanager v0.1.1
 	cloud.google.com/go/aiplatform v1.2.0
@@ -19,15 +19,16 @@ require (
 	cloud.google.com/go/bigquery v1.26.0
 	cloud.google.com/go/billing v1.0.0
 	cloud.google.com/go/binaryauthorization v0.2.0
+	cloud.google.com/go/certificatemanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/channel v1.1.0
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
 	cloud.google.com/go/cloudtasks v1.1.0
-	cloud.google.com/go/compute v1.3.0
+	cloud.google.com/go/compute v1.6.1
 	cloud.google.com/go/contactcenterinsights v0.4.0
 	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
-	cloud.google.com/go/datacatalog v1.1.0
+	cloud.google.com/go/datacatalog v1.3.0
 	cloud.google.com/go/dataflow v0.1.0
 	cloud.google.com/go/datafusion v1.0.0
 	cloud.google.com/go/datalabeling v0.1.0
@@ -48,14 +49,16 @@ require (
 	cloud.google.com/go/firestore v1.6.1
 	cloud.google.com/go/functions v1.1.0
 	cloud.google.com/go/gaming v1.0.0
+	cloud.google.com/go/gkebackup v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.2.0
+	cloud.google.com/go/gkemulticloud v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/gsuiteaddons v1.0.0
-	cloud.google.com/go/iam v0.2.0
+	cloud.google.com/go/iam v0.3.0
 	cloud.google.com/go/iap v1.0.0
 	cloud.google.com/go/ids v0.1.0
 	cloud.google.com/go/iot v1.0.0
-	cloud.google.com/go/kms v1.1.0
+	cloud.google.com/go/kms v1.4.0
 	cloud.google.com/go/language v1.0.0
 	cloud.google.com/go/lifesciences v0.1.0
 	cloud.google.com/go/logging v1.4.2
@@ -68,6 +71,7 @@ require (
 	cloud.google.com/go/networkmanagement v1.0.0
 	cloud.google.com/go/networksecurity v0.1.0
 	cloud.google.com/go/notebooks v0.1.0
+	cloud.google.com/go/optimization v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/orchestration v0.1.0
 	cloud.google.com/go/orgpolicy v1.0.0
 	cloud.google.com/go/osconfig v1.2.0
@@ -75,7 +79,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.17.1
+	cloud.google.com/go/pubsub v1.21.1
 	cloud.google.com/go/pubsublite v1.2.1
 	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
@@ -84,6 +88,7 @@ require (
 	cloud.google.com/go/resourcemanager v1.0.0
 	cloud.google.com/go/resourcesettings v1.0.0
 	cloud.google.com/go/retail v1.0.0
+	cloud.google.com/go/run v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/scheduler v1.0.0
 	cloud.google.com/go/secretmanager v1.0.0
 	cloud.google.com/go/security v1.1.1
@@ -110,8 +115,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.70.0
-	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
+	google.golang.org/api v0.80.0
+	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -333,3 +338,13 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 replace cloud.google.com/go/dataplex => ../../../dataplex
+
+replace cloud.google.com/go/certificatemanager => ../../../certificatemanager
+
+replace cloud.google.com/go/optimization => ../../../optimization
+
+replace cloud.google.com/go/run => ../../../run
+
+replace cloud.google.com/go/gkebackup => ../../../gkebackup
+
+replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
