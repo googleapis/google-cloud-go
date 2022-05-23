@@ -1201,7 +1201,7 @@
     "description": "reCAPTCHA Enterprise API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/recaptchaenterprise/latest/v2/apiv1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/recaptchaenterprise/v2/latest/apiv1",
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },

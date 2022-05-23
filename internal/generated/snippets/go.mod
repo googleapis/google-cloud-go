@@ -116,7 +116,7 @@ require (
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.80.0
-	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
+	google.golang.org/genproto v0.0.0-20220523171625-347a074981d8
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -348,3 +348,5 @@ replace cloud.google.com/go/run => ../../../run
 replace cloud.google.com/go/gkebackup => ../../../gkebackup
 
 replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
+
+replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
