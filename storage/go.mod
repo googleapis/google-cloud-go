@@ -3,7 +3,7 @@ module cloud.google.com/go/storage
 go 1.15
 
 require (
-	cloud.google.com/go v0.101.1
+	cloud.google.com/go v0.100.2
 	cloud.google.com/go/compute v1.6.1
 	cloud.google.com/go/iam v0.3.0
 	github.com/golang/protobuf v1.5.2
