@@ -1286,6 +1286,24 @@
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/retail/apiv2alpha": {
+    "distribution_name": "cloud.google.com/go/retail/apiv2alpha",
+    "description": "Retail API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2alpha",
+    "release_level": "alpha",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/retail/apiv2beta": {
+    "distribution_name": "cloud.google.com/go/retail/apiv2beta",
+    "description": "Retail API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2beta",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/rpcreplay": {
     "distribution_name": "cloud.google.com/go/rpcreplay",
     "description": "RPC Replay",
@@ -1637,15 +1655,6 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/vision/apiv1": {
-    "distribution_name": "cloud.google.com/go/vision/apiv1",
-    "description": "Cloud Vision API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/latest/apiv1",
-    "release_level": "ga",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/vision/apiv1p1beta1": {
     "distribution_name": "cloud.google.com/go/vision/apiv1p1beta1",
     "description": "Cloud Vision API",
@@ -1653,6 +1662,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/latest/apiv1p1beta1",
     "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/vision/v2/apiv1": {
+    "distribution_name": "cloud.google.com/go/vision/v2/apiv1",
+    "description": "Cloud Vision API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/latest/v2/apiv1",
+    "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/vmmigration/apiv1": {
