@@ -149,6 +149,52 @@
       ]
     },
     {
+      "regionTag": "accessapproval_v1_generated_AccessApproval_GetAccessApprovalServiceAccount_sync",
+      "title": "accessapproval GetAccessApprovalServiceAccount Sample",
+      "description": "GetAccessApprovalServiceAccount retrieves the service account that is used by Access Approval to access KMS\nkeys for signing approved approval requests.",
+      "file": "Client/GetAccessApprovalServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccessApprovalServiceAccount",
+        "fullName": "google.cloud.accessapproval.v1.Client.GetAccessApprovalServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accessapprovalpb.GetAccessApprovalServiceAccountMessage",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "accessapprovalpb.AccessApprovalServiceAccount",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.accessapproval.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAccessApprovalServiceAccount",
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetAccessApprovalServiceAccount",
+          "service": {
+            "shortName": "AccessApproval",
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "accessapproval_v1_generated_AccessApproval_GetAccessApprovalSettings_sync",
       "title": "accessapproval GetAccessApprovalSettings Sample",
       "description": "GetAccessApprovalSettings gets the settings associated with a project, folder, or organization.",
@@ -225,6 +271,52 @@
         "method": {
           "shortName": "GetApprovalRequest",
           "fullName": "google.cloud.accessapproval.v1.AccessApproval.GetApprovalRequest",
+          "service": {
+            "shortName": "AccessApproval",
+            "fullName": "google.cloud.accessapproval.v1.AccessApproval"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "accessapproval_v1_generated_AccessApproval_InvalidateApprovalRequest_sync",
+      "title": "accessapproval InvalidateApprovalRequest Sample",
+      "description": "InvalidateApprovalRequest invalidates an existing ApprovalRequest. Returns the updated\nApprovalRequest.\n\nNOTE: This does not deny access to the resource if another request has been\nmade and approved. It only invalidates a single approval.\n\nReturns FAILED_PRECONDITION if the request exists but is not in an approved\nstate.",
+      "file": "Client/InvalidateApprovalRequest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InvalidateApprovalRequest",
+        "fullName": "google.cloud.accessapproval.v1.Client.InvalidateApprovalRequest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accessapprovalpb.InvalidateApprovalRequestMessage",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "accessapprovalpb.ApprovalRequest",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.accessapproval.v1.Client"
+        },
+        "method": {
+          "shortName": "InvalidateApprovalRequest",
+          "fullName": "google.cloud.accessapproval.v1.AccessApproval.InvalidateApprovalRequest",
           "service": {
             "shortName": "AccessApproval",
             "fullName": "google.cloud.accessapproval.v1.AccessApproval"
