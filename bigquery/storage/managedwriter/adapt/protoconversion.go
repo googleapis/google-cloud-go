@@ -293,6 +293,9 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 // In addition to nesting messages, this method also handles some encapsulation of enum types to avoid possible
 // conflicts due to ambiguities, and clears oneof indices as oneof isn't a concept that maps into BigQuery
 // schemas.
+//
+// To enable proto3 usage, this function will also rewrite proto3 descriptors into equivalent proto2 form.
+// Such rewrites include setting the appropriate default values for proto3 fields.
 func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.DescriptorProto, error) {
 	return normalizeDescriptorInternal(in, newStringSet(), newStringSet(), newStringSet(), nil)
 }
