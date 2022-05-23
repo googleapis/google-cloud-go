@@ -18,7 +18,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -34,21 +33,18 @@ import (
 const ignored = "- MaxPublishRequestBytes: value changed from 0.000582077 to 10000000"
 const rootMod = "cloud.google.com/go"
 
-var repoMetadataPath string
 var verbose bool
-var gapic string
+var mod string
+var base string
 
 func init() {
-	flag.StringVar(&repoMetadataPath, "repo-metadata", "", "path to a repo-metadata-full JSON file [required]")
-	flag.StringVar(&gapic, "gapic", "", "import path of a specific GAPIC to diff")
+	flag.StringVar(&mod, "mod", "", "import path of a specific module to diff")
 	flag.BoolVar(&verbose, "verbose", false, "enable verbose command logging")
+	flag.StringVar(&base, "base", "", "path to a copy of google-cloud-go to use as the base")
 }
 
 func main() {
 	flag.Parse()
-	if repoMetadataPath == "" {
-		log.Fatalln("Missing required flag: -repo-metadata")
-	}
 
 	head, err := exec("git", "log", "-2")
 	if err != nil {
@@ -63,34 +59,25 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	f, err := os.Open(repoMetadataPath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer f.Close()
-
-	var m manifest
-	if err := json.NewDecoder(f).Decode(&m); err != nil {
-		log.Fatalln(err)
-	}
-
 	_, err = exec("go", "install", "golang.org/x/exp/cmd/apidiff@latest")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	temp, err := ioutil.TempDir("/tmp", "google-cloud-go-*")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer os.RemoveAll(temp)
+	if base == "" {
+		temp, err := ioutil.TempDir("/tmp", "google-cloud-go-*")
+		if err != nil {
+			log.Fatalln(err)
+		}
+		defer os.RemoveAll(temp)
 
-	_, err = exec("git", "clone", "https://github.com/googleapis/google-cloud-go", temp)
-	if err != nil {
-		log.Fatalln(err)
+		_, err = exec("git", "clone", "https://github.com/googleapis/google-cloud-go", temp)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 
-	diffs, diffingErrs, err := diffModules(root, temp, m)
+	diffs, diffingErrs, err := diffModules(root, base)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -111,111 +98,72 @@ func main() {
 	}
 }
 
-// manifestEntry is used for JSON marshaling in manifest.
-// Copied from internal/gapicgen/generator/gapics.go.
-type manifestEntry struct {
-	DistributionName  string `json:"distribution_name"`
-	Description       string `json:"description"`
-	Language          string `json:"language"`
-	ClientLibraryType string `json:"client_library_type"`
-	DocsURL           string `json:"docs_url"`
-	ReleaseLevel      string `json:"release_level"`
-}
-
-type manifest map[string]manifestEntry
-
-func diffModules(root, baseDir string, m manifest) (map[string]string, map[string]error, error) {
+func diffModules(root, baseDir string) (map[string]string, map[string]error, error) {
 	diffs := map[string]string{}
 	issues := map[string]error{}
 
-	for imp, entry := range m {
-		if gapic != "" && imp != gapic {
+	m, err := mods()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	for _, modDir := range m {
+		modPkg := strings.TrimPrefix(modDir, "./")
+		modPkg = strings.TrimSuffix(modPkg, "/go.mod")
+		modImp := rootMod + "/" + modPkg
+		modAbsDir := path.Join(root, modPkg)
+
+		if mod != "" && modImp != mod {
 			continue
 		}
 
-		// Prepare module directory paths relative to the repo root.
-		pkg := strings.TrimPrefix(imp, rootMod+"/")
-		baseModDir := baseDir
-		modDir := root
+		baseModDir := path.Join(baseDir, modPkg)
 
-		// Manual clients are also submodules, so we need to run apidiff in the
-		// submodule.
-		if entry.ClientLibraryType == "manual" {
-			baseModDir = path.Join(baseModDir, pkg)
-			modDir = path.Join(modDir, pkg)
-		}
-
-		// Create apidiff base from repo remote HEAD.
-		base, err := writeBase(m, baseModDir, imp, pkg)
+		subp, err := subpackages(baseModDir)
 		if err != nil {
-			issues[imp] = err
-			continue
+			return nil, nil, err
 		}
 
-		// Diff the current checked out change against remote HEAD base.
-		out, err := diff(m, modDir, imp, pkg, base)
-		if err != nil {
-			issues[imp] = err
-			continue
-		}
+		for _, sub := range subp {
+			if sub == "." {
+				continue
+			}
+			subImp := modImp + strings.TrimPrefix(sub, ".")
 
-		if out != "" && out != ignored {
-			diffs[imp] = out
+			// Create apidiff base from repo remote HEAD.
+			base, err := writeBase(baseModDir, sub)
+			if err != nil {
+				issues[subImp] = err
+				continue
+			}
+
+			// Diff the current checked out change against remote HEAD base.
+			out, err := diff(modAbsDir, sub, base)
+			if err != nil {
+				issues[subImp] = err
+				continue
+			}
+
+			if out != "" && out != ignored {
+				diffs[subImp] = out
+			}
 		}
 	}
 
 	return diffs, issues, nil
 }
 
-func writeBase(m manifest, baseModDir, imp, pkg string) (string, error) {
-	if err := cd(baseModDir); err != nil {
-		return "", err
-	}
+func writeBase(baseModDir, subPkg string) (string, error) {
+	base := path.Join(baseModDir, "pkg.main")
+	_, err := execDir(baseModDir, "apidiff", "-w", base, subPkg)
 
-	base := path.Join(baseModDir, "pkg.master")
-	out, err := exec("apidiff", "-w", base, imp)
-	if err != nil && !isSubModErr(out) {
-		return "", err
-	}
-
-	// If there was an issue with loading a submodule, change into that
-	// submodule directory and try again.
-	if isSubModErr(out) {
-		parent := manualParent(m, imp)
-		if parent == pkg {
-			return "", fmt.Errorf("unable to find parent module for %q", imp)
-		}
-		if err := cd(parent); err != nil {
-			return "", err
-		}
-		out, err := exec("apidiff", "-w", base, imp)
-		if err != nil {
-			return "", fmt.Errorf("%s: %s", err, out)
-		}
-	}
-	return base, nil
+	return base, err
 }
 
-func diff(m manifest, modDir, imp, pkg, base string) (string, error) {
-	if err := cd(modDir); err != nil {
+func diff(modDir, subpkg, base string) (string, error) {
+	out, err := execDir(modDir, "apidiff", "-allow-internal", "-incompatible", base, subpkg)
+	if err != nil {
 		return "", err
-	}
-	out, err := exec("apidiff", "-incompatible", base, imp)
-	if err != nil && !isSubModErr(out) {
-		return "", err
-	}
-	if isSubModErr(out) {
-		parent := manualParent(m, imp)
-		if parent == pkg {
-			return "", fmt.Errorf("unable to find parent module for %q", imp)
-		}
-		if err := cd(parent); err != nil {
-			return "", err
-		}
-		out, err = exec("apidiff", "-incompatible", base, imp)
-		if err != nil {
-			return "", fmt.Errorf("%s: %s", err, out)
-		}
 	}
 
 	return out, err
@@ -238,30 +186,33 @@ func checkAllowBreakingChange(commit string) bool {
 	return false
 }
 
-func manualParent(m manifest, imp string) string {
-	pkg := strings.TrimPrefix(imp, rootMod)
-	split := strings.Split(pkg, "/")
-
-	mod := rootMod
-	for _, seg := range split {
-		mod = path.Join(mod, seg)
-		if parent, ok := m[mod]; ok && parent.ClientLibraryType == "manual" {
-			return strings.TrimPrefix(mod, rootMod+"/")
-		}
+func mods() ([]string, error) {
+	out, err := exec("find", ".", "-name", "go.mod", "-not", "-path", "./internal/*", "-not", "-path", "./go.mod")
+	if err != nil {
+		return nil, err
 	}
-
-	return pkg
+	return strings.Split(out, "\n"), nil
 }
 
-func isSubModErr(msg string) bool {
-	return strings.Contains(msg, "missing") || strings.Contains(msg, "required")
+func subpackages(base string) ([]string, error) {
+	out, err := execDir(base, "find", ".", "-mindepth", "1", "-name", "doc.go", "-exec", "dirname", "{}", "\\", ";")
+	if err != nil {
+		return nil, err
+	}
+	return strings.Split(out, "\n"), nil
 }
 
-func cd(dir string) error {
+func execDir(dir, cmd string, args ...string) (string, error) {
 	if verbose {
-		log.Printf("+ cd %s\n", dir)
+		log.Printf("+ %s %s\n", cmd, strings.Join(args, " "))
 	}
-	return os.Chdir(dir)
+	c := osexec.Command(cmd, args...)
+	c.Dir = dir
+	out, err := c.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", out, err)
+	}
+	return strings.TrimSpace(string(out)), nil
 }
 
 func exec(cmd string, args ...string) (string, error) {
@@ -269,5 +220,8 @@ func exec(cmd string, args ...string) (string, error) {
 		log.Printf("+ %s %s\n", cmd, strings.Join(args, " "))
 	}
 	out, err := osexec.Command(cmd, args...).CombinedOutput()
-	return strings.TrimSpace(string(out)), err
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", out, err)
+	}
+	return strings.TrimSpace(string(out)), nil
 }

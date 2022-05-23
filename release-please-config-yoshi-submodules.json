@@ -216,7 +216,7 @@
         "privatecatalog": {
             "component": "privatecatalog"
         },
-        "recaptchaenterprise": {
+        "recaptchaenterprise/v2": {
             "component": "recaptchaenterprise"
         },
         "recommendationengine": {
