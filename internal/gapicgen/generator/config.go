@@ -305,7 +305,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/cloud/vision/v1",
 		Pkg:                   "vision",
-		ImportPath:            "cloud.google.com/go/vision/apiv1",
+		ImportPath:            "cloud.google.com/go/vision/v2/apiv1",
 		GRPCServiceConfigPath: "vision_grpc_service_config.json",
 		ApiServiceConfigPath:  "vision_v1.yaml",
 		ReleaseLevel:          "ga",
