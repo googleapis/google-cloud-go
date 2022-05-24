@@ -350,3 +350,5 @@ replace cloud.google.com/go/gkebackup => ../../../gkebackup
 replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
 
 replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
+
+replace cloud.google.com/go/vision/v2 => ../../../vision/v2
