@@ -1,5 +1,16 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.3.1...recaptchaenterprise/v2.0.0) (2022-05-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **recaptchaenterprise/v2:** parent changed to project in googleapis/go-genproto#808
+
+### Features
+
+* **recaptchaenterprise/v2:** Release breaking changes as v2 module ([#6062](https://github.com/googleapis/google-cloud-go/issues/6062)) ([1266896](https://github.com/googleapis/google-cloud-go/commit/1266896827d1b788931f348c399ef1fb6fd33ef7))
+
 ### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.3.0...recaptchaenterprise/v1.3.1) (2022-05-03)
 
 
