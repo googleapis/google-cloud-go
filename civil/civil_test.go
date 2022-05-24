@@ -305,6 +305,7 @@ func TestTimeBefore(t *testing.T) {
 		{Time{12, 20, 0, 0}, Time{12, 30, 0, 0}, true},
 		{Time{12, 20, 10, 0}, Time{12, 20, 20, 0}, true},
 		{Time{12, 20, 10, 5}, Time{12, 20, 10, 10}, true},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 5}, false},
 	} {
 		if got := test.t1.Before(test.t2); got != test.want {
 			t.Errorf("%v.Before(%v): got %t, want %t", test.t1, test.t2, got, test.want)
@@ -321,9 +322,10 @@ func TestTimeAfter(t *testing.T) {
 		{Time{12, 20, 0, 0}, Time{12, 30, 0, 0}, false},
 		{Time{12, 20, 10, 0}, Time{12, 20, 20, 0}, false},
 		{Time{12, 20, 10, 5}, Time{12, 20, 10, 10}, false},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 5}, false},
 	} {
 		if got := test.t1.After(test.t2); got != test.want {
-			t.Errorf("%v.Before(%v): got %t, want %t", test.t1, test.t2, got, test.want)
+			t.Errorf("%v.After(%v): got %t, want %t", test.t1, test.t2, got, test.want)
 		}
 	}
 }
