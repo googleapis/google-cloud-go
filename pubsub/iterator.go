@@ -114,7 +114,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pingTicker:         pingTicker,
 		failed:             make(chan struct{}),
 		drained:            make(chan struct{}),
-		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension / time.Second)),
+		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
 		keepAliveDeadlines: map[string]time.Time{},
 		pendingAcks:        map[string]bool{},
 		pendingNacks:       map[string]bool{},
