@@ -516,7 +516,7 @@ type ReceiveSettings struct {
 	// bounds the maximum amount of time before a message redelivery in the
 	// event the subscriber fails to extend the deadline.
 	//
-	// MaxExtensionPeriod must be between 10 and 600 (inclusive). This configuration
+	// MaxExtensionPeriod must be between 10s and 600s (inclusive). This configuration
 	// can be disabled by specifying a duration less than (or equal to) 0.
 	MaxExtensionPeriod time.Duration
 
@@ -524,7 +524,7 @@ type ReceiveSettings struct {
 	// By default the 99th percentile of ack latency is used to determine lease extension
 	// periods but this value can be set to minimize the number of extraneous RPCs sent.
 	//
-	// MinExtensionPeriod must be between 10 and 600 (inclusive). This configuration
+	// MinExtensionPeriod must be between 10s and 600s (inclusive). This configuration
 	// can be disabled by specifying a duration less than (or equal to) 0.
 	// Defaults to off but set to 60 seconds if the subscription has exactly-once delivery enabled,
 	// which will be added in a future release.
