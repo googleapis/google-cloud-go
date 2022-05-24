@@ -243,6 +243,12 @@ func TestResourceDetection(t *testing.T) {
 		},
 	}
 
+	// cleanup
+	oldAttrs := detectedResource.attrs
+	defer func() {
+		detectedResource.attrs = oldAttrs
+		detectedResource.once = new(sync.Once)
+	}()
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			setupDetectedResource(tc.envVars, tc.metaVars, tc.fsPaths)
@@ -252,4 +258,16 @@ func TestResourceDetection(t *testing.T) {
 			}
 		})
 	}
+}
+
+var benchmarkResultHolder *mrpb.MonitoredResource
+
+func BenchmarkDetectResource(b *testing.B) {
+	var result *mrpb.MonitoredResource
+
+	for n := 0; n < b.N; n++ {
+		result = detectResource()
+	}
+
+	benchmarkResultHolder = result
 }
