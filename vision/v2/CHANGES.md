@@ -1,5 +1,16 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/vision/v1.2.0...vision/v2.0.0) (2022-05-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **vision/v2:** removed fields from SafeSearchAnnotation in googleapis/go-genproto#809
+
+### Features
+
+* **vision/v2:** Release breaking changes as v2 module ([#6072](https://github.com/googleapis/google-cloud-go/issues/6072)) ([9a4ff7f](https://github.com/googleapis/google-cloud-go/commit/9a4ff7f694c6ff53c36c6eb9d52ceb9ec118f12c))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/vision/v1.1.0...vision/v1.2.0) (2022-02-23)
 
 
