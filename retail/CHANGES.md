@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.2.0...retail/v1.3.0) (2022-05-24)
+
+
+### Features
+
+* **retail:** start generating apiv2alpha and apiv2beta ([#6073](https://github.com/googleapis/google-cloud-go/issues/6073)) ([ec90f7b](https://github.com/googleapis/google-cloud-go/commit/ec90f7b224c67a02eb293224916c019054f5749d))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.1.0...retail/v1.2.0) (2022-02-23)
 
 
