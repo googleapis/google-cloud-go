@@ -294,7 +294,7 @@
         "videointelligence": {
             "component": "videointelligence"
         },
-        "vision": {
+        "vision/v2": {
             "component": "vision"
         },
         "vmmigration": {
