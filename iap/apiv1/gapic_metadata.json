@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "IdentityAwareProxyAdminClient",
           "rpcs": {
+            "CreateTunnelDestGroup": {
+              "methods": [
+                "CreateTunnelDestGroup"
+              ]
+            },
+            "DeleteTunnelDestGroup": {
+              "methods": [
+                "DeleteTunnelDestGroup"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -18,6 +28,16 @@
             "GetIapSettings": {
               "methods": [
                 "GetIapSettings"
+              ]
+            },
+            "GetTunnelDestGroup": {
+              "methods": [
+                "GetTunnelDestGroup"
+              ]
+            },
+            "ListTunnelDestGroups": {
+              "methods": [
+                "ListTunnelDestGroups"
               ]
             },
             "SetIamPolicy": {
@@ -33,6 +53,11 @@
             "UpdateIapSettings": {
               "methods": [
                 "UpdateIapSettings"
+              ]
+            },
+            "UpdateTunnelDestGroup": {
+              "methods": [
+                "UpdateTunnelDestGroup"
               ]
             }
           }

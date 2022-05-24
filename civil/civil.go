@@ -185,6 +185,26 @@ func (t Time) IsZero() bool {
 	return (t.Hour == 0) && (t.Minute == 0) && (t.Second == 0) && (t.Nanosecond == 0)
 }
 
+// Before reports whether t1 occurs before t2.
+func (t1 Time) Before(t2 Time) bool {
+	if t1.Hour != t2.Hour {
+		return t1.Hour < t2.Hour
+	}
+	if t1.Minute != t2.Minute {
+		return t1.Minute < t2.Minute
+	}
+	if t1.Second != t2.Second {
+		return t1.Second < t2.Second
+	}
+
+	return t1.Nanosecond < t2.Nanosecond
+}
+
+// After reports whether t1 occurs after t2.
+func (t1 Time) After(t2 Time) bool {
+	return t2.Before(t1)
+}
+
 // MarshalText implements the encoding.TextMarshaler interface.
 // The output is the result of t.String().
 func (t Time) MarshalText() ([]byte, error) {

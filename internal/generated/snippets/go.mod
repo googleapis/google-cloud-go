@@ -49,8 +49,10 @@ require (
 	cloud.google.com/go/firestore v1.6.1
 	cloud.google.com/go/functions v1.1.0
 	cloud.google.com/go/gaming v1.0.0
+	cloud.google.com/go/gkebackup v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.2.0
+	cloud.google.com/go/gkemulticloud v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/gsuiteaddons v1.0.0
 	cloud.google.com/go/iam v0.3.0
 	cloud.google.com/go/iap v1.0.0
@@ -77,7 +79,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.20.0
+	cloud.google.com/go/pubsub v1.21.1
 	cloud.google.com/go/pubsublite v1.2.1
 	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
@@ -113,8 +115,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.78.0
-	google.golang.org/genproto v0.0.0-20220505152158-f39f71e6c8f3
+	google.golang.org/api v0.80.0
+	google.golang.org/genproto v0.0.0-20220523171625-347a074981d8
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -342,3 +344,9 @@ replace cloud.google.com/go/certificatemanager => ../../../certificatemanager
 replace cloud.google.com/go/optimization => ../../../optimization
 
 replace cloud.google.com/go/run => ../../../run
+
+replace cloud.google.com/go/gkebackup => ../../../gkebackup
+
+replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
+
+replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
