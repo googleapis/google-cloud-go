@@ -556,7 +556,7 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			TimestampLiteral(time.Date(2014, time.September, 27, 12, 34, 56, 123456e3, latz)),
-			`TIMESTAMP '2014-09-27 12:34:56.123456 -07:00'`,
+			`TIMESTAMP '2014-09-27 12:34:56.123456-07:00'`,
 			reparseExpr,
 		},
 		{
