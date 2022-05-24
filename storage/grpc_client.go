@@ -456,8 +456,70 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string
 	return attrs, err
 }
 
-func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, bucket), object)
+	req := &storagepb.UpdateObjectRequest{
+		Object:        o,
+		PredefinedAcl: uattrs.PredefinedACL,
+	}
+	if err := applyCondsProto("grpcStorageClient.UpdateObject", gen, conds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	if encryptionKey != nil {
+		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
+	}
+
+	var paths []string
+	fieldMask := &fieldmaskpb.FieldMask{
+		Paths: paths,
+	}
+	if uattrs.EventBasedHold != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "event_based_hold")
+	}
+	if uattrs.TemporaryHold != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "temporary_hold")
+	}
+	if uattrs.ContentType != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "content_type")
+	}
+	if uattrs.ContentLanguage != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "content_language")
+	}
+	if uattrs.ContentEncoding != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "content_encoding")
+	}
+	if uattrs.ContentDisposition != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "content_disposition")
+	}
+	if uattrs.CacheControl != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "cache_control")
+	}
+	if !uattrs.CustomTime.IsZero() {
+		fieldMask.Paths = append(fieldMask.Paths, "custom_time")
+	}
+	if uattrs.ACL != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "acl")
+	}
+
+	// TODO(cathyo): Handle metadata. Pending b/230510191.
+
+	req.UpdateMask = fieldMask
+
+	var attrs *ObjectAttrs
+	err := run(ctx, func() error {
+		res, err := c.raw.UpdateObject(ctx, req, s.gax...)
+		attrs = newObjectFromProto(res)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if e, ok := status.FromError(err); ok && e.Code() == codes.NotFound {
+		return nil, ErrObjectNotExist
+	}
+
+	return attrs, err
 }
 
 // Default Object ACL methods.

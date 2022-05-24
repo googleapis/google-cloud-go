@@ -270,6 +270,71 @@ func TestGetObjectEmulated(t *testing.T) {
 	})
 }
 
+func TestUpdateObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		o := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		want := &ObjectAttrsToUpdate{
+			EventBasedHold:     false,
+			TemporaryHold:      false,
+			ContentType:        "text/html",
+			ContentLanguage:    "en",
+			ContentEncoding:    "gzip",
+			ContentDisposition: "",
+			CacheControl:       "",
+			ACL:                []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
+		}
+
+		got, err := client.UpdateObject(context.Background(), bucket, o.Name, want, defaultGen, nil, &Conditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatalf("client.UpdateObject: %v", err)
+		}
+		if diff := cmp.Diff(got.Name, o.Name); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.EventBasedHold, want.EventBasedHold); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.TemporaryHold, want.TemporaryHold); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentType, want.ContentType); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentLanguage, want.ContentLanguage); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentEncoding, want.ContentEncoding); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentDisposition, want.ContentDisposition); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.CacheControl, want.CacheControl); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ACL, want.ACL); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestListObjectsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
