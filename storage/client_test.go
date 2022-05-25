@@ -213,6 +213,63 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	})
 }
 
+func TestDeleteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object that will be deleted.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		err = client.DeleteObject(context.Background(), bucket, want.Name, defaultGen, nil)
+		if err != nil {
+			t.Fatalf("client.DeleteBucket: %v", err)
+		}
+	})
+}
+
+func TestGetObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestListObjectsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.

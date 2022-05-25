@@ -383,12 +383,51 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 
 // Object metadata methods.
 
-func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error {
-	return errMethodNotSupported
+func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object string, gen int64, conds *Conditions, opts ...storageOption) error {
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Objects.Delete(bucket, object).Context(ctx)
+	if err := applyConds("Delete", gen, conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+	err := run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return ErrObjectNotExist
+	}
+	return err
 }
-func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
-	return nil, errMethodNotSupported
+
+func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Objects.Get(bucket, object).Projection("full").Context(ctx)
+	if err := applyConds("Attrs", gen, conds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+	if err := setEncryptionHeaders(req.Header(), encryptionKey, false); err != nil {
+		return nil, err
+	}
+	var obj *raw.Object
+	var err error
+	err = run(ctx, func() error {
+		obj, err = req.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return nil, ErrObjectNotExist
+	}
+	if err != nil {
+		return nil, err
+	}
+	return newObject(obj), nil
 }
+
 func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
 	return nil, errMethodNotSupported
 }
