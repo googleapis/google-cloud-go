@@ -241,6 +241,7 @@ type Logger struct {
 	commonLabels           map[string]string
 	ctxFunc                func() (context.Context, func())
 	populateSourceLocation int
+	partialSuccess         bool
 }
 
 // A LoggerOption is a configuration option for a Logger.
@@ -375,6 +376,19 @@ func (o sourceLocationOption) set(l *Logger) {
 	}
 }
 
+// PartialSuccess sets the partialSuccess flag to true when ingesting a bundle of log entries.
+// See https://cloud.google.com/logging/docs/reference/v2/rest/v2/entries/write#body.request_body.FIELDS.partial_success
+// If not provided the partialSuccess flag is set to false.
+func PartialSuccess() LoggerOption {
+	return &partialSuccessOption{}
+}
+
+type partialSuccessOption struct{}
+
+func (o *partialSuccessOption) set(l *Logger) {
+	l.partialSuccess = true
+}
+
 // Logger returns a Logger that will write entries with the given log ID, such as
 // "syslog". A log ID must be less than 512 characters long and can only
 // include the following characters: upper and lower case alphanumeric
@@ -391,6 +405,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 		commonResource:         r,
 		ctxFunc:                func() (context.Context, func()) { return context.Background(), nil },
 		populateSourceLocation: DoNotPopulateSourceLocation,
+		partialSuccess:         false,
 	}
 	l.bundler = bundler.NewBundler(&logpb.LogEntry{}, func(entries interface{}) {
 		l.writeLogEntries(entries.([]*logpb.LogEntry))
@@ -752,10 +767,11 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 		return err
 	}
 	_, err = l.client.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
-		LogName:  l.logName,
-		Resource: l.commonResource,
-		Labels:   l.commonLabels,
-		Entries:  []*logpb.LogEntry{ent},
+		LogName:        l.logName,
+		Resource:       l.commonResource,
+		Labels:         l.commonLabels,
+		Entries:        []*logpb.LogEntry{ent},
+		PartialSuccess: l.partialSuccess,
 	})
 	return err
 }
@@ -785,10 +801,11 @@ func (l *Logger) Flush() error {
 
 func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 	req := &logpb.WriteLogEntriesRequest{
-		LogName:  l.logName,
-		Resource: l.commonResource,
-		Labels:   l.commonLabels,
-		Entries:  entries,
+		LogName:        l.logName,
+		Resource:       l.commonResource,
+		Labels:         l.commonLabels,
+		Entries:        entries,
+		PartialSuccess: l.partialSuccess,
 	}
 	ctx, afterCall := l.ctxFunc()
 	ctx, cancel := context.WithTimeout(ctx, defaultWriteTimeout)
