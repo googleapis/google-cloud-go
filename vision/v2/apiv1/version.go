@@ -16,7 +16,7 @@
 
 package vision
 
-import "cloud.google.com/go/vision/v2/internal"
+import "cloud.google.com/go/vision/internal"
 
 func init() {
 	versionClient = internal.Version
