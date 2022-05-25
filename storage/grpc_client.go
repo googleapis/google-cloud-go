@@ -875,7 +875,7 @@ func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
 		// successful, the next logical chunk will be returned.
-		msg, err = r.reopenStream(r.seen)
+		msg, err = r.reopenStream()
 	}
 
 	return msg, err
@@ -885,7 +885,7 @@ func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 // sets the Reader's stream and cancelStream properties in the process.
 //
 // This is an experimental API and not intended for public use.
-func (r *gRPCReader) reopenStream(seen int64) (*storagepb.ReadObjectResponse, error) {
+func (r *gRPCReader) reopenStream() (*storagepb.ReadObjectResponse, error) {
 	// Close existing stream and initialize new stream with updated offset.
 	r.Close()
 

@@ -610,7 +610,7 @@ func TestOpenReaderEmulated(t *testing.T) {
 		params := &openReaderParams{
 			bucket: bucket,
 			object: want.Name,
-			gen:    -1,
+			gen:    defaultGen,
 			offset: 0,
 			length: -1,
 		}
