@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -959,6 +960,78 @@ func BenchmarkSourceLocationPopulation(b *testing.B) {
 				if err != nil {
 					b.Fatalf("Unexpected error: %+v: %v", tc.in, err)
 				}
+			}
+		})
+	}
+}
+
+// writeLogEntriesTestHandler is a fake Logging backend handler used to test partialSuccess option logic
+type writeLogEntriesTestHandler struct {
+	logpb.UnimplementedLoggingServiceV2Server
+	hook func(*logpb.WriteLogEntriesRequest)
+}
+
+func (f *writeLogEntriesTestHandler) WriteLogEntries(_ context.Context, e *logpb.WriteLogEntriesRequest) (*logpb.WriteLogEntriesResponse, error) {
+	if f.hook != nil {
+		f.hook(e)
+	}
+	return &logpb.WriteLogEntriesResponse{}, nil
+}
+
+func TestPartialSuccessOption(t *testing.T) {
+	var logger *logging.Logger
+	var partialSuccess bool
+
+	entry := logging.Entry{Payload: "testing payload string"}
+	tests := []struct {
+		name string
+		do   func()
+	}{
+		{
+			name: "use PartialSuccess with LogSync",
+			do: func() {
+				logger.LogSync(context.TODO(), entry)
+			},
+		},
+		{
+			name: "use PartialSuccess with Log",
+			do: func() {
+				logger.Log(entry)
+				logger.Flush()
+			},
+		},
+	}
+
+	// setup fake server
+	fakeBackend := &writeLogEntriesTestHandler{}
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	gsrv := grpc.NewServer()
+	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
+	fakeServerAddr := l.Addr().String()
+	go func() {
+		if err := gsrv.Serve(l); err != nil {
+			panic(err)
+		}
+	}()
+	fakeBackend.hook = func(e *logpb.WriteLogEntriesRequest) {
+		partialSuccess = e.PartialSuccess
+	}
+	ctx := context.Background()
+	client, _ := logging.NewClient(ctx, "projects/test", option.WithEndpoint(fakeServerAddr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()))
+	defer client.Close()
+	logger = client.Logger("abc", logging.PartialSuccess())
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			partialSuccess = false
+			tc.do()
+			if !partialSuccess {
+				t.Fatal("e.PartialSuccess = false, want true")
 			}
 		})
 	}
