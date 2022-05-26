@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go v0.100.2
-	cloud.google.com/go/cbt v0.0.0-20220323182412-0d77640e139e
+	cloud.google.com/go/cbt v0.12.1
 	cloud.google.com/go/iam v0.3.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.0.1
