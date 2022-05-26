@@ -39,7 +39,6 @@ import (
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/storage/internal"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"github.com/googleapis/gax-go/v2"
@@ -85,12 +84,19 @@ const (
 	// ScopeReadWrite grants permissions to manage your
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
+
+	// aes256Algorithm is the AES256 encryption algorithm used with the
+	// Customer-Supplied Encryption Keys feature.
+	aes256Algorithm = "AES256"
+
+	// defaultGen indicates the latest object generation by default,
+	// using a negative value.
+	defaultGen = int64(-1)
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
-
+// TODO: remove this once header with invocation ID is applied to all methods.
 func setClientHeader(headers http.Header) {
-	headers.Set("x-goog-api-client", xGoogHeader)
+	headers.Set("x-goog-api-client", xGoogDefaultHeader)
 }
 
 // Client is a client for interacting with Google Cloud Storage.
@@ -916,7 +922,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	}
 	var obj *raw.Object
 	setClientHeader(call.Header())
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true)
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true, setRetryHeaderHTTP(call))
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1021,7 +1027,7 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if o.conds != nil && o.conds.MetagenerationMatch != 0 {
 		isIdempotent = true
 	}
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent)
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent, setRetryHeaderHTTP(call))
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1091,7 +1097,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0 {
 		isIdempotent = true
 	}
-	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent)
+	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent, setRetryHeaderHTTP(call))
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
@@ -1314,6 +1320,10 @@ type ObjectAttrs struct {
 
 	// Metadata represents user-provided metadata, in key/value pairs.
 	// It can be nil if no metadata is provided.
+	//
+	// For object downloads using Reader, metadata keys are sent as headers.
+	// Therefore, avoid setting metadata keys using characters that are not valid
+	// for headers. See https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6.
 	Metadata map[string]string
 
 	// Generation is the generation number of the object's content.
@@ -1994,11 +2004,24 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 	if copySource {
 		cs = "copy-source-"
 	}
-	headers.Set("x-goog-"+cs+"encryption-algorithm", "AES256")
+	headers.Set("x-goog-"+cs+"encryption-algorithm", aes256Algorithm)
 	headers.Set("x-goog-"+cs+"encryption-key", base64.StdEncoding.EncodeToString(key))
 	keyHash := sha256.Sum256(key)
 	headers.Set("x-goog-"+cs+"encryption-key-sha256", base64.StdEncoding.EncodeToString(keyHash[:]))
 	return nil
+}
+
+// toProtoCommonObjectRequestParams sets customer-supplied encryption to the proto library's CommonObjectRequestParams.
+func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequestParams {
+	if key == nil {
+		return nil
+	}
+	keyHash := sha256.Sum256(key)
+	return &storagepb.CommonObjectRequestParams{
+		EncryptionAlgorithm:      aes256Algorithm,
+		EncryptionKeyBytes:       key,
+		EncryptionKeySha256Bytes: keyHash[:],
+	}
 }
 
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
@@ -2009,7 +2032,7 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	err = run(ctx, func() error {
 		res, err = r.Context(ctx).Do()
 		return err
-	}, c.retry, true)
+	}, c.retry, true, setRetryHeaderHTTP(r))
 	if err != nil {
 		return "", err
 	}

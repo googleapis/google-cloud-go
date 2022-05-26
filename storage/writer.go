@@ -456,17 +456,12 @@ func (w *Writer) openGRPC() error {
 //
 // This is an experimental API and not intended for public use.
 func (w *Writer) startResumableUpload() error {
-	var common *storagepb.CommonRequestParams
-	if w.o.userProject != "" {
-		common = &storagepb.CommonRequestParams{UserProject: w.o.userProject}
-	}
 	spec, err := w.writeObjectSpec()
 	if err != nil {
 		return err
 	}
 	upres, err := w.o.c.gc.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-		WriteObjectSpec:     spec,
-		CommonRequestParams: common,
+		WriteObjectSpec: spec,
 	})
 
 	w.upid = upres.GetUploadId()

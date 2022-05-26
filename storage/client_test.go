@@ -213,6 +213,63 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	})
 }
 
+func TestDeleteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object that will be deleted.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		err = client.DeleteObject(context.Background(), bucket, want.Name, defaultGen, nil)
+		if err != nil {
+			t.Fatalf("client.DeleteBucket: %v", err)
+		}
+	})
+}
+
+func TestGetObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestListObjectsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
@@ -460,6 +517,74 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 	})
 }
 
+func TestDeleteBucketACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:          bucket,
+			PredefinedACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Assert bucket has two BucketACL entities, including project owner and predefinedACL.
+		acls, err := client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+		// Delete one BucketACL with AllUsers entity.
+		if err := client.DeleteBucketACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteBucketACL: %v", err)
+		}
+		// Assert bucket has one BucketACL.
+		acls, err = client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(acls), 1; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
+
+func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:                       bucket,
+			PredefinedDefaultObjectACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Assert bucket has two DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
+		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
+			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
+		}
+		// Delete one DefaultObjectACL with AllUsers entity.
+		if err := client.DeleteDefaultObjectACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteDefaultObjectACL: %v", err)
+		}
+		// Assert bucket has one DefaultObjectACL entity.
+		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 1; got != want {
+			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
+		}
+	})
+}
+
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
 	if !isEmulatorEnvironmentSet() {
@@ -501,6 +626,34 @@ func initEmulatorClients() func() error {
 		}
 		return verr
 	}
+}
+
+func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		b := &BucketAttrs{
+			Name: bucket,
+			RetentionPolicy: &RetentionPolicy{
+				RetentionPeriod: time.Minute,
+			},
+		}
+		// Create the bucket that will be locked.
+		_, err := client.CreateBucket(context.Background(), project, b)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Lock the bucket's retention policy.
+		err = client.LockBucketRetentionPolicy(context.Background(), b.Name, &BucketConditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatalf("client.LockBucketRetentionPolicy: %v", err)
+		}
+		got, err := client.GetBucket(context.Background(), bucket, nil)
+		if err != nil {
+			t.Fatalf("client.GetBucket: %v", err)
+		}
+		if !got.RetentionPolicy.IsLocked {
+			t.Error("Expected bucket retention policy to be locked, but was not.")
+		}
+	})
 }
 
 // transportClienttest executes the given function with a sub-test, a project name
