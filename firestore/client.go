@@ -299,7 +299,7 @@ func (c *Client) Batch() *WriteBatch {
 }
 
 // BulkWriter returns a BulkWriter instance.
-func (c *Client) BulkWriter(version int) (*CallersBulkWriter, error) {
+func (c *Client) BulkWriter() (*CallersBulkWriter, error) {
 	ctx := context.Background()
 	db := fmt.Sprintf("projects/%s/databases/%s", c.projectID, c.databaseID)
 

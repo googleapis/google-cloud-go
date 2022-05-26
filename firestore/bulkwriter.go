@@ -3,6 +3,7 @@ package firestore
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
@@ -16,15 +17,6 @@ const (
 	DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND = 500
 	RATE_LIMITER_MULTIPLIER                 = 1.5
 	RATE_LIMITER_MULTIPLIER_MILLIS          = 5 * 60 * 1000
-)
-
-type bulkWriterOperation int16
-
-const (
-	CREATE bulkWriterOperation = iota
-	UPDATE
-	SET
-	DELETE
 )
 
 type bulkWriterJob struct {
@@ -55,6 +47,7 @@ func NewCallersBulkWriter(ctx context.Context, database string) (*CallersBulkWri
 }
 
 // Close sends all enqueued writes in parallel.
+// CANNOT BE DEFERRED. This can cause a deadlock.
 // After calling Close(), calling any additional method automatically returns
 // with a nil error. This method completes when there are no more pending writes
 // in the queue.
@@ -64,6 +57,7 @@ func (b *CallersBulkWriter) Close() {
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
+// This method blocks execution.
 func (b *CallersBulkWriter) Flush() {
 	b.execute(true)
 	for len(b.backlogQueue) > 0 {
@@ -72,38 +66,22 @@ func (b *CallersBulkWriter) Flush() {
 	}
 }
 
-// Do holds the place of all four required operations: create, update, set, delete.
-// Only do one write per call to Do(), as you can only write to the same document 1x per batch.
-// This method signature is a bad design--be sure to fix
-func (bw *CallersBulkWriter) Do(dr *DocumentRef, op bulkWriterOperation, v interface{}) (*pb.WriteResult, error) {
-
+func (bw *CallersBulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResult, error) {
 	if !bw.isOpen {
 		return nil, errors.New("firestore: BulkWriter has been closed")
 	}
 
-	if dr == nil {
+	if doc == nil {
 		return nil, errors.New("firestore: nil document contents")
 	}
 
-	if op != DELETE && v == nil {
-		return nil, errors.New("firestore: too few parameters passed in to BulkWriter operation")
+	w, err := doc.newCreateWrites(datum)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("firestore: cannot create document with %v", datum))
 	}
 
-	var w []*pb.Write
-	var err error
 	r := make(chan *pb.WriteResult, 1)
 	e := make(chan error, 1)
-
-	// We can only do one write per document. The new*Writes methods return
-	// an array of Write objects. FOR NOW, just take the first write.
-	switch op {
-	case CREATE:
-		w, err = dr.newCreateWrites(v)
-	}
-
-	if err != nil {
-		return nil, err
-	}
 
 	j := bulkWriterJob{
 		result: r,
@@ -113,10 +91,15 @@ func (bw *CallersBulkWriter) Do(dr *DocumentRef, op bulkWriterOperation, v inter
 
 	bw.backlogQueue = append(bw.backlogQueue, j)
 
-	// NOTE: The space complexity of this pattern is linear. Is that okay?
+	// Non bonum. Be sure to change.
 	go bw.execute(false)
 
 	return <-r, <-e
+}
+
+// enqueue prepares BulkWriter jobs for execution and starts an execution thread.
+func (bw *CallersBulkWriter) enqueue(dr *DocumentRef, v interface{}) (*pb.WriteResult, error) {
+	return nil, fmt.Errorf("enqueue not implemented")
 }
 
 func (bw *CallersBulkWriter) makeBatch() []bulkWriterJob {

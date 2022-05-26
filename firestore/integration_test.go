@@ -26,6 +26,7 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"sync"
 	"testing"
 	"time"
 
@@ -1719,4 +1720,39 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	if got, want := totalCount, documentCount; got != want {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
 	}
+}
+
+type iTestBulkwriterCase struct {
+	DocRef DocumentRef
+	Value  interface{}
+}
+
+func TestIntegration_BulkWriter(t *testing.T) {
+	doc := iColl.NewDoc()
+
+	bw, err := iClient.BulkWriter()
+	if err != nil {
+		t.Errorf("error: BulkWriter creation %v\n", err)
+	}
+
+	wg := sync.WaitGroup{}
+	f := integrationTestMap
+
+	t.Log(wg)
+	t.Log(doc)
+	t.Log(bw)
+	t.Log(f)
+
+	wg.Add(1)
+	go func() {
+		wr, err := bw.Create(doc, f)
+		if err != nil {
+			t.Errorf("error: %v\n", err)
+			return
+		}
+
+		t.Logf("write result: %v", wr)
+		wg.Done()
+	}()
+	wg.Wait()
 }
