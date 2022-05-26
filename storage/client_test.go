@@ -279,9 +279,11 @@ func TestUpdateObjectEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
+		ct := time.Date(2022, 5, 25, 12, 12, 12, 0, time.UTC)
 		o := ObjectAttrs{
-			Bucket: bucket,
-			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+			CustomTime: ct,
 		}
 		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
 		if _, err := w.Write(randomBytesToWrite); err != nil {
@@ -298,7 +300,7 @@ func TestUpdateObjectEmulated(t *testing.T) {
 			ContentEncoding:    "gzip",
 			ContentDisposition: "",
 			CacheControl:       "",
-			ACL:                []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
+			CustomTime:         ct.Add(10 * time.Hour),
 		}
 
 		got, err := client.UpdateObject(context.Background(), bucket, o.Name, want, defaultGen, nil, &Conditions{MetagenerationMatch: 1})
@@ -329,7 +331,7 @@ func TestUpdateObjectEmulated(t *testing.T) {
 		if diff := cmp.Diff(got.CacheControl, want.CacheControl); diff != "" {
 			t.Errorf("got(-),want(+):\n%s", diff)
 		}
-		if diff := cmp.Diff(got.ACL, want.ACL); diff != "" {
+		if diff := cmp.Diff(got.CustomTime, want.CustomTime); diff != "" {
 			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 	})

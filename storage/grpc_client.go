@@ -460,8 +460,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	s := callSettings(c.settings, opts...)
 	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, bucket), object)
 	req := &storagepb.UpdateObjectRequest{
-		Object:        o,
-		PredefinedAcl: uattrs.PredefinedACL,
+		Object: o,
 	}
 	if err := applyCondsProto("grpcStorageClient.UpdateObject", gen, conds, req); err != nil {
 		return nil, err
@@ -501,10 +500,8 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if !uattrs.CustomTime.IsZero() {
 		fieldMask.Paths = append(fieldMask.Paths, "custom_time")
 	}
-	if uattrs.ACL != nil {
-		fieldMask.Paths = append(fieldMask.Paths, "acl")
-	}
 
+	// TODO(cathyo): Handle ACL and PredefinedACL. Pending b/233617896.
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
 
 	req.UpdateMask = fieldMask
