@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.4.0...datastream/v0.5.0) (2022-05-24)
+
+
+### Features
+
+* **datastream:** Include the location mixin client ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.3.0...datastream/v0.4.0) (2022-05-09)
 
 

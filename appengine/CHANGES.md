@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.2.0...appengine/v1.3.0) (2022-05-24)
+
+
+### Features
+
+* **appengine:** add Application.service_account feat: add client library method signature to retrieve Application by name feat: add Service.labels feat: add Version.app_engine_apis feat: add VpcAccessConnector.egress_setting ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.1.0...appengine/v1.2.0) (2022-02-23)
 
 
