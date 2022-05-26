@@ -45,7 +45,7 @@ var (
 				Path:   fmt.Sprintf("%s/doc-2", collectionPath),
 				ID:     "doc-2",
 			},
-			Operation: CREATE,
+			Operation: DELETE,
 			Value: map[string]interface{}{
 				"myval": 2,
 			},
@@ -56,7 +56,7 @@ var (
 				Path:   fmt.Sprintf("%s/doc-3", collectionPath),
 				ID:     "doc-3",
 			},
-			Operation: CREATE,
+			Operation: UPDATE,
 			Value: map[string]interface{}{
 				"myval": 3,
 			},
@@ -67,7 +67,7 @@ var (
 				Path:   fmt.Sprintf("%s/doc-4", collectionPath),
 				ID:     "doc-4",
 			},
-			Operation: CREATE,
+			Operation: SET,
 			Value: map[string]interface{}{
 				"myval": 4,
 			},

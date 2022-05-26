@@ -77,7 +77,38 @@ func (bw *CallersBulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.Wr
 
 	w, err := doc.newCreateWrites(datum)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("firestore: cannot create document with %v", datum))
+		return nil, errors.New(fmt.Sprintf("firestore: cannot create %v with %v", doc.ID, datum))
+	}
+
+	r := make(chan *pb.WriteResult, 1)
+	e := make(chan error, 1)
+
+	j := bulkWriterJob{
+		result: r,
+		write:  w[0],
+		err:    e,
+	}
+
+	bw.backlogQueue = append(bw.backlogQueue, j)
+
+	// Non bonum. Be sure to change.
+	go bw.execute(false)
+
+	return <-r, <-e
+}
+
+func (bw *CallersBulkWriter) Delete(doc *DocumentRef) (*pb.WriteResult, error) {
+	if !bw.isOpen {
+		return nil, errors.New("firestore: BulkWriter has been closed")
+	}
+
+	if doc == nil {
+		return nil, errors.New("firestore: nil document contents")
+	}
+
+	w, err := doc.newDeleteWrites(nil)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("firestore: cannot delete doc %v", doc.ID))
 	}
 
 	r := make(chan *pb.WriteResult, 1)
