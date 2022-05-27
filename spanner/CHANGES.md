@@ -1,5 +1,12 @@
 # Changes
 
+### [1.32.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.32.0...spanner/v1.32.1) (2022-05-27)
+
+
+### Bug Fixes
+
+* **spanner/spansql:** fix invalid timestamp literal formats ([#6077](https://github.com/googleapis/google-cloud-go/issues/6077)) ([6ab8bed](https://github.com/googleapis/google-cloud-go/commit/6ab8bed93a978e00a6c195d8cb4d574ca6db27c3))
+
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.31.0...spanner/v1.32.0) (2022-05-09)
 
 
