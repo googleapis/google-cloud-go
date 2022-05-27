@@ -45,6 +45,10 @@ type DatasetMetadata struct {
 	Access                  []*AccessEntry    // Access permissions.
 	DefaultEncryptionConfig *EncryptionConfig
 
+	// maxTimeTravelHours represents the number of hours for the max time travel for all tables
+	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
+	MaxTimeTravelHours time.Duration
+
 	// These fields are read-only.
 	CreationTime     time.Time
 	LastModifiedTime time.Time // When the dataset or any of its tables were modified.
@@ -71,6 +75,10 @@ type DatasetMetadataToUpdate struct {
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
+
+	// maxTimeTravelHours represents the number of hours for the max time travel for all tables
+	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
+	MaxTimeTravelHours optional.Duration
 
 	labelUpdater
 }
@@ -138,6 +146,7 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.Description = dm.Description
 	ds.Location = dm.Location
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
+	ds.MaxTimeTravelHours = int64(dm.MaxTimeTravelHours / time.Hour)
 	ds.Labels = dm.Labels
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
@@ -215,6 +224,7 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		CreationTime:            unixMillisToTime(d.CreationTime),
 		LastModifiedTime:        unixMillisToTime(d.LastModifiedTime),
 		DefaultTableExpiration:  time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
+		MaxTimeTravelHours:      time.Duration(d.MaxTimeTravelHours) * time.Hour,
 		DefaultEncryptionConfig: bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:             d.Description,
 		Name:                    d.FriendlyName,
@@ -281,6 +291,15 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 			ds.NullFields = append(ds.NullFields, "DefaultTableExpirationMs")
 		} else {
 			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
+		}
+	}
+	if dm.MaxTimeTravelHours != nil {
+		dur := optional.ToDuration(dm.MaxTimeTravelHours)
+		if dur == 0 {
+			// Send a null to delete the field.
+			ds.NullFields = append(ds.NullFields, "MaxTimeTravelHours")
+		} else {
+			ds.MaxTimeTravelHours = int64(dur / time.Hour)
 		}
 	}
 	if dm.DefaultEncryptionConfig != nil {

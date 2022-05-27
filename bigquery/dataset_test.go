@@ -322,6 +322,7 @@ func TestDatasetToBQ(t *testing.T) {
 			Name:                   "name",
 			Description:            "desc",
 			DefaultTableExpiration: time.Hour,
+			MaxTimeTravelHours:     time.Duration(181 * time.Minute), // an extra minute beyond the hour.
 			DefaultEncryptionConfig: &EncryptionConfig{
 				KMSKeyName: "some_key",
 			},
@@ -341,6 +342,7 @@ func TestDatasetToBQ(t *testing.T) {
 			FriendlyName:             "name",
 			Description:              "desc",
 			DefaultTableExpirationMs: 60 * 60 * 1000,
+			MaxTimeTravelHours:       3,
 			DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 				KmsKeyName: "some_key",
 			},
@@ -395,6 +397,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		FriendlyName:             "name",
 		Description:              "desc",
 		DefaultTableExpirationMs: 60 * 60 * 1000,
+		MaxTimeTravelHours:       3,
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName: "some_key",
 		},
@@ -421,6 +424,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Name:                   "name",
 		Description:            "desc",
 		DefaultTableExpiration: time.Hour,
+		MaxTimeTravelHours:     time.Duration(3 * time.Hour),
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
@@ -453,6 +457,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Description:            "desc",
 		Name:                   "name",
 		DefaultTableExpiration: time.Hour,
+		MaxTimeTravelHours:     time.Duration(181 * time.Minute),
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
@@ -468,6 +473,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Description:              "desc",
 		FriendlyName:             "name",
 		DefaultTableExpirationMs: 60 * 60 * 1000,
+		MaxTimeTravelHours:       3,
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName:      "some_key",
 			ForceSendFields: []string{"KmsKeyName"},
