@@ -1754,5 +1754,6 @@ func TestIntegration_BulkWriter(t *testing.T) {
 		t.Logf("write result: %v", wr)
 		wg.Done()
 	}()
+	bw.Flush()
 	wg.Wait()
 }
