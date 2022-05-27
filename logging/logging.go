@@ -826,6 +826,58 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
 
+func populateTraceInfo(e *Entry, req *http.Request) bool {
+	if req == nil {
+		if e.HTTPRequest != nil && e.HTTPRequest.Request != nil {
+			req = e.HTTPRequest.Request
+		} else {
+			return false
+		}
+	}
+	header := req.Header.Get("Traceparent")
+	if header != "" {
+		// do not use traceSampled flag defined by traceparent because
+		// flag's definition differs from expected by Cloud Tracing
+		traceID, spanID, _ := deconstructTraceParent(header)
+		if traceID != "" {
+			e.Trace = traceID
+			e.SpanID = spanID
+			return true
+		}
+	}
+	header = req.Header.Get("X-Cloud-Trace-Context")
+	if header != "" {
+		traceID, spanID, traceSampled := deconstructXCloudTraceContext(header)
+		if traceID != "" {
+			e.Trace = traceID
+			e.SpanID = spanID
+			// enforce sampling if required
+			e.TraceSampled = e.TraceSampled || traceSampled
+			return true
+		}
+	}
+	return false
+}
+
+// As per format described at https://www.w3.org/TR/trace-context/#traceparent-header-field-values
+var validTraceParentExpression = regexp.MustCompile("^(00)-([a-fA-F\\d]{32})-([a-f\\d]{16})-([a-fA-F\\d]{2})$")
+
+func deconstructTraceParent(s string) (traceID, spanID string, traceSampled bool) {
+	matches := validTraceParentExpression.FindStringSubmatch(s)
+	if matches != nil {
+		// regexp package does not support negative lookahead preventing all 0 validations
+		if matches[2] == "00000000000000000000000000000000" || matches[3] == "0000000000000000" {
+			return
+		}
+		flags, err := strconv.ParseInt(matches[4], 16, 16)
+		if err == nil {
+			traceSampled = (flags & 0x01) == 1
+		}
+		traceID, spanID = matches[2], matches[3]
+	}
+	return
+}
+
 var validXCloudTraceContext = regexp.MustCompile(
 	// Matches on "TRACE_ID"
 	`([a-f\d]+)?` +
@@ -846,7 +898,9 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	//   * traceSampled (optional): 	true
 	matches := validXCloudTraceContext.FindStringSubmatch(s)
 
-	traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
+	if matches != nil {
+		traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
+	}
 
 	if spanID == "0" {
 		spanID = ""
@@ -911,23 +965,11 @@ func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*log
 			}
 		}
 	}
-	if e.Trace == "" && e.HTTPRequest != nil && e.HTTPRequest.Request != nil {
-		traceHeader := e.HTTPRequest.Request.Header.Get("X-Cloud-Trace-Context")
-		if traceHeader != "" {
-			// Set to a relative resource name, as described at
-			// https://cloud.google.com/appengine/docs/flexible/go/writing-application-logs.
-			traceID, spanID, traceSampled := deconstructXCloudTraceContext(traceHeader)
-			if traceID != "" {
-				e.Trace = fmt.Sprintf("%s/traces/%s", parent, traceID)
-			}
-			if e.SpanID == "" {
-				e.SpanID = spanID
-			}
-
-			// If we previously hadn't set TraceSampled, let's retrieve it
-			// from the HTTP request's header, as per:
-			//   https://cloud.google.com/trace/docs/troubleshooting#force-trace
-			e.TraceSampled = e.TraceSampled || traceSampled
+	if e.Trace == "" {
+		populateTraceInfo(&e, nil)
+		// format trace
+		if e.Trace != "" && !strings.Contains(e.Trace, "/traces/") {
+			e.Trace = fmt.Sprintf("%s/traces/%s", parent, e.Trace)
 		}
 	}
 	req, err := fromHTTPRequest(e.HTTPRequest)
