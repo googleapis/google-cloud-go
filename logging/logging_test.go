@@ -336,9 +336,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
-				TraceSampled: true,
-			},
+			want: logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with blank span",
 			in: logging.Entry{
@@ -405,6 +403,163 @@ func TestToLogEntry(t *testing.T) {
 				},
 			},
 			wantError: errors.New("logging: HTTPRequest must have a non-nil Request"),
+		},
+		{
+			name: "Traceparent header with entry fields unset",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-01"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:  "projects/P/traces/105445aa7843bc8bf206b12000100012",
+				SpanId: "000000000000004a",
+			},
+		},
+		{
+			name: "traceparent header with preset sampled field",
+			in: logging.Entry{
+				TraceSampled: true,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100012",
+				SpanId:       "000000000000004a",
+				TraceSampled: true,
+			},
+		},
+		{
+			name: "Traceparent header together with x-trace-context header",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120000000/0000000000000bbb;o=1"},
+							"Traceparent":           {"00-105445aa7843bc8bf206b1200010aaaa-0000000000000aaa-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:  "projects/P/traces/105445aa7843bc8bf206b1200010aaaa",
+				SpanId: "0000000000000aaa",
+			},
+		},
+		{
+			name: "Traceparent header invalid protocol",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"01-105445aa7843bc8bf206b12000100012-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header short trace field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header long trace field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-1234567890123456789012345678901234567890-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header invalid trace field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-123456789012345678901234567890xx-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header trace field all 0s",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-00000000000000000000000000000000-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header short span field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-123456789012345-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header long span field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-12345678901234567890-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header invalid span field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-abcdefghijklmnop-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header span field all 0s",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-0000000000000000-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
 		},
 	}
 	for _, test := range tests {
