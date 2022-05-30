@@ -91,20 +91,20 @@ func (d Date) DaysSince(s Date) (days int) {
 	return int(deltaUnix / 86400)
 }
 
-// Before reports whether d1 occurs before d2.
-func (d1 Date) Before(d2 Date) bool {
-	if d1.Year != d2.Year {
-		return d1.Year < d2.Year
+// Before reports whether d occurs before d2.
+func (d Date) Before(d2 Date) bool {
+	if d.Year != d2.Year {
+		return d.Year < d2.Year
 	}
-	if d1.Month != d2.Month {
-		return d1.Month < d2.Month
+	if d.Month != d2.Month {
+		return d.Month < d2.Month
 	}
-	return d1.Day < d2.Day
+	return d.Day < d2.Day
 }
 
-// After reports whether d1 occurs after d2.
-func (d1 Date) After(d2 Date) bool {
-	return d2.Before(d1)
+// After reports whether d occurs after d2.
+func (d Date) After(d2 Date) bool {
+	return d2.Before(d)
 }
 
 // IsZero reports whether date fields are set to their default value.
@@ -185,24 +185,24 @@ func (t Time) IsZero() bool {
 	return (t.Hour == 0) && (t.Minute == 0) && (t.Second == 0) && (t.Nanosecond == 0)
 }
 
-// Before reports whether t1 occurs before t2.
-func (t1 Time) Before(t2 Time) bool {
-	if t1.Hour != t2.Hour {
-		return t1.Hour < t2.Hour
+// Before reports whether t occurs before t2.
+func (t Time) Before(t2 Time) bool {
+	if t.Hour != t2.Hour {
+		return t.Hour < t2.Hour
 	}
-	if t1.Minute != t2.Minute {
-		return t1.Minute < t2.Minute
+	if t.Minute != t2.Minute {
+		return t.Minute < t2.Minute
 	}
-	if t1.Second != t2.Second {
-		return t1.Second < t2.Second
+	if t.Second != t2.Second {
+		return t.Second < t2.Second
 	}
 
-	return t1.Nanosecond < t2.Nanosecond
+	return t.Nanosecond < t2.Nanosecond
 }
 
-// After reports whether t1 occurs after t2.
-func (t1 Time) After(t2 Time) bool {
-	return t2.Before(t1)
+// After reports whether t occurs after t2.
+func (t Time) After(t2 Time) bool {
+	return t2.Before(t)
 }
 
 // MarshalText implements the encoding.TextMarshaler interface.
@@ -282,14 +282,14 @@ func (dt DateTime) In(loc *time.Location) time.Time {
 	return time.Date(dt.Date.Year, dt.Date.Month, dt.Date.Day, dt.Time.Hour, dt.Time.Minute, dt.Time.Second, dt.Time.Nanosecond, loc)
 }
 
-// Before reports whether dt1 occurs before dt2.
-func (dt1 DateTime) Before(dt2 DateTime) bool {
-	return dt1.In(time.UTC).Before(dt2.In(time.UTC))
+// Before reports whether dt occurs before dt2.
+func (dt DateTime) Before(dt2 DateTime) bool {
+	return dt.In(time.UTC).Before(dt2.In(time.UTC))
 }
 
-// After reports whether dt1 occurs after dt2.
-func (dt1 DateTime) After(dt2 DateTime) bool {
-	return dt2.Before(dt1)
+// After reports whether dt occurs after dt2.
+func (dt DateTime) After(dt2 DateTime) bool {
+	return dt2.Before(dt)
 }
 
 // IsZero reports whether datetime fields are set to their default value.
