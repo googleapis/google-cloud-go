@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
@@ -11,7 +13,7 @@ import (
 
 const (
 	MAX_BATCH_SIZE                          = 20
-	RETRY_MAX_BATCH_SIZE                    = 10
+	RETRY_MAX_BATCH_SIZE                    = 10 // Do we even need this?
 	MAX_RETRY_ATTEMPTS                      = 10
 	DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND = 500
 	RATE_LIMITER_MULTIPLIER                 = 1.5
@@ -19,29 +21,34 @@ const (
 )
 
 type bulkWriterJob struct {
-	err      chan error
-	result   chan *pb.WriteResult
-	write    *pb.Write
-	attempts int
+	err      chan error           // send error responses to this channel
+	result   chan *pb.WriteResult // send the write results to this channel
+	write    *pb.Write            // the writes to apply to the database
+	attempts int                  // number of times this write has been attempted
 }
 
 type bulkWriterBatch struct {
-	bwr *pb.BatchWriteRequest // Request to send to the service
-	bwj []bulkWriterJob       // Corresponding jobs to return response
+	bwr *pb.BatchWriteRequest // request to send to the service
+	bwj []bulkWriterJob       // corresponding jobs to return response
 }
 
 type BulkWriter struct {
-	database     string             // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
-	ctx          context.Context    // context -- unneeded?
-	reqs         int                // current number of requests open
-	vc           *vkit.Client       // internal client
-	isOpen       bool               // signal that the BulkWriter is closed
-	isFlushing   chan bool          // signal that the BulkWriter needs to flush the queue
-	queue        chan bulkWriterJob // incoming write requests
-	backlogQueue []bulkWriterJob    // backlog of requests to send
+	database        string               // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
+	ctx             context.Context      // context
+	reqs            int64                // total number of requests sent
+	start           time.Time            // when this BulkWriter was started
+	vc              *vkit.Client         // internal client
+	isOpen          bool                 // signal that the BulkWriter is closed
+	flush           chan bool            // signal that the BulkWriter needs to flush the queue
+	isFlushing      bool                 // determines that a flush has occurred or not
+	doneFlushing    chan bool            // signals that the BulkWriter has flushed the queue
+	queue           chan bulkWriterJob   // incoming write requests
+	scheduled       chan bulkWriterBatch // scheduled requests
+	backlogQueue    []bulkWriterJob      // backlog of requests to send
+	maxOpsPerSecond int                  // Number of requests that can be sent per second.
 }
 
-// NewCallersBulkWriter creates a new instance of the CallersBulkWriter. This
+// NewBulkWriter creates a new instance of the BulkWriter. This
 // version of BulkWriter is intended to be used within go routines by the
 // callers.
 func NewBulkWriter(ctx context.Context, database string) (*BulkWriter, error) {
@@ -50,27 +57,39 @@ func NewBulkWriter(ctx context.Context, database string) (*BulkWriter, error) {
 		return nil, err
 	}
 
-	isFlushing := make(chan bool)
-	queue := make(chan bulkWriterJob)
+	f := make(chan bool)
+	q := make(chan bulkWriterJob)
+	d := make(chan bool)
+	scheduled := make(chan bulkWriterBatch)
 	bw := BulkWriter{
-		ctx:        ctx,
-		vc:         v,
-		database:   database,
-		isOpen:     true,
-		isFlushing: isFlushing,
-		queue:      queue,
+		ctx:             ctx,
+		vc:              v,
+		database:        database,
+		isOpen:          true,
+		flush:           f,
+		isFlushing:      false,
+		doneFlushing:    d,
+		queue:           q,
+		scheduled:       scheduled,
+		start:           time.Now(),
+		maxOpsPerSecond: DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND,
 	}
 
-	go bw.executor()
+	// Start the call receiving thread and request sending thread
+	go bw.receiver()
+	go bw.scheduler()
+
+	// Should we have a retry-er?
+
 	return &bw, nil
 }
 
-// Close sends all enqueued writes in parallel.
-// CANNOT BE DEFERRED. Deferring a call to Close() can cause a deadlock.
-// After calling Close(), calling any additional method automatically returns
-// with a nil error. This method completes when there are no more pending writes
+// End sends all enqueued writes in parallel and closes the BulkWriter to new requests.
+// CANNOT BE DEFERRED. Deferring a call to End() can cause a deadlock.
+// After calling End(), calling any additional method automatically returns
+// with an error. This method completes when there are no more pending writes
 // in the queue.
-func (b *BulkWriter) Close() {
+func (b *BulkWriter) End() {
 	// Make sure that flushing actually happens before isOpen changes values.
 	b.Flush()
 	b.isOpen = false
@@ -79,11 +98,16 @@ func (b *BulkWriter) Close() {
 // Flush commits all writes that have been enqueued up to this point in parallel.
 // This method blocks execution.
 func (b *BulkWriter) Flush() {
-	b.isFlushing <- true
+	b.flush <- true
+	// Block until we get the signal that we're done flushing.
+	<-b.doneFlushing
 }
 
 // Create adds a document creation write to the queue of writes to send.
 func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResult, error) {
+	r := make(chan *pb.WriteResult, 1)
+	e := make(chan error, 1)
+
 	if !bw.isOpen {
 		return nil, errors.New("firestore: BulkWriter has been closed")
 	}
@@ -94,11 +118,9 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResu
 
 	w, err := doc.newCreateWrites(datum)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("firestore: cannot create %v with %v", doc.ID, datum))
+		r <- nil
+		e <- errors.New(fmt.Sprintf("firestore: cannot create %v with %v", doc.ID, datum))
 	}
-
-	r := make(chan *pb.WriteResult, 1)
-	e := make(chan error, 1)
 
 	j := bulkWriterJob{
 		result: r,
@@ -107,11 +129,15 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResu
 	}
 
 	bw.queue <- j
+	// Note: This will increase the space complexity of this feature
 	return <-r, <-e
 }
 
 // Create adds a document deletion write to the queue of writes to send.
 func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.WriteResult, error) {
+	r := make(chan *pb.WriteResult, 1)
+	e := make(chan error, 1)
+
 	if !bw.isOpen {
 		return nil, errors.New("firestore: BulkWriter has been closed")
 	}
@@ -125,9 +151,6 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.Wr
 		return nil, errors.New(fmt.Sprintf("firestore: cannot delete doc %v", doc.ID))
 	}
 
-	r := make(chan *pb.WriteResult, 1)
-	e := make(chan error, 1)
-
 	j := bulkWriterJob{
 		result: r,
 		write:  w[0],
@@ -138,34 +161,50 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.Wr
 	return <-r, <-e
 }
 
-// executor stores up BulkWriter jobs to send and starts execution threads.
-// The executor method is the main "event loop" of the BulkWriter. It maintains
+// receiver gets write requests from the caller and sends BatchWriteRequests to the scheduler.
+// The receiver method is the main "event loop" of the BulkWriter. It maintains
 // the communication routes in between the caller and calls to the service.
-func (bw *BulkWriter) executor() {
-	for bwj := range bw.queue {
-		// Store the new bulkWriterJob in the BW queue
-		bw.backlogQueue = append(bw.backlogQueue, bwj)
+func (bw *BulkWriter) receiver() {
+	for {
+		log.Println("receiver: receiving")
+		var bs []bulkWriterBatch
 
-		// Determine whether we need to send a batch or flush the queue
 		select {
-		case <-bw.isFlushing:
-			go bw.execute(true)
-			bw.isFlushing <- false
-		default:
+		case bwj := <-bw.queue:
+			bw.backlogQueue = append(bw.backlogQueue, bwj)
 			if len(bw.backlogQueue) > MAX_BATCH_SIZE {
-				go bw.execute(false)
+				bs = bw.buildRequests(false)
+			} else if bw.isFlushing {
+				bs = bw.buildRequests(true)
 			}
+
+		case <-bw.flush:
+			log.Println("receiver: got call to flush")
+			bw.isFlushing = true
+			bs = bw.buildRequests(true)
 		}
 
-		if bw.isOpen == false {
+		for _, bwb := range bs {
+
+			// TODO: Tag a collection of bwjs as a Flush job.
+
+			// Send signal that flushed queue objects are being sent.
+			// This will only happen if we have items to send while flushing.
+			if bw.isFlushing {
+				bw.isFlushing = false
+				bw.doneFlushing <- true
+			}
+			log.Println("receiver: sending job to scheduler")
+			bw.scheduled <- bwb
+		}
+
+		if !bw.isOpen {
 			break
 		}
-
-		// TODO: Check for context.Done()
+		log.Println("receiver: end receiving")
 	}
-
-	// Send final call to flush the queue
-	go bw.execute(true)
+	close(bw.queue)
+	close(bw.scheduled)
 }
 
 // makeBatch creates MAX_BATCH_SIZE (or smaller) bundles of bulkWriterJobs for sending.
@@ -207,8 +246,8 @@ func (bw *BulkWriter) makeBatch() (bulkWriterBatch, error) {
 	return bulkWriterBatch{bwr: &bwr, bwj: b}, nil
 }
 
-// execute creates batches of writes to send, observes timing, and sends writes.
-func (bw *BulkWriter) execute(isFlushing bool) {
+// buildRequests bundles batches of writes into a series of batches
+func (bw *BulkWriter) buildRequests(isFlushing bool) []bulkWriterBatch {
 	// Build up the group of batches to send.
 	var bs []bulkWriterBatch
 	if isFlushing {
@@ -224,42 +263,36 @@ func (bw *BulkWriter) execute(isFlushing bool) {
 			bs = append(bs, b)
 		}
 	}
-
-	for _, bwb := range bs {
-		// TODO: Timing loop, checking number of requests in flight
-		// IDEA: Create a schedule() function that handles timing
-		//    + go routine with channel of bulkWriterBatch objects as param
-		//    + listens to channel, sends requests when channel is populated
-		bw.send(bwb.bwr, bwb.bwj)
-	}
+	return bs
 }
 
-/*
-
-
-func (bw *BulkWriter) schedule() {
-
-	// NEED TO KEEP TRACK OF TIME ELAPSED AND QPS
-	timeElapsed := bw.startTime - time.Now()
-	qps := bw.totalRequests / timeElapsed
-
-
-	waitTime := RATE_LIMITER_MULTIPLIER_MILLIS
+// scheduler manages the timing and rate multiplier logic for sending requests to the service.
+func (bw *BulkWriter) scheduler() {
 	for b := range bw.scheduled { // bw.scheduled is a channel of bulkWriterBatch objects
-		if qps < DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND {
-			bw.send(b.bwr, b.bwj)
+		elapsed := (bw.start.UnixMilli() - time.Now().UnixMilli()) / 1000
+		var qps int64
+		// Don't divide by 0!
+		if elapsed == 0 {
+			qps = 0
 		} else {
-			time.Sleep(time.Duration(waitTime))
-			bw.send(b.bwr, b.bwj)
+			qps = bw.reqs / elapsed
+		}
 
-			// Increase wait time?
+		if qps < int64(bw.maxOpsPerSecond) {
+			go bw.send(b.bwr, b.bwj)
+		} else {
+			time.Sleep(time.Duration(RATE_LIMITER_MULTIPLIER_MILLIS))
+			go bw.send(b.bwr, b.bwj)
 
 			// Increase number of requests per second at the five minute mark
+			mins := elapsed / 60
+			if mins%5 == 0 {
+				newOps := float64(bw.maxOpsPerSecond) * RATE_LIMITER_MULTIPLIER
+				bw.maxOpsPerSecond = int(newOps)
+			}
 		}
 	}
 }
-
-*/
 
 // send transmits writes to the service and matches response results to job channels.
 func (bw *BulkWriter) send(bwr *pb.BatchWriteRequest, bwj []bulkWriterJob) {
@@ -272,8 +305,6 @@ func (bw *BulkWriter) send(bwr *pb.BatchWriteRequest, bwj []bulkWriterJob) {
 			j.err <- err
 		}
 	}
-
-	bw.reqs--
 
 	// Iterate over the response. Match successful requests with unsuccessful
 	// requests.
