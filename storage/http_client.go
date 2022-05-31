@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -750,8 +751,100 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	}, nil
 }
 
-func (c *httpStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error {
-	return errMethodNotSupported
+func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	s := callSettings(c.settings, opts...)
+	pr, pw := io.Pipe()
+
+	attrs := params.attrs
+	mediaOpts := []googleapi.MediaOption{
+		googleapi.ChunkSize(params.chunkSize),
+	}
+	if c := attrs.ContentType; c != "" {
+		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
+	}
+	if params.chunkRetryDeadline != 0 {
+		mediaOpts = append(mediaOpts, googleapi.ChunkRetryDeadline(params.chunkRetryDeadline))
+	}
+
+	errorf := params.err
+	if errorf == nil {
+		errorf = func(_ error) {}
+	}
+
+	setObj := params.setObj
+	if setObj == nil {
+		setObj = func(_ *ObjectAttrs) {}
+	}
+
+	go func() {
+		defer close(params.donec)
+
+		rawObj := attrs.toRawObject(params.bucket)
+		if params.sendCRC32C {
+			rawObj.Crc32c = encodeUint32(attrs.CRC32C)
+		}
+		if attrs.MD5 != nil {
+			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
+		}
+		call := c.raw.Objects.Insert(params.bucket, rawObj).
+			Media(pr, mediaOpts...).
+			Projection("full").
+			Context(params.ctx).
+			Name(params.object)
+
+		if params.progress != nil {
+			call.ProgressUpdater(func(n, _ int64) { params.progress(n) })
+		}
+		if attrs.KMSKeyName != "" {
+			call.KmsKeyName(attrs.KMSKeyName)
+		}
+		if attrs.PredefinedACL != "" {
+			call.PredefinedAcl(attrs.PredefinedACL)
+		}
+		if err := setEncryptionHeaders(call.Header(), params.encryptionKey, false); err != nil {
+			errorf(err)
+			pr.CloseWithError(err)
+			return
+		}
+		var resp *raw.Object
+		err := applyConds("NewWriter", params.attrs.Generation, params.conds, call)
+		if err == nil {
+			if s.userProject != "" {
+				call.UserProject(s.userProject)
+			}
+			setClientHeader(call.Header())
+
+			// The internals that perform call.Do automatically retry both the initial
+			// call to set up the upload as well as calls to upload individual chunks
+			// for a resumable upload (as long as the chunk size is non-zero). Hence
+			// there is no need to add retries here.
+
+			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
+			isIdempotent := params.conds != nil && (params.conds.GenerationMatch >= 0 || params.conds.DoesNotExist == true)
+			var useRetry bool
+			if (s.retry == nil || s.retry.policy == RetryIdempotent) && isIdempotent {
+				useRetry = true
+			} else if s.retry != nil && s.retry.policy == RetryAlways {
+				useRetry = true
+			}
+			if useRetry {
+				if s.retry != nil {
+					call.WithRetry(s.retry.backoff, s.retry.shouldRetry)
+				} else {
+					call.WithRetry(nil, nil)
+				}
+			}
+			resp, err = call.Do()
+		}
+		if err != nil {
+			errorf(err)
+			pr.CloseWithError(err)
+			return
+		}
+		setObj(newObject(resp))
+	}()
+
+	return pw, nil
 }
 
 // IAM methods.

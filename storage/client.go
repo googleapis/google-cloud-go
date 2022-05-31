@@ -16,6 +16,8 @@ package storage
 
 import (
 	"context"
+	"io"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -84,7 +86,7 @@ type storageClient interface {
 	RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error)
 
 	NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error)
-	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
+	OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error)
 
 	// IAM methods.
 
@@ -210,6 +212,24 @@ type userProjectOption struct {
 }
 
 func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
+
+type openWriterParams struct {
+	chunkSize          int
+	chunkRetryDeadline time.Duration
+	ctx                context.Context
+
+	bucket        string
+	object        string
+	attrs         *ObjectAttrs
+	conds         *Conditions
+	encryptionKey []byte
+	sendCRC32C    bool
+
+	donec    chan struct{}
+	err      func(error)
+	progress func(int64)
+	setObj   func(*ObjectAttrs)
+}
 
 type newRangeReaderParams struct {
 	bucket        string
