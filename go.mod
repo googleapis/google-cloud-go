@@ -3,17 +3,17 @@ module cloud.google.com/go
 go 1.15
 
 require (
-	cloud.google.com/go/compute v1.6.0
-	cloud.google.com/go/storage v1.22.0
+	cloud.google.com/go/compute v1.6.1
+	cloud.google.com/go/storage v1.22.1
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-cmp v0.5.7
-	github.com/google/martian/v3 v3.3.2
-	github.com/googleapis/gax-go/v2 v2.3.0
+	github.com/google/go-cmp v0.5.8
+	github.com/google/martian/v3 v3.2.1
+	github.com/googleapis/gax-go/v2 v2.4.0
 	go.opencensus.io v0.23.0
-	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
-	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f
-	google.golang.org/api v0.74.0
-	google.golang.org/genproto v0.0.0-20220414192740-2d67ff6cf2b4
-	google.golang.org/grpc v1.45.0
+	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
+	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df
+	google.golang.org/api v0.81.0
+	google.golang.org/genproto v0.0.0-20220531173845-685668d2de03
+	google.golang.org/grpc v1.46.2
 	google.golang.org/protobuf v1.28.0
 )

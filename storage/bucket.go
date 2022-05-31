@@ -103,7 +103,7 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
-	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true)
+	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // Delete deletes the Bucket.
@@ -116,7 +116,7 @@ func (b *BucketHandle) Delete(ctx context.Context) (err error) {
 		return err
 	}
 
-	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 func (b *BucketHandle) newDeleteCall() (*raw.BucketsDeleteCall, error) {
@@ -184,7 +184,7 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 	err = run(ctx, func() error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
@@ -232,7 +232,7 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 		return err
 	}
 
-	if err := run(ctx, call, b.retry, isIdempotent); err != nil {
+	if err := run(ctx, call, b.retry, isIdempotent, setRetryHeaderHTTP(req)); err != nil {
 		return nil, err
 	}
 	return newBucket(rawBucket)
@@ -945,6 +945,81 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 	}
 }
 
+func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
+	if ua == nil {
+		return &storagepb.Bucket{}
+	}
+
+	// TODO(cathyo): Handle labels. Pending b/230510191.
+
+	var v *storagepb.Bucket_Versioning
+	if ua.VersioningEnabled != nil {
+		v = &storagepb.Bucket_Versioning{Enabled: optional.ToBool(ua.VersioningEnabled)}
+	}
+	var bb *storagepb.Bucket_Billing
+	if ua.RequesterPays != nil {
+		bb = &storage.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
+	}
+	var bktIAM *storagepb.Bucket_IamConfig
+	var ublaEnabled bool
+	var bktPolicyOnlyEnabled bool
+	if ua.UniformBucketLevelAccess != nil {
+		ublaEnabled = optional.ToBool(ua.UniformBucketLevelAccess.Enabled)
+	}
+	if ua.BucketPolicyOnly != nil {
+		bktPolicyOnlyEnabled = optional.ToBool(ua.BucketPolicyOnly.Enabled)
+	}
+	if ublaEnabled || bktPolicyOnlyEnabled {
+		bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		}
+	}
+	if ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
+		bktIAM.PublicAccessPrevention = ua.PublicAccessPrevention.String()
+	}
+	var defaultHold bool
+	if ua.DefaultEventBasedHold != nil {
+		defaultHold = optional.ToBool(ua.DefaultEventBasedHold)
+	}
+	var lifecycle Lifecycle
+	if ua.Lifecycle != nil {
+		lifecycle = *ua.Lifecycle
+	}
+	var bktACL []*storagepb.BucketAccessControl
+	if ua.acl != nil {
+		bktACL = toProtoBucketACL(ua.acl)
+	}
+	if ua.PredefinedACL != "" {
+		// Clear ACL or the call will fail.
+		bktACL = nil
+	}
+	var bktDefaultObjectACL []*storagepb.ObjectAccessControl
+	if ua.defaultObjectACL != nil {
+		bktDefaultObjectACL = toProtoObjectACL(ua.defaultObjectACL)
+	}
+	if ua.PredefinedDefaultObjectACL != "" {
+		// Clear ACLs or the call will fail.
+		bktDefaultObjectACL = nil
+	}
+
+	return &storagepb.Bucket{
+		StorageClass:          ua.StorageClass,
+		Acl:                   bktACL,
+		DefaultObjectAcl:      bktDefaultObjectACL,
+		DefaultEventBasedHold: defaultHold,
+		Versioning:            v,
+		Billing:               bb,
+		Lifecycle:             toProtoLifecycle(lifecycle),
+		RetentionPolicy:       ua.RetentionPolicy.toProtoRetentionPolicy(),
+		Cors:                  toProtoCORS(ua.CORS),
+		Encryption:            ua.Encryption.toProtoBucketEncryption(),
+		Logging:               ua.Logging.toProtoBucketLogging(),
+		Website:               ua.Website.toProtoBucketWebsite(),
+		IamConfig:             bktIAM,
+		Rpo:                   ua.RPO.String(),
+	}
+}
+
 // CORS is the bucket's Cross-Origin Resource Sharing (CORS) configuration.
 type CORS struct {
 	// MaxAge is the value to return in the Access-Control-Max-Age
@@ -1056,6 +1131,17 @@ type BucketAttrsToUpdate struct {
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
+
+	// acl is the list of access control rules on the bucket.
+	// It is unexported and only used internally by the gRPC client.
+	// Library users should use ACLHandle methods directly.
+	acl []ACLRule
+
+	// defaultObjectACL is the list of access controls to
+	// apply to new objects when no object ACL is provided.
+	// It is unexported and only used internally by the gRPC client.
+	// Library users should use ACLHandle methods directly.
+	defaultObjectACL []ACLRule
 
 	setLabels    map[string]string
 	deleteLabels map[string]bool
@@ -1255,7 +1341,7 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	return run(ctx, func() error {
 		_, err := req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // applyBucketConds modifies the provided call using the conditions in conds.
@@ -1326,7 +1412,7 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 }
 
 func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) {
-	if rp == nil {
+	if rp == nil || rp.EffectiveTime == "" {
 		return nil, nil
 	}
 	t, err := time.Parse(time.RFC3339, rp.EffectiveTime)
@@ -1913,7 +1999,7 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.bucket.retry, true)
+	}, it.bucket.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		var e *googleapi.Error
 		if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -1984,6 +2070,9 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 // Note: This method is not safe for concurrent operations without explicit synchronization.
 func (it *BucketIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
+// TODO: When the transport-agnostic client interface is integrated into the Veneer,
+// this method should be removed, and the iterator should be initialized by the
+// transport-specific client implementations.
 func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, err error) {
 	req := it.client.raw.Buckets.List(it.projectID)
 	setClientHeader(req.Header())
@@ -1997,7 +2086,7 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.client.retry, true)
+	}, it.client.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return "", err
 	}

@@ -305,7 +305,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/cloud/vision/v1",
 		Pkg:                   "vision",
-		ImportPath:            "cloud.google.com/go/vision/apiv1",
+		ImportPath:            "cloud.google.com/go/vision/v2/apiv1",
 		GRPCServiceConfigPath: "vision_grpc_service_config.json",
 		ApiServiceConfigPath:  "vision_v1.yaml",
 		ReleaseLevel:          "ga",
@@ -433,7 +433,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/cloud/recaptchaenterprise/v1",
 		Pkg:                   "recaptchaenterprise",
-		ImportPath:            "cloud.google.com/go/recaptchaenterprise/apiv1",
+		ImportPath:            "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
 		GRPCServiceConfigPath: "recaptchaenterprise_grpc_service_config.json",
 		ApiServiceConfigPath:  "recaptchaenterprise_v1.yaml",
 		ReleaseLevel:          "ga",
@@ -1407,6 +1407,87 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "run_grpc_service_config.json",
 		ApiServiceConfigPath:  "run_v2.yaml",
 		// GA after 2022/04/30
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/assuredworkloads/v1",
+		Pkg:                   "assuredworkloads",
+		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1",
+		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
+		ApiServiceConfigPath:  "assuredworkloads_v1.yaml",
+		// GA after 2022/06/04
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/binaryauthorization/v1",
+		Pkg:                   "binaryauthorization",
+		ImportPath:            "cloud.google.com/go/binaryauthorization/apiv1",
+		GRPCServiceConfigPath: "binaryauthorization_grpc_service_config.json",
+		ApiServiceConfigPath:  "binaryauthorization_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/datastream/v1",
+		Pkg:                   "datastream",
+		ImportPath:            "cloud.google.com/go/datastream/apiv1",
+		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
+		ApiServiceConfigPath:  "datastream_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/notebooks/v1",
+		Pkg:                   "notebooks",
+		ImportPath:            "cloud.google.com/go/notebooks/apiv1",
+		GRPCServiceConfigPath: "notebooks_grpc_service_config.json",
+		ApiServiceConfigPath:  "notebooks_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/workflows/v1",
+		Pkg:                   "workflows",
+		ImportPath:            "cloud.google.com/go/workflows/apiv1",
+		GRPCServiceConfigPath: "workflows_grpc_service_config.json",
+		ApiServiceConfigPath:  "workflows_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/gkebackup/v1",
+		Pkg:                   "gkebackup",
+		ImportPath:            "cloud.google.com/go/gkebackup/apiv1",
+		GRPCServiceConfigPath: "gkebackup_grpc_service_config.json",
+		ApiServiceConfigPath:  "gkebackup_v1.yaml",
+		// GA after 2022/06/16
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/gkemulticloud/v1",
+		Pkg:                   "gkemulticloud",
+		ImportPath:            "cloud.google.com/go/gkemulticloud/apiv1",
+		GRPCServiceConfigPath: "gkemulticloud_grpc_service_config.json",
+		ApiServiceConfigPath:  "gkemulticloud_v1.yaml",
+		// GA after 2022/06/16
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/retail/v2alpha",
+		Pkg:                   "retail",
+		ImportPath:            "cloud.google.com/go/retail/apiv2alpha",
+		GRPCServiceConfigPath: "retail_grpc_service_config.json",
+		ApiServiceConfigPath:  "retail_v2alpha.yaml",
+		// GA after 2022/06/23
+		ReleaseLevel: "alpha",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/retail/v2beta",
+		Pkg:                   "retail",
+		ImportPath:            "cloud.google.com/go/retail/apiv2beta",
+		GRPCServiceConfigPath: "retail_grpc_service_config.json",
+		ApiServiceConfigPath:  "retail_v2beta.yaml",
+		// GA after 2022/06/23
 		ReleaseLevel: "beta",
 	},
 

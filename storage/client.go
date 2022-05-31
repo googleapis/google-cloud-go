@@ -43,21 +43,21 @@ type storageClient interface {
 
 	GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error)
 	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
-	ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error)
+	ListBuckets(ctx context.Context, project string, opts ...storageOption) *BucketIterator
 	Close() error
 
 	// Bucket methods.
 
 	DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
 	GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
-	UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
+	UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
 	LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
-	ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) (*ObjectIterator, error)
+	ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator
 
 	// Object metadata methods.
 
-	DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error
-	GetObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+	DeleteObject(ctx context.Context, bucket, object string, gen int64, conds *Conditions, opts ...storageOption) error
+	GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
 	UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
 
 	// Default Object ACL methods.
@@ -83,7 +83,7 @@ type storageClient interface {
 	ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error)
 	RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error)
 
-	OpenReader(ctx context.Context, r *Reader, opts ...storageOption) error
+	NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error)
 	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
 
 	// IAM methods.
@@ -210,6 +210,16 @@ type userProjectOption struct {
 }
 
 func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
+
+type newRangeReaderParams struct {
+	bucket        string
+	conds         *Conditions
+	encryptionKey []byte
+	gen           int64
+	length        int64
+	object        string
+	offset        int64
+}
 
 type composeObjectRequest struct {
 	dstBucket     string

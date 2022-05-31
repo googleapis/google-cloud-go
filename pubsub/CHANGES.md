@@ -1,5 +1,38 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.21.1...pubsub/v1.22.0) (2022-05-31)
+
+
+### Features
+
+* **pubsub:** add BigQuery configuration for subscriptions ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+* **pubsub:** add min extension period ([#6041](https://github.com/googleapis/google-cloud-go/issues/6041)) ([f2407c7](https://github.com/googleapis/google-cloud-go/commit/f2407c7013bbfdfc0103296accc828b0be674f5d))
+
+
+### Bug Fixes
+
+* **pubsub:** disable deprecated BufferedByteLimit when using MaxOutstandingBytes ([#6009](https://github.com/googleapis/google-cloud-go/issues/6009)) ([dbfdf76](https://github.com/googleapis/google-cloud-go/commit/dbfdf762c77f9cfad637c573b06f0a49e01316f3))
+
+### [1.21.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.21.0...pubsub/v1.21.1) (2022-05-04)
+
+
+### Bug Fixes
+
+* **pubsub:** mark ignore option default for publish flow control ([#5983](https://github.com/googleapis/google-cloud-go/issues/5983)) ([3f41531](https://github.com/googleapis/google-cloud-go/commit/3f41531579b7a55acea66fec8362e9134125c8a0))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.20.0...pubsub/v1.21.0) (2022-04-26)
+
+
+### Features
+
+* **pubsub:** deprecate synchronous mode ([#5910](https://github.com/googleapis/google-cloud-go/issues/5910)) ([bda5179](https://github.com/googleapis/google-cloud-go/commit/bda5179fa240b1468cd1043128493f634be28986))
+
+
+### Bug Fixes
+
+* **pubsub:** enable updating enable_exactly_once_delivery in fake pubsub ([#5940](https://github.com/googleapis/google-cloud-go/issues/5940)) ([ee44bf6](https://github.com/googleapis/google-cloud-go/commit/ee44bf646af1c38ed0943a997051b0225e22a6bf))
+* **pubsub:** nack messages properly with error from receive scheduler ([#5909](https://github.com/googleapis/google-cloud-go/issues/5909)) ([80edea4](https://github.com/googleapis/google-cloud-go/commit/80edea40dd722efb3c15cd3de3f24e0e7ad08ed7))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.19.0...pubsub/v1.20.0) (2022-04-11)
 
 

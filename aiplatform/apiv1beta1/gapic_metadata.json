@@ -716,6 +716,11 @@
                 "MergeVersionAliases"
               ]
             },
+            "UpdateExplanationDataset": {
+              "methods": [
+                "UpdateExplanationDataset"
+              ]
+            },
             "UpdateModel": {
               "methods": [
                 "UpdateModel"

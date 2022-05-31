@@ -1,0 +1,243 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/storage/apiv1beta1",
+    "version": "1.32.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.storage.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigquerystorage_v1beta1_generated_BigQueryStorage_BatchCreateReadSessionStreams_sync",
+      "title": "bigquerystorage BatchCreateReadSessionStreams Sample",
+      "description": "BatchCreateReadSessionStreams creates additional streams for a ReadSession. This API can be used to\ndynamically adjust the parallelism of a batch processing task upwards by\nadding additional workers.",
+      "file": "BigQueryStorageClient/BatchCreateReadSessionStreams/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateReadSessionStreams",
+        "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient.BatchCreateReadSessionStreams",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.BatchCreateReadSessionStreamsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "storagepb.BatchCreateReadSessionStreamsResponse",
+        "client": {
+          "shortName": "BigQueryStorageClient",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient"
+        },
+        "method": {
+          "shortName": "BatchCreateReadSessionStreams",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage.BatchCreateReadSessionStreams",
+          "service": {
+            "shortName": "BigQueryStorage",
+            "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1beta1_generated_BigQueryStorage_CreateReadSession_sync",
+      "title": "bigquerystorage CreateReadSession Sample",
+      "description": "CreateReadSession creates a new read session. A read session divides the contents of a\nBigQuery table into one or more streams, which can then be used to read\ndata from the table. The read session also specifies properties of the\ndata to be read, such as a list of columns or a push-down filter describing\nthe rows to be returned.\n\nA particular row can be read by at most one stream. When the caller has\nreached the end of each stream in the session, then all the data in the\ntable has been read.\n\nRead sessions automatically expire 24 hours after they are created and do\nnot require manual clean-up by the caller.",
+      "file": "BigQueryStorageClient/CreateReadSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReadSession",
+        "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient.CreateReadSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.CreateReadSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "storagepb.ReadSession",
+        "client": {
+          "shortName": "BigQueryStorageClient",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient"
+        },
+        "method": {
+          "shortName": "CreateReadSession",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage.CreateReadSession",
+          "service": {
+            "shortName": "BigQueryStorage",
+            "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1beta1_generated_BigQueryStorage_FinalizeStream_sync",
+      "title": "bigquerystorage FinalizeStream Sample",
+      "description": "FinalizeStream triggers the graceful termination of a single stream in a ReadSession. This\nAPI can be used to dynamically adjust the parallelism of a batch processing\ntask downwards without losing data.\n\nThis API does not delete the stream – it remains visible in the\nReadSession, and any data processed by the stream is not released to other\nstreams. However, no additional data will be assigned to the stream once\nthis call completes. Callers must continue reading data on the stream until\nthe end of the stream is reached so that data which has already been\nassigned to the stream will be processed.\n\nThis method will return an error if there are no other live streams\nin the Session, or if SplitReadStream() has been called on the given\nStream.",
+      "file": "BigQueryStorageClient/FinalizeStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FinalizeStream",
+        "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient.FinalizeStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.FinalizeStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigQueryStorageClient",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient"
+        },
+        "method": {
+          "shortName": "FinalizeStream",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage.FinalizeStream",
+          "service": {
+            "shortName": "BigQueryStorage",
+            "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1beta1_generated_BigQueryStorage_ReadRows_sync",
+      "title": "bigquerystorage ReadRows Sample",
+      "description": "ReadRows reads rows from the table in the format prescribed by the read session.\nEach response contains one or more table rows, up to a maximum of 10 MiB\nper response; read requests which attempt to read individual rows larger\nthan this will fail.\n\nEach request also returns a set of stream statistics reflecting the\nestimated total number of rows in the read stream. This number is computed\nbased on the total table size and the number of active streams in the read\nsession, and may change as other streams continue to read data.",
+      "file": "BigQueryStorageClient/ReadRows/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReadRows",
+        "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient.ReadRows",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.ReadRowsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigQueryStorageClient",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient"
+        },
+        "method": {
+          "shortName": "ReadRows",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage.ReadRows",
+          "service": {
+            "shortName": "BigQueryStorage",
+            "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 1,
+          "end": -1,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1beta1_generated_BigQueryStorage_SplitReadStream_sync",
+      "title": "bigquerystorage SplitReadStream Sample",
+      "description": "SplitReadStream splits a given read stream into two Streams. These streams are referred to\nas the primary and the residual of the split. The original stream can still\nbe read from in the same manner as before. Both of the returned streams can\nalso be read from, and the total rows return by both child streams will be\nthe same as the rows read from the original stream.\n\nMoreover, the two child streams will be allocated back to back in the\noriginal Stream. Concretely, it is guaranteed that for streams Original,\nPrimary, and Residual, that Original[0-j] = Primary[0-j] and\nOriginal[j-n] = Residual[0-m] once the streams have been read to\ncompletion.\n\nThis method is guaranteed to be idempotent.",
+      "file": "BigQueryStorageClient/SplitReadStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SplitReadStream",
+        "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient.SplitReadStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.SplitReadStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "storagepb.SplitReadStreamResponse",
+        "client": {
+          "shortName": "BigQueryStorageClient",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorageClient"
+        },
+        "method": {
+          "shortName": "SplitReadStream",
+          "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage.SplitReadStream",
+          "service": {
+            "shortName": "BigQueryStorage",
+            "fullName": "google.cloud.bigquery.storage.v1beta1.BigQueryStorage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

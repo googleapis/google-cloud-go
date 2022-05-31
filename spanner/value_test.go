@@ -2273,6 +2273,70 @@ func TestDecodeStructWithPointers(t *testing.T) {
 	}
 }
 
+func TestDecodeStructArray(t *testing.T) {
+	stype := &sppb.StructType{Fields: []*sppb.StructType_Field{
+		{Name: "C", Type: &sppb.Type{Code: sppb.TypeCode_ARRAY,
+			ArrayElementType: &sppb.Type{
+				Code: sppb.TypeCode_STRUCT,
+				StructType: &sppb.StructType{Fields: []*sppb.StructType_Field{
+					{Name: "A", Type: intType()},
+					{Name: "B", Type: intType()},
+				}},
+			},
+		},
+		},
+	},
+	}
+	lv := listValueProto(listProto(listProto(intProto(1), intProto(2))))
+
+	type (
+		// inner struct
+		S2 struct {
+			A int64 `spanner:"A"`
+		}
+
+		S1 struct {
+			C []*S2 `spanner:"C"`
+		}
+	)
+
+	var (
+		test1 S1
+		test2 S1
+	)
+	for _, test := range []struct {
+		desc    string
+		lenient bool
+		ptr     interface{}
+		want    interface{}
+		fail    bool
+	}{
+		{
+			// when the Spanner returns more fields in inner struct compared to Go inner struct
+			desc:    "decode to S1 with lenient enabled",
+			ptr:     &test1,
+			want:    &S1{C: []*S2{{A: 1}}},
+			lenient: true,
+		},
+		{
+			desc:    "decode to S1 with lenient disabled",
+			ptr:     &test2,
+			fail:    true,
+			lenient: false,
+		},
+	} {
+		err := decodeStruct(stype, lv, test.ptr, test.lenient)
+		if (err != nil) != test.fail {
+			t.Errorf("%s: got error %v, wanted fail: %v", test.desc, err, test.fail)
+		}
+		if err == nil {
+			if !testutil.Equal(test.ptr, test.want) {
+				t.Errorf("%s: got %+v, want %+v", test.desc, test.ptr, test.want)
+			}
+		}
+	}
+}
+
 func TestEncodeStructValueDynamicStructs(t *testing.T) {
 	dynStructType := reflect.StructOf([]reflect.StructField{
 		{Name: "A", Type: reflect.TypeOf(0), Tag: `spanner:"a"`},

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v0.3.0...notebooks/v0.4.0) (2022-05-09)
+
+
+### Features
+
+* **notebooks:** start generating apiv1 ([#6004](https://github.com/googleapis/google-cloud-go/issues/6004)) ([1084ab1](https://github.com/googleapis/google-cloud-go/commit/1084ab16ca4dab6022bb06fdf5c380e52044171f)), refs [#5961](https://github.com/googleapis/google-cloud-go/issues/5961)
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v0.2.0...notebooks/v0.3.0) (2022-02-23)
 
 

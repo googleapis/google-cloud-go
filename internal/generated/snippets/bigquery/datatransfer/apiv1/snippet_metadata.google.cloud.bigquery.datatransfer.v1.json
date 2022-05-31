@@ -1,0 +1,702 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
+    "version": "1.32.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.datatransfer.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_CheckValidCreds_sync",
+      "title": "bigquerydatatransfer CheckValidCreds Sample",
+      "description": "CheckValidCreds returns true if valid credentials exist for the given data source and\nrequesting user.",
+      "file": "Client/CheckValidCreds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckValidCreds",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.CheckValidCreds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.CheckValidCredsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.CheckValidCredsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "CheckValidCreds",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.CheckValidCreds",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_CreateTransferConfig_sync",
+      "title": "bigquerydatatransfer CreateTransferConfig Sample",
+      "description": "CreateTransferConfig creates a new data transfer configuration.",
+      "file": "Client/CreateTransferConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTransferConfig",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.CreateTransferConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.CreateTransferConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.TransferConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateTransferConfig",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.CreateTransferConfig",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_DeleteTransferConfig_sync",
+      "title": "bigquerydatatransfer DeleteTransferConfig Sample",
+      "description": "DeleteTransferConfig deletes a data transfer configuration, including any associated transfer\nruns and logs.",
+      "file": "Client/DeleteTransferConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTransferConfig",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.DeleteTransferConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.DeleteTransferConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteTransferConfig",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.DeleteTransferConfig",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_DeleteTransferRun_sync",
+      "title": "bigquerydatatransfer DeleteTransferRun Sample",
+      "description": "DeleteTransferRun deletes the specified transfer run.",
+      "file": "Client/DeleteTransferRun/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTransferRun",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.DeleteTransferRun",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.DeleteTransferRunRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteTransferRun",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.DeleteTransferRun",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_EnrollDataSources_sync",
+      "title": "bigquerydatatransfer EnrollDataSources Sample",
+      "description": "EnrollDataSources enroll data sources in a user project. This allows users to create transfer\nconfigurations for these data sources. They will also appear in the\nListDataSources RPC and as such, will appear in the BigQuery UI\n‘https: //bigquery.cloud.google.com (at https: //bigquery.cloud.google.com)’ (and the documents can be found at\nhttps: //cloud.google.com/bigquery/bigquery-web-ui (at https: //cloud.google.com/bigquery/bigquery-web-ui) and\nhttps: //cloud.google.com/bigquery/docs/working-with-transfers (at https: //cloud.google.com/bigquery/docs/working-with-transfers)).",
+      "file": "Client/EnrollDataSources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnrollDataSources",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.EnrollDataSources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.EnrollDataSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "EnrollDataSources",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.EnrollDataSources",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_GetDataSource_sync",
+      "title": "bigquerydatatransfer GetDataSource Sample",
+      "description": "GetDataSource retrieves a supported data source and returns its settings.",
+      "file": "Client/GetDataSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataSource",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.GetDataSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.GetDataSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.DataSource",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDataSource",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.GetDataSource",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_GetTransferConfig_sync",
+      "title": "bigquerydatatransfer GetTransferConfig Sample",
+      "description": "GetTransferConfig returns information about a data transfer config.",
+      "file": "Client/GetTransferConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTransferConfig",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.GetTransferConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.GetTransferConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.TransferConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTransferConfig",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.GetTransferConfig",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_GetTransferRun_sync",
+      "title": "bigquerydatatransfer GetTransferRun Sample",
+      "description": "GetTransferRun returns information about the particular transfer run.",
+      "file": "Client/GetTransferRun/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTransferRun",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.GetTransferRun",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.GetTransferRunRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.TransferRun",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTransferRun",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.GetTransferRun",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_ListDataSources_sync",
+      "title": "bigquerydatatransfer ListDataSources Sample",
+      "description": "ListDataSources lists supported data sources and returns their settings.",
+      "file": "Client/ListDataSources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataSources",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.ListDataSources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.ListDataSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataSourceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDataSources",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.ListDataSources",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_ListTransferConfigs_sync",
+      "title": "bigquerydatatransfer ListTransferConfigs Sample",
+      "description": "ListTransferConfigs returns information about all transfer configs owned by a project in the\nspecified location.",
+      "file": "Client/ListTransferConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTransferConfigs",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.ListTransferConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.ListTransferConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTransferConfigs",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.ListTransferConfigs",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_ListTransferLogs_sync",
+      "title": "bigquerydatatransfer ListTransferLogs Sample",
+      "description": "ListTransferLogs returns log messages for the transfer run.",
+      "file": "Client/ListTransferLogs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTransferLogs",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.ListTransferLogs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.ListTransferLogsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferMessageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTransferLogs",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.ListTransferLogs",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_ListTransferRuns_sync",
+      "title": "bigquerydatatransfer ListTransferRuns Sample",
+      "description": "ListTransferRuns returns information about running and completed transfer runs.",
+      "file": "Client/ListTransferRuns/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTransferRuns",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.ListTransferRuns",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.ListTransferRunsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferRunIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTransferRuns",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.ListTransferRuns",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_ScheduleTransferRuns_sync",
+      "title": "bigquerydatatransfer ScheduleTransferRuns Sample",
+      "description": "ScheduleTransferRuns creates transfer runs for a time range [start_time, end_time].\nFor each date - or whatever granularity the data source supports - in the\nrange, one transfer run is created.\nNote that runs are created per UTC time in the time range.\nDEPRECATED: use StartManualTransferRuns instead.\n\nDeprecated: ScheduleTransferRuns may be removed in a future version.",
+      "file": "Client/ScheduleTransferRuns/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ScheduleTransferRuns",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.ScheduleTransferRuns",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.ScheduleTransferRunsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.ScheduleTransferRunsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ScheduleTransferRuns",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.ScheduleTransferRuns",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_StartManualTransferRuns_sync",
+      "title": "bigquerydatatransfer StartManualTransferRuns Sample",
+      "description": "StartManualTransferRuns start manual transfer runs to be executed now with schedule_time equal to\ncurrent time. The transfer runs can be created for a time range where the\nrun_time is between start_time (inclusive) and end_time (exclusive), or for\na specific run_time.",
+      "file": "Client/StartManualTransferRuns/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartManualTransferRuns",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.StartManualTransferRuns",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.StartManualTransferRunsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.StartManualTransferRunsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "StartManualTransferRuns",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.StartManualTransferRuns",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_UpdateTransferConfig_sync",
+      "title": "bigquerydatatransfer UpdateTransferConfig Sample",
+      "description": "UpdateTransferConfig updates a data transfer configuration.\nAll fields must be set, even if they are not updated.",
+      "file": "Client/UpdateTransferConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTransferConfig",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.UpdateTransferConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datatransferpb.UpdateTransferConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datatransferpb.TransferConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateTransferConfig",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.UpdateTransferConfig",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

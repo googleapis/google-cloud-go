@@ -516,9 +516,19 @@ type ReceiveSettings struct {
 	// bounds the maximum amount of time before a message redelivery in the
 	// event the subscriber fails to extend the deadline.
 	//
-	// MaxExtensionPeriod configuration can be disabled by specifying a
-	// duration less than (or equal to) 0.
+	// MaxExtensionPeriod must be between 10s and 600s (inclusive). This configuration
+	// can be disabled by specifying a duration less than (or equal to) 0.
 	MaxExtensionPeriod time.Duration
+
+	// MinExtensionPeriod is the the min duration for a single lease extension attempt.
+	// By default the 99th percentile of ack latency is used to determine lease extension
+	// periods but this value can be set to minimize the number of extraneous RPCs sent.
+	//
+	// MinExtensionPeriod must be between 10s and 600s (inclusive). This configuration
+	// can be disabled by specifying a duration less than (or equal to) 0.
+	// Defaults to off but set to 60 seconds if the subscription has exactly-once delivery enabled,
+	// which will be added in a future release.
+	MinExtensionPeriod time.Duration
 
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
 	// (unacknowledged but not yet expired). If MaxOutstandingMessages is 0, it
@@ -553,12 +563,20 @@ type ReceiveSettings struct {
 	// processed concurrently, set MaxOutstandingMessages.
 	NumGoroutines int
 
-	// If Synchronous is true, then no more than MaxOutstandingMessages will be in
-	// memory at one time. (In contrast, when Synchronous is false, more than
-	// MaxOutstandingMessages may have been received from the service and in memory
-	// before being processed.) MaxOutstandingBytes still refers to the total bytes
-	// processed, rather than in memory. NumGoroutines is ignored.
+	// Synchronous switches the underlying receiving mechanism to unary Pull.
+	// When Synchronous is false, the more performant StreamingPull is used.
+	// StreamingPull also has the benefit of subscriber affinity when using
+	// ordered delivery.
+	// When Synchronous is true, NumGoroutines is set to 1 and only one Pull
+	// RPC will be made to poll messages at a time.
 	// The default is false.
+	//
+	// Deprecated.
+	// Previously, users might use Synchronous mode since StreamingPull had a limitation
+	// where MaxOutstandingMessages was not always respected with large batches of
+	// small messsages. With server side flow control, this is no longer an issue
+	// and we recommend switching to the default StreamingPull mode by setting
+	// Synchronous to false.
 	Synchronous bool
 }
 
@@ -581,13 +599,11 @@ type ReceiveSettings struct {
 // idea of a duration that is short, but not so short that we perform excessive RPCs.
 const synchronousWaitTime = 100 * time.Millisecond
 
-// This is a var so that tests can change it.
-var minAckDeadline = 10 * time.Second
-
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxExtension:           60 * time.Minute,
 	MaxExtensionPeriod:     0,
+	MinExtensionPeriod:     0,
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
 	NumGoroutines:          10,
@@ -842,6 +858,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 
 	s.checkOrdering(ctx)
 
+	// TODO(hongalex): move settings check to a helper function to make it more testable
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
@@ -859,7 +876,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	maxExtPeriod := s.ReceiveSettings.MaxExtensionPeriod
 	if maxExtPeriod < 0 {
-		maxExtPeriod = 0
+		maxExtPeriod = DefaultReceiveSettings.MaxExtensionPeriod
+	}
+	minExtPeriod := s.ReceiveSettings.MinExtensionPeriod
+	if minExtPeriod < 0 {
+		minExtPeriod = DefaultReceiveSettings.MinExtensionPeriod
 	}
 
 	var numGoroutines int
@@ -875,6 +896,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	po := &pullOptions{
 		maxExtension:           maxExt,
 		maxExtensionPeriod:     maxExtPeriod,
+		minExtensionPeriod:     minExtPeriod,
 		maxPrefetch:            trunc32(int64(maxCount)),
 		synchronous:            s.ReceiveSettings.Synchronous,
 		maxOutstandingMessages: maxCount,
@@ -1003,6 +1025,13 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						f(ctx2, msg.(*Message))
 					}); err != nil {
 						wg.Done()
+						// If there are any errors with scheduling messages,
+						// nack them so they can be redelivered.
+						msg.Nack()
+						// Currently, only this error is returned by the receive scheduler.
+						if errors.Is(err, scheduler.ErrReceiveDraining) {
+							return nil
+						}
 						return err
 					}
 				}
@@ -1045,6 +1074,7 @@ func (s *Subscription) checkOrdering(ctx context.Context) {
 type pullOptions struct {
 	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in total
 	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
+	minExtensionPeriod time.Duration // the minimum time to extend a message's lease duration per modack
 	maxPrefetch        int32         // the max number of outstanding messages, used to calculate maxToPull
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
