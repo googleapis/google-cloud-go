@@ -568,12 +568,12 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	return nil, errMethodNotSupported
 }
 
-func (c *grpcStorageClient) OpenReader(ctx context.Context, params *openReaderParams, opts ...storageOption) (r *Reader, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.OpenReader")
+func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if params.conds != nil {
-		if err := params.conds.validate("grpcStorageClient.OpenReader"); err != nil {
+		if err := params.conds.validate("grpcStorageClient.NewRangeReader"); err != nil {
 			return nil, err
 		}
 	}

@@ -436,7 +436,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		return
 	}
 
-	params := &openReaderParams{
+	params := &newRangeReaderParams{
 		bucket:        o.bucket,
 		object:        o.object,
 		gen:           o.gen,
@@ -446,7 +446,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		conds:         o.conds,
 	}
 
-	r, err = o.c.tc.OpenReader(ctx, params)
+	r, err = o.c.tc.NewRangeReader(ctx, params)
 
 	return r, err
 }

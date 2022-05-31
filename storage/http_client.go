@@ -539,8 +539,8 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	return nil, errMethodNotSupported
 }
 
-func (c *httpStorageClient) OpenReader(ctx context.Context, params *openReaderParams, opts ...storageOption) (r *Reader, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.OpenReader")
+func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
@@ -549,7 +549,7 @@ func (c *httpStorageClient) OpenReader(ctx context.Context, params *openReaderPa
 		return nil, fmt.Errorf("storage: invalid offset %d < 0 requires negative length", params.offset)
 	}
 	if params.conds != nil {
-		if err := params.conds.validate("OpenReader"); err != nil {
+		if err := params.conds.validate("NewRangeReader"); err != nil {
 			return nil, err
 		}
 	}

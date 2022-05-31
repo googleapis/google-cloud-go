@@ -607,14 +607,14 @@ func TestOpenReaderEmulated(t *testing.T) {
 			t.Fatalf("closing object: %v", err)
 		}
 
-		params := &openReaderParams{
+		params := &newRangeReaderParams{
 			bucket: bucket,
 			object: want.Name,
 			gen:    defaultGen,
 			offset: 0,
 			length: -1,
 		}
-		r, err := client.OpenReader(context.Background(), params)
+		r, err := client.NewRangeReader(context.Background(), params)
 		if err != nil {
 			t.Fatalf("opening reading: %v", err)
 		}
