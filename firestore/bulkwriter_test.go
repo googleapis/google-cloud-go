@@ -5,18 +5,9 @@ import (
 	"testing"
 )
 
-type bulkWriterOperation int
-
-const (
-	CREATE bulkWriterOperation = iota
-	DELETE
-	SET
-	UPDATE
-)
-
 type testBulkwriterCase struct {
 	DocRef    DocumentRef
-	Operation bulkWriterOperation
+	Operation string
 	Value     interface{}
 }
 
@@ -34,7 +25,7 @@ var (
 				Path:   fmt.Sprintf("%s/doc-1", collectionPath),
 				ID:     "doc-1",
 			},
-			Operation: CREATE,
+			Operation: "create",
 			Value: map[string]interface{}{
 				"myval": 1,
 			},
@@ -45,7 +36,7 @@ var (
 				Path:   fmt.Sprintf("%s/doc-2", collectionPath),
 				ID:     "doc-2",
 			},
-			Operation: DELETE,
+			Operation: "delete",
 			Value: map[string]interface{}{
 				"myval": 2,
 			},
@@ -56,7 +47,7 @@ var (
 				Path:   fmt.Sprintf("%s/doc-3", collectionPath),
 				ID:     "doc-3",
 			},
-			Operation: UPDATE,
+			Operation: "update",
 			Value: map[string]interface{}{
 				"myval": 3,
 			},
@@ -67,7 +58,7 @@ var (
 				Path:   fmt.Sprintf("%s/doc-4", collectionPath),
 				ID:     "doc-4",
 			},
-			Operation: SET,
+			Operation: "set",
 			Value: map[string]interface{}{
 				"myval": 4,
 			},

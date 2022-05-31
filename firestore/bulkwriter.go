@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
@@ -15,9 +16,10 @@ const (
 	MAX_BATCH_SIZE                          = 20            // max number of writes to send in a request
 	RETRY_MAX_BATCH_SIZE                    = 10            // max number of writes to send in a retry request
 	MAX_RETRY_ATTEMPTS                      = 10            // max number of times to retry a write
-	DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND = 500           // max number of requests to the service per second (start)
+	DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND = 500           // starting max number of requests to the service per second
 	RATE_LIMITER_MULTIPLIER                 = 1.5           // amount to increase DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND every 5 minutes
 	RATE_LIMITER_MULTIPLIER_MILLIS          = 5 * 60 * 1000 // 5 minutes in milliseconds
+	cooling_period_millis                   = 2.0           // starting time to wait in between requests
 )
 
 type bulkWriterJob struct {
@@ -32,25 +34,32 @@ type bulkWriterBatch struct {
 	bwj []bulkWriterJob       // corresponding jobs to return response
 }
 
+type bulkWriterRequestBatch struct {
+	isFlushing bool              // flag that indicates that BulkWriter needs to schedule a flush of the queue
+	bwb        []bulkWriterBatch // all the bulkWriterBatch objects to schedule
+}
+
 // A BulkWriter allows multiple document writes in parallel. The BulkWriter
 // submits document writes in maximum batches of 20 writes per request. Each
 // request can contain many different document writes: create, delete, update,
 // and set are all supported. Only one operation per document is allowed.
 // Each call to Create, Update, Set, and Delete can return a value and error.
 type BulkWriter struct {
-	database        string               // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
-	ctx             context.Context      // context
-	reqs            int64                // total number of requests sent
-	start           time.Time            // when this BulkWriter was started
-	vc              *vkit.Client         // internal client
-	isOpen          bool                 // signal that the BulkWriter is closed
-	flush           chan bool            // signal that the BulkWriter needs to flush the queue
-	isFlushing      bool                 // determines that a flush has occurred or not
-	doneFlushing    chan bool            // signals that the BulkWriter has flushed the queue
-	queue           chan bulkWriterJob   // incoming write requests
-	scheduled       chan bulkWriterBatch // scheduled requests
-	backlogQueue    []bulkWriterJob      // backlog of requests to send
-	maxOpsPerSecond int                  // Number of requests that can be sent per second.
+	database        string                      // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
+	ctx             context.Context             // context
+	reqs            int64                       // total number of requests sent
+	start           time.Time                   // when this BulkWriter was started
+	vc              *vkit.Client                // internal client
+	isOpen          bool                        // signal that the BulkWriter is closed
+	flush           chan bool                   // signal that the BulkWriter needs to flush the queue
+	isFlushing      bool                        // determines that a flush has occurred or not
+	doneFlushing    chan bool                   // signals that the BulkWriter has flushed the queue
+	queue           chan bulkWriterJob          // incoming write requests
+	scheduled       chan bulkWriterRequestBatch // scheduled requests
+	backlogQueue    []bulkWriterJob             // backlog of requests to send
+	maxOpsPerSecond int                         // number of requests that can be sent per second.
+	docUpdatePaths  []string                    // document paths with corresponding writes in the queue.
+	waitTime        float64                     // time to wait in between requests; increase exponentially
 }
 
 // NewBulkWriter creates a new instance of the BulkWriter. This
@@ -65,7 +74,7 @@ func NewBulkWriter(ctx context.Context, database string) (*BulkWriter, error) {
 	f := make(chan bool)
 	q := make(chan bulkWriterJob)
 	d := make(chan bool)
-	scheduled := make(chan bulkWriterBatch)
+	s := make(chan bulkWriterRequestBatch)
 	bw := BulkWriter{
 		ctx:             ctx,
 		vc:              v,
@@ -75,16 +84,17 @@ func NewBulkWriter(ctx context.Context, database string) (*BulkWriter, error) {
 		isFlushing:      false,
 		doneFlushing:    d,
 		queue:           q,
-		scheduled:       scheduled,
+		scheduled:       s,
 		start:           time.Now(),
 		maxOpsPerSecond: DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND,
+		waitTime:        cooling_period_millis,
 	}
 
 	// Start the call receiving thread and request sending thread
 	go bw.receiver()
 	go bw.scheduler()
 
-	// Should we have a retry-er?
+	// TODO(telpirion): Create a retry thread?
 
 	return &bw, nil
 }
@@ -108,47 +118,32 @@ func (b *BulkWriter) Flush() {
 	<-b.doneFlushing
 }
 
+// QueueCount returns the number of document writes that are currently in the queue.
+func (bw *BulkWriter) QueueCount() int {
+	return len(bw.backlogQueue)
+}
+
 // Create adds a document creation write to the queue of writes to send.
 func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResult, error) {
-	r := make(chan *pb.WriteResult, 1)
-	e := make(chan error, 1)
-
-	if !bw.isOpen {
-		return nil, errors.New("firestore: BulkWriter has been closed")
-	}
-
-	if doc == nil {
-		return nil, errors.New("firestore: nil document contents")
+	err := bw.checkWriteConditions(doc)
+	if err != nil {
+		return nil, err
 	}
 
 	w, err := doc.newCreateWrites(datum)
 	if err != nil {
-		r <- nil
-		e <- fmt.Errorf("firestore: cannot create %v with %v", doc.ID, datum)
+		return nil, fmt.Errorf("firestore: cannot create %v with %v", doc.ID, datum)
 	}
 
-	j := bulkWriterJob{
-		result: r,
-		write:  w[0],
-		err:    e,
-	}
-
-	bw.queue <- j
-	// Note: This will increase the space complexity of this feature
-	return <-r, <-e
+	wc, ec := bw.write(w[0])
+	return <-wc, <-ec
 }
 
-// Delete sends a deletion request for the provided document.
+// Delete adds a document deletion write to the queue of writes to send.
 func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.WriteResult, error) {
-	r := make(chan *pb.WriteResult, 1)
-	e := make(chan error, 1)
-
-	if !bw.isOpen {
-		return nil, errors.New("firestore: BulkWriter has been closed")
-	}
-
-	if doc == nil {
-		return nil, errors.New("firestore: nil document contents")
+	err := bw.checkWriteConditions(doc)
+	if err != nil {
+		return nil, err
 	}
 
 	w, err := doc.newDeleteWrites(preconds)
@@ -156,14 +151,75 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.Wr
 		return nil, fmt.Errorf("firestore: cannot delete doc %v", doc.ID)
 	}
 
+	wc, ec := bw.write(w[0])
+	return <-wc, <-ec
+}
+
+// Set adds a document set write to the queue of writes to send.
+func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption) (*pb.WriteResult, error) {
+	err := bw.checkWriteConditions(doc)
+	if err != nil {
+		return nil, err
+	}
+
+	w, err := doc.newSetWrites(datum, opts)
+	if err != nil {
+		return nil, fmt.Errorf("firestore: cannot set %v on doc %v", datum, doc.ID)
+	}
+
+	wc, ec := bw.write(w[0])
+	return <-wc, <-ec
+}
+
+func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Precondition) (*pb.WriteResult, error) {
+	err := bw.checkWriteConditions(doc)
+	if err != nil {
+		return nil, err
+	}
+
+	w, err := doc.newUpdatePathWrites(updates, preconds)
+	if err != nil {
+		return nil, fmt.Errorf("firestore: cannot update doc %v", doc.ID)
+	}
+	wc, ec := bw.write(w[0])
+	return <-wc, <-ec
+}
+
+// checkConditions determines whether this write attempt is valid. It returns
+// an error if either the BulkWriter has already been closed or if it
+// receives a nil document reference.
+func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
+	if !bw.isOpen {
+		return errors.New("firestore: BulkWriter has been closed")
+	}
+
+	if doc == nil {
+		return errors.New("firestore: nil document contents")
+	}
+
+	for _, e := range bw.docUpdatePaths {
+		if doc.shortPath == e {
+			return fmt.Errorf("firestore: BulkWriter received duplicate write for path: %v", doc.shortPath)
+		}
+	}
+
+	bw.docUpdatePaths = append(bw.docUpdatePaths, doc.shortPath)
+	return nil
+}
+
+// write packages up write requests into bulkWriterJob objects.
+func (bw *BulkWriter) write(w *pb.Write) (chan *pb.WriteResult, chan error) {
+	r := make(chan *pb.WriteResult, 1)
+	e := make(chan error, 1)
+
 	j := bulkWriterJob{
 		result: r,
-		write:  w[0],
+		write:  w,
 		err:    e,
 	}
 
 	bw.queue <- j
-	return <-r, <-e
+	return r, e
 }
 
 // receiver gets write requests from the caller and sends BatchWriteRequests to the scheduler.
@@ -172,6 +228,7 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.Wr
 func (bw *BulkWriter) receiver() {
 	for {
 		log.Println("receiver: receiving")
+		var flushOp bool
 		var bs []bulkWriterBatch
 
 		select {
@@ -179,30 +236,24 @@ func (bw *BulkWriter) receiver() {
 			bw.backlogQueue = append(bw.backlogQueue, bwj)
 			if len(bw.backlogQueue) > MAX_BATCH_SIZE {
 				bs = bw.buildRequests(false)
-			} else if bw.isFlushing {
-				bs = bw.buildRequests(true)
 			}
-
+			// should we block from adding to the queue until a flushing job is complete?
 		case <-bw.flush:
 			log.Println("receiver: got call to flush")
 			bw.isFlushing = true
 			bs = bw.buildRequests(true)
+			flushOp = true
 		}
 
-		for _, bwb := range bs {
-
-			// TODO: Tag a collection of bwjs as a Flush job.
-
-			// Send signal that flushed queue objects are being sent.
-			// This will only happen if we have items to send while flushing.
-			if bw.isFlushing {
-				bw.isFlushing = false
-				bw.doneFlushing <- true
-			}
-			log.Println("receiver: sending job to scheduler")
-			bw.scheduled <- bwb
+		bwb := bulkWriterRequestBatch{
+			isFlushing: flushOp,
+			bwb:        bs,
 		}
 
+		// Send batch of requests to scheduler
+		bw.scheduled <- bwb
+
+		// BulkWriter has received call to Close()
 		if !bw.isOpen {
 			break
 		}
@@ -273,28 +324,40 @@ func (bw *BulkWriter) buildRequests(isFlushing bool) []bulkWriterBatch {
 
 // scheduler manages the timing and rate multiplier logic for sending requests to the service.
 func (bw *BulkWriter) scheduler() {
-	for b := range bw.scheduled { // bw.scheduled is a channel of bulkWriterBatch objects
-		elapsed := (bw.start.UnixMilli() - time.Now().UnixMilli()) / 1000
-		var qps int64
-		// Don't divide by 0!
-		if elapsed == 0 {
-			qps = 0
-		} else {
-			qps = bw.reqs / elapsed
+	for bwr := range bw.scheduled { // bw.scheduled is a channel of bulkWriterRequestBatch objects
+
+		for _, b := range bwr.bwb {
+			elapsed := (bw.start.UnixMilli() - time.Now().UnixMilli()) / 1000
+			var qps int64
+			// Don't divide by 0!
+			if elapsed == 0 {
+				qps = 0
+			} else {
+				qps = bw.reqs / elapsed
+			}
+
+			if qps < int64(bw.maxOpsPerSecond) {
+				go bw.send(b.bwr, b.bwj)
+			} else {
+				// TODO(erschmid): Decide on a back off strategy
+				time.Sleep(time.Duration(bw.waitTime))
+				bw.waitTime = math.Pow(float64(bw.waitTime), 2)
+
+				go bw.send(b.bwr, b.bwj)
+
+				// Increase number of requests per second at the five minute mark
+				mins := elapsed / 60
+				if mins%5 == 0 {
+					newOps := float64(bw.maxOpsPerSecond) * RATE_LIMITER_MULTIPLIER
+					bw.maxOpsPerSecond = int(newOps)
+				}
+			}
 		}
 
-		if qps < int64(bw.maxOpsPerSecond) {
-			go bw.send(b.bwr, b.bwj)
-		} else {
-			time.Sleep(time.Duration(RATE_LIMITER_MULTIPLIER_MILLIS))
-			go bw.send(b.bwr, b.bwj)
-
-			// Increase number of requests per second at the five minute mark
-			mins := elapsed / 60
-			if mins%5 == 0 {
-				newOps := float64(bw.maxOpsPerSecond) * RATE_LIMITER_MULTIPLIER
-				bw.maxOpsPerSecond = int(newOps)
-			}
+		// if this bulkWriterRequestBatch is a flush job, report that it is now done.
+		if bwr.isFlushing {
+			bw.isFlushing = false
+			bw.doneFlushing <- true
 		}
 	}
 }

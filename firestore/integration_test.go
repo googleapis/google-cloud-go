@@ -1754,12 +1754,19 @@ func TestIntegration_BulkWriter(t *testing.T) {
 		t.Logf("write result: %v", wr)
 		wg.Done()
 	}()
+
+	// Hold until the queue is actually populated
+	for bw.QueueCount() == 0 {
+	}
+
 	bw.Flush()
 	wg.Wait()
 }
 
 func TestIntegration_BulkWriter_Channels(t *testing.T) {
 	/*
+		TODO(telpirion): Delete if unused
+
 		doc := iColl.NewDoc()
 
 		bw, err := iClient.BulkWriter()
