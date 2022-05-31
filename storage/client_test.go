@@ -142,34 +142,34 @@ func TestUpdateBucketEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Name: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.VersioningEnabled, want.VersioningEnabled); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("VersioningEnabled: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.RequesterPays, want.RequesterPays); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("RequesterPays: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.DefaultEventBasedHold, want.DefaultEventBasedHold); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("DefaultEventBasedHold: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Encryption, want.Encryption); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Encryption: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Lifecycle, want.Lifecycle); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Lifecycle: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Logging, want.Logging); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Logging: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Website, want.Website); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Website: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.RPO, want.RPO); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("RPO: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.StorageClass, want.StorageClass); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("StorageClass: got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -308,31 +308,31 @@ func TestUpdateObjectEmulated(t *testing.T) {
 			t.Fatalf("client.UpdateObject: %v", err)
 		}
 		if diff := cmp.Diff(got.Name, o.Name); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Name: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.EventBasedHold, want.EventBasedHold); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("EventBasedHold: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.TemporaryHold, want.TemporaryHold); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("TemporaryHold: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.ContentType, want.ContentType); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("ContentType: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.ContentLanguage, want.ContentLanguage); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("ContentLanguage: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.ContentEncoding, want.ContentEncoding); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("ContentEncoding: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.ContentDisposition, want.ContentDisposition); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("ContentDisposition: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.CacheControl, want.CacheControl); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("CacheControl: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.CustomTime, want.CustomTime); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("CustomTime: got(-),want(+):\n%s", diff)
 		}
 	})
 }
