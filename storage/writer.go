@@ -235,8 +235,6 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		return 0, werr
 	}
 	if !w.opened {
-		err = w.openWriter()
-
 		// gRPC client has been initialized - use gRPC to upload.
 		if w.o.c.tc != nil {
 			if err := w.openWriter(); err != nil {
