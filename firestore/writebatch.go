@@ -22,14 +22,14 @@ import (
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
-// Deprecated: The WriteBatch API has been replaced with the transaction and
-// the bulk writer API. For atomic transaction operations, use `Transaction`.
-// For bulk read and write operations, use `BulkWriter`.
-//
 // A WriteBatch holds multiple database updates. Build a batch with the Create, Set,
 // Update and Delete methods, then run it with the Commit method. Errors in Create,
 // Set, Update or Delete are recorded instead of being returned immediately. The
 // first such error is returned by Commit.
+//
+// Deprecated: The WriteBatch API has been replaced with the transaction and
+// the bulk writer API. For atomic transaction operations, use `Transaction`.
+// For bulk read and write operations, use `BulkWriter`.
 type WriteBatch struct {
 	c      *Client
 	err    error

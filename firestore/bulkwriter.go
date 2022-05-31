@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	MAX_BATCH_SIZE                          = 20
-	RETRY_MAX_BATCH_SIZE                    = 10 // Do we even need this?
-	MAX_RETRY_ATTEMPTS                      = 10
-	DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND = 500
-	RATE_LIMITER_MULTIPLIER                 = 1.5
-	RATE_LIMITER_MULTIPLIER_MILLIS          = 5 * 60 * 1000
+	MAX_BATCH_SIZE                          = 20            // max number of writes to send in a request
+	RETRY_MAX_BATCH_SIZE                    = 10            // max number of writes to send in a retry request
+	MAX_RETRY_ATTEMPTS                      = 10            // max number of times to retry a write
+	DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND = 500           // max number of requests to the service per second (start)
+	RATE_LIMITER_MULTIPLIER                 = 1.5           // amount to increase DEFAULT_STARTING_MAXIMUM_OPS_PER_SECOND every 5 minutes
+	RATE_LIMITER_MULTIPLIER_MILLIS          = 5 * 60 * 1000 // 5 minutes in milliseconds
 )
 
 type bulkWriterJob struct {
@@ -32,6 +32,11 @@ type bulkWriterBatch struct {
 	bwj []bulkWriterJob       // corresponding jobs to return response
 }
 
+// A BulkWriter allows multiple document writes in parallel. The BulkWriter
+// submits document writes in maximum batches of 20 writes per request. Each
+// request can contain many different document writes: create, delete, update,
+// and set are all supported. Only one operation per document is allowed.
+// Each call to Create, Update, Set, and Delete can return a value and error.
 type BulkWriter struct {
 	database        string               // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
 	ctx             context.Context      // context
@@ -119,7 +124,7 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResu
 	w, err := doc.newCreateWrites(datum)
 	if err != nil {
 		r <- nil
-		e <- errors.New(fmt.Sprintf("firestore: cannot create %v with %v", doc.ID, datum))
+		e <- fmt.Errorf("firestore: cannot create %v with %v", doc.ID, datum)
 	}
 
 	j := bulkWriterJob{
@@ -133,7 +138,7 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResu
 	return <-r, <-e
 }
 
-// Create adds a document deletion write to the queue of writes to send.
+// Delete sends a deletion request for the provided document.
 func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.WriteResult, error) {
 	r := make(chan *pb.WriteResult, 1)
 	e := make(chan error, 1)
@@ -148,7 +153,7 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.Wr
 
 	w, err := doc.newDeleteWrites(preconds)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("firestore: cannot delete doc %v", doc.ID))
+		return nil, fmt.Errorf("firestore: cannot delete doc %v", doc.ID)
 	}
 
 	j := bulkWriterJob{

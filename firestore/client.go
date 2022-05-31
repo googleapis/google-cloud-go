@@ -289,11 +289,11 @@ func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 	return it
 }
 
+// Batch returns a WriteBatch.
+//
 // Deprecated: The WriteBatch API has been replaced with the transaction and
 // the bulk writer API. For atomic transaction operations, use `Transaction`.
 // For bulk read and write operations, use `BulkWriter`.
-//
-// Batch returns a WriteBatch.
 func (c *Client) Batch() *WriteBatch {
 	return &WriteBatch{c: c}
 }

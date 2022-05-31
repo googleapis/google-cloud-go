@@ -1759,25 +1759,28 @@ func TestIntegration_BulkWriter(t *testing.T) {
 }
 
 func TestIntegration_BulkWriter_Channels(t *testing.T) {
-	doc := iColl.NewDoc()
+	/*
+		doc := iColl.NewDoc()
 
-	bw, err := iClient.BulkWriter()
-	if err != nil {
-		t.Errorf("error: BulkWriter creation %v\n", err)
-	}
+		bw, err := iClient.BulkWriter()
+		if err != nil {
+			t.Errorf("error: BulkWriter creation %v\n", err)
+		}
 
-	f := integrationTestMap
+		f := integrationTestMap
 
-	wrc, ec := bw.Create(doc, f)
-	bw.Flush()
 
-	e := <-ec
-	r := <-wrc
+		wrc, ec := bw.Create(doc, f)
+		bw.Flush()
 
-	if e != nil {
-		t.Errorf("error: %v\n", e)
-		return
-	}
+		e := <-ec
+		r := <-wrc
 
-	t.Logf("write result: %v", r)
+		if e != nil {
+			t.Errorf("error: %v\n", e)
+			return
+		}
+
+		t.Logf("write result: %v", r)
+	*/
 }
