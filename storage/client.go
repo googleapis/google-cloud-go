@@ -101,11 +101,6 @@ type storageClient interface {
 	DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error
 }
 
-type transportReader interface {
-	Read([]byte) (int, error)
-	Close() error
-}
-
 // settings contains transport-agnostic configuration for API calls made via
 // the storageClient inteface. All implementations must utilize settings
 // and respect those that are applicable.

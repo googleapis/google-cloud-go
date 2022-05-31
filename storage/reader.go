@@ -382,7 +382,7 @@ type Reader struct {
 	gotCRC             uint32 // running crc
 	reopen             func(seen int64) (*http.Response, error)
 
-	reader transportReader
+	reader io.ReadCloser
 }
 
 // Close closes the Reader. It must be called when done reading.
