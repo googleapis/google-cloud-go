@@ -698,26 +698,13 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 }
 
 func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	var offset int64
+	errorf := params.err
+	progress := params.progress
+	setObj := params.setObj
 
 	pr, pw := io.Pipe()
-
-	var offset int64
 	gw := newGRPCWriter(c, params, pr)
-
-	errorf := params.err
-	if errorf == nil {
-		errorf = func(_ error) {}
-	}
-
-	progress := params.progress
-	if progress == nil {
-		progress = func(_ int64) {}
-	}
-
-	setObj := params.setObj
-	if setObj == nil {
-		setObj = func(_ *ObjectAttrs) {}
-	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
@@ -735,7 +722,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				return
 			}
 
-			// TODO: Figure out how to set up encryption via CommonObjectRequestParams.
+			// TODO(noahdietz): Send encryption key via CommonObjectRequestParams.
 
 			// The chunk buffer is full, but there is no end in sight. This
 			// means that a resumable upload will need to be used to send

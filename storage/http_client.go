@@ -753,9 +753,11 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
 	s := callSettings(c.settings, opts...)
-	pr, pw := io.Pipe()
-
+	errorf := params.err
+	setObj := params.setObj
+	progress := params.progress
 	attrs := params.attrs
+
 	mediaOpts := []googleapi.MediaOption{
 		googleapi.ChunkSize(params.chunkSize),
 	}
@@ -766,15 +768,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		mediaOpts = append(mediaOpts, googleapi.ChunkRetryDeadline(params.chunkRetryDeadline))
 	}
 
-	errorf := params.err
-	if errorf == nil {
-		errorf = func(_ error) {}
-	}
-
-	setObj := params.setObj
-	if setObj == nil {
-		setObj = func(_ *ObjectAttrs) {}
-	}
+	pr, pw := io.Pipe()
 
 	go func() {
 		defer close(params.donec)
@@ -791,10 +785,8 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			Projection("full").
 			Context(params.ctx).
 			Name(params.object)
+		call.ProgressUpdater(func(n, _ int64) { progress(n) })
 
-		if params.progress != nil {
-			call.ProgressUpdater(func(n, _ int64) { params.progress(n) })
-		}
 		if attrs.KMSKeyName != "" {
 			call.KmsKeyName(attrs.KMSKeyName)
 		}
