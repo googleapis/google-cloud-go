@@ -639,7 +639,7 @@ func (t *Topic) initBundler() {
 		// This is because there's no way to set "unlimited" for BufferedByteLimit,
 		// and simply setting it to MaxOutstandingBytes occasionally leads to issues where
 		// BufferedByteLimit is reached even though there are resources available.
-		t.PublishSettings.BufferedByteLimit = math.MaxInt64
+		t.PublishSettings.BufferedByteLimit = math.MaxInt
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
