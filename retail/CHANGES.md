@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.3.0...retail/v1.4.0) (2022-06-01)
+
+
+### Features
+
+* **retail:** allow users to disable spell check in search requests feat: allow users to add labels in search requests docs: deprecate indexable/searchable on the product level custom attributes docs: keep the API doc up-to-date with recent changes ([5ed25c5](https://github.com/googleapis/google-cloud-go/commit/5ed25c5e2e40c7602802c35d61742631b619ed3c))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.2.0...retail/v1.3.0) (2022-05-24)
 
 
