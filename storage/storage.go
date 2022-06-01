@@ -118,6 +118,8 @@ type Client struct {
 	//
 	// This is an experimental field and not intended for public use.
 	gc *gapic.Client
+	// tc is the transport-agnostic client implemented with either gRPC or HTTP.
+	tc storageClient
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -217,8 +219,12 @@ func newGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	if err != nil {
 		return nil, err
 	}
+	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
+	if err != nil {
+		return nil, err
+	}
 
-	return &Client{gc: g}, nil
+	return &Client{gc: g, tc: tc}, nil
 }
 
 // Close closes the Client.
