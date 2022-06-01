@@ -47,6 +47,7 @@ type BulkWriterStatus struct {
 	IsOpen              bool // whether this BulkWriter is open or closed
 	WritesInQueueCount  int  // number of write requests in the queue
 	WritesSentCount     int  // number of requests sent to the service
+	WritesReceivedCount int  // number of WriteResults received from the service
 }
 
 // A BulkWriter allows multiple document writes in parallel. The BulkWriter
@@ -71,7 +72,8 @@ type BulkWriter struct {
 	docUpdatePaths  []string                    // document paths with corresponding writes in the queue.
 	waitTime        float64                     // time to wait in between requests; increase exponentially
 	writesProvided  int64                       // number of writes provided by caller
-	writesSent      int64                       // number of writes sent to the service
+	writesSent      int64                       // number of writes sent to Firestore
+	writesReceived  int64                       // number of writes results received from Firestore
 }
 
 // NewBulkWriter creates a new instance of the BulkWriter. This
@@ -409,6 +411,7 @@ func (bw *BulkWriter) send(bwr *pb.BatchWriteRequest, bwj []bulkWriterJob) {
 			continue
 		}
 
+		bw.writesReceived++ // This means the writes are now finalized, all retries completed
 		bwj[i].result <- res
 		bwj[i].err <- nil
 	}

@@ -1,7 +1,6 @@
 package firestore
 
 import (
-	"sync"
 	"testing"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
@@ -69,7 +68,6 @@ func TestBulkWriter(t *testing.T) {
 		t.Error("cannot instantiate bulkwriter")
 	}
 
-	wg := sync.WaitGroup{}
 	var gotWrites []*pb.WriteResult
 	wantWrites := []*pb.WriteResult{
 		{UpdateTime: aTimestamp},
@@ -78,7 +76,6 @@ func TestBulkWriter(t *testing.T) {
 		{UpdateTime: aTimestamp3},
 	}
 
-	wg.Add(1)
 	go func() {
 		wrc, err := bw.Create(c.Doc("C/a"), testData)
 		if err != nil {
@@ -86,10 +83,8 @@ func TestBulkWriter(t *testing.T) {
 		}
 		t.Log(wrc)
 		gotWrites = append(gotWrites, wrc)
-		wg.Done()
 	}()
 
-	wg.Add(1)
 	go func() {
 		wrs, err := bw.Set(c.Doc("C/b"), testData)
 		if err != nil {
@@ -97,10 +92,8 @@ func TestBulkWriter(t *testing.T) {
 		}
 		t.Log(wrs)
 		gotWrites = append(gotWrites, wrs)
-		wg.Done()
 	}()
 
-	wg.Add(1)
 	go func() {
 		wru, err := bw.Update(c.Doc("C/f"), []Update{{FieldPath: []string{"*"}, Value: 3}})
 		if err != nil {
@@ -108,10 +101,8 @@ func TestBulkWriter(t *testing.T) {
 		}
 		t.Log(wru)
 		gotWrites = append(gotWrites, wru)
-		wg.Done()
 	}()
 
-	wg.Add(1)
 	go func() {
 		wrd, err := bw.Delete(c.Doc("C/c"))
 		if err != nil {
@@ -119,19 +110,24 @@ func TestBulkWriter(t *testing.T) {
 		}
 		t.Log(wrd)
 		gotWrites = append(gotWrites, wrd)
-		wg.Done()
 	}()
 
 	for bw.Status().WritesProvidedCount != 4 {
 	}
 
 	bw.Flush()
-	wg.Wait()
+
+	for bw.Status().WritesReceivedCount != 4 {
+	}
 
 	for i, got := range gotWrites {
 		want := wantWrites[i]
 		if want != got {
 			t.Errorf("want: %v\ngot:%v", want, got)
 		}
+	}
+
+	if bw.Status().WritesReceivedCount != 4 {
+		t.Logf("bulkwriter sent != received; sent: %v, received: %v", len(wantWrites), bw.Status().WritesReceivedCount)
 	}
 }
