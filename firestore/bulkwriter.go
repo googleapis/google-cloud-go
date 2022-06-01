@@ -39,6 +39,16 @@ type bulkWriterRequestBatch struct {
 	bwb        []bulkWriterBatch // all the bulkWriterBatch objects to schedule
 }
 
+// The BulkWriterStatus provides details about the BulkWriter, including the
+// number of writes processed, the number of requests sent to the service, and
+// the number of writes in the queue.
+type BulkWriterStatus struct {
+	WritesProvidedCount int  // number of write requests provided by caller
+	IsOpen              bool // whether this BulkWriter is open or closed
+	WritesInQueueCount  int  // number of write requests in the queue
+	WritesSentCount     int  // number of requests sent to the service
+}
+
 // A BulkWriter allows multiple document writes in parallel. The BulkWriter
 // submits document writes in maximum batches of 20 writes per request. Each
 // request can contain many different document writes: create, delete, update,
@@ -60,6 +70,8 @@ type BulkWriter struct {
 	maxOpsPerSecond int                         // number of requests that can be sent per second.
 	docUpdatePaths  []string                    // document paths with corresponding writes in the queue.
 	waitTime        float64                     // time to wait in between requests; increase exponentially
+	writesProvided  int64                       // number of writes provided by caller
+	writesSent      int64                       // number of writes sent to the service
 }
 
 // NewBulkWriter creates a new instance of the BulkWriter. This
@@ -119,8 +131,13 @@ func (b *BulkWriter) Flush() {
 }
 
 // QueueCount returns the number of document writes that are currently in the queue.
-func (bw *BulkWriter) QueueCount() int {
-	return len(bw.backlogQueue)
+func (bw *BulkWriter) Status() BulkWriterStatus {
+	return BulkWriterStatus{
+		IsOpen:              bw.isOpen,
+		WritesInQueueCount:  len(bw.backlogQueue),
+		WritesProvidedCount: int(bw.writesProvided),
+		WritesSentCount:     int(bw.writesSent),
+	}
 }
 
 // Create adds a document creation write to the queue of writes to send.
@@ -217,6 +234,9 @@ func (bw *BulkWriter) write(w *pb.Write) (chan *pb.WriteResult, chan error) {
 		write:  w,
 		err:    e,
 	}
+
+	// Write successfully created, increment count
+	bw.writesProvided++
 
 	bw.queue <- j
 	return r, e
@@ -335,6 +355,9 @@ func (bw *BulkWriter) scheduler() {
 			} else {
 				qps = bw.reqs / elapsed
 			}
+
+			wpb := len(b.bwr.Writes)
+			bw.writesSent += int64(wpb)
 
 			if qps < int64(bw.maxOpsPerSecond) {
 				go bw.send(b.bwr, b.bwj)

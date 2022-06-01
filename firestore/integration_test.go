@@ -1722,11 +1722,6 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	}
 }
 
-type iTestBulkwriterCase struct {
-	DocRef DocumentRef
-	Value  interface{}
-}
-
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 
@@ -1756,7 +1751,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	}()
 
 	// Hold until the queue is actually populated
-	for bw.QueueCount() == 0 {
+	for bw.Status().WritesProvidedCount != 1 {
 	}
 
 	bw.Flush()
