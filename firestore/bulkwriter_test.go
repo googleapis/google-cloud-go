@@ -2,6 +2,7 @@ package firestore
 
 import (
 	"testing"
+	"time"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
@@ -75,11 +76,14 @@ func TestBulkWriter(t *testing.T) {
 		{UpdateTime: aTimestamp3},
 		{UpdateTime: aTimestamp3},
 	}
+	var errs []error
 
 	go func() {
 		wrc, err := bw.Create(c.Doc("C/a"), testData)
 		if err != nil {
 			t.Error("bulkwriter cannot create testData")
+			errs = append(errs, err)
+			return
 		}
 		t.Log(wrc)
 		gotWrites = append(gotWrites, wrc)
@@ -89,6 +93,8 @@ func TestBulkWriter(t *testing.T) {
 		wrs, err := bw.Set(c.Doc("C/b"), testData)
 		if err != nil {
 			t.Error("bulkwriter cannot set testData")
+			errs = append(errs, err)
+			return
 		}
 		t.Log(wrs)
 		gotWrites = append(gotWrites, wrs)
@@ -98,6 +104,8 @@ func TestBulkWriter(t *testing.T) {
 		wru, err := bw.Update(c.Doc("C/f"), []Update{{FieldPath: []string{"*"}, Value: 3}})
 		if err != nil {
 			t.Error("bulkwriter cannot update testData")
+			errs = append(errs, err)
+			return
 		}
 		t.Log(wru)
 		gotWrites = append(gotWrites, wru)
@@ -107,23 +115,31 @@ func TestBulkWriter(t *testing.T) {
 		wrd, err := bw.Delete(c.Doc("C/c"))
 		if err != nil {
 			t.Error("bulkwriter cannot delete testData")
+			errs = append(errs, err)
+			return
 		}
 		t.Log(wrd)
 		gotWrites = append(gotWrites, wrd)
 	}()
 
 	for bw.Status().WritesProvidedCount != 4 {
+		time.Sleep(time.Duration(time.Millisecond))
 	}
 
 	bw.Flush()
 
 	for bw.Status().WritesReceivedCount != 4 {
+		time.Sleep(time.Duration(time.Millisecond))
+		for _, e := range errs {
+			t.Logf("bulkwriter write error: %v", e)
+			t.Fatal("bulkwriter encountered too many write errors")
+		}
 	}
 
 	for i, got := range gotWrites {
 		want := wantWrites[i]
 		if want != got {
-			t.Errorf("want: %v\ngot:%v", want, got)
+			t.Fatalf("want: %v\ngot:%v", want, got)
 		}
 	}
 

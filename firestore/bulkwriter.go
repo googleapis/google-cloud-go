@@ -397,6 +397,7 @@ func (bw *BulkWriter) send(bwr *pb.BatchWriteRequest, bwj []bulkWriterJob) {
 			j.result <- nil
 			j.err <- err
 		}
+		return
 	}
 
 	// Iterate over the response. Match successful requests with unsuccessful
