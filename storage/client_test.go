@@ -648,12 +648,14 @@ func TestOpenWriterEmulated(t *testing.T) {
 
 		var gotAttrs *ObjectAttrs
 		params := &openWriterParams{
-			attrs:  want,
-			bucket: bucket,
-			ctx:    context.Background(),
-			object: want.Name,
-			donec:  make(chan struct{}),
-			setObj: func(o *ObjectAttrs) { gotAttrs = o },
+			attrs:    want,
+			bucket:   bucket,
+			ctx:      context.Background(),
+			object:   want.Name,
+			donec:    make(chan struct{}),
+			err:      func(_ error) {}, // no-op
+			progress: func(_ int64) {}, // no-op
+			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
 		}
 		pw, err := client.OpenWriter(params)
 		if err != nil {
