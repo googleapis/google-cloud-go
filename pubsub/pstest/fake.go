@@ -584,7 +584,7 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		switch path {
 		case "push_config":
 			sub.proto.PushConfig = req.Subscription.PushConfig
-		
+
 		case "bigquery_config":
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
 			if sub.proto.BigqueryConfig.Table != "" {

@@ -445,7 +445,7 @@ func TestBigQuerySubscription(t *testing.T) {
 	topic := mustCreateTopic(t, client, "t")
 	bqTable := "some-project:some-dataset.some-table"
 	subConfig := SubscriptionConfig{
-		Topic:                 topic,
+		Topic: topic,
 		BigQueryConfig: BigQueryConfig{
 			Table: bqTable,
 		},

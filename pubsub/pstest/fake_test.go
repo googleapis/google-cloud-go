@@ -1456,25 +1456,24 @@ func TestTopicRetentionAdmin(t *testing.T) {
 	}
 }
 
-
 func TestSubscriptionPushPull(t *testing.T) {
 	ctx := context.Background()
 	pclient, sclient, _, cleanup := newFake(ctx, t)
 	defer cleanup()
 
 	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{
-		Name:                     "projects/P/topics/T",
+		Name: "projects/P/topics/T",
 	})
 
 	// Create a push based subscription
 	pc := &pb.PushConfig{
 		PushEndpoint: "some-endpoint",
-	} 
+	}
 	got := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		AckDeadlineSeconds: minAckDeadlineSecs,
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
-		PushConfig: pc,
+		PushConfig:         pc,
 	})
 
 	if diff := testutil.Diff(got.PushConfig, pc); diff != "" {
@@ -1487,10 +1486,10 @@ func TestSubscriptionPushPull(t *testing.T) {
 	bqc := &pb.BigQueryConfig{
 		Table: "some-table",
 	}
-	updateSub.BigqueryConfig = bqc 
+	updateSub.BigqueryConfig = bqc
 	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
 		Subscription: updateSub,
-		UpdateMask: &field_mask.FieldMask{Paths: []string{"push_config", "bigquery_config"}},
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"push_config", "bigquery_config"}},
 	})
 	if diff := testutil.Diff(got.PushConfig, new(pb.PushConfig)); diff != "" {
 		t.Errorf("sub.PushConfig should be zero value\n%s", diff)
@@ -1505,7 +1504,7 @@ func TestSubscriptionPushPull(t *testing.T) {
 	updateSub.BigqueryConfig = &pb.BigQueryConfig{}
 	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
 		Subscription: updateSub,
-		UpdateMask: &field_mask.FieldMask{Paths: []string{"bigquery_config"}},
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"bigquery_config"}},
 	})
 	if diff := testutil.Diff(got.PushConfig, new(pb.PushConfig)); diff != "" {
 		t.Errorf("sub.PushConfig should be zero value\n%s", diff)

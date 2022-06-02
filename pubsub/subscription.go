@@ -210,66 +210,65 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 	}
 }
 
-
 // BigQueryConfigState denotes the possible states for a BigQuery Subscription.
 type BigQueryConfigState int
 
 const (
 	// Default value. This value is unused.
 	BigQueryConfigStateUnspecified = iota
-	
+
 	// The usbscription can actively send messages to BigQuery.
 	BigQueryConfigActive
-	
+
 	// Cannot write to the BigQuery table because of permission denied errors.
 	BigQueryConfigPermissionDenied
-	
+
 	// Cannot write to the BigQuery table because it does not exist.
 	BigQueryConfigNotFound
-	
+
 	// Cannot write to the BigQuery table due to a schema mismatch.
 	BigQueryConfigSchemaMismatch
 )
 
-// BigQueryConfig configures the subscription to deliver to a BigQuery table. 
+// BigQueryConfig configures the subscription to deliver to a BigQuery table.
 type BigQueryConfig struct {
 	// The name of the table to which to write data, of the form
- 	// {projectId}:{datasetId}.{tableId}
+	// {projectId}:{datasetId}.{tableId}
 	Table string
 
 	// When true, use the topic's schema as the columns to write to in BigQuery,
- 	// if it exists.
+	// if it exists.
 	UseTopicSchema bool
 
 	// When true, write the subscription name, message_id, publish_time,
-  	// attributes, and ordering_key to additional columns in the table. The
-  	// subscription name, message_id, and publish_time fields are put in their own
-  	// columns while all other message properties (other than data) are written to
- 	// a JSON object in the attributes column.
+	// attributes, and ordering_key to additional columns in the table. The
+	// subscription name, message_id, and publish_time fields are put in their own
+	// columns while all other message properties (other than data) are written to
+	// a JSON object in the attributes column.
 	WriteMetadata bool
 
 	// When true and use_topic_schema is true, any fields that are a part of the
- 	// topic schema that are not part of the BigQuery table schema are dropped
- 	// when writing to BigQuery. Otherwise, the schemas must be kept in sync and
- 	// any messages with extra fields are not written and remain in the
- 	// subscription's backlog.
+	// topic schema that are not part of the BigQuery table schema are dropped
+	// when writing to BigQuery. Otherwise, the schemas must be kept in sync and
+	// any messages with extra fields are not written and remain in the
+	// subscription's backlog.
 	DropUnknownFields bool
 
 	// Output only. An output-only field that indicates whether or not the subscription can
-  	// receive messages.
+	// receive messages.
 	State BigQueryConfigState
 }
 
-func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig{
+func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	if bc == nil {
 		return nil
 	}
 	pbCfg := &pb.BigQueryConfig{
-		Table: bc.Table,
-		UseTopicSchema: bc.UseTopicSchema,
-		WriteMetadata: bc.WriteMetadata,
+		Table:             bc.Table,
+		UseTopicSchema:    bc.UseTopicSchema,
+		WriteMetadata:     bc.WriteMetadata,
 		DropUnknownFields: bc.DropUnknownFields,
-		State: pb.BigQueryConfig_State(bc.State),
+		State:             pb.BigQueryConfig_State(bc.State),
 	}
 	return pbCfg
 }
@@ -280,12 +279,12 @@ type SubscriptionConfig struct {
 	name string
 
 	// The topic from which this subscription is receiving messages.
-	Topic      *Topic
+	Topic *Topic
 
-  	// If push delivery is used with this subscription, this field is
-  	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
-  	// but not both. If both are empty, then the subscriber will pull and ack
-  	// messages using API methods.
+	// If push delivery is used with this subscription, this field is
+	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
+	// but not both. If both are empty, then the subscriber will pull and ack
+	// messages using API methods.
 	PushConfig PushConfig
 
 	// If delivery to BigQuery is used with this subscription, this field is
@@ -413,7 +412,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		Name:                     name,
 		Topic:                    cfg.Topic.name,
 		PushConfig:               pbPushConfig,
-		BigqueryConfig: 		  pbBigQueryConfig,
+		BigqueryConfig:           pbBigQueryConfig,
 		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
 		RetainAckedMessages:      cfg.RetainAckedMessages,
 		MessageRetentionDuration: retentionDuration,
@@ -486,15 +485,14 @@ func protoToBQConfig(pbBQ *pb.BigQueryConfig) *BigQueryConfig {
 		return nil
 	}
 	bq := &BigQueryConfig{
-		Table: pbBQ.GetTable(),
-		UseTopicSchema: pbBQ.GetUseTopicSchema(),
+		Table:             pbBQ.GetTable(),
+		UseTopicSchema:    pbBQ.GetUseTopicSchema(),
 		DropUnknownFields: pbBQ.GetDropUnknownFields(),
-		WriteMetadata: pbBQ.GetWriteMetadata(),
-		State: BigQueryConfigState(pbBQ.State),
+		WriteMetadata:     pbBQ.GetWriteMetadata(),
+		State:             BigQueryConfigState(pbBQ.State),
 	}
 	return bq
 }
-
 
 // DeadLetterPolicy specifies the conditions for dead lettering messages in
 // a subscription.
@@ -744,7 +742,7 @@ type SubscriptionConfigToUpdate struct {
 	PushConfig *PushConfig
 
 	// If non-nil, the bigquery config is changed. Cannot be set at the same time as PushConfig.
-	// If currently in bigquery mode, set this value to the zero value to revert to a Pull based subscription, 
+	// If currently in bigquery mode, set this value to the zero value to revert to a Pull based subscription,
 	BigQueryConfig *BigQueryConfig
 
 	// If non-zero, the ack deadline is changed.
