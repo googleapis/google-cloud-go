@@ -480,6 +480,9 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
+	if ps.BigqueryConfig == nil {
+		ps.BigqueryConfig = &pb.BigQueryConfig{}
+	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	var deadLetterTopic *topic
 	if ps.DeadLetterPolicy != nil {
@@ -488,6 +491,9 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 			return nil, status.Errorf(codes.NotFound, "deadLetter topic %q", ps.DeadLetterPolicy.DeadLetterTopic)
 		}
 		deadLetterTopic = dlTopic
+	}
+	if ps.BigqueryConfig.Table != "" {
+		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
 	}
 
 	sub := newSubscription(top, &s.mu, s.timeNowFunc, deadLetterTopic, ps)
@@ -578,6 +584,12 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		switch path {
 		case "push_config":
 			sub.proto.PushConfig = req.Subscription.PushConfig
+		
+		case "bigquery_config":
+			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
+			if sub.proto.BigqueryConfig.Table != "" {
+				sub.proto.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+			}
 
 		case "ack_deadline_seconds":
 			a := req.Subscription.AckDeadlineSeconds

@@ -210,13 +210,89 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 	}
 }
 
+
+type BigQueryConfigState int
+// Possible states for a BigQuery subscription.
+const (
+	// Default value. This value is unused.
+	BigQueryConfigStateUnspecified = iota
+	
+	// The usbscription can actively send messages to BigQuery.
+	BigQueryConfigActive
+	
+	// Cannot write to the BigQuery table because of permission denied errors.
+	BigQueryConfigPermissionDenied
+	
+	// Cannot write to the BigQuery table because it does not exist.
+	BigQueryConfigNotFound
+	
+	// Cannot write to the BigQuery table due to a schema mismatch.
+	BigQueryConfigSchemaMismatch
+)
+
+// BigQueryConfig configures the subscription to deliver to a BigQuery table. 
+type BigQueryConfig struct {
+	// The name of the table to which to write data, of the form
+ 	// {projectId}:{datasetId}.{tableId}
+	Table string
+
+	// When true, use the topic's schema as the columns to write to in BigQuery,
+ 	// if it exists.
+	UseTopicSchema bool
+
+	// When true, write the subscription name, message_id, publish_time,
+  	// attributes, and ordering_key to additional columns in the table. The
+  	// subscription name, message_id, and publish_time fields are put in their own
+  	// columns while all other message properties (other than data) are written to
+ 	// a JSON object in the attributes column.
+	WriteMetadata bool
+
+
+	// When true and use_topic_schema is true, any fields that are a part of the
+ 	// topic schema that are not part of the BigQuery table schema are dropped
+ 	// when writing to BigQuery. Otherwise, the schemas must be kept in sync and
+ 	// any messages with extra fields are not written and remain in the
+ 	// subscription's backlog.
+	DropUnknownFields bool
+
+	// Output only. An output-only field that indicates whether or not the subscription can
+  	// receive messages.
+	State BigQueryConfigState
+}
+
+func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig{
+	if bc == nil {
+		return nil
+	}
+	pbCfg := &pb.BigQueryConfig{
+		Table: bc.Table,
+		UseTopicSchema: bc.UseTopicSchema,
+		WriteMetadata: bc.WriteMetadata,
+		DropUnknownFields: bc.DropUnknownFields,
+		State: pb.BigQueryConfig_State(bc.State),
+	}
+	return pbCfg
+}
+
 // SubscriptionConfig describes the configuration of a subscription.
 type SubscriptionConfig struct {
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
 	name string
 
+	// The topic from which this subscription is receiving messages.
 	Topic      *Topic
+
+  	// If push delivery is used with this subscription, this field is
+  	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
+  	// but not both. If both are empty, then the subscriber will pull and ack
+  	// messages using API methods.
 	PushConfig PushConfig
+
+	// If delivery to BigQuery is used with this subscription, this field is
+	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
+	// but not both. If both are empty, then the subscriber will pull and ack
+	// messages using API methods.
+	BigQueryConfig BigQueryConfig
 
 	// The default maximum time after a subscriber receives a message before
 	// the subscriber should acknowledge the message. Note: messages which are
@@ -317,6 +393,10 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 || cfg.PushConfig.AuthenticationMethod != nil {
 		pbPushConfig = cfg.PushConfig.toProto()
 	}
+	var pbBigQueryConfig *pb.BigQueryConfig
+	if cfg.BigQueryConfig.Table!= "" {
+		pbBigQueryConfig = cfg.BigQueryConfig.toProto()
+	}
 	var retentionDuration *durpb.Duration
 	if cfg.RetentionDuration != 0 {
 		retentionDuration = durpb.New(cfg.RetentionDuration)
@@ -333,6 +413,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		Name:                     name,
 		Topic:                    cfg.Topic.name,
 		PushConfig:               pbPushConfig,
+		BigqueryConfig: 		  pbBigQueryConfig,
 		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
 		RetainAckedMessages:      cfg.RetainAckedMessages,
 		MessageRetentionDuration: retentionDuration,
@@ -372,9 +453,11 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		Detached:                      pbSub.Detached,
 		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
 	}
-	pc := protoToPushConfig(pbSub.PushConfig)
-	if pc != nil {
+	if pc := protoToPushConfig(pbSub.PushConfig); pc != nil {
 		subC.PushConfig = *pc
+	}
+	if bq := protoToBQConfig(pbSub.GetBigqueryConfig()); bq != nil {
+		subC.BigQueryConfig = *bq
 	}
 	return subC, nil
 }
@@ -397,6 +480,21 @@ func protoToPushConfig(pbPc *pb.PushConfig) *PushConfig {
 	}
 	return pc
 }
+
+func protoToBQConfig(pbBQ *pb.BigQueryConfig) *BigQueryConfig {
+	if pbBQ == nil {
+		return nil
+	}
+	bq := &BigQueryConfig{
+		Table: pbBQ.GetTable(),
+		UseTopicSchema: pbBQ.GetUseTopicSchema(),
+		DropUnknownFields: pbBQ.GetDropUnknownFields(),
+		WriteMetadata: pbBQ.GetWriteMetadata(),
+		State: BigQueryConfigState(pbBQ.State),
+	}
+	return bq
+}
+
 
 // DeadLetterPolicy specifies the conditions for dead lettering messages in
 // a subscription.
@@ -641,8 +739,13 @@ func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
 
 // SubscriptionConfigToUpdate describes how to update a subscription.
 type SubscriptionConfigToUpdate struct {
-	// If non-nil, the push config is changed.
+	// If non-nil, the push config is changed. Cannot be set at the same time as BigQueryConfig.
+	// If currently in push mode, set this value to the zero value to revert to a Pull based subscription.
 	PushConfig *PushConfig
+
+	// If non-nil, the bigquery config is changed. Cannot be set at the same time as PushConfig.
+	// If currently in bigquery mode, set this value to the zero value to revert to a Pull based subscription, 
+	BigQueryConfig *BigQueryConfig
 
 	// If non-zero, the ack deadline is changed.
 	AckDeadline time.Duration
@@ -697,6 +800,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.PushConfig != nil {
 		psub.PushConfig = cfg.PushConfig.toProto()
 		paths = append(paths, "push_config")
+	}
+	if cfg.BigQueryConfig != nil {
+		psub.BigqueryConfig = cfg.BigQueryConfig.toProto()
+		paths = append(paths, "bigquery_config")
 	}
 	if cfg.AckDeadline != 0 {
 		psub.AckDeadlineSeconds = trunc32(int64(cfg.AckDeadline.Seconds()))

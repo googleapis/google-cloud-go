@@ -435,3 +435,35 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 		msg.Ack()
 	})
 }
+
+func TestBigQuerySubscription(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	bqTable := "some-project:some-dataset.some-table"
+	subConfig := SubscriptionConfig{
+		Topic:                 topic,
+		BigQueryConfig: BigQueryConfig{
+			Table: bqTable,
+		},
+	}
+	bqSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := bqSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := BigQueryConfig{
+		Table: bqTable,
+		State: BigQueryConfigActive,
+	}
+	if diff := testutil.Diff(cfg.BigQueryConfig, want); diff != "" {
+		t.Fatalf("CreateBQSubscription mismatch: \n%s", diff)
+	}
+}
