@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -428,8 +429,98 @@ func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string
 	return newObject(obj), nil
 }
 
-func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+
+	var attrs ObjectAttrs
+	// Lists of fields to send, and set to null, in the JSON.
+	var forceSendFields, nullFields []string
+	if uattrs.ContentType != nil {
+		attrs.ContentType = optional.ToString(uattrs.ContentType)
+		// For ContentType, sending the empty string is a no-op.
+		// Instead we send a null.
+		if attrs.ContentType == "" {
+			nullFields = append(nullFields, "ContentType")
+		} else {
+			forceSendFields = append(forceSendFields, "ContentType")
+		}
+	}
+	if uattrs.ContentLanguage != nil {
+		attrs.ContentLanguage = optional.ToString(uattrs.ContentLanguage)
+		// For ContentLanguage it's an error to send the empty string.
+		// Instead we send a null.
+		if attrs.ContentLanguage == "" {
+			nullFields = append(nullFields, "ContentLanguage")
+		} else {
+			forceSendFields = append(forceSendFields, "ContentLanguage")
+		}
+	}
+	if uattrs.ContentEncoding != nil {
+		attrs.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
+		forceSendFields = append(forceSendFields, "ContentEncoding")
+	}
+	if uattrs.ContentDisposition != nil {
+		attrs.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
+		forceSendFields = append(forceSendFields, "ContentDisposition")
+	}
+	if uattrs.CacheControl != nil {
+		attrs.CacheControl = optional.ToString(uattrs.CacheControl)
+		forceSendFields = append(forceSendFields, "CacheControl")
+	}
+	if uattrs.EventBasedHold != nil {
+		attrs.EventBasedHold = optional.ToBool(uattrs.EventBasedHold)
+		forceSendFields = append(forceSendFields, "EventBasedHold")
+	}
+	if uattrs.TemporaryHold != nil {
+		attrs.TemporaryHold = optional.ToBool(uattrs.TemporaryHold)
+		forceSendFields = append(forceSendFields, "TemporaryHold")
+	}
+	if !uattrs.CustomTime.IsZero() {
+		attrs.CustomTime = uattrs.CustomTime
+		forceSendFields = append(forceSendFields, "CustomTime")
+	}
+	if uattrs.Metadata != nil {
+		attrs.Metadata = uattrs.Metadata
+		if len(attrs.Metadata) == 0 {
+			// Sending the empty map is a no-op. We send null instead.
+			nullFields = append(nullFields, "Metadata")
+		} else {
+			forceSendFields = append(forceSendFields, "Metadata")
+		}
+	}
+	if uattrs.ACL != nil {
+		attrs.ACL = uattrs.ACL
+		// It's an error to attempt to delete the ACL, so
+		// we don't append to nullFields here.
+		forceSendFields = append(forceSendFields, "Acl")
+	}
+	rawObj := attrs.toRawObject(bucket)
+	rawObj.ForceSendFields = forceSendFields
+	rawObj.NullFields = nullFields
+	call := c.raw.Objects.Patch(bucket, object, rawObj).Projection("full").Context(ctx)
+	if err := applyConds("Update", gen, conds, call); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	if uattrs.PredefinedACL != "" {
+		call.PredefinedAcl(uattrs.PredefinedACL)
+	}
+	if err := setEncryptionHeaders(call.Header(), encryptionKey, false); err != nil {
+		return nil, err
+	}
+	var obj *raw.Object
+	var err error
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	var e *googleapi.Error
+	if errors.As(err, &e) && e.Code == http.StatusNotFound {
+		return nil, ErrObjectNotExist
+	}
+	if err != nil {
+		return nil, err
+	}
+	return newObject(obj), nil
 }
 
 // Default Object ACL methods.
