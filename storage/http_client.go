@@ -919,6 +919,29 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 	return errMethodNotSupported
 }
 
+// Notification methods.
+
+func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Notifications")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+
+	call := c.raw.Notifications.List(bucket)
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	var res *raw.Notifications
+	err = run(ctx, func() error {
+		res, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, true, setRetryHeaderHTTP(call))
+	if err != nil {
+		return nil, err
+	}
+	return notificationsToMap(res.Items), nil
+}
+
 type httpReader struct {
 	body   io.ReadCloser
 	seen   int64

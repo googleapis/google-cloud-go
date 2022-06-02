@@ -99,6 +99,9 @@ type storageClient interface {
 	UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
 	CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error)
 	DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error
+
+	// Notification methods.
+	ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (map[string]*Notification, error)
 }
 
 // settings contains transport-agnostic configuration for API calls made via

@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	raw "google.golang.org/api/storage/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 )
 
 // A Notification describes how to send Cloud PubSub messages when certain
@@ -88,6 +89,18 @@ func toNotification(rn *raw.Notification) *Notification {
 		PayloadFormat:    rn.PayloadFormat,
 	}
 	n.TopicProjectID, n.TopicID = parseNotificationTopic(rn.Topic)
+	return n
+}
+
+func toNotificationFromProto(pbn *storagepb.Notification) *Notification {
+	n := &Notification{
+		ID:               pbn.Name,
+		EventTypes:       pbn.EventTypes,
+		ObjectNamePrefix: pbn.ObjectNamePrefix,
+		CustomAttributes: pbn.CustomAttributes,
+		PayloadFormat:    pbn.PayloadFormat,
+	}
+	n.TopicProjectID, n.TopicID = parseNotificationTopic(pbn.Topic)
 	return n
 }
 
@@ -175,6 +188,14 @@ func notificationsToMap(rns []*raw.Notification) map[string]*Notification {
 	m := map[string]*Notification{}
 	for _, rn := range rns {
 		m[rn.Id] = toNotification(rn)
+	}
+	return m
+}
+
+func notificationsToMapFromProto(ns []*storagepb.Notification) map[string]*Notification {
+	m := map[string]*Notification{}
+	for _, n := range ns {
+		m[n.Name] = toNotificationFromProto(n)
 	}
 	return m
 }

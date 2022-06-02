@@ -832,6 +832,39 @@ func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 	return errMethodNotSupported
 }
 
+// Notification methods.
+
+func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.ListNotificationsRequest{
+		Parent: bucketResourceName(globalProjectAlias, bucket),
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	var ns []*storagepb.Notification
+	gitr := c.raw.ListNotifications(ctx, req, s.gax...)
+	_ = func(pageSize int, pageToken string) (token string, err error) {
+		var notifications []*storagepb.Notification
+		err = run(ctx, func() error {
+			notifications, token, err = gitr.InternalFetch(pageSize, pageToken)
+			return err
+		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+		if err != nil {
+			return "", err
+		}
+		for _, n := range notifications {
+			ns = append(ns, n)
+		}
+		return token, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return notificationsToMapFromProto(ns), nil
+}
+
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata
 // via the x-goog-user-project system parameter defined at
 // https://cloud.google.com/apis/docs/system-parameters. This is only for
