@@ -131,4 +131,63 @@ var (
 			},
 		},
 	}
+
+	ValidationBaseSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "double_field",
+			Type: bigquery.FloatFieldType,
+		},
+		{
+			Name: "float_field",
+			Type: bigquery.FloatFieldType,
+		},
+		{
+			Name: "int32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "int64_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "uint32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sint32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sint64_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "fixed32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sfixed32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sfixed64_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "bool_field",
+			Type: bigquery.BooleanFieldType,
+		},
+		{
+			Name: "string_field",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "bytes_field",
+			Type: bigquery.BytesFieldType,
+		},
+		{
+			Name: "enum_field",
+			Type: bigquery.IntegerFieldType,
+		},
+	}
 )
