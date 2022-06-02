@@ -492,9 +492,6 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 		}
 		deadLetterTopic = dlTopic
 	}
-	if ps.BigqueryConfig.Table != "" {
-		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
-	}
 
 	sub := newSubscription(top, &s.mu, s.timeNowFunc, deadLetterTopic, ps)
 	top.subs[ps.Name] = sub
@@ -587,9 +584,6 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 
 		case "bigquery_config":
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
-			if sub.proto.BigqueryConfig.Table != "" {
-				sub.proto.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
-			}
 
 		case "ack_deadline_seconds":
 			a := req.Subscription.AckDeadlineSeconds

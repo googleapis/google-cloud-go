@@ -444,11 +444,13 @@ func TestBigQuerySubscription(t *testing.T) {
 
 	topic := mustCreateTopic(t, client, "t")
 	bqTable := "some-project:some-dataset.some-table"
+	bqConfig := BigQueryConfig{
+		Table: bqTable,
+	}
+
 	subConfig := SubscriptionConfig{
-		Topic: topic,
-		BigQueryConfig: BigQueryConfig{
-			Table: bqTable,
-		},
+		Topic:          topic,
+		BigQueryConfig: bqConfig,
 	}
 	bqSub, err := client.CreateSubscription(ctx, "s", subConfig)
 	if err != nil {
@@ -459,11 +461,7 @@ func TestBigQuerySubscription(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := BigQueryConfig{
-		Table: bqTable,
-		State: BigQueryConfigActive,
-	}
-	if diff := testutil.Diff(cfg.BigQueryConfig, want); diff != "" {
+	if diff := testutil.Diff(cfg.BigQueryConfig, bqConfig); diff != "" {
 		t.Fatalf("CreateBQSubscription mismatch: \n%s", diff)
 	}
 }
