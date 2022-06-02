@@ -211,8 +211,9 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 }
 
 
+// BigQueryConfigState denotes the possible states for a BigQuery Subscription.
 type BigQueryConfigState int
-// Possible states for a BigQuery subscription.
+
 const (
 	// Default value. This value is unused.
 	BigQueryConfigStateUnspecified = iota
@@ -246,7 +247,6 @@ type BigQueryConfig struct {
   	// columns while all other message properties (other than data) are written to
  	// a JSON object in the attributes column.
 	WriteMetadata bool
-
 
 	// When true and use_topic_schema is true, any fields that are a part of the
  	// topic schema that are not part of the BigQuery table schema are dropped
@@ -394,7 +394,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		pbPushConfig = cfg.PushConfig.toProto()
 	}
 	var pbBigQueryConfig *pb.BigQueryConfig
-	if cfg.BigQueryConfig.Table!= "" {
+	if cfg.BigQueryConfig.Table != "" {
 		pbBigQueryConfig = cfg.BigQueryConfig.toProto()
 	}
 	var retentionDuration *durpb.Duration
