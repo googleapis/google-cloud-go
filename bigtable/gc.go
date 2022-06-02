@@ -28,7 +28,7 @@ import (
 type PolicyType int
 
 const (
-	PolicyTypeUnknown PolicyType = iota
+	PolicyTypeUnspecified PolicyType = iota
 	PolicyTypeMaxAge
 	PolicyTypeMaxVersion
 	PolicyTypeUnion
@@ -229,6 +229,6 @@ func fromPolicyToTypedPolicy(gcPolicy GCPolicy) TypedGCPolicy {
 	case *bttdpb.GcRule_MaxNumVersions:
 		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeMaxVersion}
 	default:
-		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeUnknown}
+		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeUnspecified}
 	}
 }
