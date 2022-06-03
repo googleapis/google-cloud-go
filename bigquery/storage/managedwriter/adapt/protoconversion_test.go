@@ -622,6 +622,29 @@ func TestNormalizeDescriptor(t *testing.T) {
 			},
 		},
 		{
+			description: "WithProto3Optional",
+			in:          (&testdata.SimpleMessageProto3WithOptional{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_SimpleMessageProto3WithOptional"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("name"),
+						JsonName: proto.String("name"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("value"),
+						JsonName: proto.String("value"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+		{
 			description: "WithExternalEnum",
 			in:          (&testdata.ExternalEnumMessage{}).ProtoReflect().Descriptor(),
 			want: &descriptorpb.DescriptorProto{

@@ -19,31 +19,6 @@
               "methods": [
                 "CreateAssessment"
               ]
-            },
-            "CreateKey": {
-              "methods": [
-                "CreateKey"
-              ]
-            },
-            "DeleteKey": {
-              "methods": [
-                "DeleteKey"
-              ]
-            },
-            "GetKey": {
-              "methods": [
-                "GetKey"
-              ]
-            },
-            "ListKeys": {
-              "methods": [
-                "ListKeys"
-              ]
-            },
-            "UpdateKey": {
-              "methods": [
-                "UpdateKey"
-              ]
             }
           }
         }

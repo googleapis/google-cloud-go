@@ -4028,6 +4028,12 @@ func onlyRunForPGTest(t *testing.T) {
 	}
 }
 
+func skipForPGTest(t *testing.T) {
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		t.Skip("Skipping tests non needed for Postgres dialect.")
+	}
+}
+
 func verifyDirectPathRemoteAddress(t *testing.T) {
 	t.Helper()
 	if !dpConfig.attemptDirectPath {
