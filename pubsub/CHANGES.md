@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.2](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.22.1...pubsub/v1.22.2) (2022-06-03)
+
+
+### Bug Fixes
+
+* **pubsub:** fix iterator distribution bound calculations ([#6125](https://github.com/googleapis/google-cloud-go/issues/6125)) ([6c470ff](https://github.com/googleapis/google-cloud-go/commit/6c470ff02072d7af32ee07a772c5d0796b545a45))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.22.0...pubsub/v1.22.1) (2022-06-02)
 
 
