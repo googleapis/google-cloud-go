@@ -1725,11 +1725,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 
-	bw, err := iClient.BulkWriter()
-	if err != nil {
-		t.Errorf("error: BulkWriter creation %v\n", err)
-	}
-
+	bw := iClient.BulkWriter()
 	wg := sync.WaitGroup{}
 	f := integrationTestMap
 

@@ -19,6 +19,7 @@ package firestore
 import (
 	"context"
 	"fmt"
+	"log"
 	"reflect"
 	"sort"
 	"strings"
@@ -226,4 +227,13 @@ func (s *mockServer) Listen(stream pb.Firestore_ListenServer) error {
 		}
 	}
 	return nil
+}
+
+func (s *mockServer) BatchWrite(_ context.Context, req *pb.BatchWriteRequest) (*pb.BatchWriteResponse, error) {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return nil, err
+	}
+	log.Println(res)
+	return res.(*pb.BatchWriteResponse), nil
 }

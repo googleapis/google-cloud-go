@@ -299,16 +299,10 @@ func (c *Client) Batch() *WriteBatch {
 }
 
 // BulkWriter returns a BulkWriter instance.
-func (c *Client) BulkWriter() (*BulkWriter, error) {
+func (c *Client) BulkWriter() *BulkWriter {
 	ctx := context.Background()
-	db := fmt.Sprintf("projects/%s/databases/%s", c.projectID, c.databaseID)
-
-	bw, err := NewBulkWriter(ctx, db)
-	if err != nil {
-		return nil, err
-	}
-
-	return bw, nil
+	bw := newBulkWriter(ctx, c, c.path())
+	return bw
 }
 
 // commit calls the Commit RPC outside of a transaction.
