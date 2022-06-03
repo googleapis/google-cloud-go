@@ -161,8 +161,8 @@ func (it *messageIterator) checkDrained() {
 // min/maxDurationPerLeaseExtension.
 func (it *messageIterator) addToDistribution(receiveTime time.Time) {
 	d := time.Since(receiveTime)
-	d = minDuration(d, minDurationPerLeaseExtension)
-	d = maxDuration(d, maxDurationPerLeaseExtension)
+	d = maxDuration(d, minDurationPerLeaseExtension)
+	d = minDuration(d, maxDurationPerLeaseExtension)
 	it.ackTimeDist.Record(int(d / time.Second))
 }
 
