@@ -614,6 +614,9 @@ func configureACLCall(ctx context.Context, userProject string, call interface{ H
 func (c *httpStorageClient) DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error {
 	return errMethodNotSupported
 }
+
+// ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
+// Selecting a specific generation of this object is not currently supported by the client.
 func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error) {
 	s := callSettings(c.settings, opts...)
 	var acls *raw.ObjectAccessControls
@@ -623,12 +626,13 @@ func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 	err = run(ctx, func() error {
 		acls, err = req.Do()
 		return err
-	}, s.retry, true, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	if err != nil {
 		return nil, err
 	}
 	return toObjectACLRules(acls.Items), nil
 }
+
 func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
 	return nil, errMethodNotSupported
 }
