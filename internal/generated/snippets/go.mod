@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.16
 
 require (
-	cloud.google.com/go v0.101.1
+	cloud.google.com/go v0.102.0
 	cloud.google.com/go/accessapproval v1.0.1
 	cloud.google.com/go/accesscontextmanager v0.1.1
 	cloud.google.com/go/aiplatform v1.2.0
@@ -79,7 +79,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.20.0
+	cloud.google.com/go/pubsub v1.21.1
 	cloud.google.com/go/pubsublite v1.2.1
 	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
@@ -115,8 +115,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.80.0
-	google.golang.org/genproto v0.0.0-20220518221133-4f43b3371335
+	google.golang.org/api v0.81.0
+	google.golang.org/genproto v0.0.0-20220601144221-27df5f98adab
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -348,3 +348,7 @@ replace cloud.google.com/go/run => ../../../run
 replace cloud.google.com/go/gkebackup => ../../../gkebackup
 
 replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
+
+replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
+
+replace cloud.google.com/go/vision/v2 => ../../../vision/v2

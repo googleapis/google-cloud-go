@@ -142,34 +142,34 @@ func TestUpdateBucketEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Name: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.VersioningEnabled, want.VersioningEnabled); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("VersioningEnabled: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.RequesterPays, want.RequesterPays); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("RequesterPays: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.DefaultEventBasedHold, want.DefaultEventBasedHold); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("DefaultEventBasedHold: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Encryption, want.Encryption); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Encryption: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Lifecycle, want.Lifecycle); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Lifecycle: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Logging, want.Logging); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Logging: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Website, want.Website); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Website: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.RPO, want.RPO); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("RPO: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.StorageClass, want.StorageClass); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("StorageClass: got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -209,6 +209,130 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 		}
 		if diff := cmp.Diff(perms, want); diff != "" {
 			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestDeleteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object that will be deleted.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		err = client.DeleteObject(context.Background(), bucket, want.Name, defaultGen, nil)
+		if err != nil {
+			t.Fatalf("client.DeleteBucket: %v", err)
+		}
+	})
+}
+
+func TestGetObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestUpdateObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		ct := time.Date(2022, 5, 25, 12, 12, 12, 0, time.UTC)
+		o := ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+			CustomTime: ct,
+		}
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		want := &ObjectAttrsToUpdate{
+			EventBasedHold:     false,
+			TemporaryHold:      false,
+			ContentType:        "text/html",
+			ContentLanguage:    "en",
+			ContentEncoding:    "gzip",
+			ContentDisposition: "",
+			CacheControl:       "",
+			CustomTime:         ct.Add(10 * time.Hour),
+		}
+
+		got, err := client.UpdateObject(context.Background(), bucket, o.Name, want, defaultGen, nil, &Conditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatalf("client.UpdateObject: %v", err)
+		}
+		if diff := cmp.Diff(got.Name, o.Name); diff != "" {
+			t.Errorf("Name: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.EventBasedHold, want.EventBasedHold); diff != "" {
+			t.Errorf("EventBasedHold: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.TemporaryHold, want.TemporaryHold); diff != "" {
+			t.Errorf("TemporaryHold: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentType, want.ContentType); diff != "" {
+			t.Errorf("ContentType: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentLanguage, want.ContentLanguage); diff != "" {
+			t.Errorf("ContentLanguage: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentEncoding, want.ContentEncoding); diff != "" {
+			t.Errorf("ContentEncoding: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentDisposition, want.ContentDisposition); diff != "" {
+			t.Errorf("ContentDisposition: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.CacheControl, want.CacheControl); diff != "" {
+			t.Errorf("CacheControl: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.CustomTime, want.CustomTime); diff != "" {
+			t.Errorf("CustomTime: got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -524,6 +648,51 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 		}
 		if got, want := len(acls), 1; got != want {
 			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
+		}
+	})
+}
+
+func TestOpenReaderEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+
+		params := &newRangeReaderParams{
+			bucket: bucket,
+			object: want.Name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}
+		r, err := client.NewRangeReader(context.Background(), params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytesToWrite)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
+			t.Fatalf("Read: got(-),want(+):\n%s", diff)
 		}
 	})
 }
