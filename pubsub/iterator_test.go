@@ -496,3 +496,40 @@ func TestIterator_BoundedDuration(t *testing.T) {
 		})
 	}
 }
+
+ func TestAddToDistribution(t *testing.T) {
+	srv := pstest.NewServer()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+
+	_, client, err := initConn(ctx, srv.Addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{})
+
+	receiveTime := time.Now().Add(time.Duration(-1) * time.Second)
+	iter.addToDistribution(receiveTime)
+	deadline := iter.ackTimeDist.Percentile(.99)
+	want := 10
+	if deadline != want {
+		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
+	} 
+	receiveTime = time.Now().Add(time.Duration(-300) * time.Second)
+	iter.addToDistribution(receiveTime)
+	deadline = iter.ackTimeDist.Percentile(.99)
+	want = 300 
+	if deadline != want {
+		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
+	} 
+
+	receiveTime = time.Now().Add(time.Duration(-1000) * time.Second)
+	iter.addToDistribution(receiveTime)
+	deadline = iter.ackTimeDist.Percentile(.99)
+	want = 600
+	if deadline != want {
+		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
+	} 
+ }
