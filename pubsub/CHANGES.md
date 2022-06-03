@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.22.0...pubsub/v1.22.1) (2022-06-02)
+
+
+### Bug Fixes
+
+* **pubsub:** use MaxInt instead of MaxInt64 for BufferedByteLimit ([#6113](https://github.com/googleapis/google-cloud-go/issues/6113)) ([06721e0](https://github.com/googleapis/google-cloud-go/commit/06721e06a16f5c94a31b96809aad02f5eb38147c))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.21.1...pubsub/v1.22.0) (2022-05-31)
 
 
