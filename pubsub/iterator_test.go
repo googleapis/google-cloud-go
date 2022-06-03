@@ -510,6 +510,7 @@ func TestIterator_BoundedDuration(t *testing.T) {
 	}
 	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{})
 
+	// Start with a datapoint that's too small that should be bounded to 10s.
 	receiveTime := time.Now().Add(time.Duration(-1) * time.Second)
 	iter.addToDistribution(receiveTime)
 	deadline := iter.ackTimeDist.Percentile(.99)
@@ -517,6 +518,8 @@ func TestIterator_BoundedDuration(t *testing.T) {
 	if deadline != want {
 		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
 	} 
+
+	// The next datapoint should not be bounded.
 	receiveTime = time.Now().Add(time.Duration(-300) * time.Second)
 	iter.addToDistribution(receiveTime)
 	deadline = iter.ackTimeDist.Percentile(.99)
@@ -525,6 +528,7 @@ func TestIterator_BoundedDuration(t *testing.T) {
 		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
 	} 
 
+	// Lastly, add a datapoint that should be bounded to 600s
 	receiveTime = time.Now().Add(time.Duration(-1000) * time.Second)
 	iter.addToDistribution(receiveTime)
 	deadline = iter.ackTimeDist.Percentile(.99)
