@@ -254,8 +254,9 @@ type BigQueryConfig struct {
 	// subscription's backlog.
 	DropUnknownFields bool
 
-	// Output only. An output-only field that indicates whether or not the subscription can
-	// receive messages.
+	// This is an output-only field that indicates whether or not the subscription can
+	// receive messages. This field is set only in responses from the server;
+	// it is ignored if it is set in any requests.
 	State BigQueryConfigState
 }
 

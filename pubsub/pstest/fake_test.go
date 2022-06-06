@@ -1465,7 +1465,7 @@ func TestSubscriptionPushPull(t *testing.T) {
 		Name: "projects/P/topics/T",
 	})
 
-	// Create a push based subscription
+	// Create a push subscription.
 	pc := &pb.PushConfig{
 		PushEndpoint: "some-endpoint",
 	}
@@ -1498,7 +1498,7 @@ func TestSubscriptionPushPull(t *testing.T) {
 		t.Errorf("sub.BigQueryConfig mismatch: %s", diff)
 	}
 
-	// Switch to a pull based subscription.
+	// Switch back to a pull subscription.
 	updateSub.BigqueryConfig = &pb.BigQueryConfig{}
 	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
 		Subscription: updateSub,
