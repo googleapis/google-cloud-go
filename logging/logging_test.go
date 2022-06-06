@@ -1191,3 +1191,62 @@ func TestPartialSuccessOption(t *testing.T) {
 		})
 	}
 }
+
+func TestRedirectOutput(t *testing.T) {
+	var hookCalled bool
+
+	// setup fake server
+	fakeBackend := &writeLogEntriesTestHandler{}
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	gsrv := grpc.NewServer()
+	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
+	fakeServerAddr := l.Addr().String()
+	go func() {
+		if err := gsrv.Serve(l); err != nil {
+			panic(err)
+		}
+	}()
+	fakeBackend.hook = func(e *logpb.WriteLogEntriesRequest) {
+		hookCalled = true
+	}
+	ctx := context.Background()
+	client, _ := logging.NewClient(ctx, "projects/test", option.WithEndpoint(fakeServerAddr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()))
+	defer client.Close()
+
+	entry := logging.Entry{Payload: "testing payload string"}
+	tests := []struct {
+		name   string
+		logger *logging.Logger
+		want   bool
+	}{
+		{
+			name:   "redirect to stdout does not ingest",
+			logger: client.Logger("stdout-redirection-log", logging.RedirectToStdout()),
+			want:   false,
+		},
+		{
+			name:   "redirect to stderr does not ingest",
+			logger: client.Logger("stderr-redirection-log", logging.RedirectToStderr()),
+			want:   false,
+		},
+		{
+			name:   "log without Redirect flags ingest",
+			logger: client.Logger("default-ingestion-log"),
+			want:   true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			hookCalled = false
+			tc.logger.LogSync(context.TODO(), entry)
+			if hookCalled != tc.want {
+				t.Errorf("Log ingestion works unexpected: got %v want %v\n", hookCalled, tc.want)
+			}
+		})
+	}
+}

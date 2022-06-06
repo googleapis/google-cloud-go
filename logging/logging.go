@@ -89,6 +89,10 @@ const (
 	defaultWriteTimeout = 10 * time.Minute
 )
 
+// ErrRedirectProtoPayloadNotSupported is returned when Logger is configured to redirect output and
+// tries to redirect logs with protobuf payload.
+var ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
+
 // For testing:
 var now = time.Now
 
@@ -909,7 +913,7 @@ func printEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
 	} else if entry.GetJsonPayload() != nil {
 		jsonifiedEntry.Message, err = json.Marshal(entry.GetJsonPayload().AsMap())
 	} else {
-		return errors.New("printEntryToStdout: cannot find valid payload")
+		return ErrRedirectProtoPayloadNotSupported
 	}
 	if err == nil {
 		err = json.NewEncoder(w).Encode(jsonifiedEntry)
