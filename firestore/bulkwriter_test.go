@@ -9,13 +9,13 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-type bulkwriterWriteTestCase func(*BulkWriter, chan *pb.WriteResult, chan *error)
+type bulkwriterWriteTestCase func(*BulkWriter, chan *WriteResult, chan *error)
 
-func bulkwriterTestRunner(bw *BulkWriter, f bulkwriterWriteTestCase) (*pb.WriteResult, error) {
+func bulkwriterTestRunner(bw *BulkWriter, f bulkwriterWriteTestCase) (*WriteResult, error) {
 	pwp := bw.Status().WritesProvidedCount
 	pwr := bw.Status().WritesReceivedCount
 
-	wr := make(chan *pb.WriteResult, 1)
+	wr := make(chan *WriteResult, 1)
 	err := make(chan *error, 1)
 	go f(bw, wr, err)
 
@@ -156,8 +156,11 @@ func TestBulkWriter(t *testing.T) {
 
 	bw := c.BulkWriter()
 
+	var tcs []bulkwriterWriteTestCase
+	wantWRs := []*WriteResult{{aTime}, {aTime2}, {aTime3}, {aTime3}}
+
 	var testCreateCase bulkwriterWriteTestCase
-	testCreateCase = func(bw *BulkWriter, wr chan *pb.WriteResult, err chan *error) {
+	testCreateCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
 		wrc, errs := bw.Create(c.Doc("C/a"), testData)
 		if errs != nil {
 			wr <- nil
@@ -167,15 +170,10 @@ func TestBulkWriter(t *testing.T) {
 		wr <- wrc
 		err <- &errs
 	}
-
-	wc, err := bulkwriterTestRunner(bw, testCreateCase)
-	if err != nil {
-		t.Errorf("bulkwriter: got error: %v", err)
-	}
-	t.Log(wc)
+	tcs = append(tcs, testCreateCase)
 
 	var testSetCase bulkwriterWriteTestCase
-	testSetCase = func(bw *BulkWriter, wr chan *pb.WriteResult, err chan *error) {
+	testSetCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
 		wrs, errs := bw.Set(c.Doc("C/b"), testData)
 		if errs != nil {
 			wr <- nil
@@ -185,15 +183,10 @@ func TestBulkWriter(t *testing.T) {
 		wr <- wrs
 		err <- &errs
 	}
-
-	ws, err := bulkwriterTestRunner(bw, testSetCase)
-	if err != nil {
-		t.Errorf("bulkwriter: got error: %v", err)
-	}
-	t.Log(ws)
+	tcs = append(tcs, testSetCase)
 
 	var testDeleteCase bulkwriterWriteTestCase
-	testDeleteCase = func(bw *BulkWriter, wr chan *pb.WriteResult, err chan *error) {
+	testDeleteCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
 		wrd, errs := bw.Delete(c.Doc("C/c"))
 		if errs != nil {
 			wr <- nil
@@ -203,15 +196,10 @@ func TestBulkWriter(t *testing.T) {
 		wr <- wrd
 		err <- &errs
 	}
-
-	wd, err := bulkwriterTestRunner(bw, testDeleteCase)
-	if err != nil {
-		t.Errorf("bulkwriter: got error: %v", err)
-	}
-	t.Log(wd)
+	tcs = append(tcs, testDeleteCase)
 
 	var testUpdateCase bulkwriterWriteTestCase
-	testUpdateCase = func(bw *BulkWriter, wr chan *pb.WriteResult, err chan *error) {
+	testUpdateCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
 		wru, errs := bw.Update(c.Doc("C/f"), []Update{{FieldPath: []string{"*"}, Value: 3}})
 		if errs != nil {
 			wr <- nil
@@ -221,16 +209,22 @@ func TestBulkWriter(t *testing.T) {
 		wr <- wru
 		err <- &errs
 	}
+	tcs = append(tcs, testUpdateCase)
 
-	wu, err := bulkwriterTestRunner(bw, testUpdateCase)
-	if err != nil {
-		t.Errorf("bulkwriter: got error: %v", err)
-	}
-	t.Log(wu)
-	/*
-		if bw.Status().WritesReceivedCount != 4 {
-			t.Logf("bulkwriter sent != received; sent: %v, received: %v", len(wantWrites), bw.Status().WritesReceivedCount)
+	for i, tc := range tcs {
+		wr, err := bulkwriterTestRunner(bw, tc)
+		if err != nil {
+			t.Errorf("bulkwriter: got error: %v\n", err)
 		}
-	*/
+		if wr == nil {
+			t.Errorf("bulkwriter: got nil WriteResult and no error")
+		}
+		if !testEqual(wr, wantWRs[i]) {
+			t.Errorf("bulkwriter:\nwanted %v,\n got %v\n", wantWRs[i], wr.UpdateTime)
+		}
+	}
 
+	if bw.Status().WritesReceivedCount != len(tcs) {
+		t.Logf("bulkwriter sent != received; sent: %v, received: %v", len(tcs), bw.Status().WritesReceivedCount)
+	}
 }

@@ -13,13 +13,13 @@ import (
 )
 
 const (
-	MaxBatchSize                       = 20            // max number of writes to send in a request
-	RetryMaxBatchSize                  = 10            // max number of writes to send in a retry request
-	MaxRetryAttempts                   = 10            // max number of times to retry a write
-	DefaultStartingMaximumOpsPerSecond = 500           // starting max number of requests to the service per second
-	RateLimiterMultiplier              = 1.5           // amount to increase maximum ops (qps) every 5 minutes
-	RateLimiterMultiplierMillis        = 5 * 60 * 1000 // 5 minutes in milliseconds
-	CoolingPeriodMillis                = 2.0           // starting time to wait in between requests
+	MaxBatchSize                       = 20            // MaxBatchSize is the max number of writes to send in a request
+	RetryMaxBatchSize                  = 10            // RetryMaxBatchSize is the max number of writes to send in a retry request
+	MaxRetryAttempts                   = 10            // MaxRetryAttempts is the max number of times to retry a write
+	DefaultStartingMaximumOpsPerSecond = 500           // DefaultStartingMaximumOpsPerSecond is the starting max number of requests to the service per second
+	RateLimiterMultiplier              = 1.5           // RateLimiterMultiplier is the amount to increase maximum ops (qps) every 5 minutes
+	rateLimiterMultiplierMillis        = 5 * 60 * 1000 // 5 minutes in milliseconds
+	coolingPeriodMillis                = 2.0           // starting time to wait in between requests
 )
 
 type bulkWriterJob struct {
@@ -90,7 +90,7 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		scheduled:       make(chan bulkWriterRequestBatch),
 		start:           time.Now(),
 		maxOpsPerSecond: DefaultStartingMaximumOpsPerSecond,
-		waitTime:        CoolingPeriodMillis,
+		waitTime:        coolingPeriodMillis,
 	}
 
 	// Start the call receiving thread and request sending thread
@@ -122,7 +122,9 @@ func (b *BulkWriter) Flush() {
 	<-b.doneFlushing
 }
 
-// QueueCount returns the number of document writes that are currently in the queue.
+// Status returns the current state of the BulkWriter, including whether it is open and
+// the number of writes provided by the caller, writes in the queue, writes sent, and
+// the writes received.
 func (bw *BulkWriter) Status() BulkWriterStatus {
 	return BulkWriterStatus{
 		IsOpen:              bw.isOpen,
@@ -134,7 +136,7 @@ func (bw *BulkWriter) Status() BulkWriterStatus {
 }
 
 // Create adds a document creation write to the queue of writes to send.
-func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResult, error) {
+func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*WriteResult, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -146,11 +148,12 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*pb.WriteResu
 	}
 
 	wc, ec := bw.write(w[0])
-	return <-wc, <-ec
+	wr, err := bw.processResults(wc, ec)
+	return wr, err
 }
 
 // Delete adds a document deletion write to the queue of writes to send.
-func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.WriteResult, error) {
+func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*WriteResult, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -161,12 +164,13 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*pb.Wr
 		return nil, fmt.Errorf("firestore: cannot delete doc %v", doc.ID)
 	}
 
-	wc, ec := bw.write(w[0])
-	return <-wc, <-ec
+	wd, ec := bw.write(w[0])
+	wr, err := bw.processResults(wd, ec)
+	return wr, err
 }
 
 // Set adds a document set write to the queue of writes to send.
-func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption) (*pb.WriteResult, error) {
+func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption) (*WriteResult, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -177,11 +181,13 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 		return nil, fmt.Errorf("firestore: cannot set %v on doc %v", datum, doc.ID)
 	}
 
-	wc, ec := bw.write(w[0])
-	return <-wc, <-ec
+	ws, ec := bw.write(w[0])
+	wr, err := bw.processResults(ws, ec)
+	return wr, err
 }
 
-func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Precondition) (*pb.WriteResult, error) {
+// Update adds a document update write to the queue of writes to send.
+func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Precondition) (*WriteResult, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -191,8 +197,9 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 	if err != nil {
 		return nil, fmt.Errorf("firestore: cannot update doc %v", doc.ID)
 	}
-	wc, ec := bw.write(w[0])
-	return <-wc, <-ec
+	wu, ec := bw.write(w[0])
+	wr, err := bw.processResults(wu, ec)
+	return wr, err
 }
 
 // checkConditions determines whether this write attempt is valid. It returns
@@ -233,6 +240,23 @@ func (bw *BulkWriter) write(w *pb.Write) (chan *pb.WriteResult, chan error) {
 
 	bw.queue <- j
 	return r, e
+}
+
+// processResults checks for errors returned from send() and packages up the
+// results as WriteResult objects
+func (bw *BulkWriter) processResults(w chan *pb.WriteResult, e chan error) (*WriteResult, error) {
+	wrpb := <-w
+	err := <-e
+
+	if err != nil {
+		return nil, err
+	}
+
+	wr, err := writeResultFromProto(wrpb)
+	if err != nil {
+		return nil, err
+	}
+	return wr, nil
 }
 
 // receiver gets write requests from the caller and sends BatchWriteRequests to the scheduler.
@@ -367,7 +391,7 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 				}
 			}
 
-			go bw.send(b.bwr, b.bwj, ctx)
+			go bw.send(ctx, b.bwr, b.bwj)
 		}
 
 		// if this bulkWriterRequestBatch is a flush job, report that it is now done.
@@ -379,7 +403,7 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 }
 
 // send transmits writes to the service and matches response results to job channels.
-func (bw *BulkWriter) send(bwr *pb.BatchWriteRequest, bwj []bulkWriterJob, ctx context.Context) {
+func (bw *BulkWriter) send(ctx context.Context, bwr *pb.BatchWriteRequest, bwj []bulkWriterJob) {
 	bw.reqs++
 	resp, err := bw.vc.BatchWrite(ctx, bwr)
 	if err != nil {
