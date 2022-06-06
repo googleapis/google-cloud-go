@@ -13,13 +13,18 @@ import (
 )
 
 const (
-	MaxBatchSize                       = 20            // MaxBatchSize is the max number of writes to send in a request
-	RetryMaxBatchSize                  = 10            // RetryMaxBatchSize is the max number of writes to send in a retry request
-	MaxRetryAttempts                   = 10            // MaxRetryAttempts is the max number of times to retry a write
-	DefaultStartingMaximumOpsPerSecond = 500           // DefaultStartingMaximumOpsPerSecond is the starting max number of requests to the service per second
-	RateLimiterMultiplier              = 1.5           // RateLimiterMultiplier is the amount to increase maximum ops (qps) every 5 minutes
-	rateLimiterMultiplierMillis        = 5 * 60 * 1000 // 5 minutes in milliseconds
-	coolingPeriodMillis                = 2.0           // starting time to wait in between requests
+	// MaxBatchSize is the max number of writes to send in a request
+	MaxBatchSize = 20
+	// RetryMaxBatchSize is the max number of writes to send in a retry request
+	RetryMaxBatchSize = 10
+	// MaxRetryAttempts is the max number of times to retry a write
+	MaxRetryAttempts = 10
+	// DefaultStartingMaximumOpsPerSecond is the starting max number of requests to the service per second
+	DefaultStartingMaximumOpsPerSecond = 500
+	// RateLimiterMultiplier is the amount to increase maximum ops (qps) every 5 minutes
+	RateLimiterMultiplier       = 1.5
+	rateLimiterMultiplierMillis = 5 * 60 * 1000 // 5 minutes in milliseconds
+	coolingPeriodMillis         = 2.0           // starting time to wait in between requests
 )
 
 type bulkWriterJob struct {
@@ -61,12 +66,12 @@ type BulkWriter struct {
 	start           time.Time                   // when this BulkWriter was started
 	vc              *vkit.Client                // internal client
 	isOpen          bool                        // signal that the BulkWriter is closed
-	flush           chan struct{}               // signal that the BulkWriter needs to flush the queue
-	isFlushing      bool                        // determines that a flush has occurred or not
-	doneFlushing    chan struct{}               // signals that the BulkWriter has flushed the queue
+	flush           chan struct{}               // signal the beginning/end of flushing operation
+	isFlushing      bool                        // determines whether we're in a flush state
 	queue           chan bulkWriterJob          // incoming write requests
 	scheduled       chan bulkWriterRequestBatch // scheduled requests
-	backlogQueue    []bulkWriterJob             // backlog of requests to send
+	sendingQueue    []bulkWriterJob             // queue of requests to send
+	backlogQueue    []bulkWriterJob             // queue of requests to store in memory during flush operation
 	maxOpsPerSecond int                         // number of requests that can be sent per second.
 	docUpdatePaths  []string                    // document paths with corresponding writes in the queue.
 	waitTime        float64                     // time to wait in between requests; increase exponentially
@@ -85,7 +90,6 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		isOpen:          true,
 		flush:           make(chan struct{}),
 		isFlushing:      false,
-		doneFlushing:    make(chan struct{}),
 		queue:           make(chan bulkWriterJob),
 		scheduled:       make(chan bulkWriterRequestBatch),
 		start:           time.Now(),
@@ -95,8 +99,8 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 
 	// Start the call receiving thread and request sending thread
 	// enocom: We are using memory to get more speed, be aware of memory usage
-	go bw.receiver(ctx)
-	go bw.scheduler(ctx)
+	go bw.receiver(withResourceHeader(ctx, c.path()))
+	go bw.scheduler(withResourceHeader(ctx, c.path()))
 
 	// TODO(telpirion): Create a retry thread?
 
@@ -115,11 +119,19 @@ func (b *BulkWriter) End() {
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
+// CANNOT BE DEFERRED. Deferring a call to Flush() can cause a deadlock.
 // This method blocks execution.
 func (b *BulkWriter) Flush() {
 	b.flush <- struct{}{}
+
+	// Ensure that the backlogQueue is empty
+	b.backlogQueue = []bulkWriterJob{}
+
 	// Block until we get the signal that we're done flushing.
-	<-b.doneFlushing
+	<-b.flush
+
+	// Repopulate sending queue now that flush operation is done.
+	b.sendingQueue = b.backlogQueue
 }
 
 // Status returns the current state of the BulkWriter, including whether it is open and
@@ -128,7 +140,7 @@ func (b *BulkWriter) Flush() {
 func (bw *BulkWriter) Status() BulkWriterStatus {
 	return BulkWriterStatus{
 		IsOpen:              bw.isOpen,
-		WritesInQueueCount:  len(bw.backlogQueue),
+		WritesInQueueCount:  len(bw.sendingQueue),
 		WritesProvidedCount: int(bw.writesProvided),
 		WritesSentCount:     int(bw.writesSent),
 		WritesReceivedCount: int(bw.writesReceived),
@@ -270,8 +282,10 @@ func (bw *BulkWriter) receiver(ctx context.Context) {
 
 		select {
 		case bwj := <-bw.queue:
-			bw.backlogQueue = append(bw.backlogQueue, bwj)
-			if len(bw.backlogQueue) > MaxBatchSize {
+			bw.sendingQueue = append(bw.sendingQueue, bwj)
+			if bw.isFlushing {
+				bw.backlogQueue = append(bw.backlogQueue, bwj)
+			} else if len(bw.sendingQueue) > MaxBatchSize {
 				bs = bw.buildRequests(false)
 			}
 			// should we block from adding to the queue until a flushing job is complete?
@@ -303,17 +317,17 @@ func (bw *BulkWriter) receiver(ctx context.Context) {
 // makeBatch creates MAX_BATCH_SIZE (or smaller) bundles of bulkWriterJobs for sending.
 func (bw *BulkWriter) makeBatch() (bulkWriterBatch, error) {
 
-	qs := len(bw.backlogQueue)
+	qs := len(bw.sendingQueue)
 	var b []bulkWriterJob
 
 	// Don't index outside-of-bounds
 	if qs < MaxBatchSize {
-		b = bw.backlogQueue[:qs]
-		bw.backlogQueue = []bulkWriterJob{}
+		b = bw.sendingQueue[:qs]
+		bw.sendingQueue = []bulkWriterJob{}
 
 	} else {
-		b = bw.backlogQueue[:MaxBatchSize]
-		bw.backlogQueue = bw.backlogQueue[MaxBatchSize:]
+		b = bw.sendingQueue[:MaxBatchSize]
+		bw.sendingQueue = bw.sendingQueue[MaxBatchSize:]
 	}
 
 	// Get the writes out of the jobs
@@ -344,7 +358,7 @@ func (bw *BulkWriter) buildRequests(isFlushing bool) []bulkWriterBatch {
 	// Build up the group of batches to send.
 	var bs []bulkWriterBatch
 	if isFlushing {
-		for len(bw.backlogQueue) > 0 {
+		for len(bw.sendingQueue) > 0 {
 			b, err := bw.makeBatch()
 			if err == nil {
 				bs = append(bs, b)
@@ -397,7 +411,7 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 		// if this bulkWriterRequestBatch is a flush job, report that it is now done.
 		if bwr.isFlushing {
 			bw.isFlushing = false
-			bw.doneFlushing <- struct{}{}
+			bw.flush <- struct{}{}
 		}
 	}
 }
@@ -423,7 +437,7 @@ func (bw *BulkWriter) send(ctx context.Context, bwr *pb.BatchWriteRequest, bwj [
 		c := s.GetCode()
 
 		if c != 0 { // Should we do an explicit check against rpc.Code enum?
-			bw.backlogQueue = append(bw.backlogQueue, bwj[i])
+			bw.sendingQueue = append(bw.sendingQueue, bwj[i])
 			continue
 		}
 
