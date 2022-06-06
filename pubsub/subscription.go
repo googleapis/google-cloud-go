@@ -214,19 +214,19 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 type BigQueryConfigState int
 
 const (
-	// Default value. This value is unused.
+	// BigQueryConfigStateUnspecified is the default value. This value is unused.
 	BigQueryConfigStateUnspecified = iota
 
-	// The usbscription can actively send messages to BigQuery.
+	// BigQueryConfigActive means the subscription can actively send messages to BigQuery.
 	BigQueryConfigActive
 
-	// Cannot write to the BigQuery table because of permission denied errors.
+	// BigQueryConfigPermissionDenied means the subscription cannot write to the BigQuery table because of permission denied errors.
 	BigQueryConfigPermissionDenied
 
-	// Cannot write to the BigQuery table because it does not exist.
+	// BigQueryConfigNotFound means the subscription cannot write to the BigQuery table because it does not exist.
 	BigQueryConfigNotFound
 
-	// Cannot write to the BigQuery table due to a schema mismatch.
+	// BigQueryConfigSchemaMismatch means the subscription cannot write to the BigQuery table due to a schema mismatch.
 	BigQueryConfigSchemaMismatch
 )
 
