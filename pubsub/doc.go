@@ -92,6 +92,18 @@ for more details on how streaming pull behaves compared to the synchronous
 pull method.
 
 
+Streams Management
+
+Streams used for streaming pull are managed by the gRPC connection pool setting.
+By default, the number of connections in the pool is the max of 4 or GOMAXPROCS/NumCPU.
+If you have 4 or more CPU cores, the default setting allows 400 streams which is still a good default for most cases.
+If you want to have more open streams (such as for low CPU core machines), you should pass in the grpc option as described below:
+
+ opts := []option.ClientOption{
+	option.WithGRPCConnectionPool(8),
+ }
+ client, err := pubsub.NewClient(ctx, projID, opts...)
+
 Deadlines
 
 The default pubsub deadlines are suitable for most use cases, but may be
