@@ -68,11 +68,13 @@ type messageIterator struct {
 	// message arrives, we'll record now+MaxExtension in this table; whenever we have a chance
 	// to update ack deadlines (via modack), we'll consult this table and only include IDs
 	// that are not beyond their deadline.
-	keepAliveDeadlines        map[string]time.Time
-	pendingAcks               map[string]bool
-	pendingNacks              map[string]bool
-	pendingModAcks            map[string]bool // ack IDs whose ack deadline is to be modified
-	err                       error           // error from stream failure
+	keepAliveDeadlines map[string]time.Time
+	pendingAcks        map[string]bool
+	pendingNacks       map[string]bool
+	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
+	err                error           // error from stream failure
+
+	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
 }
 
@@ -280,6 +282,8 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	if err != nil {
 		return nil, err
 	}
+	it.eoMu.Lock()
+	defer it.eoMu.Unlock()
 	it.enableExactlyOnceDelivery = res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled()
 	return res.ReceivedMessages, nil
 }
@@ -536,6 +540,8 @@ func (it *messageIterator) sendAckIDRPC(ackIDSet map[string]bool, maxSize int, c
 func (it *messageIterator) pingStream() {
 	// Ignore error; if the stream is broken, this doesn't matter anyway.
 	_ = it.ps.Send(&pb.StreamingPullRequest{})
+	sendNewAckDeadline := false
+
 }
 
 // calcFieldSizeString returns the number of bytes string fields
