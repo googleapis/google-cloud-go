@@ -911,6 +911,8 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			if s.userProject != "" {
 				call.UserProject(s.userProject)
 			}
+			// TODO(tritone): Remove this code when Uploads begin to support
+			// retry attempt header injection with "client header" injection.
 			setClientHeader(call.Header())
 
 			// The internals that perform call.Do automatically retry both the initial
