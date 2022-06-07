@@ -511,6 +511,11 @@ func TestQueryToProtoErrors(t *testing.T) {
 	for i, query := range []Query{
 		{},                                     // no collection ID
 		q.Where("x", "<>", 1),                  // invalid operator
+		q.Where("x", "in", 1),     				// invalid value
+		q.Where("x", "in", nil),     			// invalid value
+		q.Where("x", "in", []int(nil)),     	// invalid value
+		q.Where("x", "not-in", []int(nil)), 	// invalid value
+		q.Where("x", "array-contains-any", []int(nil)),    // invalid value
 		q.Where("~", ">", 1),                   // invalid path
 		q.WherePath([]string{"*", ""}, ">", 1), // invalid path
 		q.StartAt(1),                           // no OrderBy

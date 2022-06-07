@@ -687,6 +687,15 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if err != nil {
 		return nil, err
 	}
+	expectArrVal := op == pb.StructuredQuery_FieldFilter_IN || op == pb.StructuredQuery_FieldFilter_NOT_IN || op == pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY
+	if expectArrVal {
+		switch val.GetValueType().(type) {
+		case *pb.Value_ArrayValue:
+			break;
+		default:
+			return nil, fmt.Errorf("firestore: operator %q requires an array value", f.op)
+		}
+	}
 	if sawTransform {
 		return nil, errors.New("firestore: transforms disallowed in query value")
 	}
