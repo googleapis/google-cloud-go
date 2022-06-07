@@ -1056,6 +1056,8 @@ func newGRPCWriter(c *grpcStorageClient, params *openWriterParams, r io.Reader) 
 	}
 }
 
+// gRPCWriter is a wrapper around the the gRPC client-stream API that manages
+// sending chunks of data provided by the user over the stream.
 type gRPCWriter struct {
 	c      *grpcStorageClient
 	buf    []byte
@@ -1072,13 +1074,9 @@ type gRPCWriter struct {
 	sendCRC32C bool
 
 	// The gRPC client-stream used for sending buffers.
-	//
-	// This is an experimental API and not intended for public use.
 	stream storagepb.Storage_WriteObjectClient
 
 	// The Resumable Upload ID started by a gRPC-based Writer.
-	//
-	// This is an experimental API and not intended for public use.
 	upid string
 }
 
