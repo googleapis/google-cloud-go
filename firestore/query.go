@@ -60,13 +60,6 @@ type Query struct {
 // in queries.
 const DocumentID = "__name__"
 
-// ArrayOperators contains the set of FieldFilter opterators that require an ArrayValue operand.
-var ArrayOperators = map[pb.StructuredQuery_FieldFilter_Operator]bool{
-	pb.StructuredQuery_FieldFilter_IN:                 true,
-	pb.StructuredQuery_FieldFilter_NOT_IN:             true,
-	pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY: true,
-}
-
 // Select returns a new Query that specifies the paths
 // to return from the result documents.
 // Each path argument can be a single field or a dot-separated sequence of
@@ -642,6 +635,13 @@ type filter struct {
 	value     interface{}
 }
 
+// arrayOperators contains the set of FieldFilter operators that require an ArrayValue operand.
+var arrayOperators = map[pb.StructuredQuery_FieldFilter_Operator]bool{
+	pb.StructuredQuery_FieldFilter_IN:                 true,
+	pb.StructuredQuery_FieldFilter_NOT_IN:             true,
+	pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY: true,
+}
+
 func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if err := f.fieldPath.validate(); err != nil {
 		return nil, err
@@ -694,7 +694,7 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	if _, ok := ArrayOperators[op]; ok {
+	if _, ok := arrayOperators[op]; ok {
 		switch val.GetValueType().(type) {
 		case *pb.Value_ArrayValue:
 			break
