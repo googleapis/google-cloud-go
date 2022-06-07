@@ -463,7 +463,8 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	s := callSettings(c.settings, opts...)
 	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, bucket), object)
 	req := &storagepb.UpdateObjectRequest{
-		Object: o,
+		Object:        o,
+		PredefinedAcl: uattrs.PredefinedACL,
 	}
 	if err := applyCondsProto("grpcStorageClient.UpdateObject", gen, conds, req); err != nil {
 		return nil, err
@@ -503,7 +504,9 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if !uattrs.CustomTime.IsZero() {
 		fieldMask.Paths = append(fieldMask.Paths, "custom_time")
 	}
-
+	if uattrs.ACL != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "acl")
+	}
 	// TODO(cathyo): Handle ACL and PredefinedACL. Pending b/233617896.
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
 
@@ -623,7 +626,22 @@ func (c *grpcStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 }
 
 func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve ObjectAttrs.
+	attrs, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var acl []ACLRule
+	aclRule := ACLRule{Entity: entity, Role: role}
+	acl = append(attrs.ACL, aclRule)
+	uattrs := &ObjectAttrsToUpdate{ACL: acl}
+	// Call UpdateObject with the specified generation.
+	_, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &aclRule, err
 }
 
 // Media operations.

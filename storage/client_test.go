@@ -652,6 +652,39 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 	})
 }
 
+func TestDeleteObjectACLsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+			Name:                       bucket,
+			PredefinedDefaultObjectACL: "publicRead",
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		acls, err := client.ListObjectACLs(ctx, bucket, want.Name)
+		if err != nil {
+			t.Fatalf("client.ListObjectACLs: %v", err)
+		}
+		// Assert there are 4 ObjectACL entities, including object owner and project owners/editors/viewers.
+		if got, want := len(acls), 1; want != got {
+			t.Errorf("ListObjectACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
+
 func TestListObjectACLsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
@@ -681,6 +714,58 @@ func TestListObjectACLsEmulated(t *testing.T) {
 		if got, want := len(acls), 4; want != got {
 			t.Errorf("ListObjectACLs: got %v, want %v items", acls, want)
 		}
+	})
+}
+
+func TestUpdateObjectACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		o := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		var listAcls []ACLRule
+		// Assert there are 4 ObjectACL entities, including object owner and project owners/editors/viewers.
+		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+			t.Fatalf("client.ListObjectACLs: %v", err)
+		}
+		if got, want := len(listAcls), 4; got != want {
+			t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
+		}
+		entity := AllUsers
+		role := RoleReader
+		want := &ACLRule{Entity: entity, Role: role}
+		got, err := client.UpdateObjectACL(ctx, bucket, o.Name, entity, role)
+		if err != nil {
+			t.Fatalf("client.UpdateBucketACL: %v", err)
+		}
+		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
+			t.Errorf("ObjectACL Entity: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
+			t.Errorf("ObjectACL Role: got(-),want(+):\n%s", diff)
+		}
+		// // Assert there are now 5 ObjectACL entities, including existing ACLs.
+		// if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+		// 	t.Fatalf("client.ListObjectACLs: %v", err)
+		// }
+		// if got, want := len(listAcls), 5; got != want {
+		// 	t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
+		// }
 	})
 }
 

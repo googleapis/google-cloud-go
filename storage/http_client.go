@@ -612,7 +612,10 @@ func configureACLCall(ctx context.Context, userProject string, call interface{ H
 // Object ACL methods.
 
 func (c *httpStorageClient) DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := c.raw.ObjectAccessControls.Delete(bucket, object, string(entity))
+	configureACLCall(ctx, s.userProject, req)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 }
 
 // ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
@@ -634,7 +637,31 @@ func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 }
 
 func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	type setRequest interface {
+		Do(opts ...googleapi.CallOption) (*raw.ObjectAccessControl, error)
+		Header() http.Header
+	}
+
+	acl := &raw.ObjectAccessControl{
+		Bucket: bucket,
+		Entity: string(entity),
+		Role:   string(role),
+	}
+	var req setRequest
+	var racl *raw.ObjectAccessControl
+	var err error
+	req = c.raw.ObjectAccessControls.Update(bucket, object, string(entity), acl)
+	configureACLCall(ctx, s.userProject, req)
+	err = run(ctx, func() error {
+		racl, err = req.Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	if err != nil {
+		return nil, err
+	}
+	aclRule := toObjectACLRule(racl)
+	return &aclRule, nil
 }
 
 // Media operations.
