@@ -922,11 +922,10 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 // Notification methods.
 
 func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Notifications")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.ListNotifications")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
-
 	call := c.raw.Notifications.List(bucket)
 	if s.userProject != "" {
 		call.UserProject(s.userProject)
@@ -940,6 +939,58 @@ func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string
 		return nil, err
 	}
 	return notificationsToMap(res.Items), nil
+}
+
+func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.CreateNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if n.ID != "" {
+		return nil, errors.New("storage: AddNotification: ID must not be set")
+	}
+	if n.TopicProjectID == "" {
+		return nil, errors.New("storage: AddNotification: missing TopicProjectID")
+	}
+	if n.TopicID == "" {
+		return nil, errors.New("storage: AddNotification: missing TopicID")
+	}
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Notifications.Insert(bucket, toRawNotification(n))
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+
+	var rn *raw.Notification
+	err = run(ctx, func() error {
+		rn, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	if err != nil {
+		return nil, err
+	}
+	return toNotification(rn), nil
+}
+
+func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.DeleteNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Notifications.Delete(bucket, id)
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	return run(ctx, func() error {
+		return call.Context(ctx).Do()
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+}
+
+func (c *httpStorageClient) GetNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (*Notification, error) {
+	notifications, err := c.ListNotifications(ctx, bucket, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return notifications[id], nil
 }
 
 type httpReader struct {

@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -836,33 +837,102 @@ func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 
 func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
 	s := callSettings(c.settings, opts...)
-	req := &storagepb.ListNotificationsRequest{
-		Parent: bucketResourceName(globalProjectAlias, bucket),
-	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	var ns []*storagepb.Notification
-	gitr := c.raw.ListNotifications(ctx, req, s.gax...)
-	_ = func(pageSize int, pageToken string) (token string, err error) {
-		var notifications []*storagepb.Notification
+	var notifications []*storagepb.Notification
+	var gitr *gapic.NotificationIterator
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		// Initialize GAPIC-based iterator when pageToken is empty, which
+		// indicates that this fetch call is attempting to get the first page.
+		//
+		// Note: Initializing the GAPIC-based iterator lazily is necessary to
+		// capture the NotificationIterator.
+		if pageToken == "" {
+			req := &storagepb.ListNotificationsRequest{
+				Parent: bucketResourceName(globalProjectAlias, bucket),
+			}
+			gitr = c.raw.ListNotifications(ctx, req, s.gax...)
+		}
+
+		var notifs []*storagepb.Notification
+		var next string
 		err = run(ctx, func() error {
-			notifications, token, err = gitr.InternalFetch(pageSize, pageToken)
+			notifs, next, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
 		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 		if err != nil {
 			return "", err
 		}
-		for _, n := range notifications {
-			ns = append(ns, n)
-		}
-		return token, nil
+
+		notifications = append(notifications, notifs...)
+		return next, nil
 	}
+	_, _ = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(notifications) },
+		func() interface{} { tb := notifications; notifications = nil; return tb })
+
+	return notificationsToMapFromProto(notifications), nil
+}
+
+func (c *grpcStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.CreateNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if n.ID != "" {
+		return nil, errors.New("storage: AddNotification: ID must not be set")
+	}
+	if n.TopicProjectID == "" {
+		return nil, errors.New("storage: AddNotification: missing TopicProjectID")
+	}
+	if n.TopicID == "" {
+		return nil, errors.New("storage: AddNotification: missing TopicID")
+	}
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.CreateNotificationRequest{
+		Parent:       bucketResourceName(globalProjectAlias, bucket),
+		Notification: toProtoNotification(n),
+	}
+	var pbn *storagepb.Notification
+	err = run(ctx, func() error {
+		var err error
+		pbn, err = c.raw.CreateNotification(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
 		return nil, err
 	}
+	return toNotificationFromProto(pbn), err
+}
 
-	return notificationsToMapFromProto(ns), nil
+func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.DeleteNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.DeleteNotificationRequest{Name: id}
+	return run(ctx, func() error {
+		return c.raw.DeleteNotification(ctx, req, s.gax...)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+}
+
+func (c *grpcStorageClient) GetNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (n *Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.GetNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.GetNotificationRequest{Name: id}
+	var pbn *storagepb.Notification
+	err = run(ctx, func() error {
+		var err error
+		pbn, err = c.raw.GetNotification(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if err != nil {
+		return nil, err
+	}
+	return toNotificationFromProto(pbn), err
 }
 
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata

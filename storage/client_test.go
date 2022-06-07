@@ -662,23 +662,101 @@ func TestListNotificationsEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
-		want := ObjectAttrs{
-			Bucket: bucket,
-			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
-		}
-		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
-		if _, err := w.Write(randomBytesToWrite); err != nil {
-			t.Fatalf("failed to populate test object: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			t.Fatalf("closing object: %v", err)
+		_, err = client.CreateNotification(ctx, bucket, &Notification{
+			TopicProjectID: project,
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  "JSON_API_V1",
+		})
+		if err != nil {
+			t.Fatalf("client.CreateNotification: %v", err)
 		}
 		n, err := client.ListNotifications(ctx, bucket)
 		if err != nil {
 			t.Fatalf("client.ListNotifications: %v", err)
 		}
-		if want, got := 0, len(n); want != got {
+		if want, got := 1, len(n); want != got {
 			t.Errorf("ListNotifications: got %v, want %v items", n, want)
+		}
+	})
+}
+
+func TestCreateNotificationEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		want := &Notification{
+			TopicProjectID: project,
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  "JSON_API_V1",
+		}
+		got, err := client.CreateNotification(ctx, bucket, want)
+		if err != nil {
+			t.Fatalf("client.CreateNotification: %v", err)
+		}
+		if diff := cmp.Diff(got.TopicID, want.TopicID); diff != "" {
+			t.Errorf("CreateNotification topic: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestDeleteNotificationEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		var n *Notification
+		n, err = client.CreateNotification(ctx, bucket, &Notification{
+			TopicProjectID: project,
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  "JSON_API_V1",
+		})
+		if err != nil {
+			t.Fatalf("client.CreateNotification: %v", err)
+		}
+		err = client.DeleteNotification(ctx, bucket, n.ID)
+		if err != nil {
+			t.Fatalf("client.DeleteNotification: %v", err)
+		}
+	})
+}
+
+func TestGetNotificationEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		var want *Notification
+		want, err = client.CreateNotification(ctx, bucket, &Notification{
+			TopicProjectID: project,
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  "JSON_API_V1",
+		})
+		if err != nil {
+			t.Fatalf("client.CreateNotification: %v", err)
+		}
+		got, err := client.GetNotification(ctx, bucket, want.ID)
+		if err != nil {
+			t.Fatalf("client.GetNotification: %v", err)
+		}
+		if diff := cmp.Diff(got.ID, want.ID); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 	})
 }
