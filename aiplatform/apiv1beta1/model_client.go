@@ -46,6 +46,7 @@ type ModelCallOptions struct {
 	ListModels                []gax.CallOption
 	ListModelVersions         []gax.CallOption
 	UpdateModel               []gax.CallOption
+	UpdateExplanationDataset  []gax.CallOption
 	DeleteModel               []gax.CallOption
 	DeleteModelVersion        []gax.CallOption
 	MergeVersionAliases       []gax.CallOption
@@ -76,6 +77,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		ListModels:                []gax.CallOption{},
 		ListModelVersions:         []gax.CallOption{},
 		UpdateModel:               []gax.CallOption{},
+		UpdateExplanationDataset:  []gax.CallOption{},
 		DeleteModel:               []gax.CallOption{},
 		DeleteModelVersion:        []gax.CallOption{},
 		MergeVersionAliases:       []gax.CallOption{},
@@ -99,6 +101,8 @@ type internalModelClient interface {
 	ListModels(context.Context, *aiplatformpb.ListModelsRequest, ...gax.CallOption) *ModelIterator
 	ListModelVersions(context.Context, *aiplatformpb.ListModelVersionsRequest, ...gax.CallOption) *ModelIterator
 	UpdateModel(context.Context, *aiplatformpb.UpdateModelRequest, ...gax.CallOption) (*aiplatformpb.Model, error)
+	UpdateExplanationDataset(context.Context, *aiplatformpb.UpdateExplanationDatasetRequest, ...gax.CallOption) (*UpdateExplanationDatasetOperation, error)
+	UpdateExplanationDatasetOperation(name string) *UpdateExplanationDatasetOperation
 	DeleteModel(context.Context, *aiplatformpb.DeleteModelRequest, ...gax.CallOption) (*DeleteModelOperation, error)
 	DeleteModelOperation(name string) *DeleteModelOperation
 	DeleteModelVersion(context.Context, *aiplatformpb.DeleteModelVersionRequest, ...gax.CallOption) (*DeleteModelVersionOperation, error)
@@ -181,6 +185,17 @@ func (c *ModelClient) ListModelVersions(ctx context.Context, req *aiplatformpb.L
 // UpdateModel updates a Model.
 func (c *ModelClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
 	return c.internalClient.UpdateModel(ctx, req, opts...)
+}
+
+// UpdateExplanationDataset incrementally update the dataset used for an examples model.
+func (c *ModelClient) UpdateExplanationDataset(ctx context.Context, req *aiplatformpb.UpdateExplanationDatasetRequest, opts ...gax.CallOption) (*UpdateExplanationDatasetOperation, error) {
+	return c.internalClient.UpdateExplanationDataset(ctx, req, opts...)
+}
+
+// UpdateExplanationDatasetOperation returns a new UpdateExplanationDatasetOperation from a given name.
+// The name must be that of a previously created UpdateExplanationDatasetOperation, possibly from a different process.
+func (c *ModelClient) UpdateExplanationDatasetOperation(name string) *UpdateExplanationDatasetOperation {
+	return c.internalClient.UpdateExplanationDatasetOperation(name)
 }
 
 // DeleteModel deletes a Model.
@@ -508,6 +523,25 @@ func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *aiplatformpb.Upd
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *modelGRPCClient) UpdateExplanationDataset(ctx context.Context, req *aiplatformpb.UpdateExplanationDatasetRequest, opts ...gax.CallOption) (*UpdateExplanationDatasetOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateExplanationDataset[0:len((*c.CallOptions).UpdateExplanationDataset):len((*c.CallOptions).UpdateExplanationDataset)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.UpdateExplanationDataset(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateExplanationDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
@@ -927,6 +961,75 @@ func (op *ExportModelOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportModelOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateExplanationDatasetOperation manages a long-running operation from UpdateExplanationDataset.
+type UpdateExplanationDatasetOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateExplanationDatasetOperation returns a new UpdateExplanationDatasetOperation from a given name.
+// The name must be that of a previously created UpdateExplanationDatasetOperation, possibly from a different process.
+func (c *modelGRPCClient) UpdateExplanationDatasetOperation(name string) *UpdateExplanationDatasetOperation {
+	return &UpdateExplanationDatasetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateExplanationDatasetOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.UpdateExplanationDatasetResponse, error) {
+	var resp aiplatformpb.UpdateExplanationDatasetResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateExplanationDatasetOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.UpdateExplanationDatasetResponse, error) {
+	var resp aiplatformpb.UpdateExplanationDatasetResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateExplanationDatasetOperation) Metadata() (*aiplatformpb.UpdateExplanationDatasetOperationMetadata, error) {
+	var meta aiplatformpb.UpdateExplanationDatasetOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateExplanationDatasetOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateExplanationDatasetOperation) Name() string {
 	return op.lro.Name()
 }
 

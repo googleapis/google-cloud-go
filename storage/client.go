@@ -56,9 +56,9 @@ type storageClient interface {
 
 	// Object metadata methods.
 
-	DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error
-	GetObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
-	UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+	DeleteObject(ctx context.Context, bucket, object string, gen int64, conds *Conditions, opts ...storageOption) error
+	GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+	UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
 
 	// Default Object ACL methods.
 
@@ -83,7 +83,7 @@ type storageClient interface {
 	ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error)
 	RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error)
 
-	OpenReader(ctx context.Context, r *Reader, opts ...storageOption) error
+	NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error)
 	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
 
 	// IAM methods.
@@ -210,6 +210,16 @@ type userProjectOption struct {
 }
 
 func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
+
+type newRangeReaderParams struct {
+	bucket        string
+	conds         *Conditions
+	encryptionKey []byte
+	gen           int64
+	length        int64
+	object        string
+	offset        int64
+}
 
 type composeObjectRequest struct {
 	dstBucket     string

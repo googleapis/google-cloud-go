@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.9.0",
+    "version": "1.10.0",
     "language": "GO",
     "apis": [
       {
@@ -5750,6 +5750,52 @@
         {
           "start": 18,
           "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelService_UpdateExplanationDataset_sync",
+      "title": "aiplatform UpdateExplanationDataset Sample",
+      "description": "UpdateExplanationDataset incrementally update the dataset used for an examples model.",
+      "file": "ModelClient/UpdateExplanationDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExplanationDataset",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelClient.UpdateExplanationDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateExplanationDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateExplanationDatasetOperation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelClient"
+        },
+        "method": {
+          "shortName": "UpdateExplanationDataset",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelService.UpdateExplanationDataset",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]

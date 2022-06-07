@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.7.0...securitycenter/v1.8.0) (2022-06-01)
+
+
+### Features
+
+* **securitycenter:** Add compliances, processes and exfiltration fields to findings attributes. They contain compliance information about a security standard indicating unmet recommendations, represents operating system processes, and data exfiltration attempt of one or more source(s) to one or more target(s).  Source(s) represent the source of data that is exfiltrated, and Target(s) represents the destination the data was copied to ([9266276](https://github.com/googleapis/google-cloud-go/commit/92662768493738a4492eae3ea4ac6db250056bf1))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.6.0...securitycenter/v1.7.0) (2022-04-20)
 
 

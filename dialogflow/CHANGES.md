@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.8.1...dialogflow/v1.9.0) (2022-05-24)
+
+
+### Features
+
+* **dialogflow/cx:** add audio export settings to security settings docs: update the doc on diagnostic info ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ### [1.8.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.8.0...dialogflow/v1.8.1) (2022-04-20)
 
 

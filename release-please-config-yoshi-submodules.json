@@ -216,7 +216,7 @@
         "privatecatalog": {
             "component": "privatecatalog"
         },
-        "recaptchaenterprise": {
+        "recaptchaenterprise/v2": {
             "component": "recaptchaenterprise"
         },
         "recommendationengine": {
@@ -294,7 +294,7 @@
         "videointelligence": {
             "component": "videointelligence"
         },
-        "vision": {
+        "vision/v2": {
             "component": "vision"
         },
         "vmmigration": {
