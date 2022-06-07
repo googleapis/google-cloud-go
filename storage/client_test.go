@@ -652,6 +652,38 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 	})
 }
 
+func TestListObjectACLsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		acls, err := client.ListObjectACLs(ctx, bucket, want.Name)
+		if err != nil {
+			t.Fatalf("client.ListObjectACLs: %v", err)
+		}
+		// Assert there are 4 ObjectACL entities, including object owner and project owners/editors/viewers.
+		if got, want := len(acls), 4; want != got {
+			t.Errorf("ListObjectACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
+
 func TestOpenReaderEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
