@@ -190,6 +190,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		State: SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
 	if !testutil.Equal(cfg, want, opt) {
@@ -226,6 +227,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		State: SubscriptionStateActive,
 	}
 	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
@@ -461,7 +463,9 @@ func TestBigQuerySubscription(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if diff := testutil.Diff(cfg.BigQueryConfig, bqConfig); diff != "" {
+	want := bqConfig
+	want.State = BigQueryConfigActive
+	if diff := testutil.Diff(cfg.BigQueryConfig, want); diff != "" {
 		t.Fatalf("CreateBQSubscription mismatch: \n%s", diff)
 	}
 }

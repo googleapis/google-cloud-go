@@ -274,6 +274,21 @@ func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	return pbCfg
 }
 
+type SubscriptionState int
+
+const (
+	// SubscriptionStateUnspecified is the default value. This value is unused.
+	SubscriptionStateUnspecified = iota
+
+	// SubscriptionStateActive means the subscription can actively send messages to BigQuery.
+	SubscriptionStateActive
+
+	// SubscriptionStateResourceError means the subscription receive messages because of an
+	// error with the resource to which it pushes messages.
+	// See the more detailed error state in the corresponding configuration.
+	SubscriptionStateResourceError
+)
+
 // SubscriptionConfig describes the configuration of a subscription.
 type SubscriptionConfig struct {
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
@@ -366,6 +381,11 @@ type SubscriptionConfig struct {
 	// This is an output only field, meaning it will only appear in responses from the backend
 	// and will be ignored if sent in a request.
 	TopicMessageRetentionDuration time.Duration
+
+	// This is an output-only field that indicates whether or not the subscription can
+	// receive messages. This field is set only in responses from the server;
+	// it is ignored if it is set in any requests.
+	State SubscriptionState
 }
 
 // String returns the globally unique printable name of the subscription config.
@@ -452,6 +472,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		RetryPolicy:                   rp,
 		Detached:                      pbSub.Detached,
 		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
+		State:                         SubscriptionState(pbSub.State),
 	}
 	if pc := protoToPushConfig(pbSub.PushConfig); pc != nil {
 		subC.PushConfig = *pc
