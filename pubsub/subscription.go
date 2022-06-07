@@ -382,6 +382,7 @@ type SubscriptionConfig struct {
 	// and will be ignored if sent in a request.
 	TopicMessageRetentionDuration time.Duration
 
+	// State indicates whether or not the subscription can receive messages.
 	// This is an output-only field that indicates whether or not the subscription can
 	// receive messages. This field is set only in responses from the server;
 	// it is ignored if it is set in any requests.
