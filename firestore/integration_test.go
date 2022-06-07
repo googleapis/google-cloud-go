@@ -1730,11 +1730,6 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	wg := sync.WaitGroup{}
 	f := integrationTestMap
 
-	t.Log(wg)
-	t.Log(doc)
-	t.Log(bw)
-	t.Log(f)
-
 	wg.Add(1)
 	go func() {
 		wr, err := bw.Create(doc, f)
@@ -1747,39 +1742,20 @@ func TestIntegration_BulkWriter(t *testing.T) {
 		wg.Done()
 	}()
 
+	s, ok := bw.Status()
+	if !ok {
+		t.Error("firestore: bulkwriter: cannot get status")
+	}
+	wp := s.WritesProvidedCount
+	cwp := wp
+
 	// Hold until the queue is actually populated
-	for bw.Status().WritesProvidedCount != 1 {
+	for cwp < wp+1 {
+		time.Sleep(time.Millisecond)
+		s, _ := bw.Status()
+		cwp = s.WritesProvidedCount
 	}
 
 	bw.Flush()
 	wg.Wait()
-}
-
-func TestIntegration_BulkWriter_Channels(t *testing.T) {
-	/*
-		TODO(telpirion): Delete if unused
-
-		doc := iColl.NewDoc()
-
-		bw, err := iClient.BulkWriter()
-		if err != nil {
-			t.Errorf("error: BulkWriter creation %v\n", err)
-		}
-
-		f := integrationTestMap
-
-
-		wrc, ec := bw.Create(doc, f)
-		bw.Flush()
-
-		e := <-ec
-		r := <-wrc
-
-		if e != nil {
-			t.Errorf("error: %v\n", e)
-			return
-		}
-
-		t.Logf("write result: %v", r)
-	*/
 }

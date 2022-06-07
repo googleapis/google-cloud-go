@@ -1,6 +1,7 @@
 package firestore
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -12,21 +13,34 @@ import (
 type bulkwriterWriteTestCase func(*BulkWriter, chan *WriteResult, chan *error)
 
 func bulkwriterTestRunner(bw *BulkWriter, f bulkwriterWriteTestCase) (*WriteResult, error) {
-	pwp := bw.Status().WritesProvidedCount
-	pwr := bw.Status().WritesReceivedCount
+	s, ok := bw.Status()
+	if !ok {
+		return nil, fmt.Errorf("bulkwriter: status not OK")
+	}
+	pwp := s.WritesProvidedCount
+	pwr := s.WritesReceivedCount
+
+	cwp := pwp
+	cwr := pwr
 
 	wr := make(chan *WriteResult, 1)
 	err := make(chan *error, 1)
 	go f(bw, wr, err)
 
-	for bw.Status().WritesProvidedCount != pwp+1 {
+	for cwp != pwp+1 {
 		time.Sleep(time.Duration(time.Millisecond))
+		if s, ok = bw.Status(); ok {
+			cwp = s.WritesProvidedCount
+		}
 	}
 
 	bw.Flush()
 
-	for bw.Status().WritesReceivedCount != pwr+1 {
+	for cwr != pwr+1 {
 		time.Sleep(time.Duration(time.Millisecond))
+		if s, ok = bw.Status(); ok {
+			cwr = s.WritesReceivedCount
+		}
 	}
 
 	return <-wr, *(<-err)
@@ -224,7 +238,12 @@ func TestBulkWriter(t *testing.T) {
 		}
 	}
 
-	if bw.Status().WritesReceivedCount != len(tcs) {
-		t.Logf("bulkwriter sent != received; sent: %v, received: %v", len(tcs), bw.Status().WritesReceivedCount)
+	s, ok := bw.Status()
+	if !ok {
+		t.Error("firestore: bulkwriter: cannot retrieve status")
+	}
+
+	if s.WritesReceivedCount != len(tcs) {
+		t.Errorf("bulkwriter sent != received; sent: %v, received: %v", len(tcs), s.WritesReceivedCount)
 	}
 }
