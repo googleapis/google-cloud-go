@@ -274,6 +274,7 @@ func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	return pbCfg
 }
 
+// BigQueryConfigState denotes the possible states for a Subscription.
 type SubscriptionState int
 
 const (
