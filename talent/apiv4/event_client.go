@@ -28,6 +28,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -37,6 +38,7 @@ var newEventClientHook clientHook
 // EventCallOptions contains the retry settings for each method of EventClient.
 type EventCallOptions struct {
 	CreateClientEvent []gax.CallOption
+	GetOperation      []gax.CallOption
 }
 
 func defaultEventGRPCClientOptions() []option.ClientOption {
@@ -54,6 +56,7 @@ func defaultEventGRPCClientOptions() []option.ClientOption {
 func defaultEventCallOptions() *EventCallOptions {
 	return &EventCallOptions{
 		CreateClientEvent: []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
 	}
 }
 
@@ -63,6 +66,7 @@ type internalEventClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	CreateClientEvent(context.Context, *talentpb.CreateClientEventRequest, ...gax.CallOption) (*talentpb.ClientEvent, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // EventClient is a client for interacting with Cloud Talent Solution API.
@@ -110,6 +114,11 @@ func (c *EventClient) CreateClientEvent(ctx context.Context, req *talentpb.Creat
 	return c.internalClient.CreateClientEvent(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *EventClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // eventGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -125,6 +134,8 @@ type eventGRPCClient struct {
 
 	// The gRPC API client.
 	eventClient talentpb.EventServiceClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -160,6 +171,7 @@ func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventCli
 		disableDeadlines: disableDeadlines,
 		eventClient:      talentpb.NewEventServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -204,6 +216,21 @@ func (c *eventGRPCClient) CreateClientEvent(ctx context.Context, req *talentpb.C
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.eventClient.CreateClientEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *eventGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

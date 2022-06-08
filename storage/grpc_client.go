@@ -611,9 +611,17 @@ func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error {
 	return errMethodNotSupported
 }
+
+// ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
+// Selecting a specific generation of this object is not currently supported by the client.
 func (c *grpcStorageClient) ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error) {
-	return nil, errMethodNotSupported
+	o, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return o.ACL, nil
 }
+
 func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
 	return nil, errMethodNotSupported
 }
