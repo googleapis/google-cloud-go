@@ -652,6 +652,83 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 	})
 }
 
+func TestListObjectACLsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		acls, err := client.ListObjectACLs(ctx, bucket, want.Name)
+		if err != nil {
+			t.Fatalf("client.ListObjectACLs: %v", err)
+		}
+		// Assert there are 4 ObjectACL entities, including object owner and project owners/editors/viewers.
+		if got, want := len(acls), 4; want != got {
+			t.Errorf("ListObjectACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
+
+func TestOpenReaderEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+
+		params := &newRangeReaderParams{
+			bucket: bucket,
+			object: want.Name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}
+		r, err := client.NewRangeReader(context.Background(), params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytesToWrite)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
+			t.Fatalf("Read: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestListNotificationsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
@@ -757,51 +834,6 @@ func TestGetNotificationEmulated(t *testing.T) {
 		}
 		if diff := cmp.Diff(got.ID, want.ID); diff != "" {
 			t.Errorf("got(-),want(+):\n%s", diff)
-		}
-	})
-}
-
-func TestOpenReaderEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
-			Name: bucket,
-		})
-		if err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
-		}
-		prefix := time.Now().Nanosecond()
-		want := &ObjectAttrs{
-			Bucket: bucket,
-			Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
-		}
-		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
-		if _, err := w.Write(randomBytesToWrite); err != nil {
-			t.Fatalf("failed to populate test data: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			t.Fatalf("closing object: %v", err)
-		}
-
-		params := &newRangeReaderParams{
-			bucket: bucket,
-			object: want.Name,
-			gen:    defaultGen,
-			offset: 0,
-			length: -1,
-		}
-		r, err := client.NewRangeReader(context.Background(), params)
-		if err != nil {
-			t.Fatalf("opening reading: %v", err)
-		}
-		wantLen := len(randomBytesToWrite)
-		got := make([]byte, wantLen)
-		n, err := r.Read(got)
-		if n != wantLen {
-			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
-		}
-		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
-			t.Fatalf("Read: got(-),want(+):\n%s", diff)
 		}
 	})
 }
