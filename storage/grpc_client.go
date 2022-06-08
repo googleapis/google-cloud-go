@@ -855,17 +855,12 @@ func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string
 		Parent: bucketResourceName(globalProjectAlias, bucket),
 	}
 	var notifications []*storagepb.Notification
+	var next string
 	err = run(ctx, func() error {
 		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
-		for {
-			n, err := gitr.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return err
-			}
-			notifications = append(notifications, n)
+		notifications, next, err = gitr.InternalFetch(20, "")
+		if next == "" {
+			return nil
 		}
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
