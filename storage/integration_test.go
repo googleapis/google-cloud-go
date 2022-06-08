@@ -299,6 +299,16 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				MatchesStorageClasses:   []string{"NEARLINE"},
 				NumNewerVersions:        10,
 			},
+		}, {
+			Action: LifecycleAction{
+				Type: DeleteAction,
+			},
+			Condition: LifecycleCondition{
+				AgeInDays:        10,
+				MatchesPrefix:    []string{"testPrefix"},
+				MatchesSuffix:    []string{"testSuffix"},
+				NumNewerVersions: 3,
+			},
 		}},
 	}
 
@@ -518,8 +528,12 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	wantLifecycle := Lifecycle{
 		Rules: []LifecycleRule{
 			{
-				Action:    LifecycleAction{Type: "Delete"},
-				Condition: LifecycleCondition{AgeInDays: 30},
+				Action: LifecycleAction{Type: "Delete"},
+				Condition: LifecycleCondition{
+					AgeInDays:     30,
+					MatchesPrefix: []string{"testPrefix"},
+					MatchesSuffix: []string{"testSuffix"},
+				},
 			},
 		},
 	}
