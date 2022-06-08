@@ -844,42 +844,34 @@ func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 // Notification methods.
 
 func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.ListNotifications")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	s := callSettings(c.settings, opts...)
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	var notifications []*storagepb.Notification
-	var gitr *gapic.NotificationIterator
-	fetch := func(pageSize int, pageToken string) (token string, err error) {
-		// Initialize GAPIC-based iterator when pageToken is empty, which
-		// indicates that this fetch call is attempting to get the first page.
-		//
-		// Note: Initializing the GAPIC-based iterator lazily is necessary to
-		// capture the NotificationIterator.
-		if pageToken == "" {
-			req := &storagepb.ListNotificationsRequest{
-				Parent: bucketResourceName(globalProjectAlias, bucket),
-			}
-			gitr = c.raw.ListNotifications(ctx, req, s.gax...)
-		}
-
-		var notifs []*storagepb.Notification
-		var next string
-		err = run(ctx, func() error {
-			notifs, next, err = gitr.InternalFetch(pageSize, pageToken)
-			return err
-		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
-		if err != nil {
-			return "", err
-		}
-
-		notifications = append(notifications, notifs...)
-		return next, nil
+	req := &storagepb.ListNotificationsRequest{
+		Parent: bucketResourceName(globalProjectAlias, bucket),
 	}
-	_, _ = iterator.NewPageInfo(
-		fetch,
-		func() int { return len(notifications) },
-		func() interface{} { tb := notifications; notifications = nil; return tb })
+	var notifications []*storagepb.Notification
+	err = run(ctx, func() error {
+		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
+		for {
+			n, err := gitr.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			notifications = append(notifications, n)
+		}
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if err != nil {
+		return nil, err
+	}
 
 	return notificationsToMapFromProto(notifications), nil
 }
