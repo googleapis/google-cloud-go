@@ -103,6 +103,13 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				Condition: LifecycleCondition{
 					Liveness: Archived,
 				},
+			}, {
+				Action: LifecycleAction{
+					Type: AbortIncompleteMPUAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 20,
+				},
 			}},
 		},
 	}
@@ -183,6 +190,13 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
+					},
+				}, {
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: AbortIncompleteMPUAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age: 20,
 					},
 				}},
 		},
@@ -329,6 +343,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 					Action:    LifecycleAction{Type: "Delete"},
 					Condition: LifecycleCondition{AgeInDays: 30},
 				},
+				{
+					Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+					Condition: LifecycleCondition{AgeInDays: 13},
+				},
 			},
 		},
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
@@ -367,6 +385,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
 					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+				},
+				{
+					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
 				},
 			},
 		},
