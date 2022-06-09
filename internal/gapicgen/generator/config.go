@@ -1490,6 +1490,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/06/23
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/batch/v1",
+		Pkg:                   "batch",
+		ImportPath:            "cloud.google.com/go/batch/apiv1",
+		GRPCServiceConfigPath: "batch_grpc_service_config.json",
+		ApiServiceConfigPath:  "batch_v1.yaml",
+		// GA after 2022/07/10
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
