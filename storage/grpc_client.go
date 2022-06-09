@@ -855,14 +855,19 @@ func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string
 		Parent: bucketResourceName(globalProjectAlias, bucket),
 	}
 	var notifications []*storagepb.Notification
-	var next string
 	err = run(ctx, func() error {
 		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
-		notifications, next, err = gitr.InternalFetch(20, "")
-		if next == "" {
-			return nil
+		for {
+			items, nextPageToken, err := gitr.InternalFetch(int(req.PageSize), req.PageToken)
+			if err != nil {
+				return err
+			}
+			notifications = append(notifications, items...)
+			// If there are no more results, nextPageToken is empty and err is nil.
+			if nextPageToken == "" {
+				return err
+			}
 		}
-		return err
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
 		return nil, err
