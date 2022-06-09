@@ -39,6 +39,9 @@
         "automl": {
             "component": "automl"
         },
+        "batch": {
+            "component": "batch"
+        },
         "billing": {
             "component": "billing"
         },
