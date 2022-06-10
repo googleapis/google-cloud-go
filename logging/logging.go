@@ -30,6 +30,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"regexp"
@@ -50,6 +51,8 @@ import (
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -86,6 +89,10 @@ const (
 	// service is temporarily impaired for some reason.
 	defaultWriteTimeout = 10 * time.Minute
 )
+
+// ErrRedirectProtoPayloadNotSupported is returned when Logger is configured to redirect output and
+// tries to redirect logs with protobuf payload.
+var ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 // For testing:
 var now = time.Now
@@ -242,151 +249,7 @@ type Logger struct {
 	ctxFunc                func() (context.Context, func())
 	populateSourceLocation int
 	partialSuccess         bool
-}
-
-// A LoggerOption is a configuration option for a Logger.
-type LoggerOption interface {
-	set(*Logger)
-}
-
-// CommonLabels are labels that apply to all log entries written from a Logger,
-// so that you don't have to repeat them in each log entry's Labels field. If
-// any of the log entries contains a (key, value) with the same key that is in
-// CommonLabels, then the entry's (key, value) overrides the one in
-// CommonLabels.
-func CommonLabels(m map[string]string) LoggerOption { return commonLabels(m) }
-
-type commonLabels map[string]string
-
-func (c commonLabels) set(l *Logger) { l.commonLabels = c }
-
-// ConcurrentWriteLimit determines how many goroutines will send log entries to the
-// underlying service. The default is 1. Set ConcurrentWriteLimit to a higher value to
-// increase throughput.
-func ConcurrentWriteLimit(n int) LoggerOption { return concurrentWriteLimit(n) }
-
-type concurrentWriteLimit int
-
-func (c concurrentWriteLimit) set(l *Logger) { l.bundler.HandlerLimit = int(c) }
-
-// DelayThreshold is the maximum amount of time that an entry should remain
-// buffered in memory before a call to the logging service is triggered. Larger
-// values of DelayThreshold will generally result in fewer calls to the logging
-// service, while increasing the risk that log entries will be lost if the
-// process crashes.
-// The default is DefaultDelayThreshold.
-func DelayThreshold(d time.Duration) LoggerOption { return delayThreshold(d) }
-
-type delayThreshold time.Duration
-
-func (d delayThreshold) set(l *Logger) { l.bundler.DelayThreshold = time.Duration(d) }
-
-// EntryCountThreshold is the maximum number of entries that will be buffered
-// in memory before a call to the logging service is triggered. Larger values
-// will generally result in fewer calls to the logging service, while
-// increasing both memory consumption and the risk that log entries will be
-// lost if the process crashes.
-// The default is DefaultEntryCountThreshold.
-func EntryCountThreshold(n int) LoggerOption { return entryCountThreshold(n) }
-
-type entryCountThreshold int
-
-func (e entryCountThreshold) set(l *Logger) { l.bundler.BundleCountThreshold = int(e) }
-
-// EntryByteThreshold is the maximum number of bytes of entries that will be
-// buffered in memory before a call to the logging service is triggered. See
-// EntryCountThreshold for a discussion of the tradeoffs involved in setting
-// this option.
-// The default is DefaultEntryByteThreshold.
-func EntryByteThreshold(n int) LoggerOption { return entryByteThreshold(n) }
-
-type entryByteThreshold int
-
-func (e entryByteThreshold) set(l *Logger) { l.bundler.BundleByteThreshold = int(e) }
-
-// EntryByteLimit is the maximum number of bytes of entries that will be sent
-// in a single call to the logging service. ErrOversizedEntry is returned if an
-// entry exceeds EntryByteLimit. This option limits the size of a single RPC
-// payload, to account for network or service issues with large RPCs. If
-// EntryByteLimit is smaller than EntryByteThreshold, the latter has no effect.
-// The default is zero, meaning there is no limit.
-func EntryByteLimit(n int) LoggerOption { return entryByteLimit(n) }
-
-type entryByteLimit int
-
-func (e entryByteLimit) set(l *Logger) { l.bundler.BundleByteLimit = int(e) }
-
-// BufferedByteLimit is the maximum number of bytes that the Logger will keep
-// in memory before returning ErrOverflow. This option limits the total memory
-// consumption of the Logger (but note that each Logger has its own, separate
-// limit). It is possible to reach BufferedByteLimit even if it is larger than
-// EntryByteThreshold or EntryByteLimit, because calls triggered by the latter
-// two options may be enqueued (and hence occupying memory) while new log
-// entries are being added.
-// The default is DefaultBufferedByteLimit.
-func BufferedByteLimit(n int) LoggerOption { return bufferedByteLimit(n) }
-
-type bufferedByteLimit int
-
-func (b bufferedByteLimit) set(l *Logger) { l.bundler.BufferedByteLimit = int(b) }
-
-// ContextFunc is a function that will be called to obtain a context.Context for the
-// WriteLogEntries RPC executed in the background for calls to Logger.Log. The
-// default is a function that always returns context.Background. The second return
-// value of the function is a function to call after the RPC completes.
-//
-// The function is not used for calls to Logger.LogSync, since the caller can pass
-// in the context directly.
-//
-// This option is EXPERIMENTAL. It may be changed or removed.
-func ContextFunc(f func() (ctx context.Context, afterCall func())) LoggerOption {
-	return contextFunc(f)
-}
-
-type contextFunc func() (ctx context.Context, afterCall func())
-
-func (c contextFunc) set(l *Logger) { l.ctxFunc = c }
-
-// SourceLocationPopulation is the flag controlling population of the source location info
-// in the ingested entries. This options allows to configure automatic population of the
-// SourceLocation field for all ingested entries, entries with DEBUG severity or disable it.
-// Note that enabling this option can decrease execution time of Logger.Log and Logger.LogSync
-// by the factor of 2 or larger.
-// The default disables source location population.
-//
-// This option is not used when an entry is created using ToLogEntry.
-func SourceLocationPopulation(f int) LoggerOption {
-	return sourceLocationOption(f)
-}
-
-const (
-	// DoNotPopulateSourceLocation is default for clients when WithSourceLocation is not provided
-	DoNotPopulateSourceLocation = 0
-	// PopulateSourceLocationForDebugEntries is set when WithSourceLocation(PopulateDebugEntries) is provided
-	PopulateSourceLocationForDebugEntries = 1
-	// AlwaysPopulateSourceLocation is set when WithSourceLocation(PopulateAllEntries) is provided
-	AlwaysPopulateSourceLocation = 2
-)
-
-type sourceLocationOption int
-
-func (o sourceLocationOption) set(l *Logger) {
-	if o == DoNotPopulateSourceLocation || o == PopulateSourceLocationForDebugEntries || o == AlwaysPopulateSourceLocation {
-		l.populateSourceLocation = int(o)
-	}
-}
-
-// PartialSuccess sets the partialSuccess flag to true when ingesting a bundle of log entries.
-// See https://cloud.google.com/logging/docs/reference/v2/rest/v2/entries/write#body.request_body.FIELDS.partial_success
-// If not provided the partialSuccess flag is set to false.
-func PartialSuccess() LoggerOption {
-	return &partialSuccessOption{}
-}
-
-type partialSuccessOption struct{}
-
-func (o *partialSuccessOption) set(l *Logger) {
-	l.partialSuccess = true
+	redirectOutputWriter   io.Writer
 }
 
 // Logger returns a Logger that will write entries with the given log ID, such as
@@ -406,6 +269,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 		ctxFunc:                func() (context.Context, func()) { return context.Background(), nil },
 		populateSourceLocation: DoNotPopulateSourceLocation,
 		partialSuccess:         false,
+		redirectOutputWriter:   nil,
 	}
 	l.bundler = bundler.NewBundler(&logpb.LogEntry{}, func(entries interface{}) {
 		l.writeLogEntries(entries.([]*logpb.LogEntry))
@@ -766,6 +630,9 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 	if err != nil {
 		return err
 	}
+	if l.redirectOutputWriter != nil {
+		return printEntryToWriter(ent, l.redirectOutputWriter)
+	}
 	_, err = l.client.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:        l.logName,
 		Resource:       l.commonResource,
@@ -781,6 +648,13 @@ func (l *Logger) Log(e Entry) {
 	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
 	if err != nil {
 		l.client.error(err)
+		return
+	}
+	if l.redirectOutputWriter != nil {
+		err := printEntryToWriter(ent, l.redirectOutputWriter)
+		if err != nil {
+			l.client.error(err)
+		}
 		return
 	}
 	if err := l.bundler.Add(ent, proto.Size(ent)); err != nil {
@@ -945,10 +819,7 @@ func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*log
 	if t.IsZero() {
 		t = now()
 	}
-	ts, err := ptypes.TimestampProto(t)
-	if err != nil {
-		return nil, err
-	}
+	ts := timestamppb.New(t)
 	if l != nil && l.populateSourceLocation != DoNotPopulateSourceLocation && e.SourceLocation == nil {
 		if l.populateSourceLocation == AlwaysPopulateSourceLocation ||
 			l.populateSourceLocation == PopulateSourceLocationForDebugEntries && e.Severity == Severity(Debug) {
@@ -996,6 +867,8 @@ func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*log
 	switch p := e.Payload.(type) {
 	case string:
 		ent.Payload = &logpb.LogEntry_TextPayload{TextPayload: p}
+	case *anypb.Any:
+		ent.Payload = &logpb.LogEntry_ProtoPayload{ProtoPayload: p}
 	default:
 		s, err := toProtoStruct(p)
 		if err != nil {
@@ -1004,4 +877,49 @@ func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*log
 		ent.Payload = &logpb.LogEntry_JsonPayload{JsonPayload: s}
 	}
 	return ent, nil
+}
+
+// entry represents the fields of a logging.Entry that can be parsed by Logging agent.
+// See the mappings at https://cloud.google.com/logging/docs/structured-logging#special-payload-fields
+type structuredLogEntry struct {
+	// JsonMessage    map[string]interface{}        `json:"message,omitempty"`
+	// TextMessage    string                        `json:"message,omitempty"`
+	Message        json.RawMessage               `json:"message"`
+	Severity       string                        `json:"severity,omitempty"`
+	HTTPRequest    *logtypepb.HttpRequest        `json:"httpRequest,omitempty"`
+	Timestamp      string                        `json:"timestamp,omitempty"`
+	Labels         map[string]string             `json:"logging.googleapis.com/labels,omitempty"`
+	InsertID       string                        `json:"logging.googleapis.com/insertId,omitempty"`
+	Operation      *logpb.LogEntryOperation      `json:"logging.googleapis.com/operation,omitempty"`
+	SourceLocation *logpb.LogEntrySourceLocation `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	SpanID         string                        `json:"logging.googleapis.com/spanId,omitempty"`
+	Trace          string                        `json:"logging.googleapis.com/trace,omitempty"`
+	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
+}
+
+func printEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
+	jsonifiedEntry := structuredLogEntry{
+		Severity:       entry.Severity.String(),
+		HTTPRequest:    entry.HttpRequest,
+		Timestamp:      entry.Timestamp.String(),
+		Labels:         entry.Labels,
+		InsertID:       entry.InsertId,
+		Operation:      entry.Operation,
+		SourceLocation: entry.SourceLocation,
+		SpanID:         entry.SpanId,
+		Trace:          entry.Trace,
+		TraceSampled:   entry.TraceSampled,
+	}
+	var err error
+	if entry.GetTextPayload() != "" {
+		jsonifiedEntry.Message, err = json.Marshal(entry.GetTextPayload())
+	} else if entry.GetJsonPayload() != nil {
+		jsonifiedEntry.Message, err = json.Marshal(entry.GetJsonPayload().AsMap())
+	} else {
+		return ErrRedirectProtoPayloadNotSupported
+	}
+	if err == nil {
+		err = json.NewEncoder(w).Encode(jsonifiedEntry)
+	}
+	return err
 }
