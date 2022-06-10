@@ -22,6 +22,7 @@ import (
 
 	"google.golang.org/api/iterator"
 	raw "google.golang.org/api/storage/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 )
 
 // HMACState is the state of the HMAC key.
@@ -190,6 +191,22 @@ func pbHmacKeyToHMACKey(pb *raw.HmacKey, updatedTimeCanBeNil bool) (*HMACKey, er
 	}
 
 	return hmk, nil
+}
+
+func toHMACKeyfromProto(pbmd *storagepb.HmacKeyMetadata) *HMACKey {
+	if pbmd == nil {
+		return nil
+	}
+
+	return &HMACKey{
+		AccessID:            pbmd.AccessId,
+		ID:                  pbmd.Id,
+		State:               HMACState(pbmd.State),
+		ProjectID:           pbmd.Project,
+		CreatedTime:         convertProtoTime(pbmd.CreateTime),
+		UpdatedTime:         convertProtoTime(pbmd.UpdateTime),
+		ServiceAccountEmail: pbmd.ServiceAccountEmail,
+	}
 }
 
 // CreateHMACKey invokes an RPC for Google Cloud Storage to create a new HMACKey.

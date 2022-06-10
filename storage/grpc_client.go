@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"os"
@@ -824,20 +825,91 @@ func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource str
 
 // HMAC Key methods.
 
-func (c *grpcStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) (*HMACKey, error) {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.GetHmacKeyRequest{
+		AccessId: accessID,
+		Project:  toProjectResource(desc.userProjectID),
+	}
+	var metadata *storagepb.HmacKeyMetadata
+	err := run(ctx, func() error {
+		var err error
+		metadata, err = c.raw.GetHmacKey(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if err != nil {
+		return nil, err
+	}
+	return toHMACKeyfromProto(metadata), nil
 }
+
 func (c *grpcStorageClient) ListHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
 	return &HMACKeysIterator{}
 }
-func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
+	if attrs.State != Active && attrs.State != Inactive {
+		return nil, fmt.Errorf("storage: invalid state %q for update, must be either %q or %q", attrs.State, Active, Inactive)
+	}
+	s := callSettings(c.settings, opts...)
+	hk := &storagepb.HmacKeyMetadata{
+		AccessId:            accessID,
+		Project:             toProjectResource(desc.userProjectID),
+		ServiceAccountEmail: desc.forServiceAccountEmail,
+		State:               string(attrs.State),
+	}
+	var paths []string
+	fieldMask := &fieldmaskpb.FieldMask{
+		Paths: paths,
+	}
+	if attrs.State != "" {
+		fieldMask.Paths = append(fieldMask.Paths, "state")
+	}
+	req := &storagepb.UpdateHmacKeyRequest{
+		HmacKey:    hk,
+		UpdateMask: fieldMask,
+	}
+	var metadata *storagepb.HmacKeyMetadata
+	err := run(ctx, func() error {
+		var err error
+		metadata, err = c.raw.UpdateHmacKey(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if err != nil {
+		return nil, err
+	}
+	return toHMACKeyfromProto(metadata), nil
 }
+
 func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.CreateHmacKeyRequest{
+		Project:             toProjectResource(desc.userProjectID),
+		ServiceAccountEmail: desc.forServiceAccountEmail,
+	}
+	var res *storagepb.CreateHmacKeyResponse
+	err := run(ctx, func() error {
+		var err error
+		res, err = c.raw.CreateHmacKey(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if err != nil {
+		return nil, err
+	}
+	key := toHMACKeyfromProto(res.Metadata)
+	key.Secret = base64.StdEncoding.EncodeToString(res.SecretKeyBytes)
+
+	return key, nil
 }
-func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error {
-	return errMethodNotSupported
+
+func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) error {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.DeleteHmacKeyRequest{
+		AccessId: accessID,
+		Project:  toProjectResource(desc.userProjectID),
+	}
+	return run(ctx, func() error {
+		return c.raw.DeleteHmacKey(ctx, req, s.gax...)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata

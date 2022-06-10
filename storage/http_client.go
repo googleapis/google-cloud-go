@@ -919,20 +919,93 @@ func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource str
 
 // HMAC Key methods.
 
-func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) (*HMACKey, error) {
+	s := callSettings(c.settings, opts...)
+	svc := raw.NewProjectsHmacKeysService(c.raw)
+	call := svc.Get(desc.userProjectID, accessID)
+	if desc.userProjectID != "" {
+		call = call.UserProject(desc.userProjectID)
+	}
+
+	var metadata *raw.HmacKeyMetadata
+	var err error
+	if err := run(ctx, func() error {
+		metadata, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+		return nil, err
+	}
+	hk := &raw.HmacKey{
+		Metadata: metadata,
+	}
+	return pbHmacKeyToHMACKey(hk, true)
 }
+
 func (c *httpStorageClient) ListHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
 	return &HMACKeysIterator{}
 }
-func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
+	if attrs.State != Active && attrs.State != Inactive {
+		return nil, fmt.Errorf("storage: invalid state %q for update, must be either %q or %q", attrs.State, Active, Inactive)
+	}
+	s := callSettings(c.settings, opts...)
+	svc := raw.NewProjectsHmacKeysService(c.raw)
+	call := svc.Update(desc.userProjectID, accessID, &raw.HmacKeyMetadata{
+		Etag:  attrs.Etag,
+		State: string(attrs.State),
+	})
+	if desc.userProjectID != "" {
+		call = call.UserProject(desc.userProjectID)
+	}
+	var metadata *raw.HmacKeyMetadata
+	var err error
+	if err := run(ctx, func() error {
+		metadata, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+		return nil, err
+	}
+	hk := &raw.HmacKey{
+		Metadata: metadata,
+	}
+	return pbHmacKeyToHMACKey(hk, true)
 }
+
 func (c *httpStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	if desc.userProjectID == "" {
+		return nil, errors.New("storage: expecting a non-blank projectID")
+	}
+	if desc.forServiceAccountEmail == "" {
+		return nil, errors.New("storage: expecting a non-blank service account email")
+	}
+	svc := raw.NewProjectsHmacKeysService(c.raw)
+	call := svc.Create(desc.userProjectID, desc.forServiceAccountEmail)
+	if desc.userProjectID != "" {
+		call = call.UserProject(desc.userProjectID)
+	}
+
+	var hkPb *raw.HmacKey
+	if err := run(ctx, func() error {
+		h, err := call.Context(ctx).Do()
+		hkPb = h
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+		return nil, err
+	}
+	return pbHmacKeyToHMACKey(hkPb, true)
 }
-func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error {
-	return errMethodNotSupported
+
+func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) error {
+	s := callSettings(c.settings, opts...)
+	svc := raw.NewProjectsHmacKeysService(c.raw)
+	call := svc.Delete(desc.userProjectID, accessID)
+	if desc.userProjectID != "" {
+		call = call.UserProject(desc.userProjectID)
+	}
+	return run(ctx, func() error {
+		return call.Context(ctx).Do()
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
 }
 
 type httpReader struct {
