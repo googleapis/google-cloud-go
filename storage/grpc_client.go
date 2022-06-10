@@ -843,9 +843,51 @@ func (c *grpcStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, a
 	return toHMACKeyfromProto(metadata), nil
 }
 
-func (c *grpcStorageClient) ListHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
-	return &HMACKeysIterator{}
+func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.ListHmacKeysRequest{
+		Project:             toProjectResource(desc.userProjectID),
+		ServiceAccountEmail: desc.forServiceAccountEmail,
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	// hmacKeyDesc includes configured HMACKey behavior through the HMACKeyOption interface.
+	it := &HMACKeysIterator{
+		ctx:       ctx,
+		projectID: desc.userProjectID,
+		desc:      *desc,
+		retry:     s.retry,
+	}
+	gitr := c.raw.ListHmacKeys(it.ctx, req, s.gax...)
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		var hmacKeys []*storagepb.HmacKeyMetadata
+		err = run(it.ctx, func() error {
+			hmacKeys, token, err = gitr.InternalFetch(pageSize, pageToken)
+			return err
+		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+		if err != nil {
+			return "", err
+		}
+		for _, hkmd := range hmacKeys {
+			hk := toHMACKeyfromProto(hkmd)
+			it.hmacKeys = append(it.hmacKeys, hk)
+		}
+
+		return token, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.hmacKeys) - it.index },
+		func() interface{} {
+			prev := it.hmacKeys
+			it.hmacKeys = it.hmacKeys[:0]
+			it.index = 0
+			return prev
+		})
+	return it
 }
+
 func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
 	if attrs.State != Active && attrs.State != Inactive {
 		return nil, fmt.Errorf("storage: invalid state %q for update, must be either %q or %q", attrs.State, Active, Inactive)

@@ -809,41 +809,56 @@ func TestHMACKeyCRUDEmulated(t *testing.T) {
 		}
 		want, err := client.CreateHMACKey(ctx, desc)
 		if err != nil {
-			t.Fatalf("client.CreateHMACKey: %v", err)
+			t.Fatalf("CreateHMACKey: %v", err)
 		}
 		if want == nil {
-			t.Fatal("client.CreateHMACKey: Unexpectedly got back a nil HMAC key")
+			t.Fatal("CreateHMACKey: Unexpectedly got back a nil HMAC key")
 		}
 		if want.State != Active {
-			t.Fatalf("client.CreateHMACKey: Unexpected state %q, expected %q", want.State, Active)
+			t.Fatalf("CreateHMACKey: Unexpected state %q, expected %q", want.State, Active)
 		}
 		got, err := client.GetHMACKey(ctx, desc, want.AccessID)
 		if err != nil {
-			t.Fatalf("client.GetHMACKey: %v", err)
+			t.Fatalf("GetHMACKey: %v", err)
 		}
 		if diff := cmp.Diff(got.ID, want.ID); diff != "" {
-			t.Errorf("client.GetHMACKey ID:got(-),want(+):\n%s", diff)
+			t.Errorf("GetHMACKey ID:got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.UpdatedTime, want.UpdatedTime); diff != "" {
-			t.Errorf("client.GetHMACKey UpdatedTime: got(-),want(+):\n%s", diff)
+			t.Errorf("GetHMACKey UpdatedTime: got(-),want(+):\n%s", diff)
 		}
 		attr := &HMACKeyAttrsToUpdate{
 			State: Inactive,
 		}
 		got, err = client.UpdateHMACKey(ctx, desc, want.AccessID, attr)
 		if err != nil {
-			t.Fatalf("client.UpdateHMACKey: %v", err)
+			t.Fatalf("UpdateHMACKey: %v", err)
 		}
 		if got.State != attr.State {
-			t.Errorf("client.UpdateHMACKey State: got %v, want %v", got.State, attr.State)
+			t.Errorf("UpdateHMACKey State: got %v, want %v", got.State, attr.State)
+		}
+		it := client.ListHMACKeys(ctx, desc)
+		var count int
+		var e error
+		for ; ; count++ {
+			_, e = it.Next()
+			if e != nil {
+				break
+			}
+		}
+		if e != iterator.Done {
+			t.Fatalf("ListHMACKeys: expected %q but got %q", iterator.Done, err)
+		}
+		if expected := 1; count != expected {
+			t.Errorf("ListHMACKeys: expected to get %d hmacKeys, but got %d", expected, count)
 		}
 		err = client.DeleteHMACKey(ctx, desc, want.AccessID)
 		if err != nil {
-			t.Fatalf("client.DeleteHMACKey: %v", err)
+			t.Fatalf("DeleteHMACKey: %v", err)
 		}
 		got, err = client.GetHMACKey(ctx, desc, want.AccessID)
 		if err == nil {
-			t.Fatalf("client.GetHMACKey unexcepted error: wanted 404")
+			t.Fatalf("GetHMACKey unexcepted error: wanted 404")
 		}
 	})
 }

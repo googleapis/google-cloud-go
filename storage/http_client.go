@@ -943,9 +943,29 @@ func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, a
 	return pbHmacKeyToHMACKey(hk, false)
 }
 
-func (c *httpStorageClient) ListHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
-	return &HMACKeysIterator{}
+func (c *httpStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
+	s := callSettings(c.settings, opts...)
+	// hmacKeyDesc includes configured HMACKey behavior through the HMACKeyOption interface.
+	it := &HMACKeysIterator{
+		ctx:       ctx,
+		raw:       raw.NewProjectsHmacKeysService(c.raw),
+		projectID: desc.userProjectID,
+		desc:      *desc,
+		retry:     s.retry,
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		it.fetch,
+		func() int { return len(it.hmacKeys) - it.index },
+		func() interface{} {
+			prev := it.hmacKeys
+			it.hmacKeys = it.hmacKeys[:0]
+			it.index = 0
+			return prev
+		})
+	return it
 }
+
 func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
 	if attrs.State != Active && attrs.State != Inactive {
 		return nil, fmt.Errorf("storage: invalid state %q for update, must be either %q or %q", attrs.State, Active, Inactive)
