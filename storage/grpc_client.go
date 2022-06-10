@@ -858,7 +858,7 @@ func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string
 	err = run(ctx, func() error {
 		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
 		for {
-			items, nextPageToken, err := gitr.InternalFetch(int(req.PageSize), req.PageToken)
+			items, nextPageToken, err := gitr.InternalFetch(int(req.GetPageSize()), req.GetPageToken())
 			if err != nil {
 				return err
 			}
@@ -867,6 +867,7 @@ func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string
 			if nextPageToken == "" {
 				return err
 			}
+			req.PageToken = nextPageToken
 		}
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
