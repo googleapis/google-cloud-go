@@ -800,49 +800,6 @@ func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
 	})
 }
 
-func TestCreateHMACKeyEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		desc := &hmacKeyDesc{
-			forServiceAccountEmail: "test@test-project.iam.gserviceaccount.com",
-			userProjectID:          project,
-		}
-		hmacKey, err := client.CreateHMACKey(context.Background(), desc)
-		if err != nil {
-			t.Fatalf("client.CreateHMACKey: %v", err)
-		}
-		if hmacKey == nil {
-			t.Fatal("client.CreateHMACKey: Unexpectedly got back a nil HMAC key")
-		}
-		if hmacKey.State != Active {
-			t.Fatalf("client.CreateHMACKey: Unexpected state %q, expected %q", hmacKey.State, Active)
-		}
-	})
-}
-
-func TestGetHMACKeyEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		// Populate test data.
-		ctx := context.Background()
-		desc := &hmacKeyDesc{
-			forServiceAccountEmail: "test@test-project.iam.gserviceaccount.com",
-			userProjectID:          project,
-		}
-		want, err := client.CreateHMACKey(ctx, desc)
-		if err != nil {
-			t.Fatalf("client.CreateHMACKey: %v", err)
-		}
-		got, err := client.GetHMACKey(ctx, desc, want.AccessID)
-		if err != nil {
-			t.Fatalf("client.GetHMACKey: %v", err)
-		}
-		if diff := cmp.Diff(got.ID, want.ID); diff != "" {
-			t.Errorf("client.GetHMACKey ID:got(-),want(+):\n%s", diff)
-		}
-		if diff := cmp.Diff(got.UpdatedTime, want.UpdatedTime); diff != "" {
-			t.Errorf("client.GetHMACKey UpdatedTime: got(-),want(+):\n%s", diff)
-		}
-	})
-}
 func TestHMACKeyCRUDEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()

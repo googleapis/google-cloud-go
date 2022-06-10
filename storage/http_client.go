@@ -922,7 +922,9 @@ func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource str
 func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
 	svc := raw.NewProjectsHmacKeysService(c.raw)
+	// hmacKeyDesc includes configured HMACKey behavior through the HMACKeyOption interface.
 	call := svc.Get(desc.userProjectID, accessID)
+	// TODO: Are there cases where desc.userProjectID != s.userProject?
 	if desc.userProjectID != "" {
 		call = call.UserProject(desc.userProjectID)
 	}
@@ -938,7 +940,7 @@ func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, a
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return pbHmacKeyToHMACKey(hk, true)
+	return pbHmacKeyToHMACKey(hk, false)
 }
 
 func (c *httpStorageClient) ListHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
@@ -957,6 +959,7 @@ func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	if desc.userProjectID != "" {
 		call = call.UserProject(desc.userProjectID)
 	}
+
 	var metadata *raw.HmacKeyMetadata
 	var err error
 	if err := run(ctx, func() error {
@@ -968,17 +971,11 @@ func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return pbHmacKeyToHMACKey(hk, true)
+	return pbHmacKeyToHMACKey(hk, false)
 }
 
 func (c *httpStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
-	if desc.userProjectID == "" {
-		return nil, errors.New("storage: expecting a non-blank projectID")
-	}
-	if desc.forServiceAccountEmail == "" {
-		return nil, errors.New("storage: expecting a non-blank service account email")
-	}
 	svc := raw.NewProjectsHmacKeysService(c.raw)
 	call := svc.Create(desc.userProjectID, desc.forServiceAccountEmail)
 	if desc.userProjectID != "" {

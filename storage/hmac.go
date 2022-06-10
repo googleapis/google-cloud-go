@@ -199,13 +199,13 @@ func toHMACKeyfromProto(pbmd *storagepb.HmacKeyMetadata) *HMACKey {
 	}
 
 	return &HMACKey{
-		AccessID:            pbmd.AccessId,
-		ID:                  pbmd.Id,
-		State:               HMACState(pbmd.State),
-		ProjectID:           pbmd.Project,
-		CreatedTime:         convertProtoTime(pbmd.CreateTime),
-		UpdatedTime:         convertProtoTime(pbmd.UpdateTime),
-		ServiceAccountEmail: pbmd.ServiceAccountEmail,
+		AccessID:            pbmd.GetAccessId(),
+		ID:                  pbmd.GetId(),
+		State:               HMACState(pbmd.GetState()),
+		ProjectID:           pbmd.GetProject(),
+		CreatedTime:         convertProtoTime(pbmd.GetCreateTime()),
+		UpdatedTime:         convertProtoTime(pbmd.GetUpdateTime()),
+		ServiceAccountEmail: pbmd.GetServiceAccountEmail(),
 	}
 }
 
