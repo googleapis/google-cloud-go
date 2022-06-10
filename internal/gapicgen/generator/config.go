@@ -1499,6 +1499,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/07/10
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/baremetalsolution/v2",
+		Pkg:                   "baremetalsolution",
+		ImportPath:            "cloud.google.com/go/baremetalsolution/apiv2",
+		GRPCServiceConfigPath: "baremetalsolution_grpc_service_config.json",
+		ApiServiceConfigPath:  "baremetalsolution_v2.yaml",
+		// GA after 2022/07/10
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
