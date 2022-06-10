@@ -1,0 +1,118 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.baremetalsolution.v2",
+  "libraryPackage": "cloud.google.com/go/baremetalsolution/apiv2",
+  "services": {
+    "BareMetalSolution": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateSnapshotSchedulePolicy": {
+              "methods": [
+                "CreateSnapshotSchedulePolicy"
+              ]
+            },
+            "CreateVolumeSnapshot": {
+              "methods": [
+                "CreateVolumeSnapshot"
+              ]
+            },
+            "DeleteSnapshotSchedulePolicy": {
+              "methods": [
+                "DeleteSnapshotSchedulePolicy"
+              ]
+            },
+            "DeleteVolumeSnapshot": {
+              "methods": [
+                "DeleteVolumeSnapshot"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLun": {
+              "methods": [
+                "GetLun"
+              ]
+            },
+            "GetNetwork": {
+              "methods": [
+                "GetNetwork"
+              ]
+            },
+            "GetSnapshotSchedulePolicy": {
+              "methods": [
+                "GetSnapshotSchedulePolicy"
+              ]
+            },
+            "GetVolume": {
+              "methods": [
+                "GetVolume"
+              ]
+            },
+            "GetVolumeSnapshot": {
+              "methods": [
+                "GetVolumeSnapshot"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLuns": {
+              "methods": [
+                "ListLuns"
+              ]
+            },
+            "ListNetworks": {
+              "methods": [
+                "ListNetworks"
+              ]
+            },
+            "ListSnapshotSchedulePolicies": {
+              "methods": [
+                "ListSnapshotSchedulePolicies"
+              ]
+            },
+            "ListVolumeSnapshots": {
+              "methods": [
+                "ListVolumeSnapshots"
+              ]
+            },
+            "ListVolumes": {
+              "methods": [
+                "ListVolumes"
+              ]
+            },
+            "ResetInstance": {
+              "methods": [
+                "ResetInstance"
+              ]
+            },
+            "RestoreVolumeSnapshot": {
+              "methods": [
+                "RestoreVolumeSnapshot"
+              ]
+            },
+            "UpdateSnapshotSchedulePolicy": {
+              "methods": [
+                "UpdateSnapshotSchedulePolicy"
+              ]
+            },
+            "UpdateVolume": {
+              "methods": [
+                "UpdateVolume"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
