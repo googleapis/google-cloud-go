@@ -1,5 +1,12 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.6.0...talent/v0.7.0) (2022-06-07)
+
+
+### Features
+
+* **talent:** add methods for Long Running Operations service ([1a0b09a](https://github.com/googleapis/google-cloud-go/commit/1a0b09a991d210fd562674aae1d2df854a0e15f9))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.5.0...talent/v0.6.0) (2022-06-01)
 
 
