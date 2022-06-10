@@ -166,21 +166,17 @@ func (o *partialSuccessOption) set(l *Logger) {
 	l.partialSuccess = true
 }
 
-// RedirectToStdout configures the logger to print log entries to stdout as Jsonified strings instead of ingesting them
-// to Cloud Logging. See https://cloud.google.com/logging/docs/structured-logging#special-payload-fields for Json format
-// of the printed strings. Use this option when need to delegate log entries ingestion to out-of-process logging agent.
-func RedirectToStdout() LoggerOption {
-	return &redirectOutputOption{
-		writer: os.Stdout,
+// RedirectAsJson instructs Logger to redirect output of calls to Log and LogSync to provided io.Writer instead of ingesting
+// to Cloud Logging. Logger formats log entries following logging agent's Json format.
+// See https://cloud.google.com/logging/docs/structured-logging#special-payload-fields for more info about the format.
+// Use this option to delegate log ingestion to an out-of-process logging agent.
+// If no writer is provided, the redirect is set to stdout.
+func RedirectAsJson(w io.Writer) LoggerOption {
+	if w == nil {
+		w = os.Stdout
 	}
-}
-
-// RedirectToStderr configures the logger to print log entries to stderr as Jsonified strings instead of ingesting them
-// to Cloud Logging. See https://cloud.google.com/logging/docs/structured-logging#special-payload-fields for Json format
-// of the printed strings. Use this option when need to delegate log entries ingestion to out-of-process logging agent.
-func RedirectToStderr() LoggerOption {
 	return &redirectOutputOption{
-		writer: os.Stderr,
+		writer: w,
 	}
 }
 

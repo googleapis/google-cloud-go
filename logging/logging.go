@@ -51,6 +51,7 @@ import (
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	logpb "google.golang.org/genproto/googleapis/logging/v2"
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -866,6 +867,8 @@ func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*log
 	switch p := e.Payload.(type) {
 	case string:
 		ent.Payload = &logpb.LogEntry_TextPayload{TextPayload: p}
+	case *anypb.Any:
+		ent.Payload = &logpb.LogEntry_ProtoPayload{ProtoPayload: p}
 	default:
 		s, err := toProtoStruct(p)
 		if err != nil {

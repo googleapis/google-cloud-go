@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
-	"strings"
 	"testing"
 	"time"
 
@@ -31,9 +30,6 @@ import (
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
-	"google.golang.org/protobuf/types/known/anypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestLoggerCreation(t *testing.T) {
@@ -357,130 +353,4 @@ func TestMonitoredResource(t *testing.T) {
 // Used by the tests in logging_test.
 func SetNow(f func() time.Time) {
 	now = f
-}
-
-func TestRedirectOutputFormats(t *testing.T) {
-	tests := []struct {
-		name      string
-		in        *logpb.LogEntry
-		want      string
-		wantError error
-	}{
-		{
-			name: "full data redirect with text payload",
-			in: &logpb.LogEntry{
-				Labels: map[string]string{"key1": "value1", "key2": "value2"},
-				Timestamp: &timestamppb.Timestamp{
-					Seconds: 1641024000,
-				},
-				Severity:     logtypepb.LogSeverity_DEBUG,
-				InsertId:     "0000AAA01",
-				Trace:        "projects/P/ABCD12345678AB12345678",
-				SpanId:       "000000000001",
-				TraceSampled: true,
-				SourceLocation: &logpb.LogEntrySourceLocation{
-					File:     "acme.go",
-					Function: "main",
-					Line:     100,
-				},
-				Operation: &logpb.LogEntryOperation{
-					Id:       "0123456789",
-					Producer: "test",
-				},
-				HttpRequest: &logtypepb.HttpRequest{
-					RequestUrl:    "https://example.com/test",
-					RequestMethod: "POST",
-				},
-				Payload: &logpb.LogEntry_TextPayload{
-					TextPayload: "this is text payload",
-				},
-			},
-			want: `{"message":"this is text payload","severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
-				`"timestamp":"seconds:1641024000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
-				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
-				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
-		},
-		{
-			name: "full data redirect with json payload",
-			in: &logpb.LogEntry{
-				Labels: map[string]string{"key1": "value1", "key2": "value2"},
-				Timestamp: &timestamppb.Timestamp{
-					Seconds: 1641024000,
-				},
-				Severity:     logtypepb.LogSeverity_DEBUG,
-				InsertId:     "0000AAA01",
-				Trace:        "projects/P/ABCD12345678AB12345678",
-				SpanId:       "000000000001",
-				TraceSampled: true,
-				SourceLocation: &logpb.LogEntrySourceLocation{
-					File:     "acme.go",
-					Function: "main",
-					Line:     100,
-				},
-				Operation: &logpb.LogEntryOperation{
-					Id:       "0123456789",
-					Producer: "test",
-				},
-				HttpRequest: &logtypepb.HttpRequest{
-					RequestUrl:    "https://example.com/test",
-					RequestMethod: "POST",
-				},
-				Payload: &logpb.LogEntry_JsonPayload{
-					JsonPayload: &structpb.Struct{
-						Fields: map[string]*structpb.Value{
-							"Message": {
-								Kind: &structpb.Value_StringValue{
-									StringValue: "message part of the payload",
-								},
-							},
-							"Latency": {
-								Kind: &structpb.Value_NumberValue{
-									NumberValue: 321,
-								},
-							},
-						},
-					},
-				},
-			},
-			want: `{"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
-				`"timestamp":"seconds:1641024000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
-				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
-				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
-		},
-		{
-			name: "error on redirect with proto payload",
-			in: &logpb.LogEntry{
-				Timestamp: &timestamppb.Timestamp{
-					Seconds: 1641024000,
-				},
-				Severity: logtypepb.LogSeverity_DEBUG,
-				Payload: &logpb.LogEntry_ProtoPayload{
-					ProtoPayload: &anypb.Any{},
-				},
-			},
-			wantError: ErrRedirectProtoPayloadNotSupported,
-		},
-	}
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			buffer := &strings.Builder{}
-			err := printEntryToWriter(tc.in, buffer)
-			if err != nil {
-				if tc.wantError == nil {
-					t.Fatalf("Unexpected error: %+v: %v", tc.in, err)
-				}
-				if tc.wantError != err {
-					t.Errorf("Expected error: %+v, got: %v want: %v\n", tc.in, err, tc.wantError)
-				}
-			} else {
-				if tc.wantError != nil {
-					t.Errorf("Expected error: %+v, want: %v\n", tc.in, tc.wantError)
-				}
-				got := strings.TrimSpace(buffer.String())
-				if got != tc.want {
-					t.Errorf("printEntryToWriter: %+v: got %v, want %v", tc.in, got, tc.want)
-				}
-			}
-		})
-	}
 }
