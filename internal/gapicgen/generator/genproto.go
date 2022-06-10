@@ -73,6 +73,9 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 
 var skipPrefixes = []string{
 	"google.golang.org/genproto/googleapis/ads",
+	// TODO(noahdietz): Do we disable generation in genproto if google-cloud-go
+	// stubs are enabled?
+	// "google.golang.org/genproto/googleapis/storage/v2",
 }
 
 func hasPrefix(s string, prefixes []string) bool {
