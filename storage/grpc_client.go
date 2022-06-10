@@ -858,6 +858,7 @@ func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string
 	err = run(ctx, func() error {
 		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
 		for {
+			// PageSize is not set and fallbacks to the API default pageSize of 100.
 			items, nextPageToken, err := gitr.InternalFetch(int(req.GetPageSize()), req.GetPageToken())
 			if err != nil {
 				return err
@@ -916,24 +917,6 @@ func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket strin
 	return run(ctx, func() error {
 		return c.raw.DeleteNotification(ctx, req, s.gax...)
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
-}
-
-func (c *grpcStorageClient) GetNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (n *Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.GetNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
-
-	s := callSettings(c.settings, opts...)
-	req := &storagepb.GetNotificationRequest{Name: id}
-	var pbn *storagepb.Notification
-	err = run(ctx, func() error {
-		var err error
-		pbn, err = c.raw.GetNotification(ctx, req, s.gax...)
-		return err
-	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
-	if err != nil {
-		return nil, err
-	}
-	return toNotificationFromProto(pbn), err
 }
 
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata

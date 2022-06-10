@@ -104,7 +104,6 @@ type storageClient interface {
 	ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (map[string]*Notification, error)
 	CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (*Notification, error)
 	DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) error
-	GetNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (*Notification, error)
 }
 
 // settings contains transport-agnostic configuration for API calls made via

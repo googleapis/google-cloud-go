@@ -964,15 +964,6 @@ func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket strin
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.CreateNotification")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if n.ID != "" {
-		return nil, errors.New("storage: AddNotification: ID must not be set")
-	}
-	if n.TopicProjectID == "" {
-		return nil, errors.New("storage: AddNotification: missing TopicProjectID")
-	}
-	if n.TopicID == "" {
-		return nil, errors.New("storage: AddNotification: missing TopicID")
-	}
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.Insert(bucket, toRawNotification(n))
 	if s.userProject != "" {
@@ -1002,14 +993,6 @@ func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket strin
 	return run(ctx, func() error {
 		return call.Context(ctx).Do()
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
-}
-
-func (c *httpStorageClient) GetNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (*Notification, error) {
-	notifications, err := c.ListNotifications(ctx, bucket, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return notifications[id], nil
 }
 
 type httpReader struct {

@@ -809,35 +809,6 @@ func TestDeleteNotificationEmulated(t *testing.T) {
 	})
 }
 
-func TestGetNotificationEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		// Populate test object.
-		ctx := context.Background()
-		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
-			Name: bucket,
-		})
-		if err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
-		}
-		var want *Notification
-		want, err = client.CreateNotification(ctx, bucket, &Notification{
-			TopicProjectID: project,
-			TopicID:        "go-storage-notification-test",
-			PayloadFormat:  "JSON_API_V1",
-		})
-		if err != nil {
-			t.Fatalf("client.CreateNotification: %v", err)
-		}
-		got, err := client.GetNotification(ctx, bucket, want.ID)
-		if err != nil {
-			t.Fatalf("client.GetNotification: %v", err)
-		}
-		if diff := cmp.Diff(got.ID, want.ID); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
-		}
-	})
-}
-
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
 	if !isEmulatorEnvironmentSet() {
