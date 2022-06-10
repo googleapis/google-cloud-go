@@ -264,8 +264,11 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 // can be retrieved by calling Attrs.
 func (w *Writer) Close() error {
 	if !w.opened {
-		// TODO(noahdietz): also open for gRPC here? Why open here at all?
-		if err := w.open(); err != nil {
+		if w.o.c.tc != nil {
+			if err := w.openWriter(); err != nil {
+				return err
+			}
+		} else if err := w.open(); err != nil {
 			return err
 		}
 	}
@@ -292,13 +295,12 @@ func (w *Writer) openWriter() (err error) {
 		chunkSize:          w.ChunkSize,
 		chunkRetryDeadline: w.ChunkRetryDeadline,
 		bucket:             w.o.bucket,
-		object:             w.o.object,
 		attrs:              &w.ObjectAttrs,
 		conds:              w.o.conds,
 		encryptionKey:      w.o.encryptionKey,
 		sendCRC32C:         w.SendCRC32C,
 		donec:              w.donec,
-		err:                w.error,
+		setError:           w.error,
 		progress:           w.progress,
 		setObj:             func(o *ObjectAttrs) { w.obj = o },
 	}

@@ -860,7 +860,7 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
 	s := callSettings(c.settings, opts...)
-	errorf := params.err
+	errorf := params.setError
 	setObj := params.setObj
 	progress := params.progress
 	attrs := params.attrs
@@ -891,7 +891,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			Media(pr, mediaOpts...).
 			Projection("full").
 			Context(params.ctx).
-			Name(params.object)
+			Name(params.attrs.Name)
 		call.ProgressUpdater(func(n, _ int64) { progress(n) })
 
 		if attrs.KMSKeyName != "" {

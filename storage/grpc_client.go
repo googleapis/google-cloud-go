@@ -40,7 +40,7 @@ const (
 	// connection pool may be necessary for jobs that require
 	// high throughput and/or leverage many concurrent streams.
 	//
-	// This is an experimental API and not intended for public use.
+	// This is only used for the gRPC client.
 	defaultConnPoolSize = 4
 
 	// globalProjectAlias is the project ID alias used for global buckets.
@@ -51,8 +51,6 @@ const (
 
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
-//
-// This is an experimental API and not intended for public use.
 func defaultGRPCOptions() []option.ClientOption {
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
@@ -84,8 +82,6 @@ func defaultGRPCOptions() []option.ClientOption {
 
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
 // storageClient interface.
-//
-// This is an experimental API and not intended for public use.
 type grpcStorageClient struct {
 	raw      *gapic.Client
 	settings *settings
@@ -93,8 +89,6 @@ type grpcStorageClient struct {
 
 // newGRPCStorageClient initializes a new storageClient that uses the gRPC
 // Storage API.
-//
-// This is an experimental API and not intended for public use.
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
@@ -766,7 +760,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
 	var offset int64
-	errorf := params.err
+	errorf := params.setError
 	progress := params.progress
 	setObj := params.setObj
 
@@ -998,8 +992,6 @@ func (r *gRPCReader) Close() error {
 //
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
-//
-// This is an experimental API and not intended for public use.
 func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
 	if err != nil && shouldRetry(err) {
@@ -1015,8 +1007,6 @@ func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
 // sets the Reader's stream and cancelStream properties in the process.
-//
-// This is an experimental API and not intended for public use.
 func (r *gRPCReader) reopenStream() (*storagepb.ReadObjectResponse, error) {
 	// Close existing stream and initialize new stream with updated offset.
 	r.Close()
@@ -1048,7 +1038,6 @@ func newGRPCWriter(c *grpcStorageClient, params *openWriterParams, r io.Reader) 
 		ctx:           params.ctx,
 		reader:        r,
 		bucket:        params.bucket,
-		object:        params.object,
 		attrs:         params.attrs,
 		conds:         params.conds,
 		encryptionKey: params.encryptionKey,
@@ -1066,7 +1055,6 @@ type gRPCWriter struct {
 	ctx context.Context
 
 	bucket        string
-	object        string
 	attrs         *ObjectAttrs
 	conds         *Conditions
 	encryptionKey []byte
@@ -1082,8 +1070,6 @@ type gRPCWriter struct {
 
 // startResumableUpload initializes a Resumable Upload with gRPC and sets the
 // upload ID on the Writer.
-//
-// This is an experimental API and not intended for public use.
 func (w *gRPCWriter) startResumableUpload() error {
 	spec, err := w.writeObjectSpec()
 	if err != nil {
@@ -1099,8 +1085,6 @@ func (w *gRPCWriter) startResumableUpload() error {
 
 // queryProgress is a helper that queries the status of the resumable upload
 // associated with the given upload ID.
-//
-// This is an experimental API and not intended for public use.
 func (w *gRPCWriter) queryProgress() (int64, error) {
 	q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
 
@@ -1116,8 +1100,6 @@ func (w *gRPCWriter) queryProgress() (int64, error) {
 // final Object will be returned as well. Finalizing the upload is primarily
 // important for Resumable Uploads. A simple or multi-part upload will always
 // be finalized once the entire buffer has been written.
-//
-// This is an experimental API and not intended for public use.
 func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*storagepb.Object, int64, bool, error) {
 	var err error
 	var finishWrite bool
@@ -1241,8 +1223,6 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 // determineOffset either returns the offset given to it in the case of a simple
 // upload, or queries the write status in the case a resumable upload is being
 // used.
-//
-// This is an experimental API and not intended for public use.
 func (w *gRPCWriter) determineOffset(offset int64) (int64, error) {
 	// For a Resumable Upload, we must start from however much data
 	// was committed.
@@ -1261,8 +1241,6 @@ func (w *gRPCWriter) determineOffset(offset int64) (int64, error) {
 // indicated that writing was finished, the Object will be finalized and
 // returned. If not, then the Object will be nil, and the boolean returned will
 // be false.
-//
-// This is an experimental API and not intended for public use.
 func (w *gRPCWriter) commit() (*storagepb.WriteObjectResponse, bool, error) {
 	finalized := true
 	resp, err := w.stream.CloseAndRecv()
@@ -1280,14 +1258,11 @@ func (w *gRPCWriter) commit() (*storagepb.WriteObjectResponse, bool, error) {
 
 // writeObjectSpec constructs a WriteObjectSpec proto using the Writer's
 // ObjectAttrs and applies its Conditions. This is only used for gRPC.
-//
-// This is an experimental API and not intended for public use.
 func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 	// To avoid modifying the ObjectAttrs embeded in the calling writer, deref
 	// the ObjectAttrs pointer to make a copy, then assign the desired name to
 	// the attribute.
 	attrs := *w.attrs
-	attrs.Name = w.object
 
 	spec := &storagepb.WriteObjectSpec{
 		Resource: attrs.toProtoObject(w.bucket),
@@ -1301,8 +1276,6 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
-//
-// This is an experimental API and not intended for public use.
 func (w *gRPCWriter) read() (int, bool, error) {
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0

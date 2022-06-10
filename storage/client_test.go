@@ -750,9 +750,8 @@ func TestOpenWriterEmulated(t *testing.T) {
 			attrs:    want,
 			bucket:   bucket,
 			ctx:      context.Background(),
-			object:   want.Name,
 			donec:    make(chan struct{}),
-			err:      func(_ error) {}, // no-op
+			setError: func(_ error) {}, // no-op
 			progress: func(_ int64) {}, // no-op
 			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
 		}

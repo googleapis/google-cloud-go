@@ -231,10 +231,6 @@ type openWriterParams struct {
 	// Required.
 	bucket string
 
-	// object is the name of the object to be written.
-	// Required.
-	object string
-
 	// attrs is the set of object attributes to use in creation of a new Object.
 	// Optional.
 	attrs *ObjectAttrs
@@ -257,9 +253,9 @@ type openWriterParams struct {
 	// Required.
 	donec chan struct{}
 
-	// err is the function used by the writer routine to report errors.
+	// setError is the function used by the writer routine to report errors.
 	// Required.
-	err func(error)
+	setError func(error)
 
 	// progress is the function used by the writer routine to report progress.
 	// Required.
