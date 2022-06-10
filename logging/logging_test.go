@@ -52,6 +52,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 const testLogIDPrefix = "GO-LOGGING-CLIENT/TEST-LOG"
@@ -1190,4 +1191,183 @@ func TestPartialSuccessOption(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRedirectOutputIngestion(t *testing.T) {
+	var hookCalled bool
+
+	// setup fake server
+	fakeBackend := &writeLogEntriesTestHandler{}
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	gsrv := grpc.NewServer()
+	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
+	fakeServerAddr := l.Addr().String()
+	go func() {
+		if err := gsrv.Serve(l); err != nil {
+			panic(err)
+		}
+	}()
+	fakeBackend.hook = func(e *logpb.WriteLogEntriesRequest) {
+		hookCalled = true
+	}
+	ctx := context.Background()
+	client, _ := logging.NewClient(ctx, "projects/test", option.WithEndpoint(fakeServerAddr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()))
+	defer client.Close()
+
+	entry := logging.Entry{Payload: "testing payload string"}
+	tests := []struct {
+		name   string
+		logger *logging.Logger
+		want   bool
+	}{
+		{
+			name:   "redirect output does not ingest",
+			logger: client.Logger("stdout-redirection-log", logging.RedirectAsJSON(os.Stdout)),
+			want:   false,
+		},
+		{
+			name:   "log without Redirect flags ingest",
+			logger: client.Logger("default-ingestion-log"),
+			want:   true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			hookCalled = false
+			tc.logger.LogSync(context.TODO(), entry)
+			if hookCalled != tc.want {
+				t.Errorf("Log ingestion works unexpected: got %v want %v\n", hookCalled, tc.want)
+			}
+		})
+	}
+}
+
+func TestRedirectOutputFormats(t *testing.T) {
+	testURL, _ := url.Parse("https://example.com/test")
+	tests := []struct {
+		name      string
+		in        *logging.Entry
+		want      string
+		wantError error
+	}{
+		{
+			name: "full data redirect with text payload",
+			in: &logging.Entry{
+				Labels:       map[string]string{"key1": "value1", "key2": "value2"},
+				Timestamp:    testNow().UTC(),
+				Severity:     logging.Debug,
+				InsertID:     "0000AAA01",
+				Trace:        "projects/P/ABCD12345678AB12345678",
+				SpanID:       "000000000001",
+				TraceSampled: true,
+				SourceLocation: &logpb.LogEntrySourceLocation{
+					File:     "acme.go",
+					Function: "main",
+					Line:     100,
+				},
+				Operation: &logpb.LogEntryOperation{
+					Id:       "0123456789",
+					Producer: "test",
+				},
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    testURL,
+						Method: "POST",
+					},
+				},
+				Payload: "this is text payload",
+			},
+			want: `{"message":"this is text payload","severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
+				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
+				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+		},
+		{
+			name: "full data redirect with json payload",
+			in: &logging.Entry{
+				Labels:       map[string]string{"key1": "value1", "key2": "value2"},
+				Timestamp:    testNow().UTC(),
+				Severity:     logging.Debug,
+				InsertID:     "0000AAA01",
+				Trace:        "projects/P/ABCD12345678AB12345678",
+				SpanID:       "000000000001",
+				TraceSampled: true,
+				SourceLocation: &logpb.LogEntrySourceLocation{
+					File:     "acme.go",
+					Function: "main",
+					Line:     100,
+				},
+				Operation: &logpb.LogEntryOperation{
+					Id:       "0123456789",
+					Producer: "test",
+				},
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    testURL,
+						Method: "POST",
+					},
+				},
+				Payload: map[string]interface{}{
+					"Message": "message part of the payload",
+					"Latency": 321,
+				},
+			},
+			want: `{"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
+				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
+				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+		},
+		{
+			name: "error on redirect with proto payload",
+			in: &logging.Entry{
+				Timestamp: testNow().UTC(),
+				Severity:  logging.Debug,
+				Payload:   &anypb.Any{},
+			},
+			wantError: logging.ErrRedirectProtoPayloadNotSupported,
+		},
+	}
+	buffer := &strings.Builder{}
+	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			buffer.Reset()
+			err := logger.LogSync(context.TODO(), *tc.in)
+			if err != nil {
+				if tc.wantError == nil {
+					t.Fatalf("Unexpected error: %+v: %v", tc.in, err)
+				}
+				if tc.wantError != err {
+					t.Errorf("Expected error: %+v, got: %v want: %v\n", tc.in, err, tc.wantError)
+				}
+			} else {
+				if tc.wantError != nil {
+					t.Errorf("Expected error: %+v, want: %v\n", tc.in, tc.wantError)
+				}
+				got := strings.TrimSpace(buffer.String())
+				if got != tc.want {
+					t.Errorf("TestRedirectOutputFormats: %+v: got %v, want %v", tc.in, got, tc.want)
+				}
+			}
+		})
+	}
+}
+
+func ExampleRedirectAsJson_withStdout() {
+	// use previously created client
+	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stdout))
+	logger.LogSync(context.TODO(), logging.Entry{Timestamp: time.Unix(1000, 0), Severity: logging.Debug, Payload: "redirected log"})
+	// Output: {"message":"redirected log","severity":"DEBUG","timestamp":"seconds:1000"}
+}
+
+func ExampleRedirectAsJson_withStderr() {
+	// use previously created client
+	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stderr))
+	logger.LogSync(context.TODO(), logging.Entry{Timestamp: time.Unix(1000, 0), Severity: logging.Debug, Payload: "redirected log"})
+	// Output: {"message":"redirected log","severity":"DEBUG","timestamp":"seconds:1000"}
 }
