@@ -25,6 +25,7 @@ import (
 	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
+// PolicyType to distinguish between max_age, max_version and compound types
 type PolicyType int
 
 const (
@@ -41,6 +42,7 @@ type GCPolicy interface {
 	proto() *bttdpb.GcRule
 }
 
+// TypedGCPolicy is a wrapper around GCPolicy that allows GC type detection
 type TypedGCPolicy struct {
 	GCPolicy
 	PolicyType PolicyType
