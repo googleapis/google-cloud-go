@@ -166,12 +166,12 @@ func (o *partialSuccessOption) set(l *Logger) {
 	l.partialSuccess = true
 }
 
-// RedirectAsJson instructs Logger to redirect output of calls to Log and LogSync to provided io.Writer instead of ingesting
+// RedirectAsJSON instructs Logger to redirect output of calls to Log and LogSync to provided io.Writer instead of ingesting
 // to Cloud Logging. Logger formats log entries following logging agent's Json format.
 // See https://cloud.google.com/logging/docs/structured-logging#special-payload-fields for more info about the format.
 // Use this option to delegate log ingestion to an out-of-process logging agent.
 // If no writer is provided, the redirect is set to stdout.
-func RedirectAsJson(w io.Writer) LoggerOption {
+func RedirectAsJSON(w io.Writer) LoggerOption {
 	if w == nil {
 		w = os.Stdout
 	}

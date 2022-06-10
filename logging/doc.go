@@ -72,12 +72,12 @@ Redirecting log ingestion
 
 Google Cloud environments support ingesting logs from standard output including stdout and stderr when logs are formatted
 as a one line Json following the supported structured log format.
-Use RedirectAsJson() LoggerOption`s to create a Logger that writes formatted logs to provider io.Writer. Use it with os.Stdout
+Use RedirectAsJSON() LoggerOption`s to create a Logger that writes formatted logs to provider io.Writer. Use it with os.Stdout
 and os.Stderr to redirect logs to Stdout and Stderr respectively.
 See https://cloud.google.com/logging/docs/structured-logging#special-payload-fields for the format description.
 
 	// Create a logger to print structured logs formatted as a single line Json to stdout
-	loggger := client.Logger("test-log", RedirectAsJson(os.Stdout))
+	loggger := client.Logger("test-log", RedirectAsJSON(os.Stdout))
 
 
 Payloads

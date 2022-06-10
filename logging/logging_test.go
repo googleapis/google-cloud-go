@@ -1227,7 +1227,7 @@ func TestRedirectOutputIngestion(t *testing.T) {
 	}{
 		{
 			name:   "redirect output does not ingest",
-			logger: client.Logger("stdout-redirection-log", logging.RedirectAsJson(os.Stdout)),
+			logger: client.Logger("stdout-redirection-log", logging.RedirectAsJSON(os.Stdout)),
 			want:   false,
 		},
 		{
@@ -1333,7 +1333,7 @@ func TestRedirectOutputFormats(t *testing.T) {
 		},
 	}
 	buffer := &strings.Builder{}
-	logger := client.Logger("test-redirect-output", logging.RedirectAsJson(buffer))
+	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			buffer.Reset()
@@ -1360,11 +1360,14 @@ func TestRedirectOutputFormats(t *testing.T) {
 
 func ExampleRedirectAsJson_withStdout() {
 	// use previously created client
-	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJson(os.Stdout))
+	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stdout))
 	logger.LogSync(context.TODO(), logging.Entry{Timestamp: time.Unix(1000, 0), Severity: logging.Debug, Payload: "redirected log"})
 	// Output: {"message":"redirected log","severity":"DEBUG","timestamp":"seconds:1000"}
 }
 
 func ExampleRedirectAsJson_withStderr() {
-
+	// use previously created client
+	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stderr))
+	logger.LogSync(context.TODO(), logging.Entry{Timestamp: time.Unix(1000, 0), Severity: logging.Debug, Payload: "redirected log"})
+	// Output: {"message":"redirected log","severity":"DEBUG","timestamp":"seconds:1000"}
 }
