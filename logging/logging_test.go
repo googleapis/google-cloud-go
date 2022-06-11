@@ -1364,10 +1364,3 @@ func ExampleRedirectAsJson_withStdout() {
 	logger.LogSync(context.TODO(), logging.Entry{Timestamp: time.Unix(1000, 0), Severity: logging.Debug, Payload: "redirected log"})
 	// Output: {"message":"redirected log","severity":"DEBUG","timestamp":"seconds:1000"}
 }
-
-func ExampleRedirectAsJson_withStderr() {
-	// use previously created client
-	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stderr))
-	logger.LogSync(context.TODO(), logging.Entry{Timestamp: time.Unix(1000, 0), Severity: logging.Debug, Payload: "redirected log"})
-	// Output: {"message":"redirected log","severity":"DEBUG","timestamp":"seconds:1000"}
-}
