@@ -16,7 +16,6 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -941,15 +940,6 @@ func (c *grpcStorageClient) CreateNotification(ctx context.Context, bucket strin
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.CreateNotification")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if n.ID != "" {
-		return nil, errors.New("storage: AddNotification: ID must not be set")
-	}
-	if n.TopicProjectID == "" {
-		return nil, errors.New("storage: AddNotification: missing TopicProjectID")
-	}
-	if n.TopicID == "" {
-		return nil, errors.New("storage: AddNotification: missing TopicID")
-	}
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.CreateNotificationRequest{
 		Parent:       bucketResourceName(globalProjectAlias, bucket),

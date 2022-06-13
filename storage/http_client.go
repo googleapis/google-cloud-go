@@ -1026,7 +1026,8 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 
 // ListNotifications returns all the Notifications configured for this bucket, as a map indexed by notification ID.
 //
-// Note: Pagination is not currently supported.
+// Note: This API does not support pagination. However, entity limits cap the number of notifications on a single bucket,
+// so all results will be returned in the first response. See https://cloud.google.com/storage/quotas#buckets.
 func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.ListNotifications")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -1056,7 +1057,6 @@ func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket strin
 	if s.userProject != "" {
 		call.UserProject(s.userProject)
 	}
-
 	var rn *raw.Notification
 	err = run(ctx, func() error {
 		rn, err = call.Context(ctx).Do()

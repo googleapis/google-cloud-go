@@ -176,8 +176,6 @@ func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (re
 
 // Notifications returns all the Notifications configured for this bucket, as a map
 // indexed by notification ID.
-//
-// Note: Pagination is not currently supported.
 func (b *BucketHandle) Notifications(ctx context.Context) (n map[string]*Notification, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Notifications")
 	defer func() { trace.EndSpan(ctx, err) }()
