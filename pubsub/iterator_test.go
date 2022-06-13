@@ -36,7 +36,7 @@ import (
 )
 
 var (
-	projName                = "some-project"
+	projName                = "P"
 	topicName               = "some-topic"
 	subName                 = "some-sub"
 	fullyQualifiedTopicName = fmt.Sprintf("projects/%s/topics/%s", projName, topicName)
@@ -544,23 +544,17 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 		t.Fatalf("Got error in recvMessages: %v", err)
 	}
 
+	iter.eoMu.RLock()
+	defer iter.eoMu.RUnlock()
 	if !iter.enableExactlyOnceDelivery {
 		t.Fatalf("expected iter.enableExactlyOnce=true")
 	}
 }
 
 func TestAddToDistribution(t *testing.T) {
-	srv := pstest.NewServer()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	c, _ := newFake(t)
 
-	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
-
-	_, client, err := initConn(ctx, srv.Addr)
-	if err != nil {
-		t.Fatal(err)
-	}
-	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{})
+	iter := newMessageIterator(c.subc, "some-sub", &pullOptions{})
 
 	// Start with a datapoint that's too small that should be bounded to 10s.
 	receiveTime := time.Now().Add(time.Duration(-1) * time.Second)
@@ -588,4 +582,41 @@ func TestAddToDistribution(t *testing.T) {
 	if deadline != want {
 		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
 	}
+}
+
+func TestPingStreamAckDeadline(t *testing.T) {
+	c, srv := newFake(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	topic := c.Topic(topicName)
+	s, err := c.CreateSubscription(ctx, subName, SubscriptionConfig{Topic: topic})
+	if err != nil {
+		t.Errorf("failed to create subscription: %v", err)
+	}
+
+	iter := newMessageIterator(c.subc, fullyQualifiedSubName, &pullOptions{})
+	defer iter.stop()
+
+	iter.eoMu.RLock()
+	if iter.enableExactlyOnceDelivery {
+		t.Error("iter.enableExactlyOnceDelivery should be false")
+	}
+	iter.eoMu.RUnlock()
+
+	_, err = s.Update(ctx, SubscriptionConfigToUpdate{
+		EnableExactlyOnceDelivery: true,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	// Receive one message via the stream to trigger the update to enableExactlyOnceDelivery
+	iter.receive(1)
+	iter.eoMu.RLock()
+	if !iter.enableExactlyOnceDelivery {
+		t.Error("iter.enableExactlyOnceDelivery should be true")
+	}
+	iter.eoMu.RUnlock()
 }

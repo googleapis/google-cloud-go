@@ -314,7 +314,7 @@ func (t1 *Topic) Equal(t2 *Topic) bool {
 func newFake(t *testing.T) (*Client, *pstest.Server) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
-	client, err := NewClient(ctx, "P",
+	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithInsecure()))
