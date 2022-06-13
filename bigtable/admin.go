@@ -310,9 +310,9 @@ type TableInfo struct {
 
 // FamilyInfo represents information about a column family.
 type FamilyInfo struct {
-	Name          string
-	GCPolicy      string
-	TypedGCPolicy TypedGCPolicy
+	Name         string
+	GCPolicy     string
+	FullGCPolicy GCPolicy
 }
 
 func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
@@ -349,9 +349,9 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	for name, fam := range res.ColumnFamilies {
 		ti.Families = append(ti.Families, name)
 		ti.FamilyInfos = append(ti.FamilyInfos, FamilyInfo{
-			Name:          name,
-			GCPolicy:      GCRuleToString(fam.GcRule),
-			TypedGCPolicy: fromPolicyToTypedPolicy(gcRuleToPolicy(fam.GcRule)),
+			Name:         name,
+			GCPolicy:     GCRuleToString(fam.GcRule),
+			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
 	}
 	return ti, nil

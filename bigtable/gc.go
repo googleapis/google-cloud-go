@@ -25,27 +25,17 @@ import (
 	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
-// PolicyType to distinguish between max_age, max_version and compound types
-type PolicyType int
+type policyType int
 
 const (
-	PolicyTypeUnspecified PolicyType = iota
-	PolicyTypeMaxAge
-	PolicyTypeMaxVersion
-	PolicyTypeUnion
-	PolicyTypeIntersection
+	policyTypeUnion policyType = iota
+	policyTypeIntersection
 )
 
 // A GCPolicy represents a rule that determines which cells are eligible for garbage collection.
 type GCPolicy interface {
 	String() string
 	proto() *bttdpb.GcRule
-}
-
-// TypedGCPolicy is a wrapper around GCPolicy that allows GC type detection
-type TypedGCPolicy struct {
-	GCPolicy
-	PolicyType PolicyType
 }
 
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
@@ -181,9 +171,9 @@ func gcRuleToPolicy(rule *bttdpb.GcRule) GCPolicy {
 	}
 	switch r := rule.Rule.(type) {
 	case *bttdpb.GcRule_Intersection_:
-		return compoundRuleToPolicy(r.Intersection.Rules, PolicyTypeIntersection)
+		return compoundRuleToPolicy(r.Intersection.Rules, policyTypeIntersection)
 	case *bttdpb.GcRule_Union_:
-		return compoundRuleToPolicy(r.Union.Rules, PolicyTypeUnion)
+		return compoundRuleToPolicy(r.Union.Rules, policyTypeUnion)
 	case *bttdpb.GcRule_MaxAge:
 		return MaxAgePolicy(time.Duration(r.MaxAge.Seconds) * time.Second)
 	case *bttdpb.GcRule_MaxNumVersions:
@@ -201,7 +191,7 @@ func joinRules(rules []*bttdpb.GcRule, sep string) string {
 	return "(" + strings.Join(chunks, sep) + ")"
 }
 
-func compoundRuleToPolicy(rules []*bttdpb.GcRule, mode PolicyType) GCPolicy {
+func compoundRuleToPolicy(rules []*bttdpb.GcRule, mode policyType) GCPolicy {
 	sub := []GCPolicy{}
 	for _, r := range rules {
 		p := gcRuleToPolicy(r)
@@ -211,26 +201,11 @@ func compoundRuleToPolicy(rules []*bttdpb.GcRule, mode PolicyType) GCPolicy {
 	}
 
 	switch mode {
-	case PolicyTypeUnion:
+	case policyTypeUnion:
 		return unionPolicy{sub: sub}
-	case PolicyTypeIntersection:
+	case policyTypeIntersection:
 		return intersectionPolicy{sub: sub}
 	default:
 		return NoGcPolicy()
-	}
-}
-
-func fromPolicyToTypedPolicy(gcPolicy GCPolicy) TypedGCPolicy {
-	switch gcPolicy.proto().Rule.(type) {
-	case *bttdpb.GcRule_Intersection_:
-		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeIntersection}
-	case *bttdpb.GcRule_Union_:
-		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeUnion}
-	case *bttdpb.GcRule_MaxAge:
-		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeMaxAge}
-	case *bttdpb.GcRule_MaxNumVersions:
-		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeMaxVersion}
-	default:
-		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeUnspecified}
 	}
 }
