@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"sync"
 	"time"
@@ -75,8 +74,9 @@ type BulkWriter struct {
 	start           time.Time                   // when this BulkWriter was started
 	vc              *vkit.Client                // internal client
 	isOpen          bool                        // signal that the BulkWriter is closed
-	flush           chan struct{}               // signal the beginning/end of flushing operation
+	startFlush      chan struct{}               // signal the beginning of flushing operation
 	isFlushing      bool                        // determines whether we're in a flush state
+	endFlush        chan struct{}               // signal the end of flushing
 	received        chan bulkWriterJob          // incoming write requests
 	scheduled       chan bulkWriterRequestBatch // scheduled requests
 	sendingQueue    []bulkWriterJob             // queue of requests to send
@@ -104,8 +104,9 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		vc:              c.c,
 		database:        database,
 		isOpen:          true,
-		flush:           make(chan struct{}),
+		startFlush:      make(chan struct{}),
 		isFlushing:      false,
+		endFlush:        make(chan struct{}),
 		received:        make(chan bulkWriterJob),
 		scheduled:       make(chan bulkWriterRequestBatch),
 		start:           time.Now(),
@@ -133,7 +134,10 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 func (b *BulkWriter) End() {
 	b.Flush()
 	b.isOpen = false
-	b.cancel() // close the scheduler and receiver threads
+	//b.cancel() // close the scheduler and receiver threads
+	close(b.scheduled)
+	close(b.received)
+	close(b.startFlush)
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
@@ -144,13 +148,14 @@ func (bw *BulkWriter) Flush() {
 	bw.backlogQueue = []bulkWriterJob{}
 	var mu sync.RWMutex
 	mu.Lock()
-	bw.flush <- struct{}{}
+	bw.startFlush <- struct{}{}
 	bw.isFlushing = true
 	// Block until we get the signal that we're done flushing.
-	<-bw.flush
+	<-bw.endFlush
 	mu.Unlock()
 	// Repopulate sending queue now that flush operation is done.
 	bw.sendingQueue = bw.backlogQueue
+	bw.isFlushing = false
 }
 
 // Status returns the current state of the BulkWriter, including whether it is open and
@@ -260,7 +265,7 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 
 	for _, e := range bw.docUpdatePaths {
 		if doc.shortPath == e {
-			return fmt.Errorf("firestore: BulkWriter received duplicate write for path: %v", doc.shortPath)
+			return fmt.Errorf("firestore: bulkwriter: received duplicate write for path: %v", doc.shortPath)
 		}
 	}
 
@@ -294,14 +299,14 @@ func (bw *BulkWriter) write(w *pb.Write) (chan *pb.WriteResult, chan error) {
 // processResults checks for errors returned from send() and packages up the
 // results as WriteResult objects
 func (bw *BulkWriter) processResults(w chan *pb.WriteResult, e chan error) (*WriteResult, error) {
-	wrpb := <-w
+	wpb := <-w
 	err := <-e
 
 	if err != nil {
 		return nil, err
 	}
 
-	wr, err := writeResultFromProto(wrpb)
+	wr, err := writeResultFromProto(wpb)
 	if err != nil {
 		return nil, err
 	}
@@ -313,7 +318,6 @@ func (bw *BulkWriter) processResults(w chan *pb.WriteResult, e chan error) (*Wri
 // the communication routes in between the caller and calls to the service.
 func (bw *BulkWriter) receiver(ctx context.Context) {
 	for {
-		log.Println("receiver: receiving")
 		var flushOp bool
 		var bs []bulkWriterBatch
 
@@ -326,13 +330,11 @@ func (bw *BulkWriter) receiver(ctx context.Context) {
 				bs = bw.buildRequests(false)
 			}
 			// should we block from adding to the queue until a flushing job is complete?
-		case <-bw.flush:
-			log.Println("receiver: got call to flush")
+		case <-bw.startFlush:
 			bs = bw.buildRequests(true)
 			flushOp = true
 		case <-ctx.Done():
 			bw.isOpen = false
-			close(bw.received)
 			break
 		}
 
@@ -343,8 +345,6 @@ func (bw *BulkWriter) receiver(ctx context.Context) {
 
 		// Send batch of requests to scheduler
 		bw.scheduled <- bwb
-
-		log.Println("receiver: end receiving")
 	}
 }
 
@@ -374,7 +374,7 @@ func (bw *BulkWriter) makeBatch() (bulkWriterBatch, error) {
 
 	// Guardrail -- check whether no writes to apply
 	if len(ws) == 0 {
-		return bulkWriterBatch{}, fmt.Errorf("no writes to apply")
+		return bulkWriterBatch{}, fmt.Errorf("bulkwriter: no writes to apply")
 	}
 
 	// Compose our request
@@ -432,7 +432,7 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 				wsr := ws.(int) + wpb
 				bw.writesLog.Store(writesSent, wsr)
 
-				// Exponential backoff strategy ... there's probably a better way to do this
+				// Exponential back off strategy ... there's probably a better way to do this
 				if qps >= int64(bw.maxOpsPerSecond) {
 					time.Sleep(time.Duration(bw.waitTime))
 					bw.waitTime = math.Pow(float64(bw.waitTime), 2)
@@ -451,11 +451,10 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 			// if this bulkWriterRequestBatch is a flush job, report that it is now done.
 			// REVIEWERS: Should we have a second channel to signal that we're done flushing?
 			if bwr.isFlushing {
-				bw.flush <- struct{}{}
+				bw.endFlush <- struct{}{}
 			}
 		case <-ctx.Done():
 			bw.isOpen = false
-			close(bw.scheduled)
 			break
 		}
 	}
