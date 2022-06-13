@@ -1523,19 +1523,16 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		var input ValuesOrSelect
 		if p.eat("VALUES") {
 			values := make([][]Expr, 0)
-			if exprs, err := p.parseParenExprList(); err != nil {
-				return nil, err
-			} else {
-				values = append(values, exprs)
-			}
-			for p.eat(",") {
+			for {
 				exprs, err := p.parseParenExprList()
 				if err != nil {
 					return nil, err
 				}
 				values = append(values, exprs)
+				if !p.eat(",") {
+					break
+				}
 			}
-
 			input = Values(values)
 		} else {
 			input, err = p.parseSelect()
