@@ -425,13 +425,13 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 		select {
 		case bwr := <-bw.scheduled: // bw.scheduled is a channel of bulkWriterRequestBatch objects
 			for _, b := range bwr.bwb {
-				elapsed := (bw.start.UnixMilli() - time.Now().UnixMilli()) / 1000
-				var qps int64
+				elapsed := time.Now().Sub(bw.start).Seconds()
+				var qps float64
 				// Don't divide by 0!
 				if elapsed == 0 {
 					qps = 0
 				} else {
-					qps = bw.reqs / elapsed
+					qps = float64(bw.reqs) / elapsed
 				}
 
 				wpb := len(b.bwr.Writes)
@@ -445,13 +445,13 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 				bw.writesLog.Store(writesSent, wsr)
 
 				// Exponential back off strategy ... there's probably a better way to do this
-				if qps >= int64(bw.maxOpsPerSecond) {
+				if qps >= float64(bw.maxOpsPerSecond) {
 					time.Sleep(time.Duration(bw.waitTime))
 					bw.waitTime = math.Pow(float64(bw.waitTime), 2)
 
 					// Increase number of requests per second at the five minute mark
 					mins := elapsed / 60
-					if mins%5 == 0 {
+					if math.Mod(mins, 5) < 0.01 {
 						newOps := float64(bw.maxOpsPerSecond) * RateLimiterMultiplier
 						bw.maxOpsPerSecond = int(newOps)
 					}
