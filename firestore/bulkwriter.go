@@ -58,7 +58,6 @@ const (
 type BulkWriterStatus struct {
 	WritesProvidedCount int  // number of write requests provided by caller
 	IsOpen              bool // whether this BulkWriter is open or closed
-	WritesInQueueCount  int  // number of write requests in the queue
 	WritesSentCount     int  // number of requests sent to the service
 	WritesReceivedCount int  // number of WriteResults received from the service
 }
@@ -82,10 +81,11 @@ type BulkWriter struct {
 	sendingQueue    []bulkWriterJob             // queue of requests to send
 	backlogQueue    []bulkWriterJob             // queue of requests to store in memory during flush operation
 	maxOpsPerSecond int                         // number of requests that can be sent per second.
-	docUpdatePaths  []string                    // document paths with corresponding writes in the queue.
+	docUpdatePaths  sync.Map                    // document paths with corresponding writes in the queue.
 	waitTime        float64                     // time to wait in between requests; increase exponentially
 	writesLog       sync.Map                    // stores writes provided, sent, and received
 	cancel          context.CancelFunc          // context to send cancel message
+	mu              sync.Mutex                  // locks concurrent access
 }
 
 // newBulkWriter creates a new instance of the BulkWriter. This
@@ -97,6 +97,8 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 	sm.LoadOrStore(writesProvided, 0)
 	sm.LoadOrStore(writesReceived, 0)
 	sm.LoadOrStore(writesSent, 0)
+
+	var dsm sync.Map
 
 	ct, cancel := context.WithCancel(ctx)
 
@@ -114,6 +116,7 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		waitTime:        coolingPeriodMillis,
 		writesLog:       sm,
 		cancel:          cancel,
+		docUpdatePaths:  dsm,
 	}
 
 	// Start the call receiving thread and request sending thread
@@ -126,6 +129,18 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 	return &bw
 }
 
+// Close releases all of the internal resources (go routines) held by the BulkWriter.
+func (bw *BulkWriter) Close() {
+	// Stop the internal for-loops inside of scheduler and receiver
+	bw.cancel()
+
+	// Close the internal channels
+	close(bw.startFlush)
+	close(bw.endFlush)
+	close(bw.received)
+	close(bw.scheduled)
+}
+
 // End sends all enqueued writes in parallel and closes the BulkWriter to new requests.
 // CANNOT BE DEFERRED. Deferring a call to End() can cause a deadlock.
 // After calling End(), calling any additional method automatically returns
@@ -133,11 +148,9 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 // in the queue.
 func (b *BulkWriter) End() {
 	b.Flush()
+	b.mu.Lock()
 	b.isOpen = false
-	//b.cancel() // close the scheduler and receiver threads
-	close(b.scheduled)
-	close(b.received)
-	close(b.startFlush)
+	b.mu.Unlock()
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
@@ -146,13 +159,12 @@ func (b *BulkWriter) End() {
 func (bw *BulkWriter) Flush() {
 	// Ensure that the backlogQueue is empty
 	bw.backlogQueue = []bulkWriterJob{}
-	var mu sync.RWMutex
-	mu.Lock()
+	bw.mu.Lock()
 	bw.startFlush <- struct{}{}
 	bw.isFlushing = true
 	// Block until we get the signal that we're done flushing.
 	<-bw.endFlush
-	mu.Unlock()
+	bw.mu.Unlock()
 	// Repopulate sending queue now that flush operation is done.
 	bw.sendingQueue = bw.backlogQueue
 	bw.isFlushing = false
@@ -163,9 +175,8 @@ func (bw *BulkWriter) Flush() {
 // the writes received.
 func (bw *BulkWriter) Status() (*BulkWriterStatus, bool) {
 
-	var mu sync.RWMutex
-	mu.RLock()
-	defer mu.RUnlock()
+	bw.mu.Lock()
+	defer bw.mu.Unlock()
 
 	wp, ok := bw.writesLog.Load(writesProvided)
 	ws, ok := bw.writesLog.Load(writesSent)
@@ -177,7 +188,6 @@ func (bw *BulkWriter) Status() (*BulkWriterStatus, bool) {
 
 	return &BulkWriterStatus{
 		IsOpen:              bw.isOpen,
-		WritesInQueueCount:  len(bw.sendingQueue),
 		WritesProvidedCount: wp.(int),
 		WritesSentCount:     ws.(int),
 		WritesReceivedCount: wr.(int),
@@ -263,13 +273,11 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 		return errors.New("firestore: nil document contents")
 	}
 
-	for _, e := range bw.docUpdatePaths {
-		if doc.shortPath == e {
-			return fmt.Errorf("firestore: bulkwriter: received duplicate write for path: %v", doc.shortPath)
-		}
+	_, loaded := bw.docUpdatePaths.LoadOrStore(doc.shortPath, struct{}{})
+	if loaded {
+		return fmt.Errorf("firestore: bulkwriter: received duplicate write for path: %v", doc.shortPath)
 	}
 
-	bw.docUpdatePaths = append(bw.docUpdatePaths, doc.shortPath)
 	return nil
 }
 
@@ -285,12 +293,14 @@ func (bw *BulkWriter) write(w *pb.Write) (chan *pb.WriteResult, chan error) {
 	}
 
 	// Write successfully created, increment count
+	bw.mu.Lock()
 	wp, ok := bw.writesLog.Load(writesProvided)
 	wpr := wp.(int) + 1
 	if !ok {
 		// TODO(telpirion): Decide what to do
 	}
 	bw.writesLog.Store(writesProvided, wpr)
+	bw.mu.Unlock()
 
 	bw.received <- j
 	return r, e
@@ -334,8 +344,10 @@ func (bw *BulkWriter) receiver(ctx context.Context) {
 			bs = bw.buildRequests(true)
 			flushOp = true
 		case <-ctx.Done():
+			bw.mu.Lock()
 			bw.isOpen = false
-			break
+			bw.mu.Unlock()
+			return
 		}
 
 		bwb := bulkWriterRequestBatch{
@@ -454,8 +466,10 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 				bw.endFlush <- struct{}{}
 			}
 		case <-ctx.Done():
+			bw.mu.Lock()
 			bw.isOpen = false
-			break
+			bw.mu.Unlock()
+			return
 		}
 	}
 }
@@ -494,7 +508,9 @@ func (bw *BulkWriter) send(ctx context.Context, bwr *pb.BatchWriteRequest, bwj [
 		}
 
 		// This means the writes are now finalized, all retries completed
-		//bw.writesReceived++
+
+		// TODO(telpirion): store successes, not retries
+
 		wr, ok := bw.writesLog.Load(writesReceived)
 		if !ok {
 			// TODO(telpirion): Decide what to do

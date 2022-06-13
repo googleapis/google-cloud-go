@@ -1726,6 +1726,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	c := integrationClient(t)
 	bw := c.BulkWriter()
+	defer bw.Close()
 
 	wg := sync.WaitGroup{}
 	f := integrationTestMap
@@ -1769,7 +1770,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	}
 
 	wp = s.WritesProvidedCount
-	cwp = wp
+	cwp = wp // should be 1
 	numNewWrites := 21
 
 	// Test a slew of writes sent at the BulkWriter
@@ -1787,7 +1788,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	}
 
 	for cwp < wp+numNewWrites {
-		time.Sleep(time.Millisecond)
+		time.Sleep(time.Second)
 		s, _ := bw.Status()
 		cwp = s.WritesProvidedCount
 	}
@@ -1796,14 +1797,17 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	wg.Wait()
 
 	s, ok = bw.Status()
+	cwr := s.WritesReceivedCount
+	for cwr < numNewWrites+1 {
+		time.Sleep(time.Millisecond)
+		s, ok = bw.Status()
+		cwr = s.WritesReceivedCount
+	}
+
 	if !ok {
 		t.Error("firestore: bulkwriter integration: cannot get status")
 	}
 	if s.IsOpen {
 		t.Error("firestore: bulkwriter integration: should be closed after calling End()")
-
-	}
-	if s.WritesReceivedCount != numNewWrites+1 {
-		t.Errorf("firestore: bulkwriter integration: incorrect number of writes received")
 	}
 }
