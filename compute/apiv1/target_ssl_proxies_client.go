@@ -47,6 +47,7 @@ type TargetSslProxiesCallOptions struct {
 	Insert             []gax.CallOption
 	List               []gax.CallOption
 	SetBackendService  []gax.CallOption
+	SetCertificateMap  []gax.CallOption
 	SetProxyHeader     []gax.CallOption
 	SetSslCertificates []gax.CallOption
 	SetSslPolicy       []gax.CallOption
@@ -62,6 +63,7 @@ type internalTargetSslProxiesClient interface {
 	Insert(context.Context, *computepb.InsertTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetSslProxiesRequest, ...gax.CallOption) *TargetSslProxyIterator
 	SetBackendService(context.Context, *computepb.SetBackendServiceTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetCertificateMap(context.Context, *computepb.SetCertificateMapTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
 	SetProxyHeader(context.Context, *computepb.SetProxyHeaderTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
 	SetSslCertificates(context.Context, *computepb.SetSslCertificatesTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
 	SetSslPolicy(context.Context, *computepb.SetSslPolicyTargetSslProxyRequest, ...gax.CallOption) (*Operation, error)
@@ -124,6 +126,11 @@ func (c *TargetSslProxiesClient) List(ctx context.Context, req *computepb.ListTa
 // SetBackendService changes the BackendService for TargetSslProxy.
 func (c *TargetSslProxiesClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetBackendService(ctx, req, opts...)
+}
+
+// SetCertificateMap changes the Certificate Map for TargetSslProxy.
+func (c *TargetSslProxiesClient) SetCertificateMap(ctx context.Context, req *computepb.SetCertificateMapTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetCertificateMap(ctx, req, opts...)
 }
 
 // SetProxyHeader changes the ProxyHeaderType for TargetSslProxy.
@@ -522,6 +529,79 @@ func (c *targetSslProxiesRESTClient) SetBackendService(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setBackendService", req.GetProject(), req.GetTargetSslProxy())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_ssl_proxy", url.QueryEscape(req.GetTargetSslProxy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// SetCertificateMap changes the Certificate Map for TargetSslProxy.
+func (c *targetSslProxiesRESTClient) SetCertificateMap(ctx context.Context, req *computepb.SetCertificateMapTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTargetSslProxiesSetCertificateMapRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setCertificateMap", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
 	if req != nil && req.RequestId != nil {
