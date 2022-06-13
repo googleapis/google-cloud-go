@@ -40,7 +40,6 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
-	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -114,10 +113,6 @@ type Client struct {
 	creds *google.Credentials
 	retry *retryConfig
 
-	// gc is an optional gRPC-based, GAPIC client.
-	//
-	// This is an experimental field and not intended for public use.
-	gc *gapic.Client
 	// tc is the transport-agnostic client implemented with either gRPC or HTTP.
 	tc storageClient
 }
@@ -215,16 +210,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // This is an experimental API and not intended for public use.
 func newGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	opts = append(defaultGRPCOptions(), opts...)
-	g, err := gapic.NewClient(ctx, opts...)
-	if err != nil {
-		return nil, err
-	}
 	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{gc: g, tc: tc}, nil
+	return &Client{tc: tc}, nil
 }
 
 // Close closes the Client.
@@ -235,8 +226,8 @@ func (c *Client) Close() error {
 	c.hc = nil
 	c.raw = nil
 	c.creds = nil
-	if c.gc != nil {
-		return c.gc.Close()
+	if c.tc != nil {
+		return c.tc.Close()
 	}
 	return nil
 }
