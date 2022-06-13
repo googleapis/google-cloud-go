@@ -25,6 +25,11 @@
                 "GetCompany"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListCompanies": {
               "methods": [
                 "ListCompanies"
@@ -48,6 +53,11 @@
               "methods": [
                 "CompleteQuery"
               ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
             }
           }
         }
@@ -61,6 +71,11 @@
             "CreateClientEvent": {
               "methods": [
                 "CreateClientEvent"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             }
           }
@@ -102,6 +117,11 @@
                 "GetJob"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
@@ -139,6 +159,11 @@
             "DeleteTenant": {
               "methods": [
                 "DeleteTenant"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetTenant": {

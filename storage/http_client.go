@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -614,9 +615,25 @@ func configureACLCall(ctx context.Context, userProject string, call interface{ H
 func (c *httpStorageClient) DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error {
 	return errMethodNotSupported
 }
+
+// ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
+// Selecting a specific generation of this object is not currently supported by the client.
 func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	var acls *raw.ObjectAccessControls
+	var err error
+	req := c.raw.ObjectAccessControls.List(bucket, object)
+	configureACLCall(ctx, s.userProject, req)
+	err = run(ctx, func() error {
+		acls, err = req.Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	if err != nil {
+		return nil, err
+	}
+	return toObjectACLRules(acls.Items), nil
 }
+
 func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
 	return nil, errMethodNotSupported
 }
@@ -841,8 +858,94 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	}, nil
 }
 
-func (c *httpStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error {
-	return errMethodNotSupported
+func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	s := callSettings(c.settings, opts...)
+	errorf := params.setError
+	setObj := params.setObj
+	progress := params.progress
+	attrs := params.attrs
+
+	mediaOpts := []googleapi.MediaOption{
+		googleapi.ChunkSize(params.chunkSize),
+	}
+	if c := attrs.ContentType; c != "" {
+		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
+	}
+	if params.chunkRetryDeadline != 0 {
+		mediaOpts = append(mediaOpts, googleapi.ChunkRetryDeadline(params.chunkRetryDeadline))
+	}
+
+	pr, pw := io.Pipe()
+
+	go func() {
+		defer close(params.donec)
+
+		rawObj := attrs.toRawObject(params.bucket)
+		if params.sendCRC32C {
+			rawObj.Crc32c = encodeUint32(attrs.CRC32C)
+		}
+		if attrs.MD5 != nil {
+			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
+		}
+		call := c.raw.Objects.Insert(params.bucket, rawObj).
+			Media(pr, mediaOpts...).
+			Projection("full").
+			Context(params.ctx).
+			Name(params.attrs.Name)
+		call.ProgressUpdater(func(n, _ int64) { progress(n) })
+
+		if attrs.KMSKeyName != "" {
+			call.KmsKeyName(attrs.KMSKeyName)
+		}
+		if attrs.PredefinedACL != "" {
+			call.PredefinedAcl(attrs.PredefinedACL)
+		}
+		if err := setEncryptionHeaders(call.Header(), params.encryptionKey, false); err != nil {
+			errorf(err)
+			pr.CloseWithError(err)
+			return
+		}
+		var resp *raw.Object
+		err := applyConds("NewWriter", params.attrs.Generation, params.conds, call)
+		if err == nil {
+			if s.userProject != "" {
+				call.UserProject(s.userProject)
+			}
+			// TODO(tritone): Remove this code when Uploads begin to support
+			// retry attempt header injection with "client header" injection.
+			setClientHeader(call.Header())
+
+			// The internals that perform call.Do automatically retry both the initial
+			// call to set up the upload as well as calls to upload individual chunks
+			// for a resumable upload (as long as the chunk size is non-zero). Hence
+			// there is no need to add retries here.
+
+			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
+			isIdempotent := params.conds != nil && (params.conds.GenerationMatch >= 0 || params.conds.DoesNotExist == true)
+			var useRetry bool
+			if (s.retry == nil || s.retry.policy == RetryIdempotent) && isIdempotent {
+				useRetry = true
+			} else if s.retry != nil && s.retry.policy == RetryAlways {
+				useRetry = true
+			}
+			if useRetry {
+				if s.retry != nil {
+					call.WithRetry(s.retry.backoff, s.retry.shouldRetry)
+				} else {
+					call.WithRetry(nil, nil)
+				}
+			}
+			resp, err = call.Do()
+		}
+		if err != nil {
+			errorf(err)
+			pr.CloseWithError(err)
+			return
+		}
+		setObj(newObject(resp))
+	}()
+
+	return pw, nil
 }
 
 // IAM methods.
