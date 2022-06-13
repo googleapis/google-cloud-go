@@ -214,55 +214,49 @@ type userProjectOption struct {
 func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
 
 type openWriterParams struct {
+	// Writer configuration
+
 	// ctx is the context used by the writer routine to make all network calls
-	// and to manage the writer routine.
+	// and to manage the writer routine - see `Writer.ctx`.
 	// Required.
 	ctx context.Context
-
 	// chunkSize - see `Writer.ChunkSize`.
 	// Optional.
 	chunkSize int
-
 	// chunkRetryDeadline - see `Writer.ChunkRetryDeadline`.
 	// Optional.
 	chunkRetryDeadline time.Duration
 
-	// bucket is the (simple) name of the bucket the object will be written to.
+	// Object/request properties
+
+	// bucket - see `Writer.o.bucket`.
 	// Required.
 	bucket string
-
-	// attrs is the set of object attributes to use in creation of a new Object.
-	// Optional.
+	// attrs - see `Writer.ObjectAttrs`.
+	// Required.
 	attrs *ObjectAttrs
-
-	// conds is the set of conditions to use when administering write requests.
+	// conds - see `Writer.o.conds`.
 	// Optional.
 	conds *Conditions
-
-	// encryptionKey is the content of a AES-256 key to be used to encrypt the
-	// data to be written.
+	// encryptionKey - see `Writer.o.encryptionKey`
 	// Optional.
 	encryptionKey []byte
-
-	// sendCRC32C is the flag indicating that the CRC32C value specified in the
-	// `attrs` should be sent.
+	// sendCRC32C - see `Writer.SendCRC32C`.
 	// Optional.
 	sendCRC32C bool
 
-	// donec is the channel used by the writer routine to indicate it is done.
+	// Writer callbacks
+
+	// donec - see `Writer.donec`.
 	// Required.
 	donec chan struct{}
-
-	// setError is the function used by the writer routine to report errors.
+	// setError callback for reporting errors - see `Writer.error`.
 	// Required.
 	setError func(error)
-
-	// progress is the function used by the writer routine to report progress.
+	// progress callback for reporting upload progress - see `Writer.progress`.
 	// Required.
 	progress func(int64)
-
-	// setObj is the function used by the writer routine to supply the resulting
-	// Object after writing is complete.
+	// setObj callback for reporting the resulting object - see `Writer.obj`.
 	// Required.
 	setObj func(*ObjectAttrs)
 }
