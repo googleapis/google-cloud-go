@@ -809,6 +809,68 @@ func TestDeleteNotificationEmulated(t *testing.T) {
 	})
 }
 
+func TestOpenWriterEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			Generation: defaultGen,
+		}
+
+		var gotAttrs *ObjectAttrs
+		params := &openWriterParams{
+			attrs:    want,
+			bucket:   bucket,
+			ctx:      context.Background(),
+			donec:    make(chan struct{}),
+			setError: func(_ error) {}, // no-op
+			progress: func(_ int64) {}, // no-op
+			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
+		}
+		pw, err := client.OpenWriter(params)
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		if _, err := pw.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := pw.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		select {
+		case <-params.donec:
+		}
+		if gotAttrs == nil {
+			t.Fatalf("Writer finished, but resulting object wasn't set")
+		}
+		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
+			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
+		}
+
+		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(context.Background())
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytesToWrite)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
+			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
 	if !isEmulatorEnvironmentSet() {

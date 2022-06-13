@@ -10,7 +10,7 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/yuin/goldmark v1.4.12
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
-	golang.org/x/tools v0.1.10
+	golang.org/x/tools v0.1.11
 	gopkg.in/yaml.v2 v2.4.0
 )
 
