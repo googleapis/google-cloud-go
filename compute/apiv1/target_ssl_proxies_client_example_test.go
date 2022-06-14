@@ -151,6 +151,29 @@ func ExampleTargetSslProxiesClient_SetBackendService() {
 	}
 }
 
+func ExampleTargetSslProxiesClient_SetCertificateMap() {
+	ctx := context.Background()
+	c, err := compute.NewTargetSslProxiesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetCertificateMapTargetSslProxyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetCertificateMapTargetSslProxyRequest.
+	}
+	op, err := c.SetCertificateMap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleTargetSslProxiesClient_SetProxyHeader() {
 	ctx := context.Background()
 	c, err := compute.NewTargetSslProxiesRESTClient(ctx)
