@@ -547,8 +547,31 @@ func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	}
 	return toObjectACLRules(acls.Items), nil
 }
-func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+	s := callSettings(c.settings, opts...)
+	type setRequest interface {
+		Do(opts ...googleapi.CallOption) (*raw.ObjectAccessControl, error)
+		Header() http.Header
+	}
+	acl := &raw.ObjectAccessControl{
+		Bucket: bucket,
+		Entity: string(entity),
+		Role:   string(role),
+	}
+	var req setRequest
+	var racl *raw.ObjectAccessControl
+	var err error
+	req = c.raw.DefaultObjectAccessControls.Update(bucket, string(entity), acl)
+	configureACLCall(ctx, s.userProject, req)
+	err = run(ctx, func() error {
+		racl, err = req.Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	if err != nil {
+		return nil, err
+	}
+	aclRule := toObjectACLRule(racl)
+	return &aclRule, nil
 }
 
 // Bucket ACL methods.

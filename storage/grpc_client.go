@@ -314,6 +314,8 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		// In cases where PredefinedDefaultObjectACL is set, DefaultObjectAcl is cleared.
 		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
 	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	if uattrs.acl != nil {
 		// In cases where acl is set by UpdateBucketACL method.
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
@@ -504,10 +506,11 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if !uattrs.CustomTime.IsZero() {
 		fieldMask.Paths = append(fieldMask.Paths, "custom_time")
 	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	if uattrs.ACL != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
-	// TODO(cathyo): Handle ACL and PredefinedACL. Pending b/233617896.
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
 
 	req.UpdateMask = fieldMask
@@ -535,6 +538,8 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 		return err
 	}
 	// Delete the entity and copy other remaining ACL entities.
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	var acl []ACLRule
 	for _, a := range attrs.DefaultObjectACL {
 		if a.Entity != entity {
@@ -555,8 +560,23 @@ func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	}
 	return attrs.DefaultObjectACL, nil
 }
-func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve BucketAttrs.
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var acl []ACLRule
+	aclRule := ACLRule{Entity: entity, Role: role}
+	acl = append(attrs.DefaultObjectACL, aclRule)
+	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
+	// Call UpdateBucket with a MetagenerationMatch precondition set.
+	_, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &aclRule, err
 }
 
 // Bucket ACL methods.
@@ -569,6 +589,8 @@ func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 		return err
 	}
 	// Delete the entity and copy other remaining ACL entities.
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	var acl []ACLRule
 	for _, a := range attrs.ACL {
 		if a.Entity != entity {
@@ -582,6 +604,7 @@ func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 	}
 	return nil
 }
+
 func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
 	if err != nil {
@@ -612,7 +635,27 @@ func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 // Object ACL methods.
 
 func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve ObjectAttrs.
+	attrs, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Delete the entity and copy other remaining ACL entities.
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
+	var acl []ACLRule
+	for _, a := range attrs.ACL {
+		if a.Entity != entity {
+			acl = append(acl, a)
+		}
+	}
+	uattrs := &ObjectAttrsToUpdate{ACL: acl}
+	// Call UpdateObject with the specified metageneration.
+	if _, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 
 // ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
@@ -636,7 +679,7 @@ func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 	aclRule := ACLRule{Entity: entity, Role: role}
 	acl = append(attrs.ACL, aclRule)
 	uattrs := &ObjectAttrsToUpdate{ACL: acl}
-	// Call UpdateObject with the specified generation.
+	// Call UpdateObject with the specified metageneration.
 	_, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...)
 	if err != nil {
 		return nil, err
