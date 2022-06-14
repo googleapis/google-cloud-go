@@ -541,16 +541,9 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 		}
 		entity := AllUsers
 		role := RoleReader
-		want := &ACLRule{Entity: entity, Role: role}
-		got, err := client.UpdateBucketACL(ctx, bucket, entity, role)
+		err = client.UpdateBucketACL(ctx, bucket, entity, role)
 		if err != nil {
 			t.Fatalf("client.UpdateBucketACL: %v", err)
-		}
-		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
-		}
-		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 		// Assert bucket now has three BucketACL entities, including existing ACLs.
 		if listAcls, err = client.ListBucketACLs(ctx, bucket); err != nil {
@@ -617,16 +610,9 @@ func TestDefaultObjectACLCRUDEmulated(t *testing.T) {
 		}
 		entity := AllAuthenticatedUsers
 		role := RoleOwner
-		want := &ACLRule{Entity: entity, Role: role}
-		got, err := client.UpdateDefaultObjectACL(ctx, bucket, entity, role)
+		err = client.UpdateDefaultObjectACL(ctx, bucket, entity, role)
 		if err != nil {
 			t.Fatalf("UpdateDefaultObjectCL: %v", err)
-		}
-		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
-			t.Errorf("DefaultObjectACL Entity: got(-),want(+):\n%s", diff)
-		}
-		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
-			t.Errorf("DefaultObjectACL Role: got(-),want(+):\n%s", diff)
 		}
 		// Assert there are now 3 DefaultObjectACL entities, including existing DefaultObjectACLs.
 		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
@@ -682,16 +668,9 @@ func TestObjectACLCRUDEmulated(t *testing.T) {
 		}
 		entity := AllUsers
 		role := RoleReader
-		want := &ACLRule{Entity: entity, Role: role}
-		got, err := client.UpdateObjectACL(ctx, bucket, o.Name, entity, role)
+		err = client.UpdateObjectACL(ctx, bucket, o.Name, entity, role)
 		if err != nil {
 			t.Fatalf("UpdateObjectCL: %v", err)
-		}
-		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
-			t.Errorf("ObjectACL Entity: got(-),want(+):\n%s", diff)
-		}
-		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
-			t.Errorf("ObjectACL Role: got(-),want(+):\n%s", diff)
 		}
 		// Assert there are now 5 ObjectACL entities, including existing ACLs.
 		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {

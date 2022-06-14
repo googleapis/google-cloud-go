@@ -553,6 +553,7 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 	}
 	return nil
 }
+
 func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
 	if err != nil {
@@ -560,23 +561,25 @@ func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	}
 	return attrs.DefaultObjectACL, nil
 }
-func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+
+func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	// There is no separate API for PATCH in gRPC.
 	// Make a GET call first to retrieve BucketAttrs.
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	var acl []ACLRule
 	aclRule := ACLRule{Entity: entity, Role: role}
 	acl = append(attrs.DefaultObjectACL, aclRule)
 	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
-	_, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...)
-	if err != nil {
-		return nil, err
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
 	}
-	return &aclRule, err
+	return nil
 }
 
 // Bucket ACL methods.
@@ -613,23 +616,24 @@ func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	return attrs.ACL, nil
 }
 
-func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	// There is no separate API for PATCH in gRPC.
 	// Make a GET call first to retrieve BucketAttrs.
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	var acl []ACLRule
 	aclRule := ACLRule{Entity: entity, Role: role}
 	acl = append(attrs.ACL, aclRule)
 	uattrs := &BucketAttrsToUpdate{acl: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
-	_, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...)
-	if err != nil {
-		return nil, err
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
 	}
-	return &aclRule, err
+	return nil
 }
 
 // Object ACL methods.
@@ -668,23 +672,24 @@ func (c *grpcStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 	return o.ACL, nil
 }
 
-func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	// There is no separate API for PATCH in gRPC.
 	// Make a GET call first to retrieve ObjectAttrs.
 	attrs, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	var acl []ACLRule
 	aclRule := ACLRule{Entity: entity, Role: role}
 	acl = append(attrs.ACL, aclRule)
 	uattrs := &ObjectAttrsToUpdate{ACL: acl}
 	// Call UpdateObject with the specified metageneration.
-	_, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...)
-	if err != nil {
-		return nil, err
+	if _, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...); err != nil {
+		return err
 	}
-	return &aclRule, err
+	return nil
 }
 
 // Media operations.

@@ -547,7 +547,7 @@ func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	}
 	return toObjectACLRules(acls.Items), nil
 }
-func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
 	type setRequest interface {
 		Do(opts ...googleapi.CallOption) (*raw.ObjectAccessControl, error)
@@ -559,19 +559,17 @@ func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket s
 		Role:   string(role),
 	}
 	var req setRequest
-	var racl *raw.ObjectAccessControl
 	var err error
 	req = c.raw.DefaultObjectAccessControls.Update(bucket, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
 	err = run(ctx, func() error {
-		racl, err = req.Do()
+		_, err = req.Do()
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	if err != nil {
-		return nil, err
+		return err
 	}
-	aclRule := toObjectACLRule(racl)
-	return &aclRule, nil
+	return nil
 }
 
 // Bucket ACL methods.
@@ -599,7 +597,7 @@ func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	return toBucketACLRules(acls.Items), nil
 }
 
-func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
 	acl := &raw.BucketAccessControl{
 		Bucket: bucket,
@@ -608,17 +606,15 @@ func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 	}
 	req := c.raw.BucketAccessControls.Update(bucket, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
-	var aclRule ACLRule
 	var err error
 	err = run(ctx, func() error {
-		acl, err = req.Do()
-		aclRule = toBucketACLRule(acl)
+		_, err = req.Do()
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &aclRule, nil
+	return nil
 }
 
 // configureACLCall sets the context, user project and headers on the apiary library call.
@@ -659,7 +655,7 @@ func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 	return toObjectACLRules(acls.Items), nil
 }
 
-func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
 	type setRequest interface {
 		Do(opts ...googleapi.CallOption) (*raw.ObjectAccessControl, error)
@@ -672,19 +668,17 @@ func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 		Role:   string(role),
 	}
 	var req setRequest
-	var racl *raw.ObjectAccessControl
 	var err error
 	req = c.raw.ObjectAccessControls.Update(bucket, object, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
 	err = run(ctx, func() error {
-		racl, err = req.Do()
+		_, err = req.Do()
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
 	if err != nil {
-		return nil, err
+		return err
 	}
-	aclRule := toObjectACLRule(racl)
-	return &aclRule, nil
+	return nil
 }
 
 // Media operations.
