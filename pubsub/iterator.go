@@ -69,10 +69,10 @@ type messageIterator struct {
 	// to update ack deadlines (via modack), we'll consult this table and only include IDs
 	// that are not beyond their deadline.
 	keepAliveDeadlines map[string]time.Time
-	pendingAcks        map[string]bool
-	pendingNacks       map[string]bool
-	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
-	err                error           // error from stream failure
+	pendingAcks        map[string]*AckResult
+	pendingNacks       map[string]*AckResult
+	pendingModAcks     map[string]*AckResult // ack IDs whose ack deadline is to be modified
+	err                error                 // error from stream failure
 
 	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
@@ -119,9 +119,9 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		drained:            make(chan struct{}),
 		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
 		keepAliveDeadlines: map[string]time.Time{},
-		pendingAcks:        map[string]bool{},
-		pendingNacks:       map[string]bool{},
-		pendingModAcks:     map[string]bool{},
+		pendingAcks:        map[string]*AckResult{},
+		pendingNacks:       map[string]*AckResult{},
+		pendingModAcks:     map[string]*AckResult{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -170,15 +170,15 @@ func (it *messageIterator) addToDistribution(receiveTime time.Time) {
 }
 
 // Called when a message is acked/nacked.
-func (it *messageIterator) done(ackID string, ack bool, receiveTime time.Time) {
+func (it *messageIterator) done(ackID string, ack bool, r *AckResult, receiveTime time.Time) {
 	it.addToDistribution(receiveTime)
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	delete(it.keepAliveDeadlines, ackID)
 	if ack {
-		it.pendingAcks[ackID] = true
+		it.pendingAcks[ackID] = r
 	} else {
-		it.pendingNacks[ackID] = true
+		it.pendingNacks[ackID] = r
 	}
 	it.checkDrained()
 }
@@ -235,7 +235,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	// We received some messages. Remember them so we can keep them alive. Also,
 	// do a receipt mod-ack when streaming.
 	maxExt := time.Now().Add(it.po.maxExtension)
-	ackIDs := map[string]bool{}
+	ackIDs := map[string]*AckResult{}
 	it.mu.Lock()
 	for _, m := range msgs {
 		ackID := msgAckID(m)
@@ -243,8 +243,8 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		it.keepAliveDeadlines[ackID] = maxExt
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
-		if !it.pendingNacks[ackID] {
-			ackIDs[ackID] = true
+		if _, ok := it.pendingNacks[ackID]; !ok {
+			ackIDs[ackID] = nil
 		}
 	}
 	deadline := it.ackDeadline()
@@ -354,18 +354,18 @@ func (it *messageIterator) sender() {
 			sendPing = !it.po.synchronous
 		}
 		// Lock is held here.
-		var acks, nacks, modAcks map[string]bool
+		var acks, nacks, modAcks map[string]*AckResult
 		if sendAcks {
 			acks = it.pendingAcks
-			it.pendingAcks = map[string]bool{}
+			it.pendingAcks = map[string]*AckResult{}
 		}
 		if sendNacks {
 			nacks = it.pendingNacks
-			it.pendingNacks = map[string]bool{}
+			it.pendingNacks = map[string]*AckResult{}
 		}
 		if sendModAcks {
 			modAcks = it.pendingModAcks
-			it.pendingModAcks = map[string]bool{}
+			it.pendingModAcks = map[string]*AckResult{}
 		}
 		it.mu.Unlock()
 		// Make Ack and ModAck RPCs.
@@ -406,13 +406,13 @@ func (it *messageIterator) handleKeepAlives() {
 			delete(it.keepAliveDeadlines, id)
 		} else {
 			// This will not conflict with a nack, because nacking removes the ID from keepAliveDeadlines.
-			it.pendingModAcks[id] = true
+			it.pendingModAcks[id] = nil
 		}
 	}
 	it.checkDrained()
 }
 
-func (it *messageIterator) sendAck(m map[string]bool) bool {
+func (it *messageIterator) sendAck(m map[string]*AckResult) bool {
 	// Account for the Subscription field.
 	overhead := calcFieldSizeString(it.subName)
 	return it.sendAckIDRPC(m, maxPayload-overhead, func(ids []string) error {
@@ -460,7 +460,7 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 // on the time it takes to process messages. The percentile chosen is the 99%th
 // percentile in order to capture the highest amount of time necessary without
 // considering 1% outliers.
-func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration) bool {
+func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration) bool {
 	deadlineSec := int32(deadline / time.Second)
 	// Account for the Subscription and AckDeadlineSeconds fields.
 	overhead := calcFieldSizeString(it.subName) + calcFieldSizeInt(int(deadlineSec))
@@ -517,7 +517,7 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 	})
 }
 
-func (it *messageIterator) sendAckIDRPC(ackIDSet map[string]bool, maxSize int, call func([]string) error) bool {
+func (it *messageIterator) sendAckIDRPC(ackIDSet map[string]*AckResult, maxSize int, call func([]string) error) bool {
 	ackIDs := make([]string, 0, len(ackIDSet))
 	for k := range ackIDSet {
 		ackIDs = append(ackIDs, k)

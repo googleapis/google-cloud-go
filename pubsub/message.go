@@ -50,7 +50,7 @@ func msgAckID(m *Message) string {
 }
 
 // The done method of the iterator that created a Message.
-type iterDoneFunc func(string, bool, time.Time)
+type iterDoneFunc func(string, bool, *AckResult, time.Time)
 
 func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc) ([]*Message, error) {
 	msgs := make([]*Message, 0, len(rms))
@@ -89,6 +89,8 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	ackh.doneFunc = doneFunc
 	return msg, nil
 }
+
+type AckResult = ipubsub.AckResult
 
 // psAckHandler handles ack/nack for the pubsub package.
 type psAckHandler struct {
