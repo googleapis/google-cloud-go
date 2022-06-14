@@ -1,0 +1,291 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/batch/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.batch.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "batch_v1_generated_BatchService_CreateJob_sync",
+      "title": "batch CreateJob Sample",
+      "description": "CreateJob create a Job.",
+      "file": "Client/CreateJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateJob",
+        "fullName": "google.cloud.batch.v1.Client.CreateJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "batchpb.CreateJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "batchpb.Job",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.batch.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateJob",
+          "fullName": "google.cloud.batch.v1.BatchService.CreateJob",
+          "service": {
+            "shortName": "BatchService",
+            "fullName": "google.cloud.batch.v1.BatchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "batch_v1_generated_BatchService_DeleteJob_sync",
+      "title": "batch DeleteJob Sample",
+      "description": "DeleteJob delete a Job.",
+      "file": "Client/DeleteJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJob",
+        "fullName": "google.cloud.batch.v1.Client.DeleteJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "batchpb.DeleteJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.batch.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteJob",
+          "fullName": "google.cloud.batch.v1.BatchService.DeleteJob",
+          "service": {
+            "shortName": "BatchService",
+            "fullName": "google.cloud.batch.v1.BatchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "batch_v1_generated_BatchService_GetJob_sync",
+      "title": "batch GetJob Sample",
+      "description": "GetJob get a Job specified by its resource name.",
+      "file": "Client/GetJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJob",
+        "fullName": "google.cloud.batch.v1.Client.GetJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "batchpb.GetJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "batchpb.Job",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.batch.v1.Client"
+        },
+        "method": {
+          "shortName": "GetJob",
+          "fullName": "google.cloud.batch.v1.BatchService.GetJob",
+          "service": {
+            "shortName": "BatchService",
+            "fullName": "google.cloud.batch.v1.BatchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "batch_v1_generated_BatchService_GetTask_sync",
+      "title": "batch GetTask Sample",
+      "description": "GetTask return a single Task.",
+      "file": "Client/GetTask/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTask",
+        "fullName": "google.cloud.batch.v1.Client.GetTask",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "batchpb.GetTaskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "batchpb.Task",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.batch.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTask",
+          "fullName": "google.cloud.batch.v1.BatchService.GetTask",
+          "service": {
+            "shortName": "BatchService",
+            "fullName": "google.cloud.batch.v1.BatchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "batch_v1_generated_BatchService_ListJobs_sync",
+      "title": "batch ListJobs Sample",
+      "description": "ListJobs list all Jobs for a project.",
+      "file": "Client/ListJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobs",
+        "fullName": "google.cloud.batch.v1.Client.ListJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "batchpb.ListJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.batch.v1.Client"
+        },
+        "method": {
+          "shortName": "ListJobs",
+          "fullName": "google.cloud.batch.v1.BatchService.ListJobs",
+          "service": {
+            "shortName": "BatchService",
+            "fullName": "google.cloud.batch.v1.BatchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "batch_v1_generated_BatchService_ListTasks_sync",
+      "title": "batch ListTasks Sample",
+      "description": "ListTasks list Tasks associated with a job.",
+      "file": "Client/ListTasks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTasks",
+        "fullName": "google.cloud.batch.v1.Client.ListTasks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "batchpb.ListTasksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TaskIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.batch.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTasks",
+          "fullName": "google.cloud.batch.v1.BatchService.ListTasks",
+          "service": {
+            "shortName": "BatchService",
+            "fullName": "google.cloud.batch.v1.BatchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
