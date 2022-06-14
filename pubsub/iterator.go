@@ -68,12 +68,15 @@ type messageIterator struct {
 	// message arrives, we'll record now+MaxExtension in this table; whenever we have a chance
 	// to update ack deadlines (via modack), we'll consult this table and only include IDs
 	// that are not beyond their deadline.
-	keepAliveDeadlines        map[string]time.Time
-	pendingAcks               map[string]bool
-	pendingNacks              map[string]bool
-	pendingModAcks            map[string]bool // ack IDs whose ack deadline is to be modified
-	err                       error           // error from stream failure
+	keepAliveDeadlines map[string]time.Time
+	pendingAcks        map[string]bool
+	pendingNacks       map[string]bool
+	pendingModAcks     map[string]bool // ack IDs whose ack deadline is to be modified
+	err                error           // error from stream failure
+
+	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
+	sendNewAckDeadline        bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -280,7 +283,12 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	if err != nil {
 		return nil, err
 	}
-	it.enableExactlyOnceDelivery = res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled()
+	it.eoMu.Lock()
+	if got := res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled(); got != it.enableExactlyOnceDelivery {
+		it.sendNewAckDeadline = true
+		it.enableExactlyOnceDelivery = got
+	}
+	it.eoMu.Unlock()
 	return res.ReceivedMessages, nil
 }
 
@@ -534,8 +542,14 @@ func (it *messageIterator) sendAckIDRPC(ackIDSet map[string]bool, maxSize int, c
 // default ack deadline, and if the messages are small enough so that many can fit
 // into the buffer.
 func (it *messageIterator) pingStream() {
-	// Ignore error; if the stream is broken, this doesn't matter anyway.
-	_ = it.ps.Send(&pb.StreamingPullRequest{})
+	spr := &pb.StreamingPullRequest{}
+	it.eoMu.RLock()
+	if it.sendNewAckDeadline {
+		spr.StreamAckDeadlineSeconds = int32(it.ackDeadline())
+		it.sendNewAckDeadline = false
+	}
+	it.eoMu.RUnlock()
+	it.ps.Send(spr)
 }
 
 // calcFieldSizeString returns the number of bytes string fields
@@ -583,8 +597,10 @@ func splitRequestIDs(ids []string, maxSize int) (prefix, remainder []string) {
 // expiration.
 func (it *messageIterator) ackDeadline() time.Duration {
 	pt := time.Duration(it.ackTimeDist.Percentile(.99)) * time.Second
-
-	return boundedDuration(pt, it.po.minExtensionPeriod, it.po.maxExtensionPeriod, it.enableExactlyOnceDelivery)
+	it.eoMu.RLock()
+	enableExactlyOnce := it.enableExactlyOnceDelivery
+	it.eoMu.RUnlock()
+	return boundedDuration(pt, it.po.minExtensionPeriod, it.po.maxExtensionPeriod, enableExactlyOnce)
 }
 
 func boundedDuration(ackDeadline, minExtension, maxExtension time.Duration, exactlyOnce bool) time.Duration {

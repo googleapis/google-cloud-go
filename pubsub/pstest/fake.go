@@ -619,6 +619,9 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 
 		case "enable_exactly_once_delivery":
 			sub.proto.EnableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			for _, st := range sub.streams {
+				st.enableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			}
 
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
