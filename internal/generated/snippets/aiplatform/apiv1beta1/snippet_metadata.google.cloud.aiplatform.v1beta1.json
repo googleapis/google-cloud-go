@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.9.0",
+    "version": "1.11.0",
     "language": "GO",
     "apis": [
       {
@@ -5757,7 +5757,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_ModelService_UpdateExplanationDataset_sync",
       "title": "aiplatform UpdateExplanationDataset Sample",
-      "description": "UpdateExplanationDataset incremental update the dataset used for a examples model.",
+      "description": "UpdateExplanationDataset incrementally update the dataset used for an examples model.",
       "file": "ModelClient/UpdateExplanationDataset/main.go",
       "language": "GO",
       "clientMethod": {

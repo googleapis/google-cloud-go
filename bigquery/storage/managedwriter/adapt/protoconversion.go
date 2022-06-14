@@ -109,7 +109,7 @@ func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoref
 	}
 	b, err := proto.Marshal(schema)
 	if err != nil {
-		return fmt.Errorf("failed to serialize tableschema: %v", err)
+		return fmt.Errorf("failed to serialize tableschema: %w", err)
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	(dm)[encoded] = descriptor
@@ -166,7 +166,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				// construct field descriptor for the message
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
 				if err != nil {
-					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %v", err))
+					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %w", err))
 				}
 				fields = append(fields, fdp)
 			} else {
@@ -176,18 +176,18 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				}
 				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, useProto3)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %w", err))
 				}
 				// Now that we have the submessage definition, we append it both to the local dependencies, as well
 				// as inserting it into the cache for possible reuse elsewhere.
 				deps = append(deps, desc.ParentFile())
 				err = cache.add(ts, desc)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %w", err))
 				}
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %w", err))
 				}
 				fields = append(fields, fdp)
 			}

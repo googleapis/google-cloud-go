@@ -3,14 +3,14 @@ module cloud.google.com/go/internal/gapicgen
 go 1.18
 
 require (
-	cloud.google.com/go v0.101.1
-	cloud.google.com/go/internal/godocfx v0.0.0-20220521181306-9d22bece1197
+	cloud.google.com/go v0.102.0
+	cloud.google.com/go/internal/godocfx v0.0.0-20220610154145-5dcbf2f859e2
 	github.com/google/go-github/v35 v35.3.0
 	github.com/shurcooL/githubv4 v0.0.0-20220520033151-0b4e3294ff00
-	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
-	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
-	golang.org/x/sys v0.0.0-20220502124256-b6088ccd6cba
-	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
+	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
+	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
+	golang.org/x/sys v0.0.0-20220610221304-9f5ed59c137d
+	google.golang.org/genproto v0.0.0-20220608133413-ed9918b62aac
 	google.golang.org/protobuf v1.28.0
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
@@ -31,7 +31,7 @@ require (
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4 // indirect
 	golang.org/x/tools v0.1.10 // indirect
-	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
+	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect

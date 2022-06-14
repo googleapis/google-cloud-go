@@ -187,7 +187,7 @@ func (c *ModelClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateM
 	return c.internalClient.UpdateModel(ctx, req, opts...)
 }
 
-// UpdateExplanationDataset incremental update the dataset used for a examples model.
+// UpdateExplanationDataset incrementally update the dataset used for an examples model.
 func (c *ModelClient) UpdateExplanationDataset(ctx context.Context, req *aiplatformpb.UpdateExplanationDatasetRequest, opts ...gax.CallOption) (*UpdateExplanationDatasetOperation, error) {
 	return c.internalClient.UpdateExplanationDataset(ctx, req, opts...)
 }

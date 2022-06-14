@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.5.0...gkehub/v0.6.0) (2022-06-01)
+
+
+### Features
+
+* **gkehub:** add EdgeCluster as a new membershipEndpoint type feat: add ApplianceCluster as a new membershipEndpoint type feat: add c++ rules in BUILD file doc: add API annotations doc: minor changes on code and doc format ([02cbe4b](https://github.com/googleapis/google-cloud-go/commit/02cbe4bec42b3389d64d1e78396b3f6a8e4976ba))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.4.0...gkehub/v0.5.0) (2022-03-14)
 
 
