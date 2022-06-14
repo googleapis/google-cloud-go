@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "DatasetClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateDataset": {
               "methods": [
                 "CreateDataset"
@@ -18,6 +23,11 @@
             "DeleteDataset": {
               "methods": [
                 "DeleteDataset"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "ExportData": {
@@ -33,6 +43,21 @@
             "GetDataset": {
               "methods": [
                 "GetDataset"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ImportData": {
@@ -55,9 +80,34 @@
                 "ListDatasets"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateDataset": {
               "methods": [
                 "UpdateDataset"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -69,6 +119,11 @@
         "grpc": {
           "libraryClient": "EndpointClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEndpoint": {
               "methods": [
                 "CreateEndpoint"
@@ -77,6 +132,11 @@
             "DeleteEndpoint": {
               "methods": [
                 "DeleteEndpoint"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeployModel": {
@@ -89,9 +149,44 @@
                 "GetEndpoint"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListEndpoints": {
               "methods": [
                 "ListEndpoints"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UndeployModel": {
@@ -103,6 +198,11 @@
               "methods": [
                 "UpdateEndpoint"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         }
@@ -113,14 +213,64 @@
         "grpc": {
           "libraryClient": "FeaturestoreOnlineServingClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ReadFeatureValues": {
               "methods": [
                 "ReadFeatureValues"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "StreamingReadFeatureValues": {
               "methods": [
                 "StreamingReadFeatureValues"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -140,6 +290,11 @@
             "BatchReadFeatureValues": {
               "methods": [
                 "BatchReadFeatureValues"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
               ]
             },
             "CreateEntityType": {
@@ -172,6 +327,11 @@
                 "DeleteFeaturestore"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "ExportFeatureValues": {
               "methods": [
                 "ExportFeatureValues"
@@ -190,6 +350,21 @@
             "GetFeaturestore": {
               "methods": [
                 "GetFeaturestore"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ImportFeatureValues": {
@@ -212,9 +387,29 @@
                 "ListFeaturestores"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "SearchFeatures": {
               "methods": [
                 "SearchFeatures"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateEntityType": {
@@ -231,6 +426,11 @@
               "methods": [
                 "UpdateFeaturestore"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         }
@@ -241,6 +441,11 @@
         "grpc": {
           "libraryClient": "IndexEndpointClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateIndexEndpoint": {
               "methods": [
                 "CreateIndexEndpoint"
@@ -251,9 +456,19 @@
                 "DeleteIndexEndpoint"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeployIndex": {
               "methods": [
                 "DeployIndex"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
               ]
             },
             "GetIndexEndpoint": {
@@ -261,14 +476,44 @@
                 "GetIndexEndpoint"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListIndexEndpoints": {
               "methods": [
                 "ListIndexEndpoints"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "MutateDeployedIndex": {
               "methods": [
                 "MutateDeployedIndex"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UndeployIndex": {
@@ -280,6 +525,11 @@
               "methods": [
                 "UpdateIndexEndpoint"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         }
@@ -290,6 +540,11 @@
         "grpc": {
           "libraryClient": "IndexClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateIndex": {
               "methods": [
                 "CreateIndex"
@@ -300,9 +555,29 @@
                 "DeleteIndex"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetIndex": {
               "methods": [
                 "GetIndex"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListIndexes": {
@@ -310,9 +585,34 @@
                 "ListIndexes"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateIndex": {
               "methods": [
                 "UpdateIndex"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -342,6 +642,11 @@
             "CancelHyperparameterTuningJob": {
               "methods": [
                 "CancelHyperparameterTuningJob"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
               ]
             },
             "CreateBatchPredictionJob": {
@@ -394,6 +699,11 @@
                 "DeleteModelDeploymentMonitoringJob"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetBatchPredictionJob": {
               "methods": [
                 "GetBatchPredictionJob"
@@ -414,9 +724,24 @@
                 "GetHyperparameterTuningJob"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetModelDeploymentMonitoringJob": {
               "methods": [
                 "GetModelDeploymentMonitoringJob"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListBatchPredictionJobs": {
@@ -439,9 +764,19 @@
                 "ListHyperparameterTuningJobs"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListModelDeploymentMonitoringJobs": {
               "methods": [
                 "ListModelDeploymentMonitoringJobs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "PauseModelDeploymentMonitoringJob": {
@@ -459,9 +794,24 @@
                 "SearchModelDeploymentMonitoringStatsAnomalies"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateModelDeploymentMonitoringJob": {
               "methods": [
                 "UpdateModelDeploymentMonitoringJob"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -486,6 +836,11 @@
             "AddExecutionEvents": {
               "methods": [
                 "AddExecutionEvents"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
               ]
             },
             "CreateArtifact": {
@@ -533,6 +888,11 @@
                 "DeleteMetadataStore"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetArtifact": {
               "methods": [
                 "GetArtifact"
@@ -548,6 +908,16 @@
                 "GetExecution"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMetadataSchema": {
               "methods": [
                 "GetMetadataSchema"
@@ -556,6 +926,11 @@
             "GetMetadataStore": {
               "methods": [
                 "GetMetadataStore"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListArtifacts": {
@@ -573,6 +948,11 @@
                 "ListExecutions"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMetadataSchemas": {
               "methods": [
                 "ListMetadataSchemas"
@@ -581,6 +961,11 @@
             "ListMetadataStores": {
               "methods": [
                 "ListMetadataStores"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "PurgeArtifacts": {
@@ -613,6 +998,16 @@
                 "QueryExecutionInputsAndOutputs"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateArtifact": {
               "methods": [
                 "UpdateArtifact"
@@ -626,6 +1021,11 @@
             "UpdateExecution": {
               "methods": [
                 "UpdateExecution"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -642,9 +1042,59 @@
                 "BatchMigrateResources"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "SearchMigratableResources": {
               "methods": [
                 "SearchMigratableResources"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -656,6 +1106,11 @@
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "DeleteModel": {
               "methods": [
                 "DeleteModel"
@@ -666,9 +1121,24 @@
                 "DeleteModelVersion"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "ExportModel": {
               "methods": [
                 "ExportModel"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
               ]
             },
             "GetModel": {
@@ -686,9 +1156,19 @@
                 "GetModelEvaluationSlice"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportModelEvaluation": {
               "methods": [
                 "ImportModelEvaluation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListModelEvaluationSlices": {
@@ -711,9 +1191,24 @@
                 "ListModels"
               ]
             },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "MergeVersionAliases": {
               "methods": [
                 "MergeVersionAliases"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateExplanationDataset": {
@@ -730,6 +1225,11 @@
               "methods": [
                 "UploadModel"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         }
@@ -740,6 +1240,11 @@
         "grpc": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CancelPipelineJob": {
               "methods": [
                 "CancelPipelineJob"
@@ -760,6 +1265,11 @@
                 "CreateTrainingPipeline"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeletePipelineJob": {
               "methods": [
                 "DeletePipelineJob"
@@ -768,6 +1278,21 @@
             "DeleteTrainingPipeline": {
               "methods": [
                 "DeleteTrainingPipeline"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetPipelineJob": {
@@ -780,6 +1305,16 @@
                 "GetTrainingPipeline"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListPipelineJobs": {
               "methods": [
                 "ListPipelineJobs"
@@ -788,6 +1323,21 @@
             "ListTrainingPipelines": {
               "methods": [
                 "ListTrainingPipelines"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -799,9 +1349,44 @@
         "grpc": {
           "libraryClient": "PredictionClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "Predict": {
@@ -813,6 +1398,21 @@
               "methods": [
                 "RawPredict"
               ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         }
@@ -823,9 +1423,19 @@
         "grpc": {
           "libraryClient": "SpecialistPoolClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateSpecialistPool": {
               "methods": [
                 "CreateSpecialistPool"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeleteSpecialistPool": {
@@ -833,9 +1443,34 @@
                 "DeleteSpecialistPool"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetSpecialistPool": {
               "methods": [
                 "GetSpecialistPool"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListSpecialistPools": {
@@ -843,9 +1478,24 @@
                 "ListSpecialistPools"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateSpecialistPool": {
               "methods": [
                 "UpdateSpecialistPool"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -872,6 +1522,11 @@
                 "BatchReadTensorboardTimeSeriesData"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateTensorboard": {
               "methods": [
                 "CreateTensorboard"
@@ -890,6 +1545,11 @@
             "CreateTensorboardTimeSeries": {
               "methods": [
                 "CreateTensorboardTimeSeries"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeleteTensorboard": {
@@ -917,6 +1577,21 @@
                 "ExportTensorboardTimeSeriesData"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetTensorboard": {
               "methods": [
                 "GetTensorboard"
@@ -935,6 +1610,16 @@
             "GetTensorboardTimeSeries": {
               "methods": [
                 "GetTensorboardTimeSeries"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListTensorboardExperiments": {
@@ -967,6 +1652,16 @@
                 "ReadTensorboardTimeSeriesData"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateTensorboard": {
               "methods": [
                 "UpdateTensorboard"
@@ -985,6 +1680,11 @@
             "UpdateTensorboardTimeSeries": {
               "methods": [
                 "UpdateTensorboardTimeSeries"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             },
             "WriteTensorboardExperimentData": {
@@ -1011,6 +1711,11 @@
                 "AddTrialMeasurement"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CheckTrialEarlyStoppingState": {
               "methods": [
                 "CheckTrialEarlyStoppingState"
@@ -1031,6 +1736,11 @@
                 "CreateTrial"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteStudy": {
               "methods": [
                 "DeleteStudy"
@@ -1041,6 +1751,21 @@
                 "DeleteTrial"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetStudy": {
               "methods": [
                 "GetStudy"
@@ -1049,6 +1774,16 @@
             "GetTrial": {
               "methods": [
                 "GetTrial"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListOptimalTrials": {
@@ -1071,6 +1806,11 @@
                 "LookupStudy"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "StopTrial": {
               "methods": [
                 "StopTrial"
@@ -1079,6 +1819,16 @@
             "SuggestTrials": {
               "methods": [
                 "SuggestTrials"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
