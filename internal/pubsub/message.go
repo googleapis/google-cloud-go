@@ -14,6 +14,8 @@
 package pubsub
 
 import (
+	"context"
+	"errors"
 	"time"
 )
 
@@ -24,6 +26,14 @@ type AckHandler interface {
 
 	// OnNack processes a message nack.
 	OnNack()
+
+	// OnAckWithResult processes a message ack and returns
+	// a result that shows if it succeeded.
+	OnAckWithResult() *AckResult
+
+	// OnNackWithResult processes a message nack and returns
+	// a result that shows if it succeeded.
+	OnNackWithResult() *AckResult
 }
 
 // Message represents a Pub/Sub message.
@@ -83,6 +93,97 @@ func (m *Message) Nack() {
 	if m.ackh != nil {
 		m.ackh.OnNack()
 	}
+}
+
+type AckResponse int
+
+const (
+	AckResponseSuccess AckResponse = iota
+	AckResponsePermissionDenied
+	AckResponseFailedPrecondition
+	AckResponseInvalidAckID
+	AckResponseOther
+)
+
+type AckResult struct {
+	ready chan struct{}
+	res   AckResponse
+	err   error
+}
+
+// Ready returns a channel that is closed when the result is ready.
+// When the Ready channel is closed, Get is guaranteed not to block.
+func (r *AckResult) Ready() <-chan struct{} { return r.ready }
+
+// Get returns the status and/or error result of a Ack, Nack, or Modack call.
+// Get blocks until the Ack/Nack completes or the context is done.
+func (r *AckResult) Get(ctx context.Context) (res AckResponse, err error) {
+	// If the result is already ready, return it even if the context is done.
+	select {
+	case <-r.Ready():
+		return r.res, r.err
+	default:
+	}
+	select {
+	case <-ctx.Done():
+		return r.res, ctx.Err()
+	case <-r.Ready():
+		return r.res, r.err
+	}
+}
+
+// NewAckResult creates a AckResult.
+func NewAckResult() *AckResult {
+	return &AckResult{
+		ready: make(chan struct{}),
+	}
+}
+
+// SetAckResult sets the ack response and error for a ack result and closes
+// the Ready channel.
+func SetAckResult(r *AckResult, res AckResponse, err error) {
+	r.res = res
+	r.err = err
+	close(r.ready)
+}
+
+var (
+	errMissingAckHandler = errors.New("pubsub: missing ack handler")
+)
+
+// AckWithResult acknowledges a message in Pub/Sub and it will not be
+// delivered to this subscription again.
+//
+// You should avoid acknowledging messages until you have
+// *finished* processing them, so that in the event of a failure,
+// you receive the message again.
+//
+// If exactly-once delivery is enabled on the subscription, the
+// AckResult returned by this method tracks the state of acknowledgement
+// operation. If the  completes successfully, the message is
+// guaranteed NOT to be re-delivered. Otherwise, the future will
+// contain an exception with more details about the failure and the
+// message may be re-delivered.
+//
+// If exactly-once delivery is NOT enabled on the subscription, AckResult
+// readies immediately with a AckResponse.Success.
+// Since acks in Cloud Pub/Sub are best effort when exactly-once
+// delivery is disabled, the message may be re-delivered. Because
+// re-deliveries are possible, you should ensure that your processing
+// code is idempotent, as you may receive any given message more than
+// once.
+func (m *Message) AckWithResult() *AckResult {
+	if m.ackh != nil {
+		return m.ackh.OnAckWithResult()
+	}
+	return nil
+}
+
+func (m *Message) NackWithResult() *AckResult {
+	if m.ackh != nil {
+		return m.ackh.OnNackWithResult()
+	}
+	return nil
 }
 
 // NewMessage creates a message with an AckHandler implementation, which should
