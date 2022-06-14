@@ -550,57 +550,6 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 }
 
 func TestAddToDistribution(t *testing.T) {
-	srv := pstest.NewServer()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
-
-	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		t.Fatal(err)
-	}
-	opts := withGRPCHeadersAssertion(t, option.WithGRPCConn(conn))
-	client, err := NewClient(ctx, projName, opts...)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	topic := client.Topic(topicName)
-	sc := SubscriptionConfig{
-		Topic:                     topic,
-		EnableMessageOrdering:     true,
-		EnableExactlyOnceDelivery: true,
-	}
-	_, err = client.CreateSubscription(ctx, subName, sc)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Make sure to call publish before constructing the iterator.
-	srv.Publish(fullyQualifiedTopicName, []byte("msg"), nil)
-
-	iter := newMessageIterator(client.subc, fullyQualifiedSubName, &pullOptions{
-		synchronous:            false,
-		maxOutstandingMessages: 100,
-		maxOutstandingBytes:    1e6,
-		maxPrefetch:            30,
-		maxExtension:           1 * time.Minute,
-		maxExtensionPeriod:     10 * time.Second,
-	})
-
-	if _, err := iter.receive(10); err != nil {
-		t.Fatalf("Got error in recvMessages: %v", err)
-	}
-
-	iter.eoMu.RLock()
-	defer iter.eoMu.RUnlock()
-	if !iter.enableExactlyOnceDelivery {
-		t.Fatalf("expected iter.enableExactlyOnce=true")
-	}
-}
-
-func TestAddToDistribution(t *testing.T) {
 	c, _ := newFake(t)
 
 	iter := newMessageIterator(c.subc, "some-sub", &pullOptions{})
