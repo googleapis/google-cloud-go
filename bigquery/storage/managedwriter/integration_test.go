@@ -611,10 +611,6 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 			break
 		}
 		curOffset = curOffset + 1
-		if err != nil {
-			t.Errorf("got error on offset %d: %v", curOffset, err)
-			break
-		}
 		s, err := resp.UpdatedSchema(ctx)
 		if err != nil {
 			t.Errorf("getting schema error: %v", err)
