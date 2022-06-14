@@ -39,8 +39,6 @@ const (
 	// ScopeCloudPlatform grants permissions to view and manage your data
 	// across Google Cloud Platform services.
 	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
-
-	maxAckDeadline = 10 * time.Minute
 )
 
 // Client is a Google Pub/Sub client scoped to a single project.

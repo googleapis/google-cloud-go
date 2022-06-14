@@ -177,6 +177,29 @@ func ExampleTargetHttpsProxiesClient_Patch() {
 	}
 }
 
+func ExampleTargetHttpsProxiesClient_SetCertificateMap() {
+	ctx := context.Background()
+	c, err := compute.NewTargetHttpsProxiesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetCertificateMapTargetHttpsProxyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetCertificateMapTargetHttpsProxyRequest.
+	}
+	op, err := c.SetCertificateMap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleTargetHttpsProxiesClient_SetQuicOverride() {
 	ctx := context.Background()
 	c, err := compute.NewTargetHttpsProxiesRESTClient(ctx)
