@@ -29,6 +29,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -44,6 +45,7 @@ type TenantCallOptions struct {
 	UpdateTenant []gax.CallOption
 	DeleteTenant []gax.CallOption
 	ListTenants  []gax.CallOption
+	GetOperation []gax.CallOption
 }
 
 func defaultTenantGRPCClientOptions() []option.ClientOption {
@@ -98,6 +100,7 @@ func defaultTenantCallOptions() *TenantCallOptions {
 				})
 			}),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -111,6 +114,7 @@ type internalTenantClient interface {
 	UpdateTenant(context.Context, *talentpb.UpdateTenantRequest, ...gax.CallOption) (*talentpb.Tenant, error)
 	DeleteTenant(context.Context, *talentpb.DeleteTenantRequest, ...gax.CallOption) error
 	ListTenants(context.Context, *talentpb.ListTenantsRequest, ...gax.CallOption) *TenantIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // TenantClient is a client for interacting with Cloud Talent Solution API.
@@ -172,6 +176,11 @@ func (c *TenantClient) ListTenants(ctx context.Context, req *talentpb.ListTenant
 	return c.internalClient.ListTenants(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *TenantClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // tenantGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -187,6 +196,8 @@ type tenantGRPCClient struct {
 
 	// The gRPC API client.
 	tenantClient talentpb.TenantServiceClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -222,6 +233,7 @@ func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantC
 		disableDeadlines: disableDeadlines,
 		tenantClient:     talentpb.NewTenantServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -379,6 +391,21 @@ func (c *tenantGRPCClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *tenantGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // TenantIterator manages a stream of *talentpb.Tenant.
