@@ -130,7 +130,7 @@ type internalClient interface {
 // Client is a client for interacting with Batch API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Batch Service.
+// Google Batch Service.
 // The service manages user submitted batch jobs and allocates Google Compute
 // Engine VM instances to run the jobs.
 type Client struct {
@@ -189,7 +189,7 @@ func (c *Client) DeleteJobOperation(name string) *DeleteJobOperation {
 	return c.internalClient.DeleteJobOperation(name)
 }
 
-// ListJobs list all Jobs for a project.
+// ListJobs list all Jobs for a project within a region.
 func (c *Client) ListJobs(ctx context.Context, req *batchpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
@@ -232,7 +232,7 @@ type gRPCClient struct {
 // NewClient creates a new batch service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Batch Service.
+// Google Batch Service.
 // The service manages user submitted batch jobs and allocates Google Compute
 // Engine VM instances to run the jobs.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
