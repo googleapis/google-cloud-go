@@ -35,6 +35,16 @@ const (
 	FlowControlSignalError
 )
 
+// flowControllerPurpose indicates whether a flowController is for a topic or a
+// subscription.
+type flowControllerPurpose int
+
+const (
+	flowControllerPurposeUnknown flowControllerPurpose = iota
+	flowControllerPurposeTopic
+	flowControllerPurposeSubscription
+)
+
 // FlowControlSettings controls flow control for messages while publishing or subscribing.
 type FlowControlSettings struct {
 	// MaxOutstandingMessages is the maximum number of bufered messages to be published.
@@ -73,6 +83,7 @@ type flowController struct {
 	// Number of outstanding bytes remaining. Atomic.
 	bytesRemaining int64
 	limitBehavior  LimitExceededBehavior
+	purpose        flowControllerPurpose
 }
 
 // newFlowController creates a new flowController that ensures no more than
@@ -93,6 +104,18 @@ func newFlowController(fc FlowControlSettings) flowController {
 	if fc.MaxOutstandingBytes > 0 {
 		f.semSize = semaphore.NewWeighted(int64(fc.MaxOutstandingBytes))
 	}
+	return f
+}
+
+func newTopicFlowController(fc FlowControlSettings) flowController {
+	f := newFlowController(fc)
+	f.purpose = flowControllerPurposeTopic
+	return f
+}
+
+func newSubscriptionFlowController(fc FlowControlSettings) flowController {
+	f := newFlowController(fc)
+	f.purpose = flowControllerPurposeSubscription
 	return f
 }
 
@@ -135,13 +158,15 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 			}
 		}
 	}
+
 	if f.semCount != nil {
 		outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
-		recordStat(ctx, OutstandingMessages, outstandingMessages)
+		f.recordOutstandingMessages(ctx, outstandingMessages)
 	}
+
 	if f.semSize != nil {
 		outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
-		recordStat(ctx, OutstandingBytes, outstandingBytes)
+		f.recordOutstandingBytes(ctx, outstandingBytes)
 	}
 	return nil
 }
@@ -154,12 +179,12 @@ func (f *flowController) release(ctx context.Context, size int) {
 
 	if f.semCount != nil {
 		outstandingMessages := atomic.AddInt64(&f.countRemaining, -1)
-		recordStat(ctx, OutstandingMessages, outstandingMessages)
+		f.recordOutstandingMessages(ctx, outstandingMessages)
 		f.semCount.Release(1)
 	}
 	if f.semSize != nil {
 		outstandingBytes := atomic.AddInt64(&f.bytesRemaining, -1*f.bound(size))
-		recordStat(ctx, OutstandingBytes, outstandingBytes)
+		f.recordOutstandingBytes(ctx, outstandingBytes)
 		f.semSize.Release(f.bound(size))
 	}
 }
@@ -175,4 +200,20 @@ func (f *flowController) bound(size int) int64 {
 // if maxCount is 0, this will always return 0.
 func (f *flowController) count() int {
 	return int(atomic.LoadInt64(&f.countRemaining))
+}
+
+func (f *flowController) recordOutstandingMessages(ctx context.Context, n int64) {
+	if f.purpose == flowControllerPurposeTopic {
+		recordStat(ctx, PublisherOutstandingMessages, n)
+	} else {
+		recordStat(ctx, OutstandingMessages, n)
+	}
+}
+
+func (f *flowController) recordOutstandingBytes(ctx context.Context, n int64) {
+	if f.purpose == flowControllerPurposeTopic {
+		recordStat(ctx, PublisherOutstandingBytes, n)
+	} else {
+		recordStat(ctx, OutstandingBytes, n)
+	}
 }

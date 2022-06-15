@@ -651,7 +651,7 @@ func (t *Topic) initBundler() {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
 	}
 
-	t.flowController = newFlowController(fcs)
+	t.flowController = newTopicFlowController(fcs)
 
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
