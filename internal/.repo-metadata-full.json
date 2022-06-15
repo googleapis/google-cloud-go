@@ -1193,7 +1193,7 @@
     "language": "Go",
     "client_library_type": "manual",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/pubsublite/apiv1": {
