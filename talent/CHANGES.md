@@ -1,5 +1,19 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.6.0...talent/v0.7.0) (2022-06-07)
+
+
+### Features
+
+* **talent:** add methods for Long Running Operations service ([1a0b09a](https://github.com/googleapis/google-cloud-go/commit/1a0b09a991d210fd562674aae1d2df854a0e15f9))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.5.0...talent/v0.6.0) (2022-06-01)
+
+
+### Features
+
+* **talent:** Add a new operator on companyDisplayNames filter to further support fuzzy match by treating input value as a multi word token feat: Add a new option TELECOMMUTE_JOBS_EXCLUDED under enum TelecommutePreference to completely filter out the telecommute jobs in response docs: Deprecate option TELECOMMUTE_EXCLUDED under enum TelecommutePreference ([46c16f1](https://github.com/googleapis/google-cloud-go/commit/46c16f1fdc7181d2fefadc8fd6a9e0b9cb226cac))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.4.0...talent/v0.5.0) (2022-02-23)
 
 

@@ -103,7 +103,7 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
-	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true)
+	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // Delete deletes the Bucket.
@@ -116,7 +116,7 @@ func (b *BucketHandle) Delete(ctx context.Context) (err error) {
 		return err
 	}
 
-	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 func (b *BucketHandle) newDeleteCall() (*raw.BucketsDeleteCall, error) {
@@ -184,7 +184,7 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 	err = run(ctx, func() error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
@@ -232,7 +232,7 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 		return err
 	}
 
-	if err := run(ctx, call, b.retry, isIdempotent); err != nil {
+	if err := run(ctx, call, b.retry, isIdempotent, setRetryHeaderHTTP(req)); err != nil {
 		return nil, err
 	}
 	return newBucket(rawBucket)
@@ -645,6 +645,13 @@ const (
 	// SetStorageClassAction changes the storage class of live and/or archived
 	// objects.
 	SetStorageClassAction = "SetStorageClass"
+
+	// AbortIncompleteMPUAction is a lifecycle action that aborts an incomplete
+	// multipart upload when the multipart upload meets the conditions specified
+	// in the lifecycle rule. The AgeInDays condition is the only allowed
+	// condition for this action. AgeInDays is measured from the time the
+	// multipart upload was created.
+	AbortIncompleteMPUAction = "AbortIncompleteMultipartUpload"
 )
 
 // LifecycleRule is a lifecycle configuration rule.
@@ -665,9 +672,8 @@ type LifecycleRule struct {
 type LifecycleAction struct {
 	// Type is the type of action to take on matching objects.
 	//
-	// Acceptable values are "Delete" to delete matching objects and
-	// "SetStorageClass" to set the storage class defined in StorageClass on
-	// matching objects.
+	// Acceptable values are storage.DeleteAction, storage.SetStorageClassAction,
+	// and storage.AbortIncompleteMPUAction.
 	Type string
 
 	// StorageClass is the storage class to set on matching objects if the Action
@@ -719,11 +725,19 @@ type LifecycleCondition struct {
 	// Liveness specifies the object's liveness. Relevant only for versioned objects
 	Liveness Liveness
 
+	// MatchesPrefix is the condition matching an object if any of the
+	// matches_prefix strings are an exact prefix of the object's name.
+	MatchesPrefix []string
+
 	// MatchesStorageClasses is the condition matching the object's storage
 	// class.
 	//
 	// Values include "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE".
 	MatchesStorageClasses []string
+
+	// MatchesSuffix is the condition matching an object if any of the
+	// matches_suffix strings are an exact suffix of the object's name.
+	MatchesSuffix []string
 
 	// NoncurrentTimeBefore is the noncurrent timestamp of the object. This
 	// condition is satisfied when an object's noncurrent timestamp is before
@@ -1341,7 +1355,7 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	return run(ctx, func() error {
 		_, err := req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // applyBucketConds modifies the provided call using the conditions in conds.
@@ -1412,7 +1426,7 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 }
 
 func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) {
-	if rp == nil {
+	if rp == nil || rp.EffectiveTime == "" {
 		return nil, nil
 	}
 	t, err := time.Parse(time.RFC3339, rp.EffectiveTime)
@@ -1504,7 +1518,9 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				Age:                     r.Condition.AgeInDays,
 				DaysSinceCustomTime:     r.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: r.Condition.DaysSinceNoncurrentTime,
+				MatchesPrefix:           r.Condition.MatchesPrefix,
 				MatchesStorageClass:     r.Condition.MatchesStorageClasses,
+				MatchesSuffix:           r.Condition.MatchesSuffix,
 				NumNewerVersions:        r.Condition.NumNewerVersions,
 			},
 		}
@@ -1549,7 +1565,9 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 				AgeDays:                 proto.Int32(int32(r.Condition.AgeInDays)),
 				DaysSinceCustomTime:     proto.Int32(int32(r.Condition.DaysSinceCustomTime)),
 				DaysSinceNoncurrentTime: proto.Int32(int32(r.Condition.DaysSinceNoncurrentTime)),
+				MatchesPrefix:           r.Condition.MatchesPrefix,
 				MatchesStorageClass:     r.Condition.MatchesStorageClasses,
+				MatchesSuffix:           r.Condition.MatchesSuffix,
 				NumNewerVersions:        proto.Int32(int32(r.Condition.NumNewerVersions)),
 			},
 		}
@@ -1592,7 +1610,9 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				AgeInDays:               rr.Condition.Age,
 				DaysSinceCustomTime:     rr.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: rr.Condition.DaysSinceNoncurrentTime,
+				MatchesPrefix:           rr.Condition.MatchesPrefix,
 				MatchesStorageClasses:   rr.Condition.MatchesStorageClass,
+				MatchesSuffix:           rr.Condition.MatchesSuffix,
 				NumNewerVersions:        rr.Condition.NumNewerVersions,
 			},
 		}
@@ -1634,7 +1654,9 @@ func toLifecycleFromProto(rl *storagepb.Bucket_Lifecycle) Lifecycle {
 				AgeInDays:               int64(rr.GetCondition().GetAgeDays()),
 				DaysSinceCustomTime:     int64(rr.GetCondition().GetDaysSinceCustomTime()),
 				DaysSinceNoncurrentTime: int64(rr.GetCondition().GetDaysSinceNoncurrentTime()),
+				MatchesPrefix:           rr.GetCondition().GetMatchesPrefix(),
 				MatchesStorageClasses:   rr.GetCondition().GetMatchesStorageClass(),
+				MatchesSuffix:           rr.GetCondition().GetMatchesSuffix(),
 				NumNewerVersions:        int64(rr.GetCondition().GetNumNewerVersions()),
 			},
 		}
@@ -1708,7 +1730,7 @@ func (b *BucketLogging) toProtoBucketLogging() *storagepb.Bucket_Logging {
 		return nil
 	}
 	return &storagepb.Bucket_Logging{
-		LogBucket:       b.LogBucket,
+		LogBucket:       bucketResourceName(globalProjectAlias, b.LogBucket),
 		LogObjectPrefix: b.LogObjectPrefix,
 	}
 }
@@ -1727,8 +1749,9 @@ func toBucketLoggingFromProto(b *storagepb.Bucket_Logging) *BucketLogging {
 	if b == nil {
 		return nil
 	}
+	lb := parseBucketName(b.GetLogBucket())
 	return &BucketLogging{
-		LogBucket:       b.GetLogBucket(),
+		LogBucket:       lb,
 		LogObjectPrefix: b.GetLogObjectPrefix(),
 	}
 }
@@ -1999,7 +2022,7 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.bucket.retry, true)
+	}, it.bucket.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		var e *googleapi.Error
 		if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -2086,7 +2109,7 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.client.retry, true)
+	}, it.client.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return "", err
 	}

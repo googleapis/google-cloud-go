@@ -258,6 +258,13 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/%v/addRule", req.GetProject(), req.GetSecurityPolicy())
 
+	params := url.Values{}
+	if req != nil && req.ValidateOnly != nil {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "security_policy", url.QueryEscape(req.GetSecurityPolicy())))
 
@@ -611,6 +618,9 @@ func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
+	if req != nil && req.ValidateOnly != nil {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -923,6 +933,9 @@ func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	params := url.Values{}
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
+	}
+	if req != nil && req.ValidateOnly != nil {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
 	}
 
 	baseUrl.RawQuery = params.Encode()

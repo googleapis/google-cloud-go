@@ -260,6 +260,38 @@ func (u *Update) SQL() string {
 	return str
 }
 
+func (i *Insert) SQL() string {
+	str := "INSERT " + i.Table.SQL() + " INTO ("
+	for i, column := range i.Columns {
+		if i > 0 {
+			str += ", "
+		}
+		str += column.SQL()
+	}
+	str += ") "
+	str += i.Input.SQL()
+	return str
+}
+
+func (v Values) SQL() string {
+	str := "VALUES "
+	for j, values := range v {
+		if j > 0 {
+			str += ", "
+		}
+		str += "("
+
+		for k, value := range values {
+			if k > 0 {
+				str += ", "
+			}
+			str += value.SQL()
+		}
+		str += ")"
+	}
+	return str
+}
+
 func (cd ColumnDef) SQL() string {
 	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
@@ -736,7 +768,7 @@ func (dl DateLiteral) addSQL(sb *strings.Builder) {
 
 func (tl TimestampLiteral) SQL() string { return buildSQL(tl) }
 func (tl TimestampLiteral) addSQL(sb *strings.Builder) {
-	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000 -07:00"))
+	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000-07:00"))
 }
 
 func (jl JSONLiteral) SQL() string { return buildSQL(jl) }
