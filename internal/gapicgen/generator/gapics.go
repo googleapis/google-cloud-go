@@ -316,7 +316,7 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 		// override the go_package option. Applied to both the protobuf/gRPC
 		// generated code, and to notify the GAPIC generator of the new
 		// import path used to reference those stubs.
-		stubPkg := conf.ImportPath + "/" + conf.StubsDir
+		stubPkg := filepath.Join(conf.ImportPath, conf.StubsDir)
 		for _, f := range protoFiles {
 			f = strings.TrimPrefix(f, g.googleapisDir+"/")
 			rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
