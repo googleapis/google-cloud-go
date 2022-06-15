@@ -49,6 +49,10 @@ export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 # to fix the flaky test Spanner need to run on us-west1 region.
 export GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG="regional-us-west1"
 
+# Storage gRPC tests should only be run on Google Compute, so they are disabled
+# by default and enabled to run here with the other integration tests.
+export GCLOUD_TESTS_GOLANG_STORAGE_ENABLE_GRPC=true
+
 # Fail on any error
 set -eo pipefail
 

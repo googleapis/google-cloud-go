@@ -71,7 +71,8 @@ const (
 )
 
 var (
-	record = flag.Bool("record", false, "record RPCs")
+	record   = flag.Bool("record", false, "record RPCs")
+	testGRPC = os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_ENABLE_GRPC") != ""
 
 	uidSpace       *uid.Space
 	uidSpaceGRPC   *uid.Space
@@ -190,8 +191,10 @@ func initIntegrationTest() func() error {
 		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
-		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
-			log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
+		if testGRPC {
+			if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
+				log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
+			}
 		}
 		return cleanup
 	}
@@ -228,6 +231,9 @@ func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
 func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
+	}
+	if !testGRPC {
+		t.Skip("gRPC Integration tests skipped without GCLOUD_TESTS_GOLANG_STORAGE_ENABLE_GRPC set")
 	}
 
 	gc, err := newGRPCClient(ctx)
@@ -4820,8 +4826,10 @@ func cleanupBuckets() error {
 	if err := killBucket(ctx, client, bucketName); err != nil {
 		return err
 	}
-	if err := killBucket(ctx, client, grpcBucketName); err != nil {
-		return err
+	if testGRPC {
+		if err := killBucket(ctx, client, grpcBucketName); err != nil {
+			return err
+		}
 	}
 
 	// Delete buckets whose name begins with our test prefix, and which were
