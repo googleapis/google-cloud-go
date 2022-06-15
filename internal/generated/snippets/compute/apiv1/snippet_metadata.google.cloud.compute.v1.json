@@ -6592,7 +6592,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_CreateInstances_sync",
       "title": "compute CreateInstances Sample",
-      "description": "CreateInstances creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
+      "description": "CreateInstances creates instances with per-instance configurations in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
       "file": "InstanceGroupManagersClient/CreateInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6730,7 +6730,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_DeletePerInstanceConfigs_sync",
       "title": "compute DeletePerInstanceConfigs Sample",
-      "description": "DeletePerInstanceConfigs deletes selected per-instance configs for the managed instance group.",
+      "description": "DeletePerInstanceConfigs deletes selected per-instance configurations for the managed instance group.",
       "file": "InstanceGroupManagersClient/DeletePerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7006,7 +7006,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_ListPerInstanceConfigs_sync",
       "title": "compute ListPerInstanceConfigs Sample",
-      "description": "ListPerInstanceConfigs lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.",
+      "description": "ListPerInstanceConfigs lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.",
       "file": "InstanceGroupManagersClient/ListPerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7098,7 +7098,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_PatchPerInstanceConfigs_sync",
       "title": "compute PatchPerInstanceConfigs Sample",
-      "description": "PatchPerInstanceConfigs inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
+      "description": "PatchPerInstanceConfigs inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
       "file": "InstanceGroupManagersClient/PatchPerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7328,7 +7328,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_UpdatePerInstanceConfigs_sync",
       "title": "compute UpdatePerInstanceConfigs Sample",
-      "description": "UpdatePerInstanceConfigs inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
+      "description": "UpdatePerInstanceConfigs inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
       "file": "InstanceGroupManagersClient/UpdatePerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7650,7 +7650,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroups_ListInstances_sync",
       "title": "compute ListInstances Sample",
-      "description": "ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported.",
+      "description": "ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use eq (equal) or ne (not equal) operators.",
       "file": "InstanceGroupsClient/ListInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9490,7 +9490,7 @@
     {
       "regionTag": "compute_v1_generated_Instances_SetScheduling_sync",
       "title": "compute SetScheduling Sample",
-      "description": "SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies.",
+      "description": "SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.",
       "file": "InstancesClient/SetScheduling/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18184,7 +18184,7 @@
     {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_CreateInstances_sync",
       "title": "compute CreateInstances Sample",
-      "description": "CreateInstances creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
+      "description": "CreateInstances creates instances with per-instance configurations in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
       "file": "RegionInstanceGroupManagersClient/CreateInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18322,7 +18322,7 @@
     {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_DeletePerInstanceConfigs_sync",
       "title": "compute DeletePerInstanceConfigs Sample",
-      "description": "DeletePerInstanceConfigs deletes selected per-instance configs for the managed instance group.",
+      "description": "DeletePerInstanceConfigs deletes selected per-instance configurations for the managed instance group.",
       "file": "RegionInstanceGroupManagersClient/DeletePerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18598,7 +18598,7 @@
     {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_ListPerInstanceConfigs_sync",
       "title": "compute ListPerInstanceConfigs Sample",
-      "description": "ListPerInstanceConfigs lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.",
+      "description": "ListPerInstanceConfigs lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.",
       "file": "RegionInstanceGroupManagersClient/ListPerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18690,7 +18690,7 @@
     {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_PatchPerInstanceConfigs_sync",
       "title": "compute PatchPerInstanceConfigs Sample",
-      "description": "PatchPerInstanceConfigs inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
+      "description": "PatchPerInstanceConfigs inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
       "file": "RegionInstanceGroupManagersClient/PatchPerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18920,7 +18920,7 @@
     {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_UpdatePerInstanceConfigs_sync",
       "title": "compute UpdatePerInstanceConfigs Sample",
-      "description": "UpdatePerInstanceConfigs inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
+      "description": "UpdatePerInstanceConfigs inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name (at http: //perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.",
       "file": "RegionInstanceGroupManagersClient/UpdatePerInstanceConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26554,6 +26554,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_TargetHttpsProxies_SetCertificateMap_sync",
+      "title": "compute SetCertificateMap Sample",
+      "description": "SetCertificateMap changes the Certificate Map for TargetHttpsProxy.",
+      "file": "TargetHttpsProxiesClient/SetCertificateMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetCertificateMap",
+        "fullName": "google.cloud.compute.v1.TargetHttpsProxiesClient.SetCertificateMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetCertificateMapTargetHttpsProxyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "TargetHttpsProxiesClient",
+          "fullName": "google.cloud.compute.v1.TargetHttpsProxiesClient"
+        },
+        "method": {
+          "shortName": "SetCertificateMap",
+          "fullName": "google.cloud.compute.v1.TargetHttpsProxies.SetCertificateMap",
+          "service": {
+            "shortName": "TargetHttpsProxies",
+            "fullName": "google.cloud.compute.v1.TargetHttpsProxies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_TargetHttpsProxies_SetQuicOverride_sync",
       "title": "compute SetQuicOverride Sample",
       "description": "SetQuicOverride sets the QUIC override policy for TargetHttpsProxy.",
@@ -27688,6 +27734,52 @@
         "method": {
           "shortName": "SetBackendService",
           "fullName": "google.cloud.compute.v1.TargetSslProxies.SetBackendService",
+          "service": {
+            "shortName": "TargetSslProxies",
+            "fullName": "google.cloud.compute.v1.TargetSslProxies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_TargetSslProxies_SetCertificateMap_sync",
+      "title": "compute SetCertificateMap Sample",
+      "description": "SetCertificateMap changes the Certificate Map for TargetSslProxy.",
+      "file": "TargetSslProxiesClient/SetCertificateMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetCertificateMap",
+        "fullName": "google.cloud.compute.v1.TargetSslProxiesClient.SetCertificateMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetCertificateMapTargetSslProxyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "TargetSslProxiesClient",
+          "fullName": "google.cloud.compute.v1.TargetSslProxiesClient"
+        },
+        "method": {
+          "shortName": "SetCertificateMap",
+          "fullName": "google.cloud.compute.v1.TargetSslProxies.SetCertificateMap",
           "service": {
             "shortName": "TargetSslProxies",
             "fullName": "google.cloud.compute.v1.TargetSslProxies"

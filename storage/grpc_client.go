@@ -30,6 +30,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -39,7 +40,7 @@ const (
 	// connection pool may be necessary for jobs that require
 	// high throughput and/or leverage many concurrent streams.
 	//
-	// This is an experimental API and not intended for public use.
+	// This is only used for the gRPC client.
 	defaultConnPoolSize = 4
 
 	// globalProjectAlias is the project ID alias used for global buckets.
@@ -50,8 +51,6 @@ const (
 
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
-//
-// This is an experimental API and not intended for public use.
 func defaultGRPCOptions() []option.ClientOption {
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
@@ -83,8 +82,6 @@ func defaultGRPCOptions() []option.ClientOption {
 
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
 // storageClient interface.
-//
-// This is an experimental API and not intended for public use.
 type grpcStorageClient struct {
 	raw      *gapic.Client
 	settings *settings
@@ -92,8 +89,6 @@ type grpcStorageClient struct {
 
 // newGRPCStorageClient initializes a new storageClient that uses the gRPC
 // Storage API.
-//
-// This is an experimental API and not intended for public use.
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
@@ -763,8 +758,72 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	return r, nil
 }
 
-func (c *grpcStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error {
-	return errMethodNotSupported
+func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	var offset int64
+	errorf := params.setError
+	progress := params.progress
+	setObj := params.setObj
+
+	pr, pw := io.Pipe()
+	gw := newGRPCWriter(c, params, pr)
+
+	// This function reads the data sent to the pipe and sends sets of messages
+	// on the gRPC client-stream as the buffer is filled.
+	go func() {
+		defer close(params.donec)
+
+		// Loop until there is an error or the Object has been finalized.
+		for {
+			// Note: This blocks until either the buffer is full or EOF is read.
+			recvd, doneReading, err := gw.read()
+			if err != nil {
+				err = checkCanceled(err)
+				errorf(err)
+				pr.CloseWithError(err)
+				return
+			}
+
+			// TODO(noahdietz): Send encryption key via CommonObjectRequestParams.
+
+			// The chunk buffer is full, but there is no end in sight. This
+			// means that a resumable upload will need to be used to send
+			// multiple chunks, until we are done reading data. Start a
+			// resumable upload if it has not already been started.
+			// Otherwise, all data will be sent over a single gRPC stream.
+			if !doneReading && gw.upid == "" {
+				err = gw.startResumableUpload()
+				if err != nil {
+					err = checkCanceled(err)
+					errorf(err)
+					pr.CloseWithError(err)
+					return
+				}
+			}
+
+			o, off, finalized, err := gw.uploadBuffer(recvd, offset, doneReading)
+			if err != nil {
+				err = checkCanceled(err)
+				errorf(err)
+				pr.CloseWithError(err)
+				return
+			}
+			// At this point, the current buffer has been uploaded. Capture the
+			// committed offset here in case the upload was not finalized and
+			// another chunk is to be uploaded.
+			offset = off
+			progress(offset)
+
+			// When we are done reading data and the chunk has been finalized,
+			// we are done.
+			if doneReading && finalized {
+				// Build Object from server's response.
+				setObj(newObjectFromProto(o))
+				return
+			}
+		}
+	}()
+
+	return pw, nil
 }
 
 // IAM methods.
@@ -838,6 +897,75 @@ func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc
 }
 func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error {
 	return errMethodNotSupported
+}
+
+// Notification methods.
+
+func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.ListNotifications")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	req := &storagepb.ListNotificationsRequest{
+		Parent: bucketResourceName(globalProjectAlias, bucket),
+	}
+	var notifications []*storagepb.Notification
+	err = run(ctx, func() error {
+		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
+		for {
+			// PageSize is not set and fallbacks to the API default pageSize of 100.
+			items, nextPageToken, err := gitr.InternalFetch(int(req.GetPageSize()), req.GetPageToken())
+			if err != nil {
+				return err
+			}
+			notifications = append(notifications, items...)
+			// If there are no more results, nextPageToken is empty and err is nil.
+			if nextPageToken == "" {
+				return err
+			}
+			req.PageToken = nextPageToken
+		}
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	return notificationsToMapFromProto(notifications), nil
+}
+
+func (c *grpcStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.CreateNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.CreateNotificationRequest{
+		Parent:       bucketResourceName(globalProjectAlias, bucket),
+		Notification: toProtoNotification(n),
+	}
+	var pbn *storagepb.Notification
+	err = run(ctx, func() error {
+		var err error
+		pbn, err = c.raw.CreateNotification(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+	if err != nil {
+		return nil, err
+	}
+	return toNotificationFromProto(pbn), err
+}
+
+func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.DeleteNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.DeleteNotificationRequest{Name: id}
+	return run(ctx, func() error {
+		return c.raw.DeleteNotification(ctx, req, s.gax...)
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata
@@ -933,8 +1061,6 @@ func (r *gRPCReader) Close() error {
 //
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
-//
-// This is an experimental API and not intended for public use.
 func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
 	if err != nil && shouldRetry(err) {
@@ -950,8 +1076,6 @@ func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
 // sets the Reader's stream and cancelStream properties in the process.
-//
-// This is an experimental API and not intended for public use.
 func (r *gRPCReader) reopenStream() (*storagepb.ReadObjectResponse, error) {
 	// Close existing stream and initialize new stream with updated offset.
 	r.Close()
@@ -963,4 +1087,285 @@ func (r *gRPCReader) reopenStream() (*storagepb.ReadObjectResponse, error) {
 	r.stream = res.stream
 	r.cancel = cancel
 	return res.response, nil
+}
+
+func newGRPCWriter(c *grpcStorageClient, params *openWriterParams, r io.Reader) *gRPCWriter {
+	size := params.chunkSize
+	if params.chunkSize == 0 {
+		// TODO: Should we actually use the minimum of 256 KB here when the user
+		// indicates they want minimal memory usage? We cannot do a zero-copy,
+		// bufferless upload like HTTP/JSON can.
+		// TODO: We need to determine if we can avoid starting a
+		// resumable upload when the user *plans* to send more than bufSize but
+		// with a bufferless upload.
+		size = maxPerMessageWriteSize
+	}
+
+	return &gRPCWriter{
+		buf:           make([]byte, size),
+		c:             c,
+		ctx:           params.ctx,
+		reader:        r,
+		bucket:        params.bucket,
+		attrs:         params.attrs,
+		conds:         params.conds,
+		encryptionKey: params.encryptionKey,
+		sendCRC32C:    params.sendCRC32C,
+	}
+}
+
+// gRPCWriter is a wrapper around the the gRPC client-stream API that manages
+// sending chunks of data provided by the user over the stream.
+type gRPCWriter struct {
+	c      *grpcStorageClient
+	buf    []byte
+	reader io.Reader
+
+	ctx context.Context
+
+	bucket        string
+	attrs         *ObjectAttrs
+	conds         *Conditions
+	encryptionKey []byte
+
+	sendCRC32C bool
+
+	// The gRPC client-stream used for sending buffers.
+	stream storagepb.Storage_WriteObjectClient
+
+	// The Resumable Upload ID started by a gRPC-based Writer.
+	upid string
+}
+
+// startResumableUpload initializes a Resumable Upload with gRPC and sets the
+// upload ID on the Writer.
+func (w *gRPCWriter) startResumableUpload() error {
+	spec, err := w.writeObjectSpec()
+	if err != nil {
+		return err
+	}
+	upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
+		WriteObjectSpec: spec,
+	})
+
+	w.upid = upres.GetUploadId()
+	return err
+}
+
+// queryProgress is a helper that queries the status of the resumable upload
+// associated with the given upload ID.
+func (w *gRPCWriter) queryProgress() (int64, error) {
+	q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+
+	// q.GetCommittedSize() will return 0 if q is nil.
+	return q.GetPersistedSize(), err
+}
+
+// uploadBuffer opens a Write stream and uploads the buffer at the given offset (if
+// uploading a chunk for a resumable uploadBuffer), and will mark the write as
+// finished if we are done receiving data from the user. The resulting write
+// offset after uploading the buffer is returned, as well as a boolean
+// indicating if the Object has been finalized. If it has been finalized, the
+// final Object will be returned as well. Finalizing the upload is primarily
+// important for Resumable Uploads. A simple or multi-part upload will always
+// be finalized once the entire buffer has been written.
+func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*storagepb.Object, int64, bool, error) {
+	var err error
+	var finishWrite bool
+	var sent, limit int = 0, maxPerMessageWriteSize
+	offset := start
+	toWrite := w.buf[:recvd]
+	for {
+		first := sent == 0
+		// This indicates that this is the last message and the remaining
+		// data fits in one message.
+		belowLimit := recvd-sent <= limit
+		if belowLimit {
+			limit = recvd - sent
+		}
+		if belowLimit && doneReading {
+			finishWrite = true
+		}
+
+		// Prepare chunk section for upload.
+		data := toWrite[sent : sent+limit]
+		req := &storagepb.WriteObjectRequest{
+			Data: &storagepb.WriteObjectRequest_ChecksummedData{
+				ChecksummedData: &storagepb.ChecksummedData{
+					Content: data,
+				},
+			},
+			WriteOffset: offset,
+			FinishWrite: finishWrite,
+		}
+
+		// Open a new stream and set the first_message field on the request.
+		// The first message on the WriteObject stream must either be the
+		// Object or the Resumable Upload ID.
+		if first {
+			w.stream, err = w.c.raw.WriteObject(w.ctx)
+			if err != nil {
+				return nil, 0, false, err
+			}
+
+			if w.upid != "" {
+				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: w.upid}
+			} else {
+				spec, err := w.writeObjectSpec()
+				if err != nil {
+					return nil, 0, false, err
+				}
+				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
+					WriteObjectSpec: spec,
+				}
+			}
+
+			// TODO: Currently the checksums are only sent on the first message
+			// of the stream, but in the future, we must also support sending it
+			// on the *last* message of the stream (instead of the first).
+			if w.sendCRC32C {
+				req.ObjectChecksums = &storagepb.ObjectChecksums{
+					Crc32C:  proto.Uint32(w.attrs.CRC32C),
+					Md5Hash: w.attrs.MD5,
+				}
+			}
+		}
+
+		err = w.stream.Send(req)
+		if err == io.EOF {
+			// err was io.EOF. The client-side of a stream only gets an EOF on Send
+			// when the backend closes the stream and wants to return an error
+			// status. Closing the stream receives the status as an error.
+			_, err = w.stream.CloseAndRecv()
+
+			// Retriable errors mean we should start over and attempt to
+			// resend the entire buffer via a new stream.
+			// If not retriable, falling through will return the error received
+			// from closing the stream.
+			if shouldRetry(err) {
+				sent = 0
+				finishWrite = false
+				// TODO: Add test case for failure modes of querying progress.
+				offset, err = w.determineOffset(start)
+				if err == nil {
+					continue
+				}
+			}
+		}
+		if err != nil {
+			return nil, 0, false, err
+		}
+
+		// Update the immediate stream's sent total and the upload offset with
+		// the data sent.
+		sent += len(data)
+		offset += int64(len(data))
+
+		// Not done sending data, do not attempt to commit it yet, loop around
+		// and send more data.
+		if recvd-sent > 0 {
+			continue
+		}
+
+		// Done sending data. Close the stream to "commit" the data sent.
+		resp, finalized, err := w.commit()
+		// Retriable errors mean we should start over and attempt to
+		// resend the entire buffer via a new stream.
+		// If not retriable, falling through will return the error received
+		// from closing the stream.
+		if shouldRetry(err) {
+			sent = 0
+			finishWrite = false
+			offset, err = w.determineOffset(start)
+			if err == nil {
+				continue
+			}
+		}
+		if err != nil {
+			return nil, 0, false, err
+		}
+
+		return resp.GetResource(), offset, finalized, nil
+	}
+}
+
+// determineOffset either returns the offset given to it in the case of a simple
+// upload, or queries the write status in the case a resumable upload is being
+// used.
+func (w *gRPCWriter) determineOffset(offset int64) (int64, error) {
+	// For a Resumable Upload, we must start from however much data
+	// was committed.
+	if w.upid != "" {
+		committed, err := w.queryProgress()
+		if err != nil {
+			return 0, err
+		}
+		offset = committed
+	}
+	return offset, nil
+}
+
+// commit closes the stream to commit the data sent and potentially receive
+// the finalized object if finished uploading. If the last request sent
+// indicated that writing was finished, the Object will be finalized and
+// returned. If not, then the Object will be nil, and the boolean returned will
+// be false.
+func (w *gRPCWriter) commit() (*storagepb.WriteObjectResponse, bool, error) {
+	finalized := true
+	resp, err := w.stream.CloseAndRecv()
+	if err == io.EOF {
+		// Closing a stream for a resumable upload finish_write = false results
+		// in an EOF which can be ignored, as we aren't done uploading yet.
+		finalized = false
+		err = nil
+	}
+	// Drop the stream reference as it has been closed.
+	w.stream = nil
+
+	return resp, finalized, err
+}
+
+// writeObjectSpec constructs a WriteObjectSpec proto using the Writer's
+// ObjectAttrs and applies its Conditions. This is only used for gRPC.
+func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
+	// To avoid modifying the ObjectAttrs embeded in the calling writer, deref
+	// the ObjectAttrs pointer to make a copy, then assign the desired name to
+	// the attribute.
+	attrs := *w.attrs
+
+	spec := &storagepb.WriteObjectSpec{
+		Resource: attrs.toProtoObject(w.bucket),
+	}
+	// WriteObject doesn't support the generation condition, so use -1.
+	if err := applyCondsProto("WriteObject", -1, w.conds, spec); err != nil {
+		return nil, err
+	}
+	return spec, nil
+}
+
+// read copies the data in the reader to the given buffer and reports how much
+// data was read into the buffer and if there is no more data to read (EOF).
+func (w *gRPCWriter) read() (int, bool, error) {
+	// Set n to -1 to start the Read loop.
+	var n, recvd int = -1, 0
+	var err error
+	for err == nil && n != 0 {
+		// The routine blocks here until data is received.
+		n, err = w.reader.Read(w.buf[recvd:])
+		recvd += n
+	}
+	var done bool
+	if err == io.EOF {
+		done = true
+		err = nil
+	}
+	return recvd, done, err
+}
+
+func checkCanceled(err error) error {
+	if status.Code(err) == codes.Canceled {
+		return context.Canceled
+	}
+
+	return err
 }
