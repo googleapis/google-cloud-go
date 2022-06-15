@@ -1508,6 +1508,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/07/10
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/videointelligence/v1p3beta1",
+		Pkg:                   "videointelligence",
+		ImportPath:            "cloud.google.com/go/videointelligence/apiv1p3beta1",
+		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
+		ApiServiceConfigPath:  "videointelligence_v1p3beta1.yaml",
+		ReleaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
