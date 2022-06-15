@@ -916,7 +916,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
-		ApiServiceConfigPath:  "assuredworkloads_v1beta1.yaml",
+		ApiServiceConfigPath:  "assuredworkloads.yaml",
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1494,6 +1494,24 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "retail_grpc_service_config.json",
 		ApiServiceConfigPath:  "retail_v2beta.yaml",
 		// GA after 2022/06/23
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/batch/v1",
+		Pkg:                   "batch",
+		ImportPath:            "cloud.google.com/go/batch/apiv1",
+		GRPCServiceConfigPath: "batch_grpc_service_config.json",
+		ApiServiceConfigPath:  "batch_v1.yaml",
+		// GA after 2022/07/10
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/baremetalsolution/v2",
+		Pkg:                   "baremetalsolution",
+		ImportPath:            "cloud.google.com/go/baremetalsolution/apiv2",
+		GRPCServiceConfigPath: "baremetalsolution_grpc_service_config.json",
+		ApiServiceConfigPath:  "baremetalsolution_v2.yaml",
+		// GA after 2022/07/10
 		ReleaseLevel: "beta",
 	},
 
