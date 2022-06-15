@@ -16,6 +16,8 @@ require (
 	cloud.google.com/go/asset v1.0.1
 	cloud.google.com/go/assuredworkloads v0.3.0
 	cloud.google.com/go/automl v1.0.0
+	cloud.google.com/go/baremetalsolution v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/batch v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/bigquery v1.26.0
 	cloud.google.com/go/billing v1.0.0
 	cloud.google.com/go/binaryauthorization v0.2.0
@@ -115,8 +117,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.82.0
-	google.golang.org/genproto v0.0.0-20220602131408-e326c6e8e9c8
+	google.golang.org/api v0.83.0
+	google.golang.org/genproto v0.0.0-20220614165028-45ed7f3ff16e
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -352,3 +354,7 @@ replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
 replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
 
 replace cloud.google.com/go/vision/v2 => ../../../vision/v2
+
+replace cloud.google.com/go/baremetalsolution => ../../../baremetalsolution
+
+replace cloud.google.com/go/batch => ../../../batch
