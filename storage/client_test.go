@@ -35,6 +35,9 @@ func TestCreateBucketEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
 			Name: bucket,
+			Logging: &BucketLogging{
+				LogBucket: bucket,
+			},
 		}
 		got, err := client.CreateBucket(context.Background(), project, want)
 		if err != nil {
@@ -42,10 +45,13 @@ func TestCreateBucketEmulated(t *testing.T) {
 		}
 		want.Location = "US"
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Name got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Location, want.Location); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Location got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Logging.LogBucket, want.Logging.LogBucket); diff != "" {
+			t.Errorf("LogBucket got(-),want(+):\n%s", diff)
 		}
 	})
 }
