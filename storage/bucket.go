@@ -1730,7 +1730,7 @@ func (b *BucketLogging) toProtoBucketLogging() *storagepb.Bucket_Logging {
 		return nil
 	}
 	return &storagepb.Bucket_Logging{
-		LogBucket:       b.LogBucket,
+		LogBucket:       bucketResourceName(globalProjectAlias, b.LogBucket),
 		LogObjectPrefix: b.LogObjectPrefix,
 	}
 }
@@ -1749,8 +1749,9 @@ func toBucketLoggingFromProto(b *storagepb.Bucket_Logging) *BucketLogging {
 	if b == nil {
 		return nil
 	}
+	lb := parseBucketName(b.GetLogBucket())
 	return &BucketLogging{
-		LogBucket:       b.GetLogBucket(),
+		LogBucket:       lb,
 		LogObjectPrefix: b.GetLogObjectPrefix(),
 	}
 }
