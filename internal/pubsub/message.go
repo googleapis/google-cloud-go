@@ -15,7 +15,6 @@ package pubsub
 
 import (
 	"context"
-	"errors"
 	"time"
 )
 
@@ -146,10 +145,6 @@ func SetAckResult(r *AckResult, res AckResponse, err error) {
 	r.err = err
 	close(r.ready)
 }
-
-var (
-	errMissingAckHandler = errors.New("pubsub: missing ack handler")
-)
 
 // AckWithResult acknowledges a message in Pub/Sub and it will not be
 // delivered to this subscription again.
