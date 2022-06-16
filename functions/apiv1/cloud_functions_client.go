@@ -128,7 +128,7 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 	}
 }
 
-// internalCloudFunctionsClient is an interface that defines the methods availaible from Cloud Functions API.
+// internalCloudFunctionsClient is an interface that defines the methods available from Cloud Functions API.
 type internalCloudFunctionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -68,7 +68,7 @@ func defaultRevisionsCallOptions() *RevisionsCallOptions {
 	}
 }
 
-// internalRevisionsClient is an interface that defines the methods availaible from Cloud Run Admin API.
+// internalRevisionsClient is an interface that defines the methods available from Cloud Run Admin API.
 type internalRevisionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

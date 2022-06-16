@@ -118,7 +118,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 	}
 }
 
-// internalConversationsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalConversationsClient is an interface that defines the methods available from Dialogflow API.
 type internalConversationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

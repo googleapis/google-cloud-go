@@ -82,7 +82,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud TPU API.
+// internalClient is an interface that defines the methods available from Cloud TPU API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
