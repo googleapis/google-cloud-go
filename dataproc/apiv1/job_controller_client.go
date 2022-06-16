@@ -151,7 +151,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 	}
 }
 
-// internalJobControllerClient is an interface that defines the methods availaible from Cloud Dataproc API.
+// internalJobControllerClient is an interface that defines the methods available from Cloud Dataproc API.
 type internalJobControllerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

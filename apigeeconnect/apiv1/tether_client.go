@@ -54,7 +54,7 @@ func defaultTetherCallOptions() *TetherCallOptions {
 	}
 }
 
-// internalTetherClient is an interface that defines the methods availaible from Apigee Connect API.
+// internalTetherClient is an interface that defines the methods available from Apigee Connect API.
 type internalTetherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

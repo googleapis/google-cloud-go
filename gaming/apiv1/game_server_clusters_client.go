@@ -127,7 +127,7 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 	}
 }
 
-// internalGameServerClustersClient is an interface that defines the methods availaible from Game Services API.
+// internalGameServerClustersClient is an interface that defines the methods available from Game Services API.
 type internalGameServerClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

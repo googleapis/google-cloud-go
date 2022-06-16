@@ -81,7 +81,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Area120 Tables API.
+// internalClient is an interface that defines the methods available from Area120 Tables API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

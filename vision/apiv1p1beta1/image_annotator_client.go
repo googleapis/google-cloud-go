@@ -67,7 +67,7 @@ func defaultImageAnnotatorCallOptions() *ImageAnnotatorCallOptions {
 	}
 }
 
-// internalImageAnnotatorClient is an interface that defines the methods availaible from Cloud Vision API.
+// internalImageAnnotatorClient is an interface that defines the methods available from Cloud Vision API.
 type internalImageAnnotatorClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

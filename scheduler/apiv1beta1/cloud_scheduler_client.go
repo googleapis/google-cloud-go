@@ -129,7 +129,7 @@ func defaultCloudSchedulerCallOptions() *CloudSchedulerCallOptions {
 	}
 }
 
-// internalCloudSchedulerClient is an interface that defines the methods availaible from Cloud Scheduler API.
+// internalCloudSchedulerClient is an interface that defines the methods available from Cloud Scheduler API.
 type internalCloudSchedulerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
