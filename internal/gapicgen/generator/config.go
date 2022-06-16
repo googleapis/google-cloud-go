@@ -1548,8 +1548,5 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GAPIC-level retries and allow the veneer layer to handle retries.
 		ApiServiceConfigPath: "storage_v2.yaml",
 		ReleaseLevel:         "alpha",
-		// Results in protobuf/grpc code generated into the following package:
-		// cloud.google.com/go/storage/internal/apiv2/stubs.
-		StubsDir: "stubs",
 	},
 }
