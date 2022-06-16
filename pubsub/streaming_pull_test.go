@@ -90,7 +90,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 		if err != nil {
 			t.Fatal(err)
 		}
-		wantAckh, _ := msgAckHandler(want)
+		wantAckh, _ := msgAckHandler(want, false)
 		wantAckh.calledDone = true
 		got := gotMap[wantAckh.ackID]
 		if got == nil {

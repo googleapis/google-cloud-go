@@ -37,13 +37,14 @@ import (
 type Message = ipubsub.Message
 
 // msgAckHandler performs a safe cast of the message's ack handler to psAckHandler.
-func msgAckHandler(m *Message) (*psAckHandler, bool) {
+func msgAckHandler(m *Message, eod bool) (*psAckHandler, bool) {
 	ackh, ok := ipubsub.MessageAckHandler(m).(*psAckHandler)
+	ackh.exactlyOnceDelivery = eod
 	return ackh, ok
 }
 
 func msgAckID(m *Message) string {
-	if ackh, ok := msgAckHandler(m); ok {
+	if ackh, ok := msgAckHandler(m, false); ok {
 		return ackh.ackID
 	}
 	return ""
@@ -104,6 +105,14 @@ type psAckHandler struct {
 
 	// The done method of the iterator that created this Message.
 	doneFunc iterDoneFunc
+
+	// the ack result that will be returned for this ack handler
+	// if AckWithResult or NackWithResult is called.
+	ackResult *AckResult
+
+	// exactlyOnceDelivery determines if the message needs to be delivered
+	// exactly once.
+	exactlyOnceDelivery bool
 }
 
 func (ah *psAckHandler) OnAck() {
@@ -114,12 +123,37 @@ func (ah *psAckHandler) OnNack() {
 	ah.done(false)
 }
 
+func (ah *psAckHandler) OnAckWithResult() *AckResult {
+	if !ah.exactlyOnceDelivery {
+		return newSuccessAckResult()
+	}
+	ah.ackResult = ipubsub.NewAckResult()
+	ah.done(true)
+	return ah.ackResult
+}
+
+func (ah *psAckHandler) OnNackWithResult() *AckResult {
+	if !ah.exactlyOnceDelivery {
+		return newSuccessAckResult()
+	}
+	ah.ackResult = ipubsub.NewAckResult()
+	ah.done(false)
+	return ah.ackResult
+}
+
 func (ah *psAckHandler) done(ack bool) {
 	if ah.calledDone {
 		return
 	}
 	ah.calledDone = true
 	if ah.doneFunc != nil {
-		ah.doneFunc(ah.ackID, ack, ah.receiveTime)
+		ah.doneFunc(ah.ackID, ack, ah.ackResult, ah.receiveTime)
 	}
+}
+
+// newSuccessAckResult returns an AckResult that resolves to success immediately.
+func newSuccessAckResult() *AckResult {
+	ar := ipubsub.NewAckResult()
+	ipubsub.SetAckResult(ar, ipubsub.AckResponseSuccess, nil)
+	return ar
 }
