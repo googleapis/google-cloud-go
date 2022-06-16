@@ -670,7 +670,7 @@ type tableGetCall struct {
 	call *bq.TablesGetCall
 }
 
-// TableUpdateOption allow requests to update table metadata.
+// TableMetadataOption allow requests to alter requests for table metadata.
 type TableMetadataOption func(*tableGetCall)
 
 // TableMetadataView specifies which details about a table are desired.
