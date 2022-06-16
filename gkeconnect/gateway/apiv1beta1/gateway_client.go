@@ -63,7 +63,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Connect Gateway API.
+// internalClient is an interface that defines the methods available from Connect Gateway API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

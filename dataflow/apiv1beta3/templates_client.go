@@ -61,7 +61,7 @@ func defaultTemplatesCallOptions() *TemplatesCallOptions {
 	}
 }
 
-// internalTemplatesClient is an interface that defines the methods availaible from Dataflow API.
+// internalTemplatesClient is an interface that defines the methods available from Dataflow API.
 type internalTemplatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

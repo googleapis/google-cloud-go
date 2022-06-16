@@ -154,7 +154,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 	}
 }
 
-// internalParticipantsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalParticipantsClient is an interface that defines the methods available from Dialogflow API.
 type internalParticipantsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

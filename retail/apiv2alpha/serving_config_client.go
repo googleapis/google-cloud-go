@@ -70,7 +70,7 @@ func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 	}
 }
 
-// internalServingConfigClient is an interface that defines the methods availaible from Retail API.
+// internalServingConfigClient is an interface that defines the methods available from Retail API.
 type internalServingConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -138,7 +138,7 @@ func defaultMetricCallOptions() *MetricCallOptions {
 	}
 }
 
-// internalMetricClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalMetricClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalMetricClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

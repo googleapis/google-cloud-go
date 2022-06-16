@@ -58,7 +58,7 @@ func defaultServiceControllerCallOptions() *ServiceControllerCallOptions {
 	}
 }
 
-// internalServiceControllerClient is an interface that defines the methods availaible from Service Control API.
+// internalServiceControllerClient is an interface that defines the methods available from Service Control API.
 type internalServiceControllerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

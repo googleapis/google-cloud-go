@@ -72,7 +72,7 @@ func defaultReachabilityCallOptions() *ReachabilityCallOptions {
 	}
 }
 
-// internalReachabilityClient is an interface that defines the methods availaible from Network Management API.
+// internalReachabilityClient is an interface that defines the methods available from Network Management API.
 type internalReachabilityClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

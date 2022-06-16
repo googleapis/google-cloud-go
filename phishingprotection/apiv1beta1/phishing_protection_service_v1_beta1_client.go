@@ -57,7 +57,7 @@ func defaultPhishingProtectionServiceV1Beta1CallOptions() *PhishingProtectionSer
 	}
 }
 
-// internalPhishingProtectionServiceV1Beta1Client is an interface that defines the methods availaible from Phishing Protection API.
+// internalPhishingProtectionServiceV1Beta1Client is an interface that defines the methods available from Phishing Protection API.
 type internalPhishingProtectionServiceV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

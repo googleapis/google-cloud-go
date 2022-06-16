@@ -138,7 +138,7 @@ func defaultBinauthzManagementCallOptions() *BinauthzManagementCallOptions {
 	}
 }
 
-// internalBinauthzManagementClient is an interface that defines the methods availaible from Binary Authorization API.
+// internalBinauthzManagementClient is an interface that defines the methods available from Binary Authorization API.
 type internalBinauthzManagementClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

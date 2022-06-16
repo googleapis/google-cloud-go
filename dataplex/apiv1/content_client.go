@@ -66,7 +66,7 @@ func defaultContentCallOptions() *ContentCallOptions {
 	}
 }
 
-// internalContentClient is an interface that defines the methods availaible from Cloud Dataplex API.
+// internalContentClient is an interface that defines the methods available from Cloud Dataplex API.
 type internalContentClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
