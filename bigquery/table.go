@@ -673,6 +673,7 @@ type tableGetCall struct {
 // TableUpdateOption allow requests to update table metadata.
 type TableMetadataOption func(*tableGetCall)
 
+// TableMetadataView specifies which details about a table are desired.
 type TableMetadataView string
 
 const (
@@ -690,9 +691,10 @@ const (
 	StorageStatsMetadataView TableMetadataView = "STORAGE_STATS"
 )
 
-// WithAutoDetectSchema governs whether the schema autodetection occurs as part of the table update.
-// This is relevant in cases like external tables where schema is detected from the source data.
-func WithView(tmv TableMetadataView) TableMetadataOption {
+// WithMetadataView is used to customize what details are returned when interrogating a
+// table via the Metadata() call.  Generally this is used to limit data returned for performance
+// reasons (such as large tables that take time computing storage statistics).
+func WithMetadataView(tmv TableMetadataView) TableMetadataOption {
 	return func(tgc *tableGetCall) {
 		tgc.call.View(string(tmv))
 	}
