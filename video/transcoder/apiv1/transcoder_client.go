@@ -73,7 +73,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Transcoder API.
+// internalClient is an interface that defines the methods available from Transcoder API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

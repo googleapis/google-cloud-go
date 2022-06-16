@@ -148,7 +148,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 	}
 }
 
-// internalInstanceAdminClient is an interface that defines the methods availaible from Cloud Spanner Instance Admin API.
+// internalInstanceAdminClient is an interface that defines the methods available from Cloud Spanner Instance Admin API.
 type internalInstanceAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

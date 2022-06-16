@@ -69,7 +69,7 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 	}
 }
 
-// internalPredictionClient is an interface that defines the methods availaible from Retail API.
+// internalPredictionClient is an interface that defines the methods available from Retail API.
 type internalPredictionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -76,7 +76,7 @@ func defaultAdaptationCallOptions() *AdaptationCallOptions {
 	}
 }
 
-// internalAdaptationClient is an interface that defines the methods availaible from Cloud Speech-to-Text API.
+// internalAdaptationClient is an interface that defines the methods available from Cloud Speech-to-Text API.
 type internalAdaptationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -45,7 +45,14 @@ type InterconnectLocationsCallOptions struct {
 	List []gax.CallOption
 }
 
-// internalInterconnectLocationsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultInterconnectLocationsRESTCallOptions() *InterconnectLocationsCallOptions {
+	return &InterconnectLocationsCallOptions{
+		Get:  []gax.CallOption{},
+		List: []gax.CallOption{},
+	}
+}
+
+// internalInterconnectLocationsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalInterconnectLocationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,6 +115,9 @@ type interconnectLocationsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing InterconnectLocationsClient
+	CallOptions **InterconnectLocationsCallOptions
 }
 
 // NewInterconnectLocationsRESTClient creates a new interconnect locations rest client.
@@ -120,13 +130,15 @@ func NewInterconnectLocationsRESTClient(ctx context.Context, opts ...option.Clie
 		return nil, err
 	}
 
+	callOpts := defaultInterconnectLocationsRESTCallOptions()
 	c := &interconnectLocationsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &InterconnectLocationsClient{internalClient: c, CallOptions: &InterconnectLocationsCallOptions{}}, nil
+	return &InterconnectLocationsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultInterconnectLocationsRESTClientOptions() []option.ClientOption {
@@ -174,6 +186,7 @@ func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect_location", url.QueryEscape(req.GetInterconnectLocation())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InterconnectLocation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

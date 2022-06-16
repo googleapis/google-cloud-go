@@ -49,7 +49,17 @@ type RegionSecurityPoliciesCallOptions struct {
 	Patch  []gax.CallOption
 }
 
-// internalRegionSecurityPoliciesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionSecurityPoliciesRESTCallOptions() *RegionSecurityPoliciesCallOptions {
+	return &RegionSecurityPoliciesCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Patch:  []gax.CallOption{},
+	}
+}
+
+// internalRegionSecurityPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionSecurityPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,6 +143,9 @@ type regionSecurityPoliciesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionSecurityPoliciesClient
+	CallOptions **RegionSecurityPoliciesCallOptions
 }
 
 // NewRegionSecurityPoliciesRESTClient creates a new region security policies rest client.
@@ -145,9 +158,11 @@ func NewRegionSecurityPoliciesRESTClient(ctx context.Context, opts ...option.Cli
 		return nil, err
 	}
 
+	callOpts := defaultRegionSecurityPoliciesRESTCallOptions()
 	c := &regionSecurityPoliciesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -161,7 +176,7 @@ func NewRegionSecurityPoliciesRESTClient(ctx context.Context, opts ...option.Cli
 	}
 	c.operationClient = opC
 
-	return &RegionSecurityPoliciesClient{internalClient: c, CallOptions: &RegionSecurityPoliciesCallOptions{}}, nil
+	return &RegionSecurityPoliciesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionSecurityPoliciesRESTClientOptions() []option.ClientOption {
@@ -219,6 +234,7 @@ func (c *regionSecurityPoliciesRESTClient) Delete(ctx context.Context, req *comp
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "security_policy", url.QueryEscape(req.GetSecurityPolicy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -279,6 +295,7 @@ func (c *regionSecurityPoliciesRESTClient) Get(ctx context.Context, req *compute
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "security_policy", url.QueryEscape(req.GetSecurityPolicy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SecurityPolicy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -348,6 +365,7 @@ func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *comp
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -518,6 +536,7 @@ func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *compu
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "security_policy", url.QueryEscape(req.GetSecurityPolicy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

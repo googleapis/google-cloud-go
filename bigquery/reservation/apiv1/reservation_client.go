@@ -210,7 +210,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from BigQuery Reservation API.
+// internalClient is an interface that defines the methods available from BigQuery Reservation API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

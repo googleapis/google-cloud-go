@@ -108,7 +108,7 @@ func defaultTagValuesCallOptions() *TagValuesCallOptions {
 	}
 }
 
-// internalTagValuesClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalTagValuesClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalTagValuesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -101,7 +101,7 @@ func defaultAutoscalingPolicyCallOptions() *AutoscalingPolicyCallOptions {
 	}
 }
 
-// internalAutoscalingPolicyClient is an interface that defines the methods availaible from Cloud Dataproc API.
+// internalAutoscalingPolicyClient is an interface that defines the methods available from Cloud Dataproc API.
 type internalAutoscalingPolicyClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
