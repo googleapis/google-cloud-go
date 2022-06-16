@@ -58,10 +58,15 @@ const (
 // number of writes processed, the number of requests sent to the service, and
 // the number of writes in the queue.
 type BulkWriterStatus struct {
-	WritesProvidedCount int  // number of write requests provided by caller
-	IsOpen              bool // whether this BulkWriter is open or closed
-	WritesSentCount     int  // number of requests sent to the service
-	WritesReceivedCount int  // number of WriteResults received from the service
+
+	// WritesProvidedCount is the number of write requests provided by caller
+	WritesProvidedCount int
+	// IsOpen shows whether this BulkWriter is open or closed
+	IsOpen bool
+	// WritesSentCount is the number of requests sent to the service
+	WritesSentCount int
+	// WritesReceivedCount is number of WriteResults received from the service
+	WritesReceivedCount int
 }
 
 // A BulkWriter allows multiple document writes in parallel. The BulkWriter
