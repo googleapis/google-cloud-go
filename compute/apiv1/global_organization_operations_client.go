@@ -46,7 +46,15 @@ type GlobalOrganizationOperationsCallOptions struct {
 	List   []gax.CallOption
 }
 
-// internalGlobalOrganizationOperationsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultGlobalOrganizationOperationsRESTCallOptions() *GlobalOrganizationOperationsCallOptions {
+	return &GlobalOrganizationOperationsCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		List:   []gax.CallOption{},
+	}
+}
+
+// internalGlobalOrganizationOperationsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalGlobalOrganizationOperationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -115,6 +123,9 @@ type globalOrganizationOperationsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing GlobalOrganizationOperationsClient
+	CallOptions **GlobalOrganizationOperationsCallOptions
 }
 
 // NewGlobalOrganizationOperationsRESTClient creates a new global organization operations rest client.
@@ -127,13 +138,15 @@ func NewGlobalOrganizationOperationsRESTClient(ctx context.Context, opts ...opti
 		return nil, err
 	}
 
+	callOpts := defaultGlobalOrganizationOperationsRESTCallOptions()
 	c := &globalOrganizationOperationsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &GlobalOrganizationOperationsClient{internalClient: c, CallOptions: &GlobalOrganizationOperationsCallOptions{}}, nil
+	return &GlobalOrganizationOperationsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultGlobalOrganizationOperationsRESTClientOptions() []option.ClientOption {
@@ -188,6 +201,7 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "operation", url.QueryEscape(req.GetOperation())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.DeleteGlobalOrganizationOperationResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -247,6 +261,7 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "operation", url.QueryEscape(req.GetOperation())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

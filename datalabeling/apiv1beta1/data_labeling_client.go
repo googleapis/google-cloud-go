@@ -360,7 +360,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Data Labeling API.
+// internalClient is an interface that defines the methods available from Data Labeling API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

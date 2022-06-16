@@ -80,7 +80,7 @@ func defaultFulfillmentsCallOptions() *FulfillmentsCallOptions {
 	}
 }
 
-// internalFulfillmentsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalFulfillmentsClient is an interface that defines the methods available from Dialogflow API.
 type internalFulfillmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

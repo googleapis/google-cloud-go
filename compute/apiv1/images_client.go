@@ -55,7 +55,23 @@ type ImagesCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalImagesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultImagesRESTCallOptions() *ImagesCallOptions {
+	return &ImagesCallOptions{
+		Delete:             []gax.CallOption{},
+		Deprecate:          []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		GetFromFamily:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		Patch:              []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		SetLabels:          []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalImagesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalImagesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -175,6 +191,9 @@ type imagesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ImagesClient
+	CallOptions **ImagesCallOptions
 }
 
 // NewImagesRESTClient creates a new images rest client.
@@ -187,9 +206,11 @@ func NewImagesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ima
 		return nil, err
 	}
 
+	callOpts := defaultImagesRESTCallOptions()
 	c := &imagesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -203,7 +224,7 @@ func NewImagesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ima
 	}
 	c.operationClient = opC
 
-	return &ImagesClient{internalClient: c, CallOptions: &ImagesCallOptions{}}, nil
+	return &ImagesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultImagesRESTClientOptions() []option.ClientOption {
@@ -261,6 +282,7 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "image", url.QueryEscape(req.GetImage())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -334,6 +356,7 @@ func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.Depreca
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "image", url.QueryEscape(req.GetImage())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Deprecate[0:len((*c.CallOptions).Deprecate):len((*c.CallOptions).Deprecate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -393,6 +416,7 @@ func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageReque
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "image", url.QueryEscape(req.GetImage())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Image{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -445,6 +469,7 @@ func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.Get
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "family", url.QueryEscape(req.GetFamily())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetFromFamily[0:len((*c.CallOptions).GetFromFamily):len((*c.CallOptions).GetFromFamily)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Image{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,6 +529,7 @@ func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetI
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -573,6 +599,7 @@ func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImag
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -742,6 +769,7 @@ func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageR
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "image", url.QueryEscape(req.GetImage())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -808,6 +836,7 @@ func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -867,6 +896,7 @@ func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabe
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -933,6 +963,7 @@ func (c *imagesRESTClient) TestIamPermissions(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

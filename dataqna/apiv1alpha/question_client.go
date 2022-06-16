@@ -86,7 +86,7 @@ func defaultQuestionCallOptions() *QuestionCallOptions {
 	}
 }
 
-// internalQuestionClient is an interface that defines the methods availaible from Data QnA API.
+// internalQuestionClient is an interface that defines the methods available from Data QnA API.
 type internalQuestionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

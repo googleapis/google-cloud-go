@@ -63,7 +63,7 @@ func defaultMetricsV1Beta3CallOptions() *MetricsV1Beta3CallOptions {
 	}
 }
 
-// internalMetricsV1Beta3Client is an interface that defines the methods availaible from Dataflow API.
+// internalMetricsV1Beta3Client is an interface that defines the methods available from Dataflow API.
 type internalMetricsV1Beta3Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

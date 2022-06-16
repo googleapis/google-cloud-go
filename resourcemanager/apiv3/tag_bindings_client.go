@@ -77,7 +77,7 @@ func defaultTagBindingsCallOptions() *TagBindingsCallOptions {
 	}
 }
 
-// internalTagBindingsClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalTagBindingsClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalTagBindingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
