@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.4.0...video/v1.5.0) (2022-06-16)
+
+
+### Features
+
+* **video/stitcher:** add asset_id and stream_id fields to VodSession and LiveSession responses fix: remove COMPLETE_POD stitching option ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.3.0...video/v1.4.0) (2022-03-14)
 
 
