@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.6.0...talent/v0.7.0) (2022-06-07)
 
 
