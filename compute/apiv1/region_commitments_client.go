@@ -50,7 +50,17 @@ type RegionCommitmentsCallOptions struct {
 	Update         []gax.CallOption
 }
 
-// internalRegionCommitmentsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionCommitmentsRESTCallOptions() *RegionCommitmentsCallOptions {
+	return &RegionCommitmentsCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+		Update:         []gax.CallOption{},
+	}
+}
+
+// internalRegionCommitmentsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionCommitmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -134,6 +144,9 @@ type regionCommitmentsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionCommitmentsClient
+	CallOptions **RegionCommitmentsCallOptions
 }
 
 // NewRegionCommitmentsRESTClient creates a new region commitments rest client.
@@ -146,9 +159,11 @@ func NewRegionCommitmentsRESTClient(ctx context.Context, opts ...option.ClientOp
 		return nil, err
 	}
 
+	callOpts := defaultRegionCommitmentsRESTCallOptions()
 	c := &regionCommitmentsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -162,7 +177,7 @@ func NewRegionCommitmentsRESTClient(ctx context.Context, opts ...option.ClientOp
 	}
 	c.operationClient = opC
 
-	return &RegionCommitmentsClient{internalClient: c, CallOptions: &RegionCommitmentsCallOptions{}}, nil
+	return &RegionCommitmentsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionCommitmentsRESTClientOptions() []option.ClientOption {
@@ -319,6 +334,7 @@ func (c *regionCommitmentsRESTClient) Get(ctx context.Context, req *computepb.Ge
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "commitment", url.QueryEscape(req.GetCommitment())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Commitment{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -385,6 +401,7 @@ func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -561,6 +578,7 @@ func (c *regionCommitmentsRESTClient) Update(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "commitment", url.QueryEscape(req.GetCommitment())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

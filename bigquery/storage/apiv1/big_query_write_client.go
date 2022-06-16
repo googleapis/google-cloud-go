@@ -133,7 +133,7 @@ func defaultBigQueryWriteCallOptions() *BigQueryWriteCallOptions {
 	}
 }
 
-// internalBigQueryWriteClient is an interface that defines the methods availaible from BigQuery Storage API.
+// internalBigQueryWriteClient is an interface that defines the methods available from BigQuery Storage API.
 type internalBigQueryWriteClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

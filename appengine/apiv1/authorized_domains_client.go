@@ -58,7 +58,7 @@ func defaultAuthorizedDomainsCallOptions() *AuthorizedDomainsCallOptions {
 	}
 }
 
-// internalAuthorizedDomainsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalAuthorizedDomainsClient is an interface that defines the methods available from App Engine Admin API.
 type internalAuthorizedDomainsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

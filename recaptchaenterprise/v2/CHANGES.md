@@ -1,5 +1,12 @@
 # Changes
 
+## [2.0.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.0.0...recaptchaenterprise/v2.0.1) (2022-06-16)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** set the right field number for reCAPTCHA private password leak ([5e46068](https://github.com/googleapis/google-cloud-go/commit/5e46068329153daf5aa590a6415d4764f1ab2b90))
+
 ## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.3.1...recaptchaenterprise/v2.0.0) (2022-05-24)
 
 

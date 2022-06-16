@@ -56,7 +56,7 @@ func defaultValidationHelperCallOptions() *ValidationHelperCallOptions {
 	}
 }
 
-// internalValidationHelperClient is an interface that defines the methods availaible from Binary Authorization API.
+// internalValidationHelperClient is an interface that defines the methods available from Binary Authorization API.
 type internalValidationHelperClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

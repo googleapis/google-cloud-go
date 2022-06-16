@@ -66,7 +66,7 @@ func defaultMetricsScopesCallOptions() *MetricsScopesCallOptions {
 	}
 }
 
-// internalMetricsScopesClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalMetricsScopesClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalMetricsScopesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

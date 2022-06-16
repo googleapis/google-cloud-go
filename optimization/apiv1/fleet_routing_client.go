@@ -83,7 +83,7 @@ func defaultFleetRoutingCallOptions() *FleetRoutingCallOptions {
 	}
 }
 
-// internalFleetRoutingClient is an interface that defines the methods availaible from Cloud Optimization API.
+// internalFleetRoutingClient is an interface that defines the methods available from Cloud Optimization API.
 type internalFleetRoutingClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

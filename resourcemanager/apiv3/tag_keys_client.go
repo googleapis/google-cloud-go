@@ -108,7 +108,7 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 	}
 }
 
-// internalTagKeysClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalTagKeysClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalTagKeysClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

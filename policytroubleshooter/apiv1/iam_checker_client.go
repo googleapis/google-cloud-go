@@ -55,7 +55,7 @@ func defaultIamCheckerCallOptions() *IamCheckerCallOptions {
 	}
 }
 
-// internalIamCheckerClient is an interface that defines the methods availaible from Policy Troubleshooter API.
+// internalIamCheckerClient is an interface that defines the methods available from Policy Troubleshooter API.
 type internalIamCheckerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

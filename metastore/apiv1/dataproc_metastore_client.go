@@ -151,7 +151,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 	}
 }
 
-// internalDataprocMetastoreClient is an interface that defines the methods availaible from Dataproc Metastore API.
+// internalDataprocMetastoreClient is an interface that defines the methods available from Dataproc Metastore API.
 type internalDataprocMetastoreClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

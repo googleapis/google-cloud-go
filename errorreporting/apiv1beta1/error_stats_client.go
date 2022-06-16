@@ -97,7 +97,7 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 	}
 }
 
-// internalErrorStatsClient is an interface that defines the methods availaible from Error Reporting API.
+// internalErrorStatsClient is an interface that defines the methods available from Error Reporting API.
 type internalErrorStatsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -98,7 +98,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 	}
 }
 
-// internalDocumentProcessorClient is an interface that defines the methods availaible from Cloud Document AI API.
+// internalDocumentProcessorClient is an interface that defines the methods available from Cloud Document AI API.
 type internalDocumentProcessorClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

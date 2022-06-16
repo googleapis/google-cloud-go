@@ -50,6 +50,12 @@ type MicrogenConfig struct {
 	// Transports is a list of Transports to generate a client for. Acceptable
 	// values are 'grpc' and 'rest'
 	Transports []string
+
+	// StubsDir indicates that the protobuf/gRPC stubs should be generated
+	// in the GAPIC module by replacing the go_package option with the value of
+	// ImportPath plus the specified suffix separated by a "/", and using the
+	// same Pkg value.
+	StubsDir string
 }
 
 var MicrogenGapicConfigs = []*MicrogenConfig{
@@ -910,7 +916,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
-		ApiServiceConfigPath:  "assuredworkloads_v1beta1.yaml",
+		ApiServiceConfigPath:  "assuredworkloads.yaml",
 		ReleaseLevel:          "beta",
 	},
 	{
