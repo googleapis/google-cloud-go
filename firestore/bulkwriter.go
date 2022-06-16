@@ -13,18 +13,20 @@ import (
 )
 
 const (
-	// MaxBatchSize is the max number of writes to send in a request
-	MaxBatchSize = 20
-	// RetryMaxBatchSize is the max number of writes to send in a retry request
-	RetryMaxBatchSize = 10
-	// MaxRetryAttempts is the max number of times to retry a write
-	MaxRetryAttempts = 10
-	// DefaultStartingMaximumOpsPerSecond is the starting max number of requests to the service per second
-	DefaultStartingMaximumOpsPerSecond = 500
-	// RateLimiterMultiplier is the amount to increase maximum ops (qps) every 5 minutes
-	RateLimiterMultiplier       = 1.5
-	rateLimiterMultiplierMillis = 5 * 60 * 1000 // 5 minutes in milliseconds
-	coolingPeriodMillis         = 2.0           // starting time to wait in between requests
+	// maxBatchSize is the max number of writes to send in a request
+	maxBatchSize = 20
+	// retryMaxBatchSize is the max number of writes to send in a retry request
+	retryMaxBatchSize = 10
+	// maxRetryAttempts is the max number of times to retry a write
+	maxRetryAttempts = 10
+	// defaultStartingMaximumOpsPerSecond is the starting max number of requests to the service per second
+	defaultStartingMaximumOpsPerSecond = 500
+	// rateLimiterMultiplier is the amount to increase maximum ops (qps) every 5 minutes
+	rateLimiterMultiplier = 1.5
+	// 5 minutes in milliseconds
+	rateLimiterMultiplierMillis = 5 * 60 * 1000
+	// starting time to wait in between requests
+	coolingPeriodMillis = 2.0
 )
 
 type bulkWriterJob struct {
@@ -112,7 +114,7 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		received:        make(chan bulkWriterJob),
 		scheduled:       make(chan bulkWriterRequestBatch),
 		start:           time.Now(),
-		maxOpsPerSecond: DefaultStartingMaximumOpsPerSecond,
+		maxOpsPerSecond: defaultStartingMaximumOpsPerSecond,
 		waitTime:        coolingPeriodMillis,
 		writesLog:       sm,
 		cancel:          cancel,
@@ -336,7 +338,7 @@ func (bw *BulkWriter) receiver(ctx context.Context) {
 			bw.sendingQueue = append(bw.sendingQueue, bwj)
 			if bw.isFlushing {
 				bw.backlogQueue = append(bw.backlogQueue, bwj)
-			} else if len(bw.sendingQueue) > MaxBatchSize {
+			} else if len(bw.sendingQueue) > maxBatchSize {
 				bs = bw.buildRequests(false)
 			}
 			// should we block from adding to the queue until a flushing job is complete?
@@ -367,19 +369,19 @@ func (bw *BulkWriter) makeBatch() (bulkWriterBatch, error) {
 	var b []bulkWriterJob
 
 	// Don't index outside-of-bounds
-	if qs < MaxBatchSize {
+	if qs < maxBatchSize {
 		b = bw.sendingQueue[:qs]
 		bw.sendingQueue = []bulkWriterJob{}
 
 	} else {
-		b = bw.sendingQueue[:MaxBatchSize]
-		bw.sendingQueue = bw.sendingQueue[MaxBatchSize:]
+		b = bw.sendingQueue[:maxBatchSize]
+		bw.sendingQueue = bw.sendingQueue[maxBatchSize:]
 	}
 
 	// Get the writes out of the jobs
 	var ws []*pb.Write
 	for _, j := range b {
-		if j.attempts < MaxRetryAttempts {
+		if j.attempts < maxRetryAttempts {
 			ws = append(ws, j.write)
 		}
 	}
@@ -452,7 +454,7 @@ func (bw *BulkWriter) scheduler(ctx context.Context) {
 					// Increase number of requests per second at the five minute mark
 					mins := elapsed / 60
 					if math.Mod(mins, 5) < 0.01 {
-						newOps := float64(bw.maxOpsPerSecond) * RateLimiterMultiplier
+						newOps := float64(bw.maxOpsPerSecond) * rateLimiterMultiplier
 						bw.maxOpsPerSecond = int(newOps)
 					}
 				}
