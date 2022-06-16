@@ -611,11 +611,11 @@ const (
 // All configured conditions must be met for the associated action to be taken.
 type LifecycleCondition struct {
 	// AllObject is used to select all objects in a bucket by
-	// setting Age=0.
+	// setting AgeInDays to 0.
 	AllObjects bool
 
 	// AgeInDays is the age of the object in days.
-	// If you want to set AgeInDays to `0` use AllObjects set to true
+	// If you want to set AgeInDays to `0` use AllObjects set to `true`.
 	AgeInDays int64
 
 	// CreatedBefore is the time the object was created.
@@ -1515,8 +1515,7 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 			},
 		}
 
-		// TODO: I don't think this is necessary because proto will automatically pass in values present.
-		// I wonder if all values will be send though by accident.
+		// TODO(#6205): This may not be needed for gRPC
 		if r.Condition.AllObjects {
 			rr.Condition.AgeDays = proto.Int32(0)
 		}
@@ -1627,6 +1626,11 @@ func toLifecycleFromProto(rl *storagepb.Bucket_Lifecycle) Lifecycle {
 				MatchesSuffix:           rr.GetCondition().GetMatchesSuffix(),
 				NumNewerVersions:        int64(rr.GetCondition().GetNumNewerVersions()),
 			},
+		}
+
+		// TODO(#6205): This may not be needed for gRPC
+		if rr.GetCondition().GetAgeDays() == 0 {
+			r.Condition.AllObjects = true
 		}
 
 		if rr.GetCondition().IsLive == nil {
