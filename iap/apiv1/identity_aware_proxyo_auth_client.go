@@ -73,7 +73,7 @@ func defaultIdentityAwareProxyOAuthCallOptions() *IdentityAwareProxyOAuthCallOpt
 	}
 }
 
-// internalIdentityAwareProxyOAuthClient is an interface that defines the methods availaible from Cloud Identity-Aware Proxy API.
+// internalIdentityAwareProxyOAuthClient is an interface that defines the methods available from Cloud Identity-Aware Proxy API.
 type internalIdentityAwareProxyOAuthClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

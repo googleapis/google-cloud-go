@@ -229,7 +229,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 	}
 }
 
-// internalBackupForGKEClient is an interface that defines the methods availaible from Backup for GKE API.
+// internalBackupForGKEClient is an interface that defines the methods available from Backup for GKE API.
 type internalBackupForGKEClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
