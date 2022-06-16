@@ -173,7 +173,7 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 	}
 }
 
-// internalAzureClustersClient is an interface that defines the methods availaible from Anthos Multi-Cloud API.
+// internalAzureClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
 type internalAzureClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

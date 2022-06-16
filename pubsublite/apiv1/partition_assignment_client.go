@@ -54,7 +54,7 @@ func defaultPartitionAssignmentCallOptions() *PartitionAssignmentCallOptions {
 	}
 }
 
-// internalPartitionAssignmentClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalPartitionAssignmentClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalPartitionAssignmentClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

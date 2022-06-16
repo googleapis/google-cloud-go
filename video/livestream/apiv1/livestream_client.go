@@ -153,7 +153,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Live Stream API.
+// internalClient is an interface that defines the methods available from Live Stream API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

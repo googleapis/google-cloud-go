@@ -85,7 +85,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 	}
 }
 
-// internalCompletionClient is an interface that defines the methods availaible from Retail API.
+// internalCompletionClient is an interface that defines the methods available from Retail API.
 type internalCompletionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

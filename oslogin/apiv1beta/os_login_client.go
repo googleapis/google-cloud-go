@@ -135,7 +135,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud OS Login API.
+// internalClient is an interface that defines the methods available from Cloud OS Login API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

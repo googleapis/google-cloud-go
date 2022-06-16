@@ -87,7 +87,7 @@ func defaultServiceManagerCallOptions() *ServiceManagerCallOptions {
 	}
 }
 
-// internalServiceManagerClient is an interface that defines the methods availaible from Service Management API.
+// internalServiceManagerClient is an interface that defines the methods available from Service Management API.
 type internalServiceManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
