@@ -91,7 +91,31 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	return msg, nil
 }
 
+// AckResult holds the result from a call to Ack or Nack.
+//
+// Call Get to obtain the result of the Ack/NackWithResult call. Example:
+//   // Get blocks until Ack/NackWithResult completes or ctx is done.
+//   ackStatus, err := r.Get(ctx)
+//   if err != nil {
+//       // TODO: Handle error.
+//   }
 type AckResult = ipubsub.AckResult
+
+// AcknowledgeStatus represents the status of an Ack or Nack request.
+type AcknowledgeStatus = ipubsub.AcknowledgeStatus
+
+const (
+	// AckResponseSuccess indicates the request was a success.
+	AckResponseSuccess AcknowledgeStatus = iota
+	// AckResponsePermissionDenied indicates the caller does not have sufficient permissions.
+	AckResponsePermissionDenied
+	// AckResponseFailedPrecondition indicates the request encountered a FailedPrecondition error.
+	AckResponseFailedPrecondition
+	// AckResponseInvalidAckID indicates one or more of the ack IDs sent were invalid.
+	AckResponseInvalidAckID
+	// AckResponseOther indicates another unknown error was returned.
+	AckResponseOther
+)
 
 // psAckHandler handles ack/nack for the pubsub package.
 type psAckHandler struct {
