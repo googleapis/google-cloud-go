@@ -56,7 +56,7 @@ func defaultSystemPolicyV1Beta1CallOptions() *SystemPolicyV1Beta1CallOptions {
 	}
 }
 
-// internalSystemPolicyV1Beta1Client is an interface that defines the methods availaible from Binary Authorization API.
+// internalSystemPolicyV1Beta1Client is an interface that defines the methods available from Binary Authorization API.
 type internalSystemPolicyV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

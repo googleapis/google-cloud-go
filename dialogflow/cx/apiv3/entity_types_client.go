@@ -130,7 +130,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 	}
 }
 
-// internalEntityTypesClient is an interface that defines the methods availaible from Dialogflow API.
+// internalEntityTypesClient is an interface that defines the methods available from Dialogflow API.
 type internalEntityTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -459,7 +459,9 @@ func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *cxpb.
 }
 
 func (c *entityTypesGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -474,7 +476,9 @@ func (c *entityTypesGRPCClient) GetLocation(ctx context.Context, req *locationpb
 }
 
 func (c *entityTypesGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -517,7 +521,9 @@ func (c *entityTypesGRPCClient) ListLocations(ctx context.Context, req *location
 }
 
 func (c *entityTypesGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -528,7 +534,9 @@ func (c *entityTypesGRPCClient) CancelOperation(ctx context.Context, req *longru
 }
 
 func (c *entityTypesGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -543,7 +551,9 @@ func (c *entityTypesGRPCClient) GetOperation(ctx context.Context, req *longrunni
 }
 
 func (c *entityTypesGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

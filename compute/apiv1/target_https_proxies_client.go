@@ -56,7 +56,23 @@ type TargetHttpsProxiesCallOptions struct {
 	SetUrlMap          []gax.CallOption
 }
 
-// internalTargetHttpsProxiesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultTargetHttpsProxiesRESTCallOptions() *TargetHttpsProxiesCallOptions {
+	return &TargetHttpsProxiesCallOptions{
+		AggregatedList:     []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		Patch:              []gax.CallOption{},
+		SetCertificateMap:  []gax.CallOption{},
+		SetQuicOverride:    []gax.CallOption{},
+		SetSslCertificates: []gax.CallOption{},
+		SetSslPolicy:       []gax.CallOption{},
+		SetUrlMap:          []gax.CallOption{},
+	}
+}
+
+// internalTargetHttpsProxiesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalTargetHttpsProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -176,6 +192,9 @@ type targetHttpsProxiesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing TargetHttpsProxiesClient
+	CallOptions **TargetHttpsProxiesCallOptions
 }
 
 // NewTargetHttpsProxiesRESTClient creates a new target https proxies rest client.
@@ -188,9 +207,11 @@ func NewTargetHttpsProxiesRESTClient(ctx context.Context, opts ...option.ClientO
 		return nil, err
 	}
 
+	callOpts := defaultTargetHttpsProxiesRESTCallOptions()
 	c := &targetHttpsProxiesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -204,7 +225,7 @@ func NewTargetHttpsProxiesRESTClient(ctx context.Context, opts ...option.ClientO
 	}
 	c.operationClient = opC
 
-	return &TargetHttpsProxiesClient{internalClient: c, CallOptions: &TargetHttpsProxiesCallOptions{}}, nil
+	return &TargetHttpsProxiesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultTargetHttpsProxiesRESTClientOptions() []option.ClientOption {
@@ -368,6 +389,7 @@ func (c *targetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -427,6 +449,7 @@ func (c *targetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.G
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetHttpsProxy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -493,6 +516,7 @@ func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -662,6 +686,7 @@ func (c *targetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -735,6 +760,7 @@ func (c *targetHttpsProxiesRESTClient) SetCertificateMap(ctx context.Context, re
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetCertificateMap[0:len((*c.CallOptions).SetCertificateMap):len((*c.CallOptions).SetCertificateMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -808,6 +834,7 @@ func (c *targetHttpsProxiesRESTClient) SetQuicOverride(ctx context.Context, req 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetQuicOverride[0:len((*c.CallOptions).SetQuicOverride):len((*c.CallOptions).SetQuicOverride)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -881,6 +908,7 @@ func (c *targetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, r
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetSslCertificates[0:len((*c.CallOptions).SetSslCertificates):len((*c.CallOptions).SetSslCertificates)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -954,6 +982,7 @@ func (c *targetHttpsProxiesRESTClient) SetSslPolicy(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetSslPolicy[0:len((*c.CallOptions).SetSslPolicy):len((*c.CallOptions).SetSslPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1027,6 +1056,7 @@ func (c *targetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *compu
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_https_proxy", url.QueryEscape(req.GetTargetHttpsProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetUrlMap[0:len((*c.CallOptions).SetUrlMap):len((*c.CallOptions).SetUrlMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

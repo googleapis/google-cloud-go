@@ -43,7 +43,14 @@ type LicenseCodesCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalLicenseCodesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultLicenseCodesRESTCallOptions() *LicenseCodesCallOptions {
+	return &LicenseCodesCallOptions{
+		Get:                []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalLicenseCodesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalLicenseCodesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -106,6 +113,9 @@ type licenseCodesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing LicenseCodesClient
+	CallOptions **LicenseCodesCallOptions
 }
 
 // NewLicenseCodesRESTClient creates a new license codes rest client.
@@ -118,13 +128,15 @@ func NewLicenseCodesRESTClient(ctx context.Context, opts ...option.ClientOption)
 		return nil, err
 	}
 
+	callOpts := defaultLicenseCodesRESTCallOptions()
 	c := &licenseCodesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &LicenseCodesClient{internalClient: c, CallOptions: &LicenseCodesCallOptions{}}, nil
+	return &LicenseCodesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultLicenseCodesRESTClientOptions() []option.ClientOption {
@@ -172,6 +184,7 @@ func (c *licenseCodesRESTClient) Get(ctx context.Context, req *computepb.GetLice
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "license_code", url.QueryEscape(req.GetLicenseCode())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.LicenseCode{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -231,6 +244,7 @@ func (c *licenseCodesRESTClient) TestIamPermissions(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

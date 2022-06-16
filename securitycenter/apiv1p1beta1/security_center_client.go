@@ -230,7 +230,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Security Command Center API.
+// internalClient is an interface that defines the methods available from Security Command Center API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

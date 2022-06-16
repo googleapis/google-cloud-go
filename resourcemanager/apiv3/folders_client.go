@@ -114,7 +114,7 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 	}
 }
 
-// internalFoldersClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalFoldersClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalFoldersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

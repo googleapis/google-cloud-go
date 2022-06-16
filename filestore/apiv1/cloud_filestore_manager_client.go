@@ -124,7 +124,7 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 	}
 }
 
-// internalCloudFilestoreManagerClient is an interface that defines the methods availaible from Cloud Filestore API.
+// internalCloudFilestoreManagerClient is an interface that defines the methods available from Cloud Filestore API.
 type internalCloudFilestoreManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -101,7 +101,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Assured Workloads API.
+// internalClient is an interface that defines the methods available from Assured Workloads API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
