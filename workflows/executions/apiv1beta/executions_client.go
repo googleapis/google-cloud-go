@@ -64,7 +64,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Workflow Executions API.
+// internalClient is an interface that defines the methods available from Workflow Executions API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

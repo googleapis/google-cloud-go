@@ -66,7 +66,7 @@ func defaultAuthorizedCertificatesCallOptions() *AuthorizedCertificatesCallOptio
 	}
 }
 
-// internalAuthorizedCertificatesClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalAuthorizedCertificatesClient is an interface that defines the methods available from App Engine Admin API.
 type internalAuthorizedCertificatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -125,7 +125,7 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 	}
 }
 
-// internalTranslationClient is an interface that defines the methods availaible from Cloud Translation API.
+// internalTranslationClient is an interface that defines the methods available from Cloud Translation API.
 type internalTranslationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

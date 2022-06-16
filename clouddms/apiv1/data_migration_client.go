@@ -94,7 +94,7 @@ func defaultDataMigrationCallOptions() *DataMigrationCallOptions {
 	}
 }
 
-// internalDataMigrationClient is an interface that defines the methods availaible from Database Migration API.
+// internalDataMigrationClient is an interface that defines the methods available from Database Migration API.
 type internalDataMigrationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
