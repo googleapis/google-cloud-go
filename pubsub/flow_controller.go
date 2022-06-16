@@ -203,17 +203,23 @@ func (f *flowController) count() int {
 }
 
 func (f *flowController) recordOutstandingMessages(ctx context.Context, n int64) {
-	if f.purpose == flowControllerPurposeTopic {
+	switch f.purpose {
+	case flowControllerPurposeTopic:
 		recordStat(ctx, PublisherOutstandingMessages, n)
-	} else {
+	case flowControllerPurposeSubscription:
+		fallthrough
+	default:
 		recordStat(ctx, OutstandingMessages, n)
 	}
 }
 
 func (f *flowController) recordOutstandingBytes(ctx context.Context, n int64) {
-	if f.purpose == flowControllerPurposeTopic {
+	switch f.purpose {
+	case flowControllerPurposeTopic:
 		recordStat(ctx, PublisherOutstandingBytes, n)
-	} else {
+	case flowControllerPurposeSubscription:
+		fallthrough
+	default:
 		recordStat(ctx, OutstandingBytes, n)
 	}
 }
