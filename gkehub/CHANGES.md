@@ -1,5 +1,13 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.6.0...gkehub/v0.7.0) (2022-06-16)
+
+
+### Features
+
+* **gkehub:** add ClusterType field in MembershipEndpoint.OnPremCluster ([5e46068](https://github.com/googleapis/google-cloud-go/commit/5e46068329153daf5aa590a6415d4764f1ab2b90))
+* **gkehub:** Added support for locations and iam_policy clients ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.5.0...gkehub/v0.6.0) (2022-06-01)
 
 
