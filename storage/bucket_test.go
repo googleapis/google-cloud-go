@@ -119,6 +119,13 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				Condition: LifecycleCondition{
 					AgeInDays: 20,
 				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
 			}},
 		},
 	}
@@ -219,6 +226,15 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
 						//Age: 20,
+					},
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:             0,
+						ForceSendFields: []string{"Age"},
 					},
 				},
 			},

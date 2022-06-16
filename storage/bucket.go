@@ -610,7 +610,12 @@ const (
 //
 // All configured conditions must be met for the associated action to be taken.
 type LifecycleCondition struct {
+	// AllObject is used to select all objects in a bucket by
+	// setting Age=0.
+	AllObjects bool
+
 	// AgeInDays is the age of the object in days.
+	// If you want to set AgeInDays to `0` use AllObjects set to true
 	AgeInDays int64
 
 	// CreatedBefore is the time the object was created.
@@ -628,10 +633,12 @@ type LifecycleCondition struct {
 
 	// DaysSinceCustomTime is the days elapsed since the CustomTime date of the
 	// object. This condition can only be satisfied if CustomTime has been set.
+	// Note: Using `0` as the value will not be ignored by the library and not sent to the API.
 	DaysSinceCustomTime int64
 
 	// DaysSinceNoncurrentTime is the days elapsed since the noncurrent timestamp
 	// of the object. This condition is relevant only for versioned objects.
+	// Note: Using `0` as the value will not be ignored by the library and not sent to the API.
 	DaysSinceNoncurrentTime int64
 
 	// Liveness specifies the object's liveness. Relevant only for versioned objects
@@ -1454,6 +1461,10 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				NumNewerVersions:        r.Condition.NumNewerVersions,
 			},
 		}
+		if r.Condition.AllObjects {
+			rr.Condition.Age = 0
+			rr.Condition.ForceSendFields = []string{"Age"}
+		}
 
 		setAgeCondition(r.Condition.AgeInDays, &rr.Condition.Age)
 
@@ -1502,6 +1513,12 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 				MatchesSuffix:           r.Condition.MatchesSuffix,
 				NumNewerVersions:        proto.Int32(int32(r.Condition.NumNewerVersions)),
 			},
+		}
+
+		// TODO: I don't think this is necessary because proto will automatically pass in values present.
+		// I wonder if all values will be send though by accident.
+		if r.Condition.AllObjects {
+			rr.Condition.AgeDays = proto.Int32(0)
 		}
 
 		switch r.Condition.Liveness {
@@ -1563,6 +1580,10 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 			},
 		}
 		r.Condition.AgeInDays = getAgeCondition(rr.Condition.Age)
+
+		if rr.Condition.Age == 0 {
+			r.Condition.AllObjects = true
+		}
 
 		if rr.Condition.IsLive == nil {
 			r.Condition.Liveness = LiveAndArchived
