@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.5.0...video/v1.6.0) (2022-06-17)
+
+
+### Features
+
+* **video/transcoder:** add support for user labels for job and job template ([c84e111](https://github.com/googleapis/google-cloud-go/commit/c84e111db5d3f57f4e8fbb5dfff0219d052435a0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.4.0...video/v1.5.0) (2022-06-16)
 
 
