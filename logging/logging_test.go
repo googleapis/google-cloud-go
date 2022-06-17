@@ -39,6 +39,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
+	"cloud.google.com/go/logging/internal"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
 	"github.com/google/go-cmp/cmp"
@@ -85,7 +86,8 @@ func testNow() time.Time {
 }
 
 func TestMain(m *testing.M) {
-	flag.Parse() // needed for testing.Short()
+	flag.Parse()                           // needed for testing.Short()
+	internal.IngestInstrumentation = false // disable ingesting instrumentation log entry
 	ctx = context.Background()
 	testProjectID = testutil.ProjID()
 	errorc = make(chan error, 100)
@@ -1134,6 +1136,29 @@ func (f *writeLogEntriesTestHandler) WriteLogEntries(_ context.Context, e *logpb
 	return &logpb.WriteLogEntriesResponse{}, nil
 }
 
+func fakeClient(parent string, writeLogEntryHandler func(e *logpb.WriteLogEntriesRequest)) (*logging.Client, error) {
+	// setup fake server
+	fakeBackend := &writeLogEntriesTestHandler{}
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		return nil, err
+	}
+	gsrv := grpc.NewServer()
+	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
+	fakeServerAddr := l.Addr().String()
+	go func() {
+		if err := gsrv.Serve(l); err != nil {
+			panic(err)
+		}
+	}()
+	fakeBackend.hook = writeLogEntryHandler
+	ctx := context.Background()
+	client, _ := logging.NewClient(ctx, parent, option.WithEndpoint(fakeServerAddr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()))
+	return client, nil
+}
+
 func TestPartialSuccessOption(t *testing.T) {
 	var logger *logging.Logger
 	var partialSuccess bool
@@ -1158,27 +1183,13 @@ func TestPartialSuccessOption(t *testing.T) {
 		},
 	}
 
-	// setup fake server
-	fakeBackend := &writeLogEntriesTestHandler{}
-	l, err := net.Listen("tcp", "localhost:0")
+	// setup fake client
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {
+		partialSuccess = e.PartialSuccess
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	gsrv := grpc.NewServer()
-	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
-	fakeServerAddr := l.Addr().String()
-	go func() {
-		if err := gsrv.Serve(l); err != nil {
-			panic(err)
-		}
-	}()
-	fakeBackend.hook = func(e *logpb.WriteLogEntriesRequest) {
-		partialSuccess = e.PartialSuccess
-	}
-	ctx := context.Background()
-	client, _ := logging.NewClient(ctx, "projects/test", option.WithEndpoint(fakeServerAddr),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()))
 	defer client.Close()
 	logger = client.Logger("abc", logging.PartialSuccess())
 
@@ -1196,27 +1207,13 @@ func TestPartialSuccessOption(t *testing.T) {
 func TestRedirectOutputIngestion(t *testing.T) {
 	var hookCalled bool
 
-	// setup fake server
-	fakeBackend := &writeLogEntriesTestHandler{}
-	l, err := net.Listen("tcp", "localhost:0")
+	// setup fake client
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {
+		hookCalled = true
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	gsrv := grpc.NewServer()
-	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
-	fakeServerAddr := l.Addr().String()
-	go func() {
-		if err := gsrv.Serve(l); err != nil {
-			panic(err)
-		}
-	}()
-	fakeBackend.hook = func(e *logpb.WriteLogEntriesRequest) {
-		hookCalled = true
-	}
-	ctx := context.Background()
-	client, _ := logging.NewClient(ctx, "projects/test", option.WithEndpoint(fakeServerAddr),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()))
 	defer client.Close()
 
 	entry := logging.Entry{Payload: "testing payload string"}
@@ -1356,6 +1353,93 @@ func TestRedirectOutputFormats(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestInstrumentationIngestion(t *testing.T) {
+	var got []*logpb.LogEntry
+
+	tests := []struct {
+		name          string
+		ingestionFlag bool
+		want          int
+	}{
+		{
+			name:          "first time log",
+			ingestionFlag: true,
+			want:          2,
+		},
+		{
+			name:          "any non first log",
+			ingestionFlag: false,
+			want:          1,
+		},
+	}
+	// setup fake client
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {
+		got = e.GetEntries()
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	iiStatus := internal.IngestInstrumentation
+
+	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
+	logger := client.Logger("test-instrumentation")
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got = nil
+			internal.IngestInstrumentation = tc.ingestionFlag
+			err := logger.LogSync(context.TODO(), *entry)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(got) != tc.want {
+				t.Errorf("got(%v),want(%v):\n", got, tc.want)
+			}
+		})
+	}
+	internal.IngestInstrumentation = iiStatus
+}
+
+func TestInstrumentationWithRedirect(t *testing.T) {
+	tests := []struct {
+		name          string
+		ingestionFlag bool
+		want          string
+	}{
+		{
+			name:          "first time log",
+			ingestionFlag: true,
+			// do not format the string to preserve expected new-line between messages
+			want: `{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}
+{"message":{"logging.googleapis.com/diagnostic":{"instrumentation_source":[{"name":"go","version":"1.4.2"}],"runtime":"1.16.14"}},"severity":"DEFAULT","timestamp":"seconds:1000"}`,
+		},
+		{
+			name:          "any non first log",
+			ingestionFlag: false,
+			want:          `{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}`,
+		},
+	}
+	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
+	buffer := &strings.Builder{}
+	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
+	iiStatus := internal.IngestInstrumentation
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			internal.IngestInstrumentation = tc.ingestionFlag
+			buffer.Reset()
+			err := logger.LogSync(context.TODO(), *entry)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := strings.TrimSpace(buffer.String())
+			if got != tc.want {
+				t.Errorf("got(%v),want(%v):\n", got, tc.want)
+			}
+		})
+	}
+	internal.IngestInstrumentation = iiStatus
 }
 
 func ExampleRedirectAsJson_withStdout() {

@@ -24,6 +24,11 @@ const (
 	ProdAddr = "logging.googleapis.com:443"
 )
 
+var (
+	// IngestInstrumentation keeps tracks of sending instrumentation lib info
+	IngestInstrumentation = true
+)
+
 // LogPath creates a formatted path from a parent and a logID.
 func LogPath(parent, logID string) string {
 	logID = strings.Replace(logID, "/", "%2F", -1)

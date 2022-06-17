@@ -90,20 +90,22 @@ const (
 	defaultWriteTimeout = 10 * time.Minute
 )
 
-// ErrRedirectProtoPayloadNotSupported is returned when Logger is configured to redirect output and
-// tries to redirect logs with protobuf payload.
-var ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
+var (
+	// ErrRedirectProtoPayloadNotSupported is returned when Logger is configured to redirect output and
+	// tries to redirect logs with protobuf payload.
+	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
-// For testing:
-var now = time.Now
+	// For testing:
+	now = time.Now
 
-// ErrOverflow signals that the number of buffered entries for a Logger
-// exceeds its BufferLimit.
-var ErrOverflow = bundler.ErrOverflow
+	// ErrOverflow signals that the number of buffered entries for a Logger
+	// exceeds its BufferLimit.
+	ErrOverflow = bundler.ErrOverflow
 
-// ErrOversizedEntry signals that an entry's size exceeds the maximum number of
-// bytes that will be sent in a single call to the logging service.
-var ErrOversizedEntry = bundler.ErrOversizedItem
+	// ErrOversizedEntry signals that an entry's size exceeds the maximum number of
+	// bytes that will be sent in a single call to the logging service.
+	ErrOversizedEntry = bundler.ErrOversizedItem
+)
 
 // Client is a Logging client. A Client is associated with a single Cloud project.
 type Client struct {
@@ -631,14 +633,15 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 		return err
 	}
 	if l.redirectOutputWriter != nil {
-		return printEntryToWriter(ent, l.redirectOutputWriter)
+		return l.redirectAsJSON(ent)
 	}
+	entries, partialSuccess := l.ingestInstrumentation([]*logpb.LogEntry{ent})
 	_, err = l.client.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:        l.logName,
 		Resource:       l.commonResource,
 		Labels:         l.commonLabels,
-		Entries:        []*logpb.LogEntry{ent},
-		PartialSuccess: l.partialSuccess,
+		Entries:        entries,
+		PartialSuccess: l.partialSuccess || partialSuccess,
 	})
 	return err
 }
@@ -650,8 +653,9 @@ func (l *Logger) Log(e Entry) {
 		l.client.error(err)
 		return
 	}
+
 	if l.redirectOutputWriter != nil {
-		err := printEntryToWriter(ent, l.redirectOutputWriter)
+		err := l.redirectAsJSON(ent)
 		if err != nil {
 			l.client.error(err)
 		}
@@ -674,12 +678,13 @@ func (l *Logger) Flush() error {
 }
 
 func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
+	entries, partialSuccess := l.ingestInstrumentation(entries)
 	req := &logpb.WriteLogEntriesRequest{
 		LogName:        l.logName,
 		Resource:       l.commonResource,
 		Labels:         l.commonLabels,
 		Entries:        entries,
-		PartialSuccess: l.partialSuccess,
+		PartialSuccess: l.partialSuccess || partialSuccess,
 	}
 	ctx, afterCall := l.ctxFunc()
 	ctx, cancel := context.WithTimeout(ctx, defaultWriteTimeout)
@@ -734,7 +739,7 @@ func populateTraceInfo(e *Entry, req *http.Request) bool {
 }
 
 // As per format described at https://www.w3.org/TR/trace-context/#traceparent-header-field-values
-var validTraceParentExpression = regexp.MustCompile("^(00)-([a-fA-F\\d]{32})-([a-f\\d]{16})-([a-fA-F\\d]{2})$")
+var validTraceParentExpression = regexp.MustCompile(`^(00)-([a-fA-F\d]{32})-([a-f\d]{16})-([a-fA-F\d]{2})$`)
 
 func deconstructTraceParent(s string) (traceID, spanID string, traceSampled bool) {
 	matches := validTraceParentExpression.FindStringSubmatch(s)
@@ -897,7 +902,7 @@ type structuredLogEntry struct {
 	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
 
-func printEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
+func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
 	jsonifiedEntry := structuredLogEntry{
 		Severity:       entry.Severity.String(),
 		HTTPRequest:    entry.HttpRequest,
@@ -922,4 +927,41 @@ func printEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
 		err = json.NewEncoder(w).Encode(jsonifiedEntry)
 	}
 	return err
+}
+
+func (l *Logger) redirectAsJSON(pbe *logpb.LogEntry) (err error) {
+	err = serializeEntryToWriter(pbe, l.redirectOutputWriter)
+	if err == nil {
+		if internal.IngestInstrumentation {
+			internal.IngestInstrumentation = false
+			pbe, err = l.instrumentationEntry()
+			if err == nil {
+				err = serializeEntryToWriter(pbe, l.redirectOutputWriter)
+			}
+		}
+	}
+	return
+}
+
+func (l *Logger) ingestInstrumentation(entries []*logpb.LogEntry) ([]*logpb.LogEntry, bool) {
+	partialSuccess := false
+	if internal.IngestInstrumentation {
+		internal.IngestInstrumentation = false
+		instrumentation, err := l.instrumentationEntry()
+		if err == nil {
+			partialSuccess = true // ensure instrumentation will be ingested even if ent is too big or invalid
+			entries = append(entries, instrumentation)
+		}
+	}
+	return entries, partialSuccess
+}
+
+func (l *Logger) instrumentationEntry() (*logpb.LogEntry, error) {
+	ent := Entry{
+		Payload: map[string]*telemetryPayload{
+			"logging.googleapis.com/diagnostic": detectedInstrumentation(),
+		},
+	}
+	// pass nil for Logger and 0 for skip levels to ignore auto-population
+	return toLogEntryInternal(ent, nil, l.client.parent, 0)
 }
