@@ -314,12 +314,13 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 
 	// testedAttrs are the bucket attrs directly compared in this test
 	type testedAttrs struct {
-		StorageClass      string
-		VersioningEnabled bool
-		LocationType      string
-		Labels            map[string]string
-		Location          string
-		Lifecycle         Lifecycle
+		StorageClass          string
+		VersioningEnabled     bool
+		LocationType          string
+		Labels                map[string]string
+		Location              string
+		Lifecycle             Lifecycle
+		CustomPlacementConfig *BucketCustomPlacementConfig
 	}
 
 	for _, test := range []struct {
@@ -358,12 +359,18 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 		{
 			name: "dual-region",
 			attrs: &BucketAttrs{
-				Location: "US-EAST1+US-WEST1",
+				Location: "US",
+				CustomPlacementConfig: &BucketCustomPlacementConfig{
+					DataLocations: []string{"US-EAST1", "US-WEST1"},
+				},
 			},
 			wantAttrs: testedAttrs{
-				Location:     "US-EAST1+US-WEST1",
+				Location:     "US",
 				LocationType: "dual-region",
 				StorageClass: "STANDARD",
+				CustomPlacementConfig: &BucketCustomPlacementConfig{
+					DataLocations: []string{"US-EAST1", "US-WEST1"},
+				},
 			},
 		},
 	} {
@@ -406,6 +413,9 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 			}
 			if gotAttrs.Location != test.wantAttrs.Location {
 				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+			}
+			if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
+				t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
 			}
 
 			// Delete the bucket and check that the deletion was succesful
