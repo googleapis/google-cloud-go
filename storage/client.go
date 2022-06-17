@@ -16,6 +16,8 @@ package storage
 
 import (
 	"context"
+	"io"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -84,7 +86,7 @@ type storageClient interface {
 	RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error)
 
 	NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error)
-	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
+	OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error)
 
 	// IAM methods.
 
@@ -99,6 +101,11 @@ type storageClient interface {
 	UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
 	CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error)
 	DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) error
+
+	// Notification methods.
+	ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (map[string]*Notification, error)
+	CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (*Notification, error)
+	DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) error
 }
 
 // settings contains transport-agnostic configuration for API calls made via
@@ -210,6 +217,54 @@ type userProjectOption struct {
 }
 
 func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
+
+type openWriterParams struct {
+	// Writer configuration
+
+	// ctx is the context used by the writer routine to make all network calls
+	// and to manage the writer routine - see `Writer.ctx`.
+	// Required.
+	ctx context.Context
+	// chunkSize - see `Writer.ChunkSize`.
+	// Optional.
+	chunkSize int
+	// chunkRetryDeadline - see `Writer.ChunkRetryDeadline`.
+	// Optional.
+	chunkRetryDeadline time.Duration
+
+	// Object/request properties
+
+	// bucket - see `Writer.o.bucket`.
+	// Required.
+	bucket string
+	// attrs - see `Writer.ObjectAttrs`.
+	// Required.
+	attrs *ObjectAttrs
+	// conds - see `Writer.o.conds`.
+	// Optional.
+	conds *Conditions
+	// encryptionKey - see `Writer.o.encryptionKey`
+	// Optional.
+	encryptionKey []byte
+	// sendCRC32C - see `Writer.SendCRC32C`.
+	// Optional.
+	sendCRC32C bool
+
+	// Writer callbacks
+
+	// donec - see `Writer.donec`.
+	// Required.
+	donec chan struct{}
+	// setError callback for reporting errors - see `Writer.error`.
+	// Required.
+	setError func(error)
+	// progress callback for reporting upload progress - see `Writer.progress`.
+	// Required.
+	progress func(int64)
+	// setObj callback for reporting the resulting object - see `Writer.obj`.
+	// Required.
+	setObj func(*ObjectAttrs)
+}
 
 type newRangeReaderParams struct {
 	bucket        string

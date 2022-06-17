@@ -170,7 +170,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 	}
 }
 
-// internalAgentsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalAgentsClient is an interface that defines the methods available from Dialogflow API.
 type internalAgentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

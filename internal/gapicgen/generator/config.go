@@ -50,6 +50,12 @@ type MicrogenConfig struct {
 	// Transports is a list of Transports to generate a client for. Acceptable
 	// values are 'grpc' and 'rest'
 	Transports []string
+
+	// StubsDir indicates that the protobuf/gRPC stubs should be generated
+	// in the GAPIC module by replacing the go_package option with the value of
+	// ImportPath plus the specified suffix separated by a "/", and using the
+	// same Pkg value.
+	StubsDir string
 }
 
 var MicrogenGapicConfigs = []*MicrogenConfig{
@@ -910,7 +916,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
-		ApiServiceConfigPath:  "assuredworkloads_v1beta1.yaml",
+		ApiServiceConfigPath:  "assuredworkloads.yaml",
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1489,6 +1495,32 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "retail_v2beta.yaml",
 		// GA after 2022/06/23
 		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/batch/v1",
+		Pkg:                   "batch",
+		ImportPath:            "cloud.google.com/go/batch/apiv1",
+		GRPCServiceConfigPath: "batch_grpc_service_config.json",
+		ApiServiceConfigPath:  "batch_v1.yaml",
+		// GA after 2022/07/10
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/baremetalsolution/v2",
+		Pkg:                   "baremetalsolution",
+		ImportPath:            "cloud.google.com/go/baremetalsolution/apiv2",
+		GRPCServiceConfigPath: "baremetalsolution_grpc_service_config.json",
+		ApiServiceConfigPath:  "baremetalsolution_v2.yaml",
+		// GA after 2022/07/10
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/videointelligence/v1p3beta1",
+		Pkg:                   "videointelligence",
+		ImportPath:            "cloud.google.com/go/videointelligence/apiv1p3beta1",
+		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
+		ApiServiceConfigPath:  "videointelligence_v1p3beta1.yaml",
+		ReleaseLevel:          "beta",
 	},
 
 	// Non-Cloud APIs

@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -857,8 +858,94 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	}, nil
 }
 
-func (c *httpStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error {
-	return errMethodNotSupported
+func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	s := callSettings(c.settings, opts...)
+	errorf := params.setError
+	setObj := params.setObj
+	progress := params.progress
+	attrs := params.attrs
+
+	mediaOpts := []googleapi.MediaOption{
+		googleapi.ChunkSize(params.chunkSize),
+	}
+	if c := attrs.ContentType; c != "" {
+		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
+	}
+	if params.chunkRetryDeadline != 0 {
+		mediaOpts = append(mediaOpts, googleapi.ChunkRetryDeadline(params.chunkRetryDeadline))
+	}
+
+	pr, pw := io.Pipe()
+
+	go func() {
+		defer close(params.donec)
+
+		rawObj := attrs.toRawObject(params.bucket)
+		if params.sendCRC32C {
+			rawObj.Crc32c = encodeUint32(attrs.CRC32C)
+		}
+		if attrs.MD5 != nil {
+			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(attrs.MD5)
+		}
+		call := c.raw.Objects.Insert(params.bucket, rawObj).
+			Media(pr, mediaOpts...).
+			Projection("full").
+			Context(params.ctx).
+			Name(params.attrs.Name)
+		call.ProgressUpdater(func(n, _ int64) { progress(n) })
+
+		if attrs.KMSKeyName != "" {
+			call.KmsKeyName(attrs.KMSKeyName)
+		}
+		if attrs.PredefinedACL != "" {
+			call.PredefinedAcl(attrs.PredefinedACL)
+		}
+		if err := setEncryptionHeaders(call.Header(), params.encryptionKey, false); err != nil {
+			errorf(err)
+			pr.CloseWithError(err)
+			return
+		}
+		var resp *raw.Object
+		err := applyConds("NewWriter", params.attrs.Generation, params.conds, call)
+		if err == nil {
+			if s.userProject != "" {
+				call.UserProject(s.userProject)
+			}
+			// TODO(tritone): Remove this code when Uploads begin to support
+			// retry attempt header injection with "client header" injection.
+			setClientHeader(call.Header())
+
+			// The internals that perform call.Do automatically retry both the initial
+			// call to set up the upload as well as calls to upload individual chunks
+			// for a resumable upload (as long as the chunk size is non-zero). Hence
+			// there is no need to add retries here.
+
+			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
+			isIdempotent := params.conds != nil && (params.conds.GenerationMatch >= 0 || params.conds.DoesNotExist == true)
+			var useRetry bool
+			if (s.retry == nil || s.retry.policy == RetryIdempotent) && isIdempotent {
+				useRetry = true
+			} else if s.retry != nil && s.retry.policy == RetryAlways {
+				useRetry = true
+			}
+			if useRetry {
+				if s.retry != nil {
+					call.WithRetry(s.retry.backoff, s.retry.shouldRetry)
+				} else {
+					call.WithRetry(nil, nil)
+				}
+			}
+			resp, err = call.Do()
+		}
+		if err != nil {
+			errorf(err)
+			pr.CloseWithError(err)
+			return
+		}
+		setObj(newObject(resp))
+	}()
+
+	return pw, nil
 }
 
 // IAM methods.
@@ -1019,6 +1106,66 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc
 	call := svc.Delete(desc.userProjectID, accessID)
 	if desc.userProjectID != "" {
 		call = call.UserProject(desc.userProjectID)
+	}
+	return run(ctx, func() error {
+		return call.Context(ctx).Do()
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+}
+
+// Notification methods.
+
+// ListNotifications returns all the Notifications configured for this bucket, as a map indexed by notification ID.
+//
+// Note: This API does not support pagination. However, entity limits cap the number of notifications on a single bucket,
+// so all results will be returned in the first response. See https://cloud.google.com/storage/quotas#buckets.
+func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.ListNotifications")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Notifications.List(bucket)
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	var res *raw.Notifications
+	err = run(ctx, func() error {
+		res, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, true, setRetryHeaderHTTP(call))
+	if err != nil {
+		return nil, err
+	}
+	return notificationsToMap(res.Items), nil
+}
+
+func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.CreateNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Notifications.Insert(bucket, toRawNotification(n))
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	var rn *raw.Notification
+	err = run(ctx, func() error {
+		rn, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	if err != nil {
+		return nil, err
+	}
+	return toNotification(rn), nil
+}
+
+func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.DeleteNotification")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Notifications.Delete(bucket, id)
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
 	}
 	return run(ctx, func() error {
 		return call.Context(ctx).Do()

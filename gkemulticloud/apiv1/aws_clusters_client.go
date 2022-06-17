@@ -145,7 +145,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 	}
 }
 
-// internalAwsClustersClient is an interface that defines the methods availaible from Anthos Multi-Cloud API.
+// internalAwsClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
 type internalAwsClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

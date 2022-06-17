@@ -138,7 +138,7 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 	}
 }
 
-// internalServiceMonitoringClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalServiceMonitoringClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalServiceMonitoringClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

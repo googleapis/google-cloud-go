@@ -71,7 +71,7 @@ func defaultJobsV1Beta3CallOptions() *JobsV1Beta3CallOptions {
 	}
 }
 
-// internalJobsV1Beta3Client is an interface that defines the methods availaible from Dataflow API.
+// internalJobsV1Beta3Client is an interface that defines the methods available from Dataflow API.
 type internalJobsV1Beta3Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
