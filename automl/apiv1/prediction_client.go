@@ -62,7 +62,7 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 	}
 }
 
-// internalPredictionClient is an interface that defines the methods availaible from Cloud AutoML API.
+// internalPredictionClient is an interface that defines the methods available from Cloud AutoML API.
 type internalPredictionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

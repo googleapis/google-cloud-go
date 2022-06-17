@@ -57,7 +57,7 @@ func defaultAutoSuggestionCallOptions() *AutoSuggestionCallOptions {
 	}
 }
 
-// internalAutoSuggestionClient is an interface that defines the methods availaible from Data QnA API.
+// internalAutoSuggestionClient is an interface that defines the methods available from Data QnA API.
 type internalAutoSuggestionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

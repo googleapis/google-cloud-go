@@ -50,6 +50,12 @@ type MicrogenConfig struct {
 	// Transports is a list of Transports to generate a client for. Acceptable
 	// values are 'grpc' and 'rest'
 	Transports []string
+
+	// StubsDir indicates that the protobuf/gRPC stubs should be generated
+	// in the GAPIC module by replacing the go_package option with the value of
+	// ImportPath plus the specified suffix separated by a "/", and using the
+	// same Pkg value.
+	StubsDir string
 }
 
 var MicrogenGapicConfigs = []*MicrogenConfig{

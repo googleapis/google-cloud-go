@@ -17,6 +17,7 @@ package bigquery
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -39,7 +40,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -216,7 +216,7 @@ func initTestState(client *Client, t time.Time) func() {
 	tableIDs = uid.NewSpace("table", opts)
 	modelIDs = uid.NewSpace("model", opts)
 	routineIDs = uid.NewSpace("routine", opts)
-	testTableExpiration = t.Add(10 * time.Minute).Round(time.Second)
+	testTableExpiration = t.Add(2 * time.Hour).Round(time.Second)
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
 
@@ -866,7 +866,7 @@ func TestIntegration_InsertErrors(t *testing.T) {
 		t.Errorf("Wanted row size error, got successful insert.")
 	}
 	var e1 *googleapi.Error
-	ok := xerrors.As(err, &e1)
+	ok := errors.As(err, &e1)
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
@@ -886,7 +886,7 @@ func TestIntegration_InsertErrors(t *testing.T) {
 		t.Errorf("Wanted error, got successful insert.")
 	}
 	var e2 *googleapi.Error
-	ok = xerrors.As(err, &e2)
+	ok = errors.As(err, &e2)
 	if !ok {
 		t.Errorf("wanted googleapi.Error, got: %v", err)
 	}
@@ -1437,7 +1437,7 @@ func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistic
 		job, err := q.Run(ctx)
 		if err != nil {
 			var e *googleapi.Error
-			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
+			if ok := errors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, err
@@ -1445,7 +1445,7 @@ func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistic
 		_, err = job.Wait(ctx)
 		if err != nil {
 			var e *googleapi.Error
-			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
+			if ok := errors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, fmt.Errorf("%q: %v", job.ID(), err)
@@ -2792,7 +2792,7 @@ func (b byCol0) Less(i, j int) bool {
 
 func hasStatusCode(err error, code int) bool {
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == code {
+	if ok := errors.As(err, &e); ok && e.Code == code {
 		return true
 	}
 	return false

@@ -56,7 +56,7 @@ func defaultQuotaControllerCallOptions() *QuotaControllerCallOptions {
 	}
 }
 
-// internalQuotaControllerClient is an interface that defines the methods availaible from Service Control API.
+// internalQuotaControllerClient is an interface that defines the methods available from Service Control API.
 type internalQuotaControllerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -113,7 +113,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Batch API.
+// internalClient is an interface that defines the methods available from Batch API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

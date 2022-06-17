@@ -58,7 +58,7 @@ func defaultQueryCallOptions() *QueryCallOptions {
 	}
 }
 
-// internalQueryClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalQueryClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalQueryClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

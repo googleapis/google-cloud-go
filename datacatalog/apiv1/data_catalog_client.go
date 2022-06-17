@@ -203,7 +203,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Google Cloud Data Catalog API.
+// internalClient is an interface that defines the methods available from Google Cloud Data Catalog API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

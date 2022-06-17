@@ -308,6 +308,22 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if conf.Pkg == "compute" {
 		args = append(args, "--go_gapic_opt", "diregapic")
 	}
+	if conf.StubsDir != "" {
+		// Enable protobuf/gRPC generation in the google-cloud-go directory.
+		args = append(args, "--go_out=plugins=grpc:"+g.googleCloudDir)
+
+		// For each file to be generated i.e. each file in the proto package,
+		// override the go_package option. Applied to both the protobuf/gRPC
+		// generated code, and to notify the GAPIC generator of the new
+		// import path used to reference those stubs.
+		stubPkg := filepath.Join(conf.ImportPath, conf.StubsDir)
+		for _, f := range protoFiles {
+			f = strings.TrimPrefix(f, g.googleapisDir+"/")
+			rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
+			args = append(args, "--go_opt="+rerouteGoPkg, "--go_gapic_opt="+rerouteGoPkg)
+		}
+	}
+
 	args = append(args, protoFiles...)
 	c := execv.Command("protoc", args...)
 	c.Dir = g.googleapisDir
