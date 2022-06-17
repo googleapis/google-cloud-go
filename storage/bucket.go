@@ -633,12 +633,12 @@ type LifecycleCondition struct {
 
 	// DaysSinceCustomTime is the days elapsed since the CustomTime date of the
 	// object. This condition can only be satisfied if CustomTime has been set.
-	// Note: Using `0` as the value will not be ignored by the library and not sent to the API.
+	// Note: Using `0` as the value will be ignored by the library and not sent to the API.
 	DaysSinceCustomTime int64
 
 	// DaysSinceNoncurrentTime is the days elapsed since the noncurrent timestamp
 	// of the object. This condition is relevant only for versioned objects.
-	// Note: Using `0` as the value will not be ignored by the library and not sent to the API.
+	// Note: Using `0` as the value will be ignored by the library and not sent to the API.
 	DaysSinceNoncurrentTime int64
 
 	// Liveness specifies the object's liveness. Relevant only for versioned objects
@@ -670,6 +670,7 @@ type LifecycleCondition struct {
 	// If the value is N, this condition is satisfied when there are at least N
 	// versions (including the live version) newer than this version of the
 	// object.
+	// Note: Using `0` as the value will be ignored by the library and not sent to the API.
 	NumNewerVersions int64
 }
 
