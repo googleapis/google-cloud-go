@@ -1163,7 +1163,7 @@ func TestPartialSuccessOption(t *testing.T) {
 	var logger *logging.Logger
 	var partialSuccess bool
 
-	entry := logging.Entry{Payload: "testing payload string"}
+	entry := logging.Entry{Payload: "payload string"}
 	tests := []struct {
 		name string
 		do   func()
@@ -1396,6 +1396,16 @@ func TestInstrumentationIngestion(t *testing.T) {
 			}
 			if len(got) != tc.want {
 				t.Errorf("got(%v),want(%v):\n", got, tc.want)
+			}
+			diagnosticEntry := false
+			for _, ent := range got {
+				if internal.LogIDFromPath("projects/test", ent.LogName) == "diagnostic-log" {
+					diagnosticEntry = true
+					break
+				}
+			}
+			if tc.ingestionFlag != diagnosticEntry {
+				t.Errorf("instrumentation entry misplaced: got(%v),want(%v):\n", diagnosticEntry, tc.ingestionFlag)
 			}
 		})
 	}

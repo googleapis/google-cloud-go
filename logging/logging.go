@@ -950,6 +950,7 @@ func (l *Logger) ingestInstrumentation(entries []*logpb.LogEntry) ([]*logpb.LogE
 		instrumentation, err := l.instrumentationEntry()
 		if err == nil {
 			partialSuccess = true // ensure instrumentation will be ingested even if ent is too big or invalid
+			instrumentation.LogName = internal.LogPath(l.client.parent, "diagnostic-log")
 			entries = append(entries, instrumentation)
 		}
 	}
