@@ -39,7 +39,7 @@ type bulkWriterOperation struct {
 	size     int                  // size of this write, in bytes
 }
 
-// The BulkWriterStatus provides details about the BulkWriter, including the
+// BulkWriterStatus provides details about the BulkWriter, including the
 // number of writes processed, the number of requests sent to the service, and
 // the number of writes in the queue.
 type BulkWriterStatus struct {
@@ -47,7 +47,7 @@ type BulkWriterStatus struct {
 	IsOpen bool
 }
 
-// A BulkWriterJob provides access to the results of a BulkWriter write attempt.
+// BulkWriterJob provides read-only access to the results of a BulkWriter write attempt.
 type BulkWriterJob struct {
 	op bulkWriterOperation // the operation this BulkWriterJob encapsulates
 }
@@ -66,10 +66,9 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 // Each call to Create, Update, Set, and Delete can return a value and error.
 type BulkWriter struct {
 	database        string             // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
-	reqs            int64              // CHECK: total number of requests sent
 	start           time.Time          // when this BulkWriter was started
 	vc              *vkit.Client       // internal client
-	isOpen          bool               // CHECK: signal that the BulkWriter is closed
+	isOpen          bool               // signal that the BulkWriter is closed
 	maxOpsPerSecond int                // number of requests that can be sent per second.
 	docUpdatePaths  sync.Map           // document paths with corresponding writes in the queue.
 	waitTime        float64            // time to wait in between requests; increase exponentially
@@ -86,9 +85,9 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 
 	var dsm sync.Map
 
-	ctx, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithCancel(withResourceHeader(ctx, c.path()))
 
-	bw := BulkWriter{
+	bw := &BulkWriter{
 		vc:              c.c,
 		database:        database,
 		isOpen:          true,
@@ -99,10 +98,15 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		docUpdatePaths:  dsm,
 		ctx:             ctx,
 	}
-	bw.bundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
-	bw.retryBundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
 
-	return &bw
+	bw.bundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
+	bw.bundler.HandlerLimit = bw.maxOpsPerSecond
+	bw.bundler.BundleCountThreshold = maxBatchSize
+
+	bw.retryBundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
+	bw.retryBundler.BundleCountThreshold = retryMaxBatchSize
+
+	return bw
 }
 
 // End sends all enqueued writes in parallel and closes the BulkWriter to new requests.
@@ -268,7 +272,6 @@ func (bw *BulkWriter) send(i interface{}) {
 	case <-bw.ctx.Done():
 		break
 	default:
-		bw.reqs++
 		resp, err := bw.vc.BatchWrite(bw.ctx, &bwr)
 		if err != nil {
 			// Do we need to be selective about what kind of errors we send?
@@ -277,23 +280,22 @@ func (bw *BulkWriter) send(i interface{}) {
 				j.err <- err
 			}
 			return
-		} else {
-			// Iterate over the response. Match successful requests with unsuccessful
-			// requests.
-			for i, res := range resp.WriteResults {
-				s := resp.Status[i]
-
-				c := s.GetCode()
-
-				if c != 0 { // Should we do an explicit check against rpc.Code enum?
-					bw.retryBundler.Add(bwj[i], bwj[i].size)
-					continue
-				}
-
-				bwj[i].result <- res
-				bwj[i].err <- nil
-			}
-			// This means the writes are now finalized, all retries completed
 		}
+		// Iterate over the response. Match successful requests with unsuccessful
+		// requests.
+		for i, res := range resp.WriteResults {
+			s := resp.Status[i]
+
+			c := s.GetCode()
+
+			if c != 0 { // Should we do an explicit check against rpc.Code enum?
+				bw.retryBundler.Add(bwj[i], bwj[i].size)
+				continue
+			}
+
+			bwj[i].result <- res
+			bwj[i].err <- nil
+		}
+		// This means the writes are now finalized, all retries completed
 	}
 }
