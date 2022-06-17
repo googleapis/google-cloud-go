@@ -39,6 +39,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
+	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
@@ -1423,7 +1424,7 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 			ingestionFlag: true,
 			// do not format the string to preserve expected new-line between messages
 			want: `{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}
-{"message":{"logging.googleapis.com/diagnostic":{"instrumentation_source":[{"name":"go","version":"1.4.2"}],"runtime":"1.16.14"}},"severity":"DEFAULT","timestamp":"seconds:1000"}`,
+{"message":{"logging.googleapis.com/diagnostic":{"instrumentation_source":[{"name":"go","version":"` + internal.Version + `"}],"runtime":"` + vkit.VersionGo() + `"}},"severity":"DEFAULT","timestamp":"seconds:1000"}`,
 		},
 		{
 			name:          "any non first log",
@@ -1453,8 +1454,6 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 }
 
 func ExampleRedirectAsJson_withStdout() {
-	// use previously created client
 	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stdout))
-	logger.LogSync(context.TODO(), logging.Entry{Timestamp: time.Unix(1000, 0), Severity: logging.Debug, Payload: "redirected log"})
-	// Output: {"message":"redirected log","severity":"DEBUG","timestamp":"seconds:1000"}
+	logger.Log(logging.Entry{Severity: logging.Debug, Payload: "redirected log"})
 }
