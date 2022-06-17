@@ -45,7 +45,14 @@ type RegionsCallOptions struct {
 	List []gax.CallOption
 }
 
-// internalRegionsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionsRESTCallOptions() *RegionsCallOptions {
+	return &RegionsCallOptions{
+		Get:  []gax.CallOption{},
+		List: []gax.CallOption{},
+	}
+}
+
+// internalRegionsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,6 +115,9 @@ type regionsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionsClient
+	CallOptions **RegionsCallOptions
 }
 
 // NewRegionsRESTClient creates a new regions rest client.
@@ -120,13 +130,15 @@ func NewRegionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Re
 		return nil, err
 	}
 
+	callOpts := defaultRegionsRESTCallOptions()
 	c := &regionsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &RegionsClient{internalClient: c, CallOptions: &RegionsCallOptions{}}, nil
+	return &RegionsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionsRESTClientOptions() []option.ClientOption {
@@ -174,6 +186,7 @@ func (c *regionsRESTClient) Get(ctx context.Context, req *computepb.GetRegionReq
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Region{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

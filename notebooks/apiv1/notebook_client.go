@@ -147,7 +147,7 @@ func defaultNotebookCallOptions() *NotebookCallOptions {
 	}
 }
 
-// internalNotebookClient is an interface that defines the methods availaible from Notebooks API.
+// internalNotebookClient is an interface that defines the methods available from Notebooks API.
 type internalNotebookClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

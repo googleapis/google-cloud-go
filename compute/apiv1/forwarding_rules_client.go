@@ -53,7 +53,20 @@ type ForwardingRulesCallOptions struct {
 	SetTarget      []gax.CallOption
 }
 
-// internalForwardingRulesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultForwardingRulesRESTCallOptions() *ForwardingRulesCallOptions {
+	return &ForwardingRulesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+		Patch:          []gax.CallOption{},
+		SetLabels:      []gax.CallOption{},
+		SetTarget:      []gax.CallOption{},
+	}
+}
+
+// internalForwardingRulesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalForwardingRulesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -155,6 +168,9 @@ type forwardingRulesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ForwardingRulesClient
+	CallOptions **ForwardingRulesCallOptions
 }
 
 // NewForwardingRulesRESTClient creates a new forwarding rules rest client.
@@ -167,9 +183,11 @@ func NewForwardingRulesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		return nil, err
 	}
 
+	callOpts := defaultForwardingRulesRESTCallOptions()
 	c := &forwardingRulesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -183,7 +201,7 @@ func NewForwardingRulesRESTClient(ctx context.Context, opts ...option.ClientOpti
 	}
 	c.operationClient = opC
 
-	return &ForwardingRulesClient{internalClient: c, CallOptions: &ForwardingRulesCallOptions{}}, nil
+	return &ForwardingRulesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultForwardingRulesRESTClientOptions() []option.ClientOption {
@@ -347,6 +365,7 @@ func (c *forwardingRulesRESTClient) Delete(ctx context.Context, req *computepb.D
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "forwarding_rule", url.QueryEscape(req.GetForwardingRule())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -407,6 +426,7 @@ func (c *forwardingRulesRESTClient) Get(ctx context.Context, req *computepb.GetF
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "forwarding_rule", url.QueryEscape(req.GetForwardingRule())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.ForwardingRule{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -473,6 +493,7 @@ func (c *forwardingRulesRESTClient) Insert(ctx context.Context, req *computepb.I
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -643,6 +664,7 @@ func (c *forwardingRulesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "forwarding_rule", url.QueryEscape(req.GetForwardingRule())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -717,6 +739,7 @@ func (c *forwardingRulesRESTClient) SetLabels(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -791,6 +814,7 @@ func (c *forwardingRulesRESTClient) SetTarget(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "forwarding_rule", url.QueryEscape(req.GetForwardingRule())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetTarget[0:len((*c.CallOptions).SetTarget):len((*c.CallOptions).SetTarget)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

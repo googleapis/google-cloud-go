@@ -664,22 +664,64 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	return t, nil
 }
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tableGetCall struct {
+	call *bq.TablesGetCall
+}
+
+// TableMetadataOption allow requests to alter requests for table metadata.
+type TableMetadataOption func(*tableGetCall)
+
+// TableMetadataView specifies which details about a table are desired.
+type TableMetadataView string
+
+const (
+	// BasicMetadataView populates basic table information including schema partitioning,
+	// but does not contain storage statistics like number or rows or bytes.  This is a more
+	// efficient view to use for large tables or higher metadata query rates.
+	BasicMetadataView TableMetadataView = "BASIC"
+
+	// FullMetadataView returns all table information, including storage statistics.  It currently
+	// returns the same information as StorageStatsMetadataView, but may include additional information
+	// in the future.
+	FullMetadataView TableMetadataView = "FULL"
+
+	// StorageStatsMetadataView includes all information from the basic view, and includes storage statistics.  It currently
+	StorageStatsMetadataView TableMetadataView = "STORAGE_STATS"
+)
+
+// WithMetadataView is used to customize what details are returned when interrogating a
+// table via the Metadata() call.  Generally this is used to limit data returned for performance
+// reasons (such as large tables that take time computing storage statistics).
+func WithMetadataView(tmv TableMetadataView) TableMetadataOption {
+	return func(tgc *tableGetCall) {
+		tgc.call.View(string(tmv))
+	}
+}
+
 // Metadata fetches the metadata for the table.
-func (t *Table) Metadata(ctx context.Context) (md *TableMetadata, err error) {
+func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req := t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
-	setClientHeader(req.Header())
-	var table *bq.Table
-	err = runWithRetry(ctx, func() (err error) {
-		table, err = req.Do()
+	tgc := &tableGetCall{
+		call: t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tgc)
+	}
+
+	setClientHeader(tgc.call.Header())
+	var res *bq.Table
+	if err := runWithRetry(ctx, func() (err error) {
+		res, err = tgc.call.Do()
 		return err
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
-	return bqToTableMetadata(table, t.c)
+	return bqToTableMetadata(res, t.c)
 }
 
 func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
