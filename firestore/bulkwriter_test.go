@@ -1,49 +1,16 @@
 package firestore
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 )
 
-type bulkwriterWriteTestCase func(*BulkWriter, chan *WriteResult, chan *error)
-
-func bulkwriterTestRunner(bw *BulkWriter, f bulkwriterWriteTestCase) (*WriteResult, error) {
-	s, ok := bw.Status()
-	if !ok {
-		return nil, fmt.Errorf("bulkwriter: status not OK")
-	}
-	pwp := s.WritesProvidedCount
-	pwr := s.WritesReceivedCount
-
-	cwp := pwp
-	cwr := pwr
-
-	wr := make(chan *WriteResult, 1)
-	err := make(chan *error, 1)
-	go f(bw, wr, err)
-
-	for cwp != pwp+1 {
-		time.Sleep(time.Duration(time.Millisecond))
-		if s, ok = bw.Status(); ok {
-			cwp = s.WritesProvidedCount
-		}
-	}
-
-	bw.Flush()
-
-	for cwr != pwr+1 {
-		time.Sleep(time.Duration(time.Millisecond))
-		if s, ok = bw.Status(); ok {
-			cwr = s.WritesReceivedCount
-		}
-	}
-
-	return <-wr, *(<-err)
+type bulkwriterTestCase struct {
+	name string
+	test func(*BulkWriter) (*BulkWriterJob, error)
 }
 
 func TestBulkWriter(t *testing.T) {
@@ -169,81 +136,49 @@ func TestBulkWriter(t *testing.T) {
 	)
 
 	bw := c.BulkWriter()
-
-	var tcs []bulkwriterWriteTestCase
 	wantWRs := []*WriteResult{{aTime}, {aTime2}, {aTime3}, {aTime3}}
-
-	var testCreateCase bulkwriterWriteTestCase
-	testCreateCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
-		wrc, errs := bw.Create(c.Doc("C/a"), testData)
-		if errs != nil {
-			wr <- nil
-			err <- &errs
-			return
-		}
-		wr <- wrc
-		err <- &errs
+	tcs := []bulkwriterTestCase{
+		{
+			name: "Create()",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) {
+				return b.Create(c.Doc("C/a"), testData)
+			},
+		},
+		{
+			name: "Set()",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) { return b.Set(c.Doc("C/b"), testData) },
+		},
+		{
+			name: "Delete()",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) {
+				return b.Delete(c.Doc("C/c"))
+			},
+		},
+		{
+			name: "Update()",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) {
+				return b.Update(c.Doc("C/f"), []Update{{FieldPath: []string{"*"}, Value: 3}})
+			},
+		},
 	}
-	tcs = append(tcs, testCreateCase)
-
-	var testSetCase bulkwriterWriteTestCase
-	testSetCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
-		wrs, errs := bw.Set(c.Doc("C/b"), testData)
-		if errs != nil {
-			wr <- nil
-			err <- &errs
-			return
-		}
-		wr <- wrs
-		err <- &errs
-	}
-	tcs = append(tcs, testSetCase)
-
-	var testDeleteCase bulkwriterWriteTestCase
-	testDeleteCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
-		wrd, errs := bw.Delete(c.Doc("C/c"))
-		if errs != nil {
-			wr <- nil
-			err <- &errs
-			return
-		}
-		wr <- wrd
-		err <- &errs
-	}
-	tcs = append(tcs, testDeleteCase)
-
-	var testUpdateCase bulkwriterWriteTestCase
-	testUpdateCase = func(bw *BulkWriter, wr chan *WriteResult, err chan *error) {
-		wru, errs := bw.Update(c.Doc("C/f"), []Update{{FieldPath: []string{"*"}, Value: 3}})
-		if errs != nil {
-			wr <- nil
-			err <- &errs
-			return
-		}
-		wr <- wru
-		err <- &errs
-	}
-	tcs = append(tcs, testUpdateCase)
 
 	for i, tc := range tcs {
-		wr, err := bulkwriterTestRunner(bw, tc)
-		if err != nil {
-			t.Errorf("bulkwriter: got error: %v\n", err)
-		}
-		if wr == nil {
-			t.Errorf("bulkwriter: got nil WriteResult and no error")
-		}
-		if !testEqual(wr, wantWRs[i]) {
-			t.Errorf("bulkwriter:\nwanted %v,\n got %v\n", wantWRs[i], wr.UpdateTime)
-		}
-	}
+		t.Run(tc.name, func(t *testing.T) {
+			j, err := tc.test(bw)
+			if err != nil {
+				t.Errorf("bulkwriter: cannot call %s for document\n", tc.name)
+			}
+			if j == nil {
+				t.Errorf("bulkwriter: got nil WriteResult for call to %s\n", tc.name)
+			}
 
-	s, ok := bw.Status()
-	if !ok {
-		t.Error("firestore: bulkwriter: cannot retrieve status")
-	}
+			bw.Flush()
 
-	if s.WritesReceivedCount != len(tcs) {
-		t.Errorf("bulkwriter sent != received; sent: %v, received: %v", len(tcs), s.WritesReceivedCount)
+			wr, err := j.Results()
+			if !testEqual(wr, wantWRs[i]) {
+				t.Errorf("bulkwriter:\nwanted %v,\n got %v\n", wantWRs[i], wr.UpdateTime)
+			}
+		})
+
 	}
 }
