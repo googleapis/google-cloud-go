@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"sync"
 	"time"
 
@@ -297,5 +298,24 @@ func (bw *BulkWriter) send(i interface{}) {
 			bwj[i].err <- nil
 		}
 		// This means the writes are now finalized, all retries completed
+	}
+
+	// Check whether we need to increase the rate of requests to the service
+	// after each result
+	bw.increaseRate()
+}
+
+// increaseRate updates the number of bundler requests that can be concurrently open
+func (bw *BulkWriter) increaseRate() {
+	elapsed := time.Now().Sub(bw.start).Seconds()
+
+	// Ideally, we would determine the qps before increasing, but instead
+	// we simply increase the number of bundler handler invocations we have
+	// running at once.
+	mins := elapsed / 60
+	if math.Mod(mins, 5) <= 0.1 {
+		newOps := float64(bw.maxOpsPerSecond) * rateLimiterMultiplier
+		bw.maxOpsPerSecond = int(newOps)
+		bw.bundler.HandlerLimit = int(newOps)
 	}
 }
