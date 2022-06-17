@@ -179,6 +179,5 @@ func TestBulkWriter(t *testing.T) {
 				t.Errorf("bulkwriter:\nwanted %v,\n got %v\n", wantWRs[i], wr.UpdateTime)
 			}
 		})
-
 	}
 }
