@@ -1054,9 +1054,6 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc,
 }
 
 func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
-	if attrs.State != Active && attrs.State != Inactive {
-		return nil, fmt.Errorf("storage: invalid state %q for update, must be either %q or %q", attrs.State, Active, Inactive)
-	}
 	s := callSettings(c.settings, opts...)
 	svc := raw.NewProjectsHmacKeysService(c.raw)
 	call := svc.Update(desc.userProjectID, accessID, &raw.HmacKeyMetadata{
