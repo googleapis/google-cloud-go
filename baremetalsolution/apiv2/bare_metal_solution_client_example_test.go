@@ -22,6 +22,7 @@ import (
 	baremetalsolution "cloud.google.com/go/baremetalsolution/apiv2"
 	"google.golang.org/api/iterator"
 	baremetalsolutionpb "google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 func ExampleNewClient() {
@@ -82,6 +83,31 @@ func ExampleClient_GetInstance() {
 	_ = resp
 }
 
+func ExampleClient_UpdateInstance() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.UpdateInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateInstanceRequest.
+	}
+	op, err := c.UpdateInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ResetInstance() {
 	ctx := context.Background()
 	c, err := baremetalsolution.NewClient(ctx)
@@ -95,6 +121,81 @@ func ExampleClient_ResetInstance() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ResetInstanceRequest.
 	}
 	op, err := c.ResetInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_StartInstance() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.StartInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#StartInstanceRequest.
+	}
+	op, err := c.StartInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_StopInstance() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.StopInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#StopInstanceRequest.
+	}
+	op, err := c.StopInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DetachLun() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.DetachLunRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#DetachLunRequest.
+	}
+	op, err := c.DetachLun(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -178,6 +279,31 @@ func ExampleClient_UpdateVolume() {
 	_ = resp
 }
 
+func ExampleClient_ResizeVolume() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.ResizeVolumeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ResizeVolumeRequest.
+	}
+	op, err := c.ResizeVolume(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListNetworks() {
 	ctx := context.Background()
 	c, err := baremetalsolution.NewClient(ctx)
@@ -204,6 +330,26 @@ func ExampleClient_ListNetworks() {
 	}
 }
 
+func ExampleClient_ListNetworkUsage() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.ListNetworkUsageRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListNetworkUsageRequest.
+	}
+	resp, err := c.ListNetworkUsage(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetNetwork() {
 	ctx := context.Background()
 	c, err := baremetalsolution.NewClient(ctx)
@@ -224,7 +370,7 @@ func ExampleClient_GetNetwork() {
 	_ = resp
 }
 
-func ExampleClient_ListSnapshotSchedulePolicies() {
+func ExampleClient_UpdateNetwork() {
 	ctx := context.Background()
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
@@ -232,135 +378,11 @@ func ExampleClient_ListSnapshotSchedulePolicies() {
 	}
 	defer c.Close()
 
-	req := &baremetalsolutionpb.ListSnapshotSchedulePoliciesRequest{
+	req := &baremetalsolutionpb.UpdateNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListSnapshotSchedulePoliciesRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateNetworkRequest.
 	}
-	it := c.ListSnapshotSchedulePolicies(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.GetSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetSnapshotSchedulePolicyRequest.
-	}
-	resp, err := c.GetSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.CreateSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#CreateSnapshotSchedulePolicyRequest.
-	}
-	resp, err := c.CreateSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.UpdateSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateSnapshotSchedulePolicyRequest.
-	}
-	resp, err := c.UpdateSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.DeleteSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#DeleteSnapshotSchedulePolicyRequest.
-	}
-	err = c.DeleteSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_CreateVolumeSnapshot() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.CreateVolumeSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#CreateVolumeSnapshotRequest.
-	}
-	resp, err := c.CreateVolumeSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RestoreVolumeSnapshot() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.RestoreVolumeSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#RestoreVolumeSnapshotRequest.
-	}
-	op, err := c.RestoreVolumeSnapshot(ctx, req)
+	op, err := c.UpdateNetwork(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -371,70 +393,6 @@ func ExampleClient_RestoreVolumeSnapshot() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleClient_DeleteVolumeSnapshot() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.DeleteVolumeSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#DeleteVolumeSnapshotRequest.
-	}
-	err = c.DeleteVolumeSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_GetVolumeSnapshot() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.GetVolumeSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetVolumeSnapshotRequest.
-	}
-	resp, err := c.GetVolumeSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListVolumeSnapshots() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.ListVolumeSnapshotsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListVolumeSnapshotsRequest.
-	}
-	it := c.ListVolumeSnapshots(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleClient_GetLun() {
@@ -470,6 +428,123 @@ func ExampleClient_ListLuns() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListLunsRequest.
 	}
 	it := c.ListLuns(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetNfsShare() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.GetNfsShareRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetNfsShareRequest.
+	}
+	resp, err := c.GetNfsShare(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListNfsShares() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.ListNfsSharesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListNfsSharesRequest.
+	}
+	it := c.ListNfsShares(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_UpdateNfsShare() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.UpdateNfsShareRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateNfsShareRequest.
+	}
+	op, err := c.UpdateNfsShare(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetLocation() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListLocations() {
+	ctx := context.Background()
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
