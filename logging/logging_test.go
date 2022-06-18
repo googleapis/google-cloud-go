@@ -39,7 +39,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
-	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
@@ -87,8 +86,8 @@ func testNow() time.Time {
 }
 
 func TestMain(m *testing.M) {
-	flag.Parse()                           // needed for testing.Short()
-	internal.IngestInstrumentation = false // disable ingesting instrumentation log entry
+	flag.Parse()                             // needed for testing.Short()
+	internal.SetIngestInstrumentation(false) // disable ingesting instrumentation log entry
 	ctx = context.Background()
 	testProjectID = testutil.ProjID()
 	errorc = make(chan error, 100)
@@ -1383,14 +1382,14 @@ func TestInstrumentationIngestion(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	iiStatus := internal.IngestInstrumentation
+	iiStatus := internal.IngestInstrumentation()
 
 	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
 	logger := client.Logger("test-instrumentation")
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			got = nil
-			internal.IngestInstrumentation = tc.ingestionFlag
+			internal.SetIngestInstrumentation(tc.ingestionFlag)
 			err := logger.LogSync(context.TODO(), *entry)
 			if err != nil {
 				t.Fatal(err)
@@ -1410,7 +1409,7 @@ func TestInstrumentationIngestion(t *testing.T) {
 			}
 		})
 	}
-	internal.IngestInstrumentation = iiStatus
+	internal.SetIngestInstrumentation(iiStatus)
 }
 
 func TestInstrumentationWithRedirect(t *testing.T) {
@@ -1424,7 +1423,7 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 			ingestionFlag: true,
 			// do not format the string to preserve expected new-line between messages
 			want: `{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}
-{"message":{"logging.googleapis.com/diagnostic":{"instrumentation_source":[{"name":"go","version":"` + internal.Version + `"}],"runtime":"` + vkit.VersionGo() + `"}},"severity":"DEFAULT","timestamp":"seconds:1000"}`,
+{"message":{"logging.googleapis.com/diagnostic":{"instrumentation_source":[{"name":"go","version":"` + internal.Version + `"}],"runtime":"` + internal.VersionGo() + `"}},"severity":"DEFAULT","timestamp":"seconds:1000"}`,
 		},
 		{
 			name:          "any non first log",
@@ -1435,10 +1434,10 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
 	buffer := &strings.Builder{}
 	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
-	iiStatus := internal.IngestInstrumentation
+	iiStatus := internal.IngestInstrumentation()
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			internal.IngestInstrumentation = tc.ingestionFlag
+			internal.SetIngestInstrumentation(tc.ingestionFlag)
 			buffer.Reset()
 			err := logger.LogSync(context.TODO(), *entry)
 			if err != nil {
@@ -1450,10 +1449,10 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 			}
 		})
 	}
-	internal.IngestInstrumentation = iiStatus
+	internal.SetIngestInstrumentation(iiStatus)
 }
 
-func ExampleRedirectAsJson_withStdout() {
+func ExampleRedirectAsJSON_withStdout() {
 	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stdout))
 	logger.Log(logging.Entry{Severity: logging.Debug, Payload: "redirected log"})
 }

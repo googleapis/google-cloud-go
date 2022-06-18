@@ -929,24 +929,24 @@ func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
 	return err
 }
 
-func (l *Logger) redirectAsJSON(pbe *logpb.LogEntry) (err error) {
-	err = serializeEntryToWriter(pbe, l.redirectOutputWriter)
-	if err == nil {
-		if internal.IngestInstrumentation {
-			internal.IngestInstrumentation = false
-			pbe, err = l.instrumentationEntry()
-			if err == nil {
-				err = serializeEntryToWriter(pbe, l.redirectOutputWriter)
-			}
-		}
+func (l *Logger) redirectAsJSON(pbe *logpb.LogEntry) error {
+	err := serializeEntryToWriter(pbe, l.redirectOutputWriter)
+	if err != nil {
+		return err
 	}
-	return
+	if internal.SetIngestInstrumentation(false) {
+		pbe, err = l.instrumentationEntry()
+		if err != nil {
+			return err
+		}
+		err = serializeEntryToWriter(pbe, l.redirectOutputWriter)
+	}
+	return err
 }
 
 func (l *Logger) ingestInstrumentation(entries []*logpb.LogEntry) ([]*logpb.LogEntry, bool) {
 	partialSuccess := false
-	if internal.IngestInstrumentation {
-		internal.IngestInstrumentation = false
+	if internal.SetIngestInstrumentation(false) {
 		instrumentation, err := l.instrumentationEntry()
 		if err == nil {
 			partialSuccess = true // ensure instrumentation will be ingested even if ent is too big or invalid
@@ -959,8 +959,8 @@ func (l *Logger) ingestInstrumentation(entries []*logpb.LogEntry) ([]*logpb.LogE
 
 func (l *Logger) instrumentationEntry() (*logpb.LogEntry, error) {
 	ent := Entry{
-		Payload: map[string]*telemetryPayload{
-			"logging.googleapis.com/diagnostic": detectedInstrumentation(),
+		Payload: map[string]*internal.InstrumentationPayload{
+			"logging.googleapis.com/diagnostic": internal.InstrumentationInfo(),
 		},
 	}
 	// pass nil for Logger and 0 for skip levels to ignore auto-population

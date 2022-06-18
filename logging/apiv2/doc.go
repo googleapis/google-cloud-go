@@ -125,7 +125,7 @@ func DefaultAuthScopes() []string {
 
 // VersionGo returns the Go runtime version. The returned string
 // has no whitespace, suitable for reporting in header.
-func VersionGo() string {
+func versionGo() string {
 	const develPrefix = "devel +"
 
 	s := runtime.Version()
