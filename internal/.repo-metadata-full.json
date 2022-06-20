@@ -1673,6 +1673,15 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/videointelligence/apiv1p3beta1": {
+    "distribution_name": "cloud.google.com/go/videointelligence/apiv1p3beta1",
+    "description": "Cloud Video Intelligence API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/videointelligence/latest/apiv1p3beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/vision/apiv1p1beta1": {
     "distribution_name": "cloud.google.com/go/vision/apiv1p1beta1",
     "description": "Cloud Vision API",
