@@ -52,7 +52,7 @@ func IngestInstrumentation() bool {
 }
 
 // SetIngestInstrumentation updates status of sending instrumentation info.
-// Returns true if the status is updated and false otherwise.
+// Returns true if the status is changed and false otherwise.
 func SetIngestInstrumentation(f bool) bool {
 	ok := false
 	if f != ingestInstrumentation {

@@ -1413,41 +1413,27 @@ func TestInstrumentationIngestion(t *testing.T) {
 }
 
 func TestInstrumentationWithRedirect(t *testing.T) {
-	tests := []struct {
-		name          string
-		ingestionFlag bool
-		want          string
-	}{
-		{
-			name:          "first time log",
-			ingestionFlag: true,
-			// do not format the string to preserve expected new-line between messages
-			want: `{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}
+	want := []string{
+		// do not format the string to preserve expected new-line between messages
+		`{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}
 {"message":{"logging.googleapis.com/diagnostic":{"instrumentation_source":[{"name":"go","version":"` + internal.Version + `"}],"runtime":"` + internal.VersionGo() + `"}},"severity":"DEFAULT","timestamp":"seconds:1000"}`,
-		},
-		{
-			name:          "any non first log",
-			ingestionFlag: false,
-			want:          `{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}`,
-		},
+		`{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}`,
 	}
 	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
 	buffer := &strings.Builder{}
 	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
 	iiStatus := internal.IngestInstrumentation()
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			internal.SetIngestInstrumentation(tc.ingestionFlag)
-			buffer.Reset()
-			err := logger.LogSync(context.TODO(), *entry)
-			if err != nil {
-				t.Fatal(err)
-			}
-			got := strings.TrimSpace(buffer.String())
-			if got != tc.want {
-				t.Errorf("got(%v),want(%v):\n", got, tc.want)
-			}
-		})
+	internal.SetIngestInstrumentation(true)
+	for i, _ := range want {
+		buffer.Reset()
+		err := logger.LogSync(context.TODO(), *entry)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := strings.TrimSpace(buffer.String())
+		if got != want[i] {
+			t.Errorf("got(%v),want(%v):\n", got, want[i])
+		}
 	}
 	internal.SetIngestInstrumentation(iiStatus)
 }
