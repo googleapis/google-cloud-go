@@ -26,8 +26,6 @@ const (
 	rateLimiterMultiplier = 1.5
 	// 5 minutes in milliseconds
 	rateLimiterMultiplierMillis = 5 * 60 * 1000
-	// Starting time to wait in between requests
-	coolingPeriodMillis = 2.0
 )
 
 // bulkWriterOperation is used internally to track the status of an individual
@@ -67,45 +65,48 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 // Each call to Create, Update, Set, and Delete can return a value and error.
 type BulkWriter struct {
 	database        string             // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
-	start           time.Time          // when this BulkWriter was started
+	start           time.Time          // when this BulkWriter was started; used to calculate qps and rate increases
 	vc              *vkit.Client       // internal client
-	isOpen          bool               // signal that the BulkWriter is closed
-	maxOpsPerSecond int                // number of requests that can be sent per second.
-	docUpdatePaths  sync.Map           // document paths with corresponding writes in the queue.
-	waitTime        float64            // time to wait in between requests; increase exponentially
+	isOpen          bool               // flag that the BulkWriter is closed
+	maxOpsPerSecond int                // number of requests that can be sent per second
+	docUpdatePaths  map[string]bool    // document paths with corresponding writes in the queue
 	cancel          context.CancelFunc // context to send cancel message
 	bundler         *bundler.Bundler   // handle bundling up writes to Firestore
 	retryBundler    *bundler.Bundler   // handle bundling up retries of writes to Firestore
 	ctx             context.Context    // context for canceling BulkWriter operations
+	rateLock        sync.Mutex         // guards increases to rate of open sends; used in increaseRate()
 }
 
 // newBulkWriter creates a new instance of the BulkWriter. This
 // version of BulkWriter is intended to be used within go routines by the
 // callers.
 func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter {
-
-	var dsm sync.Map
-
 	ctx, cancel := context.WithCancel(withResourceHeader(ctx, c.path()))
 
+	var rateLock sync.Mutex
+
 	bw := &BulkWriter{
-		vc:              c.c,
 		database:        database,
-		isOpen:          true,
 		start:           time.Now(),
+		vc:              c.c,
+		isOpen:          true,
 		maxOpsPerSecond: defaultStartingMaximumOpsPerSecond,
-		waitTime:        coolingPeriodMillis,
+		docUpdatePaths:  make(map[string]bool),
 		cancel:          cancel,
-		docUpdatePaths:  dsm,
+		bundler:         &bundler.Bundler{},
+		retryBundler:    &bundler.Bundler{},
 		ctx:             ctx,
+		rateLock:        rateLock,
 	}
 
 	bw.bundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
 	bw.bundler.HandlerLimit = bw.maxOpsPerSecond
 	bw.bundler.BundleCountThreshold = maxBatchSize
+	bw.bundler.BundleByteLimit = 0 // unlimited size
 
 	bw.retryBundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
 	bw.retryBundler.BundleCountThreshold = retryMaxBatchSize
+	bw.bundler.BundleByteLimit = 0 // unlimited size
 
 	return bw
 }
@@ -125,6 +126,7 @@ func (b *BulkWriter) End() {
 func (bw *BulkWriter) Flush() {
 	// Ensure that the backlogQueue is empty
 	bw.bundler.Flush()
+	bw.retryBundler.Flush()
 }
 
 // Status gets the current open or closed state of the BulkWriter.
@@ -213,10 +215,12 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 		return errors.New("firestore: nil document contents")
 	}
 
-	_, loaded := bw.docUpdatePaths.LoadOrStore(doc.shortPath, struct{}{})
-	if loaded {
+	_, havePath := bw.docUpdatePaths[doc.shortPath]
+	if havePath {
 		return fmt.Errorf("firestore: bulkwriter: received duplicate write for path: %v", doc.shortPath)
 	}
+
+	bw.docUpdatePaths[doc.shortPath] = true
 
 	return nil
 }
@@ -230,10 +234,14 @@ func (bw *BulkWriter) write(w *pb.Write) bulkWriterOperation {
 		result: r,
 		write:  w,
 		err:    e,
-		size:   20, // TODO: Compute actual payload size
+		size:   0, // ignore operation size constraints; can't be inferred at compile time
 	}
 
-	bw.bundler.Add(j, j.size)
+	err := bw.bundler.Add(j, j.size)
+	if err != nil {
+		j.err <- err
+		j.result <- nil
+	}
 	return j
 }
 
@@ -302,7 +310,9 @@ func (bw *BulkWriter) send(i interface{}) {
 
 	// Check whether we need to increase the rate of requests to the service
 	// after each result
+	bw.rateLock.Lock()
 	bw.increaseRate()
+	bw.rateLock.Unlock()
 }
 
 // increaseRate updates the number of bundler requests that can be concurrently open
@@ -317,5 +327,6 @@ func (bw *BulkWriter) increaseRate() {
 		newOps := float64(bw.maxOpsPerSecond) * rateLimiterMultiplier
 		bw.maxOpsPerSecond = int(newOps)
 		bw.bundler.HandlerLimit = int(newOps)
+
 	}
 }
