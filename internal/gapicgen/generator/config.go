@@ -1376,8 +1376,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dataplex/apiv1",
 		GRPCServiceConfigPath: "dataplex_grpc_service_config.json",
 		ApiServiceConfigPath:  "dataplex_v1.yaml",
-		// GA after 2022/02/28
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/video/stitcher/v1",
