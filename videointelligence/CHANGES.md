@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.2.0...videointelligence/v1.3.0) (2022-06-21)
+
+
+### Features
+
+* **videointelligence:** start generating apv1p3beta1 ([#6176](https://github.com/googleapis/google-cloud-go/issues/6176)) ([a2cdd05](https://github.com/googleapis/google-cloud-go/commit/a2cdd0548324b409f45af26d269cf3699f9cd499))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.1.0...videointelligence/v1.2.0) (2022-02-23)
 
 
