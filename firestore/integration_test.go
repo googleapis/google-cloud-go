@@ -1723,6 +1723,8 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 }
 
 func TestIntegration_NewDatabase(t *testing.T) {
+	t.Skip("firestore: integration: skipping new database test until deletion is possible.")
+
 	ctx := context.Background()
 	dbName := uid.NewSpace("integration-database", &uid.Options{}).New()
 	c, err := NewClientWithDatabase(ctx, iClient.projectID, dbName)
