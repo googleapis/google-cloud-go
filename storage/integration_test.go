@@ -415,7 +415,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
 			}
 			if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
-				t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+				t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
 			}
 
 			// Delete the bucket and check that the deletion was succesful
