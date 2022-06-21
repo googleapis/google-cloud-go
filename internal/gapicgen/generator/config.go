@@ -1421,8 +1421,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
 		ApiServiceConfigPath:  "assuredworkloads_v1.yaml",
-		// GA after 2022/06/04
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/binaryauthorization/v1",
