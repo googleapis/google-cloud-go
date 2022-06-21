@@ -18,15 +18,10 @@ import (
 	"sync"
 )
 
-// telemetryPayload
+// InstrumentationPayload defines telemetry log entry payload for capturing instrumentation info
 type InstrumentationPayload struct {
 	InstrumentationSource []map[string]string `json:"instrumentation_source"`
 	Runtime               string              `json:"runtime,omitempty"`
-}
-
-type instrumentation struct {
-	payload *InstrumentationPayload
-	once    sync.Once
 }
 
 var (
@@ -66,6 +61,7 @@ func SetIngestInstrumentation(f bool) bool {
 	return ok
 }
 
+// InstrumentationInfo returns auto-generated InstrumentationPayload for this process
 func InstrumentationInfo() *InstrumentationPayload {
 	return instrumentationPayload
 }
