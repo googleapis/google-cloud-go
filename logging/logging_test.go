@@ -1424,7 +1424,7 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
 	iiStatus := internal.IngestInstrumentation()
 	internal.SetIngestInstrumentation(true)
-	for i, _ := range want {
+	for i := range want {
 		buffer.Reset()
 		err := logger.LogSync(context.TODO(), *entry)
 		if err != nil {
