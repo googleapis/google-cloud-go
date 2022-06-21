@@ -1503,6 +1503,17 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 	return out
 }
 
+// Handle ptr or int64
+func setAgeCondition(age int64, cond *raw.BucketLifecycleRuleCondition) {
+	c := reflect.ValueOf(cond).Elem().FieldByName("Age")
+	switch c.Kind() {
+	case reflect.Int64:
+		c.SetInt(age)
+	case reflect.Ptr:
+		c.Set(reflect.ValueOf(&age))
+	}
+}
+
 func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 	var rl raw.BucketLifecycle
 	if len(l.Rules) == 0 {
@@ -1524,6 +1535,8 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				NumNewerVersions:        r.Condition.NumNewerVersions,
 			},
 		}
+
+		setAgeCondition(r.Condition.AgeInDays, rr.Condition)
 
 		switch r.Condition.Liveness {
 		case LiveAndArchived:
@@ -1595,6 +1608,19 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 	return &rl
 }
 
+// Handle ptr or int64
+func getAgeCondition(cond *raw.BucketLifecycleRuleCondition) int64 {
+	v := reflect.ValueOf(cond).Elem().FieldByName("Age")
+	if v.Kind() == reflect.Int64 {
+		return v.Interface().(int64)
+	} else if v.Kind() == reflect.Pointer {
+		if v.Interface() != nil {
+			return *(v.Interface().(*int64))
+		}
+	}
+	return 0
+}
+
 func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 	var l Lifecycle
 	if rl == nil {
@@ -1607,7 +1633,6 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				StorageClass: rr.Action.StorageClass,
 			},
 			Condition: LifecycleCondition{
-				AgeInDays:               rr.Condition.Age,
 				DaysSinceCustomTime:     rr.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: rr.Condition.DaysSinceNoncurrentTime,
 				MatchesPrefix:           rr.Condition.MatchesPrefix,
@@ -1616,6 +1641,7 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				NumNewerVersions:        rr.Condition.NumNewerVersions,
 			},
 		}
+		r.Condition.AgeInDays = getAgeCondition(rr.Condition)
 
 		if rr.Condition.IsLive == nil {
 			r.Condition.Liveness = LiveAndArchived
