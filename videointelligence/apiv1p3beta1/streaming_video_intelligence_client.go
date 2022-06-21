@@ -67,7 +67,7 @@ func defaultStreamingVideoIntelligenceCallOptions() *StreamingVideoIntelligenceC
 	}
 }
 
-// internalStreamingVideoIntelligenceClient is an interface that defines the methods availaible from Cloud Video Intelligence API.
+// internalStreamingVideoIntelligenceClient is an interface that defines the methods available from Cloud Video Intelligence API.
 type internalStreamingVideoIntelligenceClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
