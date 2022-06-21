@@ -3,7 +3,7 @@ module cloud.google.com/go
 go 1.15
 
 require (
-	cloud.google.com/go/compute v1.6.1
+	cloud.google.com/go/compute v1.7.0
 	cloud.google.com/go/storage v1.22.1
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.8
