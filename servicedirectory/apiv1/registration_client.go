@@ -293,7 +293,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 	}
 }
 
-// internalRegistrationClient is an interface that defines the methods availaible from Service Directory API.
+// internalRegistrationClient is an interface that defines the methods available from Service Directory API.
 type internalRegistrationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -542,7 +542,7 @@ func (c *registrationGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *registrationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -559,6 +559,7 @@ func (c *registrationGRPCClient) CreateNamespace(ctx context.Context, req *servi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateNamespace[0:len((*c.CallOptions).CreateNamespace):len((*c.CallOptions).CreateNamespace)], opts...)
 	var resp *servicedirectorypb.Namespace
@@ -575,6 +576,7 @@ func (c *registrationGRPCClient) CreateNamespace(ctx context.Context, req *servi
 
 func (c *registrationGRPCClient) ListNamespaces(ctx context.Context, req *servicedirectorypb.ListNamespacesRequest, opts ...gax.CallOption) *NamespaceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListNamespaces[0:len((*c.CallOptions).ListNamespaces):len((*c.CallOptions).ListNamespaces)], opts...)
 	it := &NamespaceIterator{}
@@ -624,6 +626,7 @@ func (c *registrationGRPCClient) GetNamespace(ctx context.Context, req *serviced
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetNamespace[0:len((*c.CallOptions).GetNamespace):len((*c.CallOptions).GetNamespace)], opts...)
 	var resp *servicedirectorypb.Namespace
@@ -645,6 +648,7 @@ func (c *registrationGRPCClient) UpdateNamespace(ctx context.Context, req *servi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "namespace.name", url.QueryEscape(req.GetNamespace().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateNamespace[0:len((*c.CallOptions).UpdateNamespace):len((*c.CallOptions).UpdateNamespace)], opts...)
 	var resp *servicedirectorypb.Namespace
@@ -666,6 +670,7 @@ func (c *registrationGRPCClient) DeleteNamespace(ctx context.Context, req *servi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteNamespace[0:len((*c.CallOptions).DeleteNamespace):len((*c.CallOptions).DeleteNamespace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -683,6 +688,7 @@ func (c *registrationGRPCClient) CreateService(ctx context.Context, req *service
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *servicedirectorypb.Service
@@ -699,6 +705,7 @@ func (c *registrationGRPCClient) CreateService(ctx context.Context, req *service
 
 func (c *registrationGRPCClient) ListServices(ctx context.Context, req *servicedirectorypb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
@@ -748,6 +755,7 @@ func (c *registrationGRPCClient) GetService(ctx context.Context, req *servicedir
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *servicedirectorypb.Service
@@ -769,6 +777,7 @@ func (c *registrationGRPCClient) UpdateService(ctx context.Context, req *service
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service.name", url.QueryEscape(req.GetService().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateService[0:len((*c.CallOptions).UpdateService):len((*c.CallOptions).UpdateService)], opts...)
 	var resp *servicedirectorypb.Service
@@ -790,6 +799,7 @@ func (c *registrationGRPCClient) DeleteService(ctx context.Context, req *service
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -807,6 +817,7 @@ func (c *registrationGRPCClient) CreateEndpoint(ctx context.Context, req *servic
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEndpoint[0:len((*c.CallOptions).CreateEndpoint):len((*c.CallOptions).CreateEndpoint)], opts...)
 	var resp *servicedirectorypb.Endpoint
@@ -823,6 +834,7 @@ func (c *registrationGRPCClient) CreateEndpoint(ctx context.Context, req *servic
 
 func (c *registrationGRPCClient) ListEndpoints(ctx context.Context, req *servicedirectorypb.ListEndpointsRequest, opts ...gax.CallOption) *EndpointIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEndpoints[0:len((*c.CallOptions).ListEndpoints):len((*c.CallOptions).ListEndpoints)], opts...)
 	it := &EndpointIterator{}
@@ -872,6 +884,7 @@ func (c *registrationGRPCClient) GetEndpoint(ctx context.Context, req *servicedi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEndpoint[0:len((*c.CallOptions).GetEndpoint):len((*c.CallOptions).GetEndpoint)], opts...)
 	var resp *servicedirectorypb.Endpoint
@@ -893,6 +906,7 @@ func (c *registrationGRPCClient) UpdateEndpoint(ctx context.Context, req *servic
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint.name", url.QueryEscape(req.GetEndpoint().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEndpoint[0:len((*c.CallOptions).UpdateEndpoint):len((*c.CallOptions).UpdateEndpoint)], opts...)
 	var resp *servicedirectorypb.Endpoint
@@ -914,6 +928,7 @@ func (c *registrationGRPCClient) DeleteEndpoint(ctx context.Context, req *servic
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEndpoint[0:len((*c.CallOptions).DeleteEndpoint):len((*c.CallOptions).DeleteEndpoint)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -931,6 +946,7 @@ func (c *registrationGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -952,6 +968,7 @@ func (c *registrationGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -973,6 +990,7 @@ func (c *registrationGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse

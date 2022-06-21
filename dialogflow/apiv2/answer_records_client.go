@@ -82,7 +82,7 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 	}
 }
 
-// internalAnswerRecordsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalAnswerRecordsClient is an interface that defines the methods available from Dialogflow API.
 type internalAnswerRecordsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -206,7 +206,7 @@ func (c *answerRecordsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *answerRecordsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -218,6 +218,7 @@ func (c *answerRecordsGRPCClient) Close() error {
 
 func (c *answerRecordsGRPCClient) ListAnswerRecords(ctx context.Context, req *dialogflowpb.ListAnswerRecordsRequest, opts ...gax.CallOption) *AnswerRecordIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAnswerRecords[0:len((*c.CallOptions).ListAnswerRecords):len((*c.CallOptions).ListAnswerRecords)], opts...)
 	it := &AnswerRecordIterator{}
@@ -267,6 +268,7 @@ func (c *answerRecordsGRPCClient) UpdateAnswerRecord(ctx context.Context, req *d
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "answer_record.name", url.QueryEscape(req.GetAnswerRecord().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAnswerRecord[0:len((*c.CallOptions).UpdateAnswerRecord):len((*c.CallOptions).UpdateAnswerRecord)], opts...)
 	var resp *dialogflowpb.AnswerRecord

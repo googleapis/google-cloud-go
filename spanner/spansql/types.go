@@ -235,13 +235,22 @@ type ColumnAlteration interface {
 
 func (SetColumnType) isColumnAlteration()    {}
 func (SetColumnOptions) isColumnAlteration() {}
+func (SetDefault) isColumnAlteration()       {}
+func (DropDefault) isColumnAlteration()      {}
 
 type SetColumnType struct {
 	Type    Type
 	NotNull bool
+	Default Expr
 }
 
 type SetColumnOptions struct{ Options ColumnOptions }
+
+type SetDefault struct {
+	Default Expr
+}
+
+type DropDefault struct{}
 
 type OnDelete int
 
@@ -293,7 +302,29 @@ type Delete struct {
 func (d *Delete) String() string { return fmt.Sprintf("%#v", d) }
 func (*Delete) isDMLStmt()       {}
 
-// TODO: Insert.
+// Insert represents an INSERT statement.
+// https://cloud.google.com/spanner/docs/dml-syntax#insert-statement
+type Insert struct {
+	Table   ID
+	Columns []ID
+	Input   ValuesOrSelect
+}
+
+// Values represents one or more lists of expressions passed to an `INSERT` statement.
+type Values [][]Expr
+
+func (v Values) isValuesOrSelect() {}
+func (v Values) String() string    { return fmt.Sprintf("%#v", v) }
+
+type ValuesOrSelect interface {
+	isValuesOrSelect()
+	SQL() string
+}
+
+func (Select) isValuesOrSelect() {}
+
+func (i *Insert) String() string { return fmt.Sprintf("%#v", i) }
+func (*Insert) isDMLStmt()       {}
 
 // Update represents an UPDATE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#update-statement
@@ -320,6 +351,7 @@ type ColumnDef struct {
 	Type    Type
 	NotNull bool
 
+	Default   Expr // set if this column has a default value
 	Generated Expr // set of this is a generated column
 
 	Options ColumnOptions
@@ -692,6 +724,20 @@ func (Param) isBoolExpr()       {} // possibly bool
 func (Param) isExpr()           {}
 func (Param) isLiteralOrParam() {}
 
+type Case struct {
+	Expr        Expr
+	WhenClauses []WhenClause
+	ElseResult  Expr
+}
+
+func (Case) isBoolExpr() {} // possibly bool
+func (Case) isExpr()     {}
+
+type WhenClause struct {
+	Cond   Expr
+	Result Expr
+}
+
 type BoolLiteral bool
 
 const (
@@ -746,6 +792,12 @@ func (DateLiteral) isExpr() {}
 type TimestampLiteral time.Time
 
 func (TimestampLiteral) isExpr() {}
+
+// JSONLiteral represents a JSON literal
+// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+type JSONLiteral []byte
+
+func (JSONLiteral) isExpr() {}
 
 type StarExpr int
 

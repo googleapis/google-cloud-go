@@ -80,7 +80,7 @@ func defaultCloudShellCallOptions() *CloudShellCallOptions {
 	}
 }
 
-// internalCloudShellClient is an interface that defines the methods availaible from Cloud Shell API.
+// internalCloudShellClient is an interface that defines the methods available from Cloud Shell API.
 type internalCloudShellClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -295,7 +295,7 @@ func (c *cloudShellGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *cloudShellGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -312,6 +312,7 @@ func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *shellpb.Environment
@@ -333,6 +334,7 @@ func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartEnvironment[0:len((*c.CallOptions).StartEnvironment):len((*c.CallOptions).StartEnvironment)], opts...)
 	var resp *longrunningpb.Operation
@@ -356,6 +358,7 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *sh
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AuthorizeEnvironment[0:len((*c.CallOptions).AuthorizeEnvironment):len((*c.CallOptions).AuthorizeEnvironment)], opts...)
 	var resp *longrunningpb.Operation
@@ -379,6 +382,7 @@ func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddPublicKey[0:len((*c.CallOptions).AddPublicKey):len((*c.CallOptions).AddPublicKey)], opts...)
 	var resp *longrunningpb.Operation
@@ -402,6 +406,7 @@ func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RemovePublicKey[0:len((*c.CallOptions).RemovePublicKey):len((*c.CallOptions).RemovePublicKey)], opts...)
 	var resp *longrunningpb.Operation

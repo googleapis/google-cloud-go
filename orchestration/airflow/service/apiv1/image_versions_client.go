@@ -58,7 +58,7 @@ func defaultImageVersionsCallOptions() *ImageVersionsCallOptions {
 	}
 }
 
-// internalImageVersionsClient is an interface that defines the methods availaible from Cloud Composer API.
+// internalImageVersionsClient is an interface that defines the methods available from Cloud Composer API.
 type internalImageVersionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -175,7 +175,7 @@ func (c *imageVersionsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *imageVersionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -187,6 +187,7 @@ func (c *imageVersionsGRPCClient) Close() error {
 
 func (c *imageVersionsGRPCClient) ListImageVersions(ctx context.Context, req *servicepb.ListImageVersionsRequest, opts ...gax.CallOption) *ImageVersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListImageVersions[0:len((*c.CallOptions).ListImageVersions):len((*c.CallOptions).ListImageVersions)], opts...)
 	it := &ImageVersionIterator{}

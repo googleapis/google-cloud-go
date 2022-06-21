@@ -60,7 +60,7 @@ func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptio
 	}
 }
 
-// internalWorkflowsServiceV2BetaClient is an interface that defines the methods availaible from Cloud Life Sciences API.
+// internalWorkflowsServiceV2BetaClient is an interface that defines the methods available from Cloud Life Sciences API.
 type internalWorkflowsServiceV2BetaClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -223,7 +223,7 @@ func (c *workflowsServiceV2BetaGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *workflowsServiceV2BetaGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -240,6 +240,7 @@ func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RunPipeline[0:len((*c.CallOptions).RunPipeline):len((*c.CallOptions).RunPipeline)], opts...)
 	var resp *longrunningpb.Operation

@@ -227,7 +227,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 	}
 }
 
-// internalSecurityCenterSettingsClient is an interface that defines the methods availaible from Cloud Security Command Center API.
+// internalSecurityCenterSettingsClient is an interface that defines the methods available from Cloud Security Command Center API.
 type internalSecurityCenterSettingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -457,7 +457,7 @@ func (c *securityCenterSettingsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *securityCenterSettingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -474,6 +474,7 @@ func (c *securityCenterSettingsGRPCClient) GetServiceAccount(ctx context.Context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetServiceAccount[0:len((*c.CallOptions).GetServiceAccount):len((*c.CallOptions).GetServiceAccount)], opts...)
 	var resp *settingspb.ServiceAccount
@@ -495,6 +496,7 @@ func (c *securityCenterSettingsGRPCClient) GetSettings(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	var resp *settingspb.Settings
@@ -516,6 +518,7 @@ func (c *securityCenterSettingsGRPCClient) UpdateSettings(ctx context.Context, r
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	var resp *settingspb.Settings
@@ -537,6 +540,7 @@ func (c *securityCenterSettingsGRPCClient) ResetSettings(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResetSettings[0:len((*c.CallOptions).ResetSettings):len((*c.CallOptions).ResetSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -554,6 +558,7 @@ func (c *securityCenterSettingsGRPCClient) BatchGetSettings(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchGetSettings[0:len((*c.CallOptions).BatchGetSettings):len((*c.CallOptions).BatchGetSettings)], opts...)
 	var resp *settingspb.BatchGetSettingsResponse
@@ -575,6 +580,7 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveSettings(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CalculateEffectiveSettings[0:len((*c.CallOptions).CalculateEffectiveSettings):len((*c.CallOptions).CalculateEffectiveSettings)], opts...)
 	var resp *settingspb.Settings
@@ -596,6 +602,7 @@ func (c *securityCenterSettingsGRPCClient) BatchCalculateEffectiveSettings(ctx c
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCalculateEffectiveSettings[0:len((*c.CallOptions).BatchCalculateEffectiveSettings):len((*c.CallOptions).BatchCalculateEffectiveSettings)], opts...)
 	var resp *settingspb.BatchCalculateEffectiveSettingsResponse
@@ -617,6 +624,7 @@ func (c *securityCenterSettingsGRPCClient) GetComponentSettings(ctx context.Cont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetComponentSettings[0:len((*c.CallOptions).GetComponentSettings):len((*c.CallOptions).GetComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
@@ -638,6 +646,7 @@ func (c *securityCenterSettingsGRPCClient) UpdateComponentSettings(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "component_settings.name", url.QueryEscape(req.GetComponentSettings().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateComponentSettings[0:len((*c.CallOptions).UpdateComponentSettings):len((*c.CallOptions).UpdateComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
@@ -659,6 +668,7 @@ func (c *securityCenterSettingsGRPCClient) ResetComponentSettings(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResetComponentSettings[0:len((*c.CallOptions).ResetComponentSettings):len((*c.CallOptions).ResetComponentSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -676,6 +686,7 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveComponentSettings(c
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CalculateEffectiveComponentSettings[0:len((*c.CallOptions).CalculateEffectiveComponentSettings):len((*c.CallOptions).CalculateEffectiveComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
@@ -692,6 +703,7 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveComponentSettings(c
 
 func (c *securityCenterSettingsGRPCClient) ListDetectors(ctx context.Context, req *settingspb.ListDetectorsRequest, opts ...gax.CallOption) *DetectorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDetectors[0:len((*c.CallOptions).ListDetectors):len((*c.CallOptions).ListDetectors)], opts...)
 	it := &DetectorIterator{}
@@ -736,6 +748,7 @@ func (c *securityCenterSettingsGRPCClient) ListDetectors(ctx context.Context, re
 
 func (c *securityCenterSettingsGRPCClient) ListComponents(ctx context.Context, req *settingspb.ListComponentsRequest, opts ...gax.CallOption) *StringIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListComponents[0:len((*c.CallOptions).ListComponents):len((*c.CallOptions).ListComponents)], opts...)
 	it := &StringIterator{}

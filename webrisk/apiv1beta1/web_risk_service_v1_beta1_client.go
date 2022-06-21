@@ -93,7 +93,7 @@ func defaultWebRiskServiceV1Beta1CallOptions() *WebRiskServiceV1Beta1CallOptions
 	}
 }
 
-// internalWebRiskServiceV1Beta1Client is an interface that defines the methods availaible from Web Risk API.
+// internalWebRiskServiceV1Beta1Client is an interface that defines the methods available from Web Risk API.
 type internalWebRiskServiceV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -228,7 +228,7 @@ func (c *webRiskServiceV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *webRiskServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 

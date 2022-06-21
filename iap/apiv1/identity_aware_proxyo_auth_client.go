@@ -73,7 +73,7 @@ func defaultIdentityAwareProxyOAuthCallOptions() *IdentityAwareProxyOAuthCallOpt
 	}
 }
 
-// internalIdentityAwareProxyOAuthClient is an interface that defines the methods availaible from Cloud Identity-Aware Proxy API.
+// internalIdentityAwareProxyOAuthClient is an interface that defines the methods available from Cloud Identity-Aware Proxy API.
 type internalIdentityAwareProxyOAuthClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -131,11 +131,12 @@ func (c *IdentityAwareProxyOAuthClient) ListBrands(ctx context.Context, req *iap
 
 // CreateBrand constructs a new OAuth brand for the project if one does not exist.
 // The created brand is “internal only”, meaning that OAuth clients created
-// under it only accept requests from users who belong to the same G Suite
-// organization as the project. The brand is created in an un-reviewed status.
-// NOTE: The “internal only” status can be manually changed in the Google
-// Cloud console. Requires that a brand does not already exist for the
-// project, and that the specified support email is owned by the caller.
+// under it only accept requests from users who belong to the same Google
+// Workspace organization as the project. The brand is created in an
+// un-reviewed status. NOTE: The “internal only” status can be manually
+// changed in the Google Cloud Console. Requires that a brand does not already
+// exist for the project, and that the specified support email is owned by the
+// caller.
 func (c *IdentityAwareProxyOAuthClient) CreateBrand(ctx context.Context, req *iappb.CreateBrandRequest, opts ...gax.CallOption) (*iappb.Brand, error) {
 	return c.internalClient.CreateBrand(ctx, req, opts...)
 }
@@ -248,7 +249,7 @@ func (c *identityAwareProxyOAuthGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *identityAwareProxyOAuthGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -265,6 +266,7 @@ func (c *identityAwareProxyOAuthGRPCClient) ListBrands(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBrands[0:len((*c.CallOptions).ListBrands):len((*c.CallOptions).ListBrands)], opts...)
 	var resp *iappb.ListBrandsResponse
@@ -286,6 +288,7 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateBrand(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBrand[0:len((*c.CallOptions).CreateBrand):len((*c.CallOptions).CreateBrand)], opts...)
 	var resp *iappb.Brand
@@ -307,6 +310,7 @@ func (c *identityAwareProxyOAuthGRPCClient) GetBrand(ctx context.Context, req *i
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBrand[0:len((*c.CallOptions).GetBrand):len((*c.CallOptions).GetBrand)], opts...)
 	var resp *iappb.Brand
@@ -328,6 +332,7 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateIdentityAwareProxyClient(ctx c
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateIdentityAwareProxyClient[0:len((*c.CallOptions).CreateIdentityAwareProxyClient):len((*c.CallOptions).CreateIdentityAwareProxyClient)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
@@ -344,6 +349,7 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateIdentityAwareProxyClient(ctx c
 
 func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx context.Context, req *iappb.ListIdentityAwareProxyClientsRequest, opts ...gax.CallOption) *IdentityAwareProxyClientIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListIdentityAwareProxyClients[0:len((*c.CallOptions).ListIdentityAwareProxyClients):len((*c.CallOptions).ListIdentityAwareProxyClients)], opts...)
 	it := &IdentityAwareProxyClientIterator{}
@@ -393,6 +399,7 @@ func (c *identityAwareProxyOAuthGRPCClient) GetIdentityAwareProxyClient(ctx cont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIdentityAwareProxyClient[0:len((*c.CallOptions).GetIdentityAwareProxyClient):len((*c.CallOptions).GetIdentityAwareProxyClient)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
@@ -414,6 +421,7 @@ func (c *identityAwareProxyOAuthGRPCClient) ResetIdentityAwareProxyClientSecret(
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResetIdentityAwareProxyClientSecret[0:len((*c.CallOptions).ResetIdentityAwareProxyClientSecret):len((*c.CallOptions).ResetIdentityAwareProxyClientSecret)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
@@ -435,6 +443,7 @@ func (c *identityAwareProxyOAuthGRPCClient) DeleteIdentityAwareProxyClient(ctx c
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteIdentityAwareProxyClient[0:len((*c.CallOptions).DeleteIdentityAwareProxyClient):len((*c.CallOptions).DeleteIdentityAwareProxyClient)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

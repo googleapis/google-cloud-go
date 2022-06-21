@@ -52,6 +52,7 @@ type JobCallOptions struct {
 	ListJobs           []gax.CallOption
 	SearchJobs         []gax.CallOption
 	SearchJobsForAlert []gax.CallOption
+	GetOperation       []gax.CallOption
 }
 
 func defaultJobGRPCClientOptions() []option.ClientOption {
@@ -111,10 +112,11 @@ func defaultJobCallOptions() *JobCallOptions {
 		},
 		SearchJobs:         []gax.CallOption{},
 		SearchJobsForAlert: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
-// internalJobClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+// internalJobClient is an interface that defines the methods available from Cloud Talent Solution API.
 type internalJobClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -131,6 +133,7 @@ type internalJobClient interface {
 	ListJobs(context.Context, *talentpb.ListJobsRequest, ...gax.CallOption) *JobIterator
 	SearchJobs(context.Context, *talentpb.SearchJobsRequest, ...gax.CallOption) (*talentpb.SearchJobsResponse, error)
 	SearchJobsForAlert(context.Context, *talentpb.SearchJobsRequest, ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // JobClient is a client for interacting with Cloud Talent Solution API.
@@ -257,6 +260,11 @@ func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Search
 	return c.internalClient.SearchJobsForAlert(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *JobClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // jobGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -277,6 +285,8 @@ type jobGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -312,6 +322,7 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		disableDeadlines: disableDeadlines,
 		jobClient:        talentpb.NewJobServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -343,7 +354,7 @@ func (c *jobGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *jobGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -360,6 +371,7 @@ func (c *jobGRPCClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	var resp *talentpb.Job
@@ -381,6 +393,7 @@ func (c *jobGRPCClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateJobs[0:len((*c.CallOptions).BatchCreateJobs):len((*c.CallOptions).BatchCreateJobs)], opts...)
 	var resp *longrunningpb.Operation
@@ -404,6 +417,7 @@ func (c *jobGRPCClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	var resp *talentpb.Job
@@ -425,6 +439,7 @@ func (c *jobGRPCClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job.name", url.QueryEscape(req.GetJob().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateJob[0:len((*c.CallOptions).UpdateJob):len((*c.CallOptions).UpdateJob)], opts...)
 	var resp *talentpb.Job
@@ -446,6 +461,7 @@ func (c *jobGRPCClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchUpdateJobs[0:len((*c.CallOptions).BatchUpdateJobs):len((*c.CallOptions).BatchUpdateJobs)], opts...)
 	var resp *longrunningpb.Operation
@@ -469,6 +485,7 @@ func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -486,6 +503,7 @@ func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchDeleteJobs[0:len((*c.CallOptions).BatchDeleteJobs):len((*c.CallOptions).BatchDeleteJobs)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -498,6 +516,7 @@ func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 
 func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
@@ -547,6 +566,7 @@ func (c *jobGRPCClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchJobs[0:len((*c.CallOptions).SearchJobs):len((*c.CallOptions).SearchJobs)], opts...)
 	var resp *talentpb.SearchJobsResponse
@@ -563,6 +583,7 @@ func (c *jobGRPCClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 
 func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchJobsForAlert[0:len((*c.CallOptions).SearchJobsForAlert):len((*c.CallOptions).SearchJobsForAlert)], opts...)
 	it := &SearchJobsResponse_MatchingJobIterator{}
@@ -603,6 +624,23 @@ func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *jobGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // BatchCreateJobsOperation manages a long-running operation from BatchCreateJobs.

@@ -103,14 +103,12 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 	for _, tc := range []struct {
 		desc           string
 		framework      FrameworkType
-		libraryVersion func() (version, bool)
+		libraryVersion string
 		wantClientInfo *structpb.Struct
 	}{
 		{
-			desc: "minimal",
-			libraryVersion: func() (version, bool) {
-				return version{}, false
-			},
+			desc:           "minimal",
+			libraryVersion: "",
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language": stringValue("GOLANG"),
@@ -118,11 +116,9 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 			},
 		},
 		{
-			desc:      "cps shim",
-			framework: FrameworkCloudPubSubShim,
-			libraryVersion: func() (version, bool) {
-				return version{}, false
-			},
+			desc:           "cps shim",
+			framework:      FrameworkCloudPubSubShim,
+			libraryVersion: "",
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language":  stringValue("GOLANG"),
@@ -131,17 +127,15 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 			},
 		},
 		{
-			desc:      "version valid",
-			framework: FrameworkCloudPubSubShim,
-			libraryVersion: func() (version, bool) {
-				return version{Major: "1", Minor: "2"}, true
-			},
+			desc:           "version valid",
+			framework:      FrameworkCloudPubSubShim,
+			libraryVersion: "1.2.3",
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language":      stringValue("GOLANG"),
 					"framework":     stringValue("CLOUD_PUBSUB_SHIM"),
-					"major_version": stringValue("1"),
-					"minor_version": stringValue("2"),
+					"major_version": numberValue(1),
+					"minor_version": numberValue(2),
 				},
 			},
 		},

@@ -214,7 +214,17 @@ since you read it. Here is how to express that:
 Signed URLs
 
 You can obtain a URL that lets anyone read or write an object for a limited time.
-You don't need to create a client to do this. See the documentation of
+Signing a URL requires credentials authorized to sign a URL. To use the same
+authentication that was used when instantiating the Storage client, use the
+BucketHandle.SignedURL method.
+
+    url, err := client.Bucket(bucketName).SignedURL(objectName, opts)
+    if err != nil {
+        // TODO: Handle error.
+    }
+    fmt.Println(url)
+
+You can also sign a URL wihout creating a client. See the documentation of
 SignedURL for details.
 
     url, err := storage.SignedURL(bucketName, "shared-object", opts)
@@ -230,9 +240,9 @@ temporary permission. Conditions can be applied to restrict how the HTML form is
 by a user.
 
 For more information, please see https://cloud.google.com/storage/docs/xml-api/post-object as well
-as the documentation of GenerateSignedPostPolicyV4.
+as the documentation of BucketHandle.GenerateSignedPostPolicyV4.
 
-    pv4, err := storage.GenerateSignedPostPolicyV4(bucketName, objectName, opts)
+    pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName, opts)
     if err != nil {
         // TODO: Handle error.
     }
@@ -253,18 +263,18 @@ See https://pkg.go.dev/google.golang.org/api/googleapi#Error for more informatio
 
 Retrying failed requests
 
-Methods of this package may use exponential backoff to retry calls
-that fail with transient errors. Retrying continues indefinitely unless the
-controlling context is canceled, the client is closed, or a non-transient error
-is received. See context.WithTimeout and context.WithCancel.
+Methods in this package may retry calls that fail with transient errors.
+Retrying continues indefinitely unless the controlling context is canceled, the
+client is closed, or a non-transient error is received. To stop retries from
+continuing, use context timeouts or cancellation.
 
-Retry strategy in this library follows best practices for Cloud Storage. By
-default, only idempotent operations are retried, exponential backoff with jitter
-is employed, and only transient network errors and response codes defined as
-transient by the service and will be retried. See
+The retry strategy in this library follows best practices for Cloud Storage. By
+default, operations are retried only if they are idempotent, and exponential
+backoff with jitter is employed. In addition, errors are only retried if they
+are defined as transient by the service. See
 https://cloud.google.com/storage/docs/retry-strategy for more information.
 
-Users can configure non-default retry behavior for a particular operation (using
+Users can configure non-default retry behavior for a single library call (using
 BucketHandle.Retryer and ObjectHandle.Retryer) or for all calls made by a
 client (using Client.SetRetry). For example:
 
@@ -278,7 +288,7 @@ client (using Client.SetRetry). For example:
 		storage.WithPolicy(storage.RetryAlways),
 	)
 
-	// Use context timeouts to set an overall deadline on the call, including all
+	// Use a context timeout to set an overall deadline on the call, including all
 	// potential retries.
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()

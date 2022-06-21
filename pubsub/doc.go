@@ -63,8 +63,8 @@ Subsciptions may be created like so:
 Messages are then consumed from a subscription via callback.
 
  err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
- 	log.Printf("Got message: %s", m.Data)
- 	m.Ack()
+	log.Printf("Got message: %s", m.Data)
+	m.Ack()
  })
  if err != nil {
 	// Handle error.
@@ -74,8 +74,12 @@ The callback is invoked concurrently by multiple goroutines, maximizing
 throughput. To terminate a call to Receive, cancel its context.
 
 Once client code has processed the message, it must call Message.Ack or
-message.Nack, otherwise the message will eventually be redelivered. If the
-client cannot or doesn't want to process the message, it can call Message.Nack
+Message.Nack, otherwise the message will eventually be redelivered. Ack/Nack
+MUST be called within the Receive handler function, and not from a goroutine.
+Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
+not be respected, and messages can get orphaned when cancelling Receive.
+
+If the client cannot or doesn't want to process the message, it can call Message.Nack
 to speed redelivery. For more information and configuration options, see
 "Deadlines" below.
 
@@ -86,6 +90,20 @@ Note: This uses pubsub's streaming pull feature. This feature properties that
 may be surprising. Please take a look at https://cloud.google.com/pubsub/docs/pull#streamingpull
 for more details on how streaming pull behaves compared to the synchronous
 pull method.
+
+
+Streams Management
+
+Streams used for streaming pull are managed by the gRPC connection pool setting.
+By default, the number of connections in the pool is max(4,GOMAXPROCS/NumCPU).
+
+If you have 4 or more CPU cores, the default setting allows 400 streams which is still a good default for most cases.
+If you want to have more open streams (such as for low CPU core machines), you should pass in the grpc option as described below:
+
+ opts := []option.ClientOption{
+	option.WithGRPCConnectionPool(8),
+ }
+ client, err := pubsub.NewClient(ctx, projID, opts...)
 
 
 Deadlines
@@ -136,5 +154,26 @@ Slow Message Processing
 For use cases where message processing exceeds 30 minutes, we recommend using
 the base client in a pull model, since long-lived streams are periodically killed
 by firewalls. See the example at https://godoc.org/cloud.google.com/go/pubsub/apiv1#example-SubscriberClient-Pull-LengthyClientProcessing
+
+Emulator
+
+To use an emulator with this library, you can set the PUBSUB_EMULATOR_HOST
+environment variable to the address at which your emulator is running. This will
+send requests to that address instead of to Cloud Pub/Sub. You can then create
+and use a client as usual:
+
+	// Set PUBSUB_EMULATOR_HOST environment variable.
+	err := os.Setenv("PUBSUB_EMULATOR_HOST", "localhost:9000")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Create client as usual.
+	client, err := pubsub.NewClient(ctx, "my-project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+
 */
 package pubsub // import "cloud.google.com/go/pubsub"

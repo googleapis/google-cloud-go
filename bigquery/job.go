@@ -345,7 +345,7 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint6
 	err := internal.Retry(ctx, backoff, func() (stop bool, err error) {
 		res, err = call.Do()
 		if err != nil {
-			return !retryableError(err), err
+			return !retryableError(err, jobRetryReasons), err
 		}
 		if !res.JobComplete { // GetQueryResults may return early without error; retry.
 			return false, nil
@@ -918,7 +918,7 @@ func (j *Job) setStatus(qs *bq.JobStatus) error {
 	}
 	state, ok := stateMap[qs.State]
 	if !ok {
-		return fmt.Errorf("unexpected job state: %v", qs.State)
+		return fmt.Errorf("unexpected job state: %s", qs.State)
 	}
 	j.lastStatus = &JobStatus{
 		State: state,

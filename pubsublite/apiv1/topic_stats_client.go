@@ -104,7 +104,7 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 	}
 }
 
-// internalTopicStatsClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalTopicStatsClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalTopicStatsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -240,7 +240,7 @@ func (c *topicStatsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *topicStatsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -257,6 +257,7 @@ func (c *topicStatsGRPCClient) ComputeMessageStats(ctx context.Context, req *pub
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ComputeMessageStats[0:len((*c.CallOptions).ComputeMessageStats):len((*c.CallOptions).ComputeMessageStats)], opts...)
 	var resp *pubsublitepb.ComputeMessageStatsResponse
@@ -278,6 +279,7 @@ func (c *topicStatsGRPCClient) ComputeHeadCursor(ctx context.Context, req *pubsu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ComputeHeadCursor[0:len((*c.CallOptions).ComputeHeadCursor):len((*c.CallOptions).ComputeHeadCursor)], opts...)
 	var resp *pubsublitepb.ComputeHeadCursorResponse
@@ -299,6 +301,7 @@ func (c *topicStatsGRPCClient) ComputeTimeCursor(ctx context.Context, req *pubsu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ComputeTimeCursor[0:len((*c.CallOptions).ComputeTimeCursor):len((*c.CallOptions).ComputeTimeCursor)], opts...)
 	var resp *pubsublitepb.ComputeTimeCursorResponse

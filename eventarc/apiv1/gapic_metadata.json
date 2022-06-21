@@ -10,9 +10,29 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CreateChannel": {
+              "methods": [
+                "CreateChannel"
+              ]
+            },
+            "CreateChannelConnection": {
+              "methods": [
+                "CreateChannelConnection"
+              ]
+            },
             "CreateTrigger": {
               "methods": [
                 "CreateTrigger"
+              ]
+            },
+            "DeleteChannel": {
+              "methods": [
+                "DeleteChannel"
+              ]
+            },
+            "DeleteChannelConnection": {
+              "methods": [
+                "DeleteChannelConnection"
               ]
             },
             "DeleteTrigger": {
@@ -20,14 +40,49 @@
                 "DeleteTrigger"
               ]
             },
+            "GetChannel": {
+              "methods": [
+                "GetChannel"
+              ]
+            },
+            "GetChannelConnection": {
+              "methods": [
+                "GetChannelConnection"
+              ]
+            },
+            "GetProvider": {
+              "methods": [
+                "GetProvider"
+              ]
+            },
             "GetTrigger": {
               "methods": [
                 "GetTrigger"
               ]
             },
+            "ListChannelConnections": {
+              "methods": [
+                "ListChannelConnections"
+              ]
+            },
+            "ListChannels": {
+              "methods": [
+                "ListChannels"
+              ]
+            },
+            "ListProviders": {
+              "methods": [
+                "ListProviders"
+              ]
+            },
             "ListTriggers": {
               "methods": [
                 "ListTriggers"
+              ]
+            },
+            "UpdateChannel": {
+              "methods": [
+                "UpdateChannel"
               ]
             },
             "UpdateTrigger": {

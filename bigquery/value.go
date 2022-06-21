@@ -735,6 +735,13 @@ func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
 		return formatUploadValue(v, fs, func(v reflect.Value) string {
 			return BigNumericString(v.Interface().(*big.Rat))
 		})
+	case IntervalFieldType:
+		if r, ok := v.Interface().(*IntervalValue); ok && r == nil {
+			return nil
+		}
+		return formatUploadValue(v, fs, func(v reflect.Value) string {
+			return IntervalString(v.Interface().(*IntervalValue))
+		})
 	default:
 		if !fs.Repeated || v.Len() > 0 {
 			return v.Interface()
@@ -819,6 +826,12 @@ func NumericString(r *big.Rat) string {
 // SQL.  It returns a floating point literal with 38 digits after the decimal point.
 func BigNumericString(r *big.Rat) string {
 	return r.FloatString(BigNumericScaleDigits)
+}
+
+// IntervalString returns a string  representing an *IntervalValue in a format compatible with
+// BigQuery SQL.  It returns an interval literal in canonical format.
+func IntervalString(iv *IntervalValue) string {
+	return iv.String()
 }
 
 // convertRows converts a series of TableRows into a series of Value slices.
@@ -947,6 +960,12 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		return Value(r), nil
 	case GeographyFieldType:
 		return val, nil
+	case IntervalFieldType:
+		i, err := ParseInterval(val)
+		if err != nil {
+			return nil, fmt.Errorf("bigquery: invalid INTERVAL value %q", val)
+		}
+		return Value(i), nil
 	default:
 		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}

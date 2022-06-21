@@ -26,7 +26,7 @@
 //
 // To get started with this package, create a client.
 //  ctx := context.Background()
-//  c, err := talent.NewApplicationClient(ctx)
+//  c, err := talent.NewCompanyClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
@@ -41,17 +41,17 @@
 // The following is an example of making an API call with the newly created client.
 //
 //  ctx := context.Background()
-//  c, err := talent.NewApplicationClient(ctx)
+//  c, err := talent.NewCompanyClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
 //  defer c.Close()
 //
-//  req := &talentpb.CreateApplicationRequest{
+//  req := &talentpb.CreateCompanyRequest{
 //  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateApplicationRequest.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateCompanyRequest.
 //  }
-//  resp, err := c.CreateApplication(ctx, req)
+//  resp, err := c.CreateCompany(ctx, req)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
@@ -87,7 +87,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220112"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

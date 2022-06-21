@@ -37,9 +37,9 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"cloud.google.com/go/internal/version"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
@@ -56,12 +56,21 @@ import (
 const (
 	directPathIPV6Prefix = "[2001:4860:8040"
 	directPathIPV4Prefix = "34.126"
+
+	singerDDLStatements    = "SINGER_DDL_STATEMENTS"
+	simpleDDLStatements    = "SIMPLE_DDL_STATEMENTS"
+	readDDLStatements      = "READ_DDL_STATEMENTS"
+	backupDDLStatements    = "BACKUP_DDL_STATEMENTS"
+	testTableDDLStatements = "TEST_TABLE_DDL_STATEMENTS"
 )
 
 var (
 	// testProjectID specifies the project used for testing. It can be changed
 	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
+
+	// testDialect specifies the dialect used for testing.
+	testDialect adminpb.DatabaseDialect
 
 	// spannerHost specifies the spanner API host used for testing. It can be changed
 	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
@@ -86,6 +95,26 @@ var (
 
 	dpConfig directPathTestConfig
 	peerInfo *peer.Peer
+
+	singerDBPGStatements = []string{
+		`CREATE TABLE Singers (
+				SingerId INT8 NOT NULL,
+				FirstName VARCHAR(1024),
+				LastName  VARCHAR(1024),
+				SingerInfo	BYTEA,
+				numeric NUMERIC,
+				float8 FLOAT8,
+				PRIMARY KEY(SingerId)
+			)`,
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
+				AccountId BIGINT NOT NULL,
+				Nickname  VARCHAR(100),
+				Balance   BIGINT NOT NULL,
+				PRIMARY KEY(AccountId)
+			)`,
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname)`,
+	}
 
 	singerDBStatements = []string{
 		`CREATE TABLE Singers (
@@ -131,11 +160,26 @@ var (
 		`CREATE INDEX TestTableByValueDesc ON TestTable(StringValue DESC)`,
 	}
 
+	readDBPGStatements = []string{
+		`CREATE TABLE TestTable (
+                    Key          VARCHAR PRIMARY KEY,
+                    StringValue  VARCHAR
+            )`,
+		`CREATE INDEX TestTableByValue ON TestTable(StringValue)`,
+		`CREATE INDEX TestTableByValueDesc ON TestTable(StringValue DESC)`,
+	}
+
 	simpleDBStatements = []string{
 		`CREATE TABLE test (
 				a	STRING(1024),
 				b	STRING(1024),
 			) PRIMARY KEY (a)`,
+	}
+	simpleDBPGStatements = []string{
+		`CREATE TABLE test (
+				a	VARCHAR(1024) PRIMARY KEY,
+				b	VARCHAR(1024)
+			)`,
 	}
 	simpleDBTableColumns = []string{"a", "b"}
 
@@ -145,7 +189,7 @@ var (
 		    Ts   TIMESTAMP OPTIONS (allow_commit_timestamp = true),
 	    ) PRIMARY KEY (Key)`,
 	}
-	backuDBStatements = []string{
+	backupDBStatements = []string{
 		`CREATE TABLE Singers (
 						SingerId	INT64 NOT NULL,
 						FirstName	STRING(1024),
@@ -178,6 +222,48 @@ var (
 						Numeric		NUMERIC,
 						NumericArray	ARRAY<NUMERIC>
 					) PRIMARY KEY (RowID)`,
+	}
+
+	backupDBPGStatements = []string{
+		`CREATE TABLE Singers (
+						SingerId	BIGINT PRIMARY KEY,
+						FirstName	VARCHAR(1024),
+						LastName	VARCHAR(1024),
+						SingerInfo	BYTEA
+					)`,
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
+						AccountId	BIGINT PRIMARY KEY,
+						Nickname	VARCHAR(100),
+						Balance		BIGINT NOT NULL
+					)`,
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname)`,
+		`CREATE TABLE Types (
+						RowID		BIGINT PRIMARY KEY,
+						String		VARCHAR,
+						Bytes		BYTEA,
+						Int64a		BIGINT,
+						Bool		BOOL,
+						Float64		DOUBLE PRECISION,
+						Numeric		NUMERIC
+					)`,
+	}
+
+	statements = map[adminpb.DatabaseDialect]map[string][]string{
+		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
+			singerDDLStatements:    singerDBStatements,
+			simpleDDLStatements:    simpleDBStatements,
+			readDDLStatements:      readDBStatements,
+			backupDDLStatements:    backupDBStatements,
+			testTableDDLStatements: readDBStatements,
+		},
+		adminpb.DatabaseDialect_POSTGRESQL: {
+			singerDDLStatements:    singerDBPGStatements,
+			simpleDDLStatements:    simpleDBPGStatements,
+			readDDLStatements:      readDBPGStatements,
+			backupDDLStatements:    backupDBPGStatements,
+			testTableDDLStatements: readDBPGStatements,
+		},
 	}
 
 	validInstancePattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)$")
@@ -228,9 +314,19 @@ const (
 
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTests()
-	res := m.Run()
-	cleanup()
-	os.Exit(res)
+	defer cleanup()
+	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL, adminpb.DatabaseDialect_POSTGRESQL} {
+		if isEmulatorEnvSet() && dialect == adminpb.DatabaseDialect_POSTGRESQL {
+			// PG tests are not supported in emulator
+			continue
+		}
+		testDialect = dialect
+		res := m.Run()
+		if res != 0 {
+			cleanup()
+			os.Exit(res)
+		}
+	}
 }
 
 var grpcHeaderChecker = testutil.DefaultHeadersEnforcer()
@@ -386,11 +482,12 @@ loop:
 // Test SingleUse transaction.
 func TestIntegration_SingleUse(t *testing.T) {
 	t.Parallel()
+	skipEmulatorTestForPG(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	writes := []struct {
@@ -419,10 +516,11 @@ func TestIntegration_SingleUse(t *testing.T) {
 
 	// Test reading rows with different timestamp bounds.
 	for i, test := range []struct {
-		name    string
-		want    [][]interface{}
-		tb      TimestampBound
-		checkTs func(time.Time) error
+		name      string
+		want      [][]interface{}
+		tb        TimestampBound
+		checkTs   func(time.Time) error
+		skipForPG bool
 	}{
 		{
 			name: "strong",
@@ -472,7 +570,10 @@ func TestIntegration_SingleUse(t *testing.T) {
 		},
 		{
 			name: "exact_staleness",
-			want: nil,
+			// PG query with exact_staleness returns error code
+			// "InvalidArgument", desc = "[ERROR] relation \"singers\" does not exist
+			skipForPG: true,
+			want:      nil,
 			// Specify a staleness which should be already before this test.
 			tb: ExactStaleness(time.Now().Sub(writes[0].ts) + timeDiff + 30*time.Second),
 			checkTs: func(ts time.Time) error {
@@ -484,13 +585,20 @@ func TestIntegration_SingleUse(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+			singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3) ORDER BY SingerId"
+			if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+				if test.skipForPG {
+					t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
+				}
+				singersQuery = "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = $1 OR  SingerId = $2 OR  SingerId = $3 ORDER BY SingerId"
+			}
 			// SingleUse.Query
 			su := client.Single().WithTimestampBound(test.tb)
 			got, err := readAll(su.Query(
 				ctx,
 				Statement{
-					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
-					map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
+					singersQuery,
+					map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
 				}))
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Query returns error %v, want nil", i, err)
@@ -622,7 +730,7 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	writes := []struct {
@@ -644,13 +752,17 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3)"
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = $1 OR  SingerId = $2 OR  SingerId = $3"
+	}
 	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
 		OptimizerVersion:           "1",
 		OptimizerStatisticsPackage: "latest",
 	}}
 	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
-		"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
-		map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
+		singersQuery,
+		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
 	}, qo))
 
 	if err != nil {
@@ -669,7 +781,7 @@ func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	writes := []struct {
@@ -713,7 +825,7 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	writes := []struct {
@@ -741,9 +853,10 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 
 	// Test reading rows with different timestamp bounds.
 	for i, test := range []struct {
-		want    [][]interface{}
-		tb      TimestampBound
-		checkTs func(time.Time) error
+		want      [][]interface{}
+		tb        TimestampBound
+		checkTs   func(time.Time) error
+		skipForPG bool
 	}{
 		// Note: min_read_timestamp and max_staleness are not supported by
 		// ReadOnlyTransaction. See API document for more details.
@@ -757,6 +870,7 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 				}
 				return nil
 			},
+			false,
 		},
 		{
 			// read_timestamp
@@ -768,6 +882,7 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 				}
 				return nil
 			},
+			false,
 		},
 		{
 			// exact_staleness
@@ -780,15 +895,24 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 				}
 				return nil
 			},
+			// PG query with exact_staleness returns Table not found error
+			true,
 		},
 	} {
 		// ReadOnlyTransaction.Query
 		ro := client.ReadOnlyTransaction().WithTimestampBound(test.tb)
+		singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3) ORDER BY SingerId"
+		if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+			if test.skipForPG {
+				t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
+			}
+			singersQuery = "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = $1 OR  SingerId = $2 OR  SingerId = $3 ORDER BY SingerId"
+		}
 		got, err := readAll(ro.Query(
 			ctx,
 			Statement{
-				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
-				map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
+				singersQuery,
+				map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
 			}))
 		if err != nil {
 			t.Errorf("%d: ReadOnlyTransaction.Query returns error %v, want nil", i, err)
@@ -924,7 +1048,7 @@ func TestIntegration_UpdateDuringRead(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	for i, tb := range []TimestampBound{
@@ -957,7 +1081,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Set up two accounts
@@ -987,6 +1111,10 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 		}
 	}
 
+	queryAccountByID := "SELECT Balance FROM Accounts WHERE AccountId = @p1"
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		queryAccountByID = "SELECT Balance FROM Accounts WHERE AccountId = $1"
+	}
 	for i := 0; i < 20; i++ {
 		wg.Add(1)
 		go func(iter int) {
@@ -994,7 +1122,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 				// Query Foo's balance and Bar's balance.
 				bf, e := readBalance(tx.Query(ctx,
-					Statement{"SELECT Balance FROM Accounts WHERE AccountId = @id", map[string]interface{}{"id": int64(1)}}))
+					Statement{queryAccountByID, map[string]interface{}{"p1": int64(1)}}))
 				if e != nil {
 					return e
 				}
@@ -1032,9 +1160,17 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 		if ce := r.Column(0, &bf); ce != nil {
 			return ce
 		}
-		bb, e = readBalance(tx.ReadUsingIndex(ctx, "Accounts", "AccountByNickname", KeySets(Key{"Bar"}), []string{"Balance"}))
-		if e != nil {
-			return e
+		// reading non-indexed column from index is not supported in PG
+		if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+			bb, e = readBalance(tx.Read(ctx, "Accounts", Key{int64(2)}, []string{"Balance"}))
+			if e != nil {
+				return e
+			}
+		} else {
+			bb, e = readBalance(tx.ReadUsingIndex(ctx, "Accounts", "AccountByNickname", KeySets(Key{"Bar"}), []string{"Balance"}))
+			if e != nil {
+				return e
+			}
 		}
 		verifyDirectPathRemoteAddress(t)
 		if bf != 30 || bb != 21 {
@@ -1056,7 +1192,7 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Set up two accounts
@@ -1088,8 +1224,12 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
 	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		// Query Foo's balance and Bar's balance.
+		queryAccountByID := "SELECT Balance FROM Accounts WHERE AccountId = @p1"
+		if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+			queryAccountByID = "SELECT Balance FROM Accounts WHERE AccountId = $1"
+		}
 		bf, e := readBalance(tx.Query(ctx,
-			Statement{"SELECT Balance FROM Accounts WHERE AccountId = @id", map[string]interface{}{"id": int64(1)}}))
+			Statement{queryAccountByID, map[string]interface{}{"p1": int64(1)}}))
 		if e != nil {
 			return e
 		}
@@ -1113,7 +1253,12 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 	if resp.CommitStats == nil {
 		t.Fatal("Missing commit stats in commit response")
 	}
-	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+	expectedMutationCount := int64(8)
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		// for PG mutation count for Balance column is not added for AccountName index
+		expectedMutationCount = int64(4)
+	}
+	if got, want := resp.CommitStats.MutationCount, expectedMutationCount; got != want {
 		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
 	}
 }
@@ -1124,7 +1269,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Set up two accounts
@@ -1217,7 +1362,7 @@ func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Set up two accounts
@@ -1292,7 +1437,12 @@ func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T
 	if resp.CommitStats == nil {
 		t.Fatal("Missing commit stats in commit response")
 	}
-	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+	expectedMutationCount := int64(8)
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		// for PG mutation count for Balance column is not added for AccountName index
+		expectedMutationCount = int64(4)
+	}
+	if got, want := resp.CommitStats.MutationCount, expectedMutationCount; got != want {
 		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
 	}
 }
@@ -1303,7 +1453,7 @@ func TestIntegration_Reads(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableDDLStatements])
 	defer cleanup()
 
 	// Includes k0..k14. Strings sort lexically, eg "k1" < "k10" < "k2".
@@ -1393,7 +1543,7 @@ func TestIntegration_EarlyTimestamp(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableDDLStatements])
 	defer cleanup()
 
 	var ms []*Mutation
@@ -1439,7 +1589,7 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 	// You cannot use a transaction from inside a read-write transaction.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -1467,6 +1617,7 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 
 func TestIntegration_CreateDBRetry(t *testing.T) {
 	t.Parallel()
+	skipUnsupportedPGTest(t)
 
 	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
@@ -1495,6 +1646,7 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 	op, err := dbAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
+		DatabaseDialect: testDialect,
 	})
 	if err != nil {
 		t.Fatalf("failed to create database: %v", err)
@@ -1516,7 +1668,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	defer cancel()
 	// Create a client with MinOpened=0 to prevent the session pool maintainer
 	// from repeatedly trying to create sessions for the invalid database.
-	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, singerDBStatements)
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Drop the testing database.
@@ -1534,7 +1686,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 
 	// Recreate database and table.
 	dbName := dbPath[strings.LastIndex(dbPath, "/")+1:]
-	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
+	req := &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: []string{
@@ -1545,12 +1697,36 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 				SingerInfo      BYTES(MAX)
 			) PRIMARY KEY (SingerId)`,
 		},
-	})
+		DatabaseDialect: testDialect,
+	}
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		req.ExtraStatements = []string{}
+	}
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, req)
 	if err != nil {
 		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
 	}
 	if _, err := op.Wait(ctx); err != nil {
 		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
+	}
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+			Database: dbPath,
+			Statements: []string{`
+			CREATE TABLE Singers (
+				SingerId INT8 NOT NULL,
+				FirstName VARCHAR(1024),
+				LastName  VARCHAR(1024),
+				SingerInfo	BYTEA,
+				PRIMARY KEY(SingerId)
+			)`},
+		})
+		if err != nil {
+			t.Fatalf("cannot create singers table %v: %v", dbPath, err)
+		}
+		if err := op.Wait(ctx); err != nil {
+			t.Fatalf("timeout creating singers table %v: %v", dbPath, err)
+		}
 	}
 
 	// Now, send the query again.
@@ -1566,26 +1742,25 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 // Test encoding/decoding non-struct Cloud Spanner types.
 func TestIntegration_BasicTypes(t *testing.T) {
 	t.Parallel()
+	skipUnsupportedPGTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	stmts := singerDBStatements
-	if !isEmulatorEnvSet() {
-		stmts = []string{
-			`CREATE TABLE Singers (
+	stmts := []string{
+		`CREATE TABLE Singers (
 					SingerId	INT64 NOT NULL,
 					FirstName	STRING(1024),
 					LastName	STRING(1024),
 					SingerInfo	BYTES(MAX)
 				) PRIMARY KEY (SingerId)`,
-			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-			`CREATE TABLE Accounts (
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
 					AccountId	INT64 NOT NULL,
 					Nickname	STRING(100),
 					Balance		INT64 NOT NULL,
 				) PRIMARY KEY (AccountId)`,
-			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-			`CREATE TABLE Types (
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
 					String		STRING(MAX),
 					StringArray	ARRAY<STRING(MAX)>,
@@ -1606,7 +1781,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					JSON		JSON,
 					JSONArray	ARRAY<JSON>
 				) PRIMARY KEY (RowID)`,
-		}
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -1647,7 +1821,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "String", val: "foo", want: NullString{"foo", true}},
 		{col: "String", val: NullString{"bar", true}, want: "bar"},
 		{col: "String", val: NullString{"bar", false}, want: NullString{"", false}},
-		{col: "String", val: nil, want: NullString{}},
 		{col: "StringArray", val: []string(nil), want: []NullString(nil)},
 		{col: "StringArray", val: []string{}, want: []NullString{}},
 		{col: "StringArray", val: []string{"foo", "bar"}, want: []NullString{{"foo", true}, {"bar", true}}},
@@ -1668,7 +1841,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Int64a", val: NullInt64{5, true}, want: int64(5)},
 		{col: "Int64a", val: NullInt64{6, true}, want: int64(6)},
 		{col: "Int64a", val: NullInt64{7, false}, want: NullInt64{0, false}},
-		{col: "Int64a", val: nil, want: NullInt64{}},
 		{col: "Int64Array", val: []int(nil), want: []NullInt64(nil)},
 		{col: "Int64Array", val: []int{}, want: []NullInt64{}},
 		{col: "Int64Array", val: []int{1, 2}, want: []NullInt64{{1, true}, {2, true}}},
@@ -1684,7 +1856,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Bool", val: true, want: NullBool{true, true}},
 		{col: "Bool", val: NullBool{true, true}},
 		{col: "Bool", val: NullBool{false, false}},
-		{col: "Bool", val: nil, want: NullBool{}},
 		{col: "BoolArray", val: []bool(nil), want: []NullBool(nil)},
 		{col: "BoolArray", val: []bool{}, want: []NullBool{}},
 		{col: "BoolArray", val: []bool{true, false}, want: []NullBool{{true, true}, {false, true}}},
@@ -1700,7 +1871,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Float64", val: NullFloat64{2.71, true}, want: 2.71},
 		{col: "Float64", val: NullFloat64{1.41, true}, want: NullFloat64{1.41, true}},
 		{col: "Float64", val: NullFloat64{0, false}},
-		{col: "Float64", val: nil, want: NullFloat64{}},
 		{col: "Float64Array", val: []float64(nil), want: []NullFloat64(nil)},
 		{col: "Float64Array", val: []float64{}, want: []NullFloat64{}},
 		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, want: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
@@ -1720,7 +1890,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Timestamp", val: NullTime{t1, true}},
 		{col: "Timestamp", val: NullTime{t1, true}, want: t1},
 		{col: "Timestamp", val: NullTime{}},
-		{col: "Timestamp", val: nil, want: NullTime{}},
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
@@ -1731,13 +1900,17 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
 		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
 		{col: "Numeric", val: NullNumeric{n0, false}},
-		{col: "Numeric", val: nil, want: NullNumeric{}},
 		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
 		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
 		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
 		{col: "NumericArray", val: []NullNumeric(nil)},
 		{col: "NumericArray", val: []NullNumeric{}},
 		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
+		{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
+		{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
+		{col: "JSONArray", val: []NullJSON(nil)},
+		{col: "JSONArray", val: []NullJSON{}},
+		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
 		{col: "String", val: nil, want: NullString{}},
 		{col: "StringArray", val: nil, want: []NullString(nil)},
 		{col: "Bytes", val: nil, want: []byte(nil)},
@@ -1748,65 +1921,56 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "BoolArray", val: nil, want: []NullBool(nil)},
 		{col: "Float64", val: nil, want: NullFloat64{}},
 		{col: "Float64Array", val: nil, want: []NullFloat64(nil)},
-		{col: "Date", val: nil, want: NullDate{}},
-		{col: "DateArray", val: nil, want: []NullDate(nil)},
-		{col: "Timestamp", val: nil, want: NullTime{}},
-		{col: "TimestampArray", val: nil, want: []NullTime(nil)},
 		{col: "Numeric", val: nil, want: NullNumeric{}},
 		{col: "NumericArray", val: nil, want: []NullNumeric(nil)},
+		{col: "JSON", val: nil, want: NullJSON{}},
+		{col: "JSONArray", val: nil, want: []NullJSON(nil)},
 	}
 
-	// Write rows into table first using DML. Only do this on real Spanner
-	// as the emulator does not support untyped parameters.
-	// TODO: Remove when the emulator supports untyped parameters.
-	if !isEmulatorEnvSet() {
-		statements := make([]Statement, 0)
-		for i, test := range tests {
-			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
-			// Note: We are not setting the parameter type here to ensure that it
-			// can be automatically recognized when it is actually needed.
-			stmt.Params["id"] = i
-			stmt.Params["value"] = test.val
-			statements = append(statements, stmt)
-		}
-		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			rowCounts, err := tx.BatchUpdate(ctx, statements)
-			if err != nil {
-				return err
-			}
-			if len(rowCounts) != len(tests) {
-				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
-			}
-			for i, c := range rowCounts {
-				if c != 1 {
-					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
-				}
-			}
-			return nil
-		})
-		if err != nil {
-			t.Fatalf("failed to insert values using DML: %v", err)
-		}
-		// Delete all the rows so we can insert them using mutations as well.
-		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-		if err != nil {
-			t.Fatalf("failed to delete all rows: %v", err)
-		}
-	}
-
+	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
 	if !isEmulatorEnvSet() {
 		tests = append(tests, []struct {
 			col  string
 			val  interface{}
 			want interface{}
 		}{
-			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
-			{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
-			{col: "JSON", val: nil, want: NullJSON{}},
-			{col: "JSONArray", val: []NullJSON(nil)},
-			{col: "JSONArray", val: []NullJSON{}},
-			{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
+			{col: "Date", val: nil, want: NullDate{}},
+			{col: "Timestamp", val: nil, want: NullTime{}},
 		}...)
+	}
+
+	// Write rows into table first using DML.
+	statements := make([]Statement, 0)
+	for i, test := range tests {
+		stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+		// Note: We are not setting the parameter type here to ensure that it
+		// can be automatically recognized when it is actually needed.
+		stmt.Params["id"] = i
+		stmt.Params["value"] = test.val
+		statements = append(statements, stmt)
+	}
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		rowCounts, err := tx.BatchUpdate(ctx, statements)
+		if err != nil {
+			return err
+		}
+		if len(rowCounts) != len(tests) {
+			return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+		}
+		for i, c := range rowCounts {
+			if c != 1 {
+				return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("failed to insert values using DML: %v", err)
+	}
+	// Delete all the rows so we can insert them using mutations as well.
+	_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+	if err != nil {
+		t.Fatalf("failed to delete all rows: %v", err)
 	}
 
 	// Verify that we can insert the rows using mutations.
@@ -1853,6 +2017,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 // Test decoding Cloud Spanner STRUCT type.
 func TestIntegration_StructTypes(t *testing.T) {
 	t.Parallel()
+	skipUnsupportedPGTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -1941,6 +2106,7 @@ func TestIntegration_StructTypes(t *testing.T) {
 func TestIntegration_StructParametersUnsupported(t *testing.T) {
 	skipEmulatorTest(t)
 	t.Parallel()
+	skipUnsupportedPGTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -1986,6 +2152,7 @@ func TestIntegration_StructParametersUnsupported(t *testing.T) {
 // Test queries of the form "SELECT expr".
 func TestIntegration_QueryExpressions(t *testing.T) {
 	t.Parallel()
+	skipUnsupportedPGTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2046,7 +2213,7 @@ func TestIntegration_QueryStats(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	accounts := []*Mutation{
@@ -2109,7 +2276,7 @@ func TestIntegration_ReadErrors(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][readDDLStatements])
 	defer cleanup()
 
 	var ms []*Mutation
@@ -2137,7 +2304,11 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	iter := client.Single().Query(ctx, Statement{SQL: "SELECT Apples AND Oranges"})
 	defer iter.Stop()
 	_, err = iter.Next()
-	if msg, ok := matchError(err, codes.InvalidArgument, "unrecognized name"); !ok {
+	errorMessage := "unrecognized name"
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		errorMessage = "does not exist"
+	}
+	if msg, ok := matchError(err, codes.InvalidArgument, errorMessage); !ok {
 		t.Error(msg)
 	}
 
@@ -2172,7 +2343,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Test 1: User error should abort the transaction.
@@ -2318,7 +2489,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, simpleDBStatements)
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][simpleDDLStatements])
 	defer cleanup()
 
 	if err = populate(ctx, client); err != nil {
@@ -2396,7 +2567,8 @@ func TestIntegration_BatchQuery(t *testing.T) {
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestIntegration_BatchRead(t *testing.T) {
 	t.Parallel()
-
+	// skipping PG test because of rpc error: code = InvalidArgument desc = [ERROR] syntax error at or near "." in PartitionRead
+	skipUnsupportedPGTest(t)
 	// Set up testing environment.
 	var (
 		client2 *Client
@@ -2404,7 +2576,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, simpleDBStatements)
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][simpleDDLStatements])
 	defer cleanup()
 
 	if err = populate(ctx, client); err != nil {
@@ -2481,7 +2653,8 @@ func TestIntegration_BatchRead(t *testing.T) {
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestIntegration_BROTNormal(t *testing.T) {
 	t.Parallel()
-
+	// skipping PG test because of rpc error: code = InvalidArgument desc = [ERROR] syntax error at or near "." in PartitionRead
+	skipUnsupportedPGTest(t)
 	// Set up testing environment and create txn.
 	var (
 		txn *BatchReadOnlyTransaction
@@ -2491,7 +2664,7 @@ func TestIntegration_BROTNormal(t *testing.T) {
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, simpleDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][simpleDDLStatements])
 	defer cleanup()
 
 	if txn, err = client.BatchReadOnlyTransaction(ctx, StrongRead()); err != nil {
@@ -2517,6 +2690,7 @@ func TestIntegration_BROTNormal(t *testing.T) {
 
 func TestIntegration_CommitTimestamp(t *testing.T) {
 	t.Parallel()
+	skipUnsupportedPGTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2590,7 +2764,7 @@ func TestIntegration_DML(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Function that reads a single row's first name from within a transaction.
@@ -2629,10 +2803,29 @@ func TestIntegration_DML(t *testing.T) {
 		return got
 	}
 
+	singersQuery := []string{`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Umm", "Kulthum")`,
+		`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
+		`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, "Audra", "McDonald")`,
+		`UPDATE Singers SET FirstName = "Oum" WHERE SingerId = 1`,
+		`UPDATE Singers SET FirstName = "Eddie" WHERE SingerId = 2`,
+		`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, "Audra", "McDonald")`,
+		`SELECT FirstName FROM Singers`,
+	}
+
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = []string{`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, 'Umm', 'Kulthum')`,
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (2, 'Eduard', 'Khil')`,
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, 'Audra', 'McDonald')`,
+			`UPDATE Singers SET FirstName = 'Oum' WHERE SingerId = 1`,
+			`UPDATE Singers SET FirstName = 'Eddie' WHERE SingerId = 2`,
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, 'Audra', 'McDonald')`,
+			`SELECT FirstName FROM Singers`,
+		}
+	}
 	// Use ReadWriteTransaction.Query to execute a DML statement.
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		iter := tx.Query(ctx, Statement{
-			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Umm", "Kulthum")`,
+			SQL: singersQuery[0],
 		})
 		defer iter.Stop()
 		row, err := iter.Next()
@@ -2662,7 +2855,7 @@ func TestIntegration_DML(t *testing.T) {
 	// Use ReadWriteTransaction.Update to execute a DML statement.
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		count, err := tx.Update(ctx, Statement{
-			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
+			SQL: singersQuery[1],
 		})
 		if err != nil {
 			return err
@@ -2688,7 +2881,7 @@ func TestIntegration_DML(t *testing.T) {
 	var fail = errors.New("fail")
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		_, err := tx.Update(ctx, Statement{
-			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, "Audra", "McDonald")`,
+			SQL: singersQuery[2],
 		})
 		if err != nil {
 			return err
@@ -2705,11 +2898,11 @@ func TestIntegration_DML(t *testing.T) {
 
 	// Run two DML statements in the same transaction.
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		_, err := tx.Update(ctx, Statement{SQL: `UPDATE Singers SET FirstName = "Oum" WHERE SingerId = 1`})
+		_, err := tx.Update(ctx, Statement{SQL: singersQuery[3]})
 		if err != nil {
 			return err
 		}
-		_, err = tx.Update(ctx, Statement{SQL: `UPDATE Singers SET FirstName = "Eddie" WHERE SingerId = 2`})
+		_, err = tx.Update(ctx, Statement{SQL: singersQuery[4]})
 		if err != nil {
 			return err
 		}
@@ -2727,7 +2920,7 @@ func TestIntegration_DML(t *testing.T) {
 	// Run a DML statement and an ordinary mutation in the same transaction.
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		_, err := tx.Update(ctx, Statement{
-			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (3, "Audra", "McDonald")`,
+			SQL: singersQuery[5],
 		})
 		if err != nil {
 			return err
@@ -2748,7 +2941,7 @@ func TestIntegration_DML(t *testing.T) {
 
 	// Attempt to run a query using update.
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		_, err := tx.Update(ctx, Statement{SQL: `SELECT FirstName from Singers`})
+		_, err := tx.Update(ctx, Statement{SQL: singersQuery[6]})
 		return err
 	})
 	if got, want := ErrCode(err), codes.InvalidArgument; got != want {
@@ -2758,6 +2951,7 @@ func TestIntegration_DML(t *testing.T) {
 
 func TestIntegration_StructParametersBind(t *testing.T) {
 	t.Parallel()
+	skipUnsupportedPGTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2931,7 +3125,7 @@ func TestIntegration_PDML(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	columns := []string{"SingerId", "FirstName", "LastName"}
@@ -2950,12 +3144,16 @@ func TestIntegration_PDML(t *testing.T) {
 	if _, err := client.Apply(ctx, muts); err != nil {
 		t.Fatal(err)
 	}
+	query := `UPDATE Singers SET Singers.FirstName = "changed" WHERE Singers.SingerId >= 1 AND Singers.SingerId <= @p1`
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		query = `UPDATE Singers SET FirstName = 'changed' WHERE SingerId >= 1 AND SingerId <= $1`
+	}
 	// Identifiers in PDML statements must be fully qualified.
 	// TODO(jba): revisit the above.
 	count, err := client.PartitionedUpdate(ctx, Statement{
-		SQL: `UPDATE Singers SET Singers.FirstName = "changed" WHERE Singers.SingerId >= 1 AND Singers.SingerId <= @end`,
+		SQL: query,
 		Params: map[string]interface{}{
-			"end": 3,
+			"p1": 3,
 		},
 	})
 	if err != nil {
@@ -2985,7 +3183,7 @@ func TestIntegration_BatchDML(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	columns := []string{"SingerId", "FirstName", "LastName"}
@@ -3003,12 +3201,22 @@ func TestIntegration_BatchDML(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	singersQuery := []string{`UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`,
+		`UPDATE Singers SET Singers.FirstName = "changed 2" WHERE Singers.SingerId = 2`,
+		`UPDATE Singers SET Singers.FirstName = "changed 3" WHERE Singers.SingerId = 3`,
+	}
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = []string{`UPDATE Singers SET FirstName = 'changed 1' WHERE SingerId = 1`,
+			`UPDATE Singers SET FirstName = 'changed 2' WHERE SingerId = 2`,
+			`UPDATE Singers SET FirstName = 'changed 3' WHERE SingerId = 3`,
+		}
+	}
 	var counts []int64
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) (err error) {
 		counts, err = tx.BatchUpdate(ctx, []Statement{
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`},
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 2" WHERE Singers.SingerId = 2`},
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 3" WHERE Singers.SingerId = 3`},
+			{SQL: singersQuery[0]},
+			{SQL: singersQuery[1]},
+			{SQL: singersQuery[2]},
 		})
 		return err
 	})
@@ -3038,7 +3246,7 @@ func TestIntegration_BatchDML_NoStatements(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) (err error) {
@@ -3062,7 +3270,7 @@ func TestIntegration_BatchDML_TwoStatements(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	columns := []string{"SingerId", "FirstName", "LastName"}
@@ -3080,19 +3288,30 @@ func TestIntegration_BatchDML_TwoStatements(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	singersQuery := []string{`UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`,
+		`UPDATE Singers SET Singers.FirstName = "changed 2" WHERE Singers.SingerId = 2`,
+		`UPDATE Singers SET Singers.FirstName = "changed 3" WHERE Singers.SingerId = 3`,
+		`UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`}
+
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = []string{`UPDATE Singers SET FirstName = 'changed 1' WHERE SingerId = 1`,
+			`UPDATE Singers SET FirstName = 'changed 2' WHERE SingerId = 2`,
+			`UPDATE Singers SET FirstName = 'changed 3' WHERE SingerId = 3`,
+			`UPDATE Singers SET FirstName = 'changed 1' WHERE SingerId = 1`}
+	}
 	var updateCount int64
 	var batchCounts []int64
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) (err error) {
 		batchCounts, err = tx.BatchUpdate(ctx, []Statement{
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`},
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 2" WHERE Singers.SingerId = 2`},
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 3" WHERE Singers.SingerId = 3`},
+			{SQL: singersQuery[0]},
+			{SQL: singersQuery[1]},
+			{SQL: singersQuery[2]},
 		})
 		if err != nil {
 			return err
 		}
 
-		updateCount, err = tx.Update(ctx, Statement{SQL: `UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`})
+		updateCount, err = tx.Update(ctx, Statement{SQL: singersQuery[3]})
 		return err
 	})
 	if err != nil {
@@ -3111,7 +3330,7 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	columns := []string{"SingerId", "FirstName", "LastName"}
@@ -3129,11 +3348,20 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	singersQuery := []string{`UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`,
+		`some illegal statement`,
+		`UPDATE Singers SET Singers.FirstName = "changed 3" WHERE Singers.SingerId = 3`}
+
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = []string{`UPDATE Singers SET FirstName = 'changed 1' WHERE SingerId = 1`,
+			`some illegal statement`,
+			`UPDATE Singers SET FirstName = 'changed 3' WHERE SingerId = 3`}
+	}
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) (err error) {
 		counts, err := tx.BatchUpdate(ctx, []Statement{
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 1" WHERE Singers.SingerId = 1`},
-			{SQL: `some illegal statement`},
-			{SQL: `UPDATE Singers SET Singers.FirstName = "changed 3" WHERE Singers.SingerId = 3`},
+			{SQL: singersQuery[0]},
+			{SQL: singersQuery[1]},
+			{SQL: singersQuery[2]},
 		})
 		if err == nil {
 			t.Fatal("expected err, got nil")
@@ -3171,16 +3399,107 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 	}
 }
 
+func TestIntegration_PGNumeric(t *testing.T) {
+	onlyRunForPGTest(t)
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTestForPG(ctx, t, DefaultSessionPoolConfig, singerDBPGStatements)
+	defer cleanup()
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		count, err := tx.Update(ctx, Statement{
+			SQL: `INSERT INTO Singers (SingerId, numeric, float8) VALUES ($1, $2, $3)`,
+			Params: map[string]interface{}{
+				"p1": int64(123),
+				"p2": PGNumeric{"123.456789", true},
+				"p3": float64(123.456),
+			},
+		})
+		if err != nil {
+			return err
+		}
+		if count != 1 {
+			t.Errorf("row count: got %d, want 1", count)
+		}
+
+		count, err = tx.Update(ctx, Statement{
+			SQL: `INSERT INTO Singers (SingerId, numeric, float8) VALUES ($1, $2, $3)`,
+			Params: map[string]interface{}{
+				"p1": int64(456),
+				"p2": PGNumeric{"NaN", true},
+				"p3": float64(12345.6),
+			},
+		})
+		if err != nil {
+			return err
+		}
+		if count != 1 {
+			t.Errorf("row count: got %d, want 1", count)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId, numeric, float8 FROM Singers"})
+	got, err := readPGSingerTable(iter)
+	if err != nil {
+		t.Fatalf("failed to read data: %v", err)
+	}
+	want := [][]interface{}{
+		{int64(123), PGNumeric{"123.456789", true}, float64(123.456)},
+		{int64(456), PGNumeric{"NaN", true}, float64(12345.6)},
+	}
+	if !testEqual(got, want) {
+		t.Errorf("\ngot %v\nwant%v", got, want)
+	}
+}
+
+func readPGSingerTable(iter *RowIterator) ([][]interface{}, error) {
+	defer iter.Stop()
+	var vals [][]interface{}
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		var id int64
+		var numeric PGNumeric
+		var float8 float64
+		err = row.Columns(&id, &numeric, &float8)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, []interface{}{id, numeric, float8})
+	}
+}
+
 func TestIntegration_StartBackupOperation(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 
 	startTime := time.Now()
 	// Backups can be slow, so use 1 hour timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Hour)
 	defer cancel()
-	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, backuDBStatements)
+	client, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][backupDDLStatements])
 	defer cleanup()
+
+	// Set up 1 singer to have backup size greater than zero
+	singers := []*Mutation{
+		Insert("Singers", []string{"SingerId", "FirstName", "LastName"}, []interface{}{int64(1), "test", "test"}),
+	}
+	if _, err := client.Apply(ctx, singers, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
 
 	backupID := backupIDSpace.New()
 	backupName := fmt.Sprintf("projects/%s/instances/%s/backups/%s", testProjectID, testInstanceID, backupID)
@@ -3227,7 +3546,7 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][readDDLStatements])
 	defer cleanup()
 
 	if !dpConfig.attemptDirectPath {
@@ -3268,14 +3587,13 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 }
 
 func TestIntegration_GFE_Latency(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
 	setGFELatencyMetricsFlag(true)
 
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	singerColumns := []string{"SingerId", "FirstName", "LastName"}
@@ -3348,6 +3666,14 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
+	return prepareDBAndClient(ctx, t, spc, statements, testDialect)
+}
+
+func prepareIntegrationTestForPG(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
+	return prepareDBAndClient(ctx, t, spc, statements, adminpb.DatabaseDialect_POSTGRESQL)
+}
+
+func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect) (*Client, string, func()) {
 	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -3356,16 +3682,33 @@ func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolCo
 
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
-	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
+	req := &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: statements,
-	})
+		DatabaseDialect: dbDialect,
+	}
+	if dbDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		req.ExtraStatements = []string{}
+	}
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, req)
 	if err != nil {
 		t.Fatalf("cannot create testing DB %v: %v", dbPath, err)
 	}
 	if _, err := op.Wait(ctx); err != nil {
 		t.Fatalf("cannot create testing DB %v: %v", dbPath, err)
+	}
+	if dbDialect == adminpb.DatabaseDialect_POSTGRESQL && len(statements) > 0 {
+		op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+			Database:   dbPath,
+			Statements: statements,
+		})
+		if err != nil {
+			t.Fatalf("cannot create testing table %v: %v", dbPath, err)
+		}
+		if err := op.Wait(ctx); err != nil {
+			t.Fatalf("timeout creating testing table %v: %v", dbPath, err)
+		}
 	}
 	client, err := createClient(ctx, dbPath, spc)
 	if err != nil {
@@ -3667,6 +4010,30 @@ func skipEmulatorTest(t *testing.T) {
 	}
 }
 
+func skipEmulatorTestForPG(t *testing.T) {
+	if isEmulatorEnvSet() && testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		t.Skip("Skipping PG testing against the emulator.")
+	}
+}
+
+func skipUnsupportedPGTest(t *testing.T) {
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
+	}
+}
+
+func onlyRunForPGTest(t *testing.T) {
+	if testDialect != adminpb.DatabaseDialect_POSTGRESQL {
+		t.Skip("Skipping tests supported only in Postgres dialect.")
+	}
+}
+
+func skipForPGTest(t *testing.T) {
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		t.Skip("Skipping tests non needed for Postgres dialect.")
+	}
+}
+
 func verifyDirectPathRemoteAddress(t *testing.T) {
 	t.Helper()
 	if !dpConfig.attemptDirectPath {
@@ -3750,7 +4117,7 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	if !strings.HasPrefix(m[tagKeyClientID], "client") {
 		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
 	}
-	if m[tagKeyLibVersion] != version.Repo {
+	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }

@@ -1,0 +1,244 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/assuredworkloads/apiv1beta1",
+    "version": "0.6.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.assuredworkloads.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync",
+      "title": "assuredworkloads CreateWorkload Sample",
+      "description": "CreateWorkload creates Assured Workload.",
+      "file": "Client/CreateWorkload/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkload",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.CreateWorkload",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assuredworkloadspb.CreateWorkloadRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkloadOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkload",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.CreateWorkload",
+          "service": {
+            "shortName": "AssuredWorkloadsService",
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync",
+      "title": "assuredworkloads DeleteWorkload Sample",
+      "description": "DeleteWorkload deletes the workload. Make sure that workload’s direct children are already\nin a deleted state, otherwise the request will fail with a\nFAILED_PRECONDITION error.",
+      "file": "Client/DeleteWorkload/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkload",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.DeleteWorkload",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assuredworkloadspb.DeleteWorkloadRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkload",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.DeleteWorkload",
+          "service": {
+            "shortName": "AssuredWorkloadsService",
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_GetWorkload_sync",
+      "title": "assuredworkloads GetWorkload Sample",
+      "description": "GetWorkload gets Assured Workload associated with a CRM Node",
+      "file": "Client/GetWorkload/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkload",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.GetWorkload",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assuredworkloadspb.GetWorkloadRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assuredworkloadspb.Workload",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetWorkload",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.GetWorkload",
+          "service": {
+            "shortName": "AssuredWorkloadsService",
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListWorkloads_sync",
+      "title": "assuredworkloads ListWorkloads Sample",
+      "description": "ListWorkloads lists Assured Workloads under a CRM Node.",
+      "file": "Client/ListWorkloads/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkloads",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.ListWorkloads",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assuredworkloadspb.ListWorkloadsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkloadIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListWorkloads",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.ListWorkloads",
+          "service": {
+            "shortName": "AssuredWorkloadsService",
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_UpdateWorkload_sync",
+      "title": "assuredworkloads UpdateWorkload Sample",
+      "description": "UpdateWorkload updates an existing workload.\nCurrently allows updating of workload display_name and labels.\nFor force updates don’t set etag field in the Workload.\nOnly one update operation per workload can be in progress.",
+      "file": "Client/UpdateWorkload/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkload",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.UpdateWorkload",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assuredworkloadspb.UpdateWorkloadRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assuredworkloadspb.Workload",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateWorkload",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.UpdateWorkload",
+          "service": {
+            "shortName": "AssuredWorkloadsService",
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

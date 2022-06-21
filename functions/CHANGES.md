@@ -1,5 +1,26 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.3.0...functions/v1.4.0) (2022-06-16)
+
+
+### Features
+
+* **functions:** added support for CMEK docs: clarified wording around quota usage ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.2.0...functions/v1.3.0) (2022-02-23)
+
+
+### Features
+
+* **functions:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.1.0...functions/v1.2.0) (2022-02-14)
+
+
+### Features
+
+* **functions:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/functions/v1.0.0...functions/v1.1.0) (2022-01-04)
 
 

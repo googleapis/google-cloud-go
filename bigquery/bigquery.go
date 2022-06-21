@@ -23,7 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal"
+	"cloud.google.com/go/bigquery/internal"
+	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/detect"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
@@ -40,7 +41,7 @@ const (
 	userAgentPrefix = "gcloud-golang-bigquery"
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
+var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
 
 func setClientHeader(headers http.Header) {
 	headers.Set("x-goog-api-client", xGoogHeader)
@@ -74,12 +75,12 @@ const DetectProjectID = "*detect-project-id*"
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	o := []option.ClientOption{
 		option.WithScopes(Scope),
-		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, version.Repo)),
+		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, internal.Version)),
 	}
 	o = append(o, opts...)
 	bqs, err := bq.NewService(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("bigquery: constructing client: %v", err)
+		return nil, fmt.Errorf("bigquery: constructing client: %w", err)
 	}
 
 	// Handle project autodetection.
@@ -127,7 +128,8 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	// have to read the contents and keep it in memory, and that could be expensive.
 	// TODO(jba): Look into retrying if media != nil.
 	if job.JobReference != nil && media == nil {
-		err = runWithRetry(ctx, invoke)
+		// We deviate from default retries due to BigQuery wanting to retry structured internal job errors.
+		err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
 	} else {
 		err = invoke()
 	}
@@ -152,7 +154,7 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 	}
 
 	// We control request ID, so we can always runWithRetry.
-	err = runWithRetry(ctx, invoke)
+	err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
 	if err != nil {
 		return nil, err
 	}
@@ -174,26 +176,35 @@ func unixMillisToTime(m int64) time.Time {
 // See the similar function in ../storage/invoke.go. The main difference is the
 // reason for retrying.
 func runWithRetry(ctx context.Context, call func() error) error {
+	return runWithRetryExplicit(ctx, call, defaultRetryReasons)
+}
+
+func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons []string) error {
 	// These parameters match the suggestions in https://cloud.google.com/bigquery/sla.
 	backoff := gax.Backoff{
 		Initial:    1 * time.Second,
 		Max:        32 * time.Second,
 		Multiplier: 2,
 	}
-	return internal.Retry(ctx, backoff, func() (stop bool, err error) {
+	return cloudinternal.Retry(ctx, backoff, func() (stop bool, err error) {
 		err = call()
 		if err == nil {
 			return true, nil
 		}
-		return !retryableError(err), err
+		return !retryableError(err, allowedReasons), err
 	})
 }
+
+var (
+	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
+	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
+)
 
 // This is the correct definition of retryable according to the BigQuery team. It
 // also considers 502 ("Bad Gateway") and 503 ("Service Unavailable") errors
 // retryable; these are returned by systems between the client and the BigQuery
 // service.
-func retryableError(err error) bool {
+func retryableError(err error, allowedReasons []string) bool {
 	if err == nil {
 		return false
 	}
@@ -215,8 +226,13 @@ func retryableError(err error) bool {
 		var reason string
 		if len(e.Errors) > 0 {
 			reason = e.Errors[0].Reason
+			for _, r := range allowedReasons {
+				if reason == r {
+					return true
+				}
+			}
 		}
-		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway || reason == "backendError" || reason == "rateLimitExceeded" {
+		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway {
 			return true
 		}
 	case *url.Error:
@@ -233,7 +249,7 @@ func retryableError(err error) bool {
 	}
 	// Unwrap is only supported in go1.13.x+
 	if e, ok := err.(interface{ Unwrap() error }); ok {
-		return retryableError(e.Unwrap())
+		return retryableError(e.Unwrap(), allowedReasons)
 	}
 	return false
 }

@@ -97,7 +97,7 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 	}
 }
 
-// internalErrorStatsClient is an interface that defines the methods availaible from Error Reporting API.
+// internalErrorStatsClient is an interface that defines the methods available from Error Reporting API.
 type internalErrorStatsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -228,7 +228,7 @@ func (c *errorStatsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *errorStatsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -240,6 +240,7 @@ func (c *errorStatsGRPCClient) Close() error {
 
 func (c *errorStatsGRPCClient) ListGroupStats(ctx context.Context, req *clouderrorreportingpb.ListGroupStatsRequest, opts ...gax.CallOption) *ErrorGroupStatsIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListGroupStats[0:len((*c.CallOptions).ListGroupStats):len((*c.CallOptions).ListGroupStats)], opts...)
 	it := &ErrorGroupStatsIterator{}
@@ -284,6 +285,7 @@ func (c *errorStatsGRPCClient) ListGroupStats(ctx context.Context, req *clouderr
 
 func (c *errorStatsGRPCClient) ListEvents(ctx context.Context, req *clouderrorreportingpb.ListEventsRequest, opts ...gax.CallOption) *ErrorEventIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &ErrorEventIterator{}
@@ -333,6 +335,7 @@ func (c *errorStatsGRPCClient) DeleteEvents(ctx context.Context, req *clouderror
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEvents[0:len((*c.CallOptions).DeleteEvents):len((*c.CallOptions).DeleteEvents)], opts...)
 	var resp *clouderrorreportingpb.DeleteEventsResponse

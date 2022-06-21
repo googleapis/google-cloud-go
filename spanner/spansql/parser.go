@@ -1442,7 +1442,16 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 
 		update_item: path_expression = expression | path_expression = DEFAULT
 
-		TODO: Insert.
+		INSERT [INTO] target_name
+		 (column_name_1 [, ..., column_name_n] )
+		 input
+
+		input:
+		 VALUES (row_1_column_1_expr [, ..., row_1_column_n_expr ] )
+		        [, ..., (row_k_column_1_expr [, ..., row_k_column_n_expr ] ) ]
+		| select_query
+
+		expr: value_expression | DEFAULT
 	*/
 
 	if p.eat("DELETE") {
@@ -1499,6 +1508,46 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		return u, nil
 	}
 
+	if p.eat("INSERT") {
+		p.eat("INTO") // optional
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+
+		columns, err := p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+
+		var input ValuesOrSelect
+		if p.eat("VALUES") {
+			values := make([][]Expr, 0)
+			for {
+				exprs, err := p.parseParenExprList()
+				if err != nil {
+					return nil, err
+				}
+				values = append(values, exprs)
+				if !p.eat(",") {
+					break
+				}
+			}
+			input = Values(values)
+		} else {
+			input, err = p.parseSelect()
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return &Insert{
+			Table:   tname,
+			Columns: columns,
+			Input:   input,
+		}, nil
+	}
+
 	return nil, p.errorf("unknown DML statement")
 }
 
@@ -1528,7 +1577,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	/*
 		column_def:
-			column_name {scalar_type | array_type} [NOT NULL] [AS ( expression ) STORED] [options_def]
+			column_name {scalar_type | array_type} [NOT NULL] [{DEFAULT ( expression ) | AS ( expression ) STORED}] [options_def]
 	*/
 
 	name, err := p.parseTableOrIndexOrColumnName()
@@ -1545,6 +1594,16 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	if p.eat("NOT", "NULL") {
 		cd.NotNull = true
+	}
+
+	if p.eat("DEFAULT", "(") {
+		cd.Default, err = p.parseExpr()
+		if err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect(")"); err != nil {
+			return ColumnDef{}, err
+		}
 	}
 
 	if p.eat("AS", "(") {
@@ -1573,8 +1632,28 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
 	debugf("parseColumnAlteration: %v", p)
 	/*
-		{ data_type } [ NOT NULL ] | SET [ options_def ]
+		{
+			data_type [ NOT NULL ] [ DEFAULT ( expression ) ]
+			| SET  ( options_def )
+			| SET  DEFAULT ( expression )
+			| DROP DEFAULT
+		}
 	*/
+
+	if p.eat("SET", "DEFAULT", "(") {
+		d, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
+		return SetDefault{Default: d}, nil
+	}
+
+	if p.eat("DROP", "DEFAULT") {
+		return DropDefault{}, nil
+	}
 
 	if p.eat("SET") {
 		co, err := p.parseColumnOptions()
@@ -1592,6 +1671,16 @@ func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
 
 	if p.eat("NOT", "NULL") {
 		sct.NotNull = true
+	}
+
+	if p.eat("DEFAULT", "(") {
+		sct.Default, err = p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
 	}
 
 	return sct, nil
@@ -1688,7 +1777,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				if err != nil {
 					return DatabaseOptions{}, p.errorf("invalid optimizer_version value: %v", tok.value)
 				}
-				optimizerVersion = &version
+				*optimizerVersion = version
 			}
 			opts.OptimizerVersion = optimizerVersion
 		} else if p.eat("version_retention_period", "=") {
@@ -1703,7 +1792,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				if tok.typ != stringToken {
 					return DatabaseOptions{}, p.errorf("invalid version_retention_period: %v", tok.value)
 				}
-				retentionPeriod = &tok.string
+				*retentionPeriod = tok.string
 			}
 			opts.VersionRetentionPeriod = retentionPeriod
 		} else {
@@ -2913,6 +3002,13 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		// TODO: Check IsKeyWord(tok.value), and return a good error?
 	}
 
+	// Handle conditional expressions.
+	switch {
+	case tok.caseEqual("CASE"):
+		p.back()
+		return p.parseCaseExpr()
+	}
+
 	// Handle typed literals.
 	switch {
 	case tok.caseEqual("ARRAY") || tok.value == "[":
@@ -2927,6 +3023,11 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		if p.sniffTokenType(stringToken) {
 			p.back()
 			return p.parseTimestampLit()
+		}
+	case tok.caseEqual("JSON"):
+		if p.sniffTokenType(stringToken) {
+			p.back()
+			return p.parseJSONLit()
 		}
 	}
 
@@ -2948,6 +3049,72 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return pe[0], nil // identifier
 	}
 	return pe, nil
+}
+
+func (p *parser) parseCaseExpr() (Case, *parseError) {
+	if err := p.expect("CASE"); err != nil {
+		return Case{}, err
+	}
+
+	var expr Expr
+	if !p.sniff("WHEN") {
+		var err *parseError
+		expr, err = p.parseExpr()
+		if err != nil {
+			return Case{}, err
+		}
+	}
+
+	when, err := p.parseWhenClause()
+	if err != nil {
+		return Case{}, err
+	}
+	whens := []WhenClause{when}
+	for p.sniff("WHEN") {
+		when, err := p.parseWhenClause()
+		if err != nil {
+			return Case{}, err
+		}
+		whens = append(whens, when)
+	}
+
+	var elseResult Expr
+	if p.sniff("ELSE") {
+		p.eat("ELSE")
+		var err *parseError
+		elseResult, err = p.parseExpr()
+		if err != nil {
+			return Case{}, err
+		}
+	}
+
+	if err := p.expect("END"); err != nil {
+		return Case{}, err
+	}
+
+	return Case{
+		Expr:        expr,
+		WhenClauses: whens,
+		ElseResult:  elseResult,
+	}, nil
+}
+
+func (p *parser) parseWhenClause() (WhenClause, *parseError) {
+	if err := p.expect("WHEN"); err != nil {
+		return WhenClause{}, err
+	}
+	cond, err := p.parseExpr()
+	if err != nil {
+		return WhenClause{}, err
+	}
+	if err := p.expect("THEN"); err != nil {
+		return WhenClause{}, err
+	}
+	result, err := p.parseExpr()
+	if err != nil {
+		return WhenClause{}, err
+	}
+	return WhenClause{Cond: cond, Result: result}, nil
 }
 
 func (p *parser) parseArrayLit() (Array, *parseError) {
@@ -2995,8 +3162,8 @@ var timestampFormats = []string{
 	"2006-01-02",
 	"2006-01-02 15:04:05",
 	"2006-01-02 15:04:05.000000",
-	"2006-01-02 15:04:05 -07:00",
-	"2006-01-02 15:04:05.000000 -07:00",
+	"2006-01-02 15:04:05-07:00",
+	"2006-01-02 15:04:05.000000-07:00",
 }
 
 var defaultLocation = func() *time.Location {
@@ -3025,6 +3192,19 @@ func (p *parser) parseTimestampLit() (TimestampLiteral, *parseError) {
 		}
 	}
 	return TimestampLiteral{}, p.errorf("invalid timestamp literal %q", s)
+}
+
+func (p *parser) parseJSONLit() (JSONLiteral, *parseError) {
+	if err := p.expect("JSON"); err != nil {
+		return JSONLiteral{}, err
+	}
+	s, err := p.parseStringLit()
+	if err != nil {
+		return JSONLiteral{}, err
+	}
+	// It is not guaranteed that the returned JSONLiteral is a valid JSON document
+	// to avoid error due to parsing SQL generated with an invalid JSONLiteral like JSONLiteral("")
+	return JSONLiteral(s), nil
 }
 
 func (p *parser) parseStringLit() (StringLiteral, *parseError) {

@@ -129,7 +129,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 	}
 }
 
-// internalGameServerDeploymentsClient is an interface that defines the methods availaible from Game Services API.
+// internalGameServerDeploymentsClient is an interface that defines the methods available from Game Services API.
 type internalGameServerDeploymentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -353,7 +353,7 @@ func (c *gameServerDeploymentsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gameServerDeploymentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -365,6 +365,7 @@ func (c *gameServerDeploymentsGRPCClient) Close() error {
 
 func (c *gameServerDeploymentsGRPCClient) ListGameServerDeployments(ctx context.Context, req *gamingpb.ListGameServerDeploymentsRequest, opts ...gax.CallOption) *GameServerDeploymentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListGameServerDeployments[0:len((*c.CallOptions).ListGameServerDeployments):len((*c.CallOptions).ListGameServerDeployments)], opts...)
 	it := &GameServerDeploymentIterator{}
@@ -414,6 +415,7 @@ func (c *gameServerDeploymentsGRPCClient) GetGameServerDeployment(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGameServerDeployment[0:len((*c.CallOptions).GetGameServerDeployment):len((*c.CallOptions).GetGameServerDeployment)], opts...)
 	var resp *gamingpb.GameServerDeployment
@@ -435,6 +437,7 @@ func (c *gameServerDeploymentsGRPCClient) CreateGameServerDeployment(ctx context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateGameServerDeployment[0:len((*c.CallOptions).CreateGameServerDeployment):len((*c.CallOptions).CreateGameServerDeployment)], opts...)
 	var resp *longrunningpb.Operation
@@ -458,6 +461,7 @@ func (c *gameServerDeploymentsGRPCClient) DeleteGameServerDeployment(ctx context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteGameServerDeployment[0:len((*c.CallOptions).DeleteGameServerDeployment):len((*c.CallOptions).DeleteGameServerDeployment)], opts...)
 	var resp *longrunningpb.Operation
@@ -481,6 +485,7 @@ func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeployment(ctx context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_deployment.name", url.QueryEscape(req.GetGameServerDeployment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateGameServerDeployment[0:len((*c.CallOptions).UpdateGameServerDeployment):len((*c.CallOptions).UpdateGameServerDeployment)], opts...)
 	var resp *longrunningpb.Operation
@@ -504,6 +509,7 @@ func (c *gameServerDeploymentsGRPCClient) GetGameServerDeploymentRollout(ctx con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGameServerDeploymentRollout[0:len((*c.CallOptions).GetGameServerDeploymentRollout):len((*c.CallOptions).GetGameServerDeploymentRollout)], opts...)
 	var resp *gamingpb.GameServerDeploymentRollout
@@ -525,6 +531,7 @@ func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentRollout(ctx 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateGameServerDeploymentRollout[0:len((*c.CallOptions).UpdateGameServerDeploymentRollout):len((*c.CallOptions).UpdateGameServerDeploymentRollout)], opts...)
 	var resp *longrunningpb.Operation
@@ -548,6 +555,7 @@ func (c *gameServerDeploymentsGRPCClient) PreviewGameServerDeploymentRollout(ctx
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PreviewGameServerDeploymentRollout[0:len((*c.CallOptions).PreviewGameServerDeploymentRollout):len((*c.CallOptions).PreviewGameServerDeploymentRollout)], opts...)
 	var resp *gamingpb.PreviewGameServerDeploymentRolloutResponse
@@ -569,6 +577,7 @@ func (c *gameServerDeploymentsGRPCClient) FetchDeploymentState(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FetchDeploymentState[0:len((*c.CallOptions).FetchDeploymentState):len((*c.CallOptions).FetchDeploymentState)], opts...)
 	var resp *gamingpb.FetchDeploymentStateResponse

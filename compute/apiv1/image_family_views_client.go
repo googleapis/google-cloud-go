@@ -41,7 +41,13 @@ type ImageFamilyViewsCallOptions struct {
 	Get []gax.CallOption
 }
 
-// internalImageFamilyViewsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultImageFamilyViewsRESTCallOptions() *ImageFamilyViewsCallOptions {
+	return &ImageFamilyViewsCallOptions{
+		Get: []gax.CallOption{},
+	}
+}
+
+// internalImageFamilyViewsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalImageFamilyViewsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -98,6 +104,9 @@ type imageFamilyViewsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ImageFamilyViewsClient
+	CallOptions **ImageFamilyViewsCallOptions
 }
 
 // NewImageFamilyViewsRESTClient creates a new image family views rest client.
@@ -110,13 +119,15 @@ func NewImageFamilyViewsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultImageFamilyViewsRESTCallOptions()
 	c := &imageFamilyViewsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &ImageFamilyViewsClient{internalClient: c, CallOptions: &ImageFamilyViewsCallOptions{}}, nil
+	return &ImageFamilyViewsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultImageFamilyViewsRESTClientOptions() []option.ClientOption {
@@ -133,7 +144,7 @@ func defaultImageFamilyViewsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *imageFamilyViewsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -154,40 +165,53 @@ func (c *imageFamilyViewsRESTClient) Connection() *grpc.ClientConn {
 
 // Get returns the latest image that is part of an image family, is not deprecated and is rolled out in the specified zone.
 func (c *imageFamilyViewsRESTClient) Get(ctx context.Context, req *computepb.GetImageFamilyViewRequest, opts ...gax.CallOption) (*computepb.ImageFamilyView, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/imageFamilyViews/%v", req.GetProject(), req.GetZone(), req.GetFamily())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "family", url.QueryEscape(req.GetFamily())))
 
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if err = googleapi.CheckResponse(httpRsp); err != nil {
-		return nil, err
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.ImageFamilyView{}
+	resp := &computepb.ImageFamilyView{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, maybeUnknownEnum(err)
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	return rsp, nil
+	return resp, nil
 }

@@ -109,7 +109,7 @@ func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoref
 	}
 	b, err := proto.Marshal(schema)
 	if err != nil {
-		return fmt.Errorf("failed to serialize tableschema: %v", err)
+		return fmt.Errorf("failed to serialize tableschema: %w", err)
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	(dm)[encoded] = descriptor
@@ -166,7 +166,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				// construct field descriptor for the message
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
 				if err != nil {
-					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %v", err))
+					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %w", err))
 				}
 				fields = append(fields, fdp)
 			} else {
@@ -176,18 +176,18 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				}
 				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, useProto3)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %w", err))
 				}
 				// Now that we have the submessage definition, we append it both to the local dependencies, as well
 				// as inserting it into the cache for possible reuse elsewhere.
 				deps = append(deps, desc.ParentFile())
 				err = cache.add(ts, desc)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %w", err))
 				}
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %w", err))
 				}
 				fields = append(fields, fdp)
 			}
@@ -291,7 +291,11 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 // and not the namespaces when decoding, this is sufficient for the needs of the API's representation.
 //
 // In addition to nesting messages, this method also handles some encapsulation of enum types to avoid possible
-// conflicts due to ambiguities.
+// conflicts due to ambiguities, and clears oneof indices as oneof isn't a concept that maps into BigQuery
+// schemas.
+//
+// To enable proto3 usage, this function will also rewrite proto3 descriptors into equivalent proto2 form.
+// Such rewrites include setting the appropriate default values for proto3 fields.
 func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.DescriptorProto, error) {
 	return normalizeDescriptorInternal(in, newStringSet(), newStringSet(), newStringSet(), nil)
 }
@@ -310,6 +314,44 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
 		resultFDP := protodesc.ToFieldDescriptorProto(inField)
+		// For proto3 messages without presence, use proto2 default values to match proto3
+		// behavior in default values.
+		if inField.Syntax() == protoreflect.Proto3 && inField.Cardinality() != protoreflect.Repeated {
+			// Only set default value if there's no field presence.
+			if resultFDP.Proto3Optional == nil || !resultFDP.GetProto3Optional() {
+				switch resultFDP.GetType() {
+				case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
+					resultFDP.DefaultValue = proto.String("false")
+				case descriptorpb.FieldDescriptorProto_TYPE_BYTES, descriptorpb.FieldDescriptorProto_TYPE_STRING:
+					resultFDP.DefaultValue = proto.String("")
+				case descriptorpb.FieldDescriptorProto_TYPE_ENUM:
+					// Resolve the proto3 default value.  The default value should be the value name.
+					defValue := inField.Enum().Values().ByNumber(inField.Default().Enum())
+					resultFDP.DefaultValue = proto.String(string(defValue.Name()))
+				case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
+					descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
+					descriptorpb.FieldDescriptorProto_TYPE_INT64,
+					descriptorpb.FieldDescriptorProto_TYPE_UINT64,
+					descriptorpb.FieldDescriptorProto_TYPE_INT32,
+					descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
+					descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
+					descriptorpb.FieldDescriptorProto_TYPE_UINT32,
+					descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
+					descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
+					descriptorpb.FieldDescriptorProto_TYPE_SINT32,
+					descriptorpb.FieldDescriptorProto_TYPE_SINT64:
+					resultFDP.DefaultValue = proto.String("0")
+				}
+			}
+		}
+		// Clear proto3 optional annotation, as the backend converter can
+		// treat this as a proto2 optional.
+		if resultFDP.Proto3Optional != nil {
+			resultFDP.Proto3Optional = nil
+		}
+		if resultFDP.OneofIndex != nil {
+			resultFDP.OneofIndex = nil
+		}
 		if inField.Kind() == protoreflect.MessageKind || inField.Kind() == protoreflect.GroupKind {
 			// Handle fields that reference messages.
 			// Groups are a proto2-ism which predated nested messages.
@@ -348,7 +390,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 			} else {
 				enumDP := protodesc.ToEnumDescriptorProto(inField.Enum())
 				enumDP.Name = proto.String(enumName)
-				resultDP.NestedType = append(resultDP.NestedType, &descriptorpb.DescriptorProto{
+				root.NestedType = append(root.NestedType, &descriptorpb.DescriptorProto{
 					Name:     proto.String(enclosingTypeName),
 					EnumType: []*descriptorpb.EnumDescriptorProto{enumDP},
 				})

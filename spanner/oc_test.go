@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.opencensus.io/stats/view"
@@ -34,6 +34,7 @@ import (
 
 // Check that stats are being exported.
 func TestOCStats(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
 
@@ -50,6 +51,8 @@ func TestOCStats(t *testing.T) {
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
+	skipForPGTest(t)
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	for _, test := range []struct {
 		name    string
 		view    *view.View
@@ -94,6 +97,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 }
 
 func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(v)
 	defer te.Unregister()
 
@@ -144,6 +148,7 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 }
 
 func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(SessionsCountView)
 	defer te.Unregister()
 
@@ -216,6 +221,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 }
 
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()
 
@@ -369,7 +375,7 @@ func checkCommonTags(t *testing.T, m map[tag.Key]string) {
 	if m[tagKeyDatabase] != "[DATABASE]" {
 		t.Fatalf("Incorrect database ID: %v", m[tagKeyDatabase])
 	}
-	if m[tagKeyLibVersion] != version.Repo {
+	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }

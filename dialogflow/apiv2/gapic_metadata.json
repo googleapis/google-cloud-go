@@ -117,11 +117,104 @@
         }
       }
     },
+    "ConversationDatasets": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConversationDatasetsClient",
+          "rpcs": {
+            "CreateConversationDataset": {
+              "methods": [
+                "CreateConversationDataset"
+              ]
+            },
+            "DeleteConversationDataset": {
+              "methods": [
+                "DeleteConversationDataset"
+              ]
+            },
+            "GetConversationDataset": {
+              "methods": [
+                "GetConversationDataset"
+              ]
+            },
+            "ImportConversationData": {
+              "methods": [
+                "ImportConversationData"
+              ]
+            },
+            "ListConversationDatasets": {
+              "methods": [
+                "ListConversationDatasets"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ConversationModels": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConversationModelsClient",
+          "rpcs": {
+            "CreateConversationModel": {
+              "methods": [
+                "CreateConversationModel"
+              ]
+            },
+            "CreateConversationModelEvaluation": {
+              "methods": [
+                "CreateConversationModelEvaluation"
+              ]
+            },
+            "DeleteConversationModel": {
+              "methods": [
+                "DeleteConversationModel"
+              ]
+            },
+            "DeployConversationModel": {
+              "methods": [
+                "DeployConversationModel"
+              ]
+            },
+            "GetConversationModel": {
+              "methods": [
+                "GetConversationModel"
+              ]
+            },
+            "GetConversationModelEvaluation": {
+              "methods": [
+                "GetConversationModelEvaluation"
+              ]
+            },
+            "ListConversationModelEvaluations": {
+              "methods": [
+                "ListConversationModelEvaluations"
+              ]
+            },
+            "ListConversationModels": {
+              "methods": [
+                "ListConversationModels"
+              ]
+            },
+            "UndeployConversationModel": {
+              "methods": [
+                "UndeployConversationModel"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ConversationProfiles": {
       "clients": {
         "grpc": {
           "libraryClient": "ConversationProfilesClient",
           "rpcs": {
+            "ClearSuggestionFeatureConfig": {
+              "methods": [
+                "ClearSuggestionFeatureConfig"
+              ]
+            },
             "CreateConversationProfile": {
               "methods": [
                 "CreateConversationProfile"
@@ -140,6 +233,11 @@
             "ListConversationProfiles": {
               "methods": [
                 "ListConversationProfiles"
+              ]
+            },
+            "SetSuggestionFeatureConfig": {
+              "methods": [
+                "SetSuggestionFeatureConfig"
               ]
             },
             "UpdateConversationProfile": {
@@ -208,6 +306,11 @@
             "GetDocument": {
               "methods": [
                 "GetDocument"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
               ]
             },
             "ListDocuments": {
@@ -457,6 +560,11 @@
             "SuggestFaqAnswers": {
               "methods": [
                 "SuggestFaqAnswers"
+              ]
+            },
+            "SuggestSmartReplies": {
+              "methods": [
+                "SuggestSmartReplies"
               ]
             },
             "UpdateParticipant": {

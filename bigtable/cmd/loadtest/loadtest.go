@@ -33,8 +33,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable"
-	"cloud.google.com/go/bigtable/internal/cbtconfig"
 	"cloud.google.com/go/bigtable/internal/stat"
+	"cloud.google.com/go/cbt"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )
@@ -45,24 +45,25 @@ var (
 	scratchTable = flag.String("scratch_table", "loadtest-scratch", "name of table to use; should not already exist")
 	csvOutput    = flag.String("csv_output", "",
 		"output path for statistics in .csv format. If this file already exists it will be overwritten.")
-	poolSize = flag.Int("pool_size", 1, "size of the gRPC connection pool to use for the data client")
-	reqCount = flag.Int("req_count", 100, "number of concurrent requests")
+	poolSize   = flag.Int("pool_size", 1, "size of the gRPC connection pool to use for the data client")
+	reqCount   = flag.Int("req_count", 100, "number of concurrent requests")
+	appProfile = flag.String("app_profile", "", "The application profile to use.")
 
-	config      *cbtconfig.Config
+	config      *cbt.Config
 	client      *bigtable.Client
 	adminClient *bigtable.AdminClient
 )
 
 func main() {
 	var err error
-	config, err = cbtconfig.Load()
+	config, err = cbt.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 	config.RegisterFlags()
 
 	flag.Parse()
-	if err := config.CheckFlags(cbtconfig.ProjectAndInstanceRequired); err != nil {
+	if err := config.CheckFlags(cbt.ProjectAndInstanceRequired); err != nil {
 		log.Fatal(err)
 	}
 	if config.Creds != "" {
@@ -94,7 +95,13 @@ func main() {
 	}
 
 	log.Printf("Dialing connections...")
-	client, err = bigtable.NewClient(context.Background(), config.Project, config.Instance, options...)
+	client, err = bigtable.NewClientWithConfig(
+		context.Background(),
+		config.Project,
+		config.Instance,
+		bigtable.ClientConfig{AppProfile: *appProfile},
+		options...,
+	)
 	if err != nil {
 		log.Fatalf("Making bigtable.Client: %v", err)
 	}

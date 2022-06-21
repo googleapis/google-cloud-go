@@ -58,7 +58,7 @@ func defaultServiceControllerCallOptions() *ServiceControllerCallOptions {
 	}
 }
 
-// internalServiceControllerClient is an interface that defines the methods availaible from Service Control API.
+// internalServiceControllerClient is an interface that defines the methods available from Service Control API.
 type internalServiceControllerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -217,7 +217,7 @@ func (c *serviceControllerGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *serviceControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -229,6 +229,7 @@ func (c *serviceControllerGRPCClient) Close() error {
 
 func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecontrolpb.CheckRequest, opts ...gax.CallOption) (*servicecontrolpb.CheckResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Check[0:len((*c.CallOptions).Check):len((*c.CallOptions).Check)], opts...)
 	var resp *servicecontrolpb.CheckResponse
@@ -245,6 +246,7 @@ func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecon
 
 func (c *serviceControllerGRPCClient) Report(ctx context.Context, req *servicecontrolpb.ReportRequest, opts ...gax.CallOption) (*servicecontrolpb.ReportResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Report[0:len((*c.CallOptions).Report):len((*c.CallOptions).Report)], opts...)
 	var resp *servicecontrolpb.ReportResponse

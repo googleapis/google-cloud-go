@@ -125,7 +125,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 
 		if ms.streamSettings.streamID == "" {
 			// not instantiated with a stream, construct one.
-			streamName := fmt.Sprintf("%s/_default", ms.destinationTable)
+			streamName := fmt.Sprintf("%s/streams/_default", ms.destinationTable)
 			if ms.streamSettings.streamType != DefaultStream {
 				// For everything but a default stream, we create a new stream on behalf of the user.
 				req := &storagepb.CreateWriteStreamRequest{
@@ -135,7 +135,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 					}}
 				resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
 				if err != nil {
-					return nil, fmt.Errorf("couldn't create write stream: %v", err)
+					return nil, fmt.Errorf("couldn't create write stream: %w", err)
 				}
 				streamName = resp.GetName()
 			}
@@ -221,4 +221,10 @@ func TableParentFromStreamName(streamName string) string {
 		return streamName
 	}
 	return strings.Join(parts[:6], "/")
+}
+
+// TableParentFromParts constructs a table identifier using individual identifiers and
+// returns a string in the form "projects/{project}/datasets/{dataset}/tables/{table}".
+func TableParentFromParts(projectID, datasetID, tableID string) string {
+	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, datasetID, tableID)
 }

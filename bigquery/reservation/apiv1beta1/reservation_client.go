@@ -206,7 +206,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from BigQuery Reservation API.
+// internalClient is an interface that defines the methods available from BigQuery Reservation API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -235,6 +235,7 @@ type internalClient interface {
 // Client is a client for interacting with BigQuery Reservation API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
+// Deprecated: Please use the v1 api instead.
 // This API allows users to manage their flat-rate BigQuery reservations.
 //
 // A reservation provides computational resource guarantees, in the form of
@@ -250,6 +251,8 @@ type internalClient interface {
 // commitment resource exists as a child resource of the admin project and
 // location, e.g.:
 // projects/myproject/locations/US/capacityCommitments/id.
+//
+// Deprecated: ReservationService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -526,6 +529,7 @@ type gRPCClient struct {
 // NewClient creates a new reservation service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
+// Deprecated: Please use the v1 api instead.
 // This API allows users to manage their flat-rate BigQuery reservations.
 //
 // A reservation provides computational resource guarantees, in the form of
@@ -541,6 +545,8 @@ type gRPCClient struct {
 // commitment resource exists as a child resource of the admin project and
 // location, e.g.:
 // projects/myproject/locations/US/capacityCommitments/id.
+//
+// Deprecated: ReservationService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -587,7 +593,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -604,6 +610,7 @@ func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
 	var resp *reservationpb.Reservation
@@ -620,6 +627,7 @@ func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.C
 
 func (c *gRPCClient) ListReservations(ctx context.Context, req *reservationpb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
 	it := &ReservationIterator{}
@@ -669,6 +677,7 @@ func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
 	var resp *reservationpb.Reservation
@@ -690,6 +699,7 @@ func (c *gRPCClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -707,6 +717,7 @@ func (c *gRPCClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
 	var resp *reservationpb.Reservation
@@ -728,6 +739,7 @@ func (c *gRPCClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCapacityCommitment[0:len((*c.CallOptions).CreateCapacityCommitment):len((*c.CallOptions).CreateCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -744,6 +756,7 @@ func (c *gRPCClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 
 func (c *gRPCClient) ListCapacityCommitments(ctx context.Context, req *reservationpb.ListCapacityCommitmentsRequest, opts ...gax.CallOption) *CapacityCommitmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCapacityCommitments[0:len((*c.CallOptions).ListCapacityCommitments):len((*c.CallOptions).ListCapacityCommitments)], opts...)
 	it := &CapacityCommitmentIterator{}
@@ -793,6 +806,7 @@ func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservation
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCapacityCommitment[0:len((*c.CallOptions).GetCapacityCommitment):len((*c.CallOptions).GetCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -814,6 +828,7 @@ func (c *gRPCClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCapacityCommitment[0:len((*c.CallOptions).DeleteCapacityCommitment):len((*c.CallOptions).DeleteCapacityCommitment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,6 +846,7 @@ func (c *gRPCClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "capacity_commitment.name", url.QueryEscape(req.GetCapacityCommitment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCapacityCommitment[0:len((*c.CallOptions).UpdateCapacityCommitment):len((*c.CallOptions).UpdateCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -852,6 +868,7 @@ func (c *gRPCClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SplitCapacityCommitment[0:len((*c.CallOptions).SplitCapacityCommitment):len((*c.CallOptions).SplitCapacityCommitment)], opts...)
 	var resp *reservationpb.SplitCapacityCommitmentResponse
@@ -873,6 +890,7 @@ func (c *gRPCClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).MergeCapacityCommitments[0:len((*c.CallOptions).MergeCapacityCommitments):len((*c.CallOptions).MergeCapacityCommitments)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -894,6 +912,7 @@ func (c *gRPCClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAssignment[0:len((*c.CallOptions).CreateAssignment):len((*c.CallOptions).CreateAssignment)], opts...)
 	var resp *reservationpb.Assignment
@@ -910,6 +929,7 @@ func (c *gRPCClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 
 func (c *gRPCClient) ListAssignments(ctx context.Context, req *reservationpb.ListAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAssignments[0:len((*c.CallOptions).ListAssignments):len((*c.CallOptions).ListAssignments)], opts...)
 	it := &AssignmentIterator{}
@@ -959,6 +979,7 @@ func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAssignment[0:len((*c.CallOptions).DeleteAssignment):len((*c.CallOptions).DeleteAssignment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -971,6 +992,7 @@ func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 
 func (c *gRPCClient) SearchAssignments(ctx context.Context, req *reservationpb.SearchAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchAssignments[0:len((*c.CallOptions).SearchAssignments):len((*c.CallOptions).SearchAssignments)], opts...)
 	it := &AssignmentIterator{}
@@ -1020,6 +1042,7 @@ func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).MoveAssignment[0:len((*c.CallOptions).MoveAssignment):len((*c.CallOptions).MoveAssignment)], opts...)
 	var resp *reservationpb.Assignment
@@ -1041,6 +1064,7 @@ func (c *gRPCClient) GetBiReservation(ctx context.Context, req *reservationpb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBiReservation[0:len((*c.CallOptions).GetBiReservation):len((*c.CallOptions).GetBiReservation)], opts...)
 	var resp *reservationpb.BiReservation
@@ -1062,6 +1086,7 @@ func (c *gRPCClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateBiReservation[0:len((*c.CallOptions).UpdateBiReservation):len((*c.CallOptions).UpdateBiReservation)], opts...)
 	var resp *reservationpb.BiReservation

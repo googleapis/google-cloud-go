@@ -24,6 +24,7 @@ import (
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -31,17 +32,23 @@ import (
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newIdentityAwareProxyAdminClientHook clientHook
 
 // IdentityAwareProxyAdminCallOptions contains the retry settings for each method of IdentityAwareProxyAdminClient.
 type IdentityAwareProxyAdminCallOptions struct {
-	SetIamPolicy       []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	GetIapSettings     []gax.CallOption
-	UpdateIapSettings  []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	GetIapSettings        []gax.CallOption
+	UpdateIapSettings     []gax.CallOption
+	ListTunnelDestGroups  []gax.CallOption
+	CreateTunnelDestGroup []gax.CallOption
+	GetTunnelDestGroup    []gax.CallOption
+	DeleteTunnelDestGroup []gax.CallOption
+	UpdateTunnelDestGroup []gax.CallOption
 }
 
 func defaultIdentityAwareProxyAdminGRPCClientOptions() []option.ClientOption {
@@ -58,15 +65,20 @@ func defaultIdentityAwareProxyAdminGRPCClientOptions() []option.ClientOption {
 
 func defaultIdentityAwareProxyAdminCallOptions() *IdentityAwareProxyAdminCallOptions {
 	return &IdentityAwareProxyAdminCallOptions{
-		SetIamPolicy:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		GetIapSettings:     []gax.CallOption{},
-		UpdateIapSettings:  []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		GetIapSettings:        []gax.CallOption{},
+		UpdateIapSettings:     []gax.CallOption{},
+		ListTunnelDestGroups:  []gax.CallOption{},
+		CreateTunnelDestGroup: []gax.CallOption{},
+		GetTunnelDestGroup:    []gax.CallOption{},
+		DeleteTunnelDestGroup: []gax.CallOption{},
+		UpdateTunnelDestGroup: []gax.CallOption{},
 	}
 }
 
-// internalIdentityAwareProxyAdminClient is an interface that defines the methods availaible from Cloud Identity-Aware Proxy API.
+// internalIdentityAwareProxyAdminClient is an interface that defines the methods available from Cloud Identity-Aware Proxy API.
 type internalIdentityAwareProxyAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -76,6 +88,11 @@ type internalIdentityAwareProxyAdminClient interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	GetIapSettings(context.Context, *iappb.GetIapSettingsRequest, ...gax.CallOption) (*iappb.IapSettings, error)
 	UpdateIapSettings(context.Context, *iappb.UpdateIapSettingsRequest, ...gax.CallOption) (*iappb.IapSettings, error)
+	ListTunnelDestGroups(context.Context, *iappb.ListTunnelDestGroupsRequest, ...gax.CallOption) *TunnelDestGroupIterator
+	CreateTunnelDestGroup(context.Context, *iappb.CreateTunnelDestGroupRequest, ...gax.CallOption) (*iappb.TunnelDestGroup, error)
+	GetTunnelDestGroup(context.Context, *iappb.GetTunnelDestGroupRequest, ...gax.CallOption) (*iappb.TunnelDestGroup, error)
+	DeleteTunnelDestGroup(context.Context, *iappb.DeleteTunnelDestGroupRequest, ...gax.CallOption) error
+	UpdateTunnelDestGroup(context.Context, *iappb.UpdateTunnelDestGroupRequest, ...gax.CallOption) (*iappb.TunnelDestGroup, error)
 }
 
 // IdentityAwareProxyAdminClient is a client for interacting with Cloud Identity-Aware Proxy API.
@@ -145,6 +162,33 @@ func (c *IdentityAwareProxyAdminClient) GetIapSettings(ctx context.Context, req 
 // replaces all fields unless the update_mask is set.
 func (c *IdentityAwareProxyAdminClient) UpdateIapSettings(ctx context.Context, req *iappb.UpdateIapSettingsRequest, opts ...gax.CallOption) (*iappb.IapSettings, error) {
 	return c.internalClient.UpdateIapSettings(ctx, req, opts...)
+}
+
+// ListTunnelDestGroups lists the existing TunnelDestGroups. To group across all locations, use a
+// - as the location ID. For example:
+// /v1/projects/123/iap_tunnel/locations/-/destGroups
+func (c *IdentityAwareProxyAdminClient) ListTunnelDestGroups(ctx context.Context, req *iappb.ListTunnelDestGroupsRequest, opts ...gax.CallOption) *TunnelDestGroupIterator {
+	return c.internalClient.ListTunnelDestGroups(ctx, req, opts...)
+}
+
+// CreateTunnelDestGroup creates a new TunnelDestGroup.
+func (c *IdentityAwareProxyAdminClient) CreateTunnelDestGroup(ctx context.Context, req *iappb.CreateTunnelDestGroupRequest, opts ...gax.CallOption) (*iappb.TunnelDestGroup, error) {
+	return c.internalClient.CreateTunnelDestGroup(ctx, req, opts...)
+}
+
+// GetTunnelDestGroup retrieves an existing TunnelDestGroup.
+func (c *IdentityAwareProxyAdminClient) GetTunnelDestGroup(ctx context.Context, req *iappb.GetTunnelDestGroupRequest, opts ...gax.CallOption) (*iappb.TunnelDestGroup, error) {
+	return c.internalClient.GetTunnelDestGroup(ctx, req, opts...)
+}
+
+// DeleteTunnelDestGroup deletes a TunnelDestGroup.
+func (c *IdentityAwareProxyAdminClient) DeleteTunnelDestGroup(ctx context.Context, req *iappb.DeleteTunnelDestGroupRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTunnelDestGroup(ctx, req, opts...)
+}
+
+// UpdateTunnelDestGroup updates a TunnelDestGroup.
+func (c *IdentityAwareProxyAdminClient) UpdateTunnelDestGroup(ctx context.Context, req *iappb.UpdateTunnelDestGroupRequest, opts ...gax.CallOption) (*iappb.TunnelDestGroup, error) {
+	return c.internalClient.UpdateTunnelDestGroup(ctx, req, opts...)
 }
 
 // identityAwareProxyAdminGRPCClient is a client for interacting with Cloud Identity-Aware Proxy API over gRPC transport.
@@ -217,7 +261,7 @@ func (c *identityAwareProxyAdminGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *identityAwareProxyAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -234,6 +278,7 @@ func (c *identityAwareProxyAdminGRPCClient) SetIamPolicy(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -255,6 +300,7 @@ func (c *identityAwareProxyAdminGRPCClient) GetIamPolicy(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -276,6 +322,7 @@ func (c *identityAwareProxyAdminGRPCClient) TestIamPermissions(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
@@ -297,6 +344,7 @@ func (c *identityAwareProxyAdminGRPCClient) GetIapSettings(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIapSettings[0:len((*c.CallOptions).GetIapSettings):len((*c.CallOptions).GetIapSettings)], opts...)
 	var resp *iappb.IapSettings
@@ -318,6 +366,7 @@ func (c *identityAwareProxyAdminGRPCClient) UpdateIapSettings(ctx context.Contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "iap_settings.name", url.QueryEscape(req.GetIapSettings().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateIapSettings[0:len((*c.CallOptions).UpdateIapSettings):len((*c.CallOptions).UpdateIapSettings)], opts...)
 	var resp *iappb.IapSettings
@@ -330,4 +379,180 @@ func (c *identityAwareProxyAdminGRPCClient) UpdateIapSettings(ctx context.Contex
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *identityAwareProxyAdminGRPCClient) ListTunnelDestGroups(ctx context.Context, req *iappb.ListTunnelDestGroupsRequest, opts ...gax.CallOption) *TunnelDestGroupIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListTunnelDestGroups[0:len((*c.CallOptions).ListTunnelDestGroups):len((*c.CallOptions).ListTunnelDestGroups)], opts...)
+	it := &TunnelDestGroupIterator{}
+	req = proto.Clone(req).(*iappb.ListTunnelDestGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*iappb.TunnelDestGroup, string, error) {
+		resp := &iappb.ListTunnelDestGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.identityAwareProxyAdminClient.ListTunnelDestGroups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTunnelDestGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *identityAwareProxyAdminGRPCClient) CreateTunnelDestGroup(ctx context.Context, req *iappb.CreateTunnelDestGroupRequest, opts ...gax.CallOption) (*iappb.TunnelDestGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateTunnelDestGroup[0:len((*c.CallOptions).CreateTunnelDestGroup):len((*c.CallOptions).CreateTunnelDestGroup)], opts...)
+	var resp *iappb.TunnelDestGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.identityAwareProxyAdminClient.CreateTunnelDestGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *identityAwareProxyAdminGRPCClient) GetTunnelDestGroup(ctx context.Context, req *iappb.GetTunnelDestGroupRequest, opts ...gax.CallOption) (*iappb.TunnelDestGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetTunnelDestGroup[0:len((*c.CallOptions).GetTunnelDestGroup):len((*c.CallOptions).GetTunnelDestGroup)], opts...)
+	var resp *iappb.TunnelDestGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.identityAwareProxyAdminClient.GetTunnelDestGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *identityAwareProxyAdminGRPCClient) DeleteTunnelDestGroup(ctx context.Context, req *iappb.DeleteTunnelDestGroupRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteTunnelDestGroup[0:len((*c.CallOptions).DeleteTunnelDestGroup):len((*c.CallOptions).DeleteTunnelDestGroup)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.identityAwareProxyAdminClient.DeleteTunnelDestGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *identityAwareProxyAdminGRPCClient) UpdateTunnelDestGroup(ctx context.Context, req *iappb.UpdateTunnelDestGroupRequest, opts ...gax.CallOption) (*iappb.TunnelDestGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tunnel_dest_group.name", url.QueryEscape(req.GetTunnelDestGroup().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateTunnelDestGroup[0:len((*c.CallOptions).UpdateTunnelDestGroup):len((*c.CallOptions).UpdateTunnelDestGroup)], opts...)
+	var resp *iappb.TunnelDestGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.identityAwareProxyAdminClient.UpdateTunnelDestGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// TunnelDestGroupIterator manages a stream of *iappb.TunnelDestGroup.
+type TunnelDestGroupIterator struct {
+	items    []*iappb.TunnelDestGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*iappb.TunnelDestGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *TunnelDestGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TunnelDestGroupIterator) Next() (*iappb.TunnelDestGroup, error) {
+	var item *iappb.TunnelDestGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TunnelDestGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TunnelDestGroupIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

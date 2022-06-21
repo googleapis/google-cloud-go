@@ -54,7 +54,7 @@ func defaultPartitionAssignmentCallOptions() *PartitionAssignmentCallOptions {
 	}
 }
 
-// internalPartitionAssignmentClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalPartitionAssignmentClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalPartitionAssignmentClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -179,7 +179,7 @@ func (c *partitionAssignmentGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *partitionAssignmentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 

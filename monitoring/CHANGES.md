@@ -1,5 +1,26 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.4.0...monitoring/v1.5.0) (2022-04-14)
+
+
+### Features
+
+* **monitoring/dashboard:** Sync public protos with latests public api state. This adds support for collapsible groups, filters, labels, drilldowns, logs panels and tables ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.3.0...monitoring/v1.4.0) (2022-02-23)
+
+
+### Features
+
+* **monitoring:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.2.0...monitoring/v1.3.0) (2022-02-14)
+
+
+### Features
+
+* **monitoring:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
 ## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v1.1.0...monitoring/v1.2.0) (2022-01-04)
 
 

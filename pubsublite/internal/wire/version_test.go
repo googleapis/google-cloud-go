@@ -11,87 +11,66 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-//go:build go1.12
-// +build go1.12
-
 package wire
 
 import (
-	"runtime/debug"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	pslinternal "cloud.google.com/go/pubsublite/internal"
 )
 
-func TestPubsubliteModuleVersion(t *testing.T) {
+func TestParseVersion(t *testing.T) {
 	for _, tc := range []struct {
 		desc        string
-		buildInfo   *debug.BuildInfo
+		input       string
 		wantVersion version
 		wantOk      bool
 	}{
 		{
-			desc: "version valid",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "v1.2.2"},
-					{Path: "cloud.google.com/go/pubsub", Version: "v1.8.3"},
-				},
-			},
-			wantVersion: version{Major: "1", Minor: "2"},
+			desc:        "valid 3 components",
+			input:       "1.2.2",
+			wantVersion: version{Major: 1, Minor: 2},
 			wantOk:      true,
 		},
 		{
-			desc: "version corner case",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "2.3"},
-				},
-			},
-			wantVersion: version{Major: "2", Minor: "3"},
+			desc:        "valid 2 components",
+			input:       "2.3",
+			wantVersion: version{Major: 2, Minor: 3},
 			wantOk:      true,
 		},
 		{
-			desc: "version missing",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsub", Version: "v1.8.3"},
-				},
-			},
+			desc:   "version empty",
 			wantOk: false,
 		},
 		{
-			desc: "minor version invalid",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "v1.a.2"},
-				},
-			},
+			desc:        "minor version invalid",
+			input:       "1.a.2",
+			wantVersion: version{Major: 1},
+			wantOk:      false,
+		},
+		{
+			desc:   "major version invalid",
+			input:  "b.1.2",
 			wantOk: false,
 		},
 		{
-			desc: "major version invalid",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "vb.1.2"},
-				},
-			},
-			wantOk: false,
-		},
-		{
-			desc: "minor version missing",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "v4"},
-				},
-			},
+			desc:   "minor version missing",
+			input:  "4",
 			wantOk: false,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			if gotVersion, gotOk := pubsubliteModuleVersion(tc.buildInfo); !testutil.Equal(gotVersion, tc.wantVersion) || gotOk != tc.wantOk {
-				t.Errorf("pubsubliteModuleVersion(): got (%v, %v), want (%v, %v)", gotVersion, gotOk, tc.wantVersion, tc.wantOk)
+			if gotVersion, gotOk := parseVersion(tc.input); !testutil.Equal(gotVersion, tc.wantVersion) || gotOk != tc.wantOk {
+				t.Errorf("parseVersion(): got (%v, %v), want (%v, %v)", gotVersion, gotOk, tc.wantVersion, tc.wantOk)
 			}
 		})
+	}
+}
+
+func TestParseCurrentVersion(t *testing.T) {
+	// Ensure the current version is parseable.
+	if _, ok := parseVersion(pslinternal.Version); !ok {
+		t.Errorf("Cannot parse pubsublite version: %q", pslinternal.Version)
 	}
 }

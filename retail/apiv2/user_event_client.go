@@ -125,7 +125,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 	}
 }
 
-// internalUserEventClient is an interface that defines the methods availaible from Retail API.
+// internalUserEventClient is an interface that defines the methods available from Retail API.
 type internalUserEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -224,13 +224,14 @@ func (c *UserEventClient) ImportUserEventsOperation(name string) *ImportUserEven
 	return c.internalClient.ImportUserEventsOperation(name)
 }
 
-// RejoinUserEvents triggers a user event rejoin operation with latest product catalog. Events
+// RejoinUserEvents starts a user event rejoin operation with latest product catalog. Events
 // will not be annotated with detailed product information if product is
 // missing from the catalog at the time the user event is ingested, and these
 // events are stored as unjoined events with a limited usage on training and
-// serving. This API can be used to trigger a ‘join’ operation on specified
+// serving. This method can be used to start a join operation on specified
 // events with latest version of product catalog. It can also be used to
-// correct events joined with wrong product catalog.
+// correct events joined with the wrong product catalog. A rejoin operation
+// can take hours or days to complete.
 func (c *UserEventClient) RejoinUserEvents(ctx context.Context, req *retailpb.RejoinUserEventsRequest, opts ...gax.CallOption) (*RejoinUserEventsOperation, error) {
 	return c.internalClient.RejoinUserEvents(ctx, req, opts...)
 }
@@ -327,7 +328,7 @@ func (c *userEventGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *userEventGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -344,6 +345,7 @@ func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *retailpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).WriteUserEvent[0:len((*c.CallOptions).WriteUserEvent):len((*c.CallOptions).WriteUserEvent)], opts...)
 	var resp *retailpb.UserEvent
@@ -365,6 +367,7 @@ func (c *userEventGRPCClient) CollectUserEvent(ctx context.Context, req *retailp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CollectUserEvent[0:len((*c.CallOptions).CollectUserEvent):len((*c.CallOptions).CollectUserEvent)], opts...)
 	var resp *httpbodypb.HttpBody
@@ -386,6 +389,7 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *retailpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PurgeUserEvents[0:len((*c.CallOptions).PurgeUserEvents):len((*c.CallOptions).PurgeUserEvents)], opts...)
 	var resp *longrunningpb.Operation
@@ -409,6 +413,7 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *retailp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportUserEvents[0:len((*c.CallOptions).ImportUserEvents):len((*c.CallOptions).ImportUserEvents)], opts...)
 	var resp *longrunningpb.Operation
@@ -432,6 +437,7 @@ func (c *userEventGRPCClient) RejoinUserEvents(ctx context.Context, req *retailp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RejoinUserEvents[0:len((*c.CallOptions).RejoinUserEvents):len((*c.CallOptions).RejoinUserEvents)], opts...)
 	var resp *longrunningpb.Operation

@@ -56,7 +56,7 @@ func defaultSystemPolicyV1Beta1CallOptions() *SystemPolicyV1Beta1CallOptions {
 	}
 }
 
-// internalSystemPolicyV1Beta1Client is an interface that defines the methods availaible from Binary Authorization API.
+// internalSystemPolicyV1Beta1Client is an interface that defines the methods available from Binary Authorization API.
 type internalSystemPolicyV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -173,7 +173,7 @@ func (c *systemPolicyV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *systemPolicyV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -185,6 +185,7 @@ func (c *systemPolicyV1Beta1GRPCClient) Close() error {
 
 func (c *systemPolicyV1Beta1GRPCClient) GetSystemPolicy(ctx context.Context, req *binaryauthorizationpb.GetSystemPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSystemPolicy[0:len((*c.CallOptions).GetSystemPolicy):len((*c.CallOptions).GetSystemPolicy)], opts...)
 	var resp *binaryauthorizationpb.Policy

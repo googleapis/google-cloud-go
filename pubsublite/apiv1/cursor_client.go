@@ -92,7 +92,7 @@ func defaultCursorCallOptions() *CursorCallOptions {
 	}
 }
 
-// internalCursorClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalCursorClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalCursorClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -225,7 +225,7 @@ func (c *cursorGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *cursorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -257,6 +257,7 @@ func (c *cursorGRPCClient) CommitCursor(ctx context.Context, req *pubsublitepb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CommitCursor[0:len((*c.CallOptions).CommitCursor):len((*c.CallOptions).CommitCursor)], opts...)
 	var resp *pubsublitepb.CommitCursorResponse
@@ -273,6 +274,7 @@ func (c *cursorGRPCClient) CommitCursor(ctx context.Context, req *pubsublitepb.C
 
 func (c *cursorGRPCClient) ListPartitionCursors(ctx context.Context, req *pubsublitepb.ListPartitionCursorsRequest, opts ...gax.CallOption) *PartitionCursorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPartitionCursors[0:len((*c.CallOptions).ListPartitionCursors):len((*c.CallOptions).ListPartitionCursors)], opts...)
 	it := &PartitionCursorIterator{}

@@ -37,6 +37,7 @@ var newPublisherClientHook clientHook
 // PublisherCallOptions contains the retry settings for each method of PublisherClient.
 type PublisherCallOptions struct {
 	PublishChannelConnectionEvents []gax.CallOption
+	PublishEvents                  []gax.CallOption
 }
 
 func defaultPublisherGRPCClientOptions() []option.ClientOption {
@@ -54,15 +55,17 @@ func defaultPublisherGRPCClientOptions() []option.ClientOption {
 func defaultPublisherCallOptions() *PublisherCallOptions {
 	return &PublisherCallOptions{
 		PublishChannelConnectionEvents: []gax.CallOption{},
+		PublishEvents:                  []gax.CallOption{},
 	}
 }
 
-// internalPublisherClient is an interface that defines the methods availaible from Eventarc Publishing API.
+// internalPublisherClient is an interface that defines the methods available from Eventarc Publishing API.
 type internalPublisherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	PublishChannelConnectionEvents(context.Context, *publisherpb.PublishChannelConnectionEventsRequest, ...gax.CallOption) (*publisherpb.PublishChannelConnectionEventsResponse, error)
+	PublishEvents(context.Context, *publisherpb.PublishEventsRequest, ...gax.CallOption) (*publisherpb.PublishEventsResponse, error)
 }
 
 // PublisherClient is a client for interacting with Eventarc Publishing API.
@@ -125,6 +128,11 @@ func (c *PublisherClient) Connection() *grpc.ClientConn {
 // PublishChannelConnectionEvents publish events to a ChannelConnection in a partner’s project.
 func (c *PublisherClient) PublishChannelConnectionEvents(ctx context.Context, req *publisherpb.PublishChannelConnectionEventsRequest, opts ...gax.CallOption) (*publisherpb.PublishChannelConnectionEventsResponse, error) {
 	return c.internalClient.PublishChannelConnectionEvents(ctx, req, opts...)
+}
+
+// PublishEvents publish events to a subscriber’s channel.
+func (c *PublisherClient) PublishEvents(ctx context.Context, req *publisherpb.PublishEventsRequest, opts ...gax.CallOption) (*publisherpb.PublishEventsResponse, error) {
+	return c.internalClient.PublishEvents(ctx, req, opts...)
 }
 
 // publisherGRPCClient is a client for interacting with Eventarc Publishing API over gRPC transport.
@@ -220,7 +228,7 @@ func (c *publisherGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *publisherGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -237,12 +245,30 @@ func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_connection", url.QueryEscape(req.GetChannelConnection())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PublishChannelConnectionEvents[0:len((*c.CallOptions).PublishChannelConnectionEvents):len((*c.CallOptions).PublishChannelConnectionEvents)], opts...)
 	var resp *publisherpb.PublishChannelConnectionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.publisherClient.PublishChannelConnectionEvents(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *publisherGRPCClient) PublishEvents(ctx context.Context, req *publisherpb.PublishEventsRequest, opts ...gax.CallOption) (*publisherpb.PublishEventsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel", url.QueryEscape(req.GetChannel())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).PublishEvents[0:len((*c.CallOptions).PublishEvents):len((*c.CallOptions).PublishEvents)], opts...)
+	var resp *publisherpb.PublishEventsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.publisherClient.PublishEvents(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

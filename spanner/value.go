@@ -830,6 +830,52 @@ func (n NullJSON) GormDataType() string {
 	return "JSON"
 }
 
+// PGNumeric represents a Cloud Spanner PG Numeric that may be NULL.
+type PGNumeric struct {
+	Numeric string // Numeric contains the value when it is non-NULL, and an empty string when NULL.
+	Valid   bool   // Valid is true if Numeric is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for PGNumeric.
+func (n PGNumeric) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for PGNumeric
+func (n PGNumeric) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	return n.Numeric
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for PGNumeric.
+func (n PGNumeric) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%q", n.Numeric)), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for PGNumeric.
+func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Numeric = ""
+		n.Valid = false
+		return nil
+	}
+	payload, err := trimDoubleQuotes(payload)
+	if err != nil {
+		return err
+	}
+	n.Numeric = string(payload)
+	n.Valid = true
+	return nil
+}
+
 // NullRow represents a Cloud Spanner STRUCT that may be NULL.
 // See also the document for Row.
 // Note that NullRow is not a valid Cloud Spanner column Type.
@@ -940,7 +986,7 @@ func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool
 
 // decodeValue decodes a protobuf Value into a pointer to a Go value, as
 // specified by sppb.Type.
-func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
+func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeOptions) error {
 	if v == nil {
 		return errNilSrc()
 	}
@@ -948,12 +994,15 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		return errNilSpannerType()
 	}
 	code := t.Code
+	typeAnnotation := t.TypeAnnotation
 	acode := sppb.TypeCode_TYPE_CODE_UNSPECIFIED
+	atypeAnnotation := sppb.TypeAnnotationCode_TYPE_ANNOTATION_CODE_UNSPECIFIED
 	if code == sppb.TypeCode_ARRAY {
 		if t.ArrayElementType == nil {
 			return errNilArrElemType(t)
 		}
 		acode = t.ArrayElementType.Code
+		atypeAnnotation = t.ArrayElementType.TypeAnnotation
 	}
 	_, isNull := v.Kind.(*proto3.Value_NullValue)
 
@@ -1557,6 +1606,38 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return err
 		}
 		*p = y
+	case *PGNumeric:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_NUMERIC || typeAnnotation != sppb.TypeAnnotationCode_PG_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = PGNumeric{}
+			break
+		}
+		*p = PGNumeric{v.GetStringValue(), true}
+	case *[]PGNumeric:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_NUMERIC || atypeAnnotation != sppb.TypeAnnotationCode_PG_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodePGNumericArray(x)
+		if err != nil {
+			return err
+		}
+		*p = y
 	case *time.Time:
 		var nt NullTime
 		if isNull {
@@ -1780,7 +1861,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			if isNull && !decodableType.supportsNull() {
 				return errDstNotForNull(ptr)
 			}
-			return decodableType.decodeValueToCustomType(v, t, acode, ptr)
+			return decodableType.decodeValueToCustomType(v, t, acode, atypeAnnotation, ptr)
 		}
 
 		// Check if the proto encoding is for an array of structs.
@@ -1810,7 +1891,13 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		if err != nil {
 			return err
 		}
-		if err = decodeStructArray(t.ArrayElementType.StructType, x, p); err != nil {
+		s := decodeSetting{
+			Lenient: false,
+		}
+		for _, opt := range opts {
+			opt.Apply(&s)
+		}
+		if err = decodeStructArray(t.ArrayElementType.StructType, x, p, s.Lenient); err != nil {
 			return err
 		}
 	}
@@ -1840,6 +1927,7 @@ const (
 	spannerTypeNullDate
 	spannerTypeNullNumeric
 	spannerTypeNullJSON
+	spannerTypePGNumeric
 	spannerTypeArrayOfNonNullString
 	spannerTypeArrayOfByteArray
 	spannerTypeArrayOfNonNullInt64
@@ -1856,6 +1944,7 @@ const (
 	spannerTypeArrayOfNullJSON
 	spannerTypeArrayOfNullTime
 	spannerTypeArrayOfNullDate
+	spannerTypeArrayOfPGNumeric
 )
 
 // supportsNull returns true for the Go types that can hold a null value from
@@ -1887,6 +1976,7 @@ var typeOfNullTime = reflect.TypeOf(NullTime{})
 var typeOfNullDate = reflect.TypeOf(NullDate{})
 var typeOfNullNumeric = reflect.TypeOf(NullNumeric{})
 var typeOfNullJSON = reflect.TypeOf(NullJSON{})
+var typeOfPGNumeric = reflect.TypeOf(PGNumeric{})
 
 // getDecodableSpannerType returns the corresponding decodableSpannerType of
 // the given pointer.
@@ -1956,6 +2046,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		if t.ConvertibleTo(typeOfNullJSON) {
 			return spannerTypeNullJSON
 		}
+		if t.ConvertibleTo(typeOfPGNumeric) {
+			return spannerTypePGNumeric
+		}
 	case reflect.Slice:
 		kind := val.Type().Elem().Kind()
 		switch kind {
@@ -2011,6 +2104,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			if t.ConvertibleTo(typeOfNullJSON) {
 				return spannerTypeArrayOfNullJSON
 			}
+			if t.ConvertibleTo(typeOfPGNumeric) {
+				return spannerTypeArrayOfPGNumeric
+			}
 		case reflect.Slice:
 			// The only array-of-array type that is supported is [][]byte.
 			kind := val.Type().Elem().Elem().Kind()
@@ -2027,8 +2123,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 // decodeValueToCustomType decodes a protobuf Value into a pointer to a Go
 // value. It must be possible to convert the value to the type pointed to by
 // the pointer.
-func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb.Type, acode sppb.TypeCode, ptr interface{}) error {
+func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb.Type, acode sppb.TypeCode, atypeAnnotation sppb.TypeAnnotationCode, ptr interface{}) error {
 	code := t.Code
+	typeAnnotation := t.TypeAnnotation
 	_, isNull := v.Kind.(*proto3.Value_NullValue)
 	if dsc == spannerTypeInvalid {
 		return errNilDst(ptr)
@@ -2146,6 +2243,15 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		} else {
 			result = &NullNumeric{*y, true}
 		}
+	case spannerTypePGNumeric:
+		if code != sppb.TypeCode_NUMERIC || typeAnnotation != sppb.TypeAnnotationCode_PG_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			result = &PGNumeric{}
+			break
+		}
+		result = &PGNumeric{v.GetStringValue(), true}
 	case spannerTypeNullJSON:
 		if code != sppb.TypeCode_JSON {
 			return errTypeMismatch(code, acode, ptr)
@@ -2291,6 +2397,23 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return err
 		}
 		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, numericType(), "NUMERIC")
+		if err != nil {
+			return err
+		}
+		result = y
+	case spannerTypeArrayOfPGNumeric:
+		if acode != sppb.TypeCode_NUMERIC || atypeAnnotation != sppb.TypeAnnotationCode_PG_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			ptr = nil
+			return nil
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, pgNumericType(), "PGNUMERIC")
 		if err != nil {
 			return err
 		}
@@ -2739,6 +2862,20 @@ func decodeNumericArray(pb *proto3.ListValue) ([]big.Rat, error) {
 	return a, nil
 }
 
+// decodePGNumericArray decodes proto3.ListValue pb into a PGNumeric slice.
+func decodePGNumericArray(pb *proto3.ListValue) ([]PGNumeric, error) {
+	if pb == nil {
+		return nil, errNilListValue("PGNUMERIC")
+	}
+	a := make([]PGNumeric, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, pgNumericType(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "PGNUMERIC", err)
+		}
+	}
+	return a, nil
+}
+
 // decodeByteArray decodes proto3.ListValue pb into a slice of byte slice.
 func decodeByteArray(pb *proto3.ListValue) ([][]byte, error) {
 	if pb == nil {
@@ -2912,6 +3049,22 @@ func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 	return se
 }
 
+// decodeSetting contains all the settings for decoding from spanner struct
+type decodeSetting struct {
+	Lenient bool
+}
+
+// decodeOptions is the interface to change decode struct settings
+type decodeOptions interface {
+	Apply(s *decodeSetting)
+}
+
+type withLenient struct{ lenient bool }
+
+func (w withLenient) Apply(s *decodeSetting) {
+	s.Lenient = w.lenient
+}
+
 // decodeStruct decodes proto3.ListValue pb into struct referenced by pointer
 // ptr, according to
 // the structural information given in sppb.StructType ty.
@@ -2956,8 +3109,9 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, le
 			// We don't allow duplicated field name.
 			return errDupSpannerField(f.Name, ty)
 		}
+		opts := []decodeOptions{withLenient{lenient: lenient}}
 		// Try to decode a single field.
-		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface()); err != nil {
+		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), opts...); err != nil {
 			return errDecodeStructField(ty, f.Name, err)
 		}
 		// Mark field f.Name as processed.
@@ -2982,7 +3136,7 @@ func isPtrStructPtrSlice(t reflect.Type) bool {
 // decodeStructArray decodes proto3.ListValue pb into struct slice referenced by
 // pointer ptr, according to the
 // structural information given in a sppb.StructType.
-func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}) error {
+func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, lenient bool) error {
 	if pb == nil {
 		return errNilListValue("STRUCT")
 	}
@@ -3008,7 +3162,7 @@ func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{
 			return errDecodeArrayElement(i, pv, "STRUCT", err)
 		}
 		// Decode proto3.ListValue l into struct referenced by s.Interface().
-		if err = decodeStruct(ty, l, s.Interface(), false); err != nil {
+		if err = decodeStruct(ty, l, s.Interface(), lenient); err != nil {
 			return errDecodeArrayElement(i, pv, "STRUCT", err)
 		}
 		// Append the decoded struct back into the slice.
@@ -3273,6 +3427,19 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(numericType())
+	case PGNumeric:
+		if v.Valid {
+			pb.Kind = stringKind(v.Numeric)
+		}
+		return pb, pgNumericType(), nil
+	case []PGNumeric:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(pgNumericType())
 	case NullJSON:
 		if v.Valid {
 			b, err := json.Marshal(v.Value)
@@ -3481,6 +3648,8 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullNumeric{})))
 	case spannerTypeNullJSON:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullJSON{})))
+	case spannerTypePGNumeric:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGNumeric{})))
 	case spannerTypeArrayOfNonNullString:
 		if reflect.ValueOf(v).IsNil() {
 			return []string(nil), nil
@@ -3561,6 +3730,11 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 			return []NullJSON(nil), nil
 		}
 		destination = reflect.MakeSlice(reflect.TypeOf([]NullJSON{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfPGNumeric:
+		if reflect.ValueOf(v).IsNil() {
+			return []PGNumeric(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]PGNumeric{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
 	default:
 		// This should not be possible.
 		return nil, fmt.Errorf("unknown decodable type found: %v", sourceType)

@@ -15,6 +15,16 @@
                 "BulkMuteFindings"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBigQueryExport": {
+              "methods": [
+                "CreateBigQueryExport"
+              ]
+            },
             "CreateFinding": {
               "methods": [
                 "CreateFinding"
@@ -35,6 +45,11 @@
                 "CreateSource"
               ]
             },
+            "DeleteBigQueryExport": {
+              "methods": [
+                "DeleteBigQueryExport"
+              ]
+            },
             "DeleteMuteConfig": {
               "methods": [
                 "DeleteMuteConfig"
@@ -43,6 +58,16 @@
             "DeleteNotificationConfig": {
               "methods": [
                 "DeleteNotificationConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
               ]
             },
             "GetIamPolicy": {
@@ -58,6 +83,11 @@
             "GetNotificationConfig": {
               "methods": [
                 "GetNotificationConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetOrganizationSettings": {
@@ -85,6 +115,11 @@
                 "ListAssets"
               ]
             },
+            "ListBigQueryExports": {
+              "methods": [
+                "ListBigQueryExports"
+              ]
+            },
             "ListFindings": {
               "methods": [
                 "ListFindings"
@@ -98,6 +133,11 @@
             "ListNotificationConfigs": {
               "methods": [
                 "ListNotificationConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListSources": {
@@ -128,6 +168,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
               ]
             },
             "UpdateExternalSystem": {

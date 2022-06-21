@@ -71,7 +71,7 @@ func defaultConnectionCallOptions() *ConnectionCallOptions {
 	}
 }
 
-// internalConnectionClient is an interface that defines the methods availaible from Apigee Connect API.
+// internalConnectionClient is an interface that defines the methods available from Apigee Connect API.
 type internalConnectionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -189,7 +189,7 @@ func (c *connectionGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *connectionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -201,6 +201,7 @@ func (c *connectionGRPCClient) Close() error {
 
 func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeeconnectpb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}

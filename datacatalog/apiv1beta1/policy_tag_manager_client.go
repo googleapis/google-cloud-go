@@ -83,7 +83,7 @@ func defaultPolicyTagManagerCallOptions() *PolicyTagManagerCallOptions {
 	}
 }
 
-// internalPolicyTagManagerClient is an interface that defines the methods availaible from Google Cloud Data Catalog API.
+// internalPolicyTagManagerClient is an interface that defines the methods available from Google Cloud Data Catalog API.
 type internalPolicyTagManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -277,7 +277,7 @@ func (c *policyTagManagerGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *policyTagManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -289,6 +289,7 @@ func (c *policyTagManagerGRPCClient) Close() error {
 
 func (c *policyTagManagerGRPCClient) CreateTaxonomy(ctx context.Context, req *datacatalogpb.CreateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTaxonomy[0:len((*c.CallOptions).CreateTaxonomy):len((*c.CallOptions).CreateTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
@@ -305,6 +306,7 @@ func (c *policyTagManagerGRPCClient) CreateTaxonomy(ctx context.Context, req *da
 
 func (c *policyTagManagerGRPCClient) DeleteTaxonomy(ctx context.Context, req *datacatalogpb.DeleteTaxonomyRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTaxonomy[0:len((*c.CallOptions).DeleteTaxonomy):len((*c.CallOptions).DeleteTaxonomy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -317,6 +319,7 @@ func (c *policyTagManagerGRPCClient) DeleteTaxonomy(ctx context.Context, req *da
 
 func (c *policyTagManagerGRPCClient) UpdateTaxonomy(ctx context.Context, req *datacatalogpb.UpdateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "taxonomy.name", url.QueryEscape(req.GetTaxonomy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTaxonomy[0:len((*c.CallOptions).UpdateTaxonomy):len((*c.CallOptions).UpdateTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
@@ -333,6 +336,7 @@ func (c *policyTagManagerGRPCClient) UpdateTaxonomy(ctx context.Context, req *da
 
 func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *datacatalogpb.ListTaxonomiesRequest, opts ...gax.CallOption) *TaxonomyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTaxonomies[0:len((*c.CallOptions).ListTaxonomies):len((*c.CallOptions).ListTaxonomies)], opts...)
 	it := &TaxonomyIterator{}
@@ -377,6 +381,7 @@ func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *da
 
 func (c *policyTagManagerGRPCClient) GetTaxonomy(ctx context.Context, req *datacatalogpb.GetTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTaxonomy[0:len((*c.CallOptions).GetTaxonomy):len((*c.CallOptions).GetTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
@@ -393,6 +398,7 @@ func (c *policyTagManagerGRPCClient) GetTaxonomy(ctx context.Context, req *datac
 
 func (c *policyTagManagerGRPCClient) CreatePolicyTag(ctx context.Context, req *datacatalogpb.CreatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreatePolicyTag[0:len((*c.CallOptions).CreatePolicyTag):len((*c.CallOptions).CreatePolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
@@ -409,6 +415,7 @@ func (c *policyTagManagerGRPCClient) CreatePolicyTag(ctx context.Context, req *d
 
 func (c *policyTagManagerGRPCClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeletePolicyTag[0:len((*c.CallOptions).DeletePolicyTag):len((*c.CallOptions).DeletePolicyTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -421,6 +428,7 @@ func (c *policyTagManagerGRPCClient) DeletePolicyTag(ctx context.Context, req *d
 
 func (c *policyTagManagerGRPCClient) UpdatePolicyTag(ctx context.Context, req *datacatalogpb.UpdatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy_tag.name", url.QueryEscape(req.GetPolicyTag().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdatePolicyTag[0:len((*c.CallOptions).UpdatePolicyTag):len((*c.CallOptions).UpdatePolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
@@ -437,6 +445,7 @@ func (c *policyTagManagerGRPCClient) UpdatePolicyTag(ctx context.Context, req *d
 
 func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *datacatalogpb.ListPolicyTagsRequest, opts ...gax.CallOption) *PolicyTagIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPolicyTags[0:len((*c.CallOptions).ListPolicyTags):len((*c.CallOptions).ListPolicyTags)], opts...)
 	it := &PolicyTagIterator{}
@@ -481,6 +490,7 @@ func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *da
 
 func (c *policyTagManagerGRPCClient) GetPolicyTag(ctx context.Context, req *datacatalogpb.GetPolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPolicyTag[0:len((*c.CallOptions).GetPolicyTag):len((*c.CallOptions).GetPolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
@@ -497,6 +507,7 @@ func (c *policyTagManagerGRPCClient) GetPolicyTag(ctx context.Context, req *data
 
 func (c *policyTagManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -513,6 +524,7 @@ func (c *policyTagManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iamp
 
 func (c *policyTagManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -529,6 +541,7 @@ func (c *policyTagManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iamp
 
 func (c *policyTagManagerGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse

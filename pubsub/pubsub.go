@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/pubsub/apiv1"
+	"cloud.google.com/go/pubsub/internal"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -39,8 +39,6 @@ const (
 	// ScopeCloudPlatform grants permissions to view and manage your data
 	// across Google Cloud Platform services.
 	ScopeCloudPlatform = "https://www.googleapis.com/auth/cloud-platform"
-
-	maxAckDeadline = 10 * time.Minute
 )
 
 // Client is a Google Pub/Sub client scoped to a single project.
@@ -158,7 +156,7 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		pubc.CallOptions = mergePublisherCallOptions(pubc.CallOptions, config.PublisherCallOptions)
 		subc.CallOptions = mergeSubscriberCallOptions(subc.CallOptions, config.SubscriberCallOptions)
 	}
-	pubc.SetGoogleClientInfo("gccl", version.Repo)
+	pubc.SetGoogleClientInfo("gccl", internal.Version)
 	return &Client{
 		projectID: projectID,
 		pubc:      pubc,

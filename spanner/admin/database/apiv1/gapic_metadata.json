@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "DatabaseAdminClient",
           "rpcs": {
+            "CopyBackup": {
+              "methods": [
+                "CopyBackup"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"

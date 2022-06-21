@@ -57,7 +57,7 @@ func defaultPhishingProtectionServiceV1Beta1CallOptions() *PhishingProtectionSer
 	}
 }
 
-// internalPhishingProtectionServiceV1Beta1Client is an interface that defines the methods availaible from Phishing Protection API.
+// internalPhishingProtectionServiceV1Beta1Client is an interface that defines the methods available from Phishing Protection API.
 type internalPhishingProtectionServiceV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -180,7 +180,7 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) Connection() *grpc.ClientCo
 // use by Google-written clients.
 func (c *phishingProtectionServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -197,6 +197,7 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	var resp *phishingprotectionpb.ReportPhishingResponse

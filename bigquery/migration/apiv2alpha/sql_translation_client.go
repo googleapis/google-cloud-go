@@ -56,7 +56,7 @@ func defaultSqlTranslationCallOptions() *SqlTranslationCallOptions {
 	}
 }
 
-// internalSqlTranslationClient is an interface that defines the methods availaible from BigQuery Migration API.
+// internalSqlTranslationClient is an interface that defines the methods available from BigQuery Migration API.
 type internalSqlTranslationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -173,7 +173,7 @@ func (c *sqlTranslationGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *sqlTranslationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -185,6 +185,7 @@ func (c *sqlTranslationGRPCClient) Close() error {
 
 func (c *sqlTranslationGRPCClient) TranslateQuery(ctx context.Context, req *migrationpb.TranslateQueryRequest, opts ...gax.CallOption) (*migrationpb.TranslateQueryResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TranslateQuery[0:len((*c.CallOptions).TranslateQuery):len((*c.CallOptions).TranslateQuery)], opts...)
 	var resp *migrationpb.TranslateQueryResponse

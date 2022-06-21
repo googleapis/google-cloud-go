@@ -1,0 +1,795 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkehub/apiv1beta1",
+    "version": "0.7.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkehub.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_CancelOperation_sync",
+      "title": "gkehub CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "GkeHubMembershipClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.CancelOperation",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_CreateMembership_sync",
+      "title": "gkehub CreateMembership Sample",
+      "description": "CreateMembership creates a new Membership.\n\nThis is currently only supported for GKE clusters on Google Cloud.\nTo register other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster (at https: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster).",
+      "file": "GkeHubMembershipClient/CreateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.CreateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.CreateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMembershipOperation",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "CreateMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.CreateMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_DeleteMembership_sync",
+      "title": "gkehub DeleteMembership Sample",
+      "description": "DeleteMembership removes a Membership.\n\nThis is currently only supported for GKE clusters on Google Cloud.\nTo unregister other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster (at https: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster).",
+      "file": "GkeHubMembershipClient/DeleteMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.DeleteMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.DeleteMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteMembershipOperation",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "DeleteMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.DeleteMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_DeleteOperation_sync",
+      "title": "gkehub DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "GkeHubMembershipClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.DeleteOperation",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GenerateConnectManifest_sync",
+      "title": "gkehub GenerateConnectManifest Sample",
+      "description": "GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.\n\nThis method is used internally by Google-provided libraries.\nMost clients should not need to call this method directly.",
+      "file": "GkeHubMembershipClient/GenerateConnectManifest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateConnectManifest",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GenerateConnectManifest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GenerateConnectManifestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.GenerateConnectManifestResponse",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GenerateConnectManifest",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GenerateConnectManifest",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GenerateExclusivityManifest_sync",
+      "title": "gkehub GenerateExclusivityManifest Sample",
+      "description": "GenerateExclusivityManifest generateExclusivityManifest generates the manifests to update the\nexclusivity artifacts in the cluster if needed.\n\nExclusivity artifacts include the Membership custom resource definition\n(CRD) and the singleton Membership custom resource (CR). Combined with\nValidateExclusivity, exclusivity artifacts guarantee that a Kubernetes\ncluster is only registered to a single GKE Hub.\n\nThe Membership CRD is versioned, and may require conversion when the GKE\nHub API server begins serving a newer version of the CRD and\ncorresponding CR. The response will be the converted CRD and CR if there\nare any differences between the versions.",
+      "file": "GkeHubMembershipClient/GenerateExclusivityManifest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateExclusivityManifest",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GenerateExclusivityManifest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GenerateExclusivityManifestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.GenerateExclusivityManifestResponse",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GenerateExclusivityManifest",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GenerateExclusivityManifest",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GetIamPolicy_sync",
+      "title": "gkehub GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "GkeHubMembershipClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetIamPolicy",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GetLocation_sync",
+      "title": "gkehub GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "GkeHubMembershipClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetLocation",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GetMembership_sync",
+      "title": "gkehub GetMembership Sample",
+      "description": "GetMembership gets the details of a Membership.",
+      "file": "GkeHubMembershipClient/GetMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GetMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GetMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.Membership",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GetMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GetOperation_sync",
+      "title": "gkehub GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "GkeHubMembershipClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetOperation",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_ListLocations_sync",
+      "title": "gkehub ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "GkeHubMembershipClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ListLocations",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_ListMemberships_sync",
+      "title": "gkehub ListMemberships Sample",
+      "description": "ListMemberships lists Memberships in a given project and location.",
+      "file": "GkeHubMembershipClient/ListMemberships/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMemberships",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.ListMemberships",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.ListMembershipsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MembershipIterator",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "ListMemberships",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ListMemberships",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_ListOperations_sync",
+      "title": "gkehub ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "GkeHubMembershipClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ListOperations",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_SetIamPolicy_sync",
+      "title": "gkehub SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "file": "GkeHubMembershipClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.SetIamPolicy",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_TestIamPermissions_sync",
+      "title": "gkehub TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "file": "GkeHubMembershipClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.TestIamPermissions",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_UpdateMembership_sync",
+      "title": "gkehub UpdateMembership Sample",
+      "description": "UpdateMembership updates an existing Membership.",
+      "file": "GkeHubMembershipClient/UpdateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.UpdateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.UpdateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateMembershipOperation",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "UpdateMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.UpdateMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_ValidateExclusivity_sync",
+      "title": "gkehub ValidateExclusivity Sample",
+      "description": "ValidateExclusivity validateExclusivity validates the state of exclusivity in the cluster.\nThe validation does not depend on an existing Hub membership resource.",
+      "file": "GkeHubMembershipClient/ValidateExclusivity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateExclusivity",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.ValidateExclusivity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.ValidateExclusivityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.ValidateExclusivityResponse",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "ValidateExclusivity",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ValidateExclusivity",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

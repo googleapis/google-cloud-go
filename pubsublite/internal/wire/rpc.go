@@ -32,6 +32,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
+	pslinternal "cloud.google.com/go/pubsublite/internal"
 	gax "github.com/googleapis/gax-go/v2"
 )
 
@@ -85,7 +86,7 @@ func isRetryableSendCode(code codes.Code) bool {
 func isRetryableRecvCode(code codes.Code) bool {
 	switch code {
 	// Consistent with https://github.com/googleapis/java-pubsublite/blob/master/google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/ErrorCodes.java
-	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown:
+	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown, codes.Canceled:
 		return true
 	default:
 		return false
@@ -245,6 +246,12 @@ func stringValue(str string) *structpb.Value {
 	}
 }
 
+func numberValue(val int64) *structpb.Value {
+	return &structpb.Value{
+		Kind: &structpb.Value_NumberValue{NumberValue: float64(val)},
+	}
+}
+
 // pubsubMetadata stores key/value pairs that should be added to gRPC metadata.
 type pubsubMetadata map[string]string
 
@@ -261,10 +268,10 @@ func (pm pubsubMetadata) AddSubscriptionRoutingMetadata(subscription subscriptio
 }
 
 func (pm pubsubMetadata) AddClientInfo(framework FrameworkType) {
-	pm.doAddClientInfo(framework, libraryVersion)
+	pm.doAddClientInfo(framework, pslinternal.Version)
 }
 
-func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, getVersion func() (version, bool)) {
+func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, version string) {
 	s := &structpb.Struct{
 		Fields: make(map[string]*structpb.Value),
 	}
@@ -272,9 +279,9 @@ func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, getVersion fun
 	if len(framework) > 0 {
 		s.Fields[frameworkKey] = stringValue(string(framework))
 	}
-	if version, ok := getVersion(); ok {
-		s.Fields[majorVersionKey] = stringValue(version.Major)
-		s.Fields[minorVersionKey] = stringValue(version.Minor)
+	if version, ok := parseVersion(version); ok {
+		s.Fields[majorVersionKey] = numberValue(version.Major)
+		s.Fields[minorVersionKey] = numberValue(version.Minor)
 	}
 	if bytes, err := proto.Marshal(s); err == nil {
 		pm[clientInfoMetadataHeader] = base64.StdEncoding.EncodeToString(bytes)
