@@ -1171,7 +1171,7 @@ func TestPartialSuccessOption(t *testing.T) {
 		{
 			name: "use PartialSuccess with LogSync",
 			do: func() {
-				logger.LogSync(context.TODO(), entry)
+				logger.LogSync(context.Background(), entry)
 			},
 		},
 		{
@@ -1236,7 +1236,7 @@ func TestRedirectOutputIngestion(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			hookCalled = false
-			tc.logger.LogSync(context.TODO(), entry)
+			tc.logger.LogSync(context.Background(), entry)
 			if hookCalled != tc.want {
 				t.Errorf("Log ingestion works unexpected: got %v want %v\n", hookCalled, tc.want)
 			}
@@ -1334,7 +1334,7 @@ func TestRedirectOutputFormats(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			buffer.Reset()
-			err := logger.LogSync(context.TODO(), *tc.in)
+			err := logger.LogSync(context.Background(), *tc.in)
 			if err != nil {
 				if tc.wantError == nil {
 					t.Fatalf("Unexpected error: %+v: %v", tc.in, err)
@@ -1390,12 +1390,12 @@ func TestInstrumentationIngestion(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			got = nil
 			internal.SetIngestInstrumentation(tc.ingestionFlag)
-			err := logger.LogSync(context.TODO(), *entry)
+			err := logger.LogSync(context.Background(), *entry)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if len(got) != tc.want {
-				t.Errorf("got(%v),want(%v):\n", got, tc.want)
+				t.Errorf("got(%v), want(%v)", got, tc.want)
 			}
 			diagnosticEntry := false
 			for _, ent := range got {
@@ -1405,7 +1405,7 @@ func TestInstrumentationIngestion(t *testing.T) {
 				}
 			}
 			if tc.ingestionFlag != diagnosticEntry {
-				t.Errorf("instrumentation entry misplaced: got(%v),want(%v):\n", diagnosticEntry, tc.ingestionFlag)
+				t.Errorf("instrumentation entry misplaced: got(%v), want(%v)", diagnosticEntry, tc.ingestionFlag)
 			}
 		})
 	}
@@ -1426,13 +1426,13 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 	internal.SetIngestInstrumentation(true)
 	for i := range want {
 		buffer.Reset()
-		err := logger.LogSync(context.TODO(), *entry)
+		err := logger.LogSync(context.Background(), *entry)
 		if err != nil {
 			t.Fatal(err)
 		}
 		got := strings.TrimSpace(buffer.String())
 		if got != want[i] {
-			t.Errorf("got(%v),want(%v):\n", got, want[i])
+			t.Errorf("got(%v), want(%v)", got, want[i])
 		}
 	}
 	internal.SetIngestInstrumentation(iiStatus)
