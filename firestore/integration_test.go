@@ -26,6 +26,7 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -1719,4 +1720,19 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	if got, want := totalCount, documentCount; got != want {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
 	}
+}
+
+func TestIntegration_NewDatabase(t *testing.T) {
+	ctx := context.Background()
+	dbName := uid.NewSpace("integration-database", &uid.Options{}).New()
+	c, err := NewClientWithDatabase(ctx, iClient.projectID, dbName)
+
+	if err != nil {
+		t.Errorf("Can't create new database in project %s", iClient.projectID)
+	}
+
+	if !strings.Contains(c.databaseID, dbName) {
+		t.Errorf("new database not created:\nwanted database name %s\ngot database name %s", dbName, c.databaseID)
+	}
+	t.Log("finished the test")
 }
