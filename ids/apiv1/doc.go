@@ -23,8 +23,6 @@
 // When you use this product, your organization name and consumption levels
 // will be shared with Palo Alto Networks.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Example usage
 //
 // To get started with this package, create a client.
