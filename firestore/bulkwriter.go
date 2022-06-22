@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math"
 	"sync"
 	"time"
 
@@ -41,6 +40,7 @@ type bulkWriterOperation struct {
 // processResults checks for errors returned from send() and packages up the
 // results as WriteResult objects
 func (o *bulkWriterOperation) processResults() (*WriteResult, error) {
+
 	wpb := <-o.result
 	err := <-o.err
 
@@ -54,31 +54,39 @@ func (o *bulkWriterOperation) processResults() (*WriteResult, error) {
 		return nil, err
 	}
 	return wr, err
-}
+	/*
+		var wr *WriteResult
+		var err error
 
-// BulkWriterStatus provides details about the BulkWriter, including the
-// number of writes processed, the number of requests sent to the service, and
-// the number of writes in the queue.
-type BulkWriterStatus struct {
-	// IsOpen shows whether this BulkWriter is open or closed
-	IsOpen bool
+		select {
+		case wpb := <-o.result:
+			wr, err = writeResultFromProto(wpb)
+			if err != nil {
+				wr = nil
+			}
+		case err = <-o.err:
+			wr = nil
+		}
+
+		return wr, err
+	*/
 }
 
 // BulkWriterJob provides read-only access to the results of a BulkWriter write attempt.
 type BulkWriterJob struct {
-	op  bulkWriterOperation // the operation this BulkWriterJob encapsulates
-	wr  *WriteResult        // (cached) result from the operation
-	err error               // (cached) any errors that occurred
+	bulkWriterOperation              // the operation this BulkWriterJob encapsulates
+	wr                  *WriteResult // (cached) result from the operation
+	e                   error        // (cached) any errors that occurred
 }
 
 // Results gets the results of the BulkWriter write attempt
 // Attempting to access the results before the results have been received blocks
 // subsequent calls (until the result is received).
 func (j *BulkWriterJob) Results() (*WriteResult, error) {
-	if j.wr == nil && j.err == nil {
-		j.wr, j.err = j.op.processResults() // cache the results for additional calls
+	if j.wr == nil && j.e == nil {
+		j.wr, j.e = j.processResults() // cache the results for additional calls
 	}
-	return j.wr, j.err
+	return j.wr, j.e
 }
 
 // A BulkWriter allows multiple document writes in parallel. The BulkWriter
@@ -117,6 +125,7 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		ctx:             ctx,
 	}
 
+	// can't initialize with struct above; need instance reference to BulkWriter.send()
 	bw.bundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
 	bw.bundler.HandlerLimit = bw.maxOpsPerSecond
 	bw.bundler.BundleCountThreshold = maxBatchSize
@@ -159,13 +168,18 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJo
 		return nil, err
 	}
 
+	// TODO(telpirion): Talk to FS team about why we're doing this
 	w, err := doc.newCreateWrites(datum)
 	if err != nil {
 		return nil, fmt.Errorf("firestore: cannot create %v with %v", doc.ID, datum)
 	}
 
+	if len(w) > 1 {
+		return nil, fmt.Errorf("firestore: too many document writes sent to bulkwriter")
+	}
+
 	return &BulkWriterJob{
-		op: bw.write(w[0]),
+		bulkWriterOperation: bw.write(w[0]),
 	}, nil
 }
 
@@ -181,8 +195,12 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkW
 		return nil, fmt.Errorf("firestore: cannot delete doc %v", doc.ID)
 	}
 
+	if len(w) > 1 {
+		return nil, fmt.Errorf("firestore: too many document writes sent to bulkwriter")
+	}
+
 	return &BulkWriterJob{
-		op: bw.write(w[0]),
+		bulkWriterOperation: bw.write(w[0]),
 	}, nil
 }
 
@@ -198,8 +216,12 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 		return nil, fmt.Errorf("firestore: cannot set %v on doc %v", datum, doc.ID)
 	}
 
+	if len(w) > 1 {
+		return nil, fmt.Errorf("firestore: too many writes sent to bulkwriter")
+	}
+
 	return &BulkWriterJob{
-		op: bw.write(w[0]),
+		bulkWriterOperation: bw.write(w[0]),
 	}, nil
 }
 
@@ -214,8 +236,13 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 	if err != nil {
 		return nil, fmt.Errorf("firestore: cannot update doc %v", doc.ID)
 	}
+
+	if len(w) > 1 {
+		return nil, fmt.Errorf("firestore: too many writes sent to bulkwriter")
+	}
+
 	return &BulkWriterJob{
-		op: bw.write(w[0]),
+		bulkWriterOperation: bw.write(w[0]),
 	}, nil
 }
 
@@ -300,6 +327,7 @@ func (bw *BulkWriter) send(i interface{}) {
 				j := bwj[i]
 				j.attempts++
 
+				// codyoss: consider whether we really need retrier or not
 				if j.attempts < maxRetryAttempts {
 					bw.retryBundler.Add(j, j.size)
 				}
@@ -310,27 +338,5 @@ func (bw *BulkWriter) send(i interface{}) {
 			bwj[i].err <- nil
 		}
 		// This means the writes are now finalized, all retries completed
-	}
-
-	// Check whether we need to increase the rate of requests to the service
-	// after each result
-	bw.rateLock.Lock()
-	bw.increaseRate()
-	bw.rateLock.Unlock()
-}
-
-// increaseRate updates the number of bundler requests that can be concurrently open
-func (bw *BulkWriter) increaseRate() {
-	elapsed := time.Now().Sub(bw.start).Seconds()
-
-	// Ideally, we would determine the qps before increasing, but instead
-	// we simply increase the number of bundler handler invocations we have
-	// running at once.
-	mins := elapsed / 60
-	if math.Mod(mins, 5) <= 0.1 {
-		newOps := float64(bw.maxOpsPerSecond) * rateLimiterMultiplier
-		bw.maxOpsPerSecond = int(newOps)
-		bw.bundler.HandlerLimit = int(newOps)
-
 	}
 }
