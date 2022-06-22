@@ -1506,13 +1506,13 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 // Used to handle breaking change in Autogen Storage client OLM Age field
 // from int64 to *int64 gracefully in the manual client
 // TODO(#6240): Method should be removed once breaking change is made and introduced to this client
-func setAgeCondition(age *int64, ageField interface{}) {
-	c := reflect.Indirect(reflect.ValueOf(ageField))
+func setAgeCondition(age int64, ageField interface{}) {
+	c := reflect.ValueOf(ageField).Elem()
 	switch c.Kind() {
 	case reflect.Int64:
-		c.SetInt(*age)
+		c.SetInt(age)
 	case reflect.Ptr:
-		c.Set(reflect.ValueOf(age))
+		c.Set(reflect.ValueOf(&age))
 	}
 }
 
@@ -1537,7 +1537,7 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 			},
 		}
 
-		setAgeCondition(&r.Condition.AgeInDays, &rr.Condition.Age)
+		setAgeCondition(r.Condition.AgeInDays, &rr.Condition.Age)
 
 		switch r.Condition.Liveness {
 		case LiveAndArchived:
@@ -1617,8 +1617,8 @@ func getAgeCondition(ageField interface{}) int64 {
 	if v.Kind() == reflect.Int64 {
 		return v.Interface().(int64)
 	} else if v.Kind() == reflect.Ptr {
-		if v.Interface().(*int64) != nil {
-			return *(v.Interface().(*int64))
+		if val, ok := v.Interface().(*int64); ok {
+			return *val
 		}
 	}
 	return 0

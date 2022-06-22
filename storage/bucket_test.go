@@ -564,14 +564,14 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 func TestAgeConditionBackwardCompat(t *testing.T) {
 	var ti int64
 	var want int64 = 100
-	setAgeCondition(&want, &ti)
+	setAgeCondition(want, &ti)
 	if getAgeCondition(ti) != want {
 		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
 	}
 
 	var tp *int64
 	want = 10
-	setAgeCondition(&want, &tp)
+	setAgeCondition(want, &tp)
 	if getAgeCondition(tp) != want {
 		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
 	}
