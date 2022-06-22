@@ -2971,6 +2971,60 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 	}
 }
 
+func TestIntegration_ListDatabaseRoles(t *testing.T) {
+	t.Parallel()
+	// Database roles are not currently available in PG dialect
+	skipForPGTest(t)
+
+	// Set up testing environment.
+	var (
+		err  error
+		iter *database.DatabaseRoleIterator
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE ROLE a`,
+		`CREATE ROLE z`,
+	}
+	_, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	iter = databaseAdmin.ListDatabaseRoles(ctx, &adminpb.ListDatabaseRolesRequest{
+		Parent: dbPath,
+	})
+	roles, err := readDatabaseRoles(iter)
+	if err != nil {
+		t.Fatalf("cannot list database roles in %v: %v", dbPath, err)
+	}
+	var got []string
+	rolePrefix := dbPath + "/databaseRoles/"
+	for _, role := range roles {
+		if !strings.HasPrefix(role.Name, rolePrefix) {
+			t.Fatalf("Role %v does not have prefix %v", role.Name, rolePrefix)
+		}
+		got = append(got, strings.TrimPrefix(role.Name, rolePrefix))
+	}
+	want := []string{"a", "public", "spanner_info_reader", "spanner_sys_reader", "z"}
+	if !testEqual(got, want) {
+		t.Fatalf("Database role mismatch\nGot: %v, Want: %v", got, want)
+	}
+}
+
+func readDatabaseRoles(iter *database.DatabaseRoleIterator) ([]*adminpb.DatabaseRole, error) {
+	var vals []*adminpb.DatabaseRole
+	for {
+		v, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, v)
+	}
+}
+
 // Test PartitionQuery of BatchReadOnlyTransaction, create partitions then
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
