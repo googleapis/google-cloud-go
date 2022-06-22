@@ -951,11 +951,8 @@ func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
 func TestHMACKeyCRUDEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
-		desc := &hmacKeyDesc{
-			forServiceAccountEmail: "test@test-project.iam.gserviceaccount.com",
-			userProjectID:          project,
-		}
-		want, err := client.CreateHMACKey(ctx, desc)
+		serviceAccountEmail := "test@test-project.iam.gserviceaccount.com"
+		want, err := client.CreateHMACKey(ctx, project, serviceAccountEmail)
 		if err != nil {
 			t.Fatalf("CreateHMACKey: %v", err)
 		}
@@ -965,7 +962,7 @@ func TestHMACKeyCRUDEmulated(t *testing.T) {
 		if want.State != Active {
 			t.Fatalf("CreateHMACKey: Unexpected state %q, expected %q", want.State, Active)
 		}
-		got, err := client.GetHMACKey(ctx, desc, want.AccessID)
+		got, err := client.GetHMACKey(ctx, project, want.AccessID)
 		if err != nil {
 			t.Fatalf("GetHMACKey: %v", err)
 		}
@@ -978,14 +975,14 @@ func TestHMACKeyCRUDEmulated(t *testing.T) {
 		attr := &HMACKeyAttrsToUpdate{
 			State: Inactive,
 		}
-		got, err = client.UpdateHMACKey(ctx, desc, want.AccessID, attr)
+		got, err = client.UpdateHMACKey(ctx, project, serviceAccountEmail, want.AccessID, attr)
 		if err != nil {
 			t.Fatalf("UpdateHMACKey: %v", err)
 		}
 		if got.State != attr.State {
 			t.Errorf("UpdateHMACKey State: got %v, want %v", got.State, attr.State)
 		}
-		it := client.ListHMACKeys(ctx, desc)
+		it := client.ListHMACKeys(ctx, project, serviceAccountEmail)
 		var count int
 		var e error
 		for ; ; count++ {
@@ -1000,11 +997,11 @@ func TestHMACKeyCRUDEmulated(t *testing.T) {
 		if expected := 1; count != expected {
 			t.Errorf("ListHMACKeys: expected to get %d hmacKeys, but got %d", expected, count)
 		}
-		err = client.DeleteHMACKey(ctx, desc, want.AccessID)
+		err = client.DeleteHMACKey(ctx, project, want.AccessID)
 		if err != nil {
 			t.Fatalf("DeleteHMACKey: %v", err)
 		}
-		got, err = client.GetHMACKey(ctx, desc, want.AccessID)
+		got, err = client.GetHMACKey(ctx, project, want.AccessID)
 		if err == nil {
 			t.Fatalf("GetHMACKey unexcepted error: wanted 404")
 		}

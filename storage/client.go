@@ -96,11 +96,11 @@ type storageClient interface {
 
 	// HMAC Key methods.
 
-	GetHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) (*HMACKey, error)
-	ListHMACKeys(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator
-	UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
-	CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error)
-	DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) error
+	GetHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) (*HMACKey, error)
+	ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) *HMACKeysIterator
+	UpdateHMACKey(ctx context.Context, project, serviceAccountEmail, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
+	CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error)
+	DeleteHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) error
 
 	// Notification methods.
 	ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (map[string]*Notification, error)

@@ -884,11 +884,14 @@ func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource str
 
 // HMAC Key methods.
 
-func (c *grpcStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) (*HMACKey, error) {
+func (c *grpcStorageClient) GetHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetHmacKeyRequest{
 		AccessId: accessID,
-		Project:  toProjectResource(desc.userProjectID),
+		Project:  toProjectResource(project),
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	var metadata *storagepb.HmacKeyMetadata
 	err := run(ctx, func() error {
@@ -902,20 +905,18 @@ func (c *grpcStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, a
 	return toHMACKeyfromProto(metadata), nil
 }
 
-func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
+func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) *HMACKeysIterator {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.ListHmacKeysRequest{
-		Project:             toProjectResource(desc.userProjectID),
-		ServiceAccountEmail: desc.forServiceAccountEmail,
+		Project:             toProjectResource(project),
+		ServiceAccountEmail: serviceAccountEmail,
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	// hmacKeyDesc includes configured HMACKey behavior through the HMACKeyOption interface.
 	it := &HMACKeysIterator{
 		ctx:       ctx,
-		projectID: desc.userProjectID,
-		desc:      *desc,
+		projectID: s.userProject,
 		retry:     s.retry,
 	}
 	gitr := c.raw.ListHmacKeys(it.ctx, req, s.gax...)
@@ -947,13 +948,14 @@ func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc,
 	return it
 }
 
-func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
+func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, project, serviceAccountEmail, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
 	hk := &storagepb.HmacKeyMetadata{
 		AccessId:            accessID,
-		Project:             toProjectResource(desc.userProjectID),
-		ServiceAccountEmail: desc.forServiceAccountEmail,
+		Project:             toProjectResource(project),
+		ServiceAccountEmail: serviceAccountEmail,
 		State:               string(attrs.State),
+		Etag:                attrs.Etag,
 	}
 	var paths []string
 	fieldMask := &fieldmaskpb.FieldMask{
@@ -965,6 +967,9 @@ func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	req := &storagepb.UpdateHmacKeyRequest{
 		HmacKey:    hk,
 		UpdateMask: fieldMask,
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	var metadata *storagepb.HmacKeyMetadata
 	err := run(ctx, func() error {
@@ -978,11 +983,14 @@ func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	return toHMACKeyfromProto(metadata), nil
 }
 
-func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
+func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.CreateHmacKeyRequest{
-		Project:             toProjectResource(desc.userProjectID),
-		ServiceAccountEmail: desc.forServiceAccountEmail,
+		Project:             toProjectResource(project),
+		ServiceAccountEmail: serviceAccountEmail,
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	var res *storagepb.CreateHmacKeyResponse
 	err := run(ctx, func() error {
@@ -999,11 +1007,14 @@ func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	return key, nil
 }
 
-func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) error {
+func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, project string, accessID string, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.DeleteHmacKeyRequest{
 		AccessId: accessID,
-		Project:  toProjectResource(desc.userProjectID),
+		Project:  toProjectResource(project),
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	return run(ctx, func() error {
 		return c.raw.DeleteHmacKey(ctx, req, s.gax...)

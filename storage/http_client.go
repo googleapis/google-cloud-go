@@ -1006,14 +1006,11 @@ func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource str
 
 // HMAC Key methods.
 
-func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) (*HMACKey, error) {
+func (c *httpStorageClient) GetHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
-	svc := raw.NewProjectsHmacKeysService(c.raw)
-	// hmacKeyDesc includes configured HMACKey behavior through the HMACKeyOption interface.
-	call := svc.Get(desc.userProjectID, accessID)
-	// TODO: Are there cases where desc.userProjectID != s.userProject?
-	if desc.userProjectID != "" {
-		call = call.UserProject(desc.userProjectID)
+	call := c.raw.Projects.HmacKeys.Get(project, accessID)
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
 	}
 
 	var metadata *raw.HmacKeyMetadata
@@ -1030,14 +1027,12 @@ func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, a
 	return toHMACKey(hk, false)
 }
 
-func (c *httpStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
+func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) *HMACKeysIterator {
 	s := callSettings(c.settings, opts...)
-	// hmacKeyDesc includes configured HMACKey behavior through the HMACKeyOption interface.
 	it := &HMACKeysIterator{
 		ctx:       ctx,
-		raw:       raw.NewProjectsHmacKeysService(c.raw),
-		projectID: desc.userProjectID,
-		desc:      *desc,
+		raw:       c.raw.Projects.HmacKeys,
+		projectID: project,
 		retry:     s.retry,
 	}
 	// define fetch
@@ -1054,15 +1049,14 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc,
 	return it
 }
 
-func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
+func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, project, serviceAccountEmail, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
-	svc := raw.NewProjectsHmacKeysService(c.raw)
-	call := svc.Update(desc.userProjectID, accessID, &raw.HmacKeyMetadata{
+	call := c.raw.Projects.HmacKeys.Update(project, accessID, &raw.HmacKeyMetadata{
 		Etag:  attrs.Etag,
 		State: string(attrs.State),
 	})
-	if desc.userProjectID != "" {
-		call = call.UserProject(desc.userProjectID)
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
 	}
 
 	var metadata *raw.HmacKeyMetadata
@@ -1079,12 +1073,11 @@ func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	return toHMACKey(hk, false)
 }
 
-func (c *httpStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
+func (c *httpStorageClient) CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error) {
 	s := callSettings(c.settings, opts...)
-	svc := raw.NewProjectsHmacKeysService(c.raw)
-	call := svc.Create(desc.userProjectID, desc.forServiceAccountEmail)
-	if desc.userProjectID != "" {
-		call = call.UserProject(desc.userProjectID)
+	call := c.raw.Projects.HmacKeys.Create(project, serviceAccountEmail)
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
 	}
 
 	var hk *raw.HmacKey
@@ -1098,12 +1091,11 @@ func (c *httpStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	return toHMACKey(hk, true)
 }
 
-func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) error {
+func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, project string, accessID string, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
-	svc := raw.NewProjectsHmacKeysService(c.raw)
-	call := svc.Delete(desc.userProjectID, accessID)
-	if desc.userProjectID != "" {
-		call = call.UserProject(desc.userProjectID)
+	call := c.raw.Projects.HmacKeys.Delete(project, accessID)
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
 	}
 	return run(ctx, func() error {
 		return call.Context(ctx).Do()
