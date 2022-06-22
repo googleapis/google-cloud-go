@@ -147,7 +147,7 @@ func (bw *BulkWriter) Flush() {
 	bw.retryBundler.Flush()
 }
 
-// Status gets the current open or closed state of the BulkWriter.
+// IsOpen gets the current open or closed state of the BulkWriter.
 func (bw *BulkWriter) IsOpen() bool {
 	return bw.isOpen
 }
