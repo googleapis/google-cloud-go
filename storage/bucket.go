@@ -1528,7 +1528,6 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				StorageClass: r.Action.StorageClass,
 			},
 			Condition: &raw.BucketLifecycleRuleCondition{
-				Age:                     r.Condition.AgeInDays,
 				DaysSinceCustomTime:     r.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: r.Condition.DaysSinceNoncurrentTime,
 				MatchesPrefix:           r.Condition.MatchesPrefix,
