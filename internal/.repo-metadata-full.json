@@ -824,7 +824,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/ids/latest/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/iot/apiv1": {
@@ -1670,6 +1670,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/videointelligence/latest/apiv1beta2",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/videointelligence/apiv1p3beta1": {
+    "distribution_name": "cloud.google.com/go/videointelligence/apiv1p3beta1",
+    "description": "Cloud Video Intelligence API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/videointelligence/latest/apiv1p3beta1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
