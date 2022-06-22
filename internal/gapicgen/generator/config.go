@@ -1340,8 +1340,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/ids/apiv1",
 		GRPCServiceConfigPath: "ids_grpc_service_config.json",
 		ApiServiceConfigPath:  "ids_v1.yaml",
-		// GA after 2021/12/15
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/vmmigration/v1",
