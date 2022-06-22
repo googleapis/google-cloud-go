@@ -24,7 +24,7 @@ const (
 	defaultStartingMaximumOpsPerSecond = 500
 	// rateLimiterMultiplier is the amount to increase maximum ops (qps) every 5 minutes
 	rateLimiterMultiplier = 1.5
-	// 5 minutes in milliseconds
+	// rateLimiterMultiplierMillis is 5 minutes in milliseconds
 	rateLimiterMultiplierMillis = 5 * 60 * 1000
 )
 
@@ -38,6 +38,24 @@ type bulkWriterOperation struct {
 	size     int                  // size of this write, in bytes
 }
 
+// processResults checks for errors returned from send() and packages up the
+// results as WriteResult objects
+func (o *bulkWriterOperation) processResults() (*WriteResult, error) {
+	wpb := <-o.result
+	err := <-o.err
+
+	if err != nil {
+		return nil, err
+	}
+
+	wr, err := writeResultFromProto(wpb)
+
+	if err != nil {
+		return nil, err
+	}
+	return wr, err
+}
+
 // BulkWriterStatus provides details about the BulkWriter, including the
 // number of writes processed, the number of requests sent to the service, and
 // the number of writes in the queue.
@@ -48,14 +66,19 @@ type BulkWriterStatus struct {
 
 // BulkWriterJob provides read-only access to the results of a BulkWriter write attempt.
 type BulkWriterJob struct {
-	op bulkWriterOperation // the operation this BulkWriterJob encapsulates
+	op  bulkWriterOperation // the operation this BulkWriterJob encapsulates
+	wr  *WriteResult        // (cached) result from the operation
+	err error               // (cached) any errors that occurred
 }
 
 // Results gets the results of the BulkWriter write attempt
 // Attempting to access the results before the results have been received blocks
 // subsequent calls (until the result is received).
 func (j *BulkWriterJob) Results() (*WriteResult, error) {
-	return processResults(j.op)
+	if j.wr == nil && j.err == nil {
+		j.wr, j.err = j.op.processResults() // cache the results for additional calls
+	}
+	return j.wr, j.err
 }
 
 // A BulkWriter allows multiple document writes in parallel. The BulkWriter
@@ -83,8 +106,6 @@ type BulkWriter struct {
 func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter {
 	ctx, cancel := context.WithCancel(withResourceHeader(ctx, c.path()))
 
-	var rateLock sync.Mutex
-
 	bw := &BulkWriter{
 		database:        database,
 		start:           time.Now(),
@@ -93,10 +114,7 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		maxOpsPerSecond: defaultStartingMaximumOpsPerSecond,
 		docUpdatePaths:  make(map[string]bool),
 		cancel:          cancel,
-		bundler:         &bundler.Bundler{},
-		retryBundler:    &bundler.Bundler{},
 		ctx:             ctx,
-		rateLock:        rateLock,
 	}
 
 	bw.bundler = bundler.NewBundler(bulkWriterOperation{}, bw.send)
@@ -130,10 +148,8 @@ func (bw *BulkWriter) Flush() {
 }
 
 // Status gets the current open or closed state of the BulkWriter.
-func (bw *BulkWriter) Status() BulkWriterStatus {
-	return BulkWriterStatus{
-		IsOpen: bw.isOpen,
-	}
+func (bw *BulkWriter) IsOpen() bool {
+	return bw.isOpen
 }
 
 // Create adds a document creation write to the queue of writes to send.
@@ -245,23 +261,6 @@ func (bw *BulkWriter) write(w *pb.Write) bulkWriterOperation {
 	return j
 }
 
-// processResults checks for errors returned from send() and packages up the
-// results as WriteResult objects
-func processResults(o bulkWriterOperation) (*WriteResult, error) {
-	wpb := <-o.result
-	err := <-o.err
-
-	if err != nil {
-		return nil, err
-	}
-
-	wr, err := writeResultFromProto(wpb)
-	if err != nil {
-		return nil, err
-	}
-	return wr, nil
-}
-
 // send transmits writes to the service and matches response results to job channels.
 func (bw *BulkWriter) send(i interface{}) {
 	bwj := i.([]bulkWriterOperation)
@@ -298,7 +297,12 @@ func (bw *BulkWriter) send(i interface{}) {
 			c := s.GetCode()
 
 			if c != 0 { // Should we do an explicit check against rpc.Code enum?
-				bw.retryBundler.Add(bwj[i], bwj[i].size)
+				j := bwj[i]
+				j.attempts++
+
+				if j.attempts < maxRetryAttempts {
+					bw.retryBundler.Add(j, j.size)
+				}
 				continue
 			}
 

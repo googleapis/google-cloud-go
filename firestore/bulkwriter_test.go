@@ -32,7 +32,9 @@ func TestBulkWriter(t *testing.T) {
 						},
 					},
 					CurrentDocument: &pb.Precondition{
-						ConditionType: &pb.Precondition_Exists{false},
+						ConditionType: &pb.Precondition_Exists{
+							Exists: false,
+						},
 					},
 				},
 			},
@@ -117,7 +119,9 @@ func TestBulkWriter(t *testing.T) {
 					},
 					UpdateMask: &pb.DocumentMask{FieldPaths: []string{"`*`"}},
 					CurrentDocument: &pb.Precondition{
-						ConditionType: &pb.Precondition_Exists{true},
+						ConditionType: &pb.Precondition_Exists{
+							Exists: true,
+						},
 					},
 				},
 			},
@@ -175,8 +179,12 @@ func TestBulkWriter(t *testing.T) {
 			bw.Flush()
 
 			wr, err := j.Results()
+			if err != nil {
+				t.Errorf("bulkwriter:\nwanted %v,\n, got error: %v", wantWRs[i], err)
+			}
+
 			if !testEqual(wr, wantWRs[i]) {
-				t.Errorf("bulkwriter:\nwanted %v,\n got %v\n", wantWRs[i], wr.UpdateTime)
+				t.Errorf("bulkwriter:\nwanted %v,\n got %v\n", wantWRs[i], wr)
 			}
 		})
 	}

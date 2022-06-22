@@ -1772,7 +1772,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 		}
 	}
 
-	if bw.Status().IsOpen {
+	if bw.IsOpen() {
 		t.Error("bulkwriter: IsOpen should be false after calling End()")
 	}
 }
