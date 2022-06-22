@@ -1504,7 +1504,7 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 }
 
 // Handle ptr or int64
-func setAgeCondition(age int64, cond *raw.BucketLifecycleRuleCondition) {
+func setAgeCondition(age int64, cond interface{}) {
 	c := reflect.ValueOf(cond).Elem().FieldByName("Age")
 	switch c.Kind() {
 	case reflect.Int64:
@@ -1609,7 +1609,7 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 }
 
 // Handle ptr or int64
-func getAgeCondition(cond *raw.BucketLifecycleRuleCondition) int64 {
+func getAgeCondition(cond interface{}) int64 {
 	v := reflect.ValueOf(cond).Elem().FieldByName("Age")
 	if v.Kind() == reflect.Int64 {
 		return v.Interface().(int64)
