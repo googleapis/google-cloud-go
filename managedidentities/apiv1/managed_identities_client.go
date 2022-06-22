@@ -80,7 +80,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Managed Service for Microsoft Active Directory API.
+// internalClient is an interface that defines the methods available from Managed Service for Microsoft Active Directory API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

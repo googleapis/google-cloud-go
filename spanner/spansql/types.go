@@ -302,7 +302,29 @@ type Delete struct {
 func (d *Delete) String() string { return fmt.Sprintf("%#v", d) }
 func (*Delete) isDMLStmt()       {}
 
-// TODO: Insert.
+// Insert represents an INSERT statement.
+// https://cloud.google.com/spanner/docs/dml-syntax#insert-statement
+type Insert struct {
+	Table   ID
+	Columns []ID
+	Input   ValuesOrSelect
+}
+
+// Values represents one or more lists of expressions passed to an `INSERT` statement.
+type Values [][]Expr
+
+func (v Values) isValuesOrSelect() {}
+func (v Values) String() string    { return fmt.Sprintf("%#v", v) }
+
+type ValuesOrSelect interface {
+	isValuesOrSelect()
+	SQL() string
+}
+
+func (Select) isValuesOrSelect() {}
+
+func (i *Insert) String() string { return fmt.Sprintf("%#v", i) }
+func (*Insert) isDMLStmt()       {}
 
 // Update represents an UPDATE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#update-statement

@@ -230,7 +230,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 	}
 }
 
-// internalDatabaseAdminClient is an interface that defines the methods availaible from Cloud Spanner Database Admin API.
+// internalDatabaseAdminClient is an interface that defines the methods available from Cloud Spanner Database Admin API.
 type internalDatabaseAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

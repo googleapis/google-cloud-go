@@ -101,7 +101,24 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
+					AgeInDays:        10,
+					MatchesPrefix:    []string{"testPrefix"},
+					MatchesSuffix:    []string{"testSuffix"},
+					NumNewerVersions: 3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
 					Liveness: Archived,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: AbortIncompleteMPUAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 20,
 				},
 			}},
 		},
@@ -177,12 +194,31 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						MatchesStorageClass:     []string{"NEARLINE"},
 						NumNewerVersions:        10,
 					},
-				}, {
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:              10,
+						MatchesPrefix:    []string{"testPrefix"},
+						MatchesSuffix:    []string{"testSuffix"},
+						NumNewerVersions: 3,
+					},
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
+					},
+				}, {
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: AbortIncompleteMPUAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age: 20,
 					},
 				}},
 		},
@@ -329,6 +365,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 					Action:    LifecycleAction{Type: "Delete"},
 					Condition: LifecycleCondition{AgeInDays: 30},
 				},
+				{
+					Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+					Condition: LifecycleCondition{AgeInDays: 13},
+				},
 			},
 		},
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
@@ -367,6 +407,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
 					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+				},
+				{
+					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
 				},
 			},
 		},
@@ -515,6 +559,23 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
 	}
+}
+
+func TestAgeConditionBackwardCompat(t *testing.T) {
+	var ti int64
+	var want int64 = 100
+	setAgeCondition(want, &ti)
+	if getAgeCondition(ti) != want {
+		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
+	}
+
+	var tp *int64
+	want = 10
+	setAgeCondition(want, &tp)
+	if getAgeCondition(tp) != want {
+		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
+	}
+
 }
 
 func TestCallBuilders(t *testing.T) {

@@ -3482,6 +3482,7 @@ func readPGSingerTable(iter *RowIterator) ([][]interface{}, error) {
 }
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/6200")
 	skipEmulatorTest(t)
 	skipUnsupportedPGTest(t)
 	t.Parallel()

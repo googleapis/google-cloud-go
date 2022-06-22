@@ -69,7 +69,7 @@ func defaultLookupCallOptions() *LookupCallOptions {
 	}
 }
 
-// internalLookupClient is an interface that defines the methods availaible from Service Directory API.
+// internalLookupClient is an interface that defines the methods available from Service Directory API.
 type internalLookupClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

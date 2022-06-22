@@ -58,7 +58,7 @@ func defaultImageVersionsCallOptions() *ImageVersionsCallOptions {
 	}
 }
 
-// internalImageVersionsClient is an interface that defines the methods availaible from Cloud Composer API.
+// internalImageVersionsClient is an interface that defines the methods available from Cloud Composer API.
 type internalImageVersionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

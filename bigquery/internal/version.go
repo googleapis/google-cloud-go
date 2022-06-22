@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package internal is used to manage versioning of the released library.
 package internal
 
 // Version is the current tagged release of the library.
-const Version = "1.32.0"
+const Version = "1.33.0"

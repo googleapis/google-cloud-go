@@ -90,7 +90,7 @@ func defaultDashboardsCallOptions() *DashboardsCallOptions {
 	}
 }
 
-// internalDashboardsClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalDashboardsClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalDashboardsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

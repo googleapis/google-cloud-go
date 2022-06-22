@@ -237,7 +237,42 @@ func TestIntegration_TableMetadata(t *testing.T) {
 			}
 		}
 	}
+}
 
+func TestIntegration_TableMetadataOptions(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	testTable := dataset.Table(tableIDs.New())
+	id, _ := testTable.Identifier(StandardSQLID)
+	sql := "CREATE TABLE %s AS SELECT num FROM UNNEST(GENERATE_ARRAY(0,5)) as num"
+	q := client.Query(fmt.Sprintf(sql, id))
+	if _, err := q.Read(ctx); err != nil {
+		t.Fatalf("failed to create table: %v", err)
+	}
+
+	defaultMeta, err := testTable.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("failed to get default metadata: %v", err)
+	}
+	if defaultMeta.NumBytes <= 0 {
+		t.Errorf("expected default positive NumBytes, got %d", defaultMeta.NumBytes)
+	}
+	if defaultMeta.LastModifiedTime.IsZero() {
+		t.Error("expected default LastModifiedTime to be populated, is zero value")
+	}
+	// Specify a subset of metadata.
+	basicMeta, err := testTable.Metadata(ctx, WithMetadataView(BasicMetadataView))
+	if err != nil {
+		t.Fatalf("failed to get basic metadata: %v", err)
+	}
+	if basicMeta.NumBytes != 0 {
+		t.Errorf("expected basic NumBytes to be zero, got %d", defaultMeta.NumBytes)
+	}
+	if !basicMeta.LastModifiedTime.IsZero() {
+		t.Errorf("expected basic LastModifiedTime to be zero, is %v", basicMeta.LastModifiedTime)
+	}
 }
 
 func TestIntegration_TableUpdateLabels(t *testing.T) {
