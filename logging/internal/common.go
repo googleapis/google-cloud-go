@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"sync"
 	"unicode"
 )
 
@@ -25,6 +26,9 @@ const (
 	// ProdAddr is the production address.
 	ProdAddr = "logging.googleapis.com:443"
 )
+
+// InstrumentOnce guards instrumenting logs one time
+var InstrumentOnce = new(sync.Once)
 
 // LogPath creates a formatted path from a parent and a logID.
 func LogPath(parent, logID string) string {

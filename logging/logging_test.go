@@ -86,8 +86,11 @@ func testNow() time.Time {
 }
 
 func TestMain(m *testing.M) {
-	flag.Parse()                             // needed for testing.Short()
-	internal.SetIngestInstrumentation(false) // disable ingesting instrumentation log entry
+	flag.Parse() // needed for testing.Short()
+
+	// disable ingesting instrumentation log entry
+	internal.InstrumentOnce.Do(func() {})
+
 	ctx = context.Background()
 	testProjectID = testutil.ProjID()
 	errorc = make(chan error, 100)
@@ -1358,22 +1361,6 @@ func TestRedirectOutputFormats(t *testing.T) {
 func TestInstrumentationIngestion(t *testing.T) {
 	var got []*logpb.LogEntry
 
-	tests := []struct {
-		name          string
-		ingestionFlag bool
-		want          int
-	}{
-		{
-			name:          "first time log",
-			ingestionFlag: true,
-			want:          2,
-		},
-		{
-			name:          "any non first log",
-			ingestionFlag: false,
-			want:          1,
-		},
-	}
 	// setup fake client
 	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {
 		got = e.GetEntries()
@@ -1382,34 +1369,45 @@ func TestInstrumentationIngestion(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	iiStatus := internal.IngestInstrumentation()
 
 	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
 	logger := client.Logger("test-instrumentation")
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			got = nil
-			internal.SetIngestInstrumentation(tc.ingestionFlag)
-			err := logger.LogSync(context.Background(), *entry)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if len(got) != tc.want {
-				t.Errorf("got(%v), want(%v)", got, tc.want)
-			}
-			diagnosticEntry := false
-			for _, ent := range got {
-				if internal.LogIDFromPath("projects/test", ent.LogName) == "diagnostic-log" {
-					diagnosticEntry = true
-					break
-				}
-			}
-			if tc.ingestionFlag != diagnosticEntry {
-				t.Errorf("instrumentation entry misplaced: got(%v), want(%v)", diagnosticEntry, tc.ingestionFlag)
-			}
-		})
+	tests := []struct {
+		entryLen      int
+		hasDiagnostic bool
+	}{
+		{
+			entryLen:      2,
+			hasDiagnostic: true,
+		},
+		{
+			entryLen:      1,
+			hasDiagnostic: false,
+		},
 	}
-	internal.SetIngestInstrumentation(iiStatus)
+	onceBackup := internal.InstrumentOnce
+	internal.InstrumentOnce = new(sync.Once)
+	for _, test := range tests {
+		got = nil
+		err := logger.LogSync(context.Background(), *entry)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(got) != test.entryLen {
+			t.Errorf("got(%v), want(%v)", got, test.entryLen)
+		}
+		diagnosticEntry := false
+		for _, ent := range got {
+			if internal.LogIDFromPath("projects/test", ent.LogName) == "diagnostic-log" {
+				diagnosticEntry = true
+				break
+			}
+		}
+		if diagnosticEntry != test.hasDiagnostic {
+			t.Errorf("instrumentation entry misplaced: got(%v), want(%v)", diagnosticEntry, test.hasDiagnostic)
+		}
+	}
+	internal.InstrumentOnce = onceBackup
 }
 
 func TestInstrumentationWithRedirect(t *testing.T) {
@@ -1422,8 +1420,8 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
 	buffer := &strings.Builder{}
 	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
-	iiStatus := internal.IngestInstrumentation()
-	internal.SetIngestInstrumentation(true)
+	onceBackup := internal.InstrumentOnce
+	internal.InstrumentOnce = new(sync.Once)
 	for i := range want {
 		buffer.Reset()
 		err := logger.LogSync(context.Background(), *entry)
@@ -1435,7 +1433,7 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 			t.Errorf("got(%v), want(%v)", got, want[i])
 		}
 	}
-	internal.SetIngestInstrumentation(iiStatus)
+	internal.InstrumentOnce = onceBackup
 }
 
 func ExampleRedirectAsJSON_withStdout() {

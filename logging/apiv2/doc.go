@@ -123,7 +123,7 @@ func DefaultAuthScopes() []string {
 	}
 }
 
-// VersionGo returns the Go runtime version. The returned string
+// versionGo returns the Go runtime version. The returned string
 // has no whitespace, suitable for reporting in header.
 func versionGo() string {
 	const develPrefix = "devel +"

@@ -632,16 +632,22 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 	if err != nil {
 		return err
 	}
+	entries, hasInstrumentation := l.instrumentLogs([]*logpb.LogEntry{ent})
 	if l.redirectOutputWriter != nil {
-		return l.redirectAsJSON(ent)
+		for _, ent = range entries {
+			err = serializeEntryToWriter(ent, l.redirectOutputWriter)
+			if err != nil {
+				break
+			}
+		}
+		return err
 	}
-	entries, partialSuccess := l.ingestInstrumentation([]*logpb.LogEntry{ent})
 	_, err = l.client.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:        l.logName,
 		Resource:       l.commonResource,
 		Labels:         l.commonLabels,
 		Entries:        entries,
-		PartialSuccess: l.partialSuccess || partialSuccess,
+		PartialSuccess: l.partialSuccess || hasInstrumentation,
 	})
 	return err
 }
@@ -654,15 +660,20 @@ func (l *Logger) Log(e Entry) {
 		return
 	}
 
+	entries, _ := l.instrumentLogs([]*logpb.LogEntry{ent})
 	if l.redirectOutputWriter != nil {
-		err := l.redirectAsJSON(ent)
-		if err != nil {
-			l.client.error(err)
+		for _, ent = range entries {
+			err = serializeEntryToWriter(ent, l.redirectOutputWriter)
+			if err != nil {
+				l.client.error(err)
+			}
 		}
 		return
 	}
-	if err := l.bundler.Add(ent, proto.Size(ent)); err != nil {
-		l.client.error(err)
+	for _, ent = range entries {
+		if err := l.bundler.Add(ent, proto.Size(ent)); err != nil {
+			l.client.error(err)
+		}
 	}
 }
 
@@ -678,13 +689,16 @@ func (l *Logger) Flush() error {
 }
 
 func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
-	entries, partialSuccess := l.ingestInstrumentation(entries)
+	partialSuccess := l.partialSuccess
+	if len(entries) > 1 {
+		partialSuccess = partialSuccess || hasInstrumentation(entries)
+	}
 	req := &logpb.WriteLogEntriesRequest{
 		LogName:        l.logName,
 		Resource:       l.commonResource,
 		Labels:         l.commonLabels,
 		Entries:        entries,
-		PartialSuccess: l.partialSuccess || partialSuccess,
+		PartialSuccess: partialSuccess,
 	}
 	ctx, afterCall := l.ctxFunc()
 	ctx, cancel := context.WithTimeout(ctx, defaultWriteTimeout)
@@ -927,42 +941,4 @@ func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
 		err = json.NewEncoder(w).Encode(jsonifiedEntry)
 	}
 	return err
-}
-
-func (l *Logger) redirectAsJSON(pbe *logpb.LogEntry) error {
-	err := serializeEntryToWriter(pbe, l.redirectOutputWriter)
-	if err != nil {
-		return err
-	}
-	if internal.SetIngestInstrumentation(false) {
-		pbe, err = l.instrumentationEntry()
-		if err != nil {
-			return err
-		}
-		err = serializeEntryToWriter(pbe, l.redirectOutputWriter)
-	}
-	return err
-}
-
-func (l *Logger) ingestInstrumentation(entries []*logpb.LogEntry) ([]*logpb.LogEntry, bool) {
-	partialSuccess := false
-	if internal.SetIngestInstrumentation(false) {
-		instrumentation, err := l.instrumentationEntry()
-		if err == nil {
-			partialSuccess = true // ensure instrumentation will be ingested even if ent is too big or invalid
-			instrumentation.LogName = internal.LogPath(l.client.parent, "diagnostic-log")
-			entries = append(entries, instrumentation)
-		}
-	}
-	return entries, partialSuccess
-}
-
-func (l *Logger) instrumentationEntry() (*logpb.LogEntry, error) {
-	ent := Entry{
-		Payload: map[string]*internal.InstrumentationPayload{
-			"logging.googleapis.com/diagnostic": internal.InstrumentationInfo(),
-		},
-	}
-	// pass nil for Logger and 0 for skip levels to ignore auto-population
-	return toLogEntryInternal(ent, nil, l.client.parent, 0)
 }
