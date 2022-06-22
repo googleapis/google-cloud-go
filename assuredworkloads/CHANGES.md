@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v0.5.0...assuredworkloads/v0.6.0) (2022-05-09)
 
 
