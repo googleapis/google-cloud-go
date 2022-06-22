@@ -1505,7 +1505,7 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 
 // Used to handle breaking change in Autogen Storage client OLM Age field
 // from int64 to *int64 gracefully in the manual client
-// Method should be removed once breaking change is made and introduced to this client
+// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
 func setAgeCondition(age *int64, ageField interface{}) {
 	c := reflect.Indirect(reflect.ValueOf(ageField))
 	switch c.Kind() {
@@ -1611,7 +1611,7 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 
 // Used to handle breaking change in Autogen Storage client OLM Age field
 // from int64 to *int64 gracefully in the manual client
-// Method should be removed once breaking change is made and introduced to this client
+// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
 func getAgeCondition(ageField interface{}) int64 {
 	v := reflect.ValueOf(ageField)
 	if v.Kind() == reflect.Int64 {
