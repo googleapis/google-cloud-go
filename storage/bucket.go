@@ -1613,7 +1613,7 @@ func getAgeCondition(cond interface{}) int64 {
 	v := reflect.ValueOf(cond).Elem().FieldByName("Age")
 	if v.Kind() == reflect.Int64 {
 		return v.Interface().(int64)
-	} else if v.Kind() == reflect.Pointer {
+	} else if v.Kind() == reflect.Ptr {
 		if v.Interface() != nil {
 			return *(v.Interface().(*int64))
 		}

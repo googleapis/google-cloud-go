@@ -579,7 +579,7 @@ func TestAgeConditionBackwardCompat(t *testing.T) {
 
 	var ti testInt64
 	want = 100
-	setAgeCondition(100, &ti)
+	setAgeCondition(want, &ti)
 	if getAgeCondition(&ti) != want {
 		t.Fatalf("got %v, want %v", ti.Age, want)
 	}
