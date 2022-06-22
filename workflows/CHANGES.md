@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.3.0...workflows/v1.4.0) (2022-05-09)
+
+
+### Features
+
+* **workflows:** start generating apiv1 ([#6008](https://github.com/googleapis/google-cloud-go/issues/6008)) ([41540c4](https://github.com/googleapis/google-cloud-go/commit/41540c47fdf433b00a9ded3fa2a23f1b933ed1be)), refs [#5962](https://github.com/googleapis/google-cloud-go/issues/5962)
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.2.0...workflows/v1.3.0) (2022-02-23)
 
 

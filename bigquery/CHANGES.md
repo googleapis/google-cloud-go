@@ -1,5 +1,21 @@
 # Changes
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.32.0...bigquery/v1.33.0) (2022-06-16)
+
+
+### Features
+
+* **bigquery/migration:** Add SQL Server dialect to bigquerymigration v2 client library ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+* **bigquery/storage/managedwriter/adapt:** support proto3 presence ([#6021](https://github.com/googleapis/google-cloud-go/issues/6021)) ([2984600](https://github.com/googleapis/google-cloud-go/commit/29846003d4bebb1a07ac11cac462ae65cb0bc59c))
+* **bigquery/storage/managedwriter:** improve proto3 normalization ([#6082](https://github.com/googleapis/google-cloud-go/issues/6082)) ([6a742ff](https://github.com/googleapis/google-cloud-go/commit/6a742ffb16da991a0bf2df37218dc40af5ee0011))
+* **bigquery:** add support for dataset tags ([#6114](https://github.com/googleapis/google-cloud-go/issues/6114)) ([1f35044](https://github.com/googleapis/google-cloud-go/commit/1f35044894c7395326d7a5b787a2406d5cd92cb1))
+* **bigquery:** support partial projection of table metadata ([#6186](https://github.com/googleapis/google-cloud-go/issues/6186)) ([507a2be](https://github.com/googleapis/google-cloud-go/commit/507a2be8e4fda152d517dcb972be6353a6da2914))
+
+
+### Bug Fixes
+
+* **bigquery/dataexchange:** Include common protos in google-cloud-bigquery-data_exchange-v1beta1 ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.31.0...bigquery/v1.32.0) (2022-05-06)
 
 

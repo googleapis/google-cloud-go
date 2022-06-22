@@ -53,7 +53,20 @@ type VpnGatewaysCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalVpnGatewaysClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultVpnGatewaysRESTCallOptions() *VpnGatewaysCallOptions {
+	return &VpnGatewaysCallOptions{
+		AggregatedList:     []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		GetStatus:          []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		SetLabels:          []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalVpnGatewaysClient is an interface that defines the methods available from Google Compute Engine API.
 type internalVpnGatewaysClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -155,6 +168,9 @@ type vpnGatewaysRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing VpnGatewaysClient
+	CallOptions **VpnGatewaysCallOptions
 }
 
 // NewVpnGatewaysRESTClient creates a new vpn gateways rest client.
@@ -167,9 +183,11 @@ func NewVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		return nil, err
 	}
 
+	callOpts := defaultVpnGatewaysRESTCallOptions()
 	c := &vpnGatewaysRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -183,7 +201,7 @@ func NewVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOption) 
 	}
 	c.operationClient = opC
 
-	return &VpnGatewaysClient{internalClient: c, CallOptions: &VpnGatewaysCallOptions{}}, nil
+	return &VpnGatewaysClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultVpnGatewaysRESTClientOptions() []option.ClientOption {
@@ -347,6 +365,7 @@ func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "vpn_gateway", url.QueryEscape(req.GetVpnGateway())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -407,6 +426,7 @@ func (c *vpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetVpnGa
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "vpn_gateway", url.QueryEscape(req.GetVpnGateway())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.VpnGateway{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -459,6 +479,7 @@ func (c *vpnGatewaysRESTClient) GetStatus(ctx context.Context, req *computepb.Ge
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "vpn_gateway", url.QueryEscape(req.GetVpnGateway())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetStatus[0:len((*c.CallOptions).GetStatus):len((*c.CallOptions).GetStatus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.VpnGatewaysGetStatusResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -525,6 +546,7 @@ func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -695,6 +717,7 @@ func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -762,6 +785,7 @@ func (c *vpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, req *com
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

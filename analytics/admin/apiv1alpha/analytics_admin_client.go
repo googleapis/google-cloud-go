@@ -981,7 +981,7 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 	}
 }
 
-// internalAnalyticsAdminClient is an interface that defines the methods availaible from Google Analytics Admin API.
+// internalAnalyticsAdminClient is an interface that defines the methods available from Google Analytics Admin API.
 type internalAnalyticsAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

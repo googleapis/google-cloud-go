@@ -132,7 +132,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Google Cloud Natural Language API.
+// internalClient is an interface that defines the methods available from Google Cloud Natural Language API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

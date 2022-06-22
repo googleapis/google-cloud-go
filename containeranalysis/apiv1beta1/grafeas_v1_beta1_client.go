@@ -187,7 +187,7 @@ func defaultGrafeasV1Beta1CallOptions() *GrafeasV1Beta1CallOptions {
 	}
 }
 
-// internalGrafeasV1Beta1Client is an interface that defines the methods availaible from Container Analysis API.
+// internalGrafeasV1Beta1Client is an interface that defines the methods available from Container Analysis API.
 type internalGrafeasV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

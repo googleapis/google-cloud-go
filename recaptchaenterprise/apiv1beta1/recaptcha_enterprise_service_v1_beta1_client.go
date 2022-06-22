@@ -59,7 +59,7 @@ func defaultRecaptchaEnterpriseServiceV1Beta1CallOptions() *RecaptchaEnterpriseS
 	}
 }
 
-// internalRecaptchaEnterpriseServiceV1Beta1Client is an interface that defines the methods availaible from reCAPTCHA Enterprise API.
+// internalRecaptchaEnterpriseServiceV1Beta1Client is an interface that defines the methods available from reCAPTCHA Enterprise API.
 type internalRecaptchaEnterpriseServiceV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

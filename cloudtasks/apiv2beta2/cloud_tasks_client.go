@@ -187,7 +187,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Tasks API.
+// internalClient is an interface that defines the methods available from Cloud Tasks API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

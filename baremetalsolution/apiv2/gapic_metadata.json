@@ -1,0 +1,128 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.baremetalsolution.v2",
+  "libraryPackage": "cloud.google.com/go/baremetalsolution/apiv2",
+  "services": {
+    "BareMetalSolution": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "DetachLun": {
+              "methods": [
+                "DetachLun"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetLun": {
+              "methods": [
+                "GetLun"
+              ]
+            },
+            "GetNetwork": {
+              "methods": [
+                "GetNetwork"
+              ]
+            },
+            "GetNfsShare": {
+              "methods": [
+                "GetNfsShare"
+              ]
+            },
+            "GetVolume": {
+              "methods": [
+                "GetVolume"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListLuns": {
+              "methods": [
+                "ListLuns"
+              ]
+            },
+            "ListNetworkUsage": {
+              "methods": [
+                "ListNetworkUsage"
+              ]
+            },
+            "ListNetworks": {
+              "methods": [
+                "ListNetworks"
+              ]
+            },
+            "ListNfsShares": {
+              "methods": [
+                "ListNfsShares"
+              ]
+            },
+            "ListVolumes": {
+              "methods": [
+                "ListVolumes"
+              ]
+            },
+            "ResetInstance": {
+              "methods": [
+                "ResetInstance"
+              ]
+            },
+            "ResizeVolume": {
+              "methods": [
+                "ResizeVolume"
+              ]
+            },
+            "StartInstance": {
+              "methods": [
+                "StartInstance"
+              ]
+            },
+            "StopInstance": {
+              "methods": [
+                "StopInstance"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateNetwork": {
+              "methods": [
+                "UpdateNetwork"
+              ]
+            },
+            "UpdateNfsShare": {
+              "methods": [
+                "UpdateNfsShare"
+              ]
+            },
+            "UpdateVolume": {
+              "methods": [
+                "UpdateVolume"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

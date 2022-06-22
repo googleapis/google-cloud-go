@@ -112,7 +112,7 @@ func defaultBudgetCallOptions() *BudgetCallOptions {
 	}
 }
 
-// internalBudgetClient is an interface that defines the methods availaible from Cloud Billing Budget API.
+// internalBudgetClient is an interface that defines the methods available from Cloud Billing Budget API.
 type internalBudgetClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

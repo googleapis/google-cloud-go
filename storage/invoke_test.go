@@ -17,9 +17,13 @@ package storage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"testing"
 
 	"golang.org/x/xerrors"
@@ -164,21 +168,51 @@ func TestInvoke(t *testing.T) {
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			counter := 0
+			req := &fakeApiaryRequest{header: http.Header{}}
+			var initialHeader string
 			call := func() error {
+				if counter == 0 {
+					initialHeader = req.Header()["X-Goog-Api-Client"][0]
+				}
 				counter++
 				if counter <= test.count {
 					return test.initialErr
 				}
 				return test.finalErr
 			}
-			got := run(ctx, call, test.retry, test.isIdempotentValue)
+			got := run(ctx, call, test.retry, test.isIdempotentValue, setRetryHeaderHTTP(req))
 			if test.expectFinalErr && got != test.finalErr {
 				s.Errorf("got %v, want %v", got, test.finalErr)
 			} else if !test.expectFinalErr && got != test.initialErr {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
+			gotHeader := req.Header()["X-Goog-Api-Client"][0]
+			wantAttempts := 1 + test.count
+			if !test.expectFinalErr {
+				wantAttempts = 1
+			}
+			wantHeader := strings.ReplaceAll(initialHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
+			if gotHeader != wantHeader {
+				t.Errorf("case %q, retry header:\ngot %v\nwant %v", test.desc, gotHeader, wantHeader)
+			}
+			wantHeaderFormat := "gccl-invocation-id/.{36} gccl-attempt-count/[0-9]+ gl-go/.* gccl/"
+			match, err := regexp.MatchString(wantHeaderFormat, gotHeader)
+			if err != nil {
+				s.Fatalf("compiling regexp: %v", err)
+			}
+			if !match {
+				s.Errorf("X-Goog-Api-Client header has wrong format\ngot %v\nwant regex matching %v", gotHeader, wantHeaderFormat)
+			}
 		})
 	}
+}
+
+type fakeApiaryRequest struct {
+	header http.Header
+}
+
+func (f *fakeApiaryRequest) Header() http.Header {
+	return f.header
 }
 
 func TestShouldRetry(t *testing.T) {

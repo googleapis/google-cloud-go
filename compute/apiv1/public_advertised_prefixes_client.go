@@ -49,7 +49,17 @@ type PublicAdvertisedPrefixesCallOptions struct {
 	Patch  []gax.CallOption
 }
 
-// internalPublicAdvertisedPrefixesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultPublicAdvertisedPrefixesRESTCallOptions() *PublicAdvertisedPrefixesCallOptions {
+	return &PublicAdvertisedPrefixesCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Patch:  []gax.CallOption{},
+	}
+}
+
+// internalPublicAdvertisedPrefixesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalPublicAdvertisedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,6 +143,9 @@ type publicAdvertisedPrefixesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing PublicAdvertisedPrefixesClient
+	CallOptions **PublicAdvertisedPrefixesCallOptions
 }
 
 // NewPublicAdvertisedPrefixesRESTClient creates a new public advertised prefixes rest client.
@@ -145,9 +158,11 @@ func NewPublicAdvertisedPrefixesRESTClient(ctx context.Context, opts ...option.C
 		return nil, err
 	}
 
+	callOpts := defaultPublicAdvertisedPrefixesRESTCallOptions()
 	c := &publicAdvertisedPrefixesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -161,7 +176,7 @@ func NewPublicAdvertisedPrefixesRESTClient(ctx context.Context, opts ...option.C
 	}
 	c.operationClient = opC
 
-	return &PublicAdvertisedPrefixesClient{internalClient: c, CallOptions: &PublicAdvertisedPrefixesCallOptions{}}, nil
+	return &PublicAdvertisedPrefixesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultPublicAdvertisedPrefixesRESTClientOptions() []option.ClientOption {
@@ -219,6 +234,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -278,6 +294,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.PublicAdvertisedPrefix{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,6 +361,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -513,6 +531,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

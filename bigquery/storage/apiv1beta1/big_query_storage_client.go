@@ -120,7 +120,7 @@ func defaultBigQueryStorageCallOptions() *BigQueryStorageCallOptions {
 	}
 }
 
-// internalBigQueryStorageClient is an interface that defines the methods availaible from BigQuery Storage API.
+// internalBigQueryStorageClient is an interface that defines the methods available from BigQuery Storage API.
 type internalBigQueryStorageClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

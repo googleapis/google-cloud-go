@@ -254,7 +254,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 	}
 }
 
-// internalAnalyticsHubClient is an interface that defines the methods availaible from Analytics Hub API.
+// internalAnalyticsHubClient is an interface that defines the methods available from Analytics Hub API.
 type internalAnalyticsHubClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

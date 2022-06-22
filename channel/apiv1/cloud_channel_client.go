@@ -491,7 +491,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 	}
 }
 
-// internalCloudChannelClient is an interface that defines the methods availaible from Cloud Channel API.
+// internalCloudChannelClient is an interface that defines the methods available from Cloud Channel API.
 type internalCloudChannelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

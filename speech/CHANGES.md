@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.3.1...speech/v1.4.0) (2022-05-24)
+
+
+### Features
+
+* **speech:** Add adaptation proto for v1 api ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.3.0...speech/v1.3.1) (2022-04-14)
 
 

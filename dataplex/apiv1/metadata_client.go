@@ -116,7 +116,7 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 	}
 }
 
-// internalMetadataClient is an interface that defines the methods availaible from Cloud Dataplex API.
+// internalMetadataClient is an interface that defines the methods available from Cloud Dataplex API.
 type internalMetadataClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

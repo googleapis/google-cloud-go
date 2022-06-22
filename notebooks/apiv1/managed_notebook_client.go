@@ -101,7 +101,7 @@ func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 	}
 }
 
-// internalManagedNotebookClient is an interface that defines the methods availaible from Notebooks API.
+// internalManagedNotebookClient is an interface that defines the methods available from Notebooks API.
 type internalManagedNotebookClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

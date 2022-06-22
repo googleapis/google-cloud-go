@@ -76,7 +76,7 @@ func defaultCloudMemcacheCallOptions() *CloudMemcacheCallOptions {
 	}
 }
 
-// internalCloudMemcacheClient is an interface that defines the methods availaible from Cloud Memorystore for Memcached API.
+// internalCloudMemcacheClient is an interface that defines the methods available from Cloud Memorystore for Memcached API.
 type internalCloudMemcacheClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

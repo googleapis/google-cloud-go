@@ -182,7 +182,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 	}
 }
 
-// internalEntityTypesClient is an interface that defines the methods availaible from Dialogflow API.
+// internalEntityTypesClient is an interface that defines the methods available from Dialogflow API.
 type internalEntityTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

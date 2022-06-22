@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.2.0...iap/v1.3.0) (2022-05-24)
+
+
+### Features
+
+* **iap:** add the TunnelDestGroup-related methods and types feat: add ReauthSettings to the UpdateIapSettingsRequest ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.1.0...iap/v1.2.0) (2022-02-23)
 
 

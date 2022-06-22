@@ -118,7 +118,7 @@ func defaultKnowledgeBasesCallOptions() *KnowledgeBasesCallOptions {
 	}
 }
 
-// internalKnowledgeBasesClient is an interface that defines the methods availaible from Dialogflow API.
+// internalKnowledgeBasesClient is an interface that defines the methods available from Dialogflow API.
 type internalKnowledgeBasesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

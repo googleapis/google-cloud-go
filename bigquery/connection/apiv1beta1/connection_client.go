@@ -108,7 +108,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from BigQuery Connection API.
+// internalClient is an interface that defines the methods available from BigQuery Connection API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

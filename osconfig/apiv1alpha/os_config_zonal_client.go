@@ -229,7 +229,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 	}
 }
 
-// internalOsConfigZonalClient is an interface that defines the methods availaible from OS Config API.
+// internalOsConfigZonalClient is an interface that defines the methods available from OS Config API.
 type internalOsConfigZonalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

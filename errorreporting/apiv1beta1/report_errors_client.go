@@ -57,7 +57,7 @@ func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	}
 }
 
-// internalReportErrorsClient is an interface that defines the methods availaible from Error Reporting API.
+// internalReportErrorsClient is an interface that defines the methods available from Error Reporting API.
 type internalReportErrorsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

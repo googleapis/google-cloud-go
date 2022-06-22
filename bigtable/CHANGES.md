@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.13.0...bigtable/v1.14.0) (2022-05-26)
+
+
+### Features
+
+* **bigtable:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **bigtable:** loadtest support app profile ([#5882](https://github.com/googleapis/google-cloud-go/issues/5882)) ([ec00e5a](https://github.com/googleapis/google-cloud-go/commit/ec00e5a3f0ab0e59bbdb6915ffb53a9dca5f168e))
+* **bigtable:** support PingAndWarm in emulator ([#5803](https://github.com/googleapis/google-cloud-go/issues/5803)) ([9b943d5](https://github.com/googleapis/google-cloud-go/commit/9b943d59fe7e86a037d239663dc64901e9b88a62))
+
+
+### Bug Fixes
+
+* **bigtable:** use internal.Version that is auto-updated for UA ([#5679](https://github.com/googleapis/google-cloud-go/issues/5679)) ([bd2c600](https://github.com/googleapis/google-cloud-go/commit/bd2c600145b1fd12c3ef4f314e4d72543e575206)), refs [#3330](https://github.com/googleapis/google-cloud-go/issues/3330)
+
 ## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.12.0...bigtable/v1.13.0) (2022-01-24)
 
 

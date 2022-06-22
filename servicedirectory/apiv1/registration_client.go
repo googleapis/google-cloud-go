@@ -293,7 +293,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 	}
 }
 
-// internalRegistrationClient is an interface that defines the methods availaible from Service Directory API.
+// internalRegistrationClient is an interface that defines the methods available from Service Directory API.
 type internalRegistrationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

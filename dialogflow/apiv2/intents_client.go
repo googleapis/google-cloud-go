@@ -146,7 +146,7 @@ func defaultIntentsCallOptions() *IntentsCallOptions {
 	}
 }
 
-// internalIntentsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalIntentsClient is an interface that defines the methods available from Dialogflow API.
 type internalIntentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

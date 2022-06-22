@@ -221,7 +221,7 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 	}
 }
 
-// internalClusterManagerClient is an interface that defines the methods availaible from Kubernetes Engine API.
+// internalClusterManagerClient is an interface that defines the methods available from Kubernetes Engine API.
 type internalClusterManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

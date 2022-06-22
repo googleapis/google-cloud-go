@@ -83,7 +83,7 @@ func defaultCloudRedisCallOptions() *CloudRedisCallOptions {
 	}
 }
 
-// internalCloudRedisClient is an interface that defines the methods availaible from Google Cloud Memorystore for Redis API.
+// internalCloudRedisClient is an interface that defines the methods available from Google Cloud Memorystore for Redis API.
 type internalCloudRedisClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

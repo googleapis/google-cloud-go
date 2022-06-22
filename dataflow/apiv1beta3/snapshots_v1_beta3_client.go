@@ -61,7 +61,7 @@ func defaultSnapshotsV1Beta3CallOptions() *SnapshotsV1Beta3CallOptions {
 	}
 }
 
-// internalSnapshotsV1Beta3Client is an interface that defines the methods availaible from Dataflow API.
+// internalSnapshotsV1Beta3Client is an interface that defines the methods available from Dataflow API.
 type internalSnapshotsV1Beta3Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

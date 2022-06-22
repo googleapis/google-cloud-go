@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v0.5.0...assuredworkloads/v0.6.0) (2022-05-09)
+
+
+### Features
+
+* **assuredworkloads:** start generating apiv1 ([#5985](https://github.com/googleapis/google-cloud-go/issues/5985)) ([e3ec68d](https://github.com/googleapis/google-cloud-go/commit/e3ec68d44a4b50b2d1d2da23d0a57f0bae20fed8)), refs [#5954](https://github.com/googleapis/google-cloud-go/issues/5954)
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v0.4.0...assuredworkloads/v0.5.0) (2022-02-23)
 
 

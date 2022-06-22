@@ -60,7 +60,7 @@ func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptio
 	}
 }
 
-// internalWorkflowsServiceV2BetaClient is an interface that defines the methods availaible from Cloud Life Sciences API.
+// internalWorkflowsServiceV2BetaClient is an interface that defines the methods available from Cloud Life Sciences API.
 type internalWorkflowsServiceV2BetaClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

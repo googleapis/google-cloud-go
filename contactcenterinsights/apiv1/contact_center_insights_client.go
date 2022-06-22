@@ -469,7 +469,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Contact Center AI Insights API.
+// internalClient is an interface that defines the methods available from Contact Center AI Insights API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

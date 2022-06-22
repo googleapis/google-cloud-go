@@ -56,7 +56,7 @@ func defaultFlexTemplatesCallOptions() *FlexTemplatesCallOptions {
 	}
 }
 
-// internalFlexTemplatesClient is an interface that defines the methods availaible from Dataflow API.
+// internalFlexTemplatesClient is an interface that defines the methods available from Dataflow API.
 type internalFlexTemplatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

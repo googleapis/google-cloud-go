@@ -42,7 +42,13 @@ type RegionInstancesCallOptions struct {
 	BulkInsert []gax.CallOption
 }
 
-// internalRegionInstancesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionInstancesRESTCallOptions() *RegionInstancesCallOptions {
+	return &RegionInstancesCallOptions{
+		BulkInsert: []gax.CallOption{},
+	}
+}
+
+// internalRegionInstancesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -102,6 +108,9 @@ type regionInstancesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionInstancesClient
+	CallOptions **RegionInstancesCallOptions
 }
 
 // NewRegionInstancesRESTClient creates a new region instances rest client.
@@ -114,9 +123,11 @@ func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		return nil, err
 	}
 
+	callOpts := defaultRegionInstancesRESTCallOptions()
 	c := &regionInstancesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -130,7 +141,7 @@ func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 	}
 	c.operationClient = opC
 
-	return &RegionInstancesClient{internalClient: c, CallOptions: &RegionInstancesCallOptions{}}, nil
+	return &RegionInstancesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionInstancesRESTClientOptions() []option.ClientOption {
@@ -195,6 +206,7 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).BulkInsert[0:len((*c.CallOptions).BulkInsert):len((*c.CallOptions).BulkInsert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

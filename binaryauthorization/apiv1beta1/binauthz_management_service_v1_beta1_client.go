@@ -138,7 +138,7 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 	}
 }
 
-// internalBinauthzManagementServiceV1Beta1Client is an interface that defines the methods availaible from Binary Authorization API.
+// internalBinauthzManagementServiceV1Beta1Client is an interface that defines the methods available from Binary Authorization API.
 type internalBinauthzManagementServiceV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

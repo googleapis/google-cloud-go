@@ -93,7 +93,7 @@ func defaultWebRiskServiceV1Beta1CallOptions() *WebRiskServiceV1Beta1CallOptions
 	}
 }
 
-// internalWebRiskServiceV1Beta1Client is an interface that defines the methods availaible from Web Risk API.
+// internalWebRiskServiceV1Beta1Client is an interface that defines the methods available from Web Risk API.
 type internalWebRiskServiceV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

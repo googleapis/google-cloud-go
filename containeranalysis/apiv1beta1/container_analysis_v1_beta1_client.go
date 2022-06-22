@@ -93,7 +93,7 @@ func defaultContainerAnalysisV1Beta1CallOptions() *ContainerAnalysisV1Beta1CallO
 	}
 }
 
-// internalContainerAnalysisV1Beta1Client is an interface that defines the methods availaible from Container Analysis API.
+// internalContainerAnalysisV1Beta1Client is an interface that defines the methods available from Container Analysis API.
 type internalContainerAnalysisV1Beta1Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

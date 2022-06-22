@@ -58,7 +58,7 @@ func defaultMessagesV1Beta3CallOptions() *MessagesV1Beta3CallOptions {
 	}
 }
 
-// internalMessagesV1Beta3Client is an interface that defines the methods availaible from Dataflow API.
+// internalMessagesV1Beta3Client is an interface that defines the methods available from Dataflow API.
 type internalMessagesV1Beta3Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
