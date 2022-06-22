@@ -1027,7 +1027,7 @@ func (c *httpStorageClient) GetHMACKey(ctx context.Context, project, accessID st
 	return toHMACKey(hk, false)
 }
 
-func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) *HMACKeysIterator {
+func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, showDeletedKeys bool, opts ...storageOption) *HMACKeysIterator {
 	s := callSettings(c.settings, opts...)
 	it := &HMACKeysIterator{
 		ctx:       ctx,
@@ -1035,10 +1035,49 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 		projectID: project,
 		retry:     s.retry,
 	}
-	// define fetch
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		call := c.raw.Projects.HmacKeys.List(project)
+		setClientHeader(call.Header())
+		if pageToken != "" {
+			call = call.PageToken(pageToken)
+		}
+		if pageSize > 0 {
+			call = call.MaxResults(int64(pageSize))
+		}
+		if showDeletedKeys {
+			call = call.ShowDeletedKeys(true)
+		}
+		if s.userProject != "" {
+			call = call.UserProject(s.userProject)
+		}
+		if serviceAccountEmail != "" {
+			call = call.ServiceAccountEmail(serviceAccountEmail)
+		}
+
+		var resp *raw.HmacKeysMetadata
+		err = run(it.ctx, func() error {
+			resp, err = call.Context(it.ctx).Do()
+			return err
+		}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+		if err != nil {
+			return "", err
+		}
+
+		for _, metadata := range resp.Items {
+			hk := &raw.HmacKey{
+				Metadata: metadata,
+			}
+			hkey, err := toHMACKey(hk, true)
+			if err != nil {
+				return "", err
+			}
+			it.hmacKeys = append(it.hmacKeys, hkey)
+		}
+		return resp.NextPageToken, nil
+	}
 
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
-		it.fetch,
+		fetch,
 		func() int { return len(it.hmacKeys) - it.index },
 		func() interface{} {
 			prev := it.hmacKeys

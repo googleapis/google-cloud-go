@@ -982,7 +982,8 @@ func TestHMACKeyCRUDEmulated(t *testing.T) {
 		if got.State != attr.State {
 			t.Errorf("UpdateHMACKey State: got %v, want %v", got.State, attr.State)
 		}
-		it := client.ListHMACKeys(ctx, project, serviceAccountEmail)
+		showDeletedKeys := false
+		it := client.ListHMACKeys(ctx, project, serviceAccountEmail, showDeletedKeys)
 		var count int
 		var e error
 		for ; ; count++ {

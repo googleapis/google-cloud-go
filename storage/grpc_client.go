@@ -905,18 +905,19 @@ func (c *grpcStorageClient) GetHMACKey(ctx context.Context, project, accessID st
 	return toHMACKeyfromProto(metadata), nil
 }
 
-func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) *HMACKeysIterator {
+func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, showDeletedKeys bool, opts ...storageOption) *HMACKeysIterator {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.ListHmacKeysRequest{
 		Project:             toProjectResource(project),
 		ServiceAccountEmail: serviceAccountEmail,
+		ShowDeletedKeys:     showDeletedKeys,
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	it := &HMACKeysIterator{
 		ctx:       ctx,
-		projectID: s.userProject,
+		projectID: project,
 		retry:     s.retry,
 	}
 	gitr := c.raw.ListHmacKeys(it.ctx, req, s.gax...)
