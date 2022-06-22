@@ -562,27 +562,20 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 }
 
 func TestAgeConditionBackwardCompat(t *testing.T) {
-	type testPointer struct {
-		Age *int64
+	var ti int64
+	var want int64 = 100
+	setAgeCondition(&want, &ti)
+	if getAgeCondition(ti) != want {
+		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
 	}
 
-	type testInt64 struct {
-		Age int64
+	var tp *int64
+	want = 10
+	setAgeCondition(&want, &tp)
+	if getAgeCondition(tp) != want {
+		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
 	}
 
-	var tp testPointer
-	var want int64 = 10
-	setAgeCondition(want, &tp)
-	if getAgeCondition(&tp) != want {
-		t.Fatalf("got %v, want 10", *tp.Age)
-	}
-
-	var ti testInt64
-	want = 100
-	setAgeCondition(want, &ti)
-	if getAgeCondition(&ti) != want {
-		t.Fatalf("got %v, want %v", ti.Age, want)
-	}
 }
 
 func TestCallBuilders(t *testing.T) {

@@ -1503,14 +1503,16 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 	return out
 }
 
-// Handle ptr or int64
-func setAgeCondition(age int64, cond interface{}) {
-	c := reflect.ValueOf(cond).Elem().FieldByName("Age")
+// Used to handle breaking change in Autogen Storage client OLM Age field
+// from int64 to *int64 gracefully in the manual client
+// Method should be removed once breaking change is made and introduced to this client
+func setAgeCondition(age *int64, ageField interface{}) {
+	c := reflect.Indirect(reflect.ValueOf(ageField))
 	switch c.Kind() {
 	case reflect.Int64:
-		c.SetInt(age)
+		c.SetInt(*age)
 	case reflect.Ptr:
-		c.Set(reflect.ValueOf(&age))
+		c.Set(reflect.ValueOf(age))
 	}
 }
 
@@ -1536,7 +1538,7 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 			},
 		}
 
-		setAgeCondition(r.Condition.AgeInDays, rr.Condition)
+		setAgeCondition(&r.Condition.AgeInDays, &rr.Condition.Age)
 
 		switch r.Condition.Liveness {
 		case LiveAndArchived:
@@ -1608,13 +1610,15 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 	return &rl
 }
 
-// Handle ptr or int64
-func getAgeCondition(cond interface{}) int64 {
-	v := reflect.ValueOf(cond).Elem().FieldByName("Age")
+// Used to handle breaking change in Autogen Storage client OLM Age field
+// from int64 to *int64 gracefully in the manual client
+// Method should be removed once breaking change is made and introduced to this client
+func getAgeCondition(ageField interface{}) int64 {
+	v := reflect.ValueOf(ageField)
 	if v.Kind() == reflect.Int64 {
 		return v.Interface().(int64)
 	} else if v.Kind() == reflect.Ptr {
-		if v.Interface() != nil {
+		if v.Interface().(*int64) != nil {
 			return *(v.Interface().(*int64))
 		}
 	}
@@ -1641,7 +1645,7 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				NumNewerVersions:        rr.Condition.NumNewerVersions,
 			},
 		}
-		r.Condition.AgeInDays = getAgeCondition(rr.Condition)
+		r.Condition.AgeInDays = getAgeCondition(rr.Condition.Age)
 
 		if rr.Condition.IsLive == nil {
 			r.Condition.Liveness = LiveAndArchived
