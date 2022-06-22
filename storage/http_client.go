@@ -1027,7 +1027,7 @@ func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, a
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return pbHmacKeyToHMACKey(hk, false)
+	return toHMACKey(hk, false)
 }
 
 func (c *httpStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
@@ -1040,6 +1040,7 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, desc *hmacKeyDesc,
 		desc:      *desc,
 		retry:     s.retry,
 	}
+	// define fetch
 
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -1075,7 +1076,7 @@ func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return pbHmacKeyToHMACKey(hk, false)
+	return toHMACKey(hk, false)
 }
 
 func (c *httpStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
@@ -1086,15 +1087,15 @@ func (c *httpStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc
 		call = call.UserProject(desc.userProjectID)
 	}
 
-	var hkPb *raw.HmacKey
+	var hk *raw.HmacKey
 	if err := run(ctx, func() error {
 		h, err := call.Context(ctx).Do()
-		hkPb = h
+		hk = h
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
 		return nil, err
 	}
-	return pbHmacKeyToHMACKey(hkPb, true)
+	return toHMACKey(hk, true)
 }
 
 func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, accessID string, opts ...storageOption) error {
