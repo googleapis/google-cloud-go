@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.4.0...datastream/v0.5.0) (2022-05-24)
 
 
