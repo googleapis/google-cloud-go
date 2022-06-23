@@ -1032,7 +1032,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
-	fc := newFlowController(FlowControlSettings{
+	fc := newSubscriptionFlowController(FlowControlSettings{
 		MaxOutstandingMessages: maxCount,
 		MaxOutstandingBytes:    maxBytes,
 		LimitExceededBehavior:  FlowControlBlock,
