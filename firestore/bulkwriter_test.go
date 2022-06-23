@@ -189,3 +189,42 @@ func TestBulkWriter(t *testing.T) {
 		})
 	}
 }
+
+func TestBulkWriterErrors(t *testing.T) {
+	c, _, cleanup := newMock(t)
+	defer cleanup()
+	b := c.BulkWriter()
+
+	tcs := []bulkwriterTestCase{
+		{
+			name: "empty document reference",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) {
+				return b.Delete(nil)
+			},
+		},
+		{
+			name: "cannot write to same document twice",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) {
+				b.Create(c.Doc("C/a"), testData)
+				return b.Delete(c.Doc("C/a"))
+			},
+		},
+		{
+			name: "cannot ask a closed BulkWriter to write",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) {
+				b.cancel()
+				b.End()
+				return b.Delete(c.Doc("C/b"))
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := tc.test(b)
+			if err == nil {
+				t.Fatalf("wanted error, got nil value")
+			}
+		})
+	}
+}

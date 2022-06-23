@@ -276,6 +276,10 @@ func (bw *BulkWriter) write(w *pb.Write) bulkWriterOperation {
 func (bw *BulkWriter) send(i interface{}) {
 	bwj := i.([]bulkWriterOperation)
 
+	if len(bwj) == 0 {
+		return
+	}
+
 	var ws []*pb.Write
 	for _, w := range bwj {
 		ws = append(ws, w.write)
