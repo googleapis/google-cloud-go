@@ -44,10 +44,12 @@ var (
 // instrumentLogs appends log entry with library instrumentation info to the
 // list of log entries on the first function's call.
 func (l *Logger) instrumentLogs(entries []*logpb.LogEntry) ([]*logpb.LogEntry, bool) {
-	instrumentationAdded := false
+	var instrumentationAdded bool
+
 	internal.InstrumentOnce.Do(func() {
 		ie, err := l.instrumentationEntry()
 		if err != nil {
+			// do not retry instrumenting logs if failed creating instrumentation entry
 			return
 		}
 		// populate LogName only when  directly ingesting entries
