@@ -21,10 +21,6 @@ const (
 	maxRetryAttempts = 10
 	// defaultStartingMaximumOpsPerSecond is the starting max number of requests to the service per second
 	defaultStartingMaximumOpsPerSecond = 500
-	// rateLimiterMultiplier is the amount to increase maximum ops (qps) every 5 minutes
-	rateLimiterMultiplier = 1.5
-	// rateLimiterMultiplierMillis is 5 minutes in milliseconds
-	rateLimiterMultiplierMillis = 5 * 60 * 1000
 )
 
 // bulkWriterOperation is used internally to track the status of an individual
@@ -40,7 +36,7 @@ type bulkWriterOperation struct {
 // processResults checks for errors returned from send() and packages up the
 // results as WriteResult objects
 func (o *bulkWriterOperation) processResults() (*WriteResult, error) {
-
+	//  TODO(telpirion): Refactor this to use select/case
 	wpb := <-o.result
 	err := <-o.err
 
@@ -54,22 +50,6 @@ func (o *bulkWriterOperation) processResults() (*WriteResult, error) {
 		return nil, err
 	}
 	return wr, err
-	/*
-		var wr *WriteResult
-		var err error
-
-		select {
-		case wpb := <-o.result:
-			wr, err = writeResultFromProto(wpb)
-			if err != nil {
-				wr = nil
-			}
-		case err = <-o.err:
-			wr = nil
-		}
-
-		return wr, err
-	*/
 }
 
 // BulkWriterJob provides read-only access to the results of a BulkWriter write attempt.
@@ -162,6 +142,7 @@ func (bw *BulkWriter) IsOpen() bool {
 }
 
 // Create adds a document creation write to the queue of writes to send.
+// Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJob, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
@@ -184,6 +165,7 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJo
 }
 
 // Delete adds a document deletion write to the queue of writes to send.
+// Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkWriterJob, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
@@ -205,6 +187,7 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkW
 }
 
 // Set adds a document set write to the queue of writes to send.
+// Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption) (*BulkWriterJob, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
@@ -226,6 +209,7 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 }
 
 // Update adds a document update write to the queue of writes to send.
+// Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Precondition) (*BulkWriterJob, error) {
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
