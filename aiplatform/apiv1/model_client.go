@@ -43,30 +43,31 @@ var newModelClientHook clientHook
 
 // ModelCallOptions contains the retry settings for each method of ModelClient.
 type ModelCallOptions struct {
-	UploadModel               []gax.CallOption
-	GetModel                  []gax.CallOption
-	ListModels                []gax.CallOption
-	ListModelVersions         []gax.CallOption
-	UpdateModel               []gax.CallOption
-	DeleteModel               []gax.CallOption
-	DeleteModelVersion        []gax.CallOption
-	MergeVersionAliases       []gax.CallOption
-	ExportModel               []gax.CallOption
-	ImportModelEvaluation     []gax.CallOption
-	GetModelEvaluation        []gax.CallOption
-	ListModelEvaluations      []gax.CallOption
-	GetModelEvaluationSlice   []gax.CallOption
-	ListModelEvaluationSlices []gax.CallOption
-	GetLocation               []gax.CallOption
-	ListLocations             []gax.CallOption
-	GetIamPolicy              []gax.CallOption
-	SetIamPolicy              []gax.CallOption
-	TestIamPermissions        []gax.CallOption
-	CancelOperation           []gax.CallOption
-	DeleteOperation           []gax.CallOption
-	GetOperation              []gax.CallOption
-	ListOperations            []gax.CallOption
-	WaitOperation             []gax.CallOption
+	UploadModel                      []gax.CallOption
+	GetModel                         []gax.CallOption
+	ListModels                       []gax.CallOption
+	ListModelVersions                []gax.CallOption
+	UpdateModel                      []gax.CallOption
+	DeleteModel                      []gax.CallOption
+	DeleteModelVersion               []gax.CallOption
+	MergeVersionAliases              []gax.CallOption
+	ExportModel                      []gax.CallOption
+	ImportModelEvaluation            []gax.CallOption
+	BatchImportModelEvaluationSlices []gax.CallOption
+	GetModelEvaluation               []gax.CallOption
+	ListModelEvaluations             []gax.CallOption
+	GetModelEvaluationSlice          []gax.CallOption
+	ListModelEvaluationSlices        []gax.CallOption
+	GetLocation                      []gax.CallOption
+	ListLocations                    []gax.CallOption
+	GetIamPolicy                     []gax.CallOption
+	SetIamPolicy                     []gax.CallOption
+	TestIamPermissions               []gax.CallOption
+	CancelOperation                  []gax.CallOption
+	DeleteOperation                  []gax.CallOption
+	GetOperation                     []gax.CallOption
+	ListOperations                   []gax.CallOption
+	WaitOperation                    []gax.CallOption
 }
 
 func defaultModelGRPCClientOptions() []option.ClientOption {
@@ -83,30 +84,31 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 
 func defaultModelCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
-		UploadModel:               []gax.CallOption{},
-		GetModel:                  []gax.CallOption{},
-		ListModels:                []gax.CallOption{},
-		ListModelVersions:         []gax.CallOption{},
-		UpdateModel:               []gax.CallOption{},
-		DeleteModel:               []gax.CallOption{},
-		DeleteModelVersion:        []gax.CallOption{},
-		MergeVersionAliases:       []gax.CallOption{},
-		ExportModel:               []gax.CallOption{},
-		ImportModelEvaluation:     []gax.CallOption{},
-		GetModelEvaluation:        []gax.CallOption{},
-		ListModelEvaluations:      []gax.CallOption{},
-		GetModelEvaluationSlice:   []gax.CallOption{},
-		ListModelEvaluationSlices: []gax.CallOption{},
-		GetLocation:               []gax.CallOption{},
-		ListLocations:             []gax.CallOption{},
-		GetIamPolicy:              []gax.CallOption{},
-		SetIamPolicy:              []gax.CallOption{},
-		TestIamPermissions:        []gax.CallOption{},
-		CancelOperation:           []gax.CallOption{},
-		DeleteOperation:           []gax.CallOption{},
-		GetOperation:              []gax.CallOption{},
-		ListOperations:            []gax.CallOption{},
-		WaitOperation:             []gax.CallOption{},
+		UploadModel:                      []gax.CallOption{},
+		GetModel:                         []gax.CallOption{},
+		ListModels:                       []gax.CallOption{},
+		ListModelVersions:                []gax.CallOption{},
+		UpdateModel:                      []gax.CallOption{},
+		DeleteModel:                      []gax.CallOption{},
+		DeleteModelVersion:               []gax.CallOption{},
+		MergeVersionAliases:              []gax.CallOption{},
+		ExportModel:                      []gax.CallOption{},
+		ImportModelEvaluation:            []gax.CallOption{},
+		BatchImportModelEvaluationSlices: []gax.CallOption{},
+		GetModelEvaluation:               []gax.CallOption{},
+		ListModelEvaluations:             []gax.CallOption{},
+		GetModelEvaluationSlice:          []gax.CallOption{},
+		ListModelEvaluationSlices:        []gax.CallOption{},
+		GetLocation:                      []gax.CallOption{},
+		ListLocations:                    []gax.CallOption{},
+		GetIamPolicy:                     []gax.CallOption{},
+		SetIamPolicy:                     []gax.CallOption{},
+		TestIamPermissions:               []gax.CallOption{},
+		CancelOperation:                  []gax.CallOption{},
+		DeleteOperation:                  []gax.CallOption{},
+		GetOperation:                     []gax.CallOption{},
+		ListOperations:                   []gax.CallOption{},
+		WaitOperation:                    []gax.CallOption{},
 	}
 }
 
@@ -129,6 +131,7 @@ type internalModelClient interface {
 	ExportModel(context.Context, *aiplatformpb.ExportModelRequest, ...gax.CallOption) (*ExportModelOperation, error)
 	ExportModelOperation(name string) *ExportModelOperation
 	ImportModelEvaluation(context.Context, *aiplatformpb.ImportModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
+	BatchImportModelEvaluationSlices(context.Context, *aiplatformpb.BatchImportModelEvaluationSlicesRequest, ...gax.CallOption) (*aiplatformpb.BatchImportModelEvaluationSlicesResponse, error)
 	GetModelEvaluation(context.Context, *aiplatformpb.GetModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
 	ListModelEvaluations(context.Context, *aiplatformpb.ListModelEvaluationsRequest, ...gax.CallOption) *ModelEvaluationIterator
 	GetModelEvaluationSlice(context.Context, *aiplatformpb.GetModelEvaluationSliceRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluationSlice, error)
@@ -266,6 +269,11 @@ func (c *ModelClient) ExportModelOperation(name string) *ExportModelOperation {
 // ImportModelEvaluation imports an externally generated ModelEvaluation.
 func (c *ModelClient) ImportModelEvaluation(ctx context.Context, req *aiplatformpb.ImportModelEvaluationRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error) {
 	return c.internalClient.ImportModelEvaluation(ctx, req, opts...)
+}
+
+// BatchImportModelEvaluationSlices imports a list of externally generated ModelEvaluationSlice.
+func (c *ModelClient) BatchImportModelEvaluationSlices(ctx context.Context, req *aiplatformpb.BatchImportModelEvaluationSlicesRequest, opts ...gax.CallOption) (*aiplatformpb.BatchImportModelEvaluationSlicesResponse, error) {
+	return c.internalClient.BatchImportModelEvaluationSlices(ctx, req, opts...)
 }
 
 // GetModelEvaluation gets a ModelEvaluation.
@@ -680,6 +688,23 @@ func (c *modelGRPCClient) ImportModelEvaluation(ctx context.Context, req *aiplat
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.modelClient.ImportModelEvaluation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *modelGRPCClient) BatchImportModelEvaluationSlices(ctx context.Context, req *aiplatformpb.BatchImportModelEvaluationSlicesRequest, opts ...gax.CallOption) (*aiplatformpb.BatchImportModelEvaluationSlicesResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchImportModelEvaluationSlices[0:len((*c.CallOptions).BatchImportModelEvaluationSlices):len((*c.CallOptions).BatchImportModelEvaluationSlices)], opts...)
+	var resp *aiplatformpb.BatchImportModelEvaluationSlicesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.BatchImportModelEvaluationSlices(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
