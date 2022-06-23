@@ -1106,6 +1106,11 @@
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportModelEvaluationSlices": {
+              "methods": [
+                "BatchImportModelEvaluationSlices"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
