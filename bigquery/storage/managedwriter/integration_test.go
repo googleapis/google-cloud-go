@@ -640,11 +640,11 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	for i := 0; i < 5; i++ {
 		wg.Add(1)
 		go func() {
-			result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+			res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
 			if err != nil {
 				t.Errorf("failed evolved append: %v", err)
 			}
-			_, err = result.GetResult(ctx)
+			_, err = res.GetResult(ctx)
 			if err != nil {
 				t.Errorf("error on evolved append: %v", err)
 			}
