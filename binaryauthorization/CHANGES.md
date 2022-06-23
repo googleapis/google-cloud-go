@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.5.0...binaryauthorization/v0.6.0) (2022-06-17)
 
 
