@@ -90,20 +90,22 @@ const (
 	defaultWriteTimeout = 10 * time.Minute
 )
 
-// ErrRedirectProtoPayloadNotSupported is returned when Logger is configured to redirect output and
-// tries to redirect logs with protobuf payload.
-var ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
+var (
+	// ErrRedirectProtoPayloadNotSupported is returned when Logger is configured to redirect output and
+	// tries to redirect logs with protobuf payload.
+	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
-// For testing:
-var now = time.Now
+	// For testing:
+	now = time.Now
 
-// ErrOverflow signals that the number of buffered entries for a Logger
-// exceeds its BufferLimit.
-var ErrOverflow = bundler.ErrOverflow
+	// ErrOverflow signals that the number of buffered entries for a Logger
+	// exceeds its BufferLimit.
+	ErrOverflow = bundler.ErrOverflow
 
-// ErrOversizedEntry signals that an entry's size exceeds the maximum number of
-// bytes that will be sent in a single call to the logging service.
-var ErrOversizedEntry = bundler.ErrOversizedItem
+	// ErrOversizedEntry signals that an entry's size exceeds the maximum number of
+	// bytes that will be sent in a single call to the logging service.
+	ErrOversizedEntry = bundler.ErrOversizedItem
+)
 
 // Client is a Logging client. A Client is associated with a single Cloud project.
 type Client struct {
@@ -630,15 +632,22 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 	if err != nil {
 		return err
 	}
+	entries, hasInstrumentation := l.instrumentLogs([]*logpb.LogEntry{ent})
 	if l.redirectOutputWriter != nil {
-		return printEntryToWriter(ent, l.redirectOutputWriter)
+		for _, ent = range entries {
+			err = serializeEntryToWriter(ent, l.redirectOutputWriter)
+			if err != nil {
+				break
+			}
+		}
+		return err
 	}
 	_, err = l.client.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:        l.logName,
 		Resource:       l.commonResource,
 		Labels:         l.commonLabels,
-		Entries:        []*logpb.LogEntry{ent},
-		PartialSuccess: l.partialSuccess,
+		Entries:        entries,
+		PartialSuccess: l.partialSuccess || hasInstrumentation,
 	})
 	return err
 }
@@ -650,15 +659,21 @@ func (l *Logger) Log(e Entry) {
 		l.client.error(err)
 		return
 	}
+
+	entries, _ := l.instrumentLogs([]*logpb.LogEntry{ent})
 	if l.redirectOutputWriter != nil {
-		err := printEntryToWriter(ent, l.redirectOutputWriter)
-		if err != nil {
-			l.client.error(err)
+		for _, ent = range entries {
+			err = serializeEntryToWriter(ent, l.redirectOutputWriter)
+			if err != nil {
+				l.client.error(err)
+			}
 		}
 		return
 	}
-	if err := l.bundler.Add(ent, proto.Size(ent)); err != nil {
-		l.client.error(err)
+	for _, ent = range entries {
+		if err := l.bundler.Add(ent, proto.Size(ent)); err != nil {
+			l.client.error(err)
+		}
 	}
 }
 
@@ -674,12 +689,16 @@ func (l *Logger) Flush() error {
 }
 
 func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
+	partialSuccess := l.partialSuccess
+	if len(entries) > 1 {
+		partialSuccess = partialSuccess || hasInstrumentation(entries)
+	}
 	req := &logpb.WriteLogEntriesRequest{
 		LogName:        l.logName,
 		Resource:       l.commonResource,
 		Labels:         l.commonLabels,
 		Entries:        entries,
-		PartialSuccess: l.partialSuccess,
+		PartialSuccess: partialSuccess,
 	}
 	ctx, afterCall := l.ctxFunc()
 	ctx, cancel := context.WithTimeout(ctx, defaultWriteTimeout)
@@ -734,7 +753,7 @@ func populateTraceInfo(e *Entry, req *http.Request) bool {
 }
 
 // As per format described at https://www.w3.org/TR/trace-context/#traceparent-header-field-values
-var validTraceParentExpression = regexp.MustCompile("^(00)-([a-fA-F\\d]{32})-([a-f\\d]{16})-([a-fA-F\\d]{2})$")
+var validTraceParentExpression = regexp.MustCompile(`^(00)-([a-fA-F\d]{32})-([a-f\d]{16})-([a-fA-F\d]{2})$`)
 
 func deconstructTraceParent(s string) (traceID, spanID string, traceSampled bool) {
 	matches := validTraceParentExpression.FindStringSubmatch(s)
@@ -897,7 +916,7 @@ type structuredLogEntry struct {
 	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
 
-func printEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
+func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
 	jsonifiedEntry := structuredLogEntry{
 		Severity:       entry.Severity.String(),
 		HTTPRequest:    entry.HttpRequest,
