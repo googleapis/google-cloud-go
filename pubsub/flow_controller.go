@@ -40,9 +40,8 @@ const (
 type flowControllerPurpose int
 
 const (
-	flowControllerPurposeUnknown flowControllerPurpose = iota
+	flowControllerPurposeSubscription flowControllerPurpose = iota
 	flowControllerPurposeTopic
-	flowControllerPurposeSubscription
 )
 
 // FlowControlSettings controls flow control for messages while publishing or subscribing.
@@ -203,23 +202,19 @@ func (f *flowController) count() int {
 }
 
 func (f *flowController) recordOutstandingMessages(ctx context.Context, n int64) {
-	switch f.purpose {
-	case flowControllerPurposeTopic:
+	if f.purpose == flowControllerPurposeTopic {
 		recordStat(ctx, PublisherOutstandingMessages, n)
-	case flowControllerPurposeSubscription:
-		fallthrough
-	default:
-		recordStat(ctx, OutstandingMessages, n)
+		return
 	}
+
+	recordStat(ctx, OutstandingMessages, n)
 }
 
 func (f *flowController) recordOutstandingBytes(ctx context.Context, n int64) {
-	switch f.purpose {
-	case flowControllerPurposeTopic:
+	if f.purpose == flowControllerPurposeTopic {
 		recordStat(ctx, PublisherOutstandingBytes, n)
-	case flowControllerPurposeSubscription:
-		fallthrough
-	default:
-		recordStat(ctx, OutstandingBytes, n)
+		return
 	}
+
+	recordStat(ctx, OutstandingBytes, n)
 }
