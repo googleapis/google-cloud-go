@@ -260,8 +260,11 @@ func (ms *ManagedStream) append(requestCtx context.Context, pw *pendingWrite, op
 	var err error
 
 	for {
-		// critical section:  When we issue an append, we need need to add the write to the pending channel
-		// to keep the response ordering correct.
+		// critical section:  Things that need to happen inside the critical section:
+		//
+		// * Getting the stream connection (in case of reconnects)
+		// * Issuing the append request
+		// * Adding the pending write to the channel to keep ordering correct on response
 		ms.mu.Lock()
 
 		// Don't both calling/retrying if this append's context is already expired.
