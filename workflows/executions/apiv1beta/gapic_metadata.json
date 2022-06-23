@@ -31,6 +31,31 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelExecution": {
+              "methods": [
+                "CancelExecution"
+              ]
+            },
+            "CreateExecution": {
+              "methods": [
+                "CreateExecution"
+              ]
+            },
+            "GetExecution": {
+              "methods": [
+                "GetExecution"
+              ]
+            },
+            "ListExecutions": {
+              "methods": [
+                "ListExecutions"
+              ]
+            }
+          }
         }
       }
     }

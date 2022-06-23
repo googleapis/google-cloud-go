@@ -51,12 +51,82 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "GameServerClustersClient",
+          "rpcs": {
+            "CreateGameServerCluster": {
+              "methods": [
+                "CreateGameServerCluster"
+              ]
+            },
+            "DeleteGameServerCluster": {
+              "methods": [
+                "DeleteGameServerCluster"
+              ]
+            },
+            "GetGameServerCluster": {
+              "methods": [
+                "GetGameServerCluster"
+              ]
+            },
+            "ListGameServerClusters": {
+              "methods": [
+                "ListGameServerClusters"
+              ]
+            },
+            "PreviewCreateGameServerCluster": {
+              "methods": [
+                "PreviewCreateGameServerCluster"
+              ]
+            },
+            "PreviewDeleteGameServerCluster": {
+              "methods": [
+                "PreviewDeleteGameServerCluster"
+              ]
+            },
+            "PreviewUpdateGameServerCluster": {
+              "methods": [
+                "PreviewUpdateGameServerCluster"
+              ]
+            },
+            "UpdateGameServerCluster": {
+              "methods": [
+                "UpdateGameServerCluster"
+              ]
+            }
+          }
         }
       }
     },
     "GameServerConfigsService": {
       "clients": {
         "grpc": {
+          "libraryClient": "GameServerConfigsClient",
+          "rpcs": {
+            "CreateGameServerConfig": {
+              "methods": [
+                "CreateGameServerConfig"
+              ]
+            },
+            "DeleteGameServerConfig": {
+              "methods": [
+                "DeleteGameServerConfig"
+              ]
+            },
+            "GetGameServerConfig": {
+              "methods": [
+                "GetGameServerConfig"
+              ]
+            },
+            "ListGameServerConfigs": {
+              "methods": [
+                "ListGameServerConfigs"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "GameServerConfigsClient",
           "rpcs": {
             "CreateGameServerConfig": {
@@ -134,12 +204,97 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "GameServerDeploymentsClient",
+          "rpcs": {
+            "CreateGameServerDeployment": {
+              "methods": [
+                "CreateGameServerDeployment"
+              ]
+            },
+            "DeleteGameServerDeployment": {
+              "methods": [
+                "DeleteGameServerDeployment"
+              ]
+            },
+            "FetchDeploymentState": {
+              "methods": [
+                "FetchDeploymentState"
+              ]
+            },
+            "GetGameServerDeployment": {
+              "methods": [
+                "GetGameServerDeployment"
+              ]
+            },
+            "GetGameServerDeploymentRollout": {
+              "methods": [
+                "GetGameServerDeploymentRollout"
+              ]
+            },
+            "ListGameServerDeployments": {
+              "methods": [
+                "ListGameServerDeployments"
+              ]
+            },
+            "PreviewGameServerDeploymentRollout": {
+              "methods": [
+                "PreviewGameServerDeploymentRollout"
+              ]
+            },
+            "UpdateGameServerDeployment": {
+              "methods": [
+                "UpdateGameServerDeployment"
+              ]
+            },
+            "UpdateGameServerDeploymentRollout": {
+              "methods": [
+                "UpdateGameServerDeploymentRollout"
+              ]
+            }
+          }
         }
       }
     },
     "RealmsService": {
       "clients": {
         "grpc": {
+          "libraryClient": "RealmsClient",
+          "rpcs": {
+            "CreateRealm": {
+              "methods": [
+                "CreateRealm"
+              ]
+            },
+            "DeleteRealm": {
+              "methods": [
+                "DeleteRealm"
+              ]
+            },
+            "GetRealm": {
+              "methods": [
+                "GetRealm"
+              ]
+            },
+            "ListRealms": {
+              "methods": [
+                "ListRealms"
+              ]
+            },
+            "PreviewRealmUpdate": {
+              "methods": [
+                "PreviewRealmUpdate"
+              ]
+            },
+            "UpdateRealm": {
+              "methods": [
+                "UpdateRealm"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "RealmsClient",
           "rpcs": {
             "CreateRealm": {

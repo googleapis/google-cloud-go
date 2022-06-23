@@ -38,6 +38,18 @@ func ExampleNewEnvironmentsClient() {
 	_ = c
 }
 
+func ExampleNewEnvironmentsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewEnvironmentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleEnvironmentsClient_ListEnvironments() {
 	ctx := context.Background()
 	c, err := cx.NewEnvironmentsClient(ctx)

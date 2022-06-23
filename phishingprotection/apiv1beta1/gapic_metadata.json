@@ -16,6 +16,16 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "PhishingProtectionServiceV1Beta1Client",
+          "rpcs": {
+            "ReportPhishing": {
+              "methods": [
+                "ReportPhishing"
+              ]
+            }
+          }
         }
       }
     }

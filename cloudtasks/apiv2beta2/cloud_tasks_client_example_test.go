@@ -37,6 +37,18 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	c, err := cloudtasks.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleClient_ListQueues() {
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)

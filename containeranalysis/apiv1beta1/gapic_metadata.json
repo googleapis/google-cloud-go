@@ -86,6 +86,86 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "GrafeasV1Beta1Client",
+          "rpcs": {
+            "BatchCreateNotes": {
+              "methods": [
+                "BatchCreateNotes"
+              ]
+            },
+            "BatchCreateOccurrences": {
+              "methods": [
+                "BatchCreateOccurrences"
+              ]
+            },
+            "CreateNote": {
+              "methods": [
+                "CreateNote"
+              ]
+            },
+            "CreateOccurrence": {
+              "methods": [
+                "CreateOccurrence"
+              ]
+            },
+            "DeleteNote": {
+              "methods": [
+                "DeleteNote"
+              ]
+            },
+            "DeleteOccurrence": {
+              "methods": [
+                "DeleteOccurrence"
+              ]
+            },
+            "GetNote": {
+              "methods": [
+                "GetNote"
+              ]
+            },
+            "GetOccurrence": {
+              "methods": [
+                "GetOccurrence"
+              ]
+            },
+            "GetOccurrenceNote": {
+              "methods": [
+                "GetOccurrenceNote"
+              ]
+            },
+            "GetVulnerabilityOccurrencesSummary": {
+              "methods": [
+                "GetVulnerabilityOccurrencesSummary"
+              ]
+            },
+            "ListNoteOccurrences": {
+              "methods": [
+                "ListNoteOccurrences"
+              ]
+            },
+            "ListNotes": {
+              "methods": [
+                "ListNotes"
+              ]
+            },
+            "ListOccurrences": {
+              "methods": [
+                "ListOccurrences"
+              ]
+            },
+            "UpdateNote": {
+              "methods": [
+                "UpdateNote"
+              ]
+            },
+            "UpdateOccurrence": {
+              "methods": [
+                "UpdateOccurrence"
+              ]
+            }
+          }
         }
       }
     }

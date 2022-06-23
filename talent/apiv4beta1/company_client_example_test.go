@@ -37,6 +37,18 @@ func ExampleNewCompanyClient() {
 	_ = c
 }
 
+func ExampleNewCompanyRESTClient() {
+	ctx := context.Background()
+	c, err := talent.NewCompanyRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCompanyClient_CreateCompany() {
 	ctx := context.Background()
 	c, err := talent.NewCompanyClient(ctx)

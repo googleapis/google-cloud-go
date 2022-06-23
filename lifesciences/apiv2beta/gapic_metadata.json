@@ -16,6 +16,16 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "WorkflowsServiceV2BetaClient",
+          "rpcs": {
+            "RunPipeline": {
+              "methods": [
+                "RunPipeline"
+              ]
+            }
+          }
         }
       }
     }

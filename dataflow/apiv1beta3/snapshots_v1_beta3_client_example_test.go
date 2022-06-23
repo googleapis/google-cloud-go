@@ -35,6 +35,18 @@ func ExampleNewSnapshotsV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewSnapshotsV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewSnapshotsV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
 	ctx := context.Background()
 	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)

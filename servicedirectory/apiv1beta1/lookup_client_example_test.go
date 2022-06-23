@@ -35,6 +35,18 @@ func ExampleNewLookupClient() {
 	_ = c
 }
 
+func ExampleNewLookupRESTClient() {
+	ctx := context.Background()
+	c, err := servicedirectory.NewLookupRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleLookupClient_ResolveService() {
 	ctx := context.Background()
 	c, err := servicedirectory.NewLookupClient(ctx)

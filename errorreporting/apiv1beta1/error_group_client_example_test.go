@@ -35,6 +35,18 @@ func ExampleNewErrorGroupClient() {
 	_ = c
 }
 
+func ExampleNewErrorGroupRESTClient() {
+	ctx := context.Background()
+	c, err := errorreporting.NewErrorGroupRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleErrorGroupClient_GetGroup() {
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorGroupClient(ctx)

@@ -36,6 +36,18 @@ func ExampleNewAnalyticsAdminClient() {
 	_ = c
 }
 
+func ExampleNewAnalyticsAdminRESTClient() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAnalyticsAdminClient_GetAccount() {
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)

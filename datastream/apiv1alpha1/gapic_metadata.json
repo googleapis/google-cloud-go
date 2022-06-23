@@ -116,6 +116,116 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateConnectionProfile": {
+              "methods": [
+                "CreateConnectionProfile"
+              ]
+            },
+            "CreatePrivateConnection": {
+              "methods": [
+                "CreatePrivateConnection"
+              ]
+            },
+            "CreateRoute": {
+              "methods": [
+                "CreateRoute"
+              ]
+            },
+            "CreateStream": {
+              "methods": [
+                "CreateStream"
+              ]
+            },
+            "DeleteConnectionProfile": {
+              "methods": [
+                "DeleteConnectionProfile"
+              ]
+            },
+            "DeletePrivateConnection": {
+              "methods": [
+                "DeletePrivateConnection"
+              ]
+            },
+            "DeleteRoute": {
+              "methods": [
+                "DeleteRoute"
+              ]
+            },
+            "DeleteStream": {
+              "methods": [
+                "DeleteStream"
+              ]
+            },
+            "DiscoverConnectionProfile": {
+              "methods": [
+                "DiscoverConnectionProfile"
+              ]
+            },
+            "FetchErrors": {
+              "methods": [
+                "FetchErrors"
+              ]
+            },
+            "FetchStaticIps": {
+              "methods": [
+                "FetchStaticIps"
+              ]
+            },
+            "GetConnectionProfile": {
+              "methods": [
+                "GetConnectionProfile"
+              ]
+            },
+            "GetPrivateConnection": {
+              "methods": [
+                "GetPrivateConnection"
+              ]
+            },
+            "GetRoute": {
+              "methods": [
+                "GetRoute"
+              ]
+            },
+            "GetStream": {
+              "methods": [
+                "GetStream"
+              ]
+            },
+            "ListConnectionProfiles": {
+              "methods": [
+                "ListConnectionProfiles"
+              ]
+            },
+            "ListPrivateConnections": {
+              "methods": [
+                "ListPrivateConnections"
+              ]
+            },
+            "ListRoutes": {
+              "methods": [
+                "ListRoutes"
+              ]
+            },
+            "ListStreams": {
+              "methods": [
+                "ListStreams"
+              ]
+            },
+            "UpdateConnectionProfile": {
+              "methods": [
+                "UpdateConnectionProfile"
+              ]
+            },
+            "UpdateStream": {
+              "methods": [
+                "UpdateStream"
+              ]
+            }
+          }
         }
       }
     }

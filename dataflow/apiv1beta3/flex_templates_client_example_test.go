@@ -35,6 +35,18 @@ func ExampleNewFlexTemplatesClient() {
 	_ = c
 }
 
+func ExampleNewFlexTemplatesRESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewFlexTemplatesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFlexTemplatesClient_LaunchFlexTemplate() {
 	ctx := context.Background()
 	c, err := dataflow.NewFlexTemplatesClient(ctx)

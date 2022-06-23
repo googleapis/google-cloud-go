@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateWorkflow": {
+              "methods": [
+                "CreateWorkflow"
+              ]
+            },
+            "DeleteWorkflow": {
+              "methods": [
+                "DeleteWorkflow"
+              ]
+            },
+            "GetWorkflow": {
+              "methods": [
+                "GetWorkflow"
+              ]
+            },
+            "ListWorkflows": {
+              "methods": [
+                "ListWorkflows"
+              ]
+            },
+            "UpdateWorkflow": {
+              "methods": [
+                "UpdateWorkflow"
+              ]
+            }
+          }
         }
       }
     }

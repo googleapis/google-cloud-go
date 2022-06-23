@@ -21,6 +21,21 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "RecaptchaEnterpriseServiceV1Beta1Client",
+          "rpcs": {
+            "AnnotateAssessment": {
+              "methods": [
+                "AnnotateAssessment"
+              ]
+            },
+            "CreateAssessment": {
+              "methods": [
+                "CreateAssessment"
+              ]
+            }
+          }
         }
       }
     }

@@ -36,6 +36,18 @@ func ExampleNewEventClient() {
 	_ = c
 }
 
+func ExampleNewEventRESTClient() {
+	ctx := context.Background()
+	c, err := talent.NewEventRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleEventClient_CreateClientEvent() {
 	ctx := context.Background()
 	c, err := talent.NewEventClient(ctx)

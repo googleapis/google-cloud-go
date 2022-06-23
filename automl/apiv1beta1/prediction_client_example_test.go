@@ -35,6 +35,18 @@ func ExampleNewPredictionClient() {
 	_ = c
 }
 
+func ExampleNewPredictionRESTClient() {
+	ctx := context.Background()
+	c, err := automl.NewPredictionRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExamplePredictionClient_Predict() {
 	ctx := context.Background()
 	c, err := automl.NewPredictionClient(ctx)

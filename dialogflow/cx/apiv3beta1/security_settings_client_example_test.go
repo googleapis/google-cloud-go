@@ -38,6 +38,18 @@ func ExampleNewSecuritySettingsClient() {
 	_ = c
 }
 
+func ExampleNewSecuritySettingsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewSecuritySettingsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSecuritySettingsClient_CreateSecuritySettings() {
 	ctx := context.Background()
 	c, err := cx.NewSecuritySettingsClient(ctx)

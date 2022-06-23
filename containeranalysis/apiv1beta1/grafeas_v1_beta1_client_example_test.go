@@ -36,6 +36,18 @@ func ExampleNewGrafeasV1Beta1Client() {
 	_ = c
 }
 
+func ExampleNewGrafeasV1Beta1RESTClient() {
+	ctx := context.Background()
+	c, err := containeranalysis.NewGrafeasV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)

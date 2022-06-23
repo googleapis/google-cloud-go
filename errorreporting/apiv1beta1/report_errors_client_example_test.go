@@ -35,6 +35,18 @@ func ExampleNewReportErrorsClient() {
 	_ = c
 }
 
+func ExampleNewReportErrorsRESTClient() {
+	ctx := context.Background()
+	c, err := errorreporting.NewReportErrorsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleReportErrorsClient_ReportErrorEvent() {
 	ctx := context.Background()
 	c, err := errorreporting.NewReportErrorsClient(ctx)

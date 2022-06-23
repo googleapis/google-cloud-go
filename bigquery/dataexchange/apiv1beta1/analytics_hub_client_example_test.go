@@ -37,6 +37,18 @@ func ExampleNewAnalyticsHubClient() {
 	_ = c
 }
 
+func ExampleNewAnalyticsHubRESTClient() {
+	ctx := context.Background()
+	c, err := dataexchange.NewAnalyticsHubRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAnalyticsHubClient_ListDataExchanges() {
 	ctx := context.Background()
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)

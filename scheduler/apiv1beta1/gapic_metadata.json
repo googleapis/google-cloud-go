@@ -51,6 +51,51 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CloudSchedulerClient",
+          "rpcs": {
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "PauseJob": {
+              "methods": [
+                "PauseJob"
+              ]
+            },
+            "ResumeJob": {
+              "methods": [
+                "ResumeJob"
+              ]
+            },
+            "RunJob": {
+              "methods": [
+                "RunJob"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
         }
       }
     }

@@ -37,6 +37,18 @@ func ExampleNewJobClient() {
 	_ = c
 }
 
+func ExampleNewJobRESTClient() {
+	ctx := context.Background()
+	c, err := talent.NewJobRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleJobClient_CreateJob() {
 	ctx := context.Background()
 	c, err := talent.NewJobClient(ctx)

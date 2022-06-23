@@ -36,6 +36,18 @@ func ExampleNewCloudRedisClient() {
 	_ = c
 }
 
+func ExampleNewCloudRedisRESTClient() {
+	ctx := context.Background()
+	c, err := redis.NewCloudRedisRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudRedisClient_ListInstances() {
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)

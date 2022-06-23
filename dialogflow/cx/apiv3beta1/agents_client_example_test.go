@@ -38,6 +38,18 @@ func ExampleNewAgentsClient() {
 	_ = c
 }
 
+func ExampleNewAgentsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewAgentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAgentsClient_ListAgents() {
 	ctx := context.Background()
 	c, err := cx.NewAgentsClient(ctx)

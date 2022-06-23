@@ -36,6 +36,18 @@ func ExampleNewBigQueryWriteClient() {
 	_ = c
 }
 
+func ExampleNewBigQueryWriteRESTClient() {
+	ctx := context.Background()
+	c, err := storage.NewBigQueryWriteRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleBigQueryWriteClient_CreateWriteStream() {
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)

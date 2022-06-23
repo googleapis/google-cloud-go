@@ -71,6 +71,71 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateRows": {
+              "methods": [
+                "BatchCreateRows"
+              ]
+            },
+            "BatchDeleteRows": {
+              "methods": [
+                "BatchDeleteRows"
+              ]
+            },
+            "BatchUpdateRows": {
+              "methods": [
+                "BatchUpdateRows"
+              ]
+            },
+            "CreateRow": {
+              "methods": [
+                "CreateRow"
+              ]
+            },
+            "DeleteRow": {
+              "methods": [
+                "DeleteRow"
+              ]
+            },
+            "GetRow": {
+              "methods": [
+                "GetRow"
+              ]
+            },
+            "GetTable": {
+              "methods": [
+                "GetTable"
+              ]
+            },
+            "GetWorkspace": {
+              "methods": [
+                "GetWorkspace"
+              ]
+            },
+            "ListRows": {
+              "methods": [
+                "ListRows"
+              ]
+            },
+            "ListTables": {
+              "methods": [
+                "ListTables"
+              ]
+            },
+            "ListWorkspaces": {
+              "methods": [
+                "ListWorkspaces"
+              ]
+            },
+            "UpdateRow": {
+              "methods": [
+                "UpdateRow"
+              ]
+            }
+          }
         }
       }
     }

@@ -17,22 +17,28 @@
 package lifesciences
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	lifesciencespb "google.golang.org/genproto/googleapis/cloud/lifesciences/v2beta"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newWorkflowsServiceV2BetaClientHook clientHook
@@ -55,6 +61,12 @@ func defaultWorkflowsServiceV2BetaGRPCClientOptions() []option.ClientOption {
 }
 
 func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptions {
+	return &WorkflowsServiceV2BetaCallOptions{
+		RunPipeline: []gax.CallOption{},
+	}
+}
+
+func defaultWorkflowsServiceV2BetaRESTCallOptions() *WorkflowsServiceV2BetaCallOptions {
 	return &WorkflowsServiceV2BetaCallOptions{
 		RunPipeline: []gax.CallOption{},
 	}
@@ -233,6 +245,90 @@ func (c *workflowsServiceV2BetaGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type workflowsServiceV2BetaRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing WorkflowsServiceV2BetaClient
+	CallOptions **WorkflowsServiceV2BetaCallOptions
+}
+
+// NewWorkflowsServiceV2BetaRESTClient creates a new workflows service v2 beta rest client.
+//
+// A service for running workflows, such as pipelines consisting of Docker
+// containers.
+func NewWorkflowsServiceV2BetaRESTClient(ctx context.Context, opts ...option.ClientOption) (*WorkflowsServiceV2BetaClient, error) {
+	clientOpts := append(defaultWorkflowsServiceV2BetaRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultWorkflowsServiceV2BetaRESTCallOptions()
+	c := &workflowsServiceV2BetaRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &WorkflowsServiceV2BetaClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultWorkflowsServiceV2BetaRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://lifesciences.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://lifesciences.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://lifesciences.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *workflowsServiceV2BetaRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *workflowsServiceV2BetaRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *workflowsServiceV2BetaRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -257,9 +353,89 @@ func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req 
 	}, nil
 }
 
+// RunPipeline runs a pipeline.  The returned Operation’s [metadata]
+// [google.longrunning.Operation.metadata] field will contain a
+// google.cloud.lifesciences.v2beta.Metadata object describing the status
+// of the pipeline execution. The
+// response field will contain a
+// google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
+// pipeline completes successfully.
+//
+// Note: Before you can use this method, the Life Sciences Service Agent
+// must have access to your project. This is done automatically when the
+// Cloud Life Sciences API is first enabled, but if you delete this permission
+// you must disable and re-enable the API to grant the Life Sciences
+// Service Agent the required permissions.
+// Authorization requires the following Google
+// IAM (at https://cloud.google.com/iam/) permission:
+//
+//   lifesciences.workflows.run
+func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta/%v/pipelines:run", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	return &RunPipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // RunPipelineOperation manages a long-running operation from RunPipeline.
 type RunPipelineOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // RunPipelineOperation returns a new RunPipelineOperation from a given name.
@@ -270,10 +446,21 @@ func (c *workflowsServiceV2BetaGRPCClient) RunPipelineOperation(name string) *Ru
 	}
 }
 
+// RunPipelineOperation returns a new RunPipelineOperation from a given name.
+// The name must be that of a previously created RunPipelineOperation, possibly from a different process.
+func (c *workflowsServiceV2BetaRESTClient) RunPipelineOperation(name string) *RunPipelineOperation {
+	override := fmt.Sprintf("/v2beta/%s", name)
+	return &RunPipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *RunPipelineOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*lifesciencespb.RunPipelineResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp lifesciencespb.RunPipelineResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -291,6 +478,7 @@ func (op *RunPipelineOperation) Wait(ctx context.Context, opts ...gax.CallOption
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RunPipelineOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*lifesciencespb.RunPipelineResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp lifesciencespb.RunPipelineResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

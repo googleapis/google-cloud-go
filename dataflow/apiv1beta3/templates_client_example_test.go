@@ -35,6 +35,18 @@ func ExampleNewTemplatesClient() {
 	_ = c
 }
 
+func ExampleNewTemplatesRESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewTemplatesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTemplatesClient_CreateJobFromTemplate() {
 	ctx := context.Background()
 	c, err := dataflow.NewTemplatesClient(ctx)

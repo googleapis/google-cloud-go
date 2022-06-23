@@ -16,12 +16,62 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "FlexTemplatesClient",
+          "rpcs": {
+            "LaunchFlexTemplate": {
+              "methods": [
+                "LaunchFlexTemplate"
+              ]
+            }
+          }
         }
       }
     },
     "JobsV1Beta3": {
       "clients": {
         "grpc": {
+          "libraryClient": "JobsV1Beta3Client",
+          "rpcs": {
+            "AggregatedListJobs": {
+              "methods": [
+                "AggregatedListJobs"
+              ]
+            },
+            "CheckActiveJobs": {
+              "methods": [
+                "CheckActiveJobs"
+              ]
+            },
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "SnapshotJob": {
+              "methods": [
+                "SnapshotJob"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "JobsV1Beta3Client",
           "rpcs": {
             "AggregatedListJobs": {
@@ -74,12 +124,42 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "MessagesV1Beta3Client",
+          "rpcs": {
+            "ListJobMessages": {
+              "methods": [
+                "ListJobMessages"
+              ]
+            }
+          }
         }
       }
     },
     "MetricsV1Beta3": {
       "clients": {
         "grpc": {
+          "libraryClient": "MetricsV1Beta3Client",
+          "rpcs": {
+            "GetJobExecutionDetails": {
+              "methods": [
+                "GetJobExecutionDetails"
+              ]
+            },
+            "GetJobMetrics": {
+              "methods": [
+                "GetJobMetrics"
+              ]
+            },
+            "GetStageExecutionDetails": {
+              "methods": [
+                "GetStageExecutionDetails"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "MetricsV1Beta3Client",
           "rpcs": {
             "GetJobExecutionDetails": {
@@ -122,12 +202,52 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "SnapshotsV1Beta3Client",
+          "rpcs": {
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
+              ]
+            },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
+              ]
+            }
+          }
         }
       }
     },
     "TemplatesService": {
       "clients": {
         "grpc": {
+          "libraryClient": "TemplatesClient",
+          "rpcs": {
+            "CreateJobFromTemplate": {
+              "methods": [
+                "CreateJobFromTemplate"
+              ]
+            },
+            "GetTemplate": {
+              "methods": [
+                "GetTemplate"
+              ]
+            },
+            "LaunchTemplate": {
+              "methods": [
+                "LaunchTemplate"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "TemplatesClient",
           "rpcs": {
             "CreateJobFromTemplate": {

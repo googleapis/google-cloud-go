@@ -41,6 +41,41 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "DeletePosixAccount": {
+              "methods": [
+                "DeletePosixAccount"
+              ]
+            },
+            "DeleteSshPublicKey": {
+              "methods": [
+                "DeleteSshPublicKey"
+              ]
+            },
+            "GetLoginProfile": {
+              "methods": [
+                "GetLoginProfile"
+              ]
+            },
+            "GetSshPublicKey": {
+              "methods": [
+                "GetSshPublicKey"
+              ]
+            },
+            "ImportSshPublicKey": {
+              "methods": [
+                "ImportSshPublicKey"
+              ]
+            },
+            "UpdateSshPublicKey": {
+              "methods": [
+                "UpdateSshPublicKey"
+              ]
+            }
+          }
         }
       }
     }

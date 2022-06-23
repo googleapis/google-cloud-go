@@ -38,6 +38,18 @@ func ExampleNewTransitionRouteGroupsClient() {
 	_ = c
 }
 
+func ExampleNewTransitionRouteGroupsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewTransitionRouteGroupsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTransitionRouteGroupsClient_ListTransitionRouteGroups() {
 	ctx := context.Background()
 	c, err := cx.NewTransitionRouteGroupsClient(ctx)

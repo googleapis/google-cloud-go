@@ -38,6 +38,18 @@ func ExampleNewDeploymentsClient() {
 	_ = c
 }
 
+func ExampleNewDeploymentsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewDeploymentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDeploymentsClient_ListDeployments() {
 	ctx := context.Background()
 	c, err := cx.NewDeploymentsClient(ctx)

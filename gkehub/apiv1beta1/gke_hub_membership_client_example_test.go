@@ -39,6 +39,18 @@ func ExampleNewGkeHubMembershipClient() {
 	_ = c
 }
 
+func ExampleNewGkeHubMembershipRESTClient() {
+	ctx := context.Background()
+	c, err := gkehub.NewGkeHubMembershipRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleGkeHubMembershipClient_ListMemberships() {
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)

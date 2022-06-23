@@ -35,6 +35,18 @@ func ExampleNewPhishingProtectionServiceV1Beta1Client() {
 	_ = c
 }
 
+func ExampleNewPhishingProtectionServiceV1Beta1RESTClient() {
+	ctx := context.Background()
+	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExamplePhishingProtectionServiceV1Beta1Client_ReportPhishing() {
 	ctx := context.Background()
 	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1Client(ctx)

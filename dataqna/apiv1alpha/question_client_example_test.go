@@ -35,6 +35,18 @@ func ExampleNewQuestionClient() {
 	_ = c
 }
 
+func ExampleNewQuestionRESTClient() {
+	ctx := context.Background()
+	c, err := dataqna.NewQuestionRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleQuestionClient_GetQuestion() {
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)

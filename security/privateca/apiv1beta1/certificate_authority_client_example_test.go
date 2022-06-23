@@ -36,6 +36,18 @@ func ExampleNewCertificateAuthorityClient() {
 	_ = c
 }
 
+func ExampleNewCertificateAuthorityRESTClient() {
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCertificateAuthorityClient_CreateCertificate() {
 	ctx := context.Background()
 	c, err := privateca.NewCertificateAuthorityClient(ctx)

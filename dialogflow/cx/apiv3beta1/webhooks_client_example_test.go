@@ -38,6 +38,18 @@ func ExampleNewWebhooksClient() {
 	_ = c
 }
 
+func ExampleNewWebhooksRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewWebhooksRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleWebhooksClient_ListWebhooks() {
 	ctx := context.Background()
 	c, err := cx.NewWebhooksClient(ctx)
