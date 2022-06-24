@@ -51,6 +51,7 @@ type DatasetCallOptions struct {
 	ImportData         []gax.CallOption
 	ExportData         []gax.CallOption
 	ListDataItems      []gax.CallOption
+	ListSavedQueries   []gax.CallOption
 	GetAnnotationSpec  []gax.CallOption
 	ListAnnotations    []gax.CallOption
 	GetLocation        []gax.CallOption
@@ -87,6 +88,7 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 		ImportData:         []gax.CallOption{},
 		ExportData:         []gax.CallOption{},
 		ListDataItems:      []gax.CallOption{},
+		ListSavedQueries:   []gax.CallOption{},
 		GetAnnotationSpec:  []gax.CallOption{},
 		ListAnnotations:    []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
@@ -119,6 +121,7 @@ type internalDatasetClient interface {
 	ExportData(context.Context, *aiplatformpb.ExportDataRequest, ...gax.CallOption) (*ExportDataOperation, error)
 	ExportDataOperation(name string) *ExportDataOperation
 	ListDataItems(context.Context, *aiplatformpb.ListDataItemsRequest, ...gax.CallOption) *DataItemIterator
+	ListSavedQueries(context.Context, *aiplatformpb.ListSavedQueriesRequest, ...gax.CallOption) *SavedQueryIterator
 	GetAnnotationSpec(context.Context, *aiplatformpb.GetAnnotationSpecRequest, ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error)
 	ListAnnotations(context.Context, *aiplatformpb.ListAnnotationsRequest, ...gax.CallOption) *AnnotationIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -235,6 +238,11 @@ func (c *DatasetClient) ExportDataOperation(name string) *ExportDataOperation {
 // ListDataItems lists DataItems in a Dataset.
 func (c *DatasetClient) ListDataItems(ctx context.Context, req *aiplatformpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
 	return c.internalClient.ListDataItems(ctx, req, opts...)
+}
+
+// ListSavedQueries lists SavedQueries in a Dataset.
+func (c *DatasetClient) ListSavedQueries(ctx context.Context, req *aiplatformpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
+	return c.internalClient.ListSavedQueries(ctx, req, opts...)
 }
 
 // GetAnnotationSpec gets an AnnotationSpec.
@@ -627,6 +635,51 @@ func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb
 
 		it.Response = resp
 		return resp.GetDataItems(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *datasetGRPCClient) ListSavedQueries(ctx context.Context, req *aiplatformpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSavedQueries[0:len((*c.CallOptions).ListSavedQueries):len((*c.CallOptions).ListSavedQueries)], opts...)
+	it := &SavedQueryIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListSavedQueriesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.SavedQuery, string, error) {
+		resp := &aiplatformpb.ListSavedQueriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.datasetClient.ListSavedQueries(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSavedQueries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1424,6 +1477,53 @@ func (it *OperationIterator) bufLen() int {
 }
 
 func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SavedQueryIterator manages a stream of *aiplatformpb.SavedQuery.
+type SavedQueryIterator struct {
+	items    []*aiplatformpb.SavedQuery
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.SavedQuery, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SavedQueryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SavedQueryIterator) Next() (*aiplatformpb.SavedQuery, error) {
+	var item *aiplatformpb.SavedQuery
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SavedQueryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SavedQueryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

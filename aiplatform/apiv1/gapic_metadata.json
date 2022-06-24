@@ -90,6 +90,11 @@
                 "ListOperations"
               ]
             },
+            "ListSavedQueries": {
+              "methods": [
+                "ListSavedQueries"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"

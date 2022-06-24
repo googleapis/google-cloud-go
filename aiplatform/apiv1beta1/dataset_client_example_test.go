@@ -229,6 +229,32 @@ func ExampleDatasetClient_ListDataItems() {
 	}
 }
 
+func ExampleDatasetClient_ListSavedQueries() {
+	ctx := context.Background()
+	c, err := aiplatform.NewDatasetClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListSavedQueriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListSavedQueriesRequest.
+	}
+	it := c.ListSavedQueries(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleDatasetClient_GetAnnotationSpec() {
 	ctx := context.Background()
 	c, err := aiplatform.NewDatasetClient(ctx)

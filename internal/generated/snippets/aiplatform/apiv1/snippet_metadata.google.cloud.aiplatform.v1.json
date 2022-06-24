@@ -746,6 +746,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_DatasetService_ListSavedQueries_sync",
+      "title": "aiplatform ListSavedQueries Sample",
+      "description": "ListSavedQueries lists SavedQueries in a Dataset.",
+      "file": "DatasetClient/ListSavedQueries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSavedQueries",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.ListSavedQueries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListSavedQueriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SavedQueryIterator",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "ListSavedQueries",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.ListSavedQueries",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_DatasetService_SetIamPolicy_sync",
       "title": "aiplatform SetIamPolicy Sample",
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",

@@ -104,6 +104,51 @@
       ]
     },
     {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CancelOperation_sync",
+      "title": "cloudchannel CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CancelOperation",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ChangeOffer_sync",
       "title": "cloudchannel ChangeOffer Sample",
       "description": "ChangeOffer updates the Offer for an existing customer entitlement.\n\nAn entitlement update is a long-running operation and it updates the\nentitlement as a result of fulfillment.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n  INVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n  NOT_FOUND: Offer or Entitlement resource not found.\n\n  INTERNAL: Any non-user error related to a technical issue in the\n  backend. Contact Cloud Channel support.\n\n  UNKNOWN: Any non-user error related to a technical issue in the backend.\n  Contact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
@@ -653,6 +698,51 @@
       ]
     },
     {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteOperation_sync",
+      "title": "cloudchannel DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteOperation",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetChannelPartnerLink_sync",
       "title": "cloudchannel GetChannelPartnerLink Sample",
       "description": "GetChannelPartnerLink returns the requested ChannelPartnerLink resource.\nYou must be a distributor to call this method.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The reseller account making the request is different\n  from the reseller account in the API request.\n\n  INVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n  NOT_FOUND: ChannelPartnerLink resource not found because of an\n  invalid channel partner link name.\n\nReturn value: \nThe ChannelPartnerLink resource.",
@@ -867,6 +957,52 @@
         "method": {
           "shortName": "GetEntitlement",
           "fullName": "google.cloud.channel.v1.CloudChannelService.GetEntitlement",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetOperation_sync",
+      "title": "cloudchannel GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetOperation",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
@@ -1189,6 +1325,52 @@
         "method": {
           "shortName": "ListOffers",
           "fullName": "google.cloud.channel.v1.CloudChannelService.ListOffers",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListOperations_sync",
+      "title": "cloudchannel ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListOperations",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
