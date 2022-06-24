@@ -16,15 +16,18 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"strings"
 	"sync"
 	"time"
 
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/distribution"
 	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -130,8 +133,6 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 
 // Subscription.receive will call stop on its messageIterator when finished with it.
 // Stop will block until Done has been called on all Messages that have been
-// returned by Next, or until the context with which the messageIterator was created
-// is cancelled or exceeds its deadline.
 func (it *messageIterator) stop() {
 	it.cancel()
 	it.mu.Lock()
@@ -638,4 +639,71 @@ func maxDuration(x, y time.Duration) time.Duration {
 		return x
 	}
 	return y
+}
+
+func getStatus(err error) *status.Status {
+	st, ok := status.FromError(err)
+	if !ok {
+		return nil
+	}
+	return st
+}
+
+// getAckErrors retrieves the metadata of an rpc error if available.
+func getAckErrors(err error) map[string]string {
+	st := getStatus(err)
+	if st != nil {
+		for _, detail := range st.Details() {
+			info, _ := detail.(*errdetails.ErrorInfo)
+			return info.GetMetadata()
+		}
+	}
+	return nil
+}
+
+// processResults processes AckResults by referring to errorStatus and errorsMap.
+// The errors returned by the server in `errorStatus` or in `errorsMap`
+// are used to complete the AckResults in `ackResMap` (with a success
+// or error) or to return requests for further retries.
+// Logic is derived from python-pubsub: https://github.com/googleapis/python-pubsub/blob/main/google/cloud/pubsub_v1/subscriber/_protocol/streaming_pull_manager.py#L161-L220
+func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult, errorsMap map[string]string) ([]*AckResult, []*AckResult) {
+	var completedResults, retryResults []*AckResult
+	for ackID, res := range ackResMap {
+		// Handle special errors returned for ack/modack RPCs via the ErrorInfo
+		// sidecar metadata when exactly-once delivery is enabled.
+		if exactlyOnceErrStr, ok := errorsMap[ackID]; ok {
+			if strings.HasPrefix(exactlyOnceErrStr, "TRANSIENT_") {
+				retryResults = append(retryResults, res)
+			} else {
+				exactlyOnceErr := fmt.Errorf(exactlyOnceErrStr)
+				if exactlyOnceErrStr == "PERMANENT_FAILURE_INVALID_ACK_ID" {
+					ipubsub.SetAckResult(res, AckResponseInvalidAckID, exactlyOnceErr)
+				} else {
+					ipubsub.SetAckResult(res, AckResponseOther, exactlyOnceErr)
+				}
+				completedResults = append(completedResults, res)
+			}
+		} else if errorStatus != nil && contains(errorStatus.Code(), exactlyOnceDeliveryTemporaryRetryErrors) {
+			retryResults = append(retryResults, ackResMap[ackID])
+		} else if errorStatus != nil {
+			// Other gRPC errors are not retried.
+			switch errorStatus.Code() {
+			case codes.PermissionDenied:
+				ipubsub.SetAckResult(res, AckResponsePermissionDenied, errorStatus.Err())
+			case codes.FailedPrecondition:
+				ipubsub.SetAckResult(res, AckResponseFailedPrecondition, errorStatus.Err())
+			default:
+				ipubsub.SetAckResult(res, AckResponseOther, errorStatus.Err())
+			}
+			completedResults = append(completedResults, res)
+		} else if res != nil {
+			// Since no error occurred, requests with AckResults are completed successfully.
+			ipubsub.SetAckResult(res, AckResponseSuccess, nil)
+			completedResults = append(completedResults, res)
+		} else {
+			// All other requests are considered completed.
+			completedResults = append(completedResults, res)
+		}
+	}
+	return completedResults, retryResults
 }
