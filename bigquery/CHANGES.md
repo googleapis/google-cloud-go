@@ -1,5 +1,25 @@
 # Changes
 
+
+## [1.34.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.34.0...bigquery/v1.34.1) (2022-06-23)
+
+
+### Bug Fixes
+
+* **bigquery:** release 1.34.1 ([#6251](https://github.com/googleapis/google-cloud-go/issues/6251)) ([c742b0e](https://github.com/googleapis/google-cloud-go/commit/c742b0ee644246162acaa964fc2a65eef392846f))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.33.0...bigquery/v1.34.0) (2022-06-23)
+
+
+### Features
+
+* **bigquery/storage:** add fields to eventually contain row level errors ([5fe3b1d](https://github.com/googleapis/google-cloud-go/commit/5fe3b1d946db991aebdfd279f6f3b06b8baec205))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** address locking and schema updates ([#6243](https://github.com/googleapis/google-cloud-go/issues/6243)) ([fe264a5](https://github.com/googleapis/google-cloud-go/commit/fe264a5ccfe5b13f6b7215d66a04282f5e38457f))
+
 ## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.32.0...bigquery/v1.33.0) (2022-06-16)
 
 
