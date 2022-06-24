@@ -621,8 +621,11 @@ func TestPingStreamAckDeadline(t *testing.T) {
 }
 
 func TestExactlyOnceProcessRequests(t *testing.T) {
+<<<<<<< HEAD
 	ctx := context.Background()
 
+=======
+>>>>>>> 9f5510c83 (add process results)
 	t.Run("no results", func(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
 		// Nil maps here behave the same as if they were empty maps.
