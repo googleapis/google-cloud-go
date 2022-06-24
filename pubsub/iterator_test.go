@@ -25,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
 	"google.golang.org/api/option"
@@ -617,4 +618,53 @@ func TestPingStreamAckDeadline(t *testing.T) {
 		t.Error("iter.enableExactlyOnceDelivery should be true")
 	}
 	iter.eoMu.RUnlock()
+}
+
+func TestExactlyOnceProcessRequests(t *testing.T) {
+	t.Run("no results", func(t *testing.T) {
+		// If the ackResMap is nil, then the resulting slices should be empty.
+		// Nil maps here behave the same as if they were empty maps.
+		completed, retry := processResults(nil, nil, nil)
+		if len(completed) != 0 {
+			t.Errorf("expected completed slice to be empty, got: %v\n", completed)
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", completed)
+		}
+	})
+
+	t.Run("no errors, nil AckResult", func(t *testing.T) {
+		// No errors so request should be completed even without an AckResult
+		ackReqMap := map[string]*AckResult{
+			"ackID": nil,
+		}
+		completed, retry := processResults(nil, ackReqMap, nil)
+		fmt.Printf("completed: %+v\n", completed)
+		if len(completed) != 1 {
+			t.Errorf("expected completed slice to be 1, got: %v\n", completed)
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", completed)
+		}
+	})
+
+	t.Run("no errors", func(t *testing.T) {
+		// No errors so result should be completed
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID": r,
+		}
+		completed, retry := processResults(nil, ackReqMap, nil)
+		if len(completed) != 1 {
+			t.Errorf("expected completed slice to be 1, got: %v\n", completed)
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", completed)
+		}
+		s, err := r.Get()
+		if err != nil {
+			t.Errorf("got err from AckResult: %v", err)
+		}
+	})
+
 }

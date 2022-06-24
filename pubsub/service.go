@@ -106,3 +106,25 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	}
 	return r.defaultRetryer.Retry(err)
 }
+
+var (
+	exactlyOnceDeliveryTemporaryRetryErrors = []codes.Code{
+		codes.DeadlineExceeded,
+		codes.ResourceExhausted,
+		codes.Aborted,
+		codes.Internal,
+		codes.Unavailable,
+	}
+)
+
+// check if a grpc code is in the target slice
+// consider replacing with generics's slice.Contains
+// once go 1.18 is the min version.
+func contains(v codes.Code, t []codes.Code) bool {
+	for _, c := range t {
+		if v == c {
+			return true
+		}
+	}
+	return false
+}
