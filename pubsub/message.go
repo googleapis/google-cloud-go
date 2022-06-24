@@ -105,16 +105,16 @@ type AckResult = ipubsub.AckResult
 type AcknowledgeStatus = ipubsub.AcknowledgeStatus
 
 const (
-	// AckResponseSuccess indicates the request was a success.
-	AckResponseSuccess AcknowledgeStatus = iota
-	// AckResponsePermissionDenied indicates the caller does not have sufficient permissions.
-	AckResponsePermissionDenied
-	// AckResponseFailedPrecondition indicates the request encountered a FailedPrecondition error.
-	AckResponseFailedPrecondition
-	// AckResponseInvalidAckID indicates one or more of the ack IDs sent were invalid.
-	AckResponseInvalidAckID
-	// AckResponseOther indicates another unknown error was returned.
-	AckResponseOther
+	// AcknowledgeStatusSuccess indicates the request was a success.
+	AcknowledgeStatusSuccess AcknowledgeStatus = iota
+	// AcknowledgeStatusPermissionDenied indicates the caller does not have sufficient permissions.
+	AcknowledgeStatusPermissionDenied
+	// AcknowledgeStatusFailedPrecondition indicates the request encountered a FailedPrecondition error.
+	AcknowledgeStatusFailedPrecondition
+	// AcknowledgeStatusInvalidAckID indicates one or more of the ack IDs sent were invalid.
+	AcknowledgeStatusInvalidAckID
+	// AcknowledgeStatusOther indicates another unknown error was returned.
+	AcknowledgeStatusOther
 )
 
 // psAckHandler handles ack/nack for the pubsub package.
