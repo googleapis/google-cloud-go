@@ -621,6 +621,8 @@ func TestPingStreamAckDeadline(t *testing.T) {
 }
 
 func TestExactlyOnceProcessRequests(t *testing.T) {
+	ctx := context.Background()
+
 	t.Run("no results", func(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
 		// Nil maps here behave the same as if they were empty maps.
@@ -661,9 +663,12 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		if len(retry) != 0 {
 			t.Errorf("expected retry slice to be empty, got: %v\n", completed)
 		}
-		s, err := r.Get()
+		s, err := r.Get(ctx)
 		if err != nil {
 			t.Errorf("got err from AckResult: %v", err)
+		}
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("expected AcknowledgeStatusSuccess, got %v", s)
 		}
 	})
 

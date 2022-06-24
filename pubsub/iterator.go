@@ -677,9 +677,9 @@ func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult,
 			} else {
 				exactlyOnceErr := fmt.Errorf(exactlyOnceErrStr)
 				if exactlyOnceErrStr == "PERMANENT_FAILURE_INVALID_ACK_ID" {
-					ipubsub.SetAckResult(res, AckResponseInvalidAckID, exactlyOnceErr)
+					ipubsub.SetAckResult(res, AcknowledgeStatusInvalidAckID, exactlyOnceErr)
 				} else {
-					ipubsub.SetAckResult(res, AckResponseOther, exactlyOnceErr)
+					ipubsub.SetAckResult(res, AcknowledgeStatusOther, exactlyOnceErr)
 				}
 				completedResults = append(completedResults, res)
 			}
@@ -689,16 +689,16 @@ func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult,
 			// Other gRPC errors are not retried.
 			switch errorStatus.Code() {
 			case codes.PermissionDenied:
-				ipubsub.SetAckResult(res, AckResponsePermissionDenied, errorStatus.Err())
+				ipubsub.SetAckResult(res, AcknowledgeStatusPermissionDenied, errorStatus.Err())
 			case codes.FailedPrecondition:
-				ipubsub.SetAckResult(res, AckResponseFailedPrecondition, errorStatus.Err())
+				ipubsub.SetAckResult(res, AcknowledgeStatusFailedPrecondition, errorStatus.Err())
 			default:
-				ipubsub.SetAckResult(res, AckResponseOther, errorStatus.Err())
+				ipubsub.SetAckResult(res, AcknowledgeStatusOther, errorStatus.Err())
 			}
 			completedResults = append(completedResults, res)
 		} else if res != nil {
 			// Since no error occurred, requests with AckResults are completed successfully.
-			ipubsub.SetAckResult(res, AckResponseSuccess, nil)
+			ipubsub.SetAckResult(res, AcknowledgeStatusSuccess, nil)
 			completedResults = append(completedResults, res)
 		} else {
 			// All other requests are considered completed.
