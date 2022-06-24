@@ -38,6 +38,18 @@ func ExampleNewIntentsClient() {
 	_ = c
 }
 
+func ExampleNewIntentsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewIntentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleIntentsClient_ListIntents() {
 	ctx := context.Background()
 	c, err := cx.NewIntentsClient(ctx)
