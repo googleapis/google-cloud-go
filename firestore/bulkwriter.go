@@ -77,9 +77,8 @@ type BulkWriter struct {
 	docUpdatePaths  map[string]bool    // document paths with corresponding writes in the queue
 	cancel          context.CancelFunc // context to send cancel message
 	bundler         *bundler.Bundler   // handle bundling up writes to Firestore
-	retryBundler    *bundler.Bundler   // handle bundling up retries of writes to Firestore
 	ctx             context.Context    // context for canceling BulkWriter operations
-	rateLock        sync.Mutex         // guards increases to rate of open sends; used in increaseRate()
+	openLock        sync.Mutex         // guards against setting isOpen concurrently
 }
 
 // newBulkWriter creates a new instance of the BulkWriter. This
@@ -105,10 +104,6 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 	bw.bundler.BundleCountThreshold = maxBatchSize
 	bw.bundler.BundleByteLimit = 0 // unlimited size
 
-	bw.retryBundler = bundler.NewBundler(BulkWriterJob{}, bw.send)
-	bw.retryBundler.BundleCountThreshold = retryMaxBatchSize
-	bw.bundler.BundleByteLimit = 0 // unlimited size
-
 	return bw
 }
 
@@ -119,7 +114,9 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 func (b *BulkWriter) End() {
 	b.Flush()
 	b.cancel()
+	b.openLock.Lock()
 	b.isOpen = false
+	b.openLock.Unlock()
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
@@ -127,11 +124,12 @@ func (b *BulkWriter) End() {
 func (bw *BulkWriter) Flush() {
 	// Ensure that the backlogQueue is empty
 	bw.bundler.Flush()
-	bw.retryBundler.Flush()
 }
 
 // IsOpen gets the current open or closed state of the BulkWriter.
 func (bw *BulkWriter) IsOpen() bool {
+	bw.openLock.Lock()
+	defer bw.openLock.Unlock()
 	return bw.isOpen
 }
 
@@ -304,9 +302,9 @@ func (bw *BulkWriter) send(i interface{}) {
 				j := bwj[i]
 				j.attempts++
 
-				// codyoss: consider whether we really need retrier or not
+				// Do we need separate retry bundler
 				if j.attempts < maxRetryAttempts {
-					bw.retryBundler.Add(j, j.size)
+					bw.bundler.Add(j, j.size)
 				}
 				continue
 			}
