@@ -25,14 +25,14 @@ import (
 	"cloud.google.com/go/compute/metadata"
 )
 
-// ResourceAtttributesGetter abstracts environment lookup methods to query for environment variables, metadata attributes and file content.
-type ResourceAtttributesGetter interface {
+// ResourceAttributesGetter abstracts environment lookup methods to query for environment variables, metadata attributes and file content.
+type ResourceAttributesGetter interface {
 	EnvVar(name string) string
 	Metadata(path string) string
 	ReadAll(path string) string
 }
 
-var getter ResourceAtttributesGetter = &defaultResourceGetter{
+var getter ResourceAttributesGetter = &defaultResourceGetter{
 	metaClient: metadata.NewClient(&http.Client{
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
@@ -43,7 +43,7 @@ var getter ResourceAtttributesGetter = &defaultResourceGetter{
 	})}
 
 // ResourceAttributes provides read-only access to the ResourceAtttributesGetter interface implementation.
-func ResourceAttributes() ResourceAtttributesGetter {
+func ResourceAttributes() ResourceAttributesGetter {
 	return getter
 }
 

@@ -35,7 +35,7 @@ func (r commonResource) set(l *Logger) { l.commonResource = r.MonitoredResource 
 
 type resource struct {
 	pb    *mrpb.MonitoredResource
-	attrs internal.ResourceAtttributesGetter
+	attrs internal.ResourceAttributesGetter
 	once  *sync.Once
 }
 
