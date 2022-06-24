@@ -41,7 +41,13 @@ type ImageFamilyViewsCallOptions struct {
 	Get []gax.CallOption
 }
 
-// internalImageFamilyViewsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultImageFamilyViewsRESTCallOptions() *ImageFamilyViewsCallOptions {
+	return &ImageFamilyViewsCallOptions{
+		Get: []gax.CallOption{},
+	}
+}
+
+// internalImageFamilyViewsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalImageFamilyViewsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -98,6 +104,9 @@ type imageFamilyViewsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ImageFamilyViewsClient
+	CallOptions **ImageFamilyViewsCallOptions
 }
 
 // NewImageFamilyViewsRESTClient creates a new image family views rest client.
@@ -110,13 +119,15 @@ func NewImageFamilyViewsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultImageFamilyViewsRESTCallOptions()
 	c := &imageFamilyViewsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &ImageFamilyViewsClient{internalClient: c, CallOptions: &ImageFamilyViewsCallOptions{}}, nil
+	return &ImageFamilyViewsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultImageFamilyViewsRESTClientOptions() []option.ClientOption {
@@ -164,6 +175,7 @@ func (c *imageFamilyViewsRESTClient) Get(ctx context.Context, req *computepb.Get
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "family", url.QueryEscape(req.GetFamily())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.ImageFamilyView{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

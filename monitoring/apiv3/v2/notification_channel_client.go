@@ -148,7 +148,7 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 	}
 }
 
-// internalNotificationChannelClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalNotificationChannelClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalNotificationChannelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

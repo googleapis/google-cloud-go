@@ -60,7 +60,7 @@ func defaultEventCallOptions() *EventCallOptions {
 	}
 }
 
-// internalEventClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+// internalEventClient is an interface that defines the methods available from Cloud Talent Solution API.
 type internalEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -225,7 +225,9 @@ func (c *eventGRPCClient) CreateClientEvent(ctx context.Context, req *talentpb.C
 }
 
 func (c *eventGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

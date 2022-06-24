@@ -98,7 +98,7 @@ func defaultAlertPolicyCallOptions() *AlertPolicyCallOptions {
 	}
 }
 
-// internalAlertPolicyClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalAlertPolicyClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalAlertPolicyClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

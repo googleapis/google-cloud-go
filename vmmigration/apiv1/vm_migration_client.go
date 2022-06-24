@@ -146,7 +146,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from VM Migration API.
+// internalClient is an interface that defines the methods available from VM Migration API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

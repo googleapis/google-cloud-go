@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.1...pubsublite/v1.3.2) (2022-06-15)
+
+
+### Bug Fixes
+
+* **pubsublite:** fixed version in stream headers ([#6181](https://github.com/googleapis/google-cloud-go/issues/6181)) ([25a2ae3](https://github.com/googleapis/google-cloud-go/commit/25a2ae384b6383b9ac73d600e7e9f34d10979e31))
+
 ### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.0...pubsublite/v1.3.1) (2022-04-27)
 
 

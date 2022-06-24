@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/batch/apiv1",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "language": "GO",
     "apis": [
       {
@@ -198,7 +198,7 @@
     {
       "regionTag": "batch_v1_generated_BatchService_ListJobs_sync",
       "title": "batch ListJobs Sample",
-      "description": "ListJobs list all Jobs for a project.",
+      "description": "ListJobs list all Jobs for a project within a region.",
       "file": "Client/ListJobs/main.go",
       "language": "GO",
       "clientMethod": {

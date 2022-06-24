@@ -49,7 +49,17 @@ type GlobalPublicDelegatedPrefixesCallOptions struct {
 	Patch  []gax.CallOption
 }
 
-// internalGlobalPublicDelegatedPrefixesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultGlobalPublicDelegatedPrefixesRESTCallOptions() *GlobalPublicDelegatedPrefixesCallOptions {
+	return &GlobalPublicDelegatedPrefixesCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Patch:  []gax.CallOption{},
+	}
+}
+
+// internalGlobalPublicDelegatedPrefixesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalGlobalPublicDelegatedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,6 +143,9 @@ type globalPublicDelegatedPrefixesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing GlobalPublicDelegatedPrefixesClient
+	CallOptions **GlobalPublicDelegatedPrefixesCallOptions
 }
 
 // NewGlobalPublicDelegatedPrefixesRESTClient creates a new global public delegated prefixes rest client.
@@ -145,9 +158,11 @@ func NewGlobalPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...opt
 		return nil, err
 	}
 
+	callOpts := defaultGlobalPublicDelegatedPrefixesRESTCallOptions()
 	c := &globalPublicDelegatedPrefixesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -161,7 +176,7 @@ func NewGlobalPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...opt
 	}
 	c.operationClient = opC
 
-	return &GlobalPublicDelegatedPrefixesClient{internalClient: c, CallOptions: &GlobalPublicDelegatedPrefixesCallOptions{}}, nil
+	return &GlobalPublicDelegatedPrefixesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultGlobalPublicDelegatedPrefixesRESTClientOptions() []option.ClientOption {
@@ -219,6 +234,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, re
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_delegated_prefix", url.QueryEscape(req.GetPublicDelegatedPrefix())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -278,6 +294,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_delegated_prefix", url.QueryEscape(req.GetPublicDelegatedPrefix())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.PublicDelegatedPrefix{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,6 +361,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, re
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -513,6 +531,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_delegated_prefix", url.QueryEscape(req.GetPublicDelegatedPrefix())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

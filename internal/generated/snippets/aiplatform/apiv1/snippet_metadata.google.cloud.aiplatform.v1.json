@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.11.0",
+    "version": "1.13.0",
     "language": "GO",
     "apis": [
       {
@@ -9312,6 +9312,52 @@
           "service": {
             "shortName": "MigrationService",
             "fullName": "google.cloud.aiplatform.v1.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_ModelService_BatchImportModelEvaluationSlices_sync",
+      "title": "aiplatform BatchImportModelEvaluationSlices Sample",
+      "description": "BatchImportModelEvaluationSlices imports a list of externally generated ModelEvaluationSlice.",
+      "file": "ModelClient/BatchImportModelEvaluationSlices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchImportModelEvaluationSlices",
+        "fullName": "google.cloud.aiplatform.v1.ModelClient.BatchImportModelEvaluationSlices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchImportModelEvaluationSlicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.BatchImportModelEvaluationSlicesResponse",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "BatchImportModelEvaluationSlices",
+          "fullName": "google.cloud.aiplatform.v1.ModelService.BatchImportModelEvaluationSlices",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1.ModelService"
           }
         }
       },
