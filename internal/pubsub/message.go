@@ -97,19 +97,6 @@ func (m *Message) Nack() {
 // AcknowledgeStatus represents the status of an Ack or Nack request.
 type AcknowledgeStatus int
 
-const (
-	// AckResponseSuccess indicates the request was a success.
-	AckResponseSuccess AcknowledgeStatus = iota
-	// AckResponsePermissionDenied indicates the caller does not have sufficient permissions.
-	AckResponsePermissionDenied
-	// AckResponseFailedPrecondition indicates the request encountered a FailedPrecondition error.
-	AckResponseFailedPrecondition
-	// AckResponseInvalidAckID indicates one or more of the ack IDs sent were invalid.
-	AckResponseInvalidAckID
-	// AckResponseOther indicates another unknown error was returned.
-	AckResponseOther
-)
-
 // AckResult holds the result from a call to Ack or Nack.
 type AckResult struct {
 	ready chan struct{}
