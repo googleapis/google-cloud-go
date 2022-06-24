@@ -36,6 +36,18 @@ func ExampleNewCompletionClient() {
 	_ = c
 }
 
+func ExampleNewCompletionRESTClient() {
+	ctx := context.Background()
+	c, err := talent.NewCompletionRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCompletionClient_CompleteQuery() {
 	ctx := context.Background()
 	c, err := talent.NewCompletionClient(ctx)
