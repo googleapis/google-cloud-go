@@ -1,5 +1,13 @@
 # Changes
 
+
+## [1.34.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.34.0...bigquery/v1.34.1) (2022-06-23)
+
+
+### Bug Fixes
+
+* **bigquery:** release 1.34.1 ([#6251](https://github.com/googleapis/google-cloud-go/issues/6251)) ([c742b0e](https://github.com/googleapis/google-cloud-go/commit/c742b0ee644246162acaa964fc2a65eef392846f))
+
 ## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.33.0...bigquery/v1.34.0) (2022-06-23)
 
 
