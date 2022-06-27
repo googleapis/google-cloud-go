@@ -36,6 +36,18 @@ func ExampleNewDataprocMetastoreClient() {
 	_ = c
 }
 
+func ExampleNewDataprocMetastoreRESTClient() {
+	ctx := context.Background()
+	c, err := metastore.NewDataprocMetastoreRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDataprocMetastoreClient_ListServices() {
 	ctx := context.Background()
 	c, err := metastore.NewDataprocMetastoreClient(ctx)

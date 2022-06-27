@@ -36,6 +36,18 @@ func ExampleNewJobsV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewJobsV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewJobsV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleJobsV1Beta3Client_CreateJob() {
 	ctx := context.Background()
 	c, err := dataflow.NewJobsV1Beta3Client(ctx)
