@@ -1724,7 +1724,8 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	c := integrationClient(t)
-	bw := c.BulkWriter()
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
 
 	f := integrationTestMap
 	j, err := bw.Create(doc, f)

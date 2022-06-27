@@ -29,9 +29,9 @@ type BulkWriterJob struct {
 	result   chan *pb.WriteResult // send the write results to this channel
 	write    *pb.Write            // the writes to apply to the database
 	attempts int                  // number of times this write has been attempted
-	size     int                  // size of this write, in bytes
 	wr       *WriteResult         // (cached) result from the operation
 	e        error                // (cached) any errors that occurred
+	ctx      context.Context      // context for canceling/timing out results
 }
 
 // Results gets the results of the BulkWriter write attempt
@@ -55,15 +55,11 @@ func (o *BulkWriterJob) processResults() (*WriteResult, error) {
 		return nil, err
 	}
 
-	wr, err := writeResultFromProto(wpb)
+	return writeResultFromProto(wpb)
 
-	if err != nil {
-		return nil, err
-	}
-	return wr, err
 }
 
-// A BulkWriter allows multiple document writes in parallel. The BulkWriter
+// A BulkWriter supports concurrent writes to multiple documents. The BulkWriter
 // submits document writes in maximum batches of 20 writes per request. Each
 // request can contain many different document writes: create, delete, update,
 // and set are all supported. Only one operation per document is allowed.
@@ -72,13 +68,13 @@ type BulkWriter struct {
 	database        string             // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
 	start           time.Time          // when this BulkWriter was started; used to calculate qps and rate increases
 	vc              *vkit.Client       // internal client
-	isOpen          bool               // flag that the BulkWriter is closed
 	maxOpsPerSecond int                // number of requests that can be sent per second
 	docUpdatePaths  map[string]bool    // document paths with corresponding writes in the queue
 	cancel          context.CancelFunc // context to send cancel message
 	bundler         *bundler.Bundler   // handle bundling up writes to Firestore
 	ctx             context.Context    // context for canceling BulkWriter operations
 	openLock        sync.Mutex         // guards against setting isOpen concurrently
+	isOpen          bool               // flag that the BulkWriter is closed
 }
 
 // newBulkWriter creates a new instance of the BulkWriter. This
@@ -222,9 +218,11 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 // an error if either the BulkWriter has already been closed or if it
 // receives a nil document reference.
 func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
+	bw.openLock.Lock()
 	if !bw.isOpen {
 		return errors.New("firestore: BulkWriter has been closed")
 	}
+	bw.openLock.Unlock()
 
 	if doc == nil {
 		return errors.New("firestore: nil document contents")
@@ -242,17 +240,15 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 
 // write packages up write requests into bulkWriterJob objects.
 func (bw *BulkWriter) write(w *pb.Write) BulkWriterJob {
-	r := make(chan *pb.WriteResult, 1)
-	e := make(chan error, 1)
 
 	j := BulkWriterJob{
-		result: r,
+		result: make(chan *pb.WriteResult, 1),
 		write:  w,
-		err:    e,
-		size:   0, // ignore operation size constraints; can't be inferred at compile time
+		err:    make(chan error, 1),
+		ctx:    bw.ctx,
 	}
 
-	err := bw.bundler.Add(j, j.size)
+	err := bw.bundler.Add(j, 0) // ignore operation size constraints; can't be inferred at compile time
 	if err != nil {
 		j.err <- err
 		j.result <- nil
@@ -273,7 +269,7 @@ func (bw *BulkWriter) send(i interface{}) {
 		ws = append(ws, w.write)
 	}
 
-	bwr := pb.BatchWriteRequest{
+	bwr := &pb.BatchWriteRequest{
 		Database: bw.database,
 		Writes:   ws,
 		Labels:   map[string]string{},
@@ -281,9 +277,9 @@ func (bw *BulkWriter) send(i interface{}) {
 
 	select {
 	case <-bw.ctx.Done():
-		break
+		return
 	default:
-		resp, err := bw.vc.BatchWrite(bw.ctx, &bwr)
+		resp, err := bw.vc.BatchWrite(bw.ctx, bwr)
 		if err != nil {
 			// Do we need to be selective about what kind of errors we send?
 			for _, j := range bwj {
@@ -304,7 +300,7 @@ func (bw *BulkWriter) send(i interface{}) {
 
 				// Do we need separate retry bundler
 				if j.attempts < maxRetryAttempts {
-					bw.bundler.Add(j, j.size)
+					bw.bundler.Add(j, 0) // ignore operation size constraints; can't be inferred at compile time
 				}
 				continue
 			}

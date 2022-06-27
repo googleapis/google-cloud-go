@@ -299,8 +299,7 @@ func (c *Client) Batch() *WriteBatch {
 }
 
 // BulkWriter returns a BulkWriter instance.
-func (c *Client) BulkWriter() *BulkWriter {
-	ctx := context.Background()
+func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 	bw := newBulkWriter(ctx, c, c.path())
 	return bw
 }

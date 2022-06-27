@@ -1,6 +1,7 @@
 package firestore
 
 import (
+	"context"
 	"testing"
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
@@ -139,7 +140,8 @@ func TestBulkWriter(t *testing.T) {
 		},
 	)
 
-	bw := c.BulkWriter()
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
 	wantWRs := []*WriteResult{{aTime}, {aTime2}, {aTime3}, {aTime3}}
 	tcs := []bulkwriterTestCase{
 		{
@@ -193,7 +195,8 @@ func TestBulkWriter(t *testing.T) {
 func TestBulkWriterErrors(t *testing.T) {
 	c, _, cleanup := newMock(t)
 	defer cleanup()
-	b := c.BulkWriter()
+	ctx := context.Background()
+	b := c.BulkWriter(ctx)
 
 	tcs := []bulkwriterTestCase{
 		{

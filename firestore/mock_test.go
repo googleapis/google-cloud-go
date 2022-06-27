@@ -19,7 +19,6 @@ package firestore
 import (
 	"context"
 	"fmt"
-	"log"
 	"reflect"
 	"sort"
 	"strings"
@@ -234,6 +233,5 @@ func (s *mockServer) BatchWrite(_ context.Context, req *pb.BatchWriteRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	log.Println(res)
 	return res.(*pb.BatchWriteResponse), nil
 }
