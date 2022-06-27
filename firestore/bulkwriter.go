@@ -148,7 +148,7 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJo
 	}
 
 	j := bw.write(w[0])
-	return &j, nil
+	return j, nil
 }
 
 // Delete adds a document deletion write to the queue of writes to send.
@@ -169,7 +169,7 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkW
 	}
 
 	j := bw.write(w[0])
-	return &j, nil
+	return j, nil
 }
 
 // Set adds a document set write to the queue of writes to send.
@@ -190,7 +190,7 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 	}
 
 	j := bw.write(w[0])
-	return &j, nil
+	return j, nil
 }
 
 // Update adds a document update write to the queue of writes to send.
@@ -211,7 +211,7 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 	}
 
 	j := bw.write(w[0])
-	return &j, nil
+	return j, nil
 }
 
 // checkConditions determines whether this write attempt is valid. It returns
@@ -239,7 +239,7 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 }
 
 // write packages up write requests into bulkWriterJob objects.
-func (bw *BulkWriter) write(w *pb.Write) BulkWriterJob {
+func (bw *BulkWriter) write(w *pb.Write) *BulkWriterJob {
 
 	j := BulkWriterJob{
 		result: make(chan *pb.WriteResult, 1),
@@ -253,7 +253,7 @@ func (bw *BulkWriter) write(w *pb.Write) BulkWriterJob {
 		j.err <- err
 		j.result <- nil
 	}
-	return j
+	return &j
 }
 
 // send transmits writes to the service and matches response results to job channels.
