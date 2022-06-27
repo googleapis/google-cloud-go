@@ -36,6 +36,18 @@ func ExampleNewCloudSchedulerClient() {
 	_ = c
 }
 
+func ExampleNewCloudSchedulerRESTClient() {
+	ctx := context.Background()
+	c, err := scheduler.NewCloudSchedulerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudSchedulerClient_ListJobs() {
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)

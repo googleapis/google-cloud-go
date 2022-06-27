@@ -36,6 +36,18 @@ func ExampleNewMessagesV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewMessagesV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewMessagesV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleMessagesV1Beta3Client_ListJobMessages() {
 	ctx := context.Background()
 	c, err := dataflow.NewMessagesV1Beta3Client(ctx)

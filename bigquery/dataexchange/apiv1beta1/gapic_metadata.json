@@ -86,6 +86,86 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "AnalyticsHubClient",
+          "rpcs": {
+            "CreateDataExchange": {
+              "methods": [
+                "CreateDataExchange"
+              ]
+            },
+            "CreateListing": {
+              "methods": [
+                "CreateListing"
+              ]
+            },
+            "DeleteDataExchange": {
+              "methods": [
+                "DeleteDataExchange"
+              ]
+            },
+            "DeleteListing": {
+              "methods": [
+                "DeleteListing"
+              ]
+            },
+            "GetDataExchange": {
+              "methods": [
+                "GetDataExchange"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetListing": {
+              "methods": [
+                "GetListing"
+              ]
+            },
+            "ListDataExchanges": {
+              "methods": [
+                "ListDataExchanges"
+              ]
+            },
+            "ListListings": {
+              "methods": [
+                "ListListings"
+              ]
+            },
+            "ListOrgDataExchanges": {
+              "methods": [
+                "ListOrgDataExchanges"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SubscribeListing": {
+              "methods": [
+                "SubscribeListing"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDataExchange": {
+              "methods": [
+                "UpdateDataExchange"
+              ]
+            },
+            "UpdateListing": {
+              "methods": [
+                "UpdateListing"
+              ]
+            }
+          }
         }
       }
     }
