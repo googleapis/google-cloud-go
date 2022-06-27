@@ -46,10 +46,10 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 
 // processResults checks for errors returned from send() and packages up the
 // results as WriteResult objects
-func (o *BulkWriterJob) processResults() (*WriteResult, error) {
+func (j *BulkWriterJob) processResults() (*WriteResult, error) {
 	//  TODO(telpirion): Refactor this to use select/case
-	wpb := <-o.result
-	err := <-o.err
+	wpb := <-j.result
+	err := <-j.err
 
 	if err != nil {
 		return nil, err
@@ -57,6 +57,18 @@ func (o *BulkWriterJob) processResults() (*WriteResult, error) {
 
 	return writeResultFromProto(wpb)
 
+}
+
+// setError ensures that an error is returned on the error channel of BulkWriterJob.
+func (j *BulkWriterJob) setError(e error) {
+	j.err <- e
+	j.result <- nil
+}
+
+// setSuccess ensures that a WriteResult is returned to the result channel of BulkWriterJob.
+func (j *BulkWriterJob) setResult(r *pb.WriteResult) {
+	j.err <- nil
+	j.result <- r
 }
 
 // A BulkWriter supports concurrent writes to multiple documents. The BulkWriter
@@ -250,8 +262,7 @@ func (bw *BulkWriter) write(w *pb.Write) *BulkWriterJob {
 
 	err := bw.bundler.Add(j, 0) // ignore operation size constraints; can't be inferred at compile time
 	if err != nil {
-		j.err <- err
-		j.result <- nil
+		j.setError(err)
 	}
 	return &j
 }
@@ -283,8 +294,7 @@ func (bw *BulkWriter) send(i interface{}) {
 		if err != nil {
 			// Do we need to be selective about what kind of errors we send?
 			for _, j := range bwj {
-				j.result <- nil
-				j.err <- err
+				j.setError(err)
 			}
 			return
 		}
@@ -305,8 +315,7 @@ func (bw *BulkWriter) send(i interface{}) {
 				continue
 			}
 
-			bwj[i].result <- res
-			bwj[i].err <- nil
+			bwj[i].setResult(res)
 		}
 		// This means the writes are now finalized, all retries completed
 	}
