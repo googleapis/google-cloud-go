@@ -3,7 +3,7 @@ module cloud.google.com/go/pubsublite
 go 1.15
 
 require (
-	cloud.google.com/go v0.102.0
+	cloud.google.com/go v0.102.1
 	cloud.google.com/go/pubsub v1.22.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.8
@@ -11,7 +11,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.4.0
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
 	google.golang.org/api v0.84.0
-	google.golang.org/genproto v0.0.0-20220616135557-88e70c0c3a90
+	google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad
 	google.golang.org/grpc v1.47.0
 	google.golang.org/protobuf v1.28.0
 )

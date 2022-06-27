@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.3.0...dataplex/v0.4.0) (2022-02-23)
 
 

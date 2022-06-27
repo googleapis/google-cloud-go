@@ -19,8 +19,6 @@
 //
 // Notebooks API is used to manage notebook resources in Google Cloud.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Example usage
 //
 // To get started with this package, create a client.
