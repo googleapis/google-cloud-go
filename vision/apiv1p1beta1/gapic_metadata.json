@@ -16,6 +16,16 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ImageAnnotatorClient",
+          "rpcs": {
+            "BatchAnnotateImages": {
+              "methods": [
+                "BatchAnnotateImages"
+              ]
+            }
+          }
         }
       }
     }
