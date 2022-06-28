@@ -540,11 +540,19 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 	// Delete the entity and copy other remaining ACL entities.
 	// Note: This API currently does not support entites using project ID.
 	// Use project numbers in ACL entities. Pending b/233617896.
+	// Return error if entity is not found or a project ID is used.
+	invalidEntity := true
 	var acl []ACLRule
 	for _, a := range attrs.DefaultObjectACL {
 		if a.Entity != entity {
 			acl = append(acl, a)
 		}
+		if a.Entity == entity {
+			invalidEntity = false
+		}
+	}
+	if invalidEntity {
+		return errInvalidEntity
 	}
 	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -594,11 +602,19 @@ func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 	// Delete the entity and copy other remaining ACL entities.
 	// Note: This API currently does not support entites using project ID.
 	// Use project numbers in ACL entities. Pending b/233617896.
+	// Return error if entity is not found or a project ID is used.
+	invalidEntity := true
 	var acl []ACLRule
 	for _, a := range attrs.ACL {
 		if a.Entity != entity {
 			acl = append(acl, a)
 		}
+		if a.Entity == entity {
+			invalidEntity = false
+		}
+	}
+	if invalidEntity {
+		return errInvalidEntity
 	}
 	uattrs := &BucketAttrsToUpdate{acl: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -648,11 +664,19 @@ func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object 
 	// Delete the entity and copy other remaining ACL entities.
 	// Note: This API currently does not support entites using project ID.
 	// Use project numbers in ACL entities. Pending b/233617896.
+	// Return error if entity is not found or a project ID is used.
+	invalidEntity := true
 	var acl []ACLRule
 	for _, a := range attrs.ACL {
 		if a.Entity != entity {
 			acl = append(acl, a)
 		}
+		if a.Entity == entity {
+			invalidEntity = false
+		}
+	}
+	if invalidEntity {
+		return errInvalidEntity
 	}
 	uattrs := &ObjectAttrsToUpdate{ACL: acl}
 	// Call UpdateObject with the specified metageneration.

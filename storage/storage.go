@@ -61,6 +61,9 @@ var signedURLMethods = map[string]bool{"DELETE": true, "GET": true, "HEAD": true
 var (
 	// ErrBucketNotExist indicates that the bucket does not exist.
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
+	// errInvalidEntity indicates that the ACL entity is not found or project id is not currently supported by the gRPC client.
+	// TODO: Export this error when launching the transport-agnostic client.
+	errInvalidEntity = errors.New("storage: entity was not found. The API currently does not support entites using project ID, use project numbers instead.")
 	// ErrObjectNotExist indicates that the object does not exist.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
 	// errMethodNotSupported indicates that the method called is not currently supported by the client.
