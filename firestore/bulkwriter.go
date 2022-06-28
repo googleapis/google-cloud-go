@@ -34,9 +34,9 @@ type BulkWriterJob struct {
 	ctx      context.Context      // context for canceling/timing out results
 }
 
-// Results gets the results of the BulkWriter write attempt
-// Attempting to access the results before the results have been received blocks
-// subsequent calls (until the result is received).
+// Results gets the results of the BulkWriter write attempt.
+// This method blocks if the results for this BulkWriterJob haven't been
+// received.
 func (j *BulkWriterJob) Results() (*WriteResult, error) {
 	if j.wr == nil && j.e == nil {
 		j.wr, j.e = j.processResults() // cache the results for additional calls
@@ -47,35 +47,35 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 // processResults checks for errors returned from send() and packages up the
 // results as WriteResult objects
 func (j *BulkWriterJob) processResults() (*WriteResult, error) {
-	//  TODO(telpirion): Refactor this to use select/case
-	wpb := <-j.result
-	err := <-j.err
-
-	if err != nil {
+	select {
+	case <-j.ctx.Done():
+		return nil, fmt.Errorf("bulkwriter: early write cancellation")
+	case wpb := <-j.result:
+		return writeResultFromProto(wpb)
+	case err := <-j.err:
 		return nil, err
 	}
-
-	return writeResultFromProto(wpb)
-
 }
 
 // setError ensures that an error is returned on the error channel of BulkWriterJob.
 func (j *BulkWriterJob) setError(e error) {
 	j.err <- e
-	j.result <- nil
 }
 
 // setSuccess ensures that a WriteResult is returned to the result channel of BulkWriterJob.
 func (j *BulkWriterJob) setResult(r *pb.WriteResult) {
-	j.err <- nil
 	j.result <- r
 }
 
 // A BulkWriter supports concurrent writes to multiple documents. The BulkWriter
 // submits document writes in maximum batches of 20 writes per request. Each
 // request can contain many different document writes: create, delete, update,
-// and set are all supported. Only one operation per document is allowed.
-// Each call to Create, Update, Set, and Delete can return a value and error.
+// and set are all supported.
+//
+// Only one operation (create, set, update, delete) per document is allowed.
+// BulkWriter cannot promise atomicity: individual writes can fail or succeed
+// independent of each other. Bulkwriter does not apply writes in any set order;
+// thus a document can't have set on it immediately after creation.
 type BulkWriter struct {
 	database        string             // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
 	start           time.Time          // when this BulkWriter was started; used to calculate qps and rate increases
@@ -84,7 +84,7 @@ type BulkWriter struct {
 	docUpdatePaths  map[string]bool    // document paths with corresponding writes in the queue
 	cancel          context.CancelFunc // context to send cancel message
 	bundler         *bundler.Bundler   // handle bundling up writes to Firestore
-	ctx             context.Context    // context for canceling BulkWriter operations
+	ctx             context.Context    // context for canceling all BulkWriter operations
 	openLock        sync.Mutex         // guards against setting isOpen concurrently
 	isOpen          bool               // flag that the BulkWriter is closed
 }
@@ -93,6 +93,8 @@ type BulkWriter struct {
 // version of BulkWriter is intended to be used within go routines by the
 // callers.
 func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter {
+	// Although typically we shouldn't store Context objects, in this case we
+	// need to pass this Context through to the Bundler
 	ctx, cancel := context.WithCancel(withResourceHeader(ctx, c.path()))
 
 	bw := &BulkWriter{
@@ -121,7 +123,6 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 // in the queue.
 func (b *BulkWriter) End() {
 	b.Flush()
-	b.cancel()
 	b.openLock.Lock()
 	b.isOpen = false
 	b.openLock.Unlock()
@@ -130,7 +131,6 @@ func (b *BulkWriter) End() {
 // Flush commits all writes that have been enqueued up to this point in parallel.
 // This method blocks execution.
 func (bw *BulkWriter) Flush() {
-	// Ensure that the backlogQueue is empty
 	bw.bundler.Flush()
 }
 
@@ -230,12 +230,9 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 // an error if either the BulkWriter has already been closed or if it
 // receives a nil document reference.
 func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
-	bw.openLock.Lock()
-	if !bw.isOpen {
+	if !bw.IsOpen() {
 		return errors.New("firestore: BulkWriter has been closed")
 	}
-	bw.openLock.Unlock()
-
 	if doc == nil {
 		return errors.New("firestore: nil document contents")
 	}
