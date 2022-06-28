@@ -20,8 +20,6 @@
 // Manage workflow definitions. To execute workflows and manage executions,
 // see the Workflows Executions API.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Example usage
 //
 // To get started with this package, create a client.
