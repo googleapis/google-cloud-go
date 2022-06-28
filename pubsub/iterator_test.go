@@ -621,14 +621,11 @@ func TestPingStreamAckDeadline(t *testing.T) {
 }
 
 func TestExactlyOnceProcessRequests(t *testing.T) {
-<<<<<<< HEAD
 	ctx := context.Background()
 
-=======
->>>>>>> 9f5510c83 (add process results)
-	t.Run("no results", func(t *testing.T) {
+	t.Run("no_results", func(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
-		// Nil maps here behave the same as if they were empty maps.
+		// nil maps here behave the same as if they were empty maps.
 		completed, retry := processResults(nil, nil, nil)
 		if len(completed) != 0 {
 			t.Errorf("expected completed slice to be empty, got: %v\n", completed)
@@ -638,33 +635,32 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("no errors, nil AckResult", func(t *testing.T) {
-		// No errors so request should be completed even without an AckResult
+	t.Run("no_errors_nil_AckResult", func(t *testing.T) {
+		// No errors so request should be completed even without an AckResult.
 		ackReqMap := map[string]*AckResult{
 			"ackID": nil,
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
-		fmt.Printf("completed: %+v\n", completed)
 		if len(completed) != 1 {
-			t.Errorf("expected completed slice to be 1, got: %v\n", completed)
+			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
 		}
 		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", completed)
+			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
 		}
 	})
 
 	t.Run("no errors", func(t *testing.T) {
-		// No errors so result should be completed
+		// No errors so AckResult should be completed with success.
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
-			"ackID": r,
+			"ackID1": r,
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
 		if len(completed) != 1 {
-			t.Errorf("expected completed slice to be 1, got: %v\n", completed)
+			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
 		}
 		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", completed)
+			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
 		}
 		s, err := r.Get(ctx)
 		if err != nil {
@@ -675,4 +671,184 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
+	t.Run("permanent error, invalid ack ID", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		errorsMap := map[string]string{
+			"ackID1": "PERMANENT_FAILURE_INVALID_ACK_ID",
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		if len(completed) != 1 {
+			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
+		}
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("expected error from AckResult, got nil\n")
+		}
+		if s != AcknowledgeStatusInvalidAckID {
+			t.Errorf("expected AcknowledgeStatusSuccess, got %v", s)
+		}
+	})
+
+	t.Run("transient error, invalid ack ID", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		errorsMap := map[string]string{
+			"ackID1": "TRANSIENT_FAILURE_INVALID_ACK_ID",
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		if len(completed) != 0 {
+			t.Errorf("expected completed slice to be empty, got: %v\n", len(completed))
+		}
+		if len(retry) != 1 {
+			t.Errorf("expected retry slice length to be 1, got: %v\n", len(retry))
+		}
+	})
+
+	t.Run("unknown error", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		errorsMap := map[string]string{
+			"ackID1": "unknown_error",
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		if len(completed) != 1 {
+			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
+		}
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("expected error from AckResult, got nil\n")
+		}
+		if s != AcknowledgeStatusOther {
+			t.Errorf("expected AcknowledgeStatusOther, got %v", s)
+		}
+		if err.Error() != "unknown_error" {
+			t.Errorf("expected unknwon_error, got: %s", err.Error())
+		}
+	})
+
+	t.Run("permission denied", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		st := status.New(codes.PermissionDenied, "permission denied")
+		completed, retry := processResults(st, ackReqMap, nil)
+		if len(completed) != 1 {
+			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
+		}
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("expected error from AckResult, got nil\n")
+		}
+		if s != AcknowledgeStatusPermissionDenied {
+			t.Errorf("expected AcknowledgeStatusPermissionDenied, got %v", s)
+		}
+	})
+
+	t.Run("failed precondition", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		st := status.New(codes.FailedPrecondition, "failed_precondition")
+		completed, retry := processResults(st, ackReqMap, nil)
+		if len(completed) != 1 {
+			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
+		}
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("expected error from AckResult, got nil\n")
+		}
+		if s != AcknowledgeStatusFailedPrecondition {
+			t.Errorf("expected AcknowledgeStatusFailedPrecondition, got %v", s)
+		}
+	})
+
+	t.Run("other error status", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		st := status.New(codes.OutOfRange, "out of range")
+		completed, retry := processResults(st, ackReqMap, nil)
+		if len(completed) != 1 {
+			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
+		}
+		if len(retry) != 0 {
+			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
+		}
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("expected error from AckResult, got nil\n")
+		}
+		if s != AcknowledgeStatusOther {
+			t.Errorf("expected AcknowledgeStatusOther, got %v", s)
+		}
+	})
+
+	t.Run("mixed success and failure acks", func(t *testing.T) {
+		r1 := ipubsub.NewAckResult()
+		r2 := ipubsub.NewAckResult()
+		r3 := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r1,
+			"ackID2": r2,
+			"ackID3": r3,
+		}
+		errorsMap := map[string]string{
+			"ackID1": "PERMANENT_FAILURE_INVALID_ACK_ID",
+			"ackID2": "TRANSIENT_FAILURE_INVALID_ACK_ID",
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		if len(completed) != 2 {
+			t.Errorf("expected completed slice length to be 2, got: %v\n", len(completed))
+		}
+		if len(retry) != 1 {
+			t.Errorf("expected retry slice length to be 1, got: %v\n", len(retry))
+		}
+		// message with ackID "ackID1" fails
+		s, err := completed[0].Get(ctx)
+		if err == nil {
+			t.Error("r1: expected error from AckResult, got nil\n")
+		}
+		if s != AcknowledgeStatusInvalidAckID {
+			t.Errorf("r1: expected AcknowledgeInvalidAckID, got %v", s)
+		}
+
+		// message with ackID "ackID2" is to be retried
+		ctx2, cancel := context.WithTimeout(ctx, 2*time.Second)
+		defer cancel()
+		_, err = retry[0].Get(ctx2)
+		if err.Error() != "context deadline exceeded" {
+			t.Errorf("r2: expected AckResult.Get to timeout, got: %v", err)
+		}
+
+		// message with ackID "ackID3" succeeds
+		s, err = completed[1].Get(ctx)
+		if err != nil {
+			t.Errorf("r3: got err from AckResult.Get: %v\n", err)
+		}
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("r3: expected AcknowledgeStatusSuccess, got %v", s)
+		}
+	})
 }
