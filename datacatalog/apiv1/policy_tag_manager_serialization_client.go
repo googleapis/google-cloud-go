@@ -61,7 +61,7 @@ func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializ
 	}
 }
 
-// internalPolicyTagManagerSerializationClient is an interface that defines the methods availaible from Google Cloud Data Catalog API.
+// internalPolicyTagManagerSerializationClient is an interface that defines the methods available from Google Cloud Data Catalog API.
 type internalPolicyTagManagerSerializationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

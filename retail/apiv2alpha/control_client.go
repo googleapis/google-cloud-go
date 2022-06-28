@@ -66,7 +66,7 @@ func defaultControlCallOptions() *ControlCallOptions {
 	}
 }
 
-// internalControlClient is an interface that defines the methods availaible from Retail API.
+// internalControlClient is an interface that defines the methods available from Retail API.
 type internalControlClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

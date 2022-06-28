@@ -56,7 +56,7 @@ func defaultSqlTranslationCallOptions() *SqlTranslationCallOptions {
 	}
 }
 
-// internalSqlTranslationClient is an interface that defines the methods availaible from BigQuery Migration API.
+// internalSqlTranslationClient is an interface that defines the methods available from BigQuery Migration API.
 type internalSqlTranslationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

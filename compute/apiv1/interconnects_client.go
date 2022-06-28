@@ -50,7 +50,18 @@ type InterconnectsCallOptions struct {
 	Patch          []gax.CallOption
 }
 
-// internalInterconnectsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultInterconnectsRESTCallOptions() *InterconnectsCallOptions {
+	return &InterconnectsCallOptions{
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		GetDiagnostics: []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+		Patch:          []gax.CallOption{},
+	}
+}
+
+// internalInterconnectsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalInterconnectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -140,6 +151,9 @@ type interconnectsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing InterconnectsClient
+	CallOptions **InterconnectsCallOptions
 }
 
 // NewInterconnectsRESTClient creates a new interconnects rest client.
@@ -152,9 +166,11 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 		return nil, err
 	}
 
+	callOpts := defaultInterconnectsRESTCallOptions()
 	c := &interconnectsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -168,7 +184,7 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 	}
 	c.operationClient = opC
 
-	return &InterconnectsClient{internalClient: c, CallOptions: &InterconnectsCallOptions{}}, nil
+	return &InterconnectsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultInterconnectsRESTClientOptions() []option.ClientOption {
@@ -226,6 +242,7 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -285,6 +302,7 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Interconnect{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -337,6 +355,7 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetDiagnostics[0:len((*c.CallOptions).GetDiagnostics):len((*c.CallOptions).GetDiagnostics)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InterconnectsGetDiagnosticsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -403,6 +422,7 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -572,6 +592,7 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

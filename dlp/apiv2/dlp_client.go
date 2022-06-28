@@ -346,7 +346,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Data Loss Prevention (DLP) API.
+// internalClient is an interface that defines the methods available from Cloud Data Loss Prevention (DLP) API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

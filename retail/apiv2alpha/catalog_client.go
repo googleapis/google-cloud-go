@@ -201,7 +201,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 	}
 }
 
-// internalCatalogClient is an interface that defines the methods availaible from Retail API.
+// internalCatalogClient is an interface that defines the methods available from Retail API.
 type internalCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

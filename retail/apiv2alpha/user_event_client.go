@@ -125,7 +125,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 	}
 }
 
-// internalUserEventClient is an interface that defines the methods availaible from Retail API.
+// internalUserEventClient is an interface that defines the methods available from Retail API.
 type internalUserEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

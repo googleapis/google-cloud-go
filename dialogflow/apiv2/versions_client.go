@@ -118,7 +118,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 	}
 }
 
-// internalVersionsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalVersionsClient is an interface that defines the methods available from Dialogflow API.
 type internalVersionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

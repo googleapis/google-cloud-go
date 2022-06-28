@@ -82,7 +82,7 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 	}
 }
 
-// internalAnswerRecordsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalAnswerRecordsClient is an interface that defines the methods available from Dialogflow API.
 type internalAnswerRecordsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

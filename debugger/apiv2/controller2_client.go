@@ -84,7 +84,7 @@ func defaultController2CallOptions() *Controller2CallOptions {
 	}
 }
 
-// internalController2Client is an interface that defines the methods availaible from Stackdriver Debugger API.
+// internalController2Client is an interface that defines the methods available from Stackdriver Debugger API.
 type internalController2Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

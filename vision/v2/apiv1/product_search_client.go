@@ -293,7 +293,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 	}
 }
 
-// internalProductSearchClient is an interface that defines the methods availaible from Cloud Vision API.
+// internalProductSearchClient is an interface that defines the methods available from Cloud Vision API.
 type internalProductSearchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -26,12 +26,67 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "BigQueryReadClient",
+          "rpcs": {
+            "CreateReadSession": {
+              "methods": [
+                "CreateReadSession"
+              ]
+            },
+            "ReadRows": {
+              "methods": [
+                "ReadRows"
+              ]
+            },
+            "SplitReadStream": {
+              "methods": [
+                "SplitReadStream"
+              ]
+            }
+          }
         }
       }
     },
     "BigQueryWrite": {
       "clients": {
         "grpc": {
+          "libraryClient": "BigQueryWriteClient",
+          "rpcs": {
+            "AppendRows": {
+              "methods": [
+                "AppendRows"
+              ]
+            },
+            "BatchCommitWriteStreams": {
+              "methods": [
+                "BatchCommitWriteStreams"
+              ]
+            },
+            "CreateWriteStream": {
+              "methods": [
+                "CreateWriteStream"
+              ]
+            },
+            "FinalizeWriteStream": {
+              "methods": [
+                "FinalizeWriteStream"
+              ]
+            },
+            "FlushRows": {
+              "methods": [
+                "FlushRows"
+              ]
+            },
+            "GetWriteStream": {
+              "methods": [
+                "GetWriteStream"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "BigQueryWriteClient",
           "rpcs": {
             "AppendRows": {

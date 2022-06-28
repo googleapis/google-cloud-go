@@ -1,5 +1,13 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.9.0...dialogflow/v1.10.0) (2022-06-16)
+
+
+### Features
+
+* **dialogflow/cx:** added webhook_config ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+* **dialogflow/cx:** added webhook_config ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.8.1...dialogflow/v1.9.0) (2022-05-24)
 
 

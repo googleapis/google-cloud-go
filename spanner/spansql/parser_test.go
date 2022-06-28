@@ -300,6 +300,48 @@ func TestParseQuery(t *testing.T) {
 	}
 }
 
+func TestParseDMLStmt(t *testing.T) {
+	tests := []struct {
+		in   string
+		want DMLStmt
+	}{
+		{"INSERT Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+		},
+		{"INSERT Singers (SingerId, FirstName, LastName) SELECT * FROM UNNEST ([1, 2, 3]) AS data",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromUnnest{
+						Expr: Array{
+							IntegerLiteral(1),
+							IntegerLiteral(2),
+							IntegerLiteral(3),
+						},
+						Alias: ID("data"),
+					}},
+				},
+			},
+		},
+	}
+	for _, test := range tests {
+		got, err := ParseDMLStmt(test.in)
+		if err != nil {
+			t.Errorf("ParseDMLStmt(%q): %v", test.in, err)
+			continue
+		}
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("ParseDMLStmt(%q) incorrect.\n got %#v\nwant %#v", test.in, got, test.want)
+		}
+	}
+}
+
 func TestParseExpr(t *testing.T) {
 	tests := []struct {
 		in   string

@@ -157,7 +157,7 @@ func defaultDocumentsCallOptions() *DocumentsCallOptions {
 	}
 }
 
-// internalDocumentsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalDocumentsClient is an interface that defines the methods available from Dialogflow API.
 type internalDocumentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

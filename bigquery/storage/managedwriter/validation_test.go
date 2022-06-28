@@ -151,31 +151,29 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerValueCount("enum_field", int64(testdata.Proto2ExampleEnum_P2_OTHER_THING), 1),
 			},
 		},
-		/*
-			BACKEND BEHAVIOR CURRENTLY INCORRECT for proto3 non-presence defaults.
-			{
-				description: "proto3 default values",
-				tableSchema: testdata.ValidationBaseSchema,
-				inputRow:    &testdata.ValidationP3Defaults{},
-				constraints: []constraintOption{
-					withExactRowCount(1),
-					withFloatValueCount("double_field", 0, 1),
-					withFloatValueCount("float_field", 0, 1),
-					withIntegerValueCount("int32_field", 0, 1),
-					withIntegerValueCount("int64_field", 0, 1),
-					withIntegerValueCount("uint32_field", 0, 1),
-					withIntegerValueCount("sint32_field", 0, 1),
-					withIntegerValueCount("sint64_field", 0, 1),
-					withIntegerValueCount("fixed32_field", 0, 1),
-					withIntegerValueCount("sfixed32_field", 0, 1),
-					withIntegerValueCount("sfixed64_field", 0, 1),
-					withBoolValueCount("bool_field", false, 1),
-					withStringValueCount("string_field", "", 1),
-					withBytesValueCount("bytes_field", []byte(""), 1),
-					withIntegerValueCount("enum_field", int64(0), 1),
-				},
+
+		{
+			description: "proto3 default values",
+			tableSchema: testdata.ValidationBaseSchema,
+			inputRow:    &testdata.ValidationP3Defaults{},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+				withFloatValueCount("double_field", 0, 1),
+				withFloatValueCount("float_field", 0, 1),
+				withIntegerValueCount("int32_field", 0, 1),
+				withIntegerValueCount("int64_field", 0, 1),
+				withIntegerValueCount("uint32_field", 0, 1),
+				withIntegerValueCount("sint32_field", 0, 1),
+				withIntegerValueCount("sint64_field", 0, 1),
+				withIntegerValueCount("fixed32_field", 0, 1),
+				withIntegerValueCount("sfixed32_field", 0, 1),
+				withIntegerValueCount("sfixed64_field", 0, 1),
+				withBoolValueCount("bool_field", false, 1),
+				withStringValueCount("string_field", "", 1),
+				withBytesValueCount("bytes_field", []byte(""), 1),
+				withIntegerValueCount("enum_field", int64(0), 1),
 			},
-		*/
+		},
 		/*
 			BACKEND BEHAVIOR FOR WRAPPER TYPES CURRENTLY INCORRECT
 			{

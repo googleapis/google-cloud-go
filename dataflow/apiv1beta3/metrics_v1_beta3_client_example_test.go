@@ -36,6 +36,18 @@ func ExampleNewMetricsV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewMetricsV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewMetricsV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleMetricsV1Beta3Client_GetJobMetrics() {
 	ctx := context.Background()
 	c, err := dataflow.NewMetricsV1Beta3Client(ctx)

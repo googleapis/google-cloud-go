@@ -1,5 +1,13 @@
 # Changes
 
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.5.0...binaryauthorization/v0.6.0) (2022-06-17)
+
+
+### Features
+
+* **binaryauthorization:** Adds a pod_namespace field to pod events created by Continuous Validation, to distinguish pods with the same name that run in different namespaces ([c84e111](https://github.com/googleapis/google-cloud-go/commit/c84e111db5d3f57f4e8fbb5dfff0219d052435a0))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.4.0...binaryauthorization/v0.5.0) (2022-05-09)
 
 

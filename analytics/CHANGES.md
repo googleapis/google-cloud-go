@@ -1,5 +1,12 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.6.1...analytics/v0.7.0) (2022-06-16)
+
+
+### Features
+
+* **analytics/admin:** Add Java REST transport to analytics, servicecontrol, servicemanagement, serviceusage and langauge APIs ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+
 ### [0.6.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.6.0...analytics/v0.6.1) (2022-05-24)
 
 

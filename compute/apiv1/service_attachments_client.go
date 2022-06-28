@@ -54,7 +54,21 @@ type ServiceAttachmentsCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalServiceAttachmentsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultServiceAttachmentsRESTCallOptions() *ServiceAttachmentsCallOptions {
+	return &ServiceAttachmentsCallOptions{
+		AggregatedList:     []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		Patch:              []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalServiceAttachmentsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalServiceAttachmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -162,6 +176,9 @@ type serviceAttachmentsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ServiceAttachmentsClient
+	CallOptions **ServiceAttachmentsCallOptions
 }
 
 // NewServiceAttachmentsRESTClient creates a new service attachments rest client.
@@ -174,9 +191,11 @@ func NewServiceAttachmentsRESTClient(ctx context.Context, opts ...option.ClientO
 		return nil, err
 	}
 
+	callOpts := defaultServiceAttachmentsRESTCallOptions()
 	c := &serviceAttachmentsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -190,7 +209,7 @@ func NewServiceAttachmentsRESTClient(ctx context.Context, opts ...option.ClientO
 	}
 	c.operationClient = opC
 
-	return &ServiceAttachmentsClient{internalClient: c, CallOptions: &ServiceAttachmentsCallOptions{}}, nil
+	return &ServiceAttachmentsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultServiceAttachmentsRESTClientOptions() []option.ClientOption {
@@ -354,6 +373,7 @@ func (c *serviceAttachmentsRESTClient) Delete(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "service_attachment", url.QueryEscape(req.GetServiceAttachment())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -414,6 +434,7 @@ func (c *serviceAttachmentsRESTClient) Get(ctx context.Context, req *computepb.G
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "service_attachment", url.QueryEscape(req.GetServiceAttachment())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.ServiceAttachment{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -473,6 +494,7 @@ func (c *serviceAttachmentsRESTClient) GetIamPolicy(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -539,6 +561,7 @@ func (c *serviceAttachmentsRESTClient) Insert(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -709,6 +732,7 @@ func (c *serviceAttachmentsRESTClient) Patch(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "service_attachment", url.QueryEscape(req.GetServiceAttachment())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -776,6 +800,7 @@ func (c *serviceAttachmentsRESTClient) SetIamPolicy(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -835,6 +860,7 @@ func (c *serviceAttachmentsRESTClient) TestIamPermissions(ctx context.Context, r
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

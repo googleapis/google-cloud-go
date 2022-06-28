@@ -50,7 +50,17 @@ type SslCertificatesCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalSslCertificatesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultSslCertificatesRESTCallOptions() *SslCertificatesCallOptions {
+	return &SslCertificatesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalSslCertificatesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalSslCertificatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -134,6 +144,9 @@ type sslCertificatesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing SslCertificatesClient
+	CallOptions **SslCertificatesCallOptions
 }
 
 // NewSslCertificatesRESTClient creates a new ssl certificates rest client.
@@ -146,9 +159,11 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		return nil, err
 	}
 
+	callOpts := defaultSslCertificatesRESTCallOptions()
 	c := &sslCertificatesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -162,7 +177,7 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 	}
 	c.operationClient = opC
 
-	return &SslCertificatesClient{internalClient: c, CallOptions: &SslCertificatesCallOptions{}}, nil
+	return &SslCertificatesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultSslCertificatesRESTClientOptions() []option.ClientOption {
@@ -326,6 +341,7 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "ssl_certificate", url.QueryEscape(req.GetSslCertificate())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -385,6 +401,7 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "ssl_certificate", url.QueryEscape(req.GetSslCertificate())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SslCertificate{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -451,6 +468,7 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

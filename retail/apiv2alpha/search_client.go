@@ -71,7 +71,7 @@ func defaultSearchCallOptions() *SearchCallOptions {
 	}
 }
 
-// internalSearchClient is an interface that defines the methods availaible from Retail API.
+// internalSearchClient is an interface that defines the methods available from Retail API.
 type internalSearchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

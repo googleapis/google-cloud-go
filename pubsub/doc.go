@@ -55,7 +55,7 @@ To receive messages published to a topic, clients create subscriptions
 to the topic. There may be more than one subscription per topic; each message
 that is published to the topic will be delivered to all of its subscriptions.
 
-Subsciptions may be created like so:
+Subscriptions may be created like so:
 
  sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name",
 	pubsub.SubscriptionConfig{Topic: topic})
@@ -90,6 +90,20 @@ Note: This uses pubsub's streaming pull feature. This feature properties that
 may be surprising. Please take a look at https://cloud.google.com/pubsub/docs/pull#streamingpull
 for more details on how streaming pull behaves compared to the synchronous
 pull method.
+
+
+Streams Management
+
+Streams used for streaming pull are managed by the gRPC connection pool setting.
+By default, the number of connections in the pool is max(4,GOMAXPROCS/NumCPU).
+
+If you have 4 or more CPU cores, the default setting allows 400 streams which is still a good default for most cases.
+If you want to have more open streams (such as for low CPU core machines), you should pass in the grpc option as described below:
+
+ opts := []option.ClientOption{
+	option.WithGRPCConnectionPool(8),
+ }
+ client, err := pubsub.NewClient(ctx, projID, opts...)
 
 
 Deadlines

@@ -103,7 +103,7 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 	}
 }
 
-// internalRealmsClient is an interface that defines the methods availaible from Game Services API.
+// internalRealmsClient is an interface that defines the methods available from Game Services API.
 type internalRealmsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

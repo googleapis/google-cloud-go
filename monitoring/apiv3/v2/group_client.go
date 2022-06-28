@@ -121,7 +121,7 @@ func defaultGroupCallOptions() *GroupCallOptions {
 	}
 }
 
-// internalGroupClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalGroupClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalGroupClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
