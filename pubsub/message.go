@@ -34,6 +34,11 @@ import (
 // fails, the Message will be redelivered. Nack indicates that the client will
 // not or cannot process a Message. Nack will result in the Message being
 // redelivered more quickly than if it were allowed to expire.
+//
+// If using exactly once delivery, you should call Message.AckWithResult and
+// Message.NackWithResult instead. These methods will return an AckResult,
+// which you should wait on to obtain the status of the Ack/Nack to ensure
+// these were properly processed by the server. If not,
 type Message = ipubsub.Message
 
 // msgAckHandler performs a safe cast of the message's ack handler to psAckHandler.
@@ -88,6 +93,7 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	msg.OrderingKey = resp.Message.OrderingKey
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc
+	ackh.ackResult = ipubsub.NewAckResult()
 	return msg, nil
 }
 
@@ -151,7 +157,6 @@ func (ah *psAckHandler) OnAckWithResult() *AckResult {
 	if !ah.exactlyOnceDelivery {
 		return newSuccessAckResult()
 	}
-	ah.ackResult = ipubsub.NewAckResult()
 	// call done with true to indicate ack.
 	ah.done(true)
 	return ah.ackResult
@@ -161,9 +166,12 @@ func (ah *psAckHandler) OnNackWithResult() *AckResult {
 	if !ah.exactlyOnceDelivery {
 		return newSuccessAckResult()
 	}
-	ah.ackResult = ipubsub.NewAckResult()
 	// call done with false to indicate nack.
 	ah.done(false)
+	return ah.ackResult
+}
+
+func (ah *psAckHandler) AckResult() *AckResult {
 	return ah.ackResult
 }
 

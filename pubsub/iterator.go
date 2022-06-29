@@ -16,11 +16,13 @@ package pubsub
 
 import (
 	"context"
+	"errors"
 	"io"
 	"strings"
 	"sync"
 	"time"
 
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/distribution"
 	gax "github.com/googleapis/gax-go/v2"
@@ -71,8 +73,14 @@ type messageIterator struct {
 	keepAliveDeadlines map[string]time.Time
 	pendingAcks        map[string]*AckResult
 	pendingNacks       map[string]*AckResult
-	pendingModAcks     map[string]*AckResult // ack IDs whose ack deadline is to be modified
-	err                error                 // error from stream failure
+	// ack IDs whose ack deadline is to be modified
+	// This technically does not need to be an AckResult, since it is just a set,
+	// but allows reuse of iterator.sendAckIDRPC.
+	pendingModAcks map[string]*AckResult
+	// This stores pending AckResults for cleaner shutdown when sub.Receive's ctx is cancelled.
+	// If exactly once delivery is not enabled, this map should not be populated.
+	pendingAckResults map[string]*AckResult
+	err               error // error from stream failure
 
 	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
@@ -175,6 +183,7 @@ func (it *messageIterator) done(ackID string, ack bool, r *AckResult, receiveTim
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	delete(it.keepAliveDeadlines, ackID)
+	delete(it.pendingAckResults, ackID)
 	if ack {
 		it.pendingAcks[ackID] = r
 	} else {
@@ -244,7 +253,20 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
 		if _, ok := it.pendingNacks[ackID]; !ok {
-			ackIDs[ackID] = nil
+			// Don't use the message's AckResult here.
+			// These ids are used for modacks which require an empty AckResult.
+			// Calling m.AckWithResult() (or NackWithResult) prematurely locks
+			// the message's ack/nack status.
+			ackIDs[ackID] = &ipubsub.AckResult{}
+		}
+		// If exactly once is enabled, keep track of all pending AckResults
+		// so we can cleanly close them all at shutdown.
+		if it.enableExactlyOnceDelivery {
+			ackh, ok := ipubsub.MessageAckHandler(m).(*psAckHandler)
+			if !ok {
+				it.fail(errors.New("failed to assert type as psAckHandler"))
+			}
+			it.pendingAckResults[ackID] = ackh.ackResult
 		}
 	}
 	deadline := it.ackDeadline()
@@ -406,7 +428,8 @@ func (it *messageIterator) handleKeepAlives() {
 			delete(it.keepAliveDeadlines, id)
 		} else {
 			// This will not conflict with a nack, because nacking removes the ID from keepAliveDeadlines.
-			it.pendingModAcks[id] = nil
+			// Use an empty AckResult here since we don't propagate ModAcks back to the user.
+			it.pendingModAcks[id] = &ipubsub.AckResult{}
 		}
 	}
 	it.checkDrained()
