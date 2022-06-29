@@ -828,7 +828,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/gaming/apiv1beta",
 		GRPCServiceConfigPath: "gaming_grpc_service_config.json",
 		ApiServiceConfigPath:  "gameservices_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -935,7 +934,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
 		GRPCServiceConfigPath: "privateca_grpc_service_config.json",
 		ApiServiceConfigPath:  "privateca_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
