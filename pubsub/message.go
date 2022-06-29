@@ -171,10 +171,6 @@ func (ah *psAckHandler) OnNackWithResult() *AckResult {
 	return ah.ackResult
 }
 
-func (ah *psAckHandler) AckResult() *AckResult {
-	return ah.ackResult
-}
-
 func (ah *psAckHandler) done(ack bool) {
 	if ah.calledDone {
 		return
