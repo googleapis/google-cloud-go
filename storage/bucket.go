@@ -1503,6 +1503,19 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 	return out
 }
 
+// Used to handle breaking change in Autogen Storage client OLM Age field
+// from int64 to *int64 gracefully in the manual client
+// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
+func setAgeCondition(age int64, ageField interface{}) {
+	c := reflect.ValueOf(ageField).Elem()
+	switch c.Kind() {
+	case reflect.Int64:
+		c.SetInt(age)
+	case reflect.Ptr:
+		c.Set(reflect.ValueOf(&age))
+	}
+}
+
 func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 	var rl raw.BucketLifecycle
 	if len(l.Rules) == 0 {
@@ -1515,7 +1528,6 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				StorageClass: r.Action.StorageClass,
 			},
 			Condition: &raw.BucketLifecycleRuleCondition{
-				Age:                     r.Condition.AgeInDays,
 				DaysSinceCustomTime:     r.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: r.Condition.DaysSinceNoncurrentTime,
 				MatchesPrefix:           r.Condition.MatchesPrefix,
@@ -1524,6 +1536,8 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				NumNewerVersions:        r.Condition.NumNewerVersions,
 			},
 		}
+
+		setAgeCondition(r.Condition.AgeInDays, &rr.Condition.Age)
 
 		switch r.Condition.Liveness {
 		case LiveAndArchived:
@@ -1595,6 +1609,21 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 	return &rl
 }
 
+// Used to handle breaking change in Autogen Storage client OLM Age field
+// from int64 to *int64 gracefully in the manual client
+// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
+func getAgeCondition(ageField interface{}) int64 {
+	v := reflect.ValueOf(ageField)
+	if v.Kind() == reflect.Int64 {
+		return v.Interface().(int64)
+	} else if v.Kind() == reflect.Ptr {
+		if val, ok := v.Interface().(*int64); ok {
+			return *val
+		}
+	}
+	return 0
+}
+
 func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 	var l Lifecycle
 	if rl == nil {
@@ -1607,7 +1636,6 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				StorageClass: rr.Action.StorageClass,
 			},
 			Condition: LifecycleCondition{
-				AgeInDays:               rr.Condition.Age,
 				DaysSinceCustomTime:     rr.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: rr.Condition.DaysSinceNoncurrentTime,
 				MatchesPrefix:           rr.Condition.MatchesPrefix,
@@ -1616,6 +1644,7 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				NumNewerVersions:        rr.Condition.NumNewerVersions,
 			},
 		}
+		r.Condition.AgeInDays = getAgeCondition(rr.Condition.Age)
 
 		if rr.Condition.IsLive == nil {
 			r.Condition.Liveness = LiveAndArchived

@@ -127,6 +127,11 @@
                 "ListJobs"
               ]
             },
+            "PurgeJobs": {
+              "methods": [
+                "PurgeJobs"
+              ]
+            },
             "SearchJobs": {
               "methods": [
                 "SearchJobs"

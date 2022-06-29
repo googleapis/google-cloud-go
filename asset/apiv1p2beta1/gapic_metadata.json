@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateFeed": {
+              "methods": [
+                "CreateFeed"
+              ]
+            },
+            "DeleteFeed": {
+              "methods": [
+                "DeleteFeed"
+              ]
+            },
+            "GetFeed": {
+              "methods": [
+                "GetFeed"
+              ]
+            },
+            "ListFeeds": {
+              "methods": [
+                "ListFeeds"
+              ]
+            },
+            "UpdateFeed": {
+              "methods": [
+                "UpdateFeed"
+              ]
+            }
+          }
         }
       }
     }

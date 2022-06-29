@@ -208,7 +208,7 @@ func TestToLogEntryPayload(t *testing.T) {
 			},
 		},
 	} {
-		e, err := toLogEntryInternal(Entry{Payload: test.in}, nil, "")
+		e, err := toLogEntryInternal(Entry{Payload: test.in}, nil, "", 0)
 		if err != nil {
 			t.Fatalf("%+v: %v", test.in, err)
 		}

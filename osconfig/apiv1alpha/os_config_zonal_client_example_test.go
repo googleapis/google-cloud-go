@@ -36,6 +36,18 @@ func ExampleNewOsConfigZonalClient() {
 	_ = c
 }
 
+func ExampleNewOsConfigZonalRESTClient() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
