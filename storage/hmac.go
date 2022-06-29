@@ -193,7 +193,7 @@ func toHMACKeyFromRaw(hk *raw.HmacKey, updatedTimeCanBeNil bool) (*HMACKey, erro
 	return hmKey, nil
 }
 
-func toHMACKeyfromProto(pbmd *storagepb.HmacKeyMetadata) *HMACKey {
+func toHMACKeyFromProto(pbmd *storagepb.HmacKeyMetadata) *HMACKey {
 	if pbmd == nil {
 		return nil
 	}

@@ -902,7 +902,7 @@ func (c *grpcStorageClient) GetHMACKey(ctx context.Context, project, accessID st
 	if err != nil {
 		return nil, err
 	}
-	return toHMACKeyfromProto(metadata), nil
+	return toHMACKeyFromProto(metadata), nil
 }
 
 func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, showDeletedKeys bool, opts ...storageOption) *HMACKeysIterator {
@@ -931,7 +931,7 @@ func (c *grpcStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 			return "", err
 		}
 		for _, hkmd := range hmacKeys {
-			hk := toHMACKeyfromProto(hkmd)
+			hk := toHMACKeyFromProto(hkmd)
 			it.hmacKeys = append(it.hmacKeys, hk)
 		}
 
@@ -981,7 +981,7 @@ func (c *grpcStorageClient) UpdateHMACKey(ctx context.Context, project, serviceA
 	if err != nil {
 		return nil, err
 	}
-	return toHMACKeyfromProto(metadata), nil
+	return toHMACKeyFromProto(metadata), nil
 }
 
 func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error) {
@@ -1002,7 +1002,7 @@ func (c *grpcStorageClient) CreateHMACKey(ctx context.Context, project, serviceA
 	if err != nil {
 		return nil, err
 	}
-	key := toHMACKeyfromProto(res.Metadata)
+	key := toHMACKeyFromProto(res.Metadata)
 	key.Secret = base64.StdEncoding.EncodeToString(res.SecretKeyBytes)
 
 	return key, nil
