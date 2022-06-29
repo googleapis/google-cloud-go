@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/gaming/v1.2.0...gaming/v1.3.0) (2022-06-29)
+
+
+### Features
+
+* **gaming:** temporarily remove REGAPIC support ([199b725](https://github.com/googleapis/google-cloud-go/commit/199b7250f474b1a6f53dcf0aac0c2966f4987b68))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/gaming/v1.1.0...gaming/v1.2.0) (2022-02-23)
 
 
