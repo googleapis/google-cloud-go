@@ -4593,7 +4593,7 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 	// Request is sent using a vanilla net/http client, so there are no built-in
 	// retries. We must wrap with a retry to prevent flakes.
 	return retry(ctx,
-		func() error{
+		func() error {
 			formBuf := new(bytes.Buffer)
 			mw := multipart.NewWriter(formBuf)
 			for fieldName, value := range pv4.Fields {
