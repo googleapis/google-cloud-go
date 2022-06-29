@@ -1024,7 +1024,7 @@ func (c *httpStorageClient) GetHMACKey(ctx context.Context, project, accessID st
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return toHMACKey(hk, false)
+	return toHMACKeyFromRaw(hk, false)
 }
 
 func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, showDeletedKeys bool, opts ...storageOption) *HMACKeysIterator {
@@ -1067,7 +1067,7 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 			hk := &raw.HmacKey{
 				Metadata: metadata,
 			}
-			hkey, err := toHMACKey(hk, true)
+			hkey, err := toHMACKeyFromRaw(hk, true)
 			if err != nil {
 				return "", err
 			}
@@ -1109,7 +1109,7 @@ func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, project, serviceA
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return toHMACKey(hk, false)
+	return toHMACKeyFromRaw(hk, false)
 }
 
 func (c *httpStorageClient) CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error) {
@@ -1127,7 +1127,7 @@ func (c *httpStorageClient) CreateHMACKey(ctx context.Context, project, serviceA
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
 		return nil, err
 	}
-	return toHMACKey(hk, true)
+	return toHMACKeyFromRaw(hk, true)
 }
 
 func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, project string, accessID string, opts ...storageOption) error {

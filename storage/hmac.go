@@ -139,7 +139,7 @@ func (hkh *HMACKeyHandle) Get(ctx context.Context, opts ...HMACKeyOption) (*HMAC
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return toHMACKey(hk, false)
+	return toHMACKeyFromRaw(hk, false)
 }
 
 // Delete invokes an RPC to delete the key referenced by accessID, on Google Cloud Storage.
@@ -163,7 +163,7 @@ func (hkh *HMACKeyHandle) Delete(ctx context.Context, opts ...HMACKeyOption) err
 	}, hkh.retry, true, setRetryHeaderHTTP(delCall))
 }
 
-func toHMACKey(hk *raw.HmacKey, updatedTimeCanBeNil bool) (*HMACKey, error) {
+func toHMACKeyFromRaw(hk *raw.HmacKey, updatedTimeCanBeNil bool) (*HMACKey, error) {
 	hkmd := hk.Metadata
 	if hkmd == nil {
 		return nil, errors.New("field Metadata cannot be nil")
@@ -242,7 +242,7 @@ func (c *Client) CreateHMACKey(ctx context.Context, projectID, serviceAccountEma
 		return nil, err
 	}
 
-	return toHMACKey(hk, true)
+	return toHMACKeyFromRaw(hk, true)
 }
 
 // HMACKeyAttrsToUpdate defines the attributes of an HMACKey that will be updated.
@@ -292,7 +292,7 @@ func (h *HMACKeyHandle) Update(ctx context.Context, au HMACKeyAttrsToUpdate, opt
 	hk := &raw.HmacKey{
 		Metadata: metadata,
 	}
-	return toHMACKey(hk, false)
+	return toHMACKeyFromRaw(hk, false)
 }
 
 // An HMACKeysIterator is an iterator over HMACKeys.
@@ -401,7 +401,7 @@ func (it *HMACKeysIterator) fetch(pageSize int, pageToken string) (token string,
 		hk := &raw.HmacKey{
 			Metadata: metadata,
 		}
-		hkey, err := toHMACKey(hk, true)
+		hkey, err := toHMACKeyFromRaw(hk, true)
 		if err != nil {
 			return "", err
 		}
