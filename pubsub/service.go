@@ -117,9 +117,8 @@ var (
 	}
 )
 
-// check if a grpc code is in the target slice
-// consider replacing with generics's slice.Contains
-// once go 1.18 is the min version.
+// contains checks if grpc code v is in t, a slice of retryable error codes.
+// Consider replacing with generics's slice.Contains once go 1.18 is the min version.
 func contains(v codes.Code, t []codes.Code) bool {
 	for _, c := range t {
 		if v == c {

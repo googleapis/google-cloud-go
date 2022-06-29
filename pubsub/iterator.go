@@ -140,6 +140,8 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 
 // Subscription.receive will call stop on its messageIterator when finished with it.
 // Stop will block until Done has been called on all Messages that have been
+// returned by Next, or until the context with which the messageIterator was created
+// is cancelled or exceeds its deadline.
 func (it *messageIterator) stop() {
 	it.cancel()
 	it.mu.Lock()
