@@ -105,7 +105,7 @@ type AckResult = ipubsub.AckResult
 type AcknowledgeStatus = ipubsub.AcknowledgeStatus
 
 const (
-	// AcknowledgeStatusSuccess indicates the request was a success.
+	// Indicates the request was a success.
 	AcknowledgeStatusSuccess AcknowledgeStatus = iota
 	// AcknowledgeStatusPermissionDenied indicates the caller does not have sufficient permissions.
 	AcknowledgeStatusPermissionDenied
@@ -152,6 +152,7 @@ func (ah *psAckHandler) OnAckWithResult() *AckResult {
 		return newSuccessAckResult()
 	}
 	ah.ackResult = ipubsub.NewAckResult()
+	// call done with true to indicate ack.
 	ah.done(true)
 	return ah.ackResult
 }
@@ -161,6 +162,7 @@ func (ah *psAckHandler) OnNackWithResult() *AckResult {
 		return newSuccessAckResult()
 	}
 	ah.ackResult = ipubsub.NewAckResult()
+	// call done with false to indicate nack.
 	ah.done(false)
 	return ah.ackResult
 }
