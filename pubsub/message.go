@@ -105,7 +105,7 @@ type AckResult = ipubsub.AckResult
 type AcknowledgeStatus = ipubsub.AcknowledgeStatus
 
 const (
-	// Indicates the request was a success.
+	// AcknowledgeStatusSuccess indicates the request was a success.
 	AcknowledgeStatusSuccess AcknowledgeStatus = iota
 	// AcknowledgeStatusPermissionDenied indicates the caller does not have sufficient permissions.
 	AcknowledgeStatusPermissionDenied
