@@ -49,7 +49,6 @@ type JobCallOptions struct {
 	BatchUpdateJobs    []gax.CallOption
 	DeleteJob          []gax.CallOption
 	BatchDeleteJobs    []gax.CallOption
-	PurgeJobs          []gax.CallOption
 	ListJobs           []gax.CallOption
 	SearchJobs         []gax.CallOption
 	SearchJobsForAlert []gax.CallOption
@@ -99,7 +98,6 @@ func defaultJobCallOptions() *JobCallOptions {
 			}),
 		},
 		BatchDeleteJobs: []gax.CallOption{},
-		PurgeJobs:       []gax.CallOption{},
 		ListJobs: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -133,8 +131,6 @@ type internalJobClient interface {
 	DeleteJob(context.Context, *talentpb.DeleteJobRequest, ...gax.CallOption) error
 	BatchDeleteJobs(context.Context, *talentpb.BatchDeleteJobsRequest, ...gax.CallOption) (*BatchDeleteJobsOperation, error)
 	BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation
-	PurgeJobs(context.Context, *talentpb.PurgeJobsRequest, ...gax.CallOption) (*PurgeJobsOperation, error)
-	PurgeJobsOperation(name string) *PurgeJobsOperation
 	ListJobs(context.Context, *talentpb.ListJobsRequest, ...gax.CallOption) *JobIterator
 	SearchJobs(context.Context, *talentpb.SearchJobsRequest, ...gax.CallOption) (*talentpb.SearchJobsResponse, error)
 	SearchJobsForAlert(context.Context, *talentpb.SearchJobsRequest, ...gax.CallOption) (*talentpb.SearchJobsResponse, error)
@@ -241,22 +237,6 @@ func (c *JobClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDele
 // The name must be that of a previously created BatchDeleteJobsOperation, possibly from a different process.
 func (c *JobClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation {
 	return c.internalClient.BatchDeleteJobsOperation(name)
-}
-
-// PurgeJobs purges all jobs associated with requested target.
-//
-// Note: Jobs in OPEN status remain searchable until the operation completes.
-//
-// Note: The operation returned may take hours or longer to complete,
-// depending on the number of jobs that need to be deleted.
-func (c *JobClient) PurgeJobs(ctx context.Context, req *talentpb.PurgeJobsRequest, opts ...gax.CallOption) (*PurgeJobsOperation, error) {
-	return c.internalClient.PurgeJobs(ctx, req, opts...)
-}
-
-// PurgeJobsOperation returns a new PurgeJobsOperation from a given name.
-// The name must be that of a previously created PurgeJobsOperation, possibly from a different process.
-func (c *JobClient) PurgeJobsOperation(name string) *PurgeJobsOperation {
-	return c.internalClient.PurgeJobsOperation(name)
 }
 
 // ListJobs lists jobs by filter.
@@ -543,25 +523,6 @@ func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 		return nil, err
 	}
 	return &BatchDeleteJobsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *jobGRPCClient) PurgeJobs(ctx context.Context, req *talentpb.PurgeJobsRequest, opts ...gax.CallOption) (*PurgeJobsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).PurgeJobs[0:len((*c.CallOptions).PurgeJobs):len((*c.CallOptions).PurgeJobs)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.jobClient.PurgeJobs(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &PurgeJobsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -876,75 +837,6 @@ func (op *BatchUpdateJobsOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *BatchUpdateJobsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PurgeJobsOperation manages a long-running operation from PurgeJobs.
-type PurgeJobsOperation struct {
-	lro *longrunning.Operation
-}
-
-// PurgeJobsOperation returns a new PurgeJobsOperation from a given name.
-// The name must be that of a previously created PurgeJobsOperation, possibly from a different process.
-func (c *jobGRPCClient) PurgeJobsOperation(name string) *PurgeJobsOperation {
-	return &PurgeJobsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PurgeJobsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*talentpb.PurgeJobsResponse, error) {
-	var resp talentpb.PurgeJobsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PurgeJobsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*talentpb.PurgeJobsResponse, error) {
-	var resp talentpb.PurgeJobsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PurgeJobsOperation) Metadata() (*talentpb.BatchOperationMetadata, error) {
-	var meta talentpb.BatchOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PurgeJobsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PurgeJobsOperation) Name() string {
 	return op.lro.Name()
 }
 
