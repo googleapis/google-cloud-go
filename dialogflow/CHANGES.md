@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.10.0...dialogflow/v1.11.0) (2022-06-29)
+
+
+### Features
+
+* **dialogflow:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.9.0...dialogflow/v1.10.0) (2022-06-16)
 
 
