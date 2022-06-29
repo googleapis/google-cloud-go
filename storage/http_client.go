@@ -1006,20 +1006,139 @@ func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource str
 
 // HMAC Key methods.
 
-func (c *httpStorageClient) GetHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) GetHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) (*HMACKey, error) {
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Projects.HmacKeys.Get(project, accessID)
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
+	}
+
+	var metadata *raw.HmacKeyMetadata
+	var err error
+	if err := run(ctx, func() error {
+		metadata, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+		return nil, err
+	}
+	hk := &raw.HmacKey{
+		Metadata: metadata,
+	}
+	return toHMACKeyFromRaw(hk, false)
 }
-func (c *httpStorageClient) ListHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator {
-	return &HMACKeysIterator{}
+
+func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAccountEmail string, showDeletedKeys bool, opts ...storageOption) *HMACKeysIterator {
+	s := callSettings(c.settings, opts...)
+	it := &HMACKeysIterator{
+		ctx:       ctx,
+		raw:       c.raw.Projects.HmacKeys,
+		projectID: project,
+		retry:     s.retry,
+	}
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		call := c.raw.Projects.HmacKeys.List(project)
+		setClientHeader(call.Header())
+		if pageToken != "" {
+			call = call.PageToken(pageToken)
+		}
+		if pageSize > 0 {
+			call = call.MaxResults(int64(pageSize))
+		}
+		if showDeletedKeys {
+			call = call.ShowDeletedKeys(true)
+		}
+		if s.userProject != "" {
+			call = call.UserProject(s.userProject)
+		}
+		if serviceAccountEmail != "" {
+			call = call.ServiceAccountEmail(serviceAccountEmail)
+		}
+
+		var resp *raw.HmacKeysMetadata
+		err = run(it.ctx, func() error {
+			resp, err = call.Context(it.ctx).Do()
+			return err
+		}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+		if err != nil {
+			return "", err
+		}
+
+		for _, metadata := range resp.Items {
+			hk := &raw.HmacKey{
+				Metadata: metadata,
+			}
+			hkey, err := toHMACKeyFromRaw(hk, true)
+			if err != nil {
+				return "", err
+			}
+			it.hmacKeys = append(it.hmacKeys, hkey)
+		}
+		return resp.NextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.hmacKeys) - it.index },
+		func() interface{} {
+			prev := it.hmacKeys
+			it.hmacKeys = it.hmacKeys[:0]
+			it.index = 0
+			return prev
+		})
+	return it
 }
-func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+
+func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, project, serviceAccountEmail, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error) {
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Projects.HmacKeys.Update(project, accessID, &raw.HmacKeyMetadata{
+		Etag:  attrs.Etag,
+		State: string(attrs.State),
+	})
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
+	}
+
+	var metadata *raw.HmacKeyMetadata
+	var err error
+	if err := run(ctx, func() error {
+		metadata, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+		return nil, err
+	}
+	hk := &raw.HmacKey{
+		Metadata: metadata,
+	}
+	return toHMACKeyFromRaw(hk, false)
 }
-func (c *httpStorageClient) CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error) {
-	return nil, errMethodNotSupported
+
+func (c *httpStorageClient) CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error) {
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Projects.HmacKeys.Create(project, serviceAccountEmail)
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
+	}
+
+	var hk *raw.HmacKey
+	if err := run(ctx, func() error {
+		h, err := call.Context(ctx).Do()
+		hk = h
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+		return nil, err
+	}
+	return toHMACKeyFromRaw(hk, true)
 }
-func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error {
-	return errMethodNotSupported
+
+func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, project string, accessID string, opts ...storageOption) error {
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Projects.HmacKeys.Delete(project, accessID)
+	if s.userProject != "" {
+		call = call.UserProject(s.userProject)
+	}
+	return run(ctx, func() error {
+		return call.Context(ctx).Do()
+	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
 }
 
 // Notification methods.
