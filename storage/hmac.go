@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"time"
 
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"google.golang.org/api/iterator"
 	raw "google.golang.org/api/storage/v1"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 )
 
 // HMACState is the state of the HMAC key.
