@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.7.0...gkehub/v0.8.0) (2022-06-29)
+
+
+### Features
+
+* **gkehub:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.6.0...gkehub/v0.7.0) (2022-06-16)
 
 

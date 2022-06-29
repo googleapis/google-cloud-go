@@ -828,7 +828,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/gaming/apiv1beta",
 		GRPCServiceConfigPath: "gaming_grpc_service_config.json",
 		ApiServiceConfigPath:  "gameservices_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -935,7 +934,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
 		GRPCServiceConfigPath: "privateca_grpc_service_config.json",
 		ApiServiceConfigPath:  "privateca_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1410,8 +1408,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/video/livestream/apiv1",
 		GRPCServiceConfigPath: "livestream_grpc_service_config.json",
 		ApiServiceConfigPath:  "livestream_v1.yaml",
-		// GA after 2022/02/25
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dataplex/v1",
@@ -1427,8 +1424,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/video/stitcher/apiv1",
 		GRPCServiceConfigPath: "videostitcher_grpc_service_config.json",
 		ApiServiceConfigPath:  "videostitcher_v1.yaml",
-		// GA after 2022/04/02
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/certificatemanager/v1",
@@ -1494,8 +1490,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/workflows/apiv1",
 		GRPCServiceConfigPath: "workflows_grpc_service_config.json",
 		ApiServiceConfigPath:  "workflows_v1.yaml",
-		// GA after 2022/06/05
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkebackup/v1",
