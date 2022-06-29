@@ -1,5 +1,13 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.3.0...recommender/v1.4.0) (2022-06-29)
+
+
+### Features
+
+* **recommender:** Implement configurable recommenders and  update .bazel files ([199b725](https://github.com/googleapis/google-cloud-go/commit/199b7250f474b1a6f53dcf0aac0c2966f4987b68))
+* **recommender:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.2.0...recommender/v1.3.0) (2022-02-23)
 
 
