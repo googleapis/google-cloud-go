@@ -36,18 +36,6 @@ func ExampleNewRealmsClient() {
 	_ = c
 }
 
-func ExampleNewRealmsRESTClient() {
-	ctx := context.Background()
-	c, err := gaming.NewRealmsRESTClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	// TODO: Use client.
-	_ = c
-}
-
 func ExampleRealmsClient_ListRealms() {
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)

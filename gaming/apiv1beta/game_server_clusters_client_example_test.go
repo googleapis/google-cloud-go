@@ -36,18 +36,6 @@ func ExampleNewGameServerClustersClient() {
 	_ = c
 }
 
-func ExampleNewGameServerClustersRESTClient() {
-	ctx := context.Background()
-	c, err := gaming.NewGameServerClustersRESTClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	// TODO: Use client.
-	_ = c
-}
-
 func ExampleGameServerClustersClient_ListGameServerClusters() {
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
