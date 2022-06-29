@@ -623,7 +623,7 @@ func TestPingStreamAckDeadline(t *testing.T) {
 func TestExactlyOnceProcessRequests(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("no_results", func(t *testing.T) {
+	t.Run("NoResults", func(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
 		// nil maps here behave the same as if they were empty maps.
 		completed, retry := processResults(nil, nil, nil)
@@ -635,7 +635,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("no_errors_nil_AckResult", func(t *testing.T) {
+	t.Run("NoErrorsNilAckResult", func(t *testing.T) {
 		// No errors so request should be completed even without an AckResult.
 		ackReqMap := map[string]*AckResult{
 			"ackID": nil,
@@ -649,7 +649,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("no errors", func(t *testing.T) {
+	t.Run("NoErrors", func(t *testing.T) {
 		// No errors so AckResult should be completed with success.
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
@@ -671,7 +671,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("permanent error, invalid ack ID", func(t *testing.T) {
+	t.Run("PermanentErrorInvalidAckID", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
@@ -695,7 +695,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("transient error, invalid ack ID", func(t *testing.T) {
+	t.Run("TransientErrorRetry", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
@@ -712,7 +712,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("unknown error", func(t *testing.T) {
+	t.Run("UnknownError", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
@@ -739,7 +739,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("permission denied", func(t *testing.T) {
+	t.Run("PermissionDenied", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
@@ -761,7 +761,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("failed precondition", func(t *testing.T) {
+	t.Run("FailedPrecondition", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
@@ -783,7 +783,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("other error status", func(t *testing.T) {
+	t.Run("OtherErrorStatus", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
@@ -805,7 +805,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 	})
 
-	t.Run("mixed success and failure acks", func(t *testing.T) {
+	t.Run("MixedSuccessFailureAcks", func(t *testing.T) {
 		r1 := ipubsub.NewAckResult()
 		r2 := ipubsub.NewAckResult()
 		r3 := ipubsub.NewAckResult()
@@ -826,7 +826,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			t.Errorf("expected retry slice length to be 1, got: %v\n", len(retry))
 		}
 		// message with ackID "ackID1" fails
-		s, err := completed[0].Get(ctx)
+		s, err := r1.Get(ctx)
 		if err == nil {
 			t.Error("r1: expected error from AckResult, got nil\n")
 		}
@@ -837,18 +837,35 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		// message with ackID "ackID2" is to be retried
 		ctx2, cancel := context.WithTimeout(ctx, 2*time.Second)
 		defer cancel()
-		_, err = retry[0].Get(ctx2)
+		_, err = r2.Get(ctx2)
 		if err.Error() != "context deadline exceeded" {
 			t.Errorf("r2: expected AckResult.Get to timeout, got: %v", err)
 		}
 
 		// message with ackID "ackID3" succeeds
-		s, err = completed[1].Get(ctx)
+		s, err = r3.Get(ctx)
 		if err != nil {
 			t.Errorf("r3: got err from AckResult.Get: %v\n", err)
 		}
 		if s != AcknowledgeStatusSuccess {
 			t.Errorf("r3: expected AcknowledgeStatusSuccess, got %v", s)
+		}
+	})
+
+	t.Run("RetriableErrorStatusReturnsRequestForRetrying", func(t *testing.T) {
+		for _, c := range exactlyOnceDeliveryTemporaryRetryErrors {
+			r := ipubsub.NewAckResult()
+			ackReqMap := map[string]*AckResult{
+				"ackID1": r,
+			}
+			st := status.New(c, "")
+			completed, retry := processResults(st, ackReqMap, nil)
+			if len(completed) != 0 {
+				t.Errorf("expected completed slice to be empty, got: %v\n", len(completed))
+			}
+			if len(retry) != 1 {
+				t.Errorf("expected retry slice length to be 1, got: %v\n", len(retry))
+			}
 		}
 	})
 }
