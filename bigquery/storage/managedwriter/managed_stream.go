@@ -269,6 +269,7 @@ func (ms *ManagedStream) append(requestCtx context.Context, pw *pendingWrite, op
 
 		// Don't both calling/retrying if this append's context is already expired.
 		if err = requestCtx.Err(); err != nil {
+			ms.mu.Unlock()
 			return err
 		}
 
@@ -281,6 +282,7 @@ func (ms *ManagedStream) append(requestCtx context.Context, pw *pendingWrite, op
 		}
 		arc, ch, err = ms.getStream(arc, reconnect)
 		if err != nil {
+			ms.mu.Unlock()
 			return err
 		}
 
@@ -355,9 +357,11 @@ func (ms *ManagedStream) Close() error {
 	ms.mu.Lock()
 	arc, ch, err := ms.getStream(arc, false)
 	if err != nil {
+		ms.mu.Unlock()
 		return err
 	}
 	if ms.arc == nil {
+		ms.mu.Unlock()
 		return fmt.Errorf("no stream exists")
 	}
 	err = (*arc).CloseSend()
