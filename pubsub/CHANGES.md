@@ -1,5 +1,12 @@
 # Changes
 
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.23.0...pubsub/v1.23.1) (2022-06-30)
+
+
+### Bug Fixes
+
+* **pubsub:** increase modack deadline RPC timeout ([#6289](https://github.com/googleapis/google-cloud-go/issues/6289)) ([d24600f](https://github.com/googleapis/google-cloud-go/commit/d24600fda7e574a388e8898c2ecc1958d07f4224))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.22.2...pubsub/v1.23.0) (2022-06-23)
 
 
