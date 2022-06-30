@@ -828,7 +828,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/gaming/apiv1beta",
 		GRPCServiceConfigPath: "gaming_grpc_service_config.json",
 		ApiServiceConfigPath:  "gameservices_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -935,7 +934,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
 		GRPCServiceConfigPath: "privateca_grpc_service_config.json",
 		ApiServiceConfigPath:  "privateca_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1554,6 +1552,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "videointelligence_v1p3beta1.yaml",
 		ReleaseLevel:          "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/functions/v2beta",
+		Pkg:                   "functions",
+		ImportPath:            "cloud.google.com/go/functions/apiv2beta",
+		GRPCServiceConfigPath: "functions_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudfunctions_v2beta.yaml",
+		ReleaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
@@ -1590,5 +1596,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GAPIC-level retries and allow the veneer layer to handle retries.
 		ApiServiceConfigPath: "storage_v2.yaml",
 		ReleaseLevel:         "alpha",
+		StubsDir:             "stubs",
 	},
 }
