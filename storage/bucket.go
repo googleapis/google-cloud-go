@@ -461,6 +461,7 @@ type BucketAttrs struct {
 	PredefinedDefaultObjectACL string
 
 	// Location is the location of the bucket. It defaults to "US".
+	// If specifying a dual-region, CustomPlacementConfig should be set in conjunction.
 	Location string
 
 	// MetaGeneration is the metadata generation of the bucket.
