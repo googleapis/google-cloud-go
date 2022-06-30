@@ -27,9 +27,6 @@ import (
 
 	"google.golang.org/api/option"
 
-	"cloud.google.com/go/internal"
-	"github.com/googleapis/gax-go/v2"
-
 	"github.com/google/go-cmp/cmp"
 
 	"cloud.google.com/go/internal/testutil"
@@ -478,15 +475,15 @@ func TestCapitalLetter(t *testing.T) {
 	defer func() {
 		timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 		defer cancel()
-		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
-			_, err = c.Delete(timeoutCtx,
-				&computepb.DeleteFirewallRequest{
-					Project:  projectId,
-					Firewall: name,
-				})
-			return err == nil, err
-		})
+		op, err := c.Delete(timeoutCtx,
+			&computepb.DeleteFirewallRequest{
+				Project:  projectId,
+				Firewall: name,
+			})
 		if err != nil {
+			t.Error(err)
+		}
+		if err = op.Wait(ctx); err != nil {
 			t.Error(err)
 		}
 	}()
@@ -637,11 +634,7 @@ func TestInstanceGroupResize(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
-			err = deleteOp.Wait(ctx)
-			return deleteOp.Done(), err
-		})
-		if err != nil {
+		if err := deleteOp.Wait(ctx); err != nil {
 			t.Error(err)
 		}
 	}()
