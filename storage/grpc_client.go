@@ -625,11 +625,17 @@ func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 
 func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
 
 	dstObjPb := req.dstObject.attrs.toProtoObject(req.dstBucket)
 	dstObjPb.Name = req.dstObject.name
 	if err := applyCondsProto("ComposeObject destination", -1, req.dstObject.conds, dstObjPb); err != nil {
 		return nil, err
+	}
+	if req.sendCRC32C {
+		dstObjPb.Checksums.Crc32C = &req.dstObject.attrs.CRC32C
 	}
 
 	srcs := []*storagepb.ComposeObjectRequest_SourceObject{}
@@ -646,6 +652,13 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 		Destination:   dstObjPb,
 		SourceObjects: srcs,
 	}
+	if req.predefinedACL != "" {
+		rawReq.DestinationPredefinedAcl = req.predefinedACL
+	}
+	if req.encryptionKey != nil {
+		rawReq.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.encryptionKey)
+	}
+
 	var obj *storagepb.Object
 	var err error
 	if err := run(ctx, func() error {
