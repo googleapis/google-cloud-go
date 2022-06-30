@@ -1552,6 +1552,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "videointelligence_v1p3beta1.yaml",
 		ReleaseLevel:          "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/functions/v2beta",
+		Pkg:                   "functions",
+		ImportPath:            "cloud.google.com/go/functions/apiv2beta",
+		GRPCServiceConfigPath: "functions_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudfunctions_v2beta.yaml",
+		ReleaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
