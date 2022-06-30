@@ -285,7 +285,6 @@ type composeObjectRequest struct {
 	sendCRC32C    bool
 }
 
-// composeObject manages per-object params for compose sources and destination.
 type composeSrcObject struct {
 	name  string
 	gen   int64
