@@ -624,7 +624,38 @@ func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 // Media operations.
 
 func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+
+	dstObjPb := req.dstObject.attrs.toProtoObject(req.dstBucket)
+	dstObjPb.Name = req.dstObject.name
+	if err := applyCondsProto("ComposeObject destination", -1, req.dstObject.conds, dstObjPb); err != nil {
+		return nil, err
+	}
+
+	srcs := []*storagepb.ComposeObjectRequest_SourceObject{}
+	for _, src := range req.srcs {
+		srcObjPb := &storagepb.ComposeObjectRequest_SourceObject{Name: src.name}
+		srcObjPb.Generation = src.gen // what if default value?
+		if err := applyCondsProto("ComposeObject source", src.gen, src.conds, srcObjPb); err != nil {
+			return nil, err
+		}
+		srcs = append(srcs, srcObjPb)
+	}
+
+	rawReq := &storagepb.ComposeObjectRequest{
+		Destination:   dstObjPb,
+		SourceObjects: srcs,
+	}
+	var obj *storagepb.Object
+	var err error
+	if err := run(ctx, func() error {
+		obj, err = c.raw.ComposeObject(ctx, rawReq, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx)); err != nil {
+		return nil, err
+	}
+
+	return newObjectFromProto(obj), nil
 }
 func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
 	return nil, errMethodNotSupported
