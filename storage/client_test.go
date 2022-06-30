@@ -1006,6 +1006,67 @@ func TestComposeEmulated(t *testing.T) {
 	})
 }
 
+func TestHMACKeyCRUDEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		serviceAccountEmail := "test@test-project.iam.gserviceaccount.com"
+		want, err := client.CreateHMACKey(ctx, project, serviceAccountEmail)
+		if err != nil {
+			t.Fatalf("CreateHMACKey: %v", err)
+		}
+		if want == nil {
+			t.Fatal("CreateHMACKey: Unexpectedly got back a nil HMAC key")
+		}
+		if want.State != Active {
+			t.Fatalf("CreateHMACKey: Unexpected state %q, expected %q", want.State, Active)
+		}
+		got, err := client.GetHMACKey(ctx, project, want.AccessID)
+		if err != nil {
+			t.Fatalf("GetHMACKey: %v", err)
+		}
+		if diff := cmp.Diff(got.ID, want.ID); diff != "" {
+			t.Errorf("GetHMACKey ID:got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.UpdatedTime, want.UpdatedTime); diff != "" {
+			t.Errorf("GetHMACKey UpdatedTime: got(-),want(+):\n%s", diff)
+		}
+		attr := &HMACKeyAttrsToUpdate{
+			State: Inactive,
+		}
+		got, err = client.UpdateHMACKey(ctx, project, serviceAccountEmail, want.AccessID, attr)
+		if err != nil {
+			t.Fatalf("UpdateHMACKey: %v", err)
+		}
+		if got.State != attr.State {
+			t.Errorf("UpdateHMACKey State: got %v, want %v", got.State, attr.State)
+		}
+		showDeletedKeys := false
+		it := client.ListHMACKeys(ctx, project, serviceAccountEmail, showDeletedKeys)
+		var count int
+		var e error
+		for ; ; count++ {
+			_, e = it.Next()
+			if e != nil {
+				break
+			}
+		}
+		if e != iterator.Done {
+			t.Fatalf("ListHMACKeys: expected %q but got %q", iterator.Done, err)
+		}
+		if expected := 1; count != expected {
+			t.Errorf("ListHMACKeys: expected to get %d hmacKeys, but got %d", expected, count)
+		}
+		err = client.DeleteHMACKey(ctx, project, want.AccessID)
+		if err != nil {
+			t.Fatalf("DeleteHMACKey: %v", err)
+		}
+		got, err = client.GetHMACKey(ctx, project, want.AccessID)
+		if err == nil {
+			t.Fatalf("GetHMACKey unexcepted error: wanted 404")
+		}
+	})
+}
+
 // transportClienttest executes the given function with a sub-test, a project name
 // based on the transport, a unique bucket name also based on the transport, and
 // the transport-specific client to run the test with. It also checks the environment

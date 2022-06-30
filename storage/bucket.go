@@ -27,14 +27,13 @@ import (
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/googleapis/go-type-adapters/adapters"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
-	"google.golang.org/genproto/googleapis/storage/v2"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -924,7 +923,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 	}
 	var bb *storagepb.Bucket_Billing
 	if b.RequesterPays {
-		bb = &storage.Bucket_Billing{RequesterPays: true}
+		bb = &storagepb.Bucket_Billing{RequesterPays: true}
 	}
 	var bktIAM *storagepb.Bucket_IamConfig
 	if b.UniformBucketLevelAccess.Enabled || b.BucketPolicyOnly.Enabled || b.PublicAccessPrevention != PublicAccessPreventionUnknown {
@@ -972,7 +971,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 	}
 	var bb *storagepb.Bucket_Billing
 	if ua.RequesterPays != nil {
-		bb = &storage.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
+		bb = &storagepb.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
 	}
 	var bktIAM *storagepb.Bucket_IamConfig
 	var ublaEnabled bool

@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.4.0...dataplex/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **dataplex:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+
+
+### Miscellaneous Chores
+
+* **dataplex:** release 1.0.0 ([b165e15](https://github.com/googleapis/google-cloud-go/commit/b165e15cac74ea7b5c011b35b3f92e349e99759e))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.3.0...dataplex/v0.4.0) (2022-02-23)
 
 
