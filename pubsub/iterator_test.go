@@ -620,6 +620,15 @@ func TestPingStreamAckDeadline(t *testing.T) {
 	iter.eoMu.RUnlock()
 }
 
+func compareCompletedRetryLengths(t *testing.T, completed, retry []*AckResult, wantCompleted, wantRetry int) {
+	if l := len(completed); l != wantCompleted {
+		t.Errorf("completed slice length is %d, want %d\n", l, wantCompleted)
+	}
+	if l := len(retry); l != wantRetry {
+		t.Errorf("retry slice length is %d, want %d\n", l, wantRetry)
+	}
+}
+
 func TestExactlyOnceProcessRequests(t *testing.T) {
 	ctx := context.Background()
 
@@ -627,12 +636,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
 		// nil maps here behave the same as if they were empty maps.
 		completed, retry := processResults(nil, nil, nil)
-		if len(completed) != 0 {
-			t.Errorf("expected completed slice to be empty, got: %v\n", completed)
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", completed)
-		}
+		compareCompletedRetryLengths(t, completed, retry, 0, 0)
 	})
 
 	t.Run("NoErrorsNilAckResult", func(t *testing.T) {
@@ -641,12 +645,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID": nil,
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
-		if len(completed) != 1 {
-			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 	})
 
 	t.Run("NoErrors", func(t *testing.T) {
@@ -656,12 +655,9 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID1": r,
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
-		if len(completed) != 1 {
-			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+
+		// We can obtain the AckStatus from AckResult if results are completed.
 		s, err := r.Get(ctx)
 		if err != nil {
 			t.Errorf("got err from AckResult: %v", err)
@@ -680,12 +676,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID1": "PERMANENT_FAILURE_INVALID_ACK_ID",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
-		if len(completed) != 1 {
-			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
 			t.Error("expected error from AckResult, got nil\n")
@@ -704,12 +695,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID1": "TRANSIENT_FAILURE_INVALID_ACK_ID",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
-		if len(completed) != 0 {
-			t.Errorf("expected completed slice to be empty, got: %v\n", len(completed))
-		}
-		if len(retry) != 1 {
-			t.Errorf("expected retry slice length to be 1, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 0, 1)
 	})
 
 	t.Run("UnknownError", func(t *testing.T) {
@@ -721,21 +707,14 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID1": "unknown_error",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
-		if len(completed) != 1 {
-			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+
 		s, err := r.Get(ctx)
-		if err == nil {
-			t.Error("expected error from AckResult, got nil\n")
-		}
 		if s != AcknowledgeStatusOther {
 			t.Errorf("expected AcknowledgeStatusOther, got %v", s)
 		}
-		if err.Error() != "unknown_error" {
-			t.Errorf("expected unknwon_error, got: %s", err.Error())
+		if err == nil || err.Error() != "unknown_error" {
+			t.Errorf("expected unknown_error, got: %s", err.Error())
 		}
 	})
 
@@ -746,12 +725,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 		st := status.New(codes.PermissionDenied, "permission denied")
 		completed, retry := processResults(st, ackReqMap, nil)
-		if len(completed) != 1 {
-			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
 			t.Error("expected error from AckResult, got nil\n")
@@ -768,12 +742,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 		st := status.New(codes.FailedPrecondition, "failed_precondition")
 		completed, retry := processResults(st, ackReqMap, nil)
-		if len(completed) != 1 {
-			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
 			t.Error("expected error from AckResult, got nil\n")
@@ -790,12 +759,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 		st := status.New(codes.OutOfRange, "out of range")
 		completed, retry := processResults(st, ackReqMap, nil)
-		if len(completed) != 1 {
-			t.Errorf("expected completed slice length to be 1, got: %v\n", len(completed))
-		}
-		if len(retry) != 0 {
-			t.Errorf("expected retry slice to be empty, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
 			t.Error("expected error from AckResult, got nil\n")
@@ -819,12 +783,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID2": "TRANSIENT_FAILURE_INVALID_ACK_ID",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
-		if len(completed) != 2 {
-			t.Errorf("expected completed slice length to be 2, got: %v\n", len(completed))
-		}
-		if len(retry) != 1 {
-			t.Errorf("expected retry slice length to be 1, got: %v\n", len(retry))
-		}
+		compareCompletedRetryLengths(t, completed, retry, 2, 1)
 		// message with ackID "ackID1" fails
 		s, err := r1.Get(ctx)
 		if err == nil {
@@ -860,12 +819,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			}
 			st := status.New(c, "")
 			completed, retry := processResults(st, ackReqMap, nil)
-			if len(completed) != 0 {
-				t.Errorf("expected completed slice to be empty, got: %v\n", len(completed))
-			}
-			if len(retry) != 1 {
-				t.Errorf("expected retry slice length to be 1, got: %v\n", len(retry))
-			}
+			compareCompletedRetryLengths(t, completed, retry, 0, 1)
 		}
 	})
 }
