@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 )
 
 func TestSetACL(t *testing.T) {

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.2.0...metastore/v1.3.0) (2022-06-29)
+
+
+### Features
+
+* **metastore:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.1.0...metastore/v1.2.0) (2022-02-23)
 
 
