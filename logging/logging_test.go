@@ -1420,7 +1420,7 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
 	buffer := &strings.Builder{}
 	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
-	onceBackup := internal.InstrumentOnce
+	onceBackup, timeBackup := internal.InstrumentOnce, logging.SetNow(testNow)
 	internal.InstrumentOnce = new(sync.Once)
 	for i := range want {
 		buffer.Reset()
@@ -1433,6 +1433,7 @@ func TestInstrumentationWithRedirect(t *testing.T) {
 			t.Errorf("got(%v), want(%v)", got, want[i])
 		}
 	}
+	logging.SetNow(timeBackup)
 	internal.InstrumentOnce = onceBackup
 }
 
