@@ -642,7 +642,6 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	srcs := []*storagepb.ComposeObjectRequest_SourceObject{}
 	for _, src := range req.srcs {
 		srcObjPb := &storagepb.ComposeObjectRequest_SourceObject{Name: src.name}
-		srcObjPb.Generation = src.gen // what if default value?
 		if err := applyCondsProto("ComposeObject source", src.gen, src.conds, srcObjPb); err != nil {
 			return nil, err
 		}
