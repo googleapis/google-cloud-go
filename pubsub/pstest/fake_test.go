@@ -1513,3 +1513,43 @@ func TestSubscriptionPushPull(t *testing.T) {
 		t.Errorf("sub.BigqueryConfig should be zero value\n%s", diff)
 	}
 }
+
+func TestSubscriptionMessageOrdering(t *testing.T) {
+	ctx := context.Background()
+
+	s := NewServer()
+	defer s.Close()
+
+	top, err := s.GServer.CreateTopic(ctx, &pb.Topic{Name: "projects/p/topics/t"})
+	if err != nil {
+		t.Errorf("Failed to init pubsub topic: %v", err)
+	}
+	sub, err := s.GServer.CreateSubscription(ctx, &pb.Subscription{
+		Name:                  "projects/p/subscriptions/s",
+		Topic:                 top.Name,
+		AckDeadlineSeconds:    30,
+		EnableMessageOrdering: true,
+	})
+	if err != nil {
+		t.Errorf("Failed to init pubsub subscription: %v", err)
+	}
+
+	const orderingKey = "ordering-key"
+	var ids []string
+	for i := 0; i < 1000; i++ {
+		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
+	}
+	for len(ids) > 0 {
+		pull, err := s.GServer.Pull(ctx, &pb.PullRequest{Subscription: sub.Name})
+		if err != nil {
+			t.Errorf("Failed to pull from server: %v", err)
+		}
+		for i, msg := range pull.ReceivedMessages {
+			if msg.Message.MessageId != ids[i] {
+				t.Errorf("want %s, got %s", ids[i], msg.AckId)
+			}
+			s.GServer.Acknowledge(ctx, &pb.AcknowledgeRequest{Subscription: sub.Name, AckIds: []string{msg.AckId}})
+		}
+		ids = ids[len(pull.ReceivedMessages):]
+	}
+}
