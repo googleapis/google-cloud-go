@@ -1006,7 +1006,7 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	var msgs []*pb.ReceivedMessage
-	for id, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
@@ -1028,6 +1028,32 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	return msgs
 }
 
+func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
+	if !enableMessageOrdering {
+		return msgs
+	}
+	result := make(map[string]*message)
+
+	type msg struct {
+		id string
+		m  *message
+	}
+	orderingKeyMap := make(map[string]msg)
+	for id, m := range msgs {
+		orderingKey := m.proto.Message.OrderingKey
+		if orderingKey == "" {
+			orderingKey = id
+		}
+		if val, ok := orderingKeyMap[orderingKey]; !ok || m.proto.Message.PublishTime.AsTime().Before(val.m.proto.Message.PublishTime.AsTime()) {
+			orderingKeyMap[orderingKey] = msg{m: m, id: id}
+		}
+	}
+	for _, val := range orderingKeyMap {
+		result[val.id] = val.m
+	}
+	return result
+}
+
 func (s *subscription) deliver() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1036,7 +1062,7 @@ func (s *subscription) deliver() {
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
-	for id, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
