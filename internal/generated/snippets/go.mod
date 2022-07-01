@@ -81,7 +81,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.22.2
+	cloud.google.com/go/pubsub v1.23.0
 	cloud.google.com/go/pubsublite v1.2.1
 	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
@@ -117,8 +117,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.85.0
-	google.golang.org/genproto v0.0.0-20220623142657-077d458a5694
+	google.golang.org/api v0.86.0
+	google.golang.org/genproto v0.0.0-20220630160836-4327a74d660d
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer

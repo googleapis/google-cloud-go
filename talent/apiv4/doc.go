@@ -20,8 +20,6 @@
 // Cloud Talent Solution provides the capability to create, read, update, and
 // delete job postings, as well as search jobs based on keywords and filters.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Example usage
 //
 // To get started with this package, create a client.

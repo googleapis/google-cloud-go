@@ -719,6 +719,15 @@
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/functions/apiv2beta": {
+    "distribution_name": "cloud.google.com/go/functions/apiv2beta",
+    "description": "Cloud Functions API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/apiv2beta",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/functions/metadata": {
     "distribution_name": "cloud.google.com/go/functions/metadata",
     "description": "Cloud Functions",
@@ -1571,7 +1580,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/talent/latest/apiv4",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/talent/apiv4beta1": {
