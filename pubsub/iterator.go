@@ -28,7 +28,6 @@ import (
 	"cloud.google.com/go/pubsub/internal/distribution"
 	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -663,26 +662,6 @@ func maxDuration(x, y time.Duration) time.Duration {
 		return x
 	}
 	return y
-}
-
-func getStatus(err error) *status.Status {
-	st, ok := status.FromError(err)
-	if !ok {
-		return nil
-	}
-	return st
-}
-
-// getAckErrors retrieves the metadata of an rpc error if available.
-func getAckErrors(err error) map[string]string {
-	st := getStatus(err)
-	if st != nil {
-		for _, detail := range st.Details() {
-			info, _ := detail.(*errdetails.ErrorInfo)
-			return info.GetMetadata()
-		}
-	}
-	return nil
 }
 
 // processResults processes AckResults by referring to errorStatus and errorsMap.
