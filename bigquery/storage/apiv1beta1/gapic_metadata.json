@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "BigQueryStorageClient",
+          "rpcs": {
+            "BatchCreateReadSessionStreams": {
+              "methods": [
+                "BatchCreateReadSessionStreams"
+              ]
+            },
+            "CreateReadSession": {
+              "methods": [
+                "CreateReadSession"
+              ]
+            },
+            "FinalizeStream": {
+              "methods": [
+                "FinalizeStream"
+              ]
+            },
+            "ReadRows": {
+              "methods": [
+                "ReadRows"
+              ]
+            },
+            "SplitReadStream": {
+              "methods": [
+                "SplitReadStream"
+              ]
+            }
+          }
         }
       }
     }
