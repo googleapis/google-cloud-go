@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"errors"
 	"runtime"
 	"testing"
 	"time"
@@ -287,6 +288,86 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 	wantCount = 0
 	if ct := ms.fc.count(); ct != wantCount {
 		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
+	}
+
+}
+
+func TestManagedStream_AppendDeadlocks(t *testing.T) {
+	// Ensure we don't deadlock by issing two appends.
+	testCases := []struct {
+		desc       string
+		openErrors []error
+		ctx        context.Context
+		respErr1   error
+		respErr2   error
+	}{
+		{
+			desc:       "no errors",
+			openErrors: []error{nil},
+			ctx:        context.Background(),
+			respErr1:   nil,
+			respErr2:   nil,
+		},
+		{
+			desc:       "expired caller context",
+			openErrors: []error{nil, nil},
+			ctx: func() context.Context {
+				cctx, cancel := context.WithCancel(context.Background())
+				cancel()
+				return cctx
+			}(),
+			respErr1: func() error {
+				cctx, cancel := context.WithCancel(context.Background())
+				cancel()
+				return cctx.Err()
+			}(),
+			respErr2: func() error {
+				cctx, cancel := context.WithCancel(context.Background())
+				cancel()
+				return cctx.Err()
+			}(),
+		},
+		{
+			desc:       "errored getstream",
+			openErrors: []error{status.Errorf(codes.ResourceExhausted, "some error"), status.Errorf(codes.ResourceExhausted, "some error")},
+			ctx:        context.Background(),
+			respErr1:   status.Errorf(codes.ResourceExhausted, "some error"),
+			respErr2:   status.Errorf(codes.ResourceExhausted, "some error"),
+		},
+	}
+
+	for _, tc := range testCases {
+		openF := openTestArc(&testAppendRowsClient{}, nil, nil)
+		ms := &ManagedStream{
+			ctx: context.Background(),
+			open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+				if len(tc.openErrors) == 0 {
+					panic("out of open errors")
+				}
+				curErr := tc.openErrors[0]
+				tc.openErrors = tc.openErrors[1:]
+				if curErr == nil {
+					return openF(s, opts...)
+				}
+				return nil, curErr
+			},
+			streamSettings: &streamSettings{
+				streamID: "foo",
+			},
+		}
+
+		// first append
+		pw := newPendingWrite([][]byte{[]byte("foo")})
+		gotErr := ms.append(tc.ctx, pw)
+		if !errors.Is(gotErr, tc.respErr1) {
+			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr1)
+		}
+		// second append
+		pw = newPendingWrite([][]byte{[]byte("bar")})
+		gotErr = ms.append(tc.ctx, pw)
+		if !errors.Is(gotErr, tc.respErr2) {
+			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr2)
+		}
 	}
 
 }
