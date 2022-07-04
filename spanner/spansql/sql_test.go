@@ -412,6 +412,15 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Marc", "Richards")`,
+			reparseDML,
+		},
+		{
 			&Delete{
 				Table: "Ta",
 				Where: ComparisonOp{

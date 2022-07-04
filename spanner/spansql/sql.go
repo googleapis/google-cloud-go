@@ -157,6 +157,7 @@ func (rrdp ReplaceRowDeletionPolicy) SQL() string {
 func (drdp DropRowDeletionPolicy) SQL() string {
 	return "DROP ROW DELETION POLICY"
 }
+
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
@@ -261,7 +262,7 @@ func (u *Update) SQL() string {
 }
 
 func (i *Insert) SQL() string {
-	str := "INSERT " + i.Table.SQL() + " INTO ("
+	str := "INSERT INTO " + i.Table.SQL() + " ("
 	for i, column := range i.Columns {
 		if i > 0 {
 			str += ", "
