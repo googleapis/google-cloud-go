@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"reflect"
 	"time"
@@ -211,14 +212,16 @@ func (q Query) LimitToLast(n int) Query {
 //
 // Otherwise, StartAt should be called with one field value for each OrderBy clause,
 // in the order that they appear. For example, in
-//   q.OrderBy("X", Asc).OrderBy("Y", Desc).StartAt(1, 2)
+//
+//	q.OrderBy("X", Asc).OrderBy("Y", Desc).StartAt(1, 2)
+//
 // results will begin at the first document where X = 1 and Y = 2.
 //
 // If an OrderBy call uses the special DocumentID field path, the corresponding value
 // should be the document ID relative to the query's collection. For example, to
 // start at the document "NewYork" in the "States" collection, write
 //
-//   client.Collection("States").OrderBy(DocumentID, firestore.Asc).StartAt("NewYork")
+//	client.Collection("States").OrderBy(DocumentID, firestore.Asc).StartAt("NewYork")
 //
 // Calling StartAt overrides a previous call to StartAt or StartAfter.
 func (q Query) StartAt(docSnapshotOrFieldValues ...interface{}) Query {
@@ -699,7 +702,8 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		case *pb.Value_ArrayValue:
 			break
 		default:
-			return nil, fmt.Errorf("firestore: operator %q requires an array value", f.op)
+			log.Printf("WARNING firestore: operator %q requires an array value", f.op)
+			break
 		}
 	}
 	if sawTransform {
