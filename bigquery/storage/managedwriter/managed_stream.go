@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -330,7 +329,6 @@ func (ms *ManagedStream) append(requestCtx context.Context, pw *pendingWrite, op
 				if err := gax.Sleep(ms.ctx, bo); err != nil {
 					return err
 				}
-				log.Printf("retrying append")
 				continue
 			}
 			// We've got a non-retriable error, so propagate that up. and mark the write done.
