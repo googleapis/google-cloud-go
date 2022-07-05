@@ -244,7 +244,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 
 // lockingAppend handles a single append attempt.  When successful, it returns the number of rows
 // in the request for metrics tracking.
-func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWrite) (error, int64) {
+func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWrite) (int64, error) {
 	// critical section:  Things that need to happen inside the critical section:
 	//
 	// * Getting the stream connection (in case of reconnects)
@@ -259,7 +259,7 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 
 	// Don't both calling/retrying if this append's context is already expired.
 	if err = requestCtx.Err(); err != nil {
-		return err, 0
+		return 0, err
 	}
 
 	// If an updated schema is present, we need to reconnect the stream and update the reference
@@ -271,7 +271,7 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 	}
 	arc, ch, err = ms.getStream(arc, reconnect)
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 
 	// Resolve the special work for the first append on a stream.
@@ -296,13 +296,13 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 		err = (*arc).Send(pw.request)
 	}
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 	// Compute numRows, once we pass ownership to the channel the request may be
 	// cleared.
 	numRows := int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows()))
 	ch <- pw
-	return nil, numRows
+	return numRows, nil
 }
 
 // appendWithRetry handles the details of adding sending an append request on a stream.  Appends are sent on a long
@@ -321,7 +321,7 @@ func (ms *ManagedStream) appendWithRetry(requestCtx context.Context, pw *pending
 	}
 
 	for {
-		appendErr, numRows := ms.lockingAppend(requestCtx, pw)
+		numRows, appendErr := ms.lockingAppend(requestCtx, pw)
 		if appendErr != nil {
 			// Append yielded an error.  Retry by continuing or return.
 			status := grpcstatus.Convert(appendErr)
