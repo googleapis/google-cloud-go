@@ -352,28 +352,33 @@ func (ms *ManagedStream) Close() error {
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 
-	// Critical section: get connection, close, mark closed.
-	ms.mu.Lock()
-	arc, ch, err := ms.getStream(arc, false)
-	if err != nil {
-		return err
-	}
-	if ms.arc == nil {
-		return fmt.Errorf("no stream exists")
-	}
-	err = (*arc).CloseSend()
-	if err == nil {
+	closeErr := func() error {
+		// Critical section: get connection, close, mark closed.
+		ms.mu.Lock()
+		defer ms.mu.Unlock()
+		arc, ch, err := ms.getStream(arc, false)
+		if err != nil {
+			return err
+		}
+		if ms.arc == nil {
+			return fmt.Errorf("no stream exists")
+		}
+		err = (*arc).CloseSend()
+		if err != nil {
+			ms.err = err
+			return err
+		}
+		// Mark the stream closed, then return
 		close(ch)
-	}
-	ms.err = io.EOF
-
-	// Done with the critical section.
-	ms.mu.Unlock()
-	// Propagate cancellation.
+		ms.err = io.EOF
+		return nil
+	}()
+	// Cancel the underlying context for the stream as well.
 	if ms.cancel != nil {
 		ms.cancel()
+		ms.cancel = nil
 	}
-	return err
+	return closeErr
 }
 
 // AppendRows sends the append requests to the service, and returns a single AppendResult for tracking

@@ -95,6 +95,7 @@ type testAppendRowsClient struct {
 	requests  []*storagepb.AppendRowsRequest
 	sendF     func(*storagepb.AppendRowsRequest) error
 	recvF     func() (*storagepb.AppendRowsResponse, error)
+	closeF    func() error
 }
 
 func (tarc *testAppendRowsClient) Send(req *storagepb.AppendRowsRequest) error {
@@ -103,6 +104,10 @@ func (tarc *testAppendRowsClient) Send(req *storagepb.AppendRowsRequest) error {
 
 func (tarc *testAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
 	return tarc.recvF()
+}
+
+func (tarc *testAppendRowsClient) CloseSend() error {
+	return tarc.closeF()
 }
 
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
@@ -124,6 +129,9 @@ func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.Append
 	}
 	testARC.sendF = sF
 	testARC.recvF = rF
+	testARC.closeF = func() error {
+		return nil
+	}
 	return func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 		testARC.openCount = testARC.openCount + 1
 		return testARC, nil
@@ -298,41 +306,40 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		desc       string
 		openErrors []error
 		ctx        context.Context
-		respErr1   error
-		respErr2   error
+		respErr    error
 	}{
 		{
 			desc:       "no errors",
-			openErrors: []error{nil},
+			openErrors: []error{nil, nil},
 			ctx:        context.Background(),
-			respErr1:   nil,
-			respErr2:   nil,
+			respErr:    nil,
 		},
 		{
-			desc:       "expired caller context",
+			desc:       "cancelled caller context",
 			openErrors: []error{nil, nil},
 			ctx: func() context.Context {
 				cctx, cancel := context.WithCancel(context.Background())
 				cancel()
 				return cctx
 			}(),
-			respErr1: func() error {
-				cctx, cancel := context.WithCancel(context.Background())
-				cancel()
-				return cctx.Err()
+			respErr: context.Canceled,
+		},
+		{
+			desc:       "expired caller context",
+			openErrors: []error{nil, nil},
+			ctx: func() context.Context {
+				cctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
+				defer cancel()
+				time.Sleep(2 * time.Millisecond)
+				return cctx
 			}(),
-			respErr2: func() error {
-				cctx, cancel := context.WithCancel(context.Background())
-				cancel()
-				return cctx.Err()
-			}(),
+			respErr: context.DeadlineExceeded,
 		},
 		{
 			desc:       "errored getstream",
 			openErrors: []error{status.Errorf(codes.ResourceExhausted, "some error"), status.Errorf(codes.ResourceExhausted, "some error")},
 			ctx:        context.Background(),
-			respErr1:   status.Errorf(codes.ResourceExhausted, "some error"),
-			respErr2:   status.Errorf(codes.ResourceExhausted, "some error"),
+			respErr:    status.Errorf(codes.ResourceExhausted, "some error"),
 		},
 	}
 
@@ -359,15 +366,19 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		// first append
 		pw := newPendingWrite([][]byte{[]byte("foo")})
 		gotErr := ms.append(tc.ctx, pw)
-		if !errors.Is(gotErr, tc.respErr1) {
-			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr1)
+		if !errors.Is(gotErr, tc.respErr) {
+			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
 		// second append
 		pw = newPendingWrite([][]byte{[]byte("bar")})
 		gotErr = ms.append(tc.ctx, pw)
-		if !errors.Is(gotErr, tc.respErr2) {
-			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr2)
+		if !errors.Is(gotErr, tc.respErr) {
+			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
+
+		// Issue two closes, to ensure we're not deadlocking there either.
+		ms.Close()
+		ms.Close()
 	}
 
 }
