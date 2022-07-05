@@ -365,13 +365,13 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 
 		// first append
 		pw := newPendingWrite([][]byte{[]byte("foo")})
-		gotErr := ms.append(tc.ctx, pw)
+		gotErr := ms.appendWithRetry(tc.ctx, pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
 		// second append
 		pw = newPendingWrite([][]byte{[]byte("bar")})
-		gotErr = ms.append(tc.ctx, pw)
+		gotErr = ms.appendWithRetry(tc.ctx, pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
