@@ -103,6 +103,51 @@
       ]
     },
     {
+      "regionTag": "container_v1_generated_ClusterManager_CompleteNodePoolUpgrade_sync",
+      "title": "container CompleteNodePoolUpgrade Sample",
+      "description": "CompleteNodePoolUpgrade completeNodePoolUpgrade will signal an on-going node pool upgrade to\ncomplete.",
+      "file": "ClusterManagerClient/CompleteNodePoolUpgrade/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CompleteNodePoolUpgrade",
+        "fullName": "google.container.v1.ClusterManagerClient.CompleteNodePoolUpgrade",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CompleteNodePoolUpgradeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CompleteNodePoolUpgrade",
+          "fullName": "google.container.v1.ClusterManager.CompleteNodePoolUpgrade",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "container_v1_generated_ClusterManager_CreateCluster_sync",
       "title": "container CreateCluster Sample",
       "description": "CreateCluster creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project’s\ndefault\nnetwork (at https: //cloud.google.com/compute/docs/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project’s global metadata indicating\nwhich CIDR range the cluster is using.",
