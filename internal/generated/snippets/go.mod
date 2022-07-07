@@ -32,6 +32,7 @@ require (
 	cloud.google.com/go/containeranalysis v0.1.0
 	cloud.google.com/go/datacatalog v1.3.0
 	cloud.google.com/go/dataflow v0.1.0
+	cloud.google.com/go/dataform v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/datafusion v1.0.0
 	cloud.google.com/go/datalabeling v0.1.0
 	cloud.google.com/go/dataplex v0.0.0-00010101000000-000000000000
@@ -358,3 +359,5 @@ replace cloud.google.com/go/vision/v2 => ../../../vision/v2
 replace cloud.google.com/go/baremetalsolution => ../../../baremetalsolution
 
 replace cloud.google.com/go/batch => ../../../batch
+
+replace cloud.google.com/go/dataform => ../../../dataform
