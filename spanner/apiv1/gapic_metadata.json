@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.spanner.v1",
+  "libraryPackage": "cloud.google.com/go/spanner/apiv1",
+  "services": {
+    "Spanner": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateSessions": {
+              "methods": [
+                "BatchCreateSessions"
+              ]
+            },
+            "BeginTransaction": {
+              "methods": [
+                "BeginTransaction"
+              ]
+            },
+            "Commit": {
+              "methods": [
+                "Commit"
+              ]
+            },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "ExecuteBatchDml": {
+              "methods": [
+                "ExecuteBatchDml"
+              ]
+            },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
+            "ExecuteStreamingSql": {
+              "methods": [
+                "ExecuteStreamingSql"
+              ]
+            },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
+            "PartitionQuery": {
+              "methods": [
+                "PartitionQuery"
+              ]
+            },
+            "PartitionRead": {
+              "methods": [
+                "PartitionRead"
+              ]
+            },
+            "Read": {
+              "methods": [
+                "Read"
+              ]
+            },
+            "Rollback": {
+              "methods": [
+                "Rollback"
+              ]
+            },
+            "StreamingRead": {
+              "methods": [
+                "StreamingRead"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

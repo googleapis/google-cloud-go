@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"errors"
+	"math/big"
 	"testing"
 	"time"
 
@@ -133,6 +134,11 @@ func TestKey(t *testing.T) {
 			wantStr:   `("2016-11-15")`,
 		},
 		{
+			k:         Key{*big.NewRat(1, 1)},
+			wantProto: listValueProto(stringProto("1.000000000")),
+			wantStr:   `(1.000000000)`,
+		},
+		{
 			k:         Key{[]byte("value")},
 			wantProto: listValueProto(bytesProto([]byte("value"))),
 			wantStr:   `("value")`,
@@ -202,6 +208,16 @@ func TestKey(t *testing.T) {
 			k:         Key{int(1), NullString{"value", false}, "value", 1.5, true},
 			wantProto: listValueProto(stringProto("1"), nullProto(), stringProto("value"), floatProto(1.5), boolProto(true)),
 			wantStr:   `(1,<null>,"value",1.5,true)`,
+		},
+		{
+			k:         Key{NullNumeric{*big.NewRat(2, 3), true}},
+			wantProto: listValueProto(stringProto("0.666666667")),
+			wantStr:   "(0.666666667)",
+		},
+		{
+			k:         Key{NullNumeric{big.Rat{}, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   "(<null>)",
 		},
 		{
 			k:         Key{customKeyToString("value")},

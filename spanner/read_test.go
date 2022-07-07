@@ -152,11 +152,6 @@ var (
 	}
 )
 
-// String implements fmt.stringer.
-func (r *Row) String() string {
-	return fmt.Sprintf("{fields: %s, val: %s}", r.fields, r.vals)
-}
-
 func describeRows(l []*Row) string {
 	// generate a nice test failure description
 	var s = "["

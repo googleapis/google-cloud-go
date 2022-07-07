@@ -483,6 +483,26 @@ func TestIntegration_Filters(t *testing.T) {
 			1,
 			4,
 		},
+		// TODO(#6184): Uncomment the following test cases once test DB is updated.
+		/*
+			{
+				"I!=191",
+				baseQuery.FilterField("I", "!=", 191),
+				8,
+				28,
+			},
+			{
+				"I in {2, 4}",
+				baseQuery.FilterField("I", "in", []interface{}{2, 4}),
+				2,
+				6,
+			},
+			{
+				"I not in {1, 3, 5, 7}",
+				baseQuery.FilterField("I", "not-in", []interface{}{1, 3, 5, 7}),
+				4,
+				12,
+			}*/
 	}, func() {
 		got := []*SQChild{}
 		want := []*SQChild{

@@ -1,12 +1,11 @@
-## Cloud Pub/Sub Lite [![GoDoc](https://godoc.org/cloud.google.com/go/pubsublite?status.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
+## Pub/Sub Lite [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/pubsublite.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
 
-- [About Cloud Pub/Sub Lite](https://cloud.google.com/pubsub/lite)
+- [About Pub/Sub Lite](https://cloud.google.com/pubsub/lite)
 - [Client library documentation](https://cloud.google.com/pubsub/lite/docs/reference/libraries)
 - [API documentation](https://cloud.google.com/pubsub/lite/docs/apis)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/pubsublite)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/pubsublite)
 
-*This library is in ALPHA. Backwards-incompatible changes may be made before
- stable v1.0.0 is released.*
 
 ### Example Usage
 
@@ -14,8 +13,7 @@
 ```go
 import (
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite"
-	"cloud.google.com/go/pubsublite/ps"
+	"cloud.google.com/go/pubsublite/pscompat"
 )
 ```
 
@@ -23,16 +21,13 @@ To publish messages to a topic:
 
 [snip]:# (publish)
 ```go
-// Create a PublisherClient for topic1.
-// See https://cloud.google.com/pubsub/lite/docs/locations for available zones.
-topic := pubsublite.TopicPath{
-    Project: "project-id",
-    Zone:    "us-central1-b",
-    TopicID: "topic1",
-}
-publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+// Create a PublisherClient for topic1 in zone us-central1-b.
+// See https://cloud.google.com/pubsub/lite/docs/locations for available regions
+// and zones.
+const topic = "projects/project-id/locations/us-central1-b/topics/topic1"
+publisher, err := pscompat.NewPublisherClient(ctx, topic)
 if err != nil {
-    log.Fatal(err)
+	log.Fatal(err)
 }
 
 // Publish "hello world".
@@ -52,13 +47,9 @@ To receive messages for a subscription:
 
 [snip]:# (subscribe)
 ```go
-// Create a SubscriberClient for subscription1.
-subscription := pubsublite.SubscriptionPath{
-    Project:        "project-id",
-    Zone:           "us-central1-b",
-    SubscriptionID: "subscription1",
-}
-subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscription)
+// Create a SubscriberClient for subscription1 in zone us-central1-b.
+const subscription = "projects/project-id/locations/us-central1-b/subscriptions/subscription1"
+subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
 if err != nil {
 	log.Fatal(err)
 }

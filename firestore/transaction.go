@@ -116,11 +116,13 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	// TODO(jba): get backoff time from gRPC trailer metadata? See
 	// extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
 	for i := 0; i < t.maxAttempts; i++ {
+		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.BeginTransaction")
 		var res *pb.BeginTransactionResponse
 		res, err = t.c.c.BeginTransaction(t.ctx, &pb.BeginTransactionRequest{
 			Database: db,
 			Options:  txOpts,
 		})
+		trace.EndSpan(t.ctx, err)
 		if err != nil {
 			return err
 		}
@@ -136,11 +138,14 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			// Prefer f's returned error to rollback error.
 			return err
 		}
+		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.Commit")
 		_, err = t.c.c.Commit(t.ctx, &pb.CommitRequest{
 			Database:    t.c.path(),
 			Writes:      t.writes,
 			Transaction: t.id,
 		})
+		trace.EndSpan(t.ctx, err)
+
 		// If a read-write transaction returns Aborted, retry.
 		// On success or other failures, return here.
 		if t.readOnly || status.Code(err) != codes.Aborted {

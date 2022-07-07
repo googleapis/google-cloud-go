@@ -229,7 +229,7 @@ func handleInsertErrors(ierrs []*bq.TableDataInsertAllResponseInsertErrors, rows
 	}
 	var errs PutMultiError
 	for _, e := range ierrs {
-		if int(e.Index) > len(rows) {
+		if int(e.Index) >= len(rows) {
 			return fmt.Errorf("internal error: unexpected row index: %v", e.Index)
 		}
 		rie := RowInsertionError{

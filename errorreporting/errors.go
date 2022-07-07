@@ -33,7 +33,7 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/errorreporting/apiv1beta1"
-	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/errorreporting/internal"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -88,7 +88,7 @@ var newClient = func(ctx context.Context, opts ...option.ClientOption) (client, 
 	if err != nil {
 		return nil, err
 	}
-	client.SetGoogleClientInfo("gccl", version.Repo)
+	client.SetGoogleClientInfo("gccl", internal.Version)
 	return client, nil
 }
 

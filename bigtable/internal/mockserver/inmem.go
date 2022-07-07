@@ -50,6 +50,8 @@ type Server struct {
 	MutateRowsFn func(*btpb.MutateRowsRequest, btpb.Bigtable_MutateRowsServer) error
 	// CheckAndMutateRowFn mocks CheckAndMutateRow.
 	CheckAndMutateRowFn func(context.Context, *btpb.CheckAndMutateRowRequest) (*btpb.CheckAndMutateRowResponse, error)
+	// PingAndWarmFn mocks PingAndWarm.
+	PingAndWarmFn func(context.Context, *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error)
 	// ReadModifyWriteRowFn mocks ReadModifyWriteRow.
 	ReadModifyWriteRowFn func(context.Context, *btpb.ReadModifyWriteRowRequest) (*btpb.ReadModifyWriteRowResponse, error)
 }
@@ -120,6 +122,14 @@ func (s *Server) MutateRows(req *btpb.MutateRowsRequest, srv btpb.Bigtable_Mutat
 func (s *Server) CheckAndMutateRow(ctx context.Context, srv *btpb.CheckAndMutateRowRequest) (*btpb.CheckAndMutateRowResponse, error) {
 	if s.CheckAndMutateRowFn != nil {
 		return s.CheckAndMutateRowFn(ctx, srv)
+	}
+	return nil, status.Error(codes.Unimplemented, "unimplemented")
+}
+
+// PingAndWarm implements PingAndWarm of the BigtableServer interface.
+func (s *Server) PingAndWarm(ctx context.Context, srv *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error) {
+	if s.PingAndWarmFn != nil {
+		return s.PingAndWarmFn(ctx, srv)
 	}
 	return nil, status.Error(codes.Unimplemented, "unimplemented")
 }

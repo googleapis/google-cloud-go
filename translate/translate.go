@@ -26,6 +26,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/translate/internal"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/translate/v2"
@@ -236,5 +237,5 @@ type Language struct {
 }
 
 func setClientHeader(headers http.Header) {
-	headers.Set("x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo))
+	headers.Set("x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version))
 }

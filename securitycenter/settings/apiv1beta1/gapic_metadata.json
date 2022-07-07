@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.securitycenter.settings.v1beta1",
+  "libraryPackage": "cloud.google.com/go/securitycenter/settings/apiv1beta1",
+  "services": {
+    "SecurityCenterSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SecurityCenterSettingsClient",
+          "rpcs": {
+            "BatchCalculateEffectiveSettings": {
+              "methods": [
+                "BatchCalculateEffectiveSettings"
+              ]
+            },
+            "BatchGetSettings": {
+              "methods": [
+                "BatchGetSettings"
+              ]
+            },
+            "CalculateEffectiveComponentSettings": {
+              "methods": [
+                "CalculateEffectiveComponentSettings"
+              ]
+            },
+            "CalculateEffectiveSettings": {
+              "methods": [
+                "CalculateEffectiveSettings"
+              ]
+            },
+            "GetComponentSettings": {
+              "methods": [
+                "GetComponentSettings"
+              ]
+            },
+            "GetServiceAccount": {
+              "methods": [
+                "GetServiceAccount"
+              ]
+            },
+            "GetSettings": {
+              "methods": [
+                "GetSettings"
+              ]
+            },
+            "ListComponents": {
+              "methods": [
+                "ListComponents"
+              ]
+            },
+            "ListDetectors": {
+              "methods": [
+                "ListDetectors"
+              ]
+            },
+            "ResetComponentSettings": {
+              "methods": [
+                "ResetComponentSettings"
+              ]
+            },
+            "ResetSettings": {
+              "methods": [
+                "ResetSettings"
+              ]
+            },
+            "UpdateComponentSettings": {
+              "methods": [
+                "UpdateComponentSettings"
+              ]
+            },
+            "UpdateSettings": {
+              "methods": [
+                "UpdateSettings"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

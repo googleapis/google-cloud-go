@@ -33,7 +33,6 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/logging"
 	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
@@ -95,9 +94,9 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 	mc.CallOptions.CreateLogMetric = []gax.CallOption{gax.WithRetry(retryerOnInternal)}
 	mc.CallOptions.UpdateLogMetric = []gax.CallOption{gax.WithRetry(retryerOnInternal)}
 
-	lc.SetGoogleClientInfo("gccl", version.Repo)
-	sc.SetGoogleClientInfo("gccl", version.Repo)
-	mc.SetGoogleClientInfo("gccl", version.Repo)
+	lc.SetGoogleClientInfo("gccl", internal.Version)
+	sc.SetGoogleClientInfo("gccl", internal.Version)
+	mc.SetGoogleClientInfo("gccl", internal.Version)
 	client := &Client{
 		lClient: lc,
 		sClient: sc,
@@ -161,9 +160,12 @@ func toHTTPRequest(p *logtypepb.HttpRequest) (*logging.HTTPRequest, error) {
 		Status:                         int(p.Status),
 		ResponseSize:                   p.ResponseSize,
 		Latency:                        dur,
+		LocalIP:                        p.ServerIp,
 		RemoteIP:                       p.RemoteIp,
 		CacheHit:                       p.CacheHit,
 		CacheValidatedWithOriginServer: p.CacheValidatedWithOriginServer,
+		CacheFillBytes:                 p.CacheFillBytes,
+		CacheLookup:                    p.CacheLookup,
 	}, nil
 }
 
@@ -205,8 +207,8 @@ func (rn resourceNames) set(r *logpb.ListLogEntriesRequest) {
 // "projects/PROJECT-ID/logs/LOG-ID". Forward slashes in LOG-ID must be
 // replaced by %2F before calling Filter.
 //
-// Timestamps in the filter string must be written in RFC 3339 format. See the
-// timestamp example.
+// Timestamps in the filter string must be written in RFC 3339 format. By default,
+// timestamp filters for the past 24 hours.
 func Filter(f string) EntriesOption { return filter(f) }
 
 type filter string
@@ -242,7 +244,23 @@ func listLogEntriesRequest(parent string, opts []EntriesOption) *logpb.ListLogEn
 	for _, opt := range opts {
 		opt.set(req)
 	}
+	req.Filter = defaultTimestampFilter(req.Filter)
 	return req
+}
+
+// defaultTimestampFilter returns a timestamp filter that looks back 24 hours in the past.
+// This default setting is consistent with documentation. Note: user filters containing 'timestamp'
+// substring disables this default timestamp filter, e.g. `textPayload: "timestamp"`
+func defaultTimestampFilter(filter string) string {
+	dayAgo := time.Now().Add(-24 * time.Hour).UTC()
+	switch {
+	case len(filter) == 0:
+		return fmt.Sprintf(`timestamp >= "%s"`, dayAgo.Format(time.RFC3339))
+	case !strings.Contains(strings.ToLower(filter), "timestamp"):
+		return fmt.Sprintf(`%s AND timestamp >= "%s"`, filter, dayAgo.Format(time.RFC3339))
+	default:
+		return filter
+	}
 }
 
 // An EntryIterator iterates over log entries.

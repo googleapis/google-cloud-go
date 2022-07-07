@@ -412,6 +412,13 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 	})
 
 	t.Run("Remove service", func(t *testing.T) {
+		if got, want := parent.DependenciesLen(), 2; got != want {
+			t.Errorf("compositeService.dependencies: got len %d, want %d", got, want)
+		}
+		if got, want := parent.RemovedLen(), 0; got != want {
+			t.Errorf("compositeService.removed: got len %d, want %d", got, want)
+		}
+
 		// Removing child1 should stop it, but leave everything else active.
 		parent.RemoveService(child1)
 
@@ -432,6 +439,9 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 		child1.receiver.VerifyStatus(t, serviceTerminated)
 		child2.receiver.VerifyNoStatusChanges(t)
 		parent.receiver.VerifyNoStatusChanges(t)
+		if got, want := parent.Status(), serviceActive; got != want {
+			t.Errorf("compositeService.Status() got %v, want %v", got, want)
+		}
 	})
 
 	t.Run("Terminating", func(t *testing.T) {

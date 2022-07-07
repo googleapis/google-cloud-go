@@ -16,10 +16,15 @@ package spanner
 
 import (
 	"context"
+	"strconv"
+	"strings"
+	"sync"
 
+	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"google.golang.org/grpc/metadata"
 )
 
 const statsPrefix = "cloud.google.com/go/spanner/"
@@ -36,6 +41,11 @@ var (
 	tagNumBeingPrepared = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
 	tagNumReadSessions  = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
 	tagNumWriteSessions = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
+	tagKeyMethod        = tag.MustNewKey("grpc_client_method")
+	// gfeLatencyMetricsEnabled is used to track if GFELatency and GFEHeaderMissingCount need to be recorded
+	gfeLatencyMetricsEnabled = false
+	// mutex to avoid data race in reading/writing the above flag
+	statsMu = sync.RWMutex{}
 )
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
@@ -153,6 +163,41 @@ var (
 		Aggregation: view.Count(),
 		TagKeys:     tagCommonKeys,
 	}
+
+	// GFELatency is the latency between Google's network receiving an RPC and reading back the first byte of the response
+	GFELatency = stats.Int64(
+		statsPrefix+"gfe_latency",
+		"Latency between Google's network receiving an RPC and reading back the first byte of the response",
+		stats.UnitMilliseconds,
+	)
+
+	// GFELatencyView is the view of distribution of GFELatency values
+	GFELatencyView = &view.View{
+		Name:        "cloud.google.com/go/spanner/gfe_latency",
+		Measure:     GFELatency,
+		Description: "Latency between Google's network receives an RPC and reads back the first byte of the response",
+		Aggregation: view.Distribution(0.0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0,
+			16.0, 20.0, 25.0, 30.0, 40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0,
+			300.0, 400.0, 500.0, 650.0, 800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0,
+			100000.0),
+		TagKeys: append(tagCommonKeys, tagKeyMethod),
+	}
+
+	// GFEHeaderMissingCount is the number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network
+	GFEHeaderMissingCount = stats.Int64(
+		statsPrefix+"gfe_header_missing_count",
+		"Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
+		stats.UnitDimensionless,
+	)
+
+	// GFEHeaderMissingCountView is the view of number of GFEHeaderMissingCount
+	GFEHeaderMissingCountView = &view.View{
+		Name:        "cloud.google.com/go/spanner/gfe_header_missing_count",
+		Measure:     GFEHeaderMissingCount,
+		Description: "Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
+		Aggregation: view.Count(),
+		TagKeys:     append(tagCommonKeys, tagKeyMethod),
+	}
 )
 
 // EnableStatViews enables all views of metrics relate to session management.
@@ -166,4 +211,104 @@ func EnableStatViews() error {
 		AcquiredSessionsCountView,
 		ReleasedSessionsCountView,
 	)
+}
+
+// EnableGfeLatencyView enables GFELatency metric
+func EnableGfeLatencyView() error {
+	setGFELatencyMetricsFlag(true)
+	return view.Register(GFELatencyView)
+}
+
+// EnableGfeHeaderMissingCountView enables GFEHeaderMissingCount metric
+func EnableGfeHeaderMissingCountView() error {
+	setGFELatencyMetricsFlag(true)
+	return view.Register(GFEHeaderMissingCountView)
+}
+
+// EnableGfeLatencyAndHeaderMissingCountViews enables GFEHeaderMissingCount and GFELatency metric
+func EnableGfeLatencyAndHeaderMissingCountViews() error {
+	setGFELatencyMetricsFlag(true)
+	return view.Register(
+		GFELatencyView,
+		GFEHeaderMissingCountView,
+	)
+}
+
+func getGFELatencyMetricsFlag() bool {
+	statsMu.RLock()
+	defer statsMu.RUnlock()
+	return gfeLatencyMetricsEnabled
+}
+
+func setGFELatencyMetricsFlag(enable bool) {
+	statsMu.Lock()
+	gfeLatencyMetricsEnabled = enable
+	statsMu.Unlock()
+}
+
+// DisableGfeLatencyAndHeaderMissingCountViews disables GFEHeaderMissingCount and GFELatency metric
+func DisableGfeLatencyAndHeaderMissingCountViews() {
+	setGFELatencyMetricsFlag(false)
+	view.Unregister(
+		GFELatencyView,
+		GFEHeaderMissingCountView,
+	)
+}
+
+func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod string) error {
+	if len(md.Get("server-timing")) == 0 {
+		recordStat(ctx, GFEHeaderMissingCount, 1)
+		return nil
+	}
+	serverTiming := md.Get("server-timing")[0]
+	gfeLatency, err := strconv.Atoi(strings.TrimPrefix(serverTiming, "gfet4t7; dur="))
+	if !strings.HasPrefix(serverTiming, "gfet4t7; dur=") || err != nil {
+		return err
+	}
+	// Record GFE latency with OpenCensus.
+	ctx = tag.NewContext(ctx, tag.FromContext(ctx))
+	ctx, err = tag.New(ctx, tag.Insert(tagKeyMethod, keyMethod))
+	if err != nil {
+		return err
+	}
+	recordStat(ctx, GFELatency, int64(gfeLatency))
+	return nil
+}
+
+func createContextAndCaptureGFELatencyMetrics(ctx context.Context, ct *commonTags, md metadata.MD, keyMethod string) error {
+	var ctxGFE, err = tag.New(ctx,
+		tag.Upsert(tagKeyClientID, ct.clientID),
+		tag.Upsert(tagKeyDatabase, ct.database),
+		tag.Upsert(tagKeyInstance, ct.instance),
+		tag.Upsert(tagKeyLibVersion, ct.libVersion),
+	)
+	if err != nil {
+		return err
+	}
+	return captureGFELatencyStats(ctxGFE, md, keyMethod)
+}
+
+func getCommonTags(sc *sessionClient) *commonTags {
+	_, instance, database, err := parseDatabaseName(sc.database)
+	if err != nil {
+		return nil
+	}
+	return &commonTags{
+		clientID:   sc.id,
+		database:   database,
+		instance:   instance,
+		libVersion: internal.Version,
+	}
+}
+
+// commonTags are common key-value pairs of data associated with the GFELatency measure
+type commonTags struct {
+	// Client ID
+	clientID string
+	// Database Name
+	database string
+	// Instance ID
+	instance string
+	// Library Version
+	libVersion string
 }

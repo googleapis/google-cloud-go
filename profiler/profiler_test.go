@@ -305,7 +305,7 @@ func TestRetry(t *testing.T) {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: md,
+			md: &md,
 		}
 
 		pause, shouldRetry := r.Retry(status.Error(codes.Aborted, ""))
@@ -325,15 +325,14 @@ func TestRetry(t *testing.T) {
 		}
 	}
 
-	md := grpcmd.New(map[string]string{})
-
+	md := grpcmd.New(nil)
 	r := &retryer{
 		backoff: gax.Backoff{
 			Initial:    initialBackoff,
 			Max:        maxBackoff,
 			Multiplier: backoffMultiplier,
 		},
-		md: md,
+		md: &md,
 	}
 	for i := 0; i < 100; i++ {
 		pause, shouldRetry := r.Retry(errors.New(""))
@@ -505,9 +504,19 @@ func TestInitializeConfig(t *testing.T) {
 		envProjectID    bool
 	}{
 		{
-			"accepts service name",
-			Config{Service: testService},
-			Config{Service: testService, ProjectID: testGCEProjectID, Zone: testZone, Instance: testInstance},
+			"accepts service name starting with letter",
+			Config{Service: "test-service-1"},
+			Config{Service: "test-service-1", ProjectID: testGCEProjectID, Zone: testZone, Instance: testInstance},
+			"",
+			false,
+			false,
+			true,
+			false,
+		},
+		{
+			"accepts service name starting number",
+			Config{Service: "12service"},
+			Config{Service: "12service", ProjectID: testGCEProjectID, Zone: testZone, Instance: testInstance},
 			"",
 			false,
 			false,
@@ -538,7 +547,7 @@ func TestInitializeConfig(t *testing.T) {
 			"requires valid service name",
 			Config{Service: "Service"},
 			Config{Service: "Service"},
-			"service name \"Service\" does not match regular expression ^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$",
+			"service name \"Service\" does not match regular expression ^[a-z0-9]([-a-z0-9_.]{0,253}[a-z0-9])?$",
 			false,
 			false,
 			true,

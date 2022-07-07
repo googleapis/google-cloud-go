@@ -31,6 +31,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 func TestRecordIO(t *testing.T) {
@@ -484,7 +485,7 @@ func TestRecorderBeforeFunc(t *testing.T) {
 					t.Error(err)
 					return
 				}
-				if !cmp.Equal(got, tc.wantRespMsg) {
+				if !cmp.Equal(got, tc.wantRespMsg, protocmp.Transform()) {
 					t.Errorf("got %+v; want %+v", got, tc.wantRespMsg)
 				}
 			}
@@ -499,7 +500,7 @@ func TestRecorderBeforeFunc(t *testing.T) {
 					return
 				}
 				got := e.msg.msg.(*ipb.Item)
-				if !cmp.Equal(got, tc.wantEntryMsg) {
+				if !cmp.Equal(got, tc.wantEntryMsg, protocmp.Transform()) {
 					t.Errorf("got %v; want %v", got, tc.wantEntryMsg)
 				}
 			}

@@ -75,6 +75,10 @@ func (mt *MsgTracker) Wait(timeout time.Duration) error {
 	totalCount := len(mt.msgMap)
 	mt.mu.Unlock()
 
+	if totalCount == 0 {
+		return nil
+	}
+
 	select {
 	case <-time.After(timeout):
 		mt.mu.Lock()

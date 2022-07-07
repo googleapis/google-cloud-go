@@ -15,25 +15,27 @@ package pubsublite
 
 import (
 	"flag"
+	"log"
 	"os"
 	"testing"
 
 	"cloud.google.com/go/pubsublite/internal/test"
-	"google.golang.org/api/option"
 )
 
 var (
 	// Initialized in TestMain.
-	mockServer     test.MockServer
-	testClientOpts []option.ClientOption
+	testServer *test.Server
+	mockServer test.MockServer
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	testServer, clientOpts := test.NewServerWithConn()
+	var err error
+	if testServer, err = test.NewServer(); err != nil {
+		log.Fatal(err)
+	}
 	mockServer = testServer.LiteServer
-	testClientOpts = clientOpts
 
 	exit := m.Run()
 	testServer.Close()

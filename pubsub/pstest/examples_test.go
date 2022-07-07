@@ -42,3 +42,23 @@ func ExampleNewServer() {
 	defer client.Close()
 	_ = client // TODO: Use the client.
 }
+
+func ExampleNewServerWithPort() {
+	ctx := context.Background()
+	// Start a fake server running locally at 9001.
+	srv := pstest.NewServerWithPort(9001)
+	defer srv.Close()
+	// Connect to the server without using TLS.
+	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer conn.Close()
+	// Use the connection when creating a pubsub client.
+	client, err := pubsub.NewClient(ctx, "project", option.WithGRPCConn(conn))
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+	_ = client // TODO: Use the client.
+}

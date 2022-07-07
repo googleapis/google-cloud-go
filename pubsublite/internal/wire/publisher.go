@@ -88,7 +88,7 @@ func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPub
 		metadata: newPubsubMetadata(),
 	}
 	pp.batcher = newPublishMessageBatcher(&f.settings, partition, pp.onNewBatch)
-	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, reflect.TypeOf(pb.PublishResponse{}))
+	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, streamIdleTimeout(f.settings.Timeout), reflect.TypeOf(pb.PublishResponse{}))
 	pp.metadata.AddTopicRoutingMetadata(pp.topic)
 	pp.metadata.AddClientInfo(f.settings.Framework)
 	return pp
@@ -236,7 +236,7 @@ func (pp *singlePartitionPublisher) onResponse(response interface{}) {
 //
 // Expected to be called with singlePartitionPublisher.mu held.
 func (pp *singlePartitionPublisher) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !pp.unsafeUpdateStatus(targetStatus, err) {
+	if !pp.unsafeUpdateStatus(targetStatus, wrapError("publisher", pp.topic.String(), err)) {
 		return
 	}
 
@@ -287,11 +287,12 @@ type routingPublisher struct {
 	msgRouter  messageRouter
 	publishers []*singlePartitionPublisher
 
-	compositeService
+	apiClientService
 }
 
-func newRoutingPublisher(adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
+func newRoutingPublisher(allClients apiClients, adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
 	pub := &routingPublisher{
+		apiClientService: apiClientService{clients: allClients},
 		msgRouterFactory: msgRouterFactory,
 		pubFactory:       pubFactory,
 	}
@@ -377,14 +378,20 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 	if err := validatePublishSettings(settings); err != nil {
 		return nil, err
 	}
+
+	var allClients apiClients
 	pubClient, err := newPublisherClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
+	allClients = append(allClients, pubClient)
+
 	adminClient, err := NewAdminClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
+	allClients = append(allClients, adminClient)
 
 	msgRouterFactory := newMessageRouterFactory(rand.New(rand.NewSource(time.Now().UnixNano())))
 	pubFactory := &singlePartitionPublisherFactory{
@@ -393,5 +400,5 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 		settings:  settings,
 		topicPath: topicPath,
 	}
-	return newRoutingPublisher(adminClient, msgRouterFactory, pubFactory), nil
+	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil
 }

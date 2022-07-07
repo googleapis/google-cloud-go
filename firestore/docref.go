@@ -677,6 +677,9 @@ func (d *DocumentRef) Update(ctx context.Context, updates []Update, preconds ...
 
 // Collections returns an iterator over the immediate sub-collections of the document.
 func (d *DocumentRef) Collections(ctx context.Context) *CollectionIterator {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.DocumentRef.ListCollectionIds")
+	defer func() { trace.EndSpan(ctx, nil) }()
+
 	client := d.Parent.c
 	it := &CollectionIterator{
 		client: client,
@@ -795,7 +798,8 @@ type DocumentSnapshotIterator struct {
 // the current state of the document. If the document has been deleted, Next
 // returns a DocumentSnapshot whose Exists method returns false.
 //
-// Next never returns iterator.Done unless it is called after Stop.
+// Next is not expected to return iterator.Done unless it is called after Stop.
+// Rarely, networking issues may also cause iterator.Done to be returned.
 func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 	btree, _, readTime, err := it.ws.nextSnapshot()
 	if err != nil {

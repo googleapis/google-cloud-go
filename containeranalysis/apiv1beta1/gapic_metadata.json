@@ -1,0 +1,173 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "grafeas.v1beta1",
+  "libraryPackage": "cloud.google.com/go/containeranalysis/apiv1beta1",
+  "services": {
+    "GrafeasV1Beta1": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GrafeasV1Beta1Client",
+          "rpcs": {
+            "BatchCreateNotes": {
+              "methods": [
+                "BatchCreateNotes"
+              ]
+            },
+            "BatchCreateOccurrences": {
+              "methods": [
+                "BatchCreateOccurrences"
+              ]
+            },
+            "CreateNote": {
+              "methods": [
+                "CreateNote"
+              ]
+            },
+            "CreateOccurrence": {
+              "methods": [
+                "CreateOccurrence"
+              ]
+            },
+            "DeleteNote": {
+              "methods": [
+                "DeleteNote"
+              ]
+            },
+            "DeleteOccurrence": {
+              "methods": [
+                "DeleteOccurrence"
+              ]
+            },
+            "GetNote": {
+              "methods": [
+                "GetNote"
+              ]
+            },
+            "GetOccurrence": {
+              "methods": [
+                "GetOccurrence"
+              ]
+            },
+            "GetOccurrenceNote": {
+              "methods": [
+                "GetOccurrenceNote"
+              ]
+            },
+            "GetVulnerabilityOccurrencesSummary": {
+              "methods": [
+                "GetVulnerabilityOccurrencesSummary"
+              ]
+            },
+            "ListNoteOccurrences": {
+              "methods": [
+                "ListNoteOccurrences"
+              ]
+            },
+            "ListNotes": {
+              "methods": [
+                "ListNotes"
+              ]
+            },
+            "ListOccurrences": {
+              "methods": [
+                "ListOccurrences"
+              ]
+            },
+            "UpdateNote": {
+              "methods": [
+                "UpdateNote"
+              ]
+            },
+            "UpdateOccurrence": {
+              "methods": [
+                "UpdateOccurrence"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GrafeasV1Beta1Client",
+          "rpcs": {
+            "BatchCreateNotes": {
+              "methods": [
+                "BatchCreateNotes"
+              ]
+            },
+            "BatchCreateOccurrences": {
+              "methods": [
+                "BatchCreateOccurrences"
+              ]
+            },
+            "CreateNote": {
+              "methods": [
+                "CreateNote"
+              ]
+            },
+            "CreateOccurrence": {
+              "methods": [
+                "CreateOccurrence"
+              ]
+            },
+            "DeleteNote": {
+              "methods": [
+                "DeleteNote"
+              ]
+            },
+            "DeleteOccurrence": {
+              "methods": [
+                "DeleteOccurrence"
+              ]
+            },
+            "GetNote": {
+              "methods": [
+                "GetNote"
+              ]
+            },
+            "GetOccurrence": {
+              "methods": [
+                "GetOccurrence"
+              ]
+            },
+            "GetOccurrenceNote": {
+              "methods": [
+                "GetOccurrenceNote"
+              ]
+            },
+            "GetVulnerabilityOccurrencesSummary": {
+              "methods": [
+                "GetVulnerabilityOccurrencesSummary"
+              ]
+            },
+            "ListNoteOccurrences": {
+              "methods": [
+                "ListNoteOccurrences"
+              ]
+            },
+            "ListNotes": {
+              "methods": [
+                "ListNotes"
+              ]
+            },
+            "ListOccurrences": {
+              "methods": [
+                "ListOccurrences"
+              ]
+            },
+            "UpdateNote": {
+              "methods": [
+                "UpdateNote"
+              ]
+            },
+            "UpdateOccurrence": {
+              "methods": [
+                "UpdateOccurrence"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

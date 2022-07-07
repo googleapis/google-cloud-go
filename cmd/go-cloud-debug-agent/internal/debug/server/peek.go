@@ -14,6 +14,7 @@
 
 // Functions for reading values of various types from a program's memory.
 
+//go:build linux
 // +build linux
 
 package server

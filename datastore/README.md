@@ -1,10 +1,10 @@
-## Cloud Datastore [![GoDoc](https://godoc.org/cloud.google.com/go/datastore?status.svg)](https://godoc.org/cloud.google.com/go/datastore)
+## Cloud Datastore [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/datastore.svg)](https://pkg.go.dev/cloud.google.com/go/datastore)
 
 - [About Cloud Datastore](https://cloud.google.com/datastore/)
 - [Activating the API for your project](https://cloud.google.com/datastore/docs/activate)
 - [API documentation](https://cloud.google.com/datastore/docs)
-- [Go client documentation](https://godoc.org/cloud.google.com/go/datastore)
-- [Complete sample program](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/datastore/tasks)
+- [Go client documentation](https://pkg.go.dev/cloud.google.com/go/datastore)
+- [Complete sample program](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/datastore/tasks)
 
 ### Example Usage
 

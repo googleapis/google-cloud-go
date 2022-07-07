@@ -32,7 +32,9 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -687,6 +689,10 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 		s.totalSessionsCreated++
 		s.sessions[sessionName] = sessions[i]
 	}
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
 
@@ -922,6 +928,10 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 
@@ -984,7 +994,13 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing transaction in commit request")
 	}
 	s.removeTransaction(tx)
-	return &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}, nil
+	resp := &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}
+	if req.ReturnCommitStats {
+		resp.CommitStats = &spannerpb.CommitResponse_CommitStats{
+			MutationCount: int64(1),
+		}
+	}
+	return resp, nil
 }
 
 func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (*emptypb.Empty, error) {
@@ -1051,14 +1067,17 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 }
 
 func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
-	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
-	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	return s.PartitionQuery(ctx, &spannerpb.PartitionQueryRequest{
+		Session:          req.Session,
+		Transaction:      req.Transaction,
+		PartitionOptions: req.PartitionOptions,
+		// KeySet is currently ignored.
+		Sql: fmt.Sprintf(
+			"SELECT %s FROM %s",
+			strings.Join(req.Columns, ", "),
+			req.Table,
+		),
+	})
 }
 
 // EncodeResumeToken return mock resume token encoding for an uint64 integer.
