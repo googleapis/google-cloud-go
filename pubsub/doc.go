@@ -126,11 +126,11 @@ either:
 Ack deadlines are extended periodically by the client. The initial ack
 deadline given to messages is based on the subscription's AckDeadline property,
 which defaults to 10s. The period between extensions, as well as the
-length of the extension, automatically adjust based on the time it takes the
-subscriber applicatoin to ack messages. By default, this extension period is capped
-at 10m, but this limit can be configured by the "MaxExtensionPeriod" setting.
-This has the effect that subscribers that process messages
-quickly have their message ack deadlines extended for a short amount, whereas
+length of the extension, automatically adjusts based on the time it takes the
+subscriber application to ack messages (based on the 99th percentile of ack latency).
+By default, this extension period is capped at 10m, but this limit can be configured
+by the "MaxExtensionPeriod" setting. This has the effect that subscribers that process
+messages quickly have their message ack deadlines extended for a short amount, whereas
 subscribers that process message slowly have their message ack deadlines extended
 for a large amount. The net effect is fewer RPCs sent from the client library.
 
