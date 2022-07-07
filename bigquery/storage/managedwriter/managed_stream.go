@@ -366,7 +366,9 @@ func (ms *ManagedStream) Close() error {
 		return fmt.Errorf("no stream exists")
 	}
 	err = (*arc).CloseSend()
-	// Cancel the underlying context for the stream, we don't allow re-open.
+	// Regardless of the outcome of CloseSend(), we're done with this channel.
+	close(ch)
+	// Additionally, cancel the underlying context for the stream, we don't allow re-open.
 	if ms.cancel != nil {
 		ms.cancel()
 		ms.cancel = nil
@@ -378,7 +380,6 @@ func (ms *ManagedStream) Close() error {
 		return err
 	}
 	// For normal operation, mark the stream error as io.EOF and return.
-	close(ch)
 	ms.err = io.EOF
 	return nil
 }
