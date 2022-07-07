@@ -286,16 +286,20 @@ type composeObjectRequest struct {
 }
 
 type rewriteObjectRequest struct {
-	srcBucket     string
-	srcObject     string
-	dstBucket     string
-	dstObject     string
-	dstKeyName    string
-	attrs         *ObjectAttrs
-	gen           int64
-	conds         *Conditions
-	predefinedACL string
-	token         string
+	srcBucket        string
+	srcObject        string
+	srcEncryptionKey []byte
+	srcGen           int64
+	srcConds         *Conditions
+	dstBucket        string
+	dstObject        string
+	dstEncryptionKey []byte
+	dstKeyName       string
+	attrs            *ObjectAttrs
+	gen              int64
+	conds            *Conditions
+	predefinedACL    string
+	token            string
 }
 
 type rewriteObjectResponse struct {

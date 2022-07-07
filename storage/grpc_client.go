@@ -628,7 +628,56 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	return nil, errMethodNotSupported
 }
 func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	obj := req.attrs.toProtoObject("")
+	call := &storagepb.RewriteObjectRequest{
+		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcBucket),
+		SourceObject:             req.srcObject,
+		RewriteToken:             req.token,
+		DestinationBucket:        bucketResourceName(globalProjectAlias, req.dstBucket),
+		DestinationName:          req.dstObject,
+		Destination:              obj,
+		DestinationKmsKey:        req.dstKeyName,
+		DestinationPredefinedAcl: req.predefinedACL,
+	}
+
+	// The userProject, whether source or destination project, is decided by the code calling the interface.
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	if err := applyCondsProto("Copy destination", req.gen, req.conds, call); err != nil {
+		return nil, err
+	}
+	if err := applySourceCondsProto(req.srcGen, req.srcConds, call); err != nil {
+		return nil, err
+	}
+
+	if len(req.dstEncryptionKey) > 0 {
+		call.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstEncryptionKey)
+	}
+	if len(req.srcEncryptionKey) > 0 {
+		srcParams := toProtoCommonObjectRequestParams(req.srcEncryptionKey)
+		call.CopySourceEncryptionAlgorithm = srcParams.GetEncryptionAlgorithm()
+		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
+		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
+	}
+	var res *storagepb.RewriteResponse
+	var err error
+
+	retryCall := func() error { res, err = c.raw.RewriteObject(ctx, call, s.gax...); return err }
+
+	if err := run(ctx, retryCall, s.retry, s.idempotent, setRetryHeaderGRPC(ctx)); err != nil {
+		return nil, err
+	}
+
+	r := &rewriteObjectResponse{
+		done:     res.GetDone(),
+		written:  res.GetTotalBytesRewritten(),
+		token:    res.GetRewriteToken(),
+		resource: newObjectFromProto(res.GetResource()),
+	}
+
+	return r, nil
 }
 
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
