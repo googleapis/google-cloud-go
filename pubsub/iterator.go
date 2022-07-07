@@ -17,7 +17,6 @@ package pubsub
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"strings"
 	"sync"
@@ -681,15 +680,14 @@ func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult,
 		// Handle special errors returned for ack/modack RPCs via the ErrorInfo
 		// sidecar metadata when exactly-once delivery is enabled.
 		if errAckID, ok := errorsByAckID[ackID]; ok {
-			exactlyOnceErrStr := errAckID.Error()
-			if strings.HasPrefix(exactlyOnceErrStr, transientErrStringPrefix) {
+			errAckIDStr := errAckID.Error()
+			if strings.HasPrefix(errAckIDStr, transientErrStringPrefix) {
 				retryResults = append(retryResults, res)
 			} else {
-				exactlyOnceErr := fmt.Errorf(exactlyOnceErrStr)
-				if exactlyOnceErrStr == permanentInvalidAckErrString {
-					ipubsub.SetAckResult(res, AcknowledgeStatusInvalidAckID, exactlyOnceErr)
+				if errAckIDStr == permanentInvalidAckErrString {
+					ipubsub.SetAckResult(res, AcknowledgeStatusInvalidAckID, errAckID)
 				} else {
-					ipubsub.SetAckResult(res, AcknowledgeStatusOther, exactlyOnceErr)
+					ipubsub.SetAckResult(res, AcknowledgeStatusOther, errAckID)
 				}
 				completedResults = append(completedResults, res)
 			}
