@@ -63,6 +63,12 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 	storagepb.TableFieldSchema_TIMESTAMP:  descriptorpb.FieldDescriptorProto_TYPE_INT64,
 }
 
+// primitive types which can leverage packed encoding when repeated/arrays.
+var packedTypes = []descriptorpb.FieldDescriptorProto_Type{
+	descriptorpb.FieldDescriptorProto_TYPE_INT32,
+	descriptorpb.FieldDescriptorProto_TYPE_INT64,
+}
+
 // For TableFieldSchema OPTIONAL mode, we use the wrapper types to allow for the
 // proper representation of NULL values, as proto3 semantics would just use default value.
 var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
@@ -277,12 +283,25 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 
 	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
 	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
-		return &descriptorpb.FieldDescriptorProto{
+		outType := bqTypeToFieldTypeMap[field.GetType()]
+		fdp := &descriptorpb.FieldDescriptorProto{
 			Name:   proto.String(name),
 			Number: proto.Int32(idx),
-			Type:   bqTypeToFieldTypeMap[field.GetType()].Enum(),
+			Type:   outType.Enum(),
 			Label:  convertModeToLabel(field.GetMode(), useProto3),
-		}, nil
+		}
+		// Special case: proto2 repeated fields may benefit from using packed annotation.
+		if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !useProto3 {
+			for _, v := range packedTypes {
+				if outType == v {
+					fdp.Options = &descriptorpb.FieldOptions{
+						Packed: proto.Bool(true),
+					}
+					break
+				}
+			}
+		}
+		return fdp, nil
 	}
 	// For NULLABLE proto3 fields, use a wrapper type.
 	return &descriptorpb.FieldDescriptorProto{
