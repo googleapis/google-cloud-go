@@ -84,6 +84,9 @@
         "dataflow": {
             "component": "dataflow"
         },
+        "dataform": {
+            "component": "dataform"
+        },
         "datafusion": {
             "component": "datafusion"
         },
