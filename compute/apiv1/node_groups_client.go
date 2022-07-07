@@ -58,7 +58,25 @@ type NodeGroupsCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalNodeGroupsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
+	return &NodeGroupsCallOptions{
+		AddNodes:           []gax.CallOption{},
+		AggregatedList:     []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		DeleteNodes:        []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		ListNodes:          []gax.CallOption{},
+		Patch:              []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		SetNodeTemplate:    []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalNodeGroupsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalNodeGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -190,6 +208,9 @@ type nodeGroupsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing NodeGroupsClient
+	CallOptions **NodeGroupsCallOptions
 }
 
 // NewNodeGroupsRESTClient creates a new node groups rest client.
@@ -202,9 +223,11 @@ func NewNodeGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		return nil, err
 	}
 
+	callOpts := defaultNodeGroupsRESTCallOptions()
 	c := &nodeGroupsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -218,7 +241,7 @@ func NewNodeGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 	}
 	c.operationClient = opC
 
-	return &NodeGroupsClient{internalClient: c, CallOptions: &NodeGroupsCallOptions{}}, nil
+	return &NodeGroupsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultNodeGroupsRESTClientOptions() []option.ClientOption {
@@ -283,6 +306,7 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).AddNodes[0:len((*c.CallOptions).AddNodes):len((*c.CallOptions).AddNodes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -456,6 +480,7 @@ func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -530,6 +555,7 @@ func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.D
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).DeleteNodes[0:len((*c.CallOptions).DeleteNodes):len((*c.CallOptions).DeleteNodes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -590,6 +616,7 @@ func (c *nodeGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNodeGr
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NodeGroup{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -649,6 +676,7 @@ func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -716,6 +744,7 @@ func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -982,6 +1011,7 @@ func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNo
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1049,6 +1079,7 @@ func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1115,6 +1146,7 @@ func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *compute
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetNodeTemplate[0:len((*c.CallOptions).SetNodeTemplate):len((*c.CallOptions).SetNodeTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1182,6 +1214,7 @@ func (c *nodeGroupsRESTClient) TestIamPermissions(ctx context.Context, req *comp
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

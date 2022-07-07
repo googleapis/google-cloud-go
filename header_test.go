@@ -58,7 +58,7 @@ func TestLicense(t *testing.T) {
 			return err
 		}
 
-		if ext := filepath.Ext(path); ext != ".go" && ext != ".proto" {
+		if ext := filepath.Ext(path); ext != ".go" && ext != ".proto" && ext != ".sh" {
 			return nil
 		}
 		if strings.HasSuffix(path, ".pb.go") {

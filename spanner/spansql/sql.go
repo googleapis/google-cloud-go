@@ -157,6 +157,7 @@ func (rrdp ReplaceRowDeletionPolicy) SQL() string {
 func (drdp DropRowDeletionPolicy) SQL() string {
 	return "DROP ROW DELETION POLICY"
 }
+
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
@@ -257,6 +258,38 @@ func (u *Update) SQL() string {
 		}
 	}
 	str += " WHERE " + u.Where.SQL()
+	return str
+}
+
+func (i *Insert) SQL() string {
+	str := "INSERT INTO " + i.Table.SQL() + " ("
+	for i, column := range i.Columns {
+		if i > 0 {
+			str += ", "
+		}
+		str += column.SQL()
+	}
+	str += ") "
+	str += i.Input.SQL()
+	return str
+}
+
+func (v Values) SQL() string {
+	str := "VALUES "
+	for j, values := range v {
+		if j > 0 {
+			str += ", "
+		}
+		str += "("
+
+		for k, value := range values {
+			if k > 0 {
+				str += ", "
+			}
+			str += value.SQL()
+		}
+		str += ")"
+	}
 	return str
 }
 
@@ -736,5 +769,10 @@ func (dl DateLiteral) addSQL(sb *strings.Builder) {
 
 func (tl TimestampLiteral) SQL() string { return buildSQL(tl) }
 func (tl TimestampLiteral) addSQL(sb *strings.Builder) {
-	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000 -07:00"))
+	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000-07:00"))
+}
+
+func (jl JSONLiteral) SQL() string { return buildSQL(jl) }
+func (jl JSONLiteral) addSQL(sb *strings.Builder) {
+	fmt.Fprintf(sb, "JSON '%s'", jl)
 }

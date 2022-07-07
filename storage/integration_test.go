@@ -299,6 +299,16 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				MatchesStorageClasses:   []string{"NEARLINE"},
 				NumNewerVersions:        10,
 			},
+		}, {
+			Action: LifecycleAction{
+				Type: DeleteAction,
+			},
+			Condition: LifecycleCondition{
+				AgeInDays:        10,
+				MatchesPrefix:    []string{"testPrefix"},
+				MatchesSuffix:    []string{"testSuffix"},
+				NumNewerVersions: 3,
+			},
 		}},
 	}
 
@@ -410,6 +420,49 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 	}
 }
 
+func TestIntegration_BucketLifecycle(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	wantLifecycle := Lifecycle{
+		Rules: []LifecycleRule{
+			{
+				Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+				Condition: LifecycleCondition{AgeInDays: 30},
+			},
+		},
+	}
+
+	bucket := client.Bucket(uidSpace.New())
+
+	// Create bucket with lifecycle rules
+	bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{
+		Lifecycle: wantLifecycle,
+	})
+	defer h.mustDeleteBucket(bucket)
+
+	attrs := h.mustBucketAttrs(bucket)
+	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+	}
+
+	// Remove lifecycle rules
+	ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
+	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+	if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
+		t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
+	}
+
+	// Update bucket with a lifecycle rule
+	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+	}
+}
+
 func TestIntegration_BucketUpdate(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -475,8 +528,12 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	wantLifecycle := Lifecycle{
 		Rules: []LifecycleRule{
 			{
-				Action:    LifecycleAction{Type: "Delete"},
-				Condition: LifecycleCondition{AgeInDays: 30},
+				Action: LifecycleAction{Type: "Delete"},
+				Condition: LifecycleCondition{
+					AgeInDays:     30,
+					MatchesPrefix: []string{"testPrefix"},
+					MatchesSuffix: []string{"testSuffix"},
+				},
 			},
 		},
 	}
@@ -4531,74 +4588,83 @@ func verifySignedURL(url string, headers map[string][]string, expectedFileBody [
 // verifies that it was uploaded correctly
 func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte, statusCodeOnSuccess int) error {
 	ctx := context.Background()
-	formBuf := new(bytes.Buffer)
-	mw := multipart.NewWriter(formBuf)
-	for fieldName, value := range pv4.Fields {
-		if err := mw.WriteField(fieldName, value); err != nil {
-			return fmt.Errorf("Failed to write form field: %q: %v", fieldName, err)
-		}
-	}
+	var res *http.Response
 
-	// Now let's perform the upload
-	mf, err := mw.CreateFormFile("file", "myfile.txt")
-	if err != nil {
-		return err
-	}
-	if _, err := mf.Write(bytesToWrite); err != nil {
-		return err
-	}
-	if err := mw.Close(); err != nil {
-		return err
-	}
+	// Request is sent using a vanilla net/http client, so there are no built-in
+	// retries. We must wrap with a retry to prevent flakes.
+	return retry(ctx,
+		func() error {
+			formBuf := new(bytes.Buffer)
+			mw := multipart.NewWriter(formBuf)
+			for fieldName, value := range pv4.Fields {
+				if err := mw.WriteField(fieldName, value); err != nil {
+					return fmt.Errorf("Failed to write form field: %q: %v", fieldName, err)
+				}
+			}
 
-	// Compose the HTTP request
-	req, err := http.NewRequest("POST", pv4.URL, formBuf)
-	if err != nil {
-		return fmt.Errorf("Failed to compose HTTP request: %v", err)
-	}
+			// Now let's perform the upload
+			mf, err := mw.CreateFormFile("file", "myfile.txt")
+			if err != nil {
+				return err
+			}
+			if _, err := mf.Write(bytesToWrite); err != nil {
+				return err
+			}
+			if err := mw.Close(); err != nil {
+				return err
+			}
 
-	// Ensure the Content-Type is derived from the writer
-	req.Header.Set("Content-Type", mw.FormDataContentType())
+			// Compose the HTTP request
+			req, err := http.NewRequest("POST", pv4.URL, formBuf)
+			if err != nil {
+				return fmt.Errorf("Failed to compose HTTP request: %v", err)
+			}
 
-	// Send request
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
+			// Ensure the Content-Type is derived from the writer
+			req.Header.Set("Content-Type", mw.FormDataContentType())
 
-	// Check response
-	if g, w := res.StatusCode, statusCodeOnSuccess; g != w {
-		blob, _ := httputil.DumpResponse(res, true)
-		return fmt.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
-	}
-	io.Copy(ioutil.Discard, res.Body)
+			// Send request
+			res, err = http.DefaultClient.Do(req)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		func() error {
+			// Check response
+			if g, w := res.StatusCode, statusCodeOnSuccess; g != w {
+				blob, _ := httputil.DumpResponse(res, true)
+				return fmt.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+			}
+			io.Copy(ioutil.Discard, res.Body)
 
-	// Verify that the file was properly uploaded
-	// by reading back its attributes and content
-	attrs, err := obj.Attrs(ctx)
-	if err != nil {
-		return fmt.Errorf("Failed to retrieve attributes: %v", err)
-	}
-	if g, w := attrs.Size, int64(len(bytesToWrite)); g != w {
-		return fmt.Errorf("ContentLength mismatch: got %d want %d", g, w)
-	}
-	if g, w := attrs.MD5, md5.Sum(bytesToWrite); !bytes.Equal(g, w[:]) {
-		return fmt.Errorf("MD5Checksum mismatch\nGot:  %x\nWant: %x", g, w)
-	}
+			// Verify that the file was properly uploaded
+			// by reading back its attributes and content
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Failed to retrieve attributes: %v", err)
+			}
+			if g, w := attrs.Size, int64(len(bytesToWrite)); g != w {
+				return fmt.Errorf("ContentLength mismatch: got %d want %d", g, w)
+			}
+			if g, w := attrs.MD5, md5.Sum(bytesToWrite); !bytes.Equal(g, w[:]) {
+				return fmt.Errorf("MD5Checksum mismatch\nGot:  %x\nWant: %x", g, w)
+			}
 
-	// Compare the uploaded body with the expected
-	rd, err := obj.NewReader(ctx)
-	if err != nil {
-		return fmt.Errorf("Failed to create a reader: %v", err)
-	}
-	gotBody, err := ioutil.ReadAll(rd)
-	if err != nil {
-		return fmt.Errorf("Failed to read the body: %v", err)
-	}
-	if diff := testutil.Diff(string(gotBody), string(bytesToWrite)); diff != "" {
-		return fmt.Errorf("Body mismatch: got - want +\n%s", diff)
-	}
-	return nil
+			// Compare the uploaded body with the expected
+			rd, err := obj.NewReader(ctx)
+			if err != nil {
+				return fmt.Errorf("Failed to create a reader: %v", err)
+			}
+			gotBody, err := ioutil.ReadAll(rd)
+			if err != nil {
+				return fmt.Errorf("Failed to read the body: %v", err)
+			}
+			if diff := testutil.Diff(string(gotBody), string(bytesToWrite)); diff != "" {
+				return fmt.Errorf("Body mismatch: got - want +\n%s", diff)
+			}
+			return nil
+		})
 }
 
 func newTestClientWithExplicitCredentials(ctx context.Context, t *testing.T) *Client {

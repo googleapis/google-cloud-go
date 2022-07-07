@@ -57,7 +57,24 @@ type SubnetworksCallOptions struct {
 	TestIamPermissions       []gax.CallOption
 }
 
-// internalSubnetworksClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
+	return &SubnetworksCallOptions{
+		AggregatedList:           []gax.CallOption{},
+		Delete:                   []gax.CallOption{},
+		ExpandIpCidrRange:        []gax.CallOption{},
+		Get:                      []gax.CallOption{},
+		GetIamPolicy:             []gax.CallOption{},
+		Insert:                   []gax.CallOption{},
+		List:                     []gax.CallOption{},
+		ListUsable:               []gax.CallOption{},
+		Patch:                    []gax.CallOption{},
+		SetIamPolicy:             []gax.CallOption{},
+		SetPrivateIpGoogleAccess: []gax.CallOption{},
+		TestIamPermissions:       []gax.CallOption{},
+	}
+}
+
+// internalSubnetworksClient is an interface that defines the methods available from Google Compute Engine API.
 type internalSubnetworksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -183,6 +200,9 @@ type subnetworksRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing SubnetworksClient
+	CallOptions **SubnetworksCallOptions
 }
 
 // NewSubnetworksRESTClient creates a new subnetworks rest client.
@@ -195,9 +215,11 @@ func NewSubnetworksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		return nil, err
 	}
 
+	callOpts := defaultSubnetworksRESTCallOptions()
 	c := &subnetworksRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -211,7 +233,7 @@ func NewSubnetworksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 	}
 	c.operationClient = opC
 
-	return &SubnetworksClient{internalClient: c, CallOptions: &SubnetworksCallOptions{}}, nil
+	return &SubnetworksClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultSubnetworksRESTClientOptions() []option.ClientOption {
@@ -375,6 +397,7 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "subnetwork", url.QueryEscape(req.GetSubnetwork())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -449,6 +472,7 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "subnetwork", url.QueryEscape(req.GetSubnetwork())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ExpandIpCidrRange[0:len((*c.CallOptions).ExpandIpCidrRange):len((*c.CallOptions).ExpandIpCidrRange)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -509,6 +533,7 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "subnetwork", url.QueryEscape(req.GetSubnetwork())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Subnetwork{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -568,6 +593,7 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -634,6 +660,7 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -903,6 +930,7 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "subnetwork", url.QueryEscape(req.GetSubnetwork())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -970,6 +998,7 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1036,6 +1065,7 @@ func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, re
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "subnetwork", url.QueryEscape(req.GetSubnetwork())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetPrivateIpGoogleAccess[0:len((*c.CallOptions).SetPrivateIpGoogleAccess):len((*c.CallOptions).SetPrivateIpGoogleAccess)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1103,6 +1133,7 @@ func (c *subnetworksRESTClient) TestIamPermissions(ctx context.Context, req *com
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

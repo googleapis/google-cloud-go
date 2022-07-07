@@ -12,6 +12,51 @@
   },
   "snippets": [
     {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_CancelOperation_sync",
+      "title": "firestore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.CancelOperation",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_CreateIndex_sync",
       "title": "firestore CreateIndex Sample",
       "description": "CreateIndex creates a composite index. This returns a google.longrunning.Operation\nwhich may be used to track the status of the creation. The metadata for\nthe operation will be the type IndexOperationMetadata.",
@@ -87,6 +132,51 @@
         "method": {
           "shortName": "DeleteIndex",
           "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteIndex",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteOperation_sync",
+      "title": "firestore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteOperation",
           "service": {
             "shortName": "FirestoreAdmin",
             "fullName": "google.firestore.admin.v1.FirestoreAdmin"
@@ -287,6 +377,52 @@
       ]
     },
     {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_GetOperation_sync",
+      "title": "firestore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetOperation",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_ImportDocuments_sync",
       "title": "firestore ImportDocuments Sample",
       "description": "ImportDocuments imports documents into Google Cloud Firestore. Existing documents with the\nsame name are overwritten. The import occurs in the background and its\nprogress can be monitored and managed via the Operation resource that is\ncreated. If an ImportDocuments operation is cancelled, it is possible\nthat a subset of the data has already been imported to Cloud Firestore.",
@@ -455,6 +591,52 @@
         "method": {
           "shortName": "ListIndexes",
           "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListIndexes",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ListOperations_sync",
+      "title": "firestore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListOperations",
           "service": {
             "shortName": "FirestoreAdmin",
             "fullName": "google.firestore.admin.v1.FirestoreAdmin"

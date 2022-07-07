@@ -46,12 +46,62 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "BinauthzManagementServiceV1Beta1Client",
+          "rpcs": {
+            "CreateAttestor": {
+              "methods": [
+                "CreateAttestor"
+              ]
+            },
+            "DeleteAttestor": {
+              "methods": [
+                "DeleteAttestor"
+              ]
+            },
+            "GetAttestor": {
+              "methods": [
+                "GetAttestor"
+              ]
+            },
+            "GetPolicy": {
+              "methods": [
+                "GetPolicy"
+              ]
+            },
+            "ListAttestors": {
+              "methods": [
+                "ListAttestors"
+              ]
+            },
+            "UpdateAttestor": {
+              "methods": [
+                "UpdateAttestor"
+              ]
+            },
+            "UpdatePolicy": {
+              "methods": [
+                "UpdatePolicy"
+              ]
+            }
+          }
         }
       }
     },
     "SystemPolicyV1Beta1": {
       "clients": {
         "grpc": {
+          "libraryClient": "SystemPolicyV1Beta1Client",
+          "rpcs": {
+            "GetSystemPolicy": {
+              "methods": [
+                "GetSystemPolicy"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "SystemPolicyV1Beta1Client",
           "rpcs": {
             "GetSystemPolicy": {

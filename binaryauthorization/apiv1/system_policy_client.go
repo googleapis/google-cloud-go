@@ -56,7 +56,7 @@ func defaultSystemPolicyCallOptions() *SystemPolicyCallOptions {
 	}
 }
 
-// internalSystemPolicyClient is an interface that defines the methods availaible from Binary Authorization API.
+// internalSystemPolicyClient is an interface that defines the methods available from Binary Authorization API.
 type internalSystemPolicyClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

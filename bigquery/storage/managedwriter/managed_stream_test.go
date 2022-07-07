@@ -231,7 +231,8 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 	// Create a context that will expire during the append.
 	// This is expected to surface a flowcontroller error, as there's no
 	// capacity.
-	expireCtx, _ := context.WithTimeout(ctx, 100*time.Millisecond)
+	expireCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+	defer cancel()
 	_, err := ms.AppendRows(expireCtx, fakeData)
 	if err == nil {
 		t.Errorf("expected AppendRows to error, but it succeeded")
@@ -317,7 +318,8 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 	// Send a bunch of appends that expire quicker than response, and monitor that
 	// goroutine growth stays within bounded threshold.
 	for i := 0; i < 500; i++ {
-		expireCtx, _ := context.WithTimeout(ctx, 25*time.Millisecond)
+		expireCtx, cancel := context.WithTimeout(ctx, 25*time.Millisecond)
+		defer cancel()
 		ms.AppendRows(expireCtx, fakeData)
 		if i%50 == 0 {
 			if current := runtime.NumGoroutine(); current > threshold {

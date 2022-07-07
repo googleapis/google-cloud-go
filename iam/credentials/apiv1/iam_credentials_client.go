@@ -108,7 +108,7 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 	}
 }
 
-// internalIamCredentialsClient is an interface that defines the methods availaible from IAM Service Account Credentials API.
+// internalIamCredentialsClient is an interface that defines the methods available from IAM Service Account Credentials API.
 type internalIamCredentialsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

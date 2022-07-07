@@ -70,7 +70,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 	}
 }
 
-// internalVersionsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalVersionsClient is an interface that defines the methods available from App Engine Admin API.
 type internalVersionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

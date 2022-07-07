@@ -50,7 +50,17 @@ type VpnTunnelsCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalVpnTunnelsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultVpnTunnelsRESTCallOptions() *VpnTunnelsCallOptions {
+	return &VpnTunnelsCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalVpnTunnelsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalVpnTunnelsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -134,6 +144,9 @@ type vpnTunnelsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing VpnTunnelsClient
+	CallOptions **VpnTunnelsCallOptions
 }
 
 // NewVpnTunnelsRESTClient creates a new vpn tunnels rest client.
@@ -146,9 +159,11 @@ func NewVpnTunnelsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		return nil, err
 	}
 
+	callOpts := defaultVpnTunnelsRESTCallOptions()
 	c := &vpnTunnelsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -162,7 +177,7 @@ func NewVpnTunnelsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 	}
 	c.operationClient = opC
 
-	return &VpnTunnelsClient{internalClient: c, CallOptions: &VpnTunnelsCallOptions{}}, nil
+	return &VpnTunnelsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultVpnTunnelsRESTClientOptions() []option.ClientOption {
@@ -326,6 +341,7 @@ func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "vpn_tunnel", url.QueryEscape(req.GetVpnTunnel())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -386,6 +402,7 @@ func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTun
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "vpn_tunnel", url.QueryEscape(req.GetVpnTunnel())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.VpnTunnel{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -452,6 +469,7 @@ func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

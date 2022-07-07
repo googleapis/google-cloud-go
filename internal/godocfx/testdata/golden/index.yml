@@ -132,7 +132,7 @@ items:
   langs:
   - go
   children:
-  - cloud.google.com/go/storage.DeleteAction,SetStorageClassAction
+  - cloud.google.com/go/storage.DeleteAction,SetStorageClassAction,AbortIncompleteMPUAction
   - cloud.google.com/go/storage.NoPayload,JSONPayload
   - cloud.google.com/go/storage.ObjectFinalizeEvent,ObjectMetadataUpdateEvent,ObjectDeleteEvent,ObjectArchiveEvent
   - cloud.google.com/go/storage.ScopeFullControl,ScopeReadOnly,ScopeReadWrite
@@ -288,9 +288,9 @@ items:
   - cloud.google.com/go/storage.Writer.Write
   - cloud.google.com/go/storage.SignedURL
   alt_link: https://pkg.go.dev/cloud.google.com/go/storage
-- uid: cloud.google.com/go/storage.DeleteAction,SetStorageClassAction
-  name: DeleteAction, SetStorageClassAction
-  id: DeleteAction,SetStorageClassAction
+- uid: cloud.google.com/go/storage.DeleteAction,SetStorageClassAction,AbortIncompleteMPUAction
+  name: DeleteAction, SetStorageClassAction, AbortIncompleteMPUAction
+  id: DeleteAction,SetStorageClassAction,AbortIncompleteMPUAction
   parent: cloud.google.com/go/storage
   type: const
   langs:
@@ -299,7 +299,12 @@ items:
     content: "const (\n\n\t// DeleteAction is a lifecycle action that deletes a live
       and/or archived\n\t// objects. Takes precedence over SetStorageClass actions.\n\tDeleteAction
       = \"Delete\"\n\n\t// SetStorageClassAction changes the storage class of live
-      and/or archived\n\t// objects.\n\tSetStorageClassAction = \"SetStorageClass\"\n)"
+      and/or archived\n\t// objects.\n\tSetStorageClassAction = \"SetStorageClass\"\n\n\t//
+      AbortIncompleteMPUAction is a lifecycle action that aborts an incomplete\n\t//
+      multipart upload when the multipart upload meets the conditions specified\n\t//
+      in the lifecycle rule. The AgeInDays condition is the only allowed\n\t// condition
+      for this action. AgeInDays is measured from the time the\n\t// multipart upload
+      was created.\n\tAbortIncompleteMPUAction = \"AbortIncompleteMultipartUpload\"\n)"
 - uid: cloud.google.com/go/storage.NoPayload,JSONPayload
   name: NoPayload, JSONPayload
   id: NoPayload,JSONPayload
@@ -393,6 +398,8 @@ items:
   id: ACLHandle
   summary: |
     ACLHandle provides operations on an access control list for a Google Cloud Storage bucket or object.
+    ACLHandle on an object operates on the latest generation of that object by default.
+    Selecting a specific generation of an object is not currently supported by the client.
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -1915,11 +1922,11 @@ items:
   - go
   syntax:
     content: "type LifecycleAction struct {\n\t// Type is the type of action to take
-      on matching objects.\n\t//\n\t// Acceptable values are \"Delete\" to delete
-      matching objects and\n\t// \"SetStorageClass\" to set the storage class defined
-      in StorageClass on\n\t// matching objects.\n\tType <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      StorageClass is the storage class to set on matching objects if the Action\n\t//
-      is \"SetStorageClass\".\n\tStorageClass <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      on matching objects.\n\t//\n\t// Acceptable values are storage.DeleteAction,
+      storage.SetStorageClassAction,\n\t// and storage.AbortIncompleteMPUAction.\n\tType
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// StorageClass
+      is the storage class to set on matching objects if the Action\n\t// is \"SetStorageClass\".\n\tStorageClass
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.LifecycleCondition
   name: LifecycleCondition
   id: LifecycleCondition
@@ -1950,16 +1957,21 @@ items:
       condition is relevant only for versioned objects.\n\tDaysSinceNoncurrentTime
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Liveness specifies
       the object's liveness. Relevant only for versioned objects\n\tLiveness <a href=\"#cloud_google_com_go_storage_Liveness\">Liveness</a>\n\n\t//
+      MatchesPrefix is the condition matching an object if any of the\n\t// matches_prefix
+      strings are an exact prefix of the object's name.\n\tMatchesPrefix []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       MatchesStorageClasses is the condition matching the object's storage\n\t// class.\n\t//\n\t//
       Values include \"STANDARD\", \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\tMatchesStorageClasses
-      []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// NoncurrentTimeBefore
-      is the noncurrent timestamp of the object. This\n\t// condition is satisfied
-      when an object's noncurrent timestamp is before\n\t// midnight of the specified
-      date in UTC.\n\t//\n\t// This condition is relevant only for versioned objects.\n\tNoncurrentTimeBefore
-      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      NumNewerVersions is the condition matching objects with a number of newer versions.\n\t//\n\t//
-      If the value is N, this condition is satisfied when there are at least N\n\t//
-      versions (including the live version) newer than this version of the\n\t// object.\n\tNumNewerVersions
+      []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// MatchesSuffix
+      is the condition matching an object if any of the\n\t// matches_suffix strings
+      are an exact suffix of the object's name.\n\tMatchesSuffix []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      NoncurrentTimeBefore is the noncurrent timestamp of the object. This\n\t// condition
+      is satisfied when an object's noncurrent timestamp is before\n\t// midnight
+      of the specified date in UTC.\n\t//\n\t// This condition is relevant only for
+      versioned objects.\n\tNoncurrentTimeBefore <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// NumNewerVersions is the
+      condition matching objects with a number of newer versions.\n\t//\n\t// If the
+      value is N, this condition is satisfied when there are at least N\n\t// versions
+      (including the live version) newer than this version of the\n\t// object.\n\tNumNewerVersions
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.LifecycleRule
   name: LifecycleRule
@@ -2080,14 +2092,16 @@ items:
       <a href=\"https://pkg.go.dev/builtin#uint32\">uint32</a>\n\n\t// MediaLink is
       an URL to the object's content. This field is read-only.\n\tMediaLink <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Metadata represents user-provided metadata, in key/value pairs.\n\t// It can
-      be nil if no metadata is provided.\n\tMetadata map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Generation is
-      the generation number of the object's content.\n\t// This field is read-only.\n\tGeneration
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Metageneration
-      is the version of the metadata for this\n\t// object at this generation. This
-      field is used for preconditions\n\t// and for detecting changes in metadata.
-      A metageneration number\n\t// is only meaningful in the context of a particular
-      generation\n\t// of a particular object. This field is read-only.\n\tMetageneration
+      be nil if no metadata is provided.\n\t//\n\t// For object downloads using Reader,
+      metadata keys are sent as headers.\n\t// Therefore, avoid setting metadata keys
+      using characters that are not valid\n\t// for headers. See https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6.\n\tMetadata
+      map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Generation is the generation number of the object's content.\n\t// This field
+      is read-only.\n\tGeneration <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      Metageneration is the version of the metadata for this\n\t// object at this
+      generation. This field is used for preconditions\n\t// and for detecting changes
+      in metadata. A metageneration number\n\t// is only meaningful in the context
+      of a particular generation\n\t// of a particular object. This field is read-only.\n\tMetageneration
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// StorageClass
       is the storage class of the object. This defines\n\t// how objects are stored
       and determines the SLA and the cost of storage.\n\t// Typical values are \"STANDARD\",
@@ -2490,6 +2504,9 @@ items:
     ObjectAttrs field before the first call to Write. If no ContentType
     attribute is specified, the content type will be automatically sniffed
     using net/http.DetectContentType.
+
+    Note that each Writer allocates an internal buffer of size Writer.ChunkSize.
+    See the ChunkSize docs for more information.
 
     It is the caller's responsibility to call Close when writing is done. To
     stop writing without saving the data, cancel the context.
@@ -3503,18 +3520,22 @@ items:
       ChunkSize controls the maximum number of bytes of the object that the\n\t//
       Writer will attempt to send to the server in a single request. Objects\n\t//
       smaller than the size will be sent in a single request, while larger\n\t// objects
-      will be split over multiple requests. The size will be rounded up\n\t// to the
-      nearest multiple of 256K.\n\t//\n\t// ChunkSize will default to a reasonable
-      value. If you perform many\n\t// concurrent writes of small objects (under ~8MB),
-      you may wish set ChunkSize\n\t// to a value that matches your objects' sizes
-      to avoid consuming large\n\t// amounts of memory. See\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/upload#size\n\t//
+      will be split over multiple requests. The value will be rounded up\n\t// to
+      the nearest multiple of 256K. The default ChunkSize is 16MiB.\n\t//\n\t// Each
+      Writer will internally allocate a buffer of size ChunkSize. This is\n\t// used
+      to buffer input data and allow for the input to be sent again if a\n\t// request
+      must be retried.\n\t//\n\t// If you upload small objects (< 16MiB), you should
+      set ChunkSize\n\t// to a value slightly larger than the objects' sizes to avoid
+      memory bloat.\n\t// This is especially important if you are uploading many small
+      objects\n\t// concurrently. See\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/upload#size\n\t//
       for more information about performance trade-offs related to ChunkSize.\n\t//\n\t//
       If ChunkSize is set to zero, chunking will be disabled and the object will\n\t//
       be uploaded in a single request without the use of a buffer. This will\n\t//
       further reduce memory used during uploads, but will also prevent the writer\n\t//
-      from retrying in case of a transient error from the server, since a buffer\n\t//
-      is required in order to retry the failed request.\n\t//\n\t// ChunkSize must
-      be set before the first Write call.\n\tChunkSize <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\n\t//
+      from retrying in case of a transient error from the server or resuming an\n\t//
+      upload that fails midway through, since the buffer is required in order to\n\t//
+      retry the failed request.\n\t//\n\t// ChunkSize must be set before the first
+      Write call.\n\tChunkSize <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\n\t//
       ChunkRetryDeadline sets a per-chunk retry deadline for multi-chunk\n\t// resumable
       uploads.\n\t//\n\t// For uploads of larger files, the Writer will attempt to
       retry if the\n\t// request to upload a particular chunk fails with a transient

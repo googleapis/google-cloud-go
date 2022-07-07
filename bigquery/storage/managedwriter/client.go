@@ -135,7 +135,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 					}}
 				resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
 				if err != nil {
-					return nil, fmt.Errorf("couldn't create write stream: %v", err)
+					return nil, fmt.Errorf("couldn't create write stream: %w", err)
 				}
 				streamName = resp.GetName()
 			}

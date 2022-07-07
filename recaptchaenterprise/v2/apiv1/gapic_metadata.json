@@ -1,0 +1,78 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.recaptchaenterprise.v1",
+  "libraryPackage": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+  "services": {
+    "RecaptchaEnterpriseService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnnotateAssessment": {
+              "methods": [
+                "AnnotateAssessment"
+              ]
+            },
+            "CreateAssessment": {
+              "methods": [
+                "CreateAssessment"
+              ]
+            },
+            "CreateKey": {
+              "methods": [
+                "CreateKey"
+              ]
+            },
+            "DeleteKey": {
+              "methods": [
+                "DeleteKey"
+              ]
+            },
+            "GetKey": {
+              "methods": [
+                "GetKey"
+              ]
+            },
+            "GetMetrics": {
+              "methods": [
+                "GetMetrics"
+              ]
+            },
+            "ListKeys": {
+              "methods": [
+                "ListKeys"
+              ]
+            },
+            "ListRelatedAccountGroupMemberships": {
+              "methods": [
+                "ListRelatedAccountGroupMemberships"
+              ]
+            },
+            "ListRelatedAccountGroups": {
+              "methods": [
+                "ListRelatedAccountGroups"
+              ]
+            },
+            "MigrateKey": {
+              "methods": [
+                "MigrateKey"
+              ]
+            },
+            "SearchRelatedAccountGroupMemberships": {
+              "methods": [
+                "SearchRelatedAccountGroupMemberships"
+              ]
+            },
+            "UpdateKey": {
+              "methods": [
+                "UpdateKey"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

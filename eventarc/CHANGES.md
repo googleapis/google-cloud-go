@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.5.0...eventarc/v1.6.0) (2022-05-24)
+
+
+### Features
+
+* **eventarc:** Add Provider resources ([da99e5f](https://github.com/googleapis/google-cloud-go/commit/da99e5f7905367388d967aab12b4949bb4b250ff))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.4.0...eventarc/v1.5.0) (2022-04-20)
 
 

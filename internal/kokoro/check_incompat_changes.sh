@@ -21,4 +21,4 @@ if [[ `go version` != *"go1.18"* ]]; then
     exit 0
 fi
 
-go run ./internal/apidiff -verbose -repo-metadata=./internal/.repo-metadata-full.json
+go run ./internal/apidiff -verbose

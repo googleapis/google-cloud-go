@@ -116,7 +116,7 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 	}
 }
 
-// internalMetricsClient is an interface that defines the methods availaible from Cloud Logging API.
+// internalMetricsClient is an interface that defines the methods available from Cloud Logging API.
 type internalMetricsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

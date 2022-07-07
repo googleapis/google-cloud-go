@@ -51,7 +51,7 @@ func TestParse(t *testing.T) {
 	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(r.pages), 13; got != want {
+	if got, want := len(r.pages), 14; got != want {
 		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
 	}
 	if got := r.module.Path; got != mod {

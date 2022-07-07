@@ -50,9 +50,35 @@ type DatasetMetadata struct {
 	LastModifiedTime time.Time // When the dataset or any of its tables were modified.
 	FullID           string    // The full dataset ID in the form projectID:datasetID.
 
+	// The tags associated with this dataset. Tag keys are
+	// globally unique, and managed via the resource manager API.
+	// More information: https://cloud.google.com/resource-manager/docs/tags/tags-overview
+	Tags []*DatasetTag
+
 	// ETag is the ETag obtained when reading metadata. Pass it to Dataset.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
+}
+
+// DatasetTag is a representation of a single tag key/value.
+type DatasetTag struct {
+	// TagKey is the namespaced friendly name of the tag key, e.g.
+	// "12345/environment" where 12345 is org id.
+	TagKey string
+
+	// TagValue is the friendly short name of the tag value, e.g.
+	// "production".
+	TagValue string
+}
+
+func bqToDatasetTag(in *bq.DatasetTags) *DatasetTag {
+	if in == nil {
+		return nil
+	}
+	return &DatasetTag{
+		TagKey:   in.TagKey,
+		TagValue: in.TagValue,
+	}
 }
 
 // DatasetMetadataToUpdate is used when updating a dataset's metadata.
@@ -229,6 +255,12 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 			return nil, err
 		}
 		dm.Access = append(dm.Access, e)
+	}
+	for _, bqTag := range d.Tags {
+		tag := bqToDatasetTag(bqTag)
+		if tag != nil {
+			dm.Tags = append(dm.Tags, tag)
+		}
 	}
 	return dm, nil
 }

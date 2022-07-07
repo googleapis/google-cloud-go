@@ -20,6 +20,7 @@ import (
 	"context"
 
 	iap "cloud.google.com/go/iap/apiv1"
+	"google.golang.org/api/iterator"
 	iappb "google.golang.org/genproto/googleapis/cloud/iap/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
@@ -129,6 +130,110 @@ func ExampleIdentityAwareProxyAdminClient_UpdateIapSettings() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#UpdateIapSettingsRequest.
 	}
 	resp, err := c.UpdateIapSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIdentityAwareProxyAdminClient_ListTunnelDestGroups() {
+	ctx := context.Background()
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.ListTunnelDestGroupsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ListTunnelDestGroupsRequest.
+	}
+	it := c.ListTunnelDestGroups(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleIdentityAwareProxyAdminClient_CreateTunnelDestGroup() {
+	ctx := context.Background()
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.CreateTunnelDestGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#CreateTunnelDestGroupRequest.
+	}
+	resp, err := c.CreateTunnelDestGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIdentityAwareProxyAdminClient_GetTunnelDestGroup() {
+	ctx := context.Background()
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.GetTunnelDestGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetTunnelDestGroupRequest.
+	}
+	resp, err := c.GetTunnelDestGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIdentityAwareProxyAdminClient_DeleteTunnelDestGroup() {
+	ctx := context.Background()
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.DeleteTunnelDestGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#DeleteTunnelDestGroupRequest.
+	}
+	err = c.DeleteTunnelDestGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleIdentityAwareProxyAdminClient_UpdateTunnelDestGroup() {
+	ctx := context.Background()
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.UpdateTunnelDestGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#UpdateTunnelDestGroupRequest.
+	}
+	resp, err := c.UpdateTunnelDestGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -51,7 +51,19 @@ type RegionBackendServicesCallOptions struct {
 	Update    []gax.CallOption
 }
 
-// internalRegionBackendServicesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionBackendServicesRESTCallOptions() *RegionBackendServicesCallOptions {
+	return &RegionBackendServicesCallOptions{
+		Delete:    []gax.CallOption{},
+		Get:       []gax.CallOption{},
+		GetHealth: []gax.CallOption{},
+		Insert:    []gax.CallOption{},
+		List:      []gax.CallOption{},
+		Patch:     []gax.CallOption{},
+		Update:    []gax.CallOption{},
+	}
+}
+
+// internalRegionBackendServicesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionBackendServicesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -147,6 +159,9 @@ type regionBackendServicesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionBackendServicesClient
+	CallOptions **RegionBackendServicesCallOptions
 }
 
 // NewRegionBackendServicesRESTClient creates a new region backend services rest client.
@@ -159,9 +174,11 @@ func NewRegionBackendServicesRESTClient(ctx context.Context, opts ...option.Clie
 		return nil, err
 	}
 
+	callOpts := defaultRegionBackendServicesRESTCallOptions()
 	c := &regionBackendServicesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -175,7 +192,7 @@ func NewRegionBackendServicesRESTClient(ctx context.Context, opts ...option.Clie
 	}
 	c.operationClient = opC
 
-	return &RegionBackendServicesClient{internalClient: c, CallOptions: &RegionBackendServicesCallOptions{}}, nil
+	return &RegionBackendServicesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionBackendServicesRESTClientOptions() []option.ClientOption {
@@ -233,6 +250,7 @@ func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *compu
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "backend_service", url.QueryEscape(req.GetBackendService())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -293,6 +311,7 @@ func (c *regionBackendServicesRESTClient) Get(ctx context.Context, req *computep
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "backend_service", url.QueryEscape(req.GetBackendService())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.BackendService{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -352,6 +371,7 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "backend_service", url.QueryEscape(req.GetBackendService())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetHealth[0:len((*c.CallOptions).GetHealth):len((*c.CallOptions).GetHealth)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.BackendServiceGroupHealth{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -418,6 +438,7 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -588,6 +609,7 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "backend_service", url.QueryEscape(req.GetBackendService())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -662,6 +684,7 @@ func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *compu
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "backend_service", url.QueryEscape(req.GetBackendService())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

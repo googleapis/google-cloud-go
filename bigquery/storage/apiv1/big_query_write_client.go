@@ -64,9 +64,10 @@ func defaultBigQueryWriteCallOptions() *BigQueryWriteCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Initial:    10000 * time.Millisecond,
+					Max:        120000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -133,7 +134,7 @@ func defaultBigQueryWriteCallOptions() *BigQueryWriteCallOptions {
 	}
 }
 
-// internalBigQueryWriteClient is an interface that defines the methods availaible from BigQuery Storage API.
+// internalBigQueryWriteClient is an interface that defines the methods available from BigQuery Storage API.
 type internalBigQueryWriteClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -357,7 +358,7 @@ func (c *bigQueryWriteGRPCClient) Close() error {
 
 func (c *bigQueryWriteGRPCClient) CreateWriteStream(ctx context.Context, req *storagepb.CreateWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
