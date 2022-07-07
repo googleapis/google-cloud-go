@@ -1561,6 +1561,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/dataform/v1alpha2",
+		Pkg:                   "dataform",
+		ImportPath:            "cloud.google.com/go/dataform/apiv1alpha2",
+		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
+		ApiServiceConfigPath:  "dataform_v1alpha2.yaml",
+		Transports:            []string{"grpc", "rest"},
+		ReleaseLevel:          "alpha",
+	},
 
 	// Non-Cloud APIs
 	{

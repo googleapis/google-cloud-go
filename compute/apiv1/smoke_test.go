@@ -473,17 +473,25 @@ func TestCapitalLetter(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() {
+		var op *Operation
+		var err error
+		ok := testutil.Retry(t, 20, 10*time.Second, func(r *testutil.R) {
+			var err error
+			op, err = c.Delete(ctx,
+				&computepb.DeleteFirewallRequest{
+					Project:  projectId,
+					Firewall: name,
+				})
+			if err != nil {
+				r.Errorf("%v", err)
+			}
+		})
+		if !ok {
+			t.Fatal(err)
+		}
 		timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 		defer cancel()
-		op, err := c.Delete(timeoutCtx,
-			&computepb.DeleteFirewallRequest{
-				Project:  projectId,
-				Firewall: name,
-			})
-		if err != nil {
-			t.Error(err)
-		}
-		if err = op.Wait(ctx); err != nil {
+		if err = op.Wait(timeoutCtx); err != nil {
 			t.Error(err)
 		}
 	}()
@@ -492,7 +500,7 @@ func TestCapitalLetter(t *testing.T) {
 		Firewall: name,
 	})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("got(-),want(+):\n%s", diff)
