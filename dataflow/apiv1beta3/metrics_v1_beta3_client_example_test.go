@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,18 @@ func ExampleNewMetricsV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewMetricsV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewMetricsV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleMetricsV1Beta3Client_GetJobMetrics() {
 	ctx := context.Background()
 	c, err := dataflow.NewMetricsV1Beta3Client(ctx)
@@ -46,6 +58,7 @@ func ExampleMetricsV1Beta3Client_GetJobMetrics() {
 
 	req := &dataflowpb.GetJobMetricsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobMetricsRequest.
 	}
 	resp, err := c.GetJobMetrics(ctx, req)
 	if err != nil {
@@ -65,6 +78,7 @@ func ExampleMetricsV1Beta3Client_GetJobExecutionDetails() {
 
 	req := &dataflowpb.GetJobExecutionDetailsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobExecutionDetailsRequest.
 	}
 	it := c.GetJobExecutionDetails(ctx, req)
 	for {
@@ -90,6 +104,7 @@ func ExampleMetricsV1Beta3Client_GetStageExecutionDetails() {
 
 	req := &dataflowpb.GetStageExecutionDetailsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetStageExecutionDetailsRequest.
 	}
 	it := c.GetStageExecutionDetails(ctx, req)
 	for {

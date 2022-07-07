@@ -33,7 +33,6 @@ type CmdWrapper struct {
 // The commands stdout/stderr default to os.Stdout/os.Stderr respectfully.
 func Command(name string, arg ...string) *CmdWrapper {
 	c := &CmdWrapper{exec.Command(name, arg...)}
-	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin
 	return &CmdWrapper{exec.Command(name, arg...)}
@@ -41,12 +40,9 @@ func Command(name string, arg ...string) *CmdWrapper {
 
 // Run a command.
 func (c *CmdWrapper) Run() error {
-	log.Printf("[%s] >>>> %v <<<<", c.Dir, strings.Join(c.Args, " "))
-	err := c.Cmd.Run()
-	if err != nil {
-		if ee, ok := err.(*exec.ExitError); ok {
-			log.Println(string(ee.Stderr))
-		}
+	b, err := c.Output()
+	if len(b) > 0 {
+		log.Printf("Command Output: %s", b)
 	}
 	return err
 }

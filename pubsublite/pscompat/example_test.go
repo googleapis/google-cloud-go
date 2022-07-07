@@ -15,6 +15,7 @@ package pscompat_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -22,12 +23,11 @@ import (
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/pscompat"
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/xerrors"
 )
 
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
-	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	publisher, err := pscompat.NewPublisherClient(ctx, topic)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +67,7 @@ func ExamplePublisherClient_Publish() {
 // topic.
 func ExamplePublisherClient_Publish_batchingSettings() {
 	ctx := context.Background()
-	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	settings := pscompat.PublishSettings{
 		DelayThreshold:    50 * time.Millisecond,
 		CountThreshold:    200,
@@ -113,7 +113,7 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 // PublishSettings.Timeout value to detect and alert.
 func ExamplePublisherClient_Publish_errorHandling() {
 	ctx := context.Background()
-	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	settings := pscompat.PublishSettings{
 		// The PublisherClient will terminate when it cannot connect to backends for
 		// more than 10 minutes.
@@ -145,7 +145,7 @@ func ExamplePublisherClient_Publish_errorHandling() {
 				// created to republish failed messages.
 				fmt.Printf("Publish error: %v\n", err)
 				// Oversized messages cannot be published.
-				if !xerrors.Is(err, pscompat.ErrOversizedMessage) {
+				if !errors.Is(err, pscompat.ErrOversizedMessage) {
 					mu.Lock()
 					toRepublish = append(toRepublish, msg)
 					mu.Unlock()
@@ -159,9 +159,9 @@ func ExamplePublisherClient_Publish_errorHandling() {
 	if err := g.Wait(); err != nil {
 		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
 		switch {
-		case xerrors.Is(publisher.Error(), pscompat.ErrBackendUnavailable):
+		case errors.Is(publisher.Error(), pscompat.ErrBackendUnavailable):
 			// TODO: Create a new publisher client to republish failed messages.
-		case xerrors.Is(publisher.Error(), pscompat.ErrOverflow):
+		case errors.Is(publisher.Error(), pscompat.ErrOverflow):
 			// TODO: Create a new publisher client to republish failed messages.
 			// Throttle publishing. Note that backend unavailability can also cause
 			// buffer overflow before the ErrBackendUnavailable error.
@@ -173,7 +173,7 @@ func ExamplePublisherClient_Publish_errorHandling() {
 
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()
-	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
 	if err != nil {
 		// TODO: Handle error.
@@ -197,7 +197,7 @@ func ExampleSubscriberClient_Receive() {
 // ReceiveSettings.Timeout value to detect and alert.
 func ExampleSubscriberClient_Receive_errorHandling() {
 	ctx := context.Background()
-	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	settings := pscompat.ReceiveSettings{
 		// The SubscriberClient will terminate when it cannot connect to backends
 		// for more than 5 minutes.
@@ -217,7 +217,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 		})
 		if err != nil {
 			fmt.Printf("Subscriber client stopped receiving due to error: %v\n", err)
-			if xerrors.Is(err, pscompat.ErrBackendUnavailable) {
+			if errors.Is(err, pscompat.ErrBackendUnavailable) {
 				// TODO: Alert if necessary. Receive can be retried.
 			} else {
 				// TODO: Handle fatal error.
@@ -238,7 +238,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 // partitions in the associated topic.
 func ExampleSubscriberClient_Receive_maxOutstanding() {
 	ctx := context.Background()
-	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	settings := pscompat.ReceiveSettings{
 		MaxOutstandingMessages: 5,
 		MaxOutstandingBytes:    10e6,
@@ -268,7 +268,7 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 // determine which partitions it should connect to.
 func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
 	ctx := context.Background()
-	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	settings := pscompat.ReceiveSettings{
 		// NOTE: The corresponding topic must have 2 or more partitions.
 		Partitions: []int{0, 1},
@@ -310,7 +310,7 @@ func ExampleNewPublisherClient_interface() {
 
 	// Create a Pub/Sub Lite publisher client.
 	ctx := context.Background()
-	publisher, err := pscompat.NewPublisherClient(ctx, "projects/my-project/locations/zone/topics/my-topic")
+	publisher, err := pscompat.NewPublisherClient(ctx, "projects/my-project/locations/region-or-zone/topics/my-topic")
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -341,7 +341,7 @@ func ExampleNewSubscriberClient_interface() {
 
 	// Create a Pub/Sub Lite subscriber client.
 	ctx := context.Background()
-	subscriber, err := pscompat.NewSubscriberClient(ctx, "projects/my-project/locations/zone/subscriptions/my-subscription")
+	subscriber, err := pscompat.NewSubscriberClient(ctx, "projects/my-project/locations/region-or-zone/subscriptions/my-subscription")
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -358,7 +358,7 @@ func ExampleNewSubscriberClient_interface() {
 
 func ExampleParseMessageMetadata_publisher() {
 	ctx := context.Background()
-	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	publisher, err := pscompat.NewPublisherClient(ctx, topic)
 	if err != nil {
 		// TODO: Handle error.
@@ -379,7 +379,7 @@ func ExampleParseMessageMetadata_publisher() {
 
 func ExampleParseMessageMetadata_subscriber() {
 	ctx := context.Background()
-	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
 	if err != nil {
 		// TODO: Handle error.

@@ -103,6 +103,7 @@ type GServer struct {
 	streamTimeout  time.Duration
 	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
+	schemas        map[string]*pb.Schema
 
 	// PublishResponses is a channel of responses to use for Publish.
 	publishResponses chan *publishResponse
@@ -138,10 +139,12 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 			reactorOptions:      reactorOptions,
 			publishResponses:    make(chan *publishResponse, 100),
 			autoPublishResponse: true,
+			schemas:             map[string]*pb.Schema{},
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
+	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
 	srv.Start()
 	return s
 }
@@ -175,7 +178,7 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 	if !ok {
 		panic(fmt.Sprintf("topic name must be of the form %q", topicPattern))
 	}
-	_, _ = s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
+	s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
 	req := &pb.PublishRequest{
 		Topic:    topic,
 		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs, OrderingKey: orderingKey}},
@@ -316,6 +319,9 @@ func (s *GServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error)
 	if s.topics[t.Name] != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "topic %q", t.Name)
 	}
+	if err := checkMRD(t.MessageRetentionDuration); err != nil {
+		return nil, err
+	}
 	top := newTopic(t)
 	s.topics[t.Name] = top
 	return top.proto, nil
@@ -353,6 +359,11 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 			t.proto.Labels = req.Topic.Labels
 		case "message_storage_policy":
 			t.proto.MessageStoragePolicy = req.Topic.MessageStoragePolicy
+		case "message_retention_duration":
+			if err := checkMRD(req.Topic.MessageRetentionDuration); err != nil {
+				return nil, err
+			}
+			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -423,6 +434,14 @@ func (s *GServer) DeleteTopic(_ context.Context, req *pb.DeleteTopicRequest) (*e
 	if t == nil {
 		return nil, status.Errorf(codes.NotFound, "topic %q", req.Topic)
 	}
+	for _, sub := range s.subs {
+		if sub.deadLetterTopic == nil {
+			continue
+		}
+		if req.Topic == sub.deadLetterTopic.proto.Name {
+			return nil, status.Errorf(codes.FailedPrecondition, "topic %q used as deadLetter for %s", req.Topic, sub.proto.Name)
+		}
+	}
 	t.stop()
 	delete(s.topics, req.Topic)
 	return &emptypb.Empty{}, nil
@@ -461,8 +480,22 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
+	if ps.BigqueryConfig == nil {
+		ps.BigqueryConfig = &pb.BigQueryConfig{}
+	} else if ps.BigqueryConfig.Table != "" {
+		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+	}
+	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
+	var deadLetterTopic *topic
+	if ps.DeadLetterPolicy != nil {
+		dlTopic, ok := s.topics[ps.DeadLetterPolicy.DeadLetterTopic]
+		if !ok {
+			return nil, status.Errorf(codes.NotFound, "deadLetter topic %q", ps.DeadLetterPolicy.DeadLetterTopic)
+		}
+		deadLetterTopic = dlTopic
+	}
 
-	sub := newSubscription(top, &s.mu, s.timeNowFunc, ps)
+	sub := newSubscription(top, &s.mu, s.timeNowFunc, deadLetterTopic, ps)
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
@@ -506,6 +539,9 @@ const (
 var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
 
 func checkMRD(pmrd *durpb.Duration) error {
+	if pmrd == nil {
+		return nil
+	}
 	mrd := pmrd.AsDuration()
 	if mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
 		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
@@ -548,6 +584,12 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		case "push_config":
 			sub.proto.PushConfig = req.Subscription.PushConfig
 
+		case "bigquery_config":
+			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
+			if sub.proto.GetBigqueryConfig().GetTable() != "" {
+				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+			}
+
 		case "ack_deadline_seconds":
 			a := req.Subscription.AckDeadlineSeconds
 			if err := checkAckDeadline(a); err != nil {
@@ -572,12 +614,22 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 
 		case "dead_letter_policy":
 			sub.proto.DeadLetterPolicy = req.Subscription.DeadLetterPolicy
+			if sub.proto.DeadLetterPolicy != nil {
+				dlTopic, ok := s.topics[sub.proto.DeadLetterPolicy.DeadLetterTopic]
+				if !ok {
+					return nil, status.Errorf(codes.NotFound, "topic %q", sub.proto.DeadLetterPolicy.DeadLetterTopic)
+				}
+				sub.deadLetterTopic = dlTopic
+			}
 
 		case "retry_policy":
 			sub.proto.RetryPolicy = req.Subscription.RetryPolicy
 
 		case "filter":
 			sub.proto.Filter = req.Subscription.Filter
+
+		case "enable_exactly_once_delivery":
+			sub.proto.EnableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
 
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
@@ -731,29 +783,32 @@ func (t *topic) publish(pm *pb.PubsubMessage, m *Message) {
 }
 
 type subscription struct {
-	topic       *topic
-	mu          *sync.Mutex // the server mutex, here for convenience
-	proto       *pb.Subscription
-	ackTimeout  time.Duration
-	msgs        map[string]*message // unacked messages by message ID
-	streams     []*stream
-	done        chan struct{}
-	timeNowFunc func() time.Time
+	topic           *topic
+	deadLetterTopic *topic
+	mu              *sync.Mutex // the server mutex, here for convenience
+	proto           *pb.Subscription
+	ackTimeout      time.Duration
+	msgs            map[string]*message // unacked messages by message ID
+	streams         []*stream
+	done            chan struct{}
+	timeNowFunc     func() time.Time
 }
 
-func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, ps *pb.Subscription) *subscription {
+func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription) *subscription {
 	at := time.Duration(ps.AckDeadlineSeconds) * time.Second
 	if at == 0 {
 		at = 10 * time.Second
 	}
+	ps.State = pb.Subscription_ACTIVE
 	return &subscription{
-		topic:       t,
-		mu:          mu,
-		proto:       ps,
-		ackTimeout:  at,
-		msgs:        map[string]*message{},
-		done:        make(chan struct{}),
-		timeNowFunc: timeNowFunc,
+		topic:           t,
+		deadLetterTopic: deadLetterTopic,
+		mu:              mu,
+		proto:           ps,
+		ackTimeout:      at,
+		msgs:            map[string]*message{},
+		done:            make(chan struct{}),
+		timeNowFunc:     timeNowFunc,
 	}
 }
 
@@ -951,9 +1006,17 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	var msgs []*pb.ReceivedMessage
-	for _, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
+		}
+		if s.deadLetterCandidate(m) {
+			s.ack(id)
+			s.publishToDeadLetter(m)
+			continue
+		}
+		if s.proto.DeadLetterPolicy != nil {
+			m.proto.DeliveryAttempt = int32(*m.deliveries)
 		}
 		(*m.deliveries)++
 		m.ackDeadline = now.Add(s.ackTimeout)
@@ -965,6 +1028,32 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	return msgs
 }
 
+func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
+	if !enableMessageOrdering {
+		return msgs
+	}
+	result := make(map[string]*message)
+
+	type msg struct {
+		id string
+		m  *message
+	}
+	orderingKeyMap := make(map[string]msg)
+	for id, m := range msgs {
+		orderingKey := m.proto.Message.OrderingKey
+		if orderingKey == "" {
+			orderingKey = id
+		}
+		if val, ok := orderingKeyMap[orderingKey]; !ok || m.proto.Message.PublishTime.AsTime().Before(val.m.proto.Message.PublishTime.AsTime()) {
+			orderingKeyMap[orderingKey] = msg{m: m, id: id}
+		}
+	}
+	for _, val := range orderingKeyMap {
+		result[val.id] = val.m
+	}
+	return result
+}
+
 func (s *subscription) deliver() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -973,8 +1062,13 @@ func (s *subscription) deliver() {
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
-	for _, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
+			continue
+		}
+		if s.deadLetterCandidate(m) {
+			s.ack(id)
+			s.publishToDeadLetter(m)
 			continue
 		}
 		// If the message was never delivered before, start with the stream at
@@ -1038,6 +1132,7 @@ func (s *subscription) maintainMessages(now time.Time) {
 		pubTime := m.proto.Message.PublishTime.AsTime()
 		// Remove messages that have been undelivered for a long time.
 		if !m.outstanding() && now.Sub(pubTime) > retentionDuration {
+			s.publishToDeadLetter(m)
 			delete(s.msgs, id)
 		}
 	}
@@ -1071,6 +1166,33 @@ func (s *subscription) deleteStream(st *stream) {
 		s.streams = deleteStreamAt(s.streams, i)
 	}
 }
+
+func (s *subscription) deadLetterCandidate(m *message) bool {
+	if s.proto.DeadLetterPolicy == nil {
+		return false
+	}
+	if m.retriesDone(s.proto.DeadLetterPolicy.MaxDeliveryAttempts) {
+		return true
+	}
+	return false
+}
+
+func (s *subscription) publishToDeadLetter(m *message) {
+	acks := 0
+	if m.acks != nil {
+		acks = *m.acks
+	}
+	deliveries := 0
+	if m.deliveries != nil {
+		deliveries = *m.deliveries
+	}
+	s.deadLetterTopic.publish(m.proto.Message, &Message{
+		PublishTime: m.publishTime,
+		Acks:        acks,
+		Deliveries:  deliveries,
+	})
+}
+
 func deleteStreamAt(s []*stream, i int) []*stream {
 	// Preserve order for round-robin delivery.
 	return append(s[:i], s[i+1:]...)
@@ -1088,6 +1210,11 @@ type message struct {
 // A message is outstanding if it is owned by some stream.
 func (m *message) outstanding() bool {
 	return !m.ackDeadline.IsZero()
+}
+
+// A message is outstanding if it is owned by some stream.
+func (m *message) retriesDone(maxRetries int32) bool {
+	return m.deliveries != nil && int32(*m.deliveries) >= maxRetries
 }
 
 func (m *message) makeAvailable() {
@@ -1236,4 +1363,116 @@ func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReac
 		FuncName: funcName,
 		Reactor:  &errorInjectionReactor{code: code, msg: msg},
 	}
+}
+
+func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "CreateSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	name := fmt.Sprintf("%s/schemas/%s", req.Parent, req.SchemaId)
+	sc := &pb.Schema{
+		Name:       name,
+		Type:       req.Schema.Type,
+		Definition: req.Schema.Definition,
+	}
+	s.schemas[name] = sc
+
+	return sc, nil
+}
+
+func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Schema, error) {
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "GetSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	sc, ok := s.schemas[req.Name]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "schema(%q) not found", req.Name)
+	}
+	return sc, nil
+}
+
+func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*pb.ListSchemasResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ListSchemas", &pb.ListSchemasResponse{}); handled || err != nil {
+		return ret.(*pb.ListSchemasResponse), err
+	}
+	ss := make([]*pb.Schema, 0)
+	for _, sc := range s.schemas {
+		ss = append(ss, sc)
+	}
+	return &pb.ListSchemasResponse{
+		Schemas: ss,
+	}, nil
+}
+
+func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "DeleteSchema", &emptypb.Empty{}); handled || err != nil {
+		return ret.(*emptypb.Empty), err
+	}
+
+	schema := s.schemas[req.Name]
+	if schema == nil {
+		return nil, status.Errorf(codes.NotFound, "schema %q", req.Name)
+	}
+
+	delete(s.schemas, req.Name)
+	return &emptypb.Empty{}, nil
+}
+
+// ValidateSchema mocks the ValidateSchema call but only checks that the schema definition is not empty.
+func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaRequest) (*pb.ValidateSchemaResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateSchema", &pb.ValidateSchemaResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateSchemaResponse), err
+	}
+
+	if req.Schema.Definition == "" {
+		return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+	}
+	return &pb.ValidateSchemaResponse{}, nil
+}
+
+// ValidateMessage mocks the ValidateMessage call but only checks that the schema definition to validate the
+// message against is not empty.
+func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequest) (*pb.ValidateMessageResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateMessage", &pb.ValidateMessageResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateMessageResponse), err
+	}
+
+	spec := req.GetSchemaSpec()
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Name); ok {
+		sc, ok := s.schemas[valReq.Name]
+		if !ok {
+			return nil, status.Errorf(codes.NotFound, "schema(%q) not found", valReq.Name)
+		}
+		if sc.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
+	}
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Schema); ok {
+		if valReq.Schema.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
+	}
+
+	return &pb.ValidateMessageResponse{}, nil
 }

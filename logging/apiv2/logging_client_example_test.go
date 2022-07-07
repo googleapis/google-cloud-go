@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ func ExampleClient_DeleteLog() {
 
 	req := &loggingpb.DeleteLogRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteLogRequest.
 	}
 	err = c.DeleteLog(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleClient_WriteLogEntries() {
 
 	req := &loggingpb.WriteLogEntriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#WriteLogEntriesRequest.
 	}
 	resp, err := c.WriteLogEntries(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleClient_ListLogEntries() {
 
 	req := &loggingpb.ListLogEntriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListLogEntriesRequest.
 	}
 	it := c.ListLogEntries(ctx, req)
 	for {
@@ -108,6 +111,7 @@ func ExampleClient_ListMonitoredResourceDescriptors() {
 
 	req := &loggingpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -133,6 +137,7 @@ func ExampleClient_ListLogs() {
 
 	req := &loggingpb.ListLogsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListLogsRequest.
 	}
 	it := c.ListLogs(ctx, req)
 	for {

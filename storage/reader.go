@@ -94,6 +94,10 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	if o.c.tc != nil {
+		return o.newRangeReaderWithGRPC(ctx, offset, length)
+	}
+
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
@@ -149,9 +153,16 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 			req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, offset+length-1))
 		}
 		// We wait to assign conditions here because the generation number can change in between reopen() runs.
-		req.URL.RawQuery = conditionsQuery(gen, o.conds)
+		if err := setConditionsHeaders(req.Header, o.conds); err != nil {
+			return nil, err
+		}
+		// If an object generation is specified, include generation as query string parameters.
+		if gen >= 0 {
+			req.URL.RawQuery = fmt.Sprintf("generation=%d", gen)
+		}
+
 		var res *http.Response
-		err = runWithRetry(ctx, func() error {
+		err = run(ctx, func() error {
 			res, err = o.c.hc.Do(req)
 			if err != nil {
 				return err
@@ -198,7 +209,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 				gen = gen64
 			}
 			return nil
-		})
+		}, o.retry, true, setRetryHeaderHTTP(&readerRequestWrapper{req}))
 		if err != nil {
 			return nil, err
 		}
@@ -220,6 +231,8 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
 			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
 		}
+		// Content range is formatted <first byte>-<last byte>/<total size>. We take
+		// the total size.
 		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
 		if err != nil {
 			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
@@ -324,6 +337,34 @@ func parseCRC32c(res *http.Response) (uint32, bool) {
 	return 0, false
 }
 
+// setConditionsHeaders sets precondition request headers for downloads
+// using the XML API. It assumes that the conditions have been validated.
+func setConditionsHeaders(headers http.Header, conds *Conditions) error {
+	if conds == nil {
+		return nil
+	}
+	if conds.MetagenerationMatch != 0 {
+		headers.Set("x-goog-if-metageneration-match", fmt.Sprint(conds.MetagenerationMatch))
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		headers.Set("x-goog-if-generation-match", fmt.Sprint(conds.GenerationMatch))
+	case conds.DoesNotExist:
+		headers.Set("x-goog-if-generation-match", "0")
+	}
+	return nil
+}
+
+// Wrap a request to look similar to an apiary library request, in order to
+// be used by run().
+type readerRequestWrapper struct {
+	req *http.Request
+}
+
+func (w *readerRequestWrapper) Header() http.Header {
+	return w.req.Header
+}
+
 var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 
 // Reader reads a Cloud Storage object.
@@ -340,15 +381,31 @@ type Reader struct {
 	wantCRC            uint32 // the CRC32c value the server sent in the header
 	gotCRC             uint32 // running crc
 	reopen             func(seen int64) (*http.Response, error)
+
+	reader io.ReadCloser
 }
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
-	return r.body.Close()
+	if r.body != nil {
+		return r.body.Close()
+	}
+
+	// TODO(noahdietz): Complete integration means returning this call's return
+	// value, which for gRPC will always be nil.
+	if r.reader != nil {
+		return r.reader.Close()
+	}
+	return nil
 }
 
 func (r *Reader) Read(p []byte) (int, error) {
-	n, err := r.readWithRetry(p)
+	read := r.readWithRetry
+	if r.reader != nil {
+		read = r.reader.Read
+	}
+
+	n, err := read(p)
 	if r.remain != -1 {
 		r.remain -= int64(n)
 	}
@@ -365,6 +422,33 @@ func (r *Reader) Read(p []byte) (int, error) {
 		}
 	}
 	return n, err
+}
+
+// newRangeReaderWithGRPC creates a new Reader with the given range that uses
+// gRPC to read Object content.
+//
+// This is an experimental API and not intended for public use.
+func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.newRangeReaderWithGRPC")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if err = o.validate(); err != nil {
+		return
+	}
+
+	params := &newRangeReaderParams{
+		bucket:        o.bucket,
+		object:        o.object,
+		gen:           o.gen,
+		offset:        offset,
+		length:        length,
+		encryptionKey: o.encryptionKey,
+		conds:         o.conds,
+	}
+
+	r, err = o.c.tc.NewRangeReader(ctx, params)
+
+	return r, err
 }
 
 func (r *Reader) readWithRetry(p []byte) (int, error) {

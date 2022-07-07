@@ -3,7 +3,7 @@
 - [About BigQuery](https://cloud.google.com/bigquery/)
 - [API documentation](https://cloud.google.com/bigquery/docs)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/bigquery)
-- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/bigquery)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/bigquery)
 
 ### Example Usage
 

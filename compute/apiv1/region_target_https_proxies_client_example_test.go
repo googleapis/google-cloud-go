@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,13 +46,17 @@ func ExampleRegionTargetHttpsProxiesClient_Delete() {
 
 	req := &computepb.DeleteRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionTargetHttpsProxyRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionTargetHttpsProxiesClient_Get() {
@@ -64,6 +69,7 @@ func ExampleRegionTargetHttpsProxiesClient_Get() {
 
 	req := &computepb.GetRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionTargetHttpsProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -83,13 +89,17 @@ func ExampleRegionTargetHttpsProxiesClient_Insert() {
 
 	req := &computepb.InsertRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionTargetHttpsProxyRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionTargetHttpsProxiesClient_List() {
@@ -102,13 +112,43 @@ func ExampleRegionTargetHttpsProxiesClient_List() {
 
 	req := &computepb.ListRegionTargetHttpsProxiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionTargetHttpsProxiesRequest.
 	}
-	resp, err := c.List(ctx, req)
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleRegionTargetHttpsProxiesClient_Patch() {
+	ctx := context.Background()
+	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+	defer c.Close()
+
+	req := &computepb.PatchRegionTargetHttpsProxyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionTargetHttpsProxyRequest.
+	}
+	op, err := c.Patch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionTargetHttpsProxiesClient_SetSslCertificates() {
@@ -121,13 +161,17 @@ func ExampleRegionTargetHttpsProxiesClient_SetSslCertificates() {
 
 	req := &computepb.SetSslCertificatesRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslCertificatesRegionTargetHttpsProxyRequest.
 	}
-	resp, err := c.SetSslCertificates(ctx, req)
+	op, err := c.SetSslCertificates(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionTargetHttpsProxiesClient_SetUrlMap() {
@@ -140,11 +184,15 @@ func ExampleRegionTargetHttpsProxiesClient_SetUrlMap() {
 
 	req := &computepb.SetUrlMapRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetUrlMapRegionTargetHttpsProxyRequest.
 	}
-	resp, err := c.SetUrlMap(ctx, req)
+	op, err := c.SetUrlMap(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

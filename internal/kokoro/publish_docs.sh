@@ -38,7 +38,7 @@ if [[ -n "$FORCE_GENERATE_ALL" ]]; then
 elif [[ -n "$MODULE" ]]; then
   godocfx "$MODULE"
 else
-  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go
+  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine
 fi
 
 for f in $(find obj/api -name docs.metadata); do

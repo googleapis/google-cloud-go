@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewPhishingProtectionServiceV1Beta1Client() {
 	_ = c
 }
 
+func ExampleNewPhishingProtectionServiceV1Beta1RESTClient() {
+	ctx := context.Background()
+	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExamplePhishingProtectionServiceV1Beta1Client_ReportPhishing() {
 	ctx := context.Background()
 	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1Client(ctx)
@@ -45,6 +57,7 @@ func ExamplePhishingProtectionServiceV1Beta1Client_ReportPhishing() {
 
 	req := &phishingprotectionpb.ReportPhishingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1#ReportPhishingRequest.
 	}
 	resp, err := c.ReportPhishing(ctx, req)
 	if err != nil {

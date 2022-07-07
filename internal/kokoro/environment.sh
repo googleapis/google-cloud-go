@@ -65,12 +65,16 @@ echo $ENVCTL_ID
 
 # If App Engine, install app-engine-go component
 if [[ $ENVIRONMENT == *"appengine"* ]]; then
-  gcloud components install app-engine-go -q
+  apt-get install google-cloud-sdk-app-engine-go -y | cat
 fi
 
 # If Kubernetes, install kubectl component
 if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
-  gcloud components install kubectl -q
+  curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  chmod +x kubectl
+  mkdir -p ~/.local/bin
+  mv ./kubectl ~/.local/bin
+  export PATH=$PATH:~/.local/bin/
 fi
 
 # Run the environment test for the specified GCP service

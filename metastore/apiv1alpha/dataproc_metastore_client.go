@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,7 +66,6 @@ func defaultDataprocMetastoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://metastore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -152,7 +151,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 	}
 }
 
-// internalDataprocMetastoreClient is an interface that defines the methods availaible from Dataproc Metastore API.
+// internalDataprocMetastoreClient is an interface that defines the methods available from Dataproc Metastore API.
 type internalDataprocMetastoreClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -187,8 +186,8 @@ type internalDataprocMetastoreClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Configures and manages metastore services.
-// Metastore services are fully managed, highly available, auto-scaled,
-// auto-healing, OSS-native deployments of technical metadata management
+// Metastore services are fully managed, highly available, autoscaled,
+// autohealing, OSS-native deployments of technical metadata management
 // software. Each metastore service exposes a network endpoint through which
 // metadata queries are served. Metadata queries can originate from a variety
 // of sources, including Apache Hive, Apache Presto, and Apache Spark.
@@ -349,7 +348,7 @@ func (c *DataprocMetastoreClient) GetBackup(ctx context.Context, req *metastorep
 	return c.internalClient.GetBackup(ctx, req, opts...)
 }
 
-// CreateBackup creates a new Backup in a given project and location.
+// CreateBackup creates a new backup in a given project and location.
 func (c *DataprocMetastoreClient) CreateBackup(ctx context.Context, req *metastorepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
 	return c.internalClient.CreateBackup(ctx, req, opts...)
 }
@@ -400,8 +399,8 @@ type dataprocMetastoreGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Configures and manages metastore services.
-// Metastore services are fully managed, highly available, auto-scaled,
-// auto-healing, OSS-native deployments of technical metadata management
+// Metastore services are fully managed, highly available, autoscaled,
+// autohealing, OSS-native deployments of technical metadata management
 // software. Each metastore service exposes a network endpoint through which
 // metadata queries are served. Metadata queries can originate from a variety
 // of sources, including Apache Hive, Apache Presto, and Apache Spark.
@@ -476,7 +475,7 @@ func (c *dataprocMetastoreGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *dataprocMetastoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -488,16 +487,19 @@ func (c *dataprocMetastoreGRPCClient) Close() error {
 
 func (c *dataprocMetastoreGRPCClient) ListServices(ctx context.Context, req *metastorepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*metastorepb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Service, string, error) {
-		var resp *metastorepb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &metastorepb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -520,9 +522,11 @@ func (c *dataprocMetastoreGRPCClient) ListServices(ctx context.Context, req *met
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -533,6 +537,7 @@ func (c *dataprocMetastoreGRPCClient) GetService(ctx context.Context, req *metas
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *metastorepb.Service
@@ -554,6 +559,7 @@ func (c *dataprocMetastoreGRPCClient) CreateService(ctx context.Context, req *me
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *longrunningpb.Operation
@@ -577,6 +583,7 @@ func (c *dataprocMetastoreGRPCClient) UpdateService(ctx context.Context, req *me
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service.name", url.QueryEscape(req.GetService().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateService[0:len((*c.CallOptions).UpdateService):len((*c.CallOptions).UpdateService)], opts...)
 	var resp *longrunningpb.Operation
@@ -600,6 +607,7 @@ func (c *dataprocMetastoreGRPCClient) DeleteService(ctx context.Context, req *me
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	var resp *longrunningpb.Operation
@@ -618,16 +626,19 @@ func (c *dataprocMetastoreGRPCClient) DeleteService(ctx context.Context, req *me
 
 func (c *dataprocMetastoreGRPCClient) ListMetadataImports(ctx context.Context, req *metastorepb.ListMetadataImportsRequest, opts ...gax.CallOption) *MetadataImportIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListMetadataImports[0:len((*c.CallOptions).ListMetadataImports):len((*c.CallOptions).ListMetadataImports)], opts...)
 	it := &MetadataImportIterator{}
 	req = proto.Clone(req).(*metastorepb.ListMetadataImportsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.MetadataImport, string, error) {
-		var resp *metastorepb.ListMetadataImportsResponse
-		req.PageToken = pageToken
+		resp := &metastorepb.ListMetadataImportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -650,9 +661,11 @@ func (c *dataprocMetastoreGRPCClient) ListMetadataImports(ctx context.Context, r
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -663,6 +676,7 @@ func (c *dataprocMetastoreGRPCClient) GetMetadataImport(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetMetadataImport[0:len((*c.CallOptions).GetMetadataImport):len((*c.CallOptions).GetMetadataImport)], opts...)
 	var resp *metastorepb.MetadataImport
@@ -684,6 +698,7 @@ func (c *dataprocMetastoreGRPCClient) CreateMetadataImport(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMetadataImport[0:len((*c.CallOptions).CreateMetadataImport):len((*c.CallOptions).CreateMetadataImport)], opts...)
 	var resp *longrunningpb.Operation
@@ -707,6 +722,7 @@ func (c *dataprocMetastoreGRPCClient) UpdateMetadataImport(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metadata_import.name", url.QueryEscape(req.GetMetadataImport().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateMetadataImport[0:len((*c.CallOptions).UpdateMetadataImport):len((*c.CallOptions).UpdateMetadataImport)], opts...)
 	var resp *longrunningpb.Operation
@@ -730,6 +746,7 @@ func (c *dataprocMetastoreGRPCClient) ExportMetadata(ctx context.Context, req *m
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportMetadata[0:len((*c.CallOptions).ExportMetadata):len((*c.CallOptions).ExportMetadata)], opts...)
 	var resp *longrunningpb.Operation
@@ -753,6 +770,7 @@ func (c *dataprocMetastoreGRPCClient) RestoreService(ctx context.Context, req *m
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RestoreService[0:len((*c.CallOptions).RestoreService):len((*c.CallOptions).RestoreService)], opts...)
 	var resp *longrunningpb.Operation
@@ -771,16 +789,19 @@ func (c *dataprocMetastoreGRPCClient) RestoreService(ctx context.Context, req *m
 
 func (c *dataprocMetastoreGRPCClient) ListBackups(ctx context.Context, req *metastorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
 	req = proto.Clone(req).(*metastorepb.ListBackupsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Backup, string, error) {
-		var resp *metastorepb.ListBackupsResponse
-		req.PageToken = pageToken
+		resp := &metastorepb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -803,9 +824,11 @@ func (c *dataprocMetastoreGRPCClient) ListBackups(ctx context.Context, req *meta
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -816,6 +839,7 @@ func (c *dataprocMetastoreGRPCClient) GetBackup(ctx context.Context, req *metast
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *metastorepb.Backup
@@ -837,6 +861,7 @@ func (c *dataprocMetastoreGRPCClient) CreateBackup(ctx context.Context, req *met
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
@@ -860,6 +885,7 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *met
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	var resp *longrunningpb.Operation

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,6 +37,56 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleClient_ImportAptArtifacts() {
+	ctx := context.Background()
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.ImportAptArtifactsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ImportAptArtifactsRequest.
+	}
+	op, err := c.ImportAptArtifacts(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ImportYumArtifacts() {
+	ctx := context.Background()
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.ImportYumArtifactsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ImportYumArtifactsRequest.
+	}
+	op, err := c.ImportYumArtifacts(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListRepositories() {
 	ctx := context.Background()
 	c, err := artifactregistry.NewClient(ctx)
@@ -47,6 +97,7 @@ func ExampleClient_ListRepositories() {
 
 	req := &artifactregistrypb.ListRepositoriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListRepositoriesRequest.
 	}
 	it := c.ListRepositories(ctx, req)
 	for {
@@ -72,6 +123,7 @@ func ExampleClient_GetRepository() {
 
 	req := &artifactregistrypb.GetRepositoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetRepositoryRequest.
 	}
 	resp, err := c.GetRepository(ctx, req)
 	if err != nil {
@@ -91,6 +143,7 @@ func ExampleClient_CreateRepository() {
 
 	req := &artifactregistrypb.CreateRepositoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#CreateRepositoryRequest.
 	}
 	op, err := c.CreateRepository(ctx, req)
 	if err != nil {
@@ -115,6 +168,7 @@ func ExampleClient_UpdateRepository() {
 
 	req := &artifactregistrypb.UpdateRepositoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#UpdateRepositoryRequest.
 	}
 	resp, err := c.UpdateRepository(ctx, req)
 	if err != nil {
@@ -134,6 +188,7 @@ func ExampleClient_DeleteRepository() {
 
 	req := &artifactregistrypb.DeleteRepositoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#DeleteRepositoryRequest.
 	}
 	op, err := c.DeleteRepository(ctx, req)
 	if err != nil {
@@ -156,6 +211,7 @@ func ExampleClient_ListPackages() {
 
 	req := &artifactregistrypb.ListPackagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListPackagesRequest.
 	}
 	it := c.ListPackages(ctx, req)
 	for {
@@ -181,6 +237,7 @@ func ExampleClient_GetPackage() {
 
 	req := &artifactregistrypb.GetPackageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetPackageRequest.
 	}
 	resp, err := c.GetPackage(ctx, req)
 	if err != nil {
@@ -200,6 +257,7 @@ func ExampleClient_DeletePackage() {
 
 	req := &artifactregistrypb.DeletePackageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#DeletePackageRequest.
 	}
 	op, err := c.DeletePackage(ctx, req)
 	if err != nil {
@@ -222,6 +280,7 @@ func ExampleClient_ListVersions() {
 
 	req := &artifactregistrypb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListVersionsRequest.
 	}
 	it := c.ListVersions(ctx, req)
 	for {
@@ -247,6 +306,7 @@ func ExampleClient_GetVersion() {
 
 	req := &artifactregistrypb.GetVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetVersionRequest.
 	}
 	resp, err := c.GetVersion(ctx, req)
 	if err != nil {
@@ -266,6 +326,7 @@ func ExampleClient_DeleteVersion() {
 
 	req := &artifactregistrypb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#DeleteVersionRequest.
 	}
 	op, err := c.DeleteVersion(ctx, req)
 	if err != nil {
@@ -288,6 +349,7 @@ func ExampleClient_ListFiles() {
 
 	req := &artifactregistrypb.ListFilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListFilesRequest.
 	}
 	it := c.ListFiles(ctx, req)
 	for {
@@ -313,6 +375,7 @@ func ExampleClient_GetFile() {
 
 	req := &artifactregistrypb.GetFileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetFileRequest.
 	}
 	resp, err := c.GetFile(ctx, req)
 	if err != nil {
@@ -332,6 +395,7 @@ func ExampleClient_ListTags() {
 
 	req := &artifactregistrypb.ListTagsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListTagsRequest.
 	}
 	it := c.ListTags(ctx, req)
 	for {
@@ -357,6 +421,7 @@ func ExampleClient_GetTag() {
 
 	req := &artifactregistrypb.GetTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetTagRequest.
 	}
 	resp, err := c.GetTag(ctx, req)
 	if err != nil {
@@ -376,6 +441,7 @@ func ExampleClient_CreateTag() {
 
 	req := &artifactregistrypb.CreateTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#CreateTagRequest.
 	}
 	resp, err := c.CreateTag(ctx, req)
 	if err != nil {
@@ -395,6 +461,7 @@ func ExampleClient_UpdateTag() {
 
 	req := &artifactregistrypb.UpdateTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#UpdateTagRequest.
 	}
 	resp, err := c.UpdateTag(ctx, req)
 	if err != nil {
@@ -414,6 +481,7 @@ func ExampleClient_DeleteTag() {
 
 	req := &artifactregistrypb.DeleteTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#DeleteTagRequest.
 	}
 	err = c.DeleteTag(ctx, req)
 	if err != nil {
@@ -431,6 +499,7 @@ func ExampleClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -450,6 +519,7 @@ func ExampleClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -469,8 +539,49 @@ func ExampleClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetProjectSettings() {
+	ctx := context.Background()
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.GetProjectSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetProjectSettingsRequest.
+	}
+	resp, err := c.GetProjectSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateProjectSettings() {
+	ctx := context.Background()
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.UpdateProjectSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#UpdateProjectSettingsRequest.
+	}
+	resp, err := c.UpdateProjectSettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

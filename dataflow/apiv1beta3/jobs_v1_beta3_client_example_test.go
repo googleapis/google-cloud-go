@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,18 @@ func ExampleNewJobsV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewJobsV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewJobsV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleJobsV1Beta3Client_CreateJob() {
 	ctx := context.Background()
 	c, err := dataflow.NewJobsV1Beta3Client(ctx)
@@ -46,6 +58,7 @@ func ExampleJobsV1Beta3Client_CreateJob() {
 
 	req := &dataflowpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#CreateJobRequest.
 	}
 	resp, err := c.CreateJob(ctx, req)
 	if err != nil {
@@ -65,6 +78,7 @@ func ExampleJobsV1Beta3Client_GetJob() {
 
 	req := &dataflowpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -84,6 +98,7 @@ func ExampleJobsV1Beta3Client_UpdateJob() {
 
 	req := &dataflowpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#UpdateJobRequest.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -103,6 +118,7 @@ func ExampleJobsV1Beta3Client_ListJobs() {
 
 	req := &dataflowpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -128,6 +144,7 @@ func ExampleJobsV1Beta3Client_AggregatedListJobs() {
 
 	req := &dataflowpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListJobsRequest.
 	}
 	it := c.AggregatedListJobs(ctx, req)
 	for {
@@ -153,6 +170,7 @@ func ExampleJobsV1Beta3Client_CheckActiveJobs() {
 
 	req := &dataflowpb.CheckActiveJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#CheckActiveJobsRequest.
 	}
 	resp, err := c.CheckActiveJobs(ctx, req)
 	if err != nil {
@@ -172,6 +190,7 @@ func ExampleJobsV1Beta3Client_SnapshotJob() {
 
 	req := &dataflowpb.SnapshotJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#SnapshotJobRequest.
 	}
 	resp, err := c.SnapshotJob(ctx, req)
 	if err != nil {

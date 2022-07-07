@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://resourcesettings.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -71,12 +70,34 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetSetting:    []gax.CallOption{},
-		UpdateSetting: []gax.CallOption{},
+		GetSetting: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSetting: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Resource Settings API.
+// internalClient is an interface that defines the methods available from Resource Settings API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -245,7 +266,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -257,16 +278,19 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListSettings(ctx context.Context, req *resourcesettingspb.ListSettingsRequest, opts ...gax.CallOption) *SettingIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSettings[0:len((*c.CallOptions).ListSettings):len((*c.CallOptions).ListSettings)], opts...)
 	it := &SettingIterator{}
 	req = proto.Clone(req).(*resourcesettingspb.ListSettingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcesettingspb.Setting, string, error) {
-		var resp *resourcesettingspb.ListSettingsResponse
-		req.PageToken = pageToken
+		resp := &resourcesettingspb.ListSettingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -289,14 +313,22 @@ func (c *gRPCClient) ListSettings(ctx context.Context, req *resourcesettingspb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
 func (c *gRPCClient) GetSetting(ctx context.Context, req *resourcesettingspb.GetSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSetting[0:len((*c.CallOptions).GetSetting):len((*c.CallOptions).GetSetting)], opts...)
 	var resp *resourcesettingspb.Setting
@@ -312,7 +344,13 @@ func (c *gRPCClient) GetSetting(ctx context.Context, req *resourcesettingspb.Get
 }
 
 func (c *gRPCClient) UpdateSetting(ctx context.Context, req *resourcesettingspb.UpdateSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "setting.name", url.QueryEscape(req.GetSetting().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSetting[0:len((*c.CallOptions).UpdateSetting):len((*c.CallOptions).UpdateSetting)], opts...)
 	var resp *resourcesettingspb.Setting

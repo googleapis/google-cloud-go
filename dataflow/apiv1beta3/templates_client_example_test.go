@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewTemplatesClient() {
 	_ = c
 }
 
+func ExampleNewTemplatesRESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewTemplatesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTemplatesClient_CreateJobFromTemplate() {
 	ctx := context.Background()
 	c, err := dataflow.NewTemplatesClient(ctx)
@@ -45,6 +57,7 @@ func ExampleTemplatesClient_CreateJobFromTemplate() {
 
 	req := &dataflowpb.CreateJobFromTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#CreateJobFromTemplateRequest.
 	}
 	resp, err := c.CreateJobFromTemplate(ctx, req)
 	if err != nil {
@@ -64,6 +77,7 @@ func ExampleTemplatesClient_LaunchTemplate() {
 
 	req := &dataflowpb.LaunchTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#LaunchTemplateRequest.
 	}
 	resp, err := c.LaunchTemplate(ctx, req)
 	if err != nil {
@@ -83,6 +97,7 @@ func ExampleTemplatesClient_GetTemplate() {
 
 	req := &dataflowpb.GetTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetTemplateRequest.
 	}
 	resp, err := c.GetTemplate(ctx, req)
 	if err != nil {

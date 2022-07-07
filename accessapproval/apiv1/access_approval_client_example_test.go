@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ func ExampleClient_ListApprovalRequests() {
 
 	req := &accessapprovalpb.ListApprovalRequestsMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#ListApprovalRequestsMessage.
 	}
 	it := c.ListApprovalRequests(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetApprovalRequest() {
 
 	req := &accessapprovalpb.GetApprovalRequestMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#GetApprovalRequestMessage.
 	}
 	resp, err := c.GetApprovalRequest(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_ApproveApprovalRequest() {
 
 	req := &accessapprovalpb.ApproveApprovalRequestMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#ApproveApprovalRequestMessage.
 	}
 	resp, err := c.ApproveApprovalRequest(ctx, req)
 	if err != nil {
@@ -109,8 +112,29 @@ func ExampleClient_DismissApprovalRequest() {
 
 	req := &accessapprovalpb.DismissApprovalRequestMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#DismissApprovalRequestMessage.
 	}
 	resp, err := c.DismissApprovalRequest(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_InvalidateApprovalRequest() {
+	ctx := context.Background()
+	c, err := accessapproval.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &accessapprovalpb.InvalidateApprovalRequestMessage{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#InvalidateApprovalRequestMessage.
+	}
+	resp, err := c.InvalidateApprovalRequest(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -128,6 +152,7 @@ func ExampleClient_GetAccessApprovalSettings() {
 
 	req := &accessapprovalpb.GetAccessApprovalSettingsMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#GetAccessApprovalSettingsMessage.
 	}
 	resp, err := c.GetAccessApprovalSettings(ctx, req)
 	if err != nil {
@@ -147,6 +172,7 @@ func ExampleClient_UpdateAccessApprovalSettings() {
 
 	req := &accessapprovalpb.UpdateAccessApprovalSettingsMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#UpdateAccessApprovalSettingsMessage.
 	}
 	resp, err := c.UpdateAccessApprovalSettings(ctx, req)
 	if err != nil {
@@ -166,9 +192,30 @@ func ExampleClient_DeleteAccessApprovalSettings() {
 
 	req := &accessapprovalpb.DeleteAccessApprovalSettingsMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#DeleteAccessApprovalSettingsMessage.
 	}
 	err = c.DeleteAccessApprovalSettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleClient_GetAccessApprovalServiceAccount() {
+	ctx := context.Background()
+	c, err := accessapproval.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &accessapprovalpb.GetAccessApprovalServiceAccountMessage{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#GetAccessApprovalServiceAccountMessage.
+	}
+	resp, err := c.GetAccessApprovalServiceAccount(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,18 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	c, err := speech.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleClient_Recognize() {
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
@@ -46,6 +58,7 @@ func ExampleClient_Recognize() {
 
 	req := &speechpb.RecognizeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#RecognizeRequest.
 	}
 	resp, err := c.Recognize(ctx, req)
 	if err != nil {
@@ -65,6 +78,7 @@ func ExampleClient_LongRunningRecognize() {
 
 	req := &speechpb.LongRunningRecognizeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#LongRunningRecognizeRequest.
 	}
 	op, err := c.LongRunningRecognize(ctx, req)
 	if err != nil {

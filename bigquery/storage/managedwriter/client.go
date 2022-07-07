@@ -20,10 +20,23 @@ import (
 	"runtime"
 	"strings"
 
-	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	storage "cloud.google.com/go/bigquery/storage/apiv1"
+	"cloud.google.com/go/internal/detect"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
+
+// DetectProjectID is a sentinel value that instructs NewClient to detect the
+// project ID. It is given in place of the projectID argument. NewClient will
+// use the project ID from the given credentials or the default credentials
+// (https://developers.google.com/accounts/docs/application-default-credentials)
+// if no credentials were provided. When providing credentials, not all
+// options will allow NewClient to extract the project ID. Specifically a JWT
+// does not have the project ID encoded.
+const DetectProjectID = "*detect-project-id*"
 
 // Client is a managed BigQuery Storage write client scoped to a single project.
 type Client struct {
@@ -47,18 +60,56 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, err
 	}
 
+	// Handle project autodetection.
+	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
 	}, nil
 }
 
+// Close releases resources held by the client.
+func (c *Client) Close() error {
+	// TODO: consider if we should propagate a cancellation from client to all associated managed streams.
+	if c.rawClient == nil {
+		return fmt.Errorf("already closed")
+	}
+	c.rawClient.Close()
+	c.rawClient = nil
+	return nil
+}
+
 // NewManagedStream establishes a new managed stream for appending data into a table.
+//
+// Context here is retained for use by the underlying streaming connections the managed stream may create.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
+	return c.buildManagedStream(ctx, c.rawClient.AppendRows, false, opts...)
+}
+
+func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
+	ctx, cancel := context.WithCancel(ctx)
 
 	ms := &ManagedStream{
 		streamSettings: defaultStreamSettings(),
 		c:              c,
+		ctx:            ctx,
+		cancel:         cancel,
+		callOptions: []gax.CallOption{
+			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
+		},
+		open: func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			arc, err := streamFunc(
+				// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
+				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)))
+			if err != nil {
+				return nil, err
+			}
+			return arc, nil
+		},
 	}
 
 	// apply writer options
@@ -66,30 +117,39 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 		opt(ms)
 	}
 
-	if err := c.validateOptions(ctx, ms); err != nil {
-		return nil, err
-	}
-
-	if ms.streamSettings.streamID == "" {
-		// not instantiated with a stream, construct one.
-		streamName := fmt.Sprintf("%s/_default", ms.destinationTable)
-		if ms.streamSettings.streamType != DefaultStream {
-			// For everything but a default stream, we create a new stream on behalf of the user.
-			req := &storagepb.CreateWriteStreamRequest{
-				Parent: ms.destinationTable,
-				WriteStream: &storagepb.WriteStream{
-					Type: streamTypeToEnum(ms.streamSettings.streamType),
-				}}
-			resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
-			if err != nil {
-				return nil, fmt.Errorf("couldn't create write stream: %v", err)
-			}
-			streamName = resp.GetName()
+	// skipSetup exists for testing scenarios.
+	if !skipSetup {
+		if err := c.validateOptions(ctx, ms); err != nil {
+			return nil, err
 		}
-		ms.streamSettings.streamID = streamName
-		// TODO(followup CLs): instantiate an appendstream client, flow controller, etc.
-	}
 
+		if ms.streamSettings.streamID == "" {
+			// not instantiated with a stream, construct one.
+			streamName := fmt.Sprintf("%s/streams/_default", ms.destinationTable)
+			if ms.streamSettings.streamType != DefaultStream {
+				// For everything but a default stream, we create a new stream on behalf of the user.
+				req := &storagepb.CreateWriteStreamRequest{
+					Parent: ms.destinationTable,
+					WriteStream: &storagepb.WriteStream{
+						Type: streamTypeToEnum(ms.streamSettings.streamType),
+					}}
+				resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
+				if err != nil {
+					return nil, fmt.Errorf("couldn't create write stream: %w", err)
+				}
+				streamName = resp.GetName()
+			}
+			ms.streamSettings.streamID = streamName
+		}
+	}
+	if ms.streamSettings != nil {
+		if ms.ctx != nil {
+			ms.ctx = keyContextWithTags(ms.ctx, ms.streamSettings.streamID, ms.streamSettings.dataOrigin)
+		}
+		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
+	} else {
+		ms.fc = newFlowController(0, 0)
+	}
 	return ms, nil
 }
 
@@ -107,7 +167,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		}
 		// update type and destination based on stream metadata
 		ms.streamSettings.streamType = StreamType(info.Type.String())
-		ms.destinationTable = tableParentFromStreamName(ms.streamSettings.streamID)
+		ms.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
 	}
 	if ms.destinationTable == "" {
 		return fmt.Errorf("no destination table specified")
@@ -119,22 +179,24 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	return nil
 }
 
-// BatchCommit is used to commit one or more PendingStream streams belonging to the same table
-// as a single transaction.  Streams must be finalized before committing.
+// BatchCommitWriteStreams atomically commits a group of PENDING streams that belong to the same
+// parent table.
 //
-// TODO: this currently exposes the raw proto response, but a future CL will wrap this with a nicer type.
-func (c *Client) BatchCommit(ctx context.Context, parentTable string, streamNames []string) (*storagepb.BatchCommitWriteStreamsResponse, error) {
+// Streams must be finalized before commit and cannot be committed multiple
+// times. Once a stream is committed, data in the stream becomes available
+// for read operations.
+func (c *Client) BatchCommitWriteStreams(ctx context.Context, req *storagepb.BatchCommitWriteStreamsRequest, opts ...gax.CallOption) (*storagepb.BatchCommitWriteStreamsResponse, error) {
+	return c.rawClient.BatchCommitWriteStreams(ctx, req, opts...)
+}
 
-	// determine table from first streamName, as all must share the same table.
-	if len(streamNames) <= 0 {
-		return nil, fmt.Errorf("no streamnames provided")
-	}
-
-	req := &storagepb.BatchCommitWriteStreamsRequest{
-		Parent:       tableParentFromStreamName(streamNames[0]),
-		WriteStreams: streamNames,
-	}
-	return c.rawClient.BatchCommitWriteStreams(ctx, req)
+// CreateWriteStream creates a write stream to the given table.
+// Additionally, every table has a special stream named ‘_default’
+// to which data can be written. This stream doesn’t need to be created using
+// CreateWriteStream. It is a stream that can be used simultaneously by any
+// number of clients. Data written to this stream is considered committed as
+// soon as an acknowledgement is received.
+func (c *Client) CreateWriteStream(ctx context.Context, req *storagepb.CreateWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
+	return c.rawClient.CreateWriteStream(ctx, req, opts...)
 }
 
 // getWriteStream returns information about a given write stream.
@@ -147,9 +209,10 @@ func (c *Client) getWriteStream(ctx context.Context, streamName string) (*storag
 	return c.rawClient.GetWriteStream(ctx, req)
 }
 
-// tableParentFromStreamName return the corresponding parent table
-// identifier given a fully qualified streamname.
-func tableParentFromStreamName(streamName string) string {
+// TableParentFromStreamName is a utility function for extracting the parent table
+// prefix from a stream name.  When an invalid stream ID is passed, this simply returns
+// the original stream name.
+func TableParentFromStreamName(streamName string) string {
 	// Stream IDs have the following prefix:
 	// projects/{project}/datasets/{dataset}/tables/{table}/blah
 	parts := strings.SplitN(streamName, "/", 7)
@@ -158,4 +221,10 @@ func tableParentFromStreamName(streamName string) string {
 		return streamName
 	}
 	return strings.Join(parts[:6], "/")
+}
+
+// TableParentFromParts constructs a table identifier using individual identifiers and
+// returns a string in the form "projects/{project}/datasets/{dataset}/tables/{table}".
+func TableParentFromParts(projectID, datasetID, tableID string) string {
+	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, datasetID, tableID)
 }

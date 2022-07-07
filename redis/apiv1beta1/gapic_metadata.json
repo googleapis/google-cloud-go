@@ -35,6 +35,11 @@
                 "GetInstance"
               ]
             },
+            "GetInstanceAuthString": {
+              "methods": [
+                "GetInstanceAuthString"
+              ]
+            },
             "ImportInstance": {
               "methods": [
                 "ImportInstance"
@@ -43,6 +48,71 @@
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpgradeInstance": {
+              "methods": [
+                "UpgradeInstance"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudRedisClient",
+          "rpcs": {
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "ExportInstance": {
+              "methods": [
+                "ExportInstance"
+              ]
+            },
+            "FailoverInstance": {
+              "methods": [
+                "FailoverInstance"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetInstanceAuthString": {
+              "methods": [
+                "GetInstanceAuthString"
+              ]
+            },
+            "ImportInstance": {
+              "methods": [
+                "ImportInstance"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
               ]
             },
             "UpdateInstance": {

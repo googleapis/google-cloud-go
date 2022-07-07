@@ -76,7 +76,7 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 		acks:          acks,
 		cursorTracker: newCommitCursorTracker(acks),
 	}
-	c.stream = newRetryableStream(ctx, c, settings.Timeout, reflect.TypeOf(pb.StreamingCommitCursorResponse{}))
+	c.stream = newRetryableStream(ctx, c, settings.Timeout, streamIdleTimeout(settings.Timeout), reflect.TypeOf(pb.StreamingCommitCursorResponse{}))
 	c.metadata.AddClientInfo(settings.Framework)
 
 	backgroundTask := c.commitOffsetToStream

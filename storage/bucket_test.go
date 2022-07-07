@@ -23,6 +23,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -44,6 +45,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
 		PublicAccessPrevention:   PublicAccessPreventionEnforced,
 		VersioningEnabled:        false,
+		RPO:                      RPOAsyncTurbo,
 		// should be ignored:
 		MetaGeneration: 39,
 		Created:        time.Now(),
@@ -99,7 +101,24 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
+					AgeInDays:        10,
+					MatchesPrefix:    []string{"testPrefix"},
+					MatchesSuffix:    []string{"testSuffix"},
+					NumNewerVersions: 3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
 					Liveness: Archived,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: AbortIncompleteMPUAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 20,
 				},
 			}},
 		},
@@ -125,6 +144,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			PublicAccessPrevention: "enforced",
 		},
 		Versioning: nil, // ignore VersioningEnabled if false
+		Rpo:        rpoAsyncTurbo,
 		Labels:     map[string]string{"label": "value"},
 		Cors: []*raw.BucketCors{
 			{
@@ -174,12 +194,31 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						MatchesStorageClass:     []string{"NEARLINE"},
 						NumNewerVersions:        10,
 					},
-				}, {
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:              10,
+						MatchesPrefix:    []string{"testPrefix"},
+						MatchesSuffix:    []string{"testSuffix"},
+						NumNewerVersions: 3,
+					},
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
+					},
+				}, {
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: AbortIncompleteMPUAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age: 20,
 					},
 				}},
 		},
@@ -257,12 +296,31 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
-	// setting being propagated in the proto.
+	// inherited setting being propagated in the proto.
 	attrs.PublicAccessPrevention = PublicAccessPreventionUnspecified
 	got = attrs.toRawBucket()
 	want.IamConfiguration = &raw.BucketIamConfiguration{
-		PublicAccessPrevention: "unspecified",
+		PublicAccessPrevention: "inherited",
 	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "inherited" leads to the
+	// setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionInherited
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting RPO to default is propagated in the proto.
+	attrs.RPO = RPODefault
+	got = attrs.toRawBucket()
+	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
 	}
@@ -274,7 +332,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 			Enabled: true,
 		},
-		PublicAccessPrevention: "unspecified",
+		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
@@ -306,6 +364,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				{
 					Action:    LifecycleAction{Type: "Delete"},
 					Condition: LifecycleCondition{AgeInDays: 30},
+				},
+				{
+					Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+					Condition: LifecycleCondition{AgeInDays: 13},
 				},
 			},
 		},
@@ -345,6 +407,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
 					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+				},
+				{
+					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
 				},
 			},
 		},
@@ -495,6 +561,23 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 }
 
+func TestAgeConditionBackwardCompat(t *testing.T) {
+	var ti int64
+	var want int64 = 100
+	setAgeCondition(want, &ti)
+	if getAgeCondition(ti) != want {
+		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
+	}
+
+	var tp *int64
+	want = 10
+	setAgeCondition(want, &tp)
+	if getAgeCondition(tp) != want {
+		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
+	}
+
+}
+
 func TestCallBuilders(t *testing.T) {
 	rc, err := raw.NewService(context.Background())
 	if err != nil {
@@ -642,10 +725,11 @@ func TestNewBucket(t *testing.T) {
 		Acl: []*raw.BucketAccessControl{
 			{Bucket: "name", Role: "READER", Email: "joe@example.com", Entity: "allUsers"},
 		},
-		LocationType: "dual-region",
-		Encryption:   &raw.BucketEncryption{DefaultKmsKeyName: "key"},
-		Logging:      &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:      &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		LocationType:  "dual-region",
+		Encryption:    &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:       &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		ProjectNumber: 123231313,
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -695,6 +779,7 @@ func TestNewBucket(t *testing.T) {
 		ACL:              []ACLRule{{Entity: "allUsers", Role: RoleReader, Email: "joe@example.com"}},
 		DefaultObjectACL: nil,
 		LocationType:     "dual-region",
+		ProjectNumber:    123231313,
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -702,5 +787,92 @@ func TestNewBucket(t *testing.T) {
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
+	}
+}
+
+func TestBucketRetryer(t *testing.T) {
+	testCases := []struct {
+		name string
+		call func(b *BucketHandle) *BucketHandle
+		want *retryConfig
+	}{
+		{
+			name: "all defaults",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer()
+			},
+			want: &retryConfig{},
+		},
+		{
+			name: "set all options",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(
+					WithBackoff(gax.Backoff{
+						Initial:    2 * time.Second,
+						Max:        30 * time.Second,
+						Multiplier: 3,
+					}),
+					WithPolicy(RetryAlways),
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				},
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set some backoff options",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(
+					WithBackoff(gax.Backoff{
+						Multiplier: 3,
+					}))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 3,
+				}},
+		},
+		{
+			name: "set policy only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithPolicy(RetryNever))
+			},
+			want: &retryConfig{
+				policy: RetryNever,
+			},
+		},
+		{
+			name: "set ErrorFunc only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			b := tc.call(&BucketHandle{})
+			if diff := cmp.Diff(
+				b.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
 	}
 }

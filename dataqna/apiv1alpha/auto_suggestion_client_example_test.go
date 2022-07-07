@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewAutoSuggestionClient() {
 	_ = c
 }
 
+func ExampleNewAutoSuggestionRESTClient() {
+	ctx := context.Background()
+	c, err := dataqna.NewAutoSuggestionRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAutoSuggestionClient_SuggestQueries() {
 	ctx := context.Background()
 	c, err := dataqna.NewAutoSuggestionClient(ctx)
@@ -45,6 +57,7 @@ func ExampleAutoSuggestionClient_SuggestQueries() {
 
 	req := &dataqnapb.SuggestQueriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#SuggestQueriesRequest.
 	}
 	resp, err := c.SuggestQueries(ctx, req)
 	if err != nil {

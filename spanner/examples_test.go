@@ -404,6 +404,30 @@ func ExampleRow_ToStruct() {
 	fmt.Println(acct)
 }
 
+func ExampleRow_ToStructLenient() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	row, err := client.Single().ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"accountID", "name", "balance"})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	type Account struct {
+		Name     string
+		Balance  int64
+		NickName string
+	}
+
+	var acct Account
+	if err := row.ToStructLenient(&acct); err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(acct)
+}
+
 func ExampleReadOnlyTransaction_Read() {
 	ctx := context.Background()
 	client, err := spanner.NewClient(ctx, myDB)

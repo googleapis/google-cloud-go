@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,18 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	c, err := privatecatalog.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleClient_SearchCatalogs() {
 	ctx := context.Background()
 	c, err := privatecatalog.NewClient(ctx)
@@ -46,6 +58,7 @@ func ExampleClient_SearchCatalogs() {
 
 	req := &privatecatalogpb.SearchCatalogsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchCatalogsRequest.
 	}
 	it := c.SearchCatalogs(ctx, req)
 	for {
@@ -71,6 +84,7 @@ func ExampleClient_SearchProducts() {
 
 	req := &privatecatalogpb.SearchProductsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchProductsRequest.
 	}
 	it := c.SearchProducts(ctx, req)
 	for {
@@ -96,6 +110,7 @@ func ExampleClient_SearchVersions() {
 
 	req := &privatecatalogpb.SearchVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchVersionsRequest.
 	}
 	it := c.SearchVersions(ctx, req)
 	for {

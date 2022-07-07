@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,6 +37,18 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	c, err := secretmanager.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleClient_ListSecrets() {
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
@@ -47,6 +59,7 @@ func ExampleClient_ListSecrets() {
 
 	req := &secretmanagerpb.ListSecretsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#ListSecretsRequest.
 	}
 	it := c.ListSecrets(ctx, req)
 	for {
@@ -72,6 +85,7 @@ func ExampleClient_CreateSecret() {
 
 	req := &secretmanagerpb.CreateSecretRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#CreateSecretRequest.
 	}
 	resp, err := c.CreateSecret(ctx, req)
 	if err != nil {
@@ -91,6 +105,7 @@ func ExampleClient_AddSecretVersion() {
 
 	req := &secretmanagerpb.AddSecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#AddSecretVersionRequest.
 	}
 	resp, err := c.AddSecretVersion(ctx, req)
 	if err != nil {
@@ -110,6 +125,7 @@ func ExampleClient_GetSecret() {
 
 	req := &secretmanagerpb.GetSecretRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#GetSecretRequest.
 	}
 	resp, err := c.GetSecret(ctx, req)
 	if err != nil {
@@ -129,6 +145,7 @@ func ExampleClient_UpdateSecret() {
 
 	req := &secretmanagerpb.UpdateSecretRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#UpdateSecretRequest.
 	}
 	resp, err := c.UpdateSecret(ctx, req)
 	if err != nil {
@@ -148,6 +165,7 @@ func ExampleClient_DeleteSecret() {
 
 	req := &secretmanagerpb.DeleteSecretRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#DeleteSecretRequest.
 	}
 	err = c.DeleteSecret(ctx, req)
 	if err != nil {
@@ -165,6 +183,7 @@ func ExampleClient_ListSecretVersions() {
 
 	req := &secretmanagerpb.ListSecretVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#ListSecretVersionsRequest.
 	}
 	it := c.ListSecretVersions(ctx, req)
 	for {
@@ -190,6 +209,7 @@ func ExampleClient_GetSecretVersion() {
 
 	req := &secretmanagerpb.GetSecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#GetSecretVersionRequest.
 	}
 	resp, err := c.GetSecretVersion(ctx, req)
 	if err != nil {
@@ -209,6 +229,7 @@ func ExampleClient_AccessSecretVersion() {
 
 	req := &secretmanagerpb.AccessSecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#AccessSecretVersionRequest.
 	}
 	resp, err := c.AccessSecretVersion(ctx, req)
 	if err != nil {
@@ -228,6 +249,7 @@ func ExampleClient_DisableSecretVersion() {
 
 	req := &secretmanagerpb.DisableSecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#DisableSecretVersionRequest.
 	}
 	resp, err := c.DisableSecretVersion(ctx, req)
 	if err != nil {
@@ -247,6 +269,7 @@ func ExampleClient_EnableSecretVersion() {
 
 	req := &secretmanagerpb.EnableSecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#EnableSecretVersionRequest.
 	}
 	resp, err := c.EnableSecretVersion(ctx, req)
 	if err != nil {
@@ -266,6 +289,7 @@ func ExampleClient_DestroySecretVersion() {
 
 	req := &secretmanagerpb.DestroySecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#DestroySecretVersionRequest.
 	}
 	resp, err := c.DestroySecretVersion(ctx, req)
 	if err != nil {
@@ -285,6 +309,7 @@ func ExampleClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -304,6 +329,7 @@ func ExampleClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -323,6 +349,7 @@ func ExampleClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

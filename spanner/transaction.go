@@ -25,9 +25,12 @@ import (
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"github.com/golang/protobuf/proto"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -75,6 +78,9 @@ type txReadOnly struct {
 
 	// txOpts provides options for a transaction.
 	txOpts TransactionOptions
+
+	// commonTags for opencensus metrics
+	ct *commonTags
 }
 
 // TransactionOptions provides options for a transaction.
@@ -172,7 +178,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			return client.StreamingRead(ctx,
+			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
 					Session:        t.sh.getID(),
 					Transaction:    ts,
@@ -184,6 +190,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					Limit:          int64(limit),
 					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
 				})
+			if err != nil {
+				return client, err
+			}
+			md, err := client.Header()
+			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
+					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+				}
+			}
+			return client, err
 		},
 		t.replaceSessionFunc,
 		t.setTimestamp,
@@ -212,7 +228,15 @@ func errMultipleRowsFound(table string, key Key, index string) error {
 // If no row is present with the given key, then ReadRow returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
-	iter := t.Read(ctx, table, key, columns)
+	return t.ReadRowWithOptions(ctx, table, key, columns, nil)
+}
+
+// ReadRowWithOptions reads a single row from the database. Pass a ReadOptions to modify the read operation.
+//
+// If no row is present with the given key, then ReadRowWithOptions returns an error where
+// spanner.ErrCode(err) is codes.NotFound.
+func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key Key, columns []string, opts *ReadOptions) (*Row, error) {
+	iter := t.ReadWithOptions(ctx, table, key, columns, opts)
 	defer iter.Stop()
 	row, err := iter.Next()
 	switch err {
@@ -313,8 +337,9 @@ func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transac
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.query(ctx, statement, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 }
 
@@ -331,8 +356,9 @@ func (t *txReadOnly) QueryWithOptions(ctx context.Context, statement Statement, 
 func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_PROFILE
 	return t.query(ctx, statement, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 }
 
@@ -340,8 +366,9 @@ func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *R
 func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
 	mode := sppb.ExecuteSqlRequest_PLAN
 	iter := t.query(ctx, statement, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 	defer iter.Stop()
 	for {
@@ -373,7 +400,17 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
-			return client.ExecuteStreamingSql(ctx, req)
+			client, err := client.ExecuteStreamingSql(ctx, req)
+			if err != nil {
+				return client, err
+			}
+			md, err := client.Header()
+			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
+					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+				}
+			}
+			return client, err
 		},
 		t.replaceSessionFunc,
 		t.setTimestamp,
@@ -533,6 +570,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		var md metadata.MD
 		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
 			Session: sh.getID(),
 			Options: &sppb.TransactionOptions{
@@ -540,7 +578,14 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 					ReadOnly: buildTransactionOptionsReadOnly(t.getTimestampBound(), true),
 				},
 			},
-		})
+		}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+		if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+			if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
+				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+			}
+		}
+
 		if isSessionNotFoundError(err) {
 			sh.destroy()
 			continue
@@ -867,8 +912,9 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowCount int64, err error) {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.update(ctx, stmt, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 }
 
@@ -886,7 +932,14 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	if err != nil {
 		return 0, err
 	}
-	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
+	var md metadata.MD
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+		}
+	}
 	if err != nil {
 		return 0, ToSpannerError(err)
 	}
@@ -948,13 +1001,20 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		})
 	}
 
+	var md metadata.MD
 	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.ExecuteBatchDmlRequest{
 		Session:        sh.getID(),
 		Transaction:    ts,
 		Statements:     sppbStmts,
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
-	})
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "batchUpdateWithOptions"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
+		}
+	}
 	if err != nil {
 		return nil, ToSpannerError(err)
 	}
@@ -1070,6 +1130,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		return resp, errSessionClosed(t.sh)
 	}
 
+	var md metadata.MD
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.CommitRequest{
 		Session: sid,
 		Transaction: &sppb.CommitRequest_TransactionId{
@@ -1078,7 +1139,12 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 		Mutations:         mPb,
 		ReturnCommitStats: options.ReturnCommitStats,
-	})
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "commit"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+		}
+	}
 	if e != nil {
 		return resp, toSpannerErrorWithCommitInfo(e, true)
 	}
@@ -1210,6 +1276,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txOpts = options
+	t.ct = c.ct
 
 	if err = t.begin(ctx); err != nil {
 		if sh != nil {

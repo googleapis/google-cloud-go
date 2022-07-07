@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewQuestionClient() {
 	_ = c
 }
 
+func ExampleNewQuestionRESTClient() {
+	ctx := context.Background()
+	c, err := dataqna.NewQuestionRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleQuestionClient_GetQuestion() {
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
@@ -45,6 +57,7 @@ func ExampleQuestionClient_GetQuestion() {
 
 	req := &dataqnapb.GetQuestionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetQuestionRequest.
 	}
 	resp, err := c.GetQuestion(ctx, req)
 	if err != nil {
@@ -64,6 +77,7 @@ func ExampleQuestionClient_CreateQuestion() {
 
 	req := &dataqnapb.CreateQuestionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#CreateQuestionRequest.
 	}
 	resp, err := c.CreateQuestion(ctx, req)
 	if err != nil {
@@ -83,6 +97,7 @@ func ExampleQuestionClient_ExecuteQuestion() {
 
 	req := &dataqnapb.ExecuteQuestionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#ExecuteQuestionRequest.
 	}
 	resp, err := c.ExecuteQuestion(ctx, req)
 	if err != nil {
@@ -102,6 +117,7 @@ func ExampleQuestionClient_GetUserFeedback() {
 
 	req := &dataqnapb.GetUserFeedbackRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetUserFeedbackRequest.
 	}
 	resp, err := c.GetUserFeedback(ctx, req)
 	if err != nil {
@@ -121,6 +137,7 @@ func ExampleQuestionClient_UpdateUserFeedback() {
 
 	req := &dataqnapb.UpdateUserFeedbackRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#UpdateUserFeedbackRequest.
 	}
 	resp, err := c.UpdateUserFeedback(ctx, req)
 	if err != nil {

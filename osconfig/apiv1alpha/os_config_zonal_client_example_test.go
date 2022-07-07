@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,18 @@ func ExampleNewOsConfigZonalClient() {
 	_ = c
 }
 
+func ExampleNewOsConfigZonalRESTClient() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
@@ -46,6 +58,7 @@ func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 
 	req := &osconfigpb.CreateOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#CreateOSPolicyAssignmentRequest.
 	}
 	op, err := c.CreateOSPolicyAssignment(ctx, req)
 	if err != nil {
@@ -70,6 +83,7 @@ func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
 
 	req := &osconfigpb.UpdateOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#UpdateOSPolicyAssignmentRequest.
 	}
 	op, err := c.UpdateOSPolicyAssignment(ctx, req)
 	if err != nil {
@@ -94,6 +108,7 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
 
 	req := &osconfigpb.GetOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#GetOSPolicyAssignmentRequest.
 	}
 	resp, err := c.GetOSPolicyAssignment(ctx, req)
 	if err != nil {
@@ -113,6 +128,7 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
 
 	req := &osconfigpb.ListOSPolicyAssignmentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#ListOSPolicyAssignmentsRequest.
 	}
 	it := c.ListOSPolicyAssignments(ctx, req)
 	for {
@@ -138,6 +154,7 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
 
 	req := &osconfigpb.ListOSPolicyAssignmentRevisionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#ListOSPolicyAssignmentRevisionsRequest.
 	}
 	it := c.ListOSPolicyAssignmentRevisions(ctx, req)
 	for {
@@ -163,6 +180,7 @@ func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
 
 	req := &osconfigpb.DeleteOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#DeleteOSPolicyAssignmentRequest.
 	}
 	op, err := c.DeleteOSPolicyAssignment(ctx, req)
 	if err != nil {
@@ -185,6 +203,7 @@ func ExampleOsConfigZonalClient_GetInstanceOSPoliciesCompliance() {
 
 	req := &osconfigpb.GetInstanceOSPoliciesComplianceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#GetInstanceOSPoliciesComplianceRequest.
 	}
 	resp, err := c.GetInstanceOSPoliciesCompliance(ctx, req)
 	if err != nil {
@@ -204,8 +223,55 @@ func ExampleOsConfigZonalClient_ListInstanceOSPoliciesCompliances() {
 
 	req := &osconfigpb.ListInstanceOSPoliciesCompliancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#ListInstanceOSPoliciesCompliancesRequest.
 	}
 	it := c.ListInstanceOSPoliciesCompliances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleOsConfigZonalClient_GetOSPolicyAssignmentReport() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.GetOSPolicyAssignmentReportRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#GetOSPolicyAssignmentReportRequest.
+	}
+	resp, err := c.GetOSPolicyAssignmentReport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.ListOSPolicyAssignmentReportsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#ListOSPolicyAssignmentReportsRequest.
+	}
+	it := c.ListOSPolicyAssignmentReports(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -229,6 +295,7 @@ func ExampleOsConfigZonalClient_GetInventory() {
 
 	req := &osconfigpb.GetInventoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#GetInventoryRequest.
 	}
 	resp, err := c.GetInventory(ctx, req)
 	if err != nil {
@@ -248,6 +315,7 @@ func ExampleOsConfigZonalClient_ListInventories() {
 
 	req := &osconfigpb.ListInventoriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#ListInventoriesRequest.
 	}
 	it := c.ListInventories(ctx, req)
 	for {
@@ -273,6 +341,7 @@ func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
 
 	req := &osconfigpb.GetVulnerabilityReportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#GetVulnerabilityReportRequest.
 	}
 	resp, err := c.GetVulnerabilityReport(ctx, req)
 	if err != nil {
@@ -292,6 +361,7 @@ func ExampleOsConfigZonalClient_ListVulnerabilityReports() {
 
 	req := &osconfigpb.ListVulnerabilityReportsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#ListVulnerabilityReportsRequest.
 	}
 	it := c.ListVulnerabilityReports(ctx, req)
 	for {

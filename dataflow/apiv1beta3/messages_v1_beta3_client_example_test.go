@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,18 @@ func ExampleNewMessagesV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewMessagesV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewMessagesV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleMessagesV1Beta3Client_ListJobMessages() {
 	ctx := context.Background()
 	c, err := dataflow.NewMessagesV1Beta3Client(ctx)
@@ -46,6 +58,7 @@ func ExampleMessagesV1Beta3Client_ListJobMessages() {
 
 	req := &dataflowpb.ListJobMessagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListJobMessagesRequest.
 	}
 	it := c.ListJobMessages(ctx, req)
 	for {

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,13 +46,17 @@ func ExampleTargetPoolsClient_AddHealthCheck() {
 
 	req := &computepb.AddHealthCheckTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddHealthCheckTargetPoolRequest.
 	}
-	resp, err := c.AddHealthCheck(ctx, req)
+	op, err := c.AddHealthCheck(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_AddInstance() {
@@ -64,13 +69,17 @@ func ExampleTargetPoolsClient_AddInstance() {
 
 	req := &computepb.AddInstanceTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddInstanceTargetPoolRequest.
 	}
-	resp, err := c.AddInstance(ctx, req)
+	op, err := c.AddInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_AggregatedList() {
@@ -83,13 +92,20 @@ func ExampleTargetPoolsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListTargetPoolsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListTargetPoolsRequest.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleTargetPoolsClient_Delete() {
@@ -102,13 +118,17 @@ func ExampleTargetPoolsClient_Delete() {
 
 	req := &computepb.DeleteTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetPoolRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_Get() {
@@ -121,6 +141,7 @@ func ExampleTargetPoolsClient_Get() {
 
 	req := &computepb.GetTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetTargetPoolRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,6 +161,7 @@ func ExampleTargetPoolsClient_GetHealth() {
 
 	req := &computepb.GetHealthTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetHealthTargetPoolRequest.
 	}
 	resp, err := c.GetHealth(ctx, req)
 	if err != nil {
@@ -159,13 +181,17 @@ func ExampleTargetPoolsClient_Insert() {
 
 	req := &computepb.InsertTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetPoolRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_List() {
@@ -178,13 +204,20 @@ func ExampleTargetPoolsClient_List() {
 
 	req := &computepb.ListTargetPoolsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetPoolsRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleTargetPoolsClient_RemoveHealthCheck() {
@@ -197,13 +230,17 @@ func ExampleTargetPoolsClient_RemoveHealthCheck() {
 
 	req := &computepb.RemoveHealthCheckTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveHealthCheckTargetPoolRequest.
 	}
-	resp, err := c.RemoveHealthCheck(ctx, req)
+	op, err := c.RemoveHealthCheck(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_RemoveInstance() {
@@ -216,13 +253,17 @@ func ExampleTargetPoolsClient_RemoveInstance() {
 
 	req := &computepb.RemoveInstanceTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveInstanceTargetPoolRequest.
 	}
-	resp, err := c.RemoveInstance(ctx, req)
+	op, err := c.RemoveInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleTargetPoolsClient_SetBackup() {
@@ -235,11 +276,15 @@ func ExampleTargetPoolsClient_SetBackup() {
 
 	req := &computepb.SetBackupTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetBackupTargetPoolRequest.
 	}
-	resp, err := c.SetBackup(ctx, req)
+	op, err := c.SetBackup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

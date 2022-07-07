@@ -77,14 +77,16 @@ var (
 	numericParamType    = &bq.QueryParameterType{Type: "NUMERIC"}
 	bigNumericParamType = &bq.QueryParameterType{Type: "BIGNUMERIC"}
 	geographyParamType  = &bq.QueryParameterType{Type: "GEOGRAPHY"}
+	intervalParamType   = &bq.QueryParameterType{Type: "INTERVAL"}
 )
 
 var (
-	typeOfDate     = reflect.TypeOf(civil.Date{})
-	typeOfTime     = reflect.TypeOf(civil.Time{})
-	typeOfDateTime = reflect.TypeOf(civil.DateTime{})
-	typeOfGoTime   = reflect.TypeOf(time.Time{})
-	typeOfRat      = reflect.TypeOf(&big.Rat{})
+	typeOfDate          = reflect.TypeOf(civil.Date{})
+	typeOfTime          = reflect.TypeOf(civil.Time{})
+	typeOfDateTime      = reflect.TypeOf(civil.DateTime{})
+	typeOfGoTime        = reflect.TypeOf(time.Time{})
+	typeOfRat           = reflect.TypeOf(&big.Rat{})
+	typeOfIntervalValue = reflect.TypeOf(&IntervalValue{})
 )
 
 // A QueryParameter is a parameter to a query.
@@ -106,6 +108,7 @@ type QueryParameter struct {
 	// []byte: BYTES
 	// time.Time: TIMESTAMP
 	// *big.Rat: NUMERIC
+	// *IntervalValue: INTERVAL
 	// Arrays and slices of the above.
 	// Structs of the above. Only the exported fields are used.
 	//
@@ -156,6 +159,8 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		return timestampParamType, nil
 	case typeOfRat:
 		return numericParamType, nil
+	case typeOfIntervalValue:
+		return intervalParamType, nil
 	case typeOfNullBool:
 		return boolParamType, nil
 	case typeOfNullFloat64:
@@ -300,6 +305,9 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		// to honor previous behavior and send as Numeric type.
 		res.Value = NumericString(v.Interface().(*big.Rat))
 		return res, nil
+	case typeOfIntervalValue:
+		res.Value = IntervalString(v.Interface().(*IntervalValue))
+		return res, nil
 	}
 	switch t.Kind() {
 	case reflect.Slice:
@@ -379,6 +387,7 @@ var paramTypeToFieldType = map[string]FieldType{
 	numericParamType.Type:    NumericFieldType,
 	bigNumericParamType.Type: BigNumericFieldType,
 	geographyParamType.Type:  GeographyFieldType,
+	intervalParamType.Type:   IntervalFieldType,
 }
 
 // Convert a parameter value from the service to a Go value. This is similar to, but

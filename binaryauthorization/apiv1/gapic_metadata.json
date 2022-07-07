@@ -1,0 +1,81 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.binaryauthorization.v1",
+  "libraryPackage": "cloud.google.com/go/binaryauthorization/apiv1",
+  "services": {
+    "BinauthzManagementServiceV1": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BinauthzManagementClient",
+          "rpcs": {
+            "CreateAttestor": {
+              "methods": [
+                "CreateAttestor"
+              ]
+            },
+            "DeleteAttestor": {
+              "methods": [
+                "DeleteAttestor"
+              ]
+            },
+            "GetAttestor": {
+              "methods": [
+                "GetAttestor"
+              ]
+            },
+            "GetPolicy": {
+              "methods": [
+                "GetPolicy"
+              ]
+            },
+            "ListAttestors": {
+              "methods": [
+                "ListAttestors"
+              ]
+            },
+            "UpdateAttestor": {
+              "methods": [
+                "UpdateAttestor"
+              ]
+            },
+            "UpdatePolicy": {
+              "methods": [
+                "UpdatePolicy"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SystemPolicyV1": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SystemPolicyClient",
+          "rpcs": {
+            "GetSystemPolicy": {
+              "methods": [
+                "GetSystemPolicy"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ValidationHelperV1": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ValidationHelperClient",
+          "rpcs": {
+            "ValidateAttestationOccurrence": {
+              "methods": [
+                "ValidateAttestationOccurrence"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

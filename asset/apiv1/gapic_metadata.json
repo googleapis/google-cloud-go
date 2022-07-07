@@ -20,9 +20,19 @@
                 "AnalyzeIamPolicyLongrunning"
               ]
             },
+            "AnalyzeMove": {
+              "methods": [
+                "AnalyzeMove"
+              ]
+            },
             "BatchGetAssetsHistory": {
               "methods": [
                 "BatchGetAssetsHistory"
+              ]
+            },
+            "BatchGetEffectiveIamPolicies": {
+              "methods": [
+                "BatchGetEffectiveIamPolicies"
               ]
             },
             "CreateFeed": {
@@ -30,9 +40,19 @@
                 "CreateFeed"
               ]
             },
+            "CreateSavedQuery": {
+              "methods": [
+                "CreateSavedQuery"
+              ]
+            },
             "DeleteFeed": {
               "methods": [
                 "DeleteFeed"
+              ]
+            },
+            "DeleteSavedQuery": {
+              "methods": [
+                "DeleteSavedQuery"
               ]
             },
             "ExportAssets": {
@@ -45,6 +65,11 @@
                 "GetFeed"
               ]
             },
+            "GetSavedQuery": {
+              "methods": [
+                "GetSavedQuery"
+              ]
+            },
             "ListAssets": {
               "methods": [
                 "ListAssets"
@@ -53,6 +78,11 @@
             "ListFeeds": {
               "methods": [
                 "ListFeeds"
+              ]
+            },
+            "ListSavedQueries": {
+              "methods": [
+                "ListSavedQueries"
               ]
             },
             "SearchAllIamPolicies": {
@@ -68,6 +98,11 @@
             "UpdateFeed": {
               "methods": [
                 "UpdateFeed"
+              ]
+            },
+            "UpdateSavedQuery": {
+              "methods": [
+                "UpdateSavedQuery"
               ]
             }
           }

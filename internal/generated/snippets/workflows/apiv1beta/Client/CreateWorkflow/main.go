@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ func main() {
 
 	req := &workflowspb.CreateWorkflowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#CreateWorkflowRequest.
 	}
 	op, err := c.CreateWorkflow(ctx, req)
 	if err != nil {

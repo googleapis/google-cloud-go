@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	c, err := agentendpoint.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleClient_StartNextTask() {
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
@@ -45,6 +57,7 @@ func ExampleClient_StartNextTask() {
 
 	req := &agentendpointpb.StartNextTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#StartNextTaskRequest.
 	}
 	resp, err := c.StartNextTask(ctx, req)
 	if err != nil {
@@ -64,6 +77,7 @@ func ExampleClient_ReportTaskProgress() {
 
 	req := &agentendpointpb.ReportTaskProgressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#ReportTaskProgressRequest.
 	}
 	resp, err := c.ReportTaskProgress(ctx, req)
 	if err != nil {
@@ -83,6 +97,7 @@ func ExampleClient_ReportTaskComplete() {
 
 	req := &agentendpointpb.ReportTaskCompleteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#ReportTaskCompleteRequest.
 	}
 	resp, err := c.ReportTaskComplete(ctx, req)
 	if err != nil {
@@ -102,6 +117,7 @@ func ExampleClient_LookupEffectiveGuestPolicy() {
 
 	req := &agentendpointpb.LookupEffectiveGuestPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#LookupEffectiveGuestPolicyRequest.
 	}
 	resp, err := c.LookupEffectiveGuestPolicy(ctx, req)
 	if err != nil {
@@ -121,6 +137,7 @@ func ExampleClient_RegisterAgent() {
 
 	req := &agentendpointpb.RegisterAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#RegisterAgentRequest.
 	}
 	resp, err := c.RegisterAgent(ctx, req)
 	if err != nil {

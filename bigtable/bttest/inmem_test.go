@@ -2034,3 +2034,84 @@ func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
 		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
 	}
 }
+
+func TestMutateRowEmptyMutationErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	ctx := context.Background()
+	req := &btpb.MutateRowRequest{
+		TableName: "mytable",
+		RowKey:    []byte("r"),
+		Mutations: []*btpb.Mutation{},
+	}
+
+	resp, err := srv.MutateRow(ctx, req)
+	if resp != nil ||
+		fmt.Sprint(err) !=
+			"rpc error: code = InvalidArgument"+
+				" desc = No mutations provided" {
+		t.Fatalf("Failed to error %s", err)
+	}
+}
+
+type bigtableTestingMutateRowsServer struct {
+	grpc.ServerStream
+}
+
+func (x *bigtableTestingMutateRowsServer) Send(m *btpb.MutateRowsResponse) error {
+	return nil
+}
+
+func TestMutateRowsEmptyMutationErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	req := &btpb.MutateRowsRequest{
+		TableName: "mytable",
+		Entries: []*btpb.MutateRowsRequest_Entry{
+			{Mutations: []*btpb.Mutation{}},
+			{Mutations: []*btpb.Mutation{}},
+		},
+	}
+
+	err := srv.MutateRows(req, &bigtableTestingMutateRowsServer{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = InvalidArgument "+
+			"desc = No mutations provided" {
+		t.Fatalf("Failed to error %s", err)
+	}
+}
+
+func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
+	row := &row{
+		key: "row",
+		families: map[string]*family{
+			"fam": {
+				name: "fam",
+				cells: map[string][]cell{
+					"col1": {{ts: 1000, value: []byte("val2")}},
+					"col2": {
+						{ts: 1000, value: []byte("val2")},
+						{ts: 1000, value: []byte("val3")},
+					},
+				},
+				colNames: []string{"col1", "col2"},
+			},
+		},
+	}
+	for _, test := range []struct {
+		filter *btpb.RowFilter
+		want   bool
+	}{
+		// The regexp-based filters perform whole-string, case-sensitive matches.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{1}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{2}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{3}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{4}}, false},
+	} {
+		got, err := filterRow(test.filter, row.copy())
+		if err != nil {
+			t.Errorf("%s: got unexpected error: %v", proto.CompactTextString(test.filter), err)
+		}
+		if got != test.want {
+			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+		}
+	}
+}

@@ -32,7 +32,9 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -687,6 +689,10 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 		s.totalSessionsCreated++
 		s.sessions[sessionName] = sessions[i]
 	}
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
 
@@ -922,6 +928,10 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 

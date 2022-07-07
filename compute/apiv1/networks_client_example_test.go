@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,13 +46,17 @@ func ExampleNetworksClient_AddPeering() {
 
 	req := &computepb.AddPeeringNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddPeeringNetworkRequest.
 	}
-	resp, err := c.AddPeering(ctx, req)
+	op, err := c.AddPeering(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworksClient_Delete() {
@@ -64,13 +69,17 @@ func ExampleNetworksClient_Delete() {
 
 	req := &computepb.DeleteNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworksClient_Get() {
@@ -83,6 +92,7 @@ func ExampleNetworksClient_Get() {
 
 	req := &computepb.GetNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -102,6 +112,7 @@ func ExampleNetworksClient_GetEffectiveFirewalls() {
 
 	req := &computepb.GetEffectiveFirewallsNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetEffectiveFirewallsNetworkRequest.
 	}
 	resp, err := c.GetEffectiveFirewalls(ctx, req)
 	if err != nil {
@@ -121,13 +132,17 @@ func ExampleNetworksClient_Insert() {
 
 	req := &computepb.InsertNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNetworkRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworksClient_List() {
@@ -140,13 +155,20 @@ func ExampleNetworksClient_List() {
 
 	req := &computepb.ListNetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNetworksRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNetworksClient_ListPeeringRoutes() {
@@ -159,13 +181,20 @@ func ExampleNetworksClient_ListPeeringRoutes() {
 
 	req := &computepb.ListPeeringRoutesNetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPeeringRoutesNetworksRequest.
 	}
-	resp, err := c.ListPeeringRoutes(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListPeeringRoutes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNetworksClient_Patch() {
@@ -178,13 +207,17 @@ func ExampleNetworksClient_Patch() {
 
 	req := &computepb.PatchNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchNetworkRequest.
 	}
-	resp, err := c.Patch(ctx, req)
+	op, err := c.Patch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworksClient_RemovePeering() {
@@ -197,13 +230,17 @@ func ExampleNetworksClient_RemovePeering() {
 
 	req := &computepb.RemovePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemovePeeringNetworkRequest.
 	}
-	resp, err := c.RemovePeering(ctx, req)
+	op, err := c.RemovePeering(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworksClient_SwitchToCustomMode() {
@@ -216,13 +253,17 @@ func ExampleNetworksClient_SwitchToCustomMode() {
 
 	req := &computepb.SwitchToCustomModeNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SwitchToCustomModeNetworkRequest.
 	}
-	resp, err := c.SwitchToCustomMode(ctx, req)
+	op, err := c.SwitchToCustomMode(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworksClient_UpdatePeering() {
@@ -235,11 +276,15 @@ func ExampleNetworksClient_UpdatePeering() {
 
 	req := &computepb.UpdatePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdatePeeringNetworkRequest.
 	}
-	resp, err := c.UpdatePeering(ctx, req)
+	op, err := c.UpdatePeering(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

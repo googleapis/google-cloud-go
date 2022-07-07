@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewImageAnnotatorClient() {
 	_ = c
 }
 
+func ExampleNewImageAnnotatorRESTClient() {
+	ctx := context.Background()
+	c, err := vision.NewImageAnnotatorRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
@@ -45,6 +57,7 @@ func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 
 	req := &visionpb.BatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1#BatchAnnotateImagesRequest.
 	}
 	resp, err := c.BatchAnnotateImages(ctx, req)
 	if err != nil {

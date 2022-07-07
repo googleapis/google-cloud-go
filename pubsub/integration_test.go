@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -33,6 +34,7 @@ import (
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
@@ -48,8 +50,9 @@ import (
 )
 
 var (
-	topicIDs = uid.NewSpace("topic", nil)
-	subIDs   = uid.NewSpace("sub", nil)
+	topicIDs  = uid.NewSpace("topic", nil)
+	subIDs    = uid.NewSpace("sub", nil)
+	schemaIDs = uid.NewSpace("schema", nil)
 )
 
 // messageData is used to hold the contents of a message so that it can be compared against the contents
@@ -96,6 +99,26 @@ func integrationTestClient(ctx context.Context, t *testing.T, opts ...option.Cli
 		t.Fatalf("Creating client error: %v", err)
 	}
 	return client
+}
+
+func integrationTestSchemaClient(ctx context.Context, t *testing.T, opts ...option.ClientOption) *SchemaClient {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	projID := testutil.ProjID()
+	if projID == "" {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
+	sc, err := NewSchemaClient(ctx, projID, opts...)
+	if err != nil {
+		t.Fatalf("Creating client error: %v", err)
+	}
+	return sc
 }
 
 func TestIntegration_All(t *testing.T) {
@@ -287,14 +310,15 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 	// Use a timeout to ensure that Pull does not block indefinitely if there are
 	// unexpectedly few messages available.
 	now := time.Now()
-	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+	timeout := 3 * time.Minute
+	timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
 	if err != nil {
 		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Since(now) >= time.Minute {
+			if time.Since(now) >= timeout {
 				t.Fatal("pullN took too long")
 			}
 		} else {
@@ -413,6 +437,7 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	msg := &Message{
 		Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
 	}
+	topic.PublishSettings.FlowControlSettings.LimitExceededBehavior = FlowControlSignalError
 	r := topic.Publish(ctx, msg)
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("Failed to publish max length message: %v", err)
@@ -521,15 +546,9 @@ func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := SubscriptionConfig{
-		Topic:               topic,
-		AckDeadline:         10 * time.Second,
-		RetainAckedMessages: false,
-		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    time.Duration(0),
-	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("\ngot: - want: +\n%s", diff)
+	want := time.Duration(0)
+	if got.ExpirationPolicy != want {
+		t.Fatalf("config.ExpirationPolicy mismatch, got: %v, want: %v\n", got.ExpirationPolicy, want)
 	}
 }
 
@@ -606,8 +625,10 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 				ServiceAccountEmail: serviceAccountEmail,
 			},
 		},
+		State: SubscriptionStateActive,
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
+	if diff := testutil.Diff(got, want, opt); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 	// Add a PushConfig and change other fields.
@@ -638,9 +659,10 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetentionDuration:   2 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    25 * time.Hour,
+		State:               SubscriptionStateActive,
 	}
 
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
@@ -653,7 +675,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	}
 	want.ExpirationPolicy = time.Duration(0)
 
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
@@ -674,7 +696,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	// service issue: PushConfig attributes are not removed.
 	// TODO(jba): remove when issue resolved.
 	want.PushConfig.Attributes = map[string]string{"x-goog-version": "v1"}
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 	// If nothing changes, our client returns an error.
@@ -722,17 +744,9 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := SubscriptionConfig{
-		Topic:             topic,
-		AckDeadline:       2 * time.Minute,
-		RetentionDuration: 2 * time.Hour,
-		ExpirationPolicy:  25 * time.Hour,
-	}
-	// Pubsub service issue: PushConfig attributes are not removed.
-	// TODO(jba): remove when issue resolved.
-	want.PushConfig.Attributes = map[string]string{"x-goog-version": "v1"}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("\ngot: - want: +\n%s", diff)
+	want := 25 * time.Hour
+	if got.ExpirationPolicy != want {
+		t.Fatalf("config.ExpirationPolicy mismatch; got: %v, want: %v", got.ExpirationPolicy, want)
 	}
 
 	// ExpirationPolicy to never expire.
@@ -742,8 +756,8 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error: %v\n", err)
 	}
-	want.ExpirationPolicy = time.Duration(0)
-	if diff := testutil.Diff(got, want); diff != "" {
+	want = time.Duration(0)
+	if diff := testutil.Diff(got.ExpirationPolicy, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 
@@ -908,7 +922,7 @@ func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 
 	// Specify some regions to set.
 	regions := []string{"asia-east1", "us-east1"}
-	got, err := topic.Update(ctx, TopicConfigToUpdate{
+	cfg, err := topic.Update(ctx, TopicConfigToUpdate{
 		MessageStoragePolicy: &MessageStoragePolicy{
 			AllowedPersistenceRegions: regions,
 		},
@@ -916,11 +930,8 @@ func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := TopicConfig{
-		MessageStoragePolicy: MessageStoragePolicy{
-			AllowedPersistenceRegions: regions,
-		},
-	}
+	got := cfg.MessageStoragePolicy.AllowedPersistenceRegions
+	want := regions
 	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot  %+v\nwant regions%+v", got, want)
 	}
@@ -1081,7 +1092,7 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := tc
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := testutil.Diff(got.MessageStoragePolicy, want.MessageStoragePolicy); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }
@@ -1159,8 +1170,8 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 			if got, want := r, fmt.Sprintf("item-%d", i); got != want {
 				t.Fatalf("%d: got %s, want %s", i, got, want)
 			}
-		case <-time.After(5 * time.Second):
-			t.Fatalf("timed out after 5s waiting for item %d", i)
+		case <-time.After(30 * time.Second):
+			t.Fatalf("timed out after 30s waiting for item %d", i)
 		}
 	}
 }
@@ -1260,8 +1271,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 
 	select {
 	case <-done:
-	case <-time.After(60 * time.Second):
-		t.Fatal("timed out after 60s waiting for all messages to be received")
+	case <-time.After(5 * time.Minute):
+		t.Fatal("timed out after 5m waiting for all messages to be received")
 	}
 
 	mu.Lock()
@@ -1434,18 +1445,11 @@ func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := SubscriptionConfig{
-		Topic:               topic,
-		AckDeadline:         10 * time.Second,
-		RetainAckedMessages: false,
-		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    defaultExpirationPolicy,
-		DeadLetterPolicy: &DeadLetterPolicy{
-			DeadLetterTopic:     deadLetterTopic.String(),
-			MaxDeliveryAttempts: 5,
-		},
+	want := &DeadLetterPolicy{
+		DeadLetterTopic:     deadLetterTopic.String(),
+		MaxDeliveryAttempts: 5,
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := testutil.Diff(got.DeadLetterPolicy, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 
@@ -1497,21 +1501,6 @@ func TestIntegration_DeadLetterPolicy_DeliveryAttempt(t *testing.T) {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
-
-	got, err := sub.Config(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := SubscriptionConfig{
-		Topic:               topic,
-		AckDeadline:         10 * time.Second,
-		RetainAckedMessages: false,
-		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    defaultExpirationPolicy,
-	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
-	}
 
 	res := topic.Publish(ctx, &Message{
 		Data: []byte("failed message"),
@@ -1573,15 +1562,8 @@ func TestIntegration_DeadLetterPolicy_ClearDeadLetter(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := SubscriptionConfig{
-		Topic:               topic,
-		AckDeadline:         10 * time.Second,
-		RetainAckedMessages: false,
-		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    defaultExpirationPolicy,
-	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
+	if got.DeadLetterPolicy != nil {
+		t.Fatalf("config.DeadLetterPolicy; got: %v want: nil", got.DeadLetterPolicy)
 	}
 }
 
@@ -1624,16 +1606,9 @@ func TestIntegration_Filter_CreateSubscription(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := SubscriptionConfig{
-		Topic:               topic,
-		AckDeadline:         10 * time.Second,
-		RetainAckedMessages: false,
-		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    defaultExpirationPolicy,
-		Filter:              "attributes.event_type = \"1\"",
-	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("SubsciptionConfig; got: - want: +\n%s", diff)
+	want := cfg.Filter
+	if got.Filter != want {
+		t.Fatalf("subcfg.Filter mismatch; got: %s, want: %s", got.Filter, want)
 	}
 	attrs := make(map[string]string)
 	attrs["event_type"] = "1"
@@ -1708,7 +1683,7 @@ func TestIntegration_RetryPolicy(t *testing.T) {
 			MaximumBackoff: 500 * time.Second,
 		},
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := testutil.Diff(got.RetryPolicy, want.RetryPolicy); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 
@@ -1726,7 +1701,7 @@ func TestIntegration_RetryPolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.RetryPolicy = nil
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := testutil.Diff(got.RetryPolicy, want.RetryPolicy); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }
@@ -1762,15 +1737,246 @@ func TestIntegration_DetachSubscription(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetSubscription error: %v", err)
 	}
-	want := SubscriptionConfig{
-		Topic:               topic,
-		AckDeadline:         10 * time.Second,
-		RetainAckedMessages: false,
-		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    defaultExpirationPolicy,
-		Detached:            true,
+	if !got.Detached {
+		t.Fatal("SubscriptionConfig not detached after calling detach")
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("SubscriptionConfig for detached sub; got: - want: +\n%s", diff)
+}
+
+func TestIntegration_SchemaAdmin(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc       string
+		schemaType SchemaType
+		path       string
+	}{
+		{
+			desc:       "avro schema",
+			schemaType: SchemaAvro,
+			path:       "testdata/schema/us-states.avsc",
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/us-states.proto",
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			schema := string(content)
+			schemaID := schemaIDs.New()
+			schemaPath := fmt.Sprintf("projects/%s/schemas/%s", testutil.ProjID(), schemaID)
+			sc := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: schema,
+			}
+			got, err := c.CreateSchema(ctx, schemaID, sc)
+			if err != nil {
+				t.Fatalf("SchemaClient.CreateSchema error: %v", err)
+			}
+
+			want := &SchemaConfig{
+				Name:       schemaPath,
+				Type:       tc.schemaType,
+				Definition: schema,
+			}
+			if diff := testutil.Diff(got, want); diff != "" {
+				t.Fatalf("\ngot: - want: +\n%s", diff)
+			}
+
+			got, err = c.Schema(ctx, schemaID, SchemaViewFull)
+			if err != nil {
+				t.Fatalf("SchemaClient.Schema error: %v", err)
+			}
+			if diff := testutil.Diff(got, want); diff != "" {
+				t.Fatalf("\ngot: - want: +\n%s", diff)
+			}
+
+			err = c.DeleteSchema(ctx, schemaID)
+			if err != nil {
+				t.Fatalf("SchemaClient.DeleteSchema error: %v", err)
+			}
+		})
+	}
+}
+
+func TestIntegration_ValidateSchema(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc       string
+		schemaType SchemaType
+		path       string
+		wantErr    error
+	}{
+		{
+			desc:       "avro schema",
+			schemaType: SchemaAvro,
+			path:       "testdata/schema/us-states.avsc",
+			wantErr:    nil,
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/us-states.proto",
+			wantErr:    nil,
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/invalid.avsc",
+			wantErr:    status.Errorf(codes.InvalidArgument, "Request contains an invalid argument."),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			def := string(content)
+			cfg := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: def,
+			}
+			_, gotErr := c.ValidateSchema(ctx, cfg)
+			if status.Code(gotErr) != status.Code(tc.wantErr) {
+				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestIntegration_ValidateMessage(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc        string
+		schemaType  SchemaType
+		schemaPath  string
+		encoding    SchemaEncoding
+		messagePath string
+		wantErr     error
+	}{
+		{
+			desc:        "avro json encoding",
+			schemaType:  SchemaAvro,
+			schemaPath:  "testdata/schema/us-states.avsc",
+			encoding:    EncodingJSON,
+			messagePath: "testdata/schema/alaska.json",
+			wantErr:     nil,
+		},
+		{
+			desc:        "avro binary encoding",
+			schemaType:  SchemaAvro,
+			schemaPath:  "testdata/schema/us-states.avsc",
+			encoding:    EncodingBinary,
+			messagePath: "testdata/schema/alaska.avro",
+			wantErr:     nil,
+		},
+		{
+			desc:        "proto json encoding",
+			schemaType:  SchemaProtocolBuffer,
+			schemaPath:  "testdata/schema/us-states.proto",
+			encoding:    EncodingJSON,
+			messagePath: "testdata/schema/alaska.json",
+			wantErr:     nil,
+		},
+		{
+			desc:        "protocol buffer schema",
+			schemaType:  SchemaProtocolBuffer,
+			schemaPath:  "testdata/schema/invalid.avsc",
+			encoding:    EncodingBinary,
+			messagePath: "testdata/schema/invalid.avsc",
+			wantErr:     status.Errorf(codes.InvalidArgument, "Request contains an invalid argument."),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.schemaPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			def := string(content)
+			cfg := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: def,
+			}
+
+			msg, err := ioutil.ReadFile(tc.messagePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, gotErr := c.ValidateMessageWithConfig(ctx, msg, tc.encoding, cfg)
+			if status.Code(gotErr) != status.Code(tc.wantErr) {
+				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestIntegration_TopicRetention(t *testing.T) {
+	ctx := context.Background()
+	c := integrationTestClient(ctx, t)
+	defer c.Close()
+
+	tc := TopicConfig{
+		RetentionDuration: 50 * time.Minute,
+	}
+	topic, err := c.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	newDur := 11 * time.Minute
+	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: newDur,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.RetentionDuration; got != newDur {
+		t.Fatalf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Create a subscription on the topic and read TopicMessageRetentionDuration.
+	s, err := c.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sCfg, err := s.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := sCfg.TopicMessageRetentionDuration; got != newDur {
+		t.Fatalf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Clear retention duration by setting to a negative value.
+	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: -1 * time.Minute,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.RetentionDuration; got != nil {
+		t.Fatalf("expected cleared retention duration, got: %v", got)
 	}
 }

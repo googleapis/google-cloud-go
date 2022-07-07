@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ func ExampleDocumentProcessorClient_ProcessDocument() {
 
 	req := &documentaipb.ProcessRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1#ProcessRequest.
 	}
 	resp, err := c.ProcessDocument(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleDocumentProcessorClient_BatchProcessDocuments() {
 
 	req := &documentaipb.BatchProcessRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1#BatchProcessRequest.
 	}
 	op, err := c.BatchProcessDocuments(ctx, req)
 	if err != nil {
@@ -88,6 +90,7 @@ func ExampleDocumentProcessorClient_ReviewDocument() {
 
 	req := &documentaipb.ReviewDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1#ReviewDocumentRequest.
 	}
 	op, err := c.ReviewDocument(ctx, req)
 	if err != nil {

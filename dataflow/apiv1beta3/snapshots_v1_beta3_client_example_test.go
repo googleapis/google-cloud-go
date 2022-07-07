@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewSnapshotsV1Beta3Client() {
 	_ = c
 }
 
+func ExampleNewSnapshotsV1Beta3RESTClient() {
+	ctx := context.Background()
+	c, err := dataflow.NewSnapshotsV1Beta3RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
 	ctx := context.Background()
 	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
@@ -45,6 +57,7 @@ func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
 
 	req := &dataflowpb.GetSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetSnapshotRequest.
 	}
 	resp, err := c.GetSnapshot(ctx, req)
 	if err != nil {
@@ -64,6 +77,7 @@ func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 
 	req := &dataflowpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#DeleteSnapshotRequest.
 	}
 	resp, err := c.DeleteSnapshot(ctx, req)
 	if err != nil {
@@ -83,6 +97,7 @@ func ExampleSnapshotsV1Beta3Client_ListSnapshots() {
 
 	req := &dataflowpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListSnapshotsRequest.
 	}
 	resp, err := c.ListSnapshots(ctx, req)
 	if err != nil {

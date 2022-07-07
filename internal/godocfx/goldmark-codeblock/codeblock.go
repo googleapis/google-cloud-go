@@ -41,7 +41,7 @@ func newCodeBlockHTMLRenderer(opts ...html.Option) renderer.NodeRenderer {
 
 func (r *codeBlockHTMLRenderer) renderCodeBlock(w util.BufWriter, source []byte, n ast.Node, entering bool) (ast.WalkStatus, error) {
 	if entering {
-		_, _ = w.WriteString(`<pre><code class="prettyprint">`)
+		_, _ = w.WriteString(`<pre class="prettyprint"><code>`)
 
 		l := n.Lines().Len()
 		for i := 0; i < l; i++ {

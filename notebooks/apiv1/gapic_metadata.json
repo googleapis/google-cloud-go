@@ -1,0 +1,242 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.notebooks.v1",
+  "libraryPackage": "cloud.google.com/go/notebooks/apiv1",
+  "services": {
+    "ManagedNotebookService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ManagedNotebookClient",
+          "rpcs": {
+            "CreateRuntime": {
+              "methods": [
+                "CreateRuntime"
+              ]
+            },
+            "DeleteRuntime": {
+              "methods": [
+                "DeleteRuntime"
+              ]
+            },
+            "GetRuntime": {
+              "methods": [
+                "GetRuntime"
+              ]
+            },
+            "ListRuntimes": {
+              "methods": [
+                "ListRuntimes"
+              ]
+            },
+            "RefreshRuntimeTokenInternal": {
+              "methods": [
+                "RefreshRuntimeTokenInternal"
+              ]
+            },
+            "ReportRuntimeEvent": {
+              "methods": [
+                "ReportRuntimeEvent"
+              ]
+            },
+            "ResetRuntime": {
+              "methods": [
+                "ResetRuntime"
+              ]
+            },
+            "StartRuntime": {
+              "methods": [
+                "StartRuntime"
+              ]
+            },
+            "StopRuntime": {
+              "methods": [
+                "StopRuntime"
+              ]
+            },
+            "SwitchRuntime": {
+              "methods": [
+                "SwitchRuntime"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "NotebookService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NotebookClient",
+          "rpcs": {
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "CreateExecution": {
+              "methods": [
+                "CreateExecution"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "CreateSchedule": {
+              "methods": [
+                "CreateSchedule"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "DeleteExecution": {
+              "methods": [
+                "DeleteExecution"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteSchedule": {
+              "methods": [
+                "DeleteSchedule"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetExecution": {
+              "methods": [
+                "GetExecution"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetInstanceHealth": {
+              "methods": [
+                "GetInstanceHealth"
+              ]
+            },
+            "GetSchedule": {
+              "methods": [
+                "GetSchedule"
+              ]
+            },
+            "IsInstanceUpgradeable": {
+              "methods": [
+                "IsInstanceUpgradeable"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "ListExecutions": {
+              "methods": [
+                "ListExecutions"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListSchedules": {
+              "methods": [
+                "ListSchedules"
+              ]
+            },
+            "RegisterInstance": {
+              "methods": [
+                "RegisterInstance"
+              ]
+            },
+            "ReportInstanceInfo": {
+              "methods": [
+                "ReportInstanceInfo"
+              ]
+            },
+            "ResetInstance": {
+              "methods": [
+                "ResetInstance"
+              ]
+            },
+            "RollbackInstance": {
+              "methods": [
+                "RollbackInstance"
+              ]
+            },
+            "SetInstanceAccelerator": {
+              "methods": [
+                "SetInstanceAccelerator"
+              ]
+            },
+            "SetInstanceLabels": {
+              "methods": [
+                "SetInstanceLabels"
+              ]
+            },
+            "SetInstanceMachineType": {
+              "methods": [
+                "SetInstanceMachineType"
+              ]
+            },
+            "StartInstance": {
+              "methods": [
+                "StartInstance"
+              ]
+            },
+            "StopInstance": {
+              "methods": [
+                "StopInstance"
+              ]
+            },
+            "TriggerSchedule": {
+              "methods": [
+                "TriggerSchedule"
+              ]
+            },
+            "UpdateInstanceConfig": {
+              "methods": [
+                "UpdateInstanceConfig"
+              ]
+            },
+            "UpdateInstanceMetadataItems": {
+              "methods": [
+                "UpdateInstanceMetadataItems"
+              ]
+            },
+            "UpdateShieldedInstanceConfig": {
+              "methods": [
+                "UpdateShieldedInstanceConfig"
+              ]
+            },
+            "UpgradeInstance": {
+              "methods": [
+                "UpgradeInstance"
+              ]
+            },
+            "UpgradeInstanceInternal": {
+              "methods": [
+                "UpgradeInstanceInternal"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

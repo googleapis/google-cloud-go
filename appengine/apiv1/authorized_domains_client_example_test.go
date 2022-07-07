@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ func ExampleAuthorizedDomainsClient_ListAuthorizedDomains() {
 
 	req := &appenginepb.ListAuthorizedDomainsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListAuthorizedDomainsRequest.
 	}
 	it := c.ListAuthorizedDomains(ctx, req)
 	for {

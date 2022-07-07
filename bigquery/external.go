@@ -96,6 +96,19 @@ type ExternalDataConfig struct {
 	// HivePartitioningOptions allows use of Hive partitioning based on the
 	// layout of objects in Google Cloud Storage.
 	HivePartitioningOptions *HivePartitioningOptions
+
+	// DecimalTargetTypes allows selection of how decimal values are converted when
+	// processed in bigquery, subject to the value type having sufficient precision/scale
+	// to support the values.  In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
+	// selected if is present in the list and if supports the necessary precision and scale.
+	//
+	// StringTargetType supports all precision and scale values.
+	DecimalTargetTypes []DecimalTargetType
+
+	// ConnectionID associates an external data configuration with a connection ID.
+	// Connections are managed through the BigQuery Connection API:
+	// https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1
+	ConnectionID string
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -107,12 +120,16 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		IgnoreUnknownValues:     e.IgnoreUnknownValues,
 		MaxBadRecords:           e.MaxBadRecords,
 		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
+		ConnectionId:            e.ConnectionID,
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
 	}
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
+	}
+	for _, v := range e.DecimalTargetTypes {
+		q.DecimalTargetTypes = append(q.DecimalTargetTypes, string(v))
 	}
 	return q
 }
@@ -127,8 +144,14 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		MaxBadRecords:           q.MaxBadRecords,
 		Schema:                  bqToSchema(q.Schema),
 		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
+		ConnectionID:            q.ConnectionId,
+	}
+	for _, v := range q.DecimalTargetTypes {
+		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
 	}
 	switch {
+	case q.AvroOptions != nil:
+		e.Options = bqToAvroOptions(q.AvroOptions)
 	case q.CsvOptions != nil:
 		e.Options = bqToCSVOptions(q.CsvOptions)
 	case q.GoogleSheetsOptions != nil:
@@ -149,6 +172,29 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 // This interface is implemented by CSVOptions, GoogleSheetsOptions and BigtableOptions.
 type ExternalDataConfigOptions interface {
 	populateExternalDataConfig(*bq.ExternalDataConfiguration)
+}
+
+// AvroOptions are additional options for Avro external data data sources.
+type AvroOptions struct {
+	// UseAvroLogicalTypes indicates whether to interpret logical types as the
+	// corresponding BigQuery data type (for example, TIMESTAMP), instead of using
+	// the raw type (for example, INTEGER).
+	UseAvroLogicalTypes bool
+}
+
+func (o *AvroOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	c.AvroOptions = &bq.AvroOptions{
+		UseAvroLogicalTypes: o.UseAvroLogicalTypes,
+	}
+}
+
+func bqToAvroOptions(q *bq.AvroOptions) *AvroOptions {
+	if q == nil {
+		return nil
+	}
+	return &AvroOptions{
+		UseAvroLogicalTypes: q.UseAvroLogicalTypes,
+	}
 }
 
 // CSVOptions are additional options for CSV external data sources.
@@ -180,6 +226,10 @@ type CSVOptions struct {
 	// The number of rows at the top of a CSV file that BigQuery will skip when
 	// reading data.
 	SkipLeadingRows int64
+
+	// An optional custom string that will represent a NULL
+	// value in CSV import data.
+	NullMarker string
 }
 
 func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
@@ -190,6 +240,7 @@ func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration)
 		FieldDelimiter:      o.FieldDelimiter,
 		Quote:               o.quote(),
 		SkipLeadingRows:     o.SkipLeadingRows,
+		NullMarker:          o.NullMarker,
 	}
 }
 
@@ -221,6 +272,7 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 		Encoding:            Encoding(q.Encoding),
 		FieldDelimiter:      q.FieldDelimiter,
 		SkipLeadingRows:     q.SkipLeadingRows,
+		NullMarker:          q.NullMarker,
 	}
 	o.setQuote(q.Quote)
 	return o

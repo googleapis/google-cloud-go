@@ -1,0 +1,98 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.video.livestream.v1",
+  "libraryPackage": "cloud.google.com/go/video/livestream/apiv1",
+  "services": {
+    "LivestreamService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateChannel": {
+              "methods": [
+                "CreateChannel"
+              ]
+            },
+            "CreateEvent": {
+              "methods": [
+                "CreateEvent"
+              ]
+            },
+            "CreateInput": {
+              "methods": [
+                "CreateInput"
+              ]
+            },
+            "DeleteChannel": {
+              "methods": [
+                "DeleteChannel"
+              ]
+            },
+            "DeleteEvent": {
+              "methods": [
+                "DeleteEvent"
+              ]
+            },
+            "DeleteInput": {
+              "methods": [
+                "DeleteInput"
+              ]
+            },
+            "GetChannel": {
+              "methods": [
+                "GetChannel"
+              ]
+            },
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetInput": {
+              "methods": [
+                "GetInput"
+              ]
+            },
+            "ListChannels": {
+              "methods": [
+                "ListChannels"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListInputs": {
+              "methods": [
+                "ListInputs"
+              ]
+            },
+            "StartChannel": {
+              "methods": [
+                "StartChannel"
+              ]
+            },
+            "StopChannel": {
+              "methods": [
+                "StopChannel"
+              ]
+            },
+            "UpdateChannel": {
+              "methods": [
+                "UpdateChannel"
+              ]
+            },
+            "UpdateInput": {
+              "methods": [
+                "UpdateInput"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

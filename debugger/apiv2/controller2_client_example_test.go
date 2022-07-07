@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ func ExampleController2Client_RegisterDebuggee() {
 
 	req := &clouddebuggerpb.RegisterDebuggeeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#RegisterDebuggeeRequest.
 	}
 	resp, err := c.RegisterDebuggee(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleController2Client_ListActiveBreakpoints() {
 
 	req := &clouddebuggerpb.ListActiveBreakpointsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListActiveBreakpointsRequest.
 	}
 	resp, err := c.ListActiveBreakpoints(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleController2Client_UpdateActiveBreakpoint() {
 
 	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#UpdateActiveBreakpointRequest.
 	}
 	resp, err := c.UpdateActiveBreakpoint(ctx, req)
 	if err != nil {

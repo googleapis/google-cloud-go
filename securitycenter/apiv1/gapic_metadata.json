@@ -10,9 +10,29 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BulkMuteFindings": {
+              "methods": [
+                "BulkMuteFindings"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBigQueryExport": {
+              "methods": [
+                "CreateBigQueryExport"
+              ]
+            },
             "CreateFinding": {
               "methods": [
                 "CreateFinding"
+              ]
+            },
+            "CreateMuteConfig": {
+              "methods": [
+                "CreateMuteConfig"
               ]
             },
             "CreateNotificationConfig": {
@@ -25,9 +45,29 @@
                 "CreateSource"
               ]
             },
+            "DeleteBigQueryExport": {
+              "methods": [
+                "DeleteBigQueryExport"
+              ]
+            },
+            "DeleteMuteConfig": {
+              "methods": [
+                "DeleteMuteConfig"
+              ]
+            },
             "DeleteNotificationConfig": {
               "methods": [
                 "DeleteNotificationConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
               ]
             },
             "GetIamPolicy": {
@@ -35,9 +75,19 @@
                 "GetIamPolicy"
               ]
             },
+            "GetMuteConfig": {
+              "methods": [
+                "GetMuteConfig"
+              ]
+            },
             "GetNotificationConfig": {
               "methods": [
                 "GetNotificationConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetOrganizationSettings": {
@@ -65,14 +115,29 @@
                 "ListAssets"
               ]
             },
+            "ListBigQueryExports": {
+              "methods": [
+                "ListBigQueryExports"
+              ]
+            },
             "ListFindings": {
               "methods": [
                 "ListFindings"
               ]
             },
+            "ListMuteConfigs": {
+              "methods": [
+                "ListMuteConfigs"
+              ]
+            },
             "ListNotificationConfigs": {
               "methods": [
                 "ListNotificationConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListSources": {
@@ -95,14 +160,34 @@
                 "SetIamPolicy"
               ]
             },
+            "SetMute": {
+              "methods": [
+                "SetMute"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
               ]
             },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
+              ]
+            },
+            "UpdateExternalSystem": {
+              "methods": [
+                "UpdateExternalSystem"
+              ]
+            },
             "UpdateFinding": {
               "methods": [
                 "UpdateFinding"
+              ]
+            },
+            "UpdateMuteConfig": {
+              "methods": [
+                "UpdateMuteConfig"
               ]
             },
             "UpdateNotificationConfig": {

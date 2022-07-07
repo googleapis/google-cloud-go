@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "FirestoreAdminClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateIndex": {
               "methods": [
                 "CreateIndex"
@@ -20,9 +25,19 @@
                 "DeleteIndex"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "ExportDocuments": {
               "methods": [
                 "ExportDocuments"
+              ]
+            },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
               ]
             },
             "GetField": {
@@ -35,9 +50,19 @@
                 "GetIndex"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportDocuments": {
               "methods": [
                 "ImportDocuments"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
               ]
             },
             "ListFields": {
@@ -48,6 +73,16 @@
             "ListIndexes": {
               "methods": [
                 "ListIndexes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDatabase": {
+              "methods": [
+                "UpdateDatabase"
               ]
             },
             "UpdateField": {

@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "ConfigClient",
           "rpcs": {
+            "CopyLogEntries": {
+              "methods": [
+                "CopyLogEntries"
+              ]
+            },
             "CreateBucket": {
               "methods": [
                 "CreateBucket"
@@ -65,6 +70,11 @@
                 "GetExclusion"
               ]
             },
+            "GetSettings": {
+              "methods": [
+                "GetSettings"
+              ]
+            },
             "GetSink": {
               "methods": [
                 "GetSink"
@@ -113,6 +123,11 @@
             "UpdateExclusion": {
               "methods": [
                 "UpdateExclusion"
+              ]
+            },
+            "UpdateSettings": {
+              "methods": [
+                "UpdateSettings"
               ]
             },
             "UpdateSink": {

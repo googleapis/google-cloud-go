@@ -33,6 +33,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+
+	vkit "cloud.google.com/go/pubsub/apiv1"
 )
 
 // Subscription is a reference to a PubSub subscription.
@@ -48,7 +50,6 @@ type Subscription struct {
 	mu            sync.Mutex
 	receiveActive bool
 
-	once           sync.Once
 	enableOrdering bool
 }
 
@@ -86,7 +87,8 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 		Project: c.fullyQualifiedProjectName(),
 	})
 	return &SubscriptionIterator{
-		c: c,
+		c:  c,
+		it: it,
 		next: func() (string, error) {
 			sub, err := it.Next()
 			if err != nil {
@@ -100,6 +102,7 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 // SubscriptionIterator is an iterator that returns a series of subscriptions.
 type SubscriptionIterator struct {
 	c    *Client
+	it   *vkit.SubscriptionIterator
 	next func() (string, error)
 }
 
@@ -110,6 +113,22 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 		return nil, err
 	}
 	return &Subscription{c: subs.c, name: subName}, nil
+}
+
+// NextConfig returns the next subscription config. If there are no more subscriptions,
+// iterator.Done will be returned.
+// This call shares the underlying iterator with calls to `SubscriptionIterator.Next`.
+// If you wish to use mix calls, create separate iterator instances for both.
+func (subs *SubscriptionIterator) NextConfig() (*SubscriptionConfig, error) {
+	spb, err := subs.it.Next()
+	if err != nil {
+		return nil, err
+	}
+	cfg, err := protoToSubscriptionConfig(spb, subs.c)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }
 
 // PushConfig contains configuration for subscriptions that operate in push mode.
@@ -191,10 +210,105 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 	}
 }
 
+// BigQueryConfigState denotes the possible states for a BigQuery Subscription.
+type BigQueryConfigState int
+
+const (
+	// BigQueryConfigStateUnspecified is the default value. This value is unused.
+	BigQueryConfigStateUnspecified = iota
+
+	// BigQueryConfigActive means the subscription can actively send messages to BigQuery.
+	BigQueryConfigActive
+
+	// BigQueryConfigPermissionDenied means the subscription cannot write to the BigQuery table because of permission denied errors.
+	BigQueryConfigPermissionDenied
+
+	// BigQueryConfigNotFound means the subscription cannot write to the BigQuery table because it does not exist.
+	BigQueryConfigNotFound
+
+	// BigQueryConfigSchemaMismatch means the subscription cannot write to the BigQuery table due to a schema mismatch.
+	BigQueryConfigSchemaMismatch
+)
+
+// BigQueryConfig configures the subscription to deliver to a BigQuery table.
+type BigQueryConfig struct {
+	// The name of the table to which to write data, of the form
+	// {projectId}:{datasetId}.{tableId}
+	Table string
+
+	// When true, use the topic's schema as the columns to write to in BigQuery,
+	// if it exists.
+	UseTopicSchema bool
+
+	// When true, write the subscription name, message_id, publish_time,
+	// attributes, and ordering_key to additional columns in the table. The
+	// subscription name, message_id, and publish_time fields are put in their own
+	// columns while all other message properties (other than data) are written to
+	// a JSON object in the attributes column.
+	WriteMetadata bool
+
+	// When true and use_topic_schema is true, any fields that are a part of the
+	// topic schema that are not part of the BigQuery table schema are dropped
+	// when writing to BigQuery. Otherwise, the schemas must be kept in sync and
+	// any messages with extra fields are not written and remain in the
+	// subscription's backlog.
+	DropUnknownFields bool
+
+	// This is an output-only field that indicates whether or not the subscription can
+	// receive messages. This field is set only in responses from the server;
+	// it is ignored if it is set in any requests.
+	State BigQueryConfigState
+}
+
+func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
+	if bc == nil {
+		return nil
+	}
+	pbCfg := &pb.BigQueryConfig{
+		Table:             bc.Table,
+		UseTopicSchema:    bc.UseTopicSchema,
+		WriteMetadata:     bc.WriteMetadata,
+		DropUnknownFields: bc.DropUnknownFields,
+		State:             pb.BigQueryConfig_State(bc.State),
+	}
+	return pbCfg
+}
+
+// SubscriptionState denotes the possible states for a Subscription.
+type SubscriptionState int
+
+const (
+	// SubscriptionStateUnspecified is the default value. This value is unused.
+	SubscriptionStateUnspecified = iota
+
+	// SubscriptionStateActive means the subscription can actively send messages to BigQuery.
+	SubscriptionStateActive
+
+	// SubscriptionStateResourceError means the subscription receive messages because of an
+	// error with the resource to which it pushes messages.
+	// See the more detailed error state in the corresponding configuration.
+	SubscriptionStateResourceError
+)
+
 // SubscriptionConfig describes the configuration of a subscription.
 type SubscriptionConfig struct {
-	Topic      *Topic
+	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
+	name string
+
+	// The topic from which this subscription is receiving messages.
+	Topic *Topic
+
+	// If push delivery is used with this subscription, this field is
+	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
+	// but not both. If both are empty, then the subscriber will pull and ack
+	// messages using API methods.
 	PushConfig PushConfig
+
+	// If delivery to BigQuery is used with this subscription, this field is
+	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
+	// but not both. If both are empty, then the subscriber will pull and ack
+	// messages using API methods.
+	BigQueryConfig BigQueryConfig
 
 	// The default maximum time after a subscriber receives a message before
 	// the subscriber should acknowledge the message. Note: messages which are
@@ -257,12 +371,53 @@ type SubscriptionConfig struct {
 	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
 	// the endpoint will not be made.
 	Detached bool
+
+	// TopicMessageRetentionDuration indicates the minimum duration for which a message is
+	// retained after it is published to the subscription's topic. If this field is
+	// set, messages published to the subscription's topic in the last
+	// `TopicMessageRetentionDuration` are always available to subscribers.
+	// You can enable both topic and subscription retention for the same topic.
+	// In this situation, the maximum of the retention durations takes effect.
+	//
+	// This is an output only field, meaning it will only appear in responses from the backend
+	// and will be ignored if sent in a request.
+	TopicMessageRetentionDuration time.Duration
+
+	// State indicates whether or not the subscription can receive messages.
+	// This is an output-only field that indicates whether or not the subscription can
+	// receive messages. This field is set only in responses from the server;
+	// it is ignored if it is set in any requests.
+	State SubscriptionState
+}
+
+// String returns the globally unique printable name of the subscription config.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) String() string {
+	return s.name
+}
+
+// ID returns the unique identifier of the subscription within its project.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) ID() string {
+	slash := strings.LastIndex(s.name, "/")
+	if slash == -1 {
+		return ""
+	}
+	return s.name[slash+1:]
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	var pbPushConfig *pb.PushConfig
 	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 || cfg.PushConfig.AuthenticationMethod != nil {
 		pbPushConfig = cfg.PushConfig.toProto()
+	}
+	var pbBigQueryConfig *pb.BigQueryConfig
+	if cfg.BigQueryConfig.Table != "" {
+		pbBigQueryConfig = cfg.BigQueryConfig.toProto()
 	}
 	var retentionDuration *durpb.Duration
 	if cfg.RetentionDuration != 0 {
@@ -280,6 +435,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		Name:                     name,
 		Topic:                    cfg.Topic.name,
 		PushConfig:               pbPushConfig,
+		BigqueryConfig:           pbBigQueryConfig,
 		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
 		RetainAckedMessages:      cfg.RetainAckedMessages,
 		MessageRetentionDuration: retentionDuration,
@@ -305,21 +461,26 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:                 newTopic(c, pbSub.Topic),
-		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages:   pbSub.RetainAckedMessages,
-		RetentionDuration:     rd,
-		Labels:                pbSub.Labels,
-		ExpirationPolicy:      expirationPolicy,
-		EnableMessageOrdering: pbSub.EnableMessageOrdering,
-		DeadLetterPolicy:      dlp,
-		Filter:                pbSub.Filter,
-		RetryPolicy:           rp,
-		Detached:              pbSub.Detached,
+		name:                          pbSub.Name,
+		Topic:                         newTopic(c, pbSub.Topic),
+		AckDeadline:                   time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:           pbSub.RetainAckedMessages,
+		RetentionDuration:             rd,
+		Labels:                        pbSub.Labels,
+		ExpirationPolicy:              expirationPolicy,
+		EnableMessageOrdering:         pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:              dlp,
+		Filter:                        pbSub.Filter,
+		RetryPolicy:                   rp,
+		Detached:                      pbSub.Detached,
+		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
+		State:                         SubscriptionState(pbSub.State),
 	}
-	pc := protoToPushConfig(pbSub.PushConfig)
-	if pc != nil {
+	if pc := protoToPushConfig(pbSub.PushConfig); pc != nil {
 		subC.PushConfig = *pc
+	}
+	if bq := protoToBQConfig(pbSub.GetBigqueryConfig()); bq != nil {
+		subC.BigQueryConfig = *bq
 	}
 	return subC, nil
 }
@@ -341,6 +502,20 @@ func protoToPushConfig(pbPc *pb.PushConfig) *PushConfig {
 		}
 	}
 	return pc
+}
+
+func protoToBQConfig(pbBQ *pb.BigQueryConfig) *BigQueryConfig {
+	if pbBQ == nil {
+		return nil
+	}
+	bq := &BigQueryConfig{
+		Table:             pbBQ.GetTable(),
+		UseTopicSchema:    pbBQ.GetUseTopicSchema(),
+		DropUnknownFields: pbBQ.GetDropUnknownFields(),
+		WriteMetadata:     pbBQ.GetWriteMetadata(),
+		State:             BigQueryConfigState(pbBQ.State),
+	}
+	return bq
 }
 
 // DeadLetterPolicy specifies the conditions for dead lettering messages in
@@ -461,9 +636,19 @@ type ReceiveSettings struct {
 	// bounds the maximum amount of time before a message redelivery in the
 	// event the subscriber fails to extend the deadline.
 	//
-	// MaxExtensionPeriod configuration can be disabled by specifying a
-	// duration less than (or equal to) 0.
+	// MaxExtensionPeriod must be between 10s and 600s (inclusive). This configuration
+	// can be disabled by specifying a duration less than (or equal to) 0.
 	MaxExtensionPeriod time.Duration
+
+	// MinExtensionPeriod is the the min duration for a single lease extension attempt.
+	// By default the 99th percentile of ack latency is used to determine lease extension
+	// periods but this value can be set to minimize the number of extraneous RPCs sent.
+	//
+	// MinExtensionPeriod must be between 10s and 600s (inclusive). This configuration
+	// can be disabled by specifying a duration less than (or equal to) 0.
+	// Defaults to off but set to 60 seconds if the subscription has exactly-once delivery enabled,
+	// which will be added in a future release.
+	MinExtensionPeriod time.Duration
 
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
 	// (unacknowledged but not yet expired). If MaxOutstandingMessages is 0, it
@@ -498,12 +683,20 @@ type ReceiveSettings struct {
 	// processed concurrently, set MaxOutstandingMessages.
 	NumGoroutines int
 
-	// If Synchronous is true, then no more than MaxOutstandingMessages will be in
-	// memory at one time. (In contrast, when Synchronous is false, more than
-	// MaxOutstandingMessages may have been received from the service and in memory
-	// before being processed.) MaxOutstandingBytes still refers to the total bytes
-	// processed, rather than in memory. NumGoroutines is ignored.
+	// Synchronous switches the underlying receiving mechanism to unary Pull.
+	// When Synchronous is false, the more performant StreamingPull is used.
+	// StreamingPull also has the benefit of subscriber affinity when using
+	// ordered delivery.
+	// When Synchronous is true, NumGoroutines is set to 1 and only one Pull
+	// RPC will be made to poll messages at a time.
 	// The default is false.
+	//
+	// Deprecated.
+	// Previously, users might use Synchronous mode since StreamingPull had a limitation
+	// where MaxOutstandingMessages was not always respected with large batches of
+	// small messsages. With server side flow control, this is no longer an issue
+	// and we recommend switching to the default StreamingPull mode by setting
+	// Synchronous to false.
 	Synchronous bool
 }
 
@@ -526,13 +719,11 @@ type ReceiveSettings struct {
 // idea of a duration that is short, but not so short that we perform excessive RPCs.
 const synchronousWaitTime = 100 * time.Millisecond
 
-// This is a var so that tests can change it.
-var minAckDeadline = 10 * time.Second
-
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxExtension:           60 * time.Minute,
 	MaxExtensionPeriod:     0,
+	MinExtensionPeriod:     0,
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
 	NumGoroutines:          10,
@@ -570,8 +761,13 @@ func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
 
 // SubscriptionConfigToUpdate describes how to update a subscription.
 type SubscriptionConfigToUpdate struct {
-	// If non-nil, the push config is changed.
+	// If non-nil, the push config is changed. Cannot be set at the same time as BigQueryConfig.
+	// If currently in push mode, set this value to the zero value to revert to a Pull based subscription.
 	PushConfig *PushConfig
+
+	// If non-nil, the bigquery config is changed. Cannot be set at the same time as PushConfig.
+	// If currently in bigquery mode, set this value to the zero value to revert to a Pull based subscription,
+	BigQueryConfig *BigQueryConfig
 
 	// If non-zero, the ack deadline is changed.
 	AckDeadline time.Duration
@@ -626,6 +822,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.PushConfig != nil {
 		psub.PushConfig = cfg.PushConfig.toProto()
 		paths = append(paths, "push_config")
+	}
+	if cfg.BigQueryConfig != nil {
+		psub.BigqueryConfig = cfg.BigQueryConfig.toProto()
+		paths = append(paths, "bigquery_config")
 	}
 	if cfg.AckDeadline != 0 {
 		psub.AckDeadlineSeconds = trunc32(int64(cfg.AckDeadline.Seconds()))
@@ -785,6 +985,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
+	s.checkOrdering(ctx)
+
+	// TODO(hongalex): move settings check to a helper function to make it more testable
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
@@ -802,7 +1005,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	maxExtPeriod := s.ReceiveSettings.MaxExtensionPeriod
 	if maxExtPeriod < 0 {
-		maxExtPeriod = 0
+		maxExtPeriod = DefaultReceiveSettings.MaxExtensionPeriod
+	}
+	minExtPeriod := s.ReceiveSettings.MinExtensionPeriod
+	if minExtPeriod < 0 {
+		minExtPeriod = DefaultReceiveSettings.MinExtensionPeriod
 	}
 
 	var numGoroutines int
@@ -818,13 +1025,18 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	po := &pullOptions{
 		maxExtension:           maxExt,
 		maxExtensionPeriod:     maxExtPeriod,
+		minExtensionPeriod:     minExtPeriod,
 		maxPrefetch:            trunc32(int64(maxCount)),
 		synchronous:            s.ReceiveSettings.Synchronous,
 		maxOutstandingMessages: maxCount,
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
-	fc := newFlowController(maxCount, maxBytes)
+	fc := newSubscriptionFlowController(FlowControlSettings{
+		MaxOutstandingMessages: maxCount,
+		MaxOutstandingBytes:    maxBytes,
+		LimitExceededBehavior:  FlowControlBlock,
+	})
 
 	sched := scheduler.NewReceiveScheduler(maxCount)
 
@@ -888,12 +1100,28 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						}
 					}
 				}
+				// If the context is done, don't pull more messages.
+				select {
+				case <-ctx.Done():
+					return nil
+				default:
+				}
 				msgs, err := iter.receive(maxToPull)
 				if err == io.EOF {
 					return nil
 				}
 				if err != nil {
 					return err
+				}
+				// If context is done and messages have been pulled,
+				// nack them.
+				select {
+				case <-ctx.Done():
+					for _, m := range msgs {
+						m.Nack()
+					}
+					return nil
+				default:
 				}
 				for i, msg := range msgs {
 					msg := msg
@@ -914,9 +1142,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
-					if msg.OrderingKey != "" {
-						s.once.Do(s.checkOrdering)
-					}
 					// Make sure the subscription has ordering enabled before adding to scheduler.
 					var key string
 					if s.enableOrdering {
@@ -929,6 +1154,13 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						f(ctx2, msg.(*Message))
 					}); err != nil {
 						wg.Done()
+						// If there are any errors with scheduling messages,
+						// nack them so they can be redelivered.
+						msg.Nack()
+						// Currently, only this error is returned by the receive scheduler.
+						if errors.Is(err, scheduler.ErrReceiveDraining) {
+							return nil
+						}
 						return err
 					}
 				}
@@ -959,8 +1191,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 // the roles/viewer or roles/pubsub.viewer role) we will assume
 // EnableMessageOrdering to be true.
 // See: https://github.com/googleapis/google-cloud-go/issues/3884
-func (s *Subscription) checkOrdering() {
-	ctx := context.Background()
+func (s *Subscription) checkOrdering(ctx context.Context) {
 	cfg, err := s.Config(ctx)
 	if err != nil {
 		s.enableOrdering = true
@@ -972,7 +1203,8 @@ func (s *Subscription) checkOrdering() {
 type pullOptions struct {
 	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in total
 	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
-	maxPrefetch        int32
+	minExtensionPeriod time.Duration // the minimum time to extend a message's lease duration per modack
+	maxPrefetch        int32         // the max number of outstanding messages, used to calculate maxToPull
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
 	synchronous            bool

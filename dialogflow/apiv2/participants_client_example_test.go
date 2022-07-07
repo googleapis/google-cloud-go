@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import (
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
 	"google.golang.org/api/iterator"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewParticipantsClient() {
@@ -46,6 +48,7 @@ func ExampleParticipantsClient_CreateParticipant() {
 
 	req := &dialogflowpb.CreateParticipantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateParticipantRequest.
 	}
 	resp, err := c.CreateParticipant(ctx, req)
 	if err != nil {
@@ -65,6 +68,7 @@ func ExampleParticipantsClient_GetParticipant() {
 
 	req := &dialogflowpb.GetParticipantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetParticipantRequest.
 	}
 	resp, err := c.GetParticipant(ctx, req)
 	if err != nil {
@@ -84,6 +88,7 @@ func ExampleParticipantsClient_ListParticipants() {
 
 	req := &dialogflowpb.ListParticipantsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListParticipantsRequest.
 	}
 	it := c.ListParticipants(ctx, req)
 	for {
@@ -109,6 +114,7 @@ func ExampleParticipantsClient_UpdateParticipant() {
 
 	req := &dialogflowpb.UpdateParticipantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateParticipantRequest.
 	}
 	resp, err := c.UpdateParticipant(ctx, req)
 	if err != nil {
@@ -128,6 +134,7 @@ func ExampleParticipantsClient_AnalyzeContent() {
 
 	req := &dialogflowpb.AnalyzeContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#AnalyzeContentRequest.
 	}
 	resp, err := c.AnalyzeContent(ctx, req)
 	if err != nil {
@@ -147,6 +154,7 @@ func ExampleParticipantsClient_SuggestArticles() {
 
 	req := &dialogflowpb.SuggestArticlesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestArticlesRequest.
 	}
 	resp, err := c.SuggestArticles(ctx, req)
 	if err != nil {
@@ -166,6 +174,7 @@ func ExampleParticipantsClient_SuggestFaqAnswers() {
 
 	req := &dialogflowpb.SuggestFaqAnswersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestFaqAnswersRequest.
 	}
 	resp, err := c.SuggestFaqAnswers(ctx, req)
 	if err != nil {
@@ -173,4 +182,134 @@ func ExampleParticipantsClient_SuggestFaqAnswers() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleParticipantsClient_SuggestSmartReplies() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dialogflowpb.SuggestSmartRepliesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestSmartRepliesRequest.
+	}
+	resp, err := c.SuggestSmartReplies(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleParticipantsClient_GetLocation() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleParticipantsClient_ListLocations() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleParticipantsClient_CancelOperation() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleParticipantsClient_GetOperation() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleParticipantsClient_ListOperations() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

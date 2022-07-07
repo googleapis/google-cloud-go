@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build go1.15
 // +build go1.15
 
 package main
@@ -29,6 +30,7 @@ import (
 	_ "cloud.google.com/go/bigquery" // Implicitly required by test.
 	_ "cloud.google.com/go/storage"  // Implicitly required by test.
 	"github.com/google/go-cmp/cmp"
+	_ "golang.org/x/sync/semaphore" // Implicitly required by test.
 	"golang.org/x/tools/go/packages"
 )
 
@@ -49,7 +51,7 @@ func TestParse(t *testing.T) {
 	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(r.pages), 10; got != want {
+	if got, want := len(r.pages), 14; got != want {
 		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
 	}
 	if got := r.module.Path; got != mod {
@@ -251,6 +253,32 @@ stem: "/appengine/docs/standard/go/reference/services/bundled"
 		writeMetadata(&buf, now, module)
 		if diff := cmp.Diff(test.want, buf.String()); diff != "" {
 			t.Errorf("writeMetadata(%q) got unexpected diff (-want +got):\n\n%s", test.path, diff)
+		}
+	}
+}
+
+func TestGetStatus(t *testing.T) {
+	tests := []struct {
+		doc  string
+		want string
+	}{
+		{
+			doc: `Size returns the size of the object in bytes.
+The returned value is always the same and is not affected by
+calls to Read or Close.
+
+Deprecated: use Reader.Attrs.Size.`,
+			want: "deprecated",
+		},
+		{
+			doc:  `This will never be deprecated!`,
+			want: "",
+		},
+	}
+
+	for _, test := range tests {
+		if got := getStatus(test.doc); got != test.want {
+			t.Errorf("getStatus(%v) got %q, want %q", test.doc, got, test.want)
 		}
 	}
 }

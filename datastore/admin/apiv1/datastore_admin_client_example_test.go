@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import (
 	admin "cloud.google.com/go/datastore/admin/apiv1"
 	"google.golang.org/api/iterator"
 	adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewDatastoreAdminClient() {
@@ -46,6 +47,7 @@ func ExampleDatastoreAdminClient_ExportEntities() {
 
 	req := &adminpb.ExportEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ExportEntitiesRequest.
 	}
 	op, err := c.ExportEntities(ctx, req)
 	if err != nil {
@@ -70,6 +72,7 @@ func ExampleDatastoreAdminClient_ImportEntities() {
 
 	req := &adminpb.ImportEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ImportEntitiesRequest.
 	}
 	op, err := c.ImportEntities(ctx, req)
 	if err != nil {
@@ -92,6 +95,7 @@ func ExampleDatastoreAdminClient_CreateIndex() {
 
 	req := &adminpb.CreateIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#CreateIndexRequest.
 	}
 	op, err := c.CreateIndex(ctx, req)
 	if err != nil {
@@ -116,6 +120,7 @@ func ExampleDatastoreAdminClient_DeleteIndex() {
 
 	req := &adminpb.DeleteIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#DeleteIndexRequest.
 	}
 	op, err := c.DeleteIndex(ctx, req)
 	if err != nil {
@@ -140,6 +145,7 @@ func ExampleDatastoreAdminClient_GetIndex() {
 
 	req := &adminpb.GetIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#GetIndexRequest.
 	}
 	resp, err := c.GetIndex(ctx, req)
 	if err != nil {
@@ -159,8 +165,91 @@ func ExampleDatastoreAdminClient_ListIndexes() {
 
 	req := &adminpb.ListIndexesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ListIndexesRequest.
 	}
 	it := c.ListIndexes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleDatastoreAdminClient_CancelOperation() {
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDatastoreAdminClient_DeleteOperation() {
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDatastoreAdminClient_GetOperation() {
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatastoreAdminClient_ListOperations() {
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

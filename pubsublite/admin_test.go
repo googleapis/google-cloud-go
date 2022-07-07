@@ -21,9 +21,14 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	emptypb "github.com/golang/protobuf/ptypes/empty"
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	lrpb "google.golang.org/genproto/googleapis/longrunning"
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {
@@ -46,6 +51,7 @@ func TestAdminTopicCRUD(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 4,
 		PerPartitionBytes:          30 * gibi,
 		RetentionDuration:          24 * time.Hour,
+		ThroughputReservation:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
 	}
 	updateConfig := TopicConfigToUpdate{
 		Name:                       topicPath,
@@ -53,6 +59,7 @@ func TestAdminTopicCRUD(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 8,
 		PerPartitionBytes:          40 * gibi,
 		RetentionDuration:          InfiniteRetention,
+		ThroughputReservation:      "",
 	}
 	emptyUpdateConfig := TopicConfigToUpdate{
 		Name: topicPath,
@@ -409,6 +416,194 @@ func TestAdminListSubscriptions(t *testing.T) {
 	}
 }
 
+func TestAdminReservationCRUD(t *testing.T) {
+	ctx := context.Background()
+
+	// Inputs
+	const reservationPath = "projects/my-proj/locations/us-central1/reservations/my-reservation"
+	reservationConfig := ReservationConfig{
+		Name:               reservationPath,
+		ThroughputCapacity: 4,
+	}
+	updateConfig := ReservationConfigToUpdate{
+		Name:               reservationPath,
+		ThroughputCapacity: 5,
+	}
+	emptyUpdateConfig := ReservationConfigToUpdate{
+		Name: reservationPath,
+	}
+
+	// Expected requests and fake responses
+	wantCreateReq := &pb.CreateReservationRequest{
+		Parent:        "projects/my-proj/locations/us-central1",
+		ReservationId: "my-reservation",
+		Reservation:   reservationConfig.toProto(),
+	}
+	wantUpdateReq := updateConfig.toUpdateRequest()
+	wantGetReq := &pb.GetReservationRequest{
+		Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+	}
+	wantDeleteReq := &pb.DeleteReservationRequest{
+		Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+	}
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(wantCreateReq, reservationConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantUpdateReq, reservationConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantGetReq, reservationConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantDeleteReq, &emptypb.Empty{}, nil)
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	if gotConfig, err := admin.CreateReservation(ctx, reservationConfig); err != nil {
+		t.Errorf("CreateReservation() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &reservationConfig) {
+		t.Errorf("CreateReservation() got: %v\nwant: %v", gotConfig, reservationConfig)
+	}
+
+	if gotConfig, err := admin.UpdateReservation(ctx, updateConfig); err != nil {
+		t.Errorf("UpdateReservation() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &reservationConfig) {
+		t.Errorf("UpdateReservation() got: %v\nwant: %v", gotConfig, reservationConfig)
+	}
+
+	if _, err := admin.UpdateReservation(ctx, emptyUpdateConfig); !test.ErrorEqual(err, errNoReservationFieldsUpdated) {
+		t.Errorf("UpdateReservation() got err: (%v), want err: (%v)", err, errNoReservationFieldsUpdated)
+	}
+
+	if gotConfig, err := admin.Reservation(ctx, reservationPath); err != nil {
+		t.Errorf("Reservation() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &reservationConfig) {
+		t.Errorf("Reservation() got: %v\nwant: %v", gotConfig, reservationConfig)
+	}
+
+	if err := admin.DeleteReservation(ctx, reservationPath); err != nil {
+		t.Errorf("DeleteReservation() got err: %v", err)
+	}
+}
+
+func TestAdminListReservations(t *testing.T) {
+	ctx := context.Background()
+
+	// Inputs
+	const locationPath = "projects/my-proj/locations/us-central1"
+	reservationConfig1 := ReservationConfig{
+		Name:               "projects/my-proj/locations/us-central1/reservations/reservation1",
+		ThroughputCapacity: 1,
+	}
+	reservationConfig2 := ReservationConfig{
+		Name:               "projects/my-proj/locations/us-central1/reservations/reservation2",
+		ThroughputCapacity: 2,
+	}
+	reservationConfig3 := ReservationConfig{
+		Name:               "projects/my-proj/locations/us-central1/reservations/reservation3",
+		ThroughputCapacity: 2,
+	}
+
+	// Expected requests and fake responses
+	wantListReq1 := &pb.ListReservationsRequest{
+		Parent: "projects/my-proj/locations/us-central1",
+	}
+	listResp1 := &pb.ListReservationsResponse{
+		Reservations:  []*pb.Reservation{reservationConfig1.toProto(), reservationConfig2.toProto()},
+		NextPageToken: "next_token",
+	}
+	wantListReq2 := &pb.ListReservationsRequest{
+		Parent:    "projects/my-proj/locations/us-central1",
+		PageToken: "next_token",
+	}
+	listResp2 := &pb.ListReservationsResponse{
+		Reservations: []*pb.Reservation{reservationConfig3.toProto()},
+	}
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(wantListReq1, listResp1, nil)
+	verifiers.GlobalVerifier.Push(wantListReq2, listResp2, nil)
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	var gotReservationConfigs []*ReservationConfig
+	reservationIt := admin.Reservations(ctx, locationPath)
+	for {
+		reservation, err := reservationIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("ReservationIterator.Next() got err: %v", err)
+		} else {
+			gotReservationConfigs = append(gotReservationConfigs, reservation)
+		}
+	}
+
+	wantReservationConfigs := []*ReservationConfig{&reservationConfig1, &reservationConfig2, &reservationConfig3}
+	if diff := testutil.Diff(gotReservationConfigs, wantReservationConfigs); diff != "" {
+		t.Errorf("Reservations() got: -, want: +\n%s", diff)
+	}
+}
+
+func TestAdminListReservationTopics(t *testing.T) {
+	ctx := context.Background()
+
+	// Inputs
+	const (
+		reservationPath = "projects/my-proj/locations/us-central1/reservations/my-reservation"
+		topic1          = "projects/my-proj/locations/us-central1-a/topics/topic1"
+		topic2          = "projects/my-proj/locations/us-central1-a/topics/topic2"
+		topic3          = "projects/my-proj/locations/us-central1-a/topics/topic3"
+	)
+
+	// Expected requests and fake responses
+	wantListReq1 := &pb.ListReservationTopicsRequest{
+		Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+	}
+	listResp1 := &pb.ListReservationTopicsResponse{
+		Topics:        []string{topic1, topic2},
+		NextPageToken: "next_token",
+	}
+	wantListReq2 := &pb.ListReservationTopicsRequest{
+		Name:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
+		PageToken: "next_token",
+	}
+	listResp2 := &pb.ListReservationTopicsResponse{
+		Topics: []string{topic3},
+	}
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(wantListReq1, listResp1, nil)
+	verifiers.GlobalVerifier.Push(wantListReq2, listResp2, nil)
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	var gotTopics []string
+	topicPathIt := admin.ReservationTopics(ctx, reservationPath)
+	for {
+		topicPath, err := topicPathIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("TopicPathIterator.Next() got err: %v", err)
+		} else {
+			gotTopics = append(gotTopics, topicPath)
+		}
+	}
+
+	wantTopics := []string{topic1, topic2, topic3}
+	if !testutil.Equal(gotTopics, wantTopics) {
+		t.Errorf("ReservationTopics() got: %v\nwant: %v", gotTopics, wantTopics)
+	}
+}
+
 func TestAdminValidateResourcePaths(t *testing.T) {
 	ctx := context.Background()
 
@@ -433,7 +628,13 @@ func TestAdminValidateResourcePaths(t *testing.T) {
 		t.Errorf("Subscription() should fail")
 	}
 	if err := admin.DeleteSubscription(ctx, "INVALID"); err == nil {
-		t.Errorf("DeleteTopic() should fail")
+		t.Errorf("DeleteSubscription() should fail")
+	}
+	if _, err := admin.Reservation(ctx, "INVALID"); err == nil {
+		t.Errorf("Reservation() should fail")
+	}
+	if err := admin.DeleteReservation(ctx, "INVALID"); err == nil {
+		t.Errorf("DeleteReservation() should fail")
 	}
 
 	topicIt := admin.Topics(ctx, "INVALID")
@@ -447,5 +648,216 @@ func TestAdminValidateResourcePaths(t *testing.T) {
 	subsIt := admin.Subscriptions(ctx, "INVALID")
 	if _, err := subsIt.Next(); err == nil {
 		t.Errorf("SubscriptionIterator.Next() should fail")
+	}
+	resIt := admin.Reservations(ctx, "INVALID")
+	if _, err := resIt.Next(); err == nil {
+		t.Errorf("ReservationIterator.Next() should fail")
+	}
+	topicPathIt := admin.ReservationTopics(ctx, "INVALID")
+	if _, err := topicPathIt.Next(); err == nil {
+		t.Errorf("TopicPathIterator.Next() should fail")
+	}
+}
+
+func TestAdminSeekSubscription(t *testing.T) {
+	const subscriptionPath = "projects/my-proj/locations/us-central1-a/subscriptions/my-subscription"
+	const operationPath = "projects/my-proj/locations/us-central1-a/operations/seek-op"
+	ctx := context.Background()
+
+	for _, tc := range []struct {
+		desc    string
+		target  SeekTarget
+		wantReq *pb.SeekSubscriptionRequest
+	}{
+		{
+			desc:   "Beginning",
+			target: Beginning,
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
+					NamedTarget: pb.SeekSubscriptionRequest_TAIL,
+				},
+			},
+		},
+		{
+			desc:   "End",
+			target: End,
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
+					NamedTarget: pb.SeekSubscriptionRequest_HEAD,
+				},
+			},
+		},
+		{
+			desc:   "PublishTime",
+			target: PublishTime(time.Unix(1234, 0)),
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_TimeTarget{
+					TimeTarget: &pb.TimeTarget{
+						Time: &pb.TimeTarget_PublishTime{
+							PublishTime: &tspb.Timestamp{Seconds: 1234},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:   "EventTime",
+			target: EventTime(time.Unix(2345, 0)),
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_TimeTarget{
+					TimeTarget: &pb.TimeTarget{
+						Time: &pb.TimeTarget_EventTime{
+							EventTime: &tspb.Timestamp{Seconds: 2345},
+						},
+					},
+				},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			initialOpResponse := &lrpb.Operation{
+				Name: operationPath,
+				Done: false,
+				Metadata: test.MakeAny(&pb.OperationMetadata{
+					Target:     subscriptionPath,
+					Verb:       "seek",
+					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
+				}),
+			}
+			wantInitialMetadata := &OperationMetadata{
+				Target:     subscriptionPath,
+				Verb:       "seek",
+				CreateTime: time.Unix(123456, 700),
+			}
+
+			wantGetOpReq := &lrpb.GetOperationRequest{
+				Name: operationPath,
+			}
+			successOpResponse := &lrpb.Operation{
+				Name: operationPath,
+				Done: true,
+				Metadata: test.MakeAny(&pb.OperationMetadata{
+					Target:     subscriptionPath,
+					Verb:       "seek",
+					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
+					EndTime:    &tspb.Timestamp{Seconds: 234567, Nanos: 800},
+				}),
+				Result: &lrpb.Operation_Response{
+					Response: test.MakeAny(&pb.SeekSubscriptionResponse{}),
+				},
+			}
+			failedOpResponse := &lrpb.Operation{
+				Name: operationPath,
+				Done: true,
+				Metadata: test.MakeAny(&pb.OperationMetadata{
+					Target:     subscriptionPath,
+					Verb:       "seek",
+					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
+					EndTime:    &tspb.Timestamp{Seconds: 234567, Nanos: 800},
+				}),
+				Result: &lrpb.Operation_Error{
+					Error: &statuspb.Status{Code: 10},
+				},
+			}
+			wantCompleteMetadata := &OperationMetadata{
+				Target:     subscriptionPath,
+				Verb:       "seek",
+				CreateTime: time.Unix(123456, 700),
+				EndTime:    time.Unix(234567, 800),
+			}
+
+			seekErr := status.Error(codes.FailedPrecondition, "")
+
+			verifiers := test.NewVerifiers(t)
+			// Seek 1
+			verifiers.GlobalVerifier.Push(tc.wantReq, initialOpResponse, nil)
+			verifiers.GlobalVerifier.Push(wantGetOpReq, successOpResponse, nil)
+			// Seek 2
+			verifiers.GlobalVerifier.Push(tc.wantReq, initialOpResponse, nil)
+			verifiers.GlobalVerifier.Push(wantGetOpReq, failedOpResponse, nil)
+			// Seek 3
+			verifiers.GlobalVerifier.Push(tc.wantReq, nil, seekErr)
+			mockServer.OnTestStart(verifiers)
+			defer mockServer.OnTestEnd()
+
+			admin := newTestAdminClient(t)
+			defer admin.Close()
+
+			// Seek 1 - Successful operation.
+			op, err := admin.SeekSubscription(ctx, subscriptionPath, tc.target)
+			if err != nil {
+				t.Fatalf("SeekSubscription() got err: %v", err)
+			}
+			if got, want := op.Done(), false; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			if got, want := op.Name(), operationPath; got != want {
+				t.Errorf("Name() got %v, want %v", got, want)
+			}
+			gotMetadata, err := op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantInitialMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			result, err := op.Wait(ctx)
+			if err != nil {
+				t.Fatalf("Wait() got err: %v", err)
+			}
+			if result == nil {
+				t.Error("SeekSubscriptionResult was nil")
+			}
+			if got, want := op.Done(), true; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			gotMetadata, err = op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantCompleteMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			// Seek 2 - Failed operation.
+			op, err = admin.SeekSubscription(ctx, subscriptionPath, tc.target)
+			if err != nil {
+				t.Fatalf("SeekSubscription() got err: %v", err)
+			}
+			if got, want := op.Done(), false; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			if got, want := op.Name(), operationPath; got != want {
+				t.Errorf("Name() got %v, want %v", got, want)
+			}
+			gotMetadata, err = op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantInitialMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			_, gotErr := op.Wait(ctx)
+			if wantErr := status.Error(codes.Aborted, ""); !test.ErrorEqual(gotErr, wantErr) {
+				t.Fatalf("Wait() got err: %v, want err: %v", gotErr, wantErr)
+			}
+			if got, want := op.Done(), true; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			gotMetadata, err = op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantCompleteMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			// Seek 3 - Failed seek.
+			if _, gotErr := admin.SeekSubscription(ctx, subscriptionPath, tc.target); !test.ErrorEqual(gotErr, seekErr) {
+				t.Errorf("SeekSubscription() got err: %v, want err: %v", gotErr, seekErr)
+			}
+		})
 	}
 }

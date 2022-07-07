@@ -80,6 +80,11 @@
                 "MoveAssignment"
               ]
             },
+            "SearchAllAssignments": {
+              "methods": [
+                "SearchAllAssignments"
+              ]
+            },
             "SearchAssignments": {
               "methods": [
                 "SearchAssignments"
@@ -88,6 +93,11 @@
             "SplitCapacityCommitment": {
               "methods": [
                 "SplitCapacityCommitment"
+              ]
+            },
+            "UpdateAssignment": {
+              "methods": [
+                "UpdateAssignment"
               ]
             },
             "UpdateBiReservation": {

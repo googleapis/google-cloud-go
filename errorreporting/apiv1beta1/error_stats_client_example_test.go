@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,18 @@ func ExampleNewErrorStatsClient() {
 	_ = c
 }
 
+func ExampleNewErrorStatsRESTClient() {
+	ctx := context.Background()
+	c, err := errorreporting.NewErrorStatsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleErrorStatsClient_ListGroupStats() {
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorStatsClient(ctx)
@@ -46,6 +58,7 @@ func ExampleErrorStatsClient_ListGroupStats() {
 
 	req := &clouderrorreportingpb.ListGroupStatsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ListGroupStatsRequest.
 	}
 	it := c.ListGroupStats(ctx, req)
 	for {
@@ -71,6 +84,7 @@ func ExampleErrorStatsClient_ListEvents() {
 
 	req := &clouderrorreportingpb.ListEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ListEventsRequest.
 	}
 	it := c.ListEvents(ctx, req)
 	for {
@@ -96,6 +110,7 @@ func ExampleErrorStatsClient_DeleteEvents() {
 
 	req := &clouderrorreportingpb.DeleteEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#DeleteEventsRequest.
 	}
 	resp, err := c.DeleteEvents(ctx, req)
 	if err != nil {

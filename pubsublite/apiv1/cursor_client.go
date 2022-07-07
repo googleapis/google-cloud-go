@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ func defaultCursorGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -93,7 +92,7 @@ func defaultCursorCallOptions() *CursorCallOptions {
 	}
 }
 
-// internalCursorClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalCursorClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalCursorClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -226,7 +225,7 @@ func (c *cursorGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *cursorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -258,6 +257,7 @@ func (c *cursorGRPCClient) CommitCursor(ctx context.Context, req *pubsublitepb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CommitCursor[0:len((*c.CallOptions).CommitCursor):len((*c.CallOptions).CommitCursor)], opts...)
 	var resp *pubsublitepb.CommitCursorResponse
@@ -274,16 +274,19 @@ func (c *cursorGRPCClient) CommitCursor(ctx context.Context, req *pubsublitepb.C
 
 func (c *cursorGRPCClient) ListPartitionCursors(ctx context.Context, req *pubsublitepb.ListPartitionCursorsRequest, opts ...gax.CallOption) *PartitionCursorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPartitionCursors[0:len((*c.CallOptions).ListPartitionCursors):len((*c.CallOptions).ListPartitionCursors)], opts...)
 	it := &PartitionCursorIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListPartitionCursorsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.PartitionCursor, string, error) {
-		var resp *pubsublitepb.ListPartitionCursorsResponse
-		req.PageToken = pageToken
+		resp := &pubsublitepb.ListPartitionCursorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -306,9 +309,11 @@ func (c *cursorGRPCClient) ListPartitionCursors(ctx context.Context, req *pubsub
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

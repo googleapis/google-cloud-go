@@ -32,7 +32,7 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 		wantConfig *TopicConfig
 	}{
 		{
-			desc: "retention duration set",
+			desc: "all fields set",
 			topicpb: &pb.Topic{
 				Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 				PartitionConfig: &pb.Topic_PartitionConfig{
@@ -51,6 +51,9 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 						Nanos:   600,
 					},
 				},
+				ReservationConfig: &pb.Topic_ReservationConfig{
+					ThroughputReservation: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				},
 			},
 			wantConfig: &TopicConfig{
 				Name:                       "projects/my-proj/locations/us-central1-c/topics/my-topic",
@@ -59,10 +62,11 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 				SubscribeCapacityMiBPerSec: 16,
 				PerPartitionBytes:          1073741824,
 				RetentionDuration:          time.Duration(86400*1e9 + 600),
+				ThroughputReservation:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
 			},
 		},
 		{
-			desc: "retention duration unset",
+			desc: "optional fields unset",
 			topicpb: &pb.Topic{
 				Name: "projects/my-proj/locations/europe-west1-b/topics/my-topic",
 				PartitionConfig: &pb.Topic_PartitionConfig{
@@ -117,6 +121,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 				SubscribeCapacityMiBPerSec: 12,
 				PerPartitionBytes:          500000,
 				RetentionDuration:          time.Duration(0),
+				ThroughputReservation:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
 			},
 			want: &pb.UpdateTopicRequest{
 				Topic: &pb.Topic{
@@ -134,6 +139,9 @@ func TestTopicUpdateRequest(t *testing.T) {
 						PerPartitionBytes: 500000,
 						Period:            &dpb.Duration{},
 					},
+					ReservationConfig: &pb.Topic_ReservationConfig{
+						ThroughputReservation: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+					},
 				},
 				UpdateMask: &fmpb.FieldMask{
 					Paths: []string{
@@ -142,6 +150,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 						"partition_config.capacity.subscribe_mib_per_sec",
 						"retention_config.per_partition_bytes",
 						"retention_config.period",
+						"reservation_config.throughput_reservation",
 					},
 				},
 			},
@@ -165,6 +174,32 @@ func TestTopicUpdateRequest(t *testing.T) {
 				UpdateMask: &fmpb.FieldMask{
 					Paths: []string{
 						"retention_config.period",
+					},
+				},
+			},
+		},
+		{
+			desc: "clear throughput reservation",
+			config: &TopicConfigToUpdate{
+				Name:                  "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				ThroughputReservation: "",
+			},
+			want: &pb.UpdateTopicRequest{
+				Topic: &pb.Topic{
+					Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
+					PartitionConfig: &pb.Topic_PartitionConfig{
+						Dimension: &pb.Topic_PartitionConfig_Capacity_{
+							Capacity: &pb.Topic_PartitionConfig_Capacity{},
+						},
+					},
+					RetentionConfig: &pb.Topic_RetentionConfig{},
+					ReservationConfig: &pb.Topic_ReservationConfig{
+						ThroughputReservation: "",
+					},
+				},
+				UpdateMask: &fmpb.FieldMask{
+					Paths: []string{
+						"reservation_config.throughput_reservation",
 					},
 				},
 			},
@@ -287,6 +322,83 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 			if got := tc.config.toUpdateRequest(); !proto.Equal(got, tc.want) {
 				t.Errorf("SubscriptionConfigToUpdate: %v toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestReservationConfigToProtoConversion(t *testing.T) {
+	for _, tc := range []struct {
+		desc       string
+		respb      *pb.Reservation
+		wantConfig *ReservationConfig
+	}{
+		{
+			desc: "all fields set",
+			respb: &pb.Reservation{
+				Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				ThroughputCapacity: 5,
+			},
+			wantConfig: &ReservationConfig{
+				Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				ThroughputCapacity: 5,
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotConfig := protoToReservationConfig(tc.respb)
+			if !testutil.Equal(gotConfig, tc.wantConfig) {
+				t.Errorf("protoToReservationConfig(%v)\ngot: %v\nwant: %v", tc.respb, gotConfig, tc.wantConfig)
+			}
+
+			// Check that the config converts back to an identical proto.
+			if gotProto := tc.wantConfig.toProto(); !proto.Equal(gotProto, tc.respb) {
+				t.Errorf("ReservationConfig: %v toProto():\ngot: %v\nwant: %v", tc.wantConfig, gotProto, tc.respb)
+			}
+		})
+	}
+}
+
+func TestReservationUpdateRequest(t *testing.T) {
+	for _, tc := range []struct {
+		desc   string
+		config *ReservationConfigToUpdate
+		want   *pb.UpdateReservationRequest
+	}{
+		{
+			desc: "all fields set",
+			config: &ReservationConfigToUpdate{
+				Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				ThroughputCapacity: 4,
+			},
+			want: &pb.UpdateReservationRequest{
+				Reservation: &pb.Reservation{
+					Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+					ThroughputCapacity: 4,
+				},
+				UpdateMask: &fmpb.FieldMask{
+					Paths: []string{
+						"throughput_capacity",
+					},
+				},
+			},
+		},
+		{
+			desc: "no fields set",
+			config: &ReservationConfigToUpdate{
+				Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+			},
+			want: &pb.UpdateReservationRequest{
+				Reservation: &pb.Reservation{
+					Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				},
+				UpdateMask: &fmpb.FieldMask{},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			if got := tc.config.toUpdateRequest(); !proto.Equal(got, tc.want) {
+				t.Errorf("ReservationConfigToUpdate: %v toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
 			}
 		})
 	}

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,18 @@ func ExampleNewErrorGroupClient() {
 	_ = c
 }
 
+func ExampleNewErrorGroupRESTClient() {
+	ctx := context.Background()
+	c, err := errorreporting.NewErrorGroupRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleErrorGroupClient_GetGroup() {
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorGroupClient(ctx)
@@ -45,6 +57,7 @@ func ExampleErrorGroupClient_GetGroup() {
 
 	req := &clouderrorreportingpb.GetGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#GetGroupRequest.
 	}
 	resp, err := c.GetGroup(ctx, req)
 	if err != nil {
@@ -64,6 +77,7 @@ func ExampleErrorGroupClient_UpdateGroup() {
 
 	req := &clouderrorreportingpb.UpdateGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#UpdateGroupRequest.
 	}
 	resp, err := c.UpdateGroup(ctx, req)
 	if err != nil {

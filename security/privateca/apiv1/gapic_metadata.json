@@ -95,6 +95,16 @@
                 "GetCertificateTemplate"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "ListCaPools": {
               "methods": [
                 "ListCaPools"
@@ -120,9 +130,24 @@
                 "ListCertificates"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "RevokeCertificate": {
               "methods": [
                 "RevokeCertificate"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UndeleteCertificateAuthority": {
