@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCertificate": {
               "methods": [
                 "CreateCertificate"
@@ -50,6 +55,11 @@
                 "DeleteDnsAuthorization"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetCertificate": {
               "methods": [
                 "GetCertificate"
@@ -70,6 +80,16 @@
                 "GetDnsAuthorization"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListCertificateMapEntries": {
               "methods": [
                 "ListCertificateMapEntries"
@@ -88,6 +108,16 @@
             "ListDnsAuthorizations": {
               "methods": [
                 "ListDnsAuthorizations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "UpdateCertificate": {
