@@ -664,22 +664,29 @@ func maxDuration(x, y time.Duration) time.Duration {
 	return y
 }
 
+const (
+	transientErrStringPrefix     = "TRANSIENT_"
+	transientInvalidAckErrString = transientErrStringPrefix + "FAILURE_INVALID_ACK_ID"
+	permanentInvalidAckErrString = "PERMANENT_FAILURE_INVALID_ACK_ID"
+)
+
 // processResults processes AckResults by referring to errorStatus and errorsMap.
-// The errors returned by the server in `errorStatus` or in `errorsMap`
+// The errors returned by the server in `errorStatus` or in `errorsByAckID`
 // are used to complete the AckResults in `ackResMap` (with a success
 // or error) or to return requests for further retries.
 // Logic is derived from python-pubsub: https://github.com/googleapis/python-pubsub/blob/main/google/cloud/pubsub_v1/subscriber/_protocol/streaming_pull_manager.py#L161-L220
-func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult, errorsMap map[string]string) ([]*AckResult, []*AckResult) {
+func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult, errorsByAckID map[string]error) ([]*AckResult, []*AckResult) {
 	var completedResults, retryResults []*AckResult
 	for ackID, res := range ackResMap {
 		// Handle special errors returned for ack/modack RPCs via the ErrorInfo
 		// sidecar metadata when exactly-once delivery is enabled.
-		if exactlyOnceErrStr, ok := errorsMap[ackID]; ok {
-			if strings.HasPrefix(exactlyOnceErrStr, "TRANSIENT_") {
+		if errAckID, ok := errorsByAckID[ackID]; ok {
+			exactlyOnceErrStr := errAckID.Error()
+			if strings.HasPrefix(exactlyOnceErrStr, transientErrStringPrefix) {
 				retryResults = append(retryResults, res)
 			} else {
 				exactlyOnceErr := fmt.Errorf(exactlyOnceErrStr)
-				if exactlyOnceErrStr == "PERMANENT_FAILURE_INVALID_ACK_ID" {
+				if exactlyOnceErrStr == permanentInvalidAckErrString {
 					ipubsub.SetAckResult(res, AcknowledgeStatusInvalidAckID, exactlyOnceErr)
 				} else {
 					ipubsub.SetAckResult(res, AcknowledgeStatusOther, exactlyOnceErr)

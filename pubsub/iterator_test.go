@@ -245,7 +245,7 @@ func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg 
 		_, ok := recvd[msgData]
 		if ok {
 			recvdMu.Unlock()
-			t.Fatalf("already saw \"%s\"\n", msgData)
+			t.Logf("already saw \"%s\"\n", msgData)
 			return
 		}
 		recvd[msgData] = true
@@ -622,15 +622,18 @@ func TestPingStreamAckDeadline(t *testing.T) {
 
 func compareCompletedRetryLengths(t *testing.T, completed, retry []*AckResult, wantCompleted, wantRetry int) {
 	if l := len(completed); l != wantCompleted {
-		t.Errorf("completed slice length is %d, want %d\n", l, wantCompleted)
+		t.Errorf("completed slice length got %d, want %d", l, wantCompleted)
 	}
 	if l := len(retry); l != wantRetry {
-		t.Errorf("retry slice length is %d, want %d\n", l, wantRetry)
+		t.Errorf("retry slice length got %d, want %d", l, wantRetry)
 	}
 }
 
 func TestExactlyOnceProcessRequests(t *testing.T) {
 	ctx := context.Background()
+
+	transientInvalidAckError := errors.New(transientInvalidAckErrString)
+	permanentInvalidAckError := errors.New(permanentInvalidAckErrString)
 
 	t.Run("NoResults", func(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
@@ -660,10 +663,10 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		// We can obtain the AckStatus from AckResult if results are completed.
 		s, err := r.Get(ctx)
 		if err != nil {
-			t.Errorf("got err from AckResult: %v", err)
+			t.Errorf("AckResult err: got %v, want nil", err)
 		}
 		if s != AcknowledgeStatusSuccess {
-			t.Errorf("expected AcknowledgeStatusSuccess, got %v", s)
+			t.Errorf("got %v, want AcknowledgeStatusSuccess", s)
 		}
 	})
 
@@ -672,17 +675,17 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
 		}
-		errorsMap := map[string]string{
-			"ackID1": "PERMANENT_FAILURE_INVALID_ACK_ID",
+		errorsMap := map[string]error{
+			"ackID1": permanentInvalidAckError,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
-			t.Error("expected error from AckResult, got nil\n")
+			t.Error("AckResult err: got nil, want err")
 		}
 		if s != AcknowledgeStatusInvalidAckID {
-			t.Errorf("expected AcknowledgeStatusSuccess, got %v", s)
+			t.Errorf("got %v, want AcknowledgeStatusSuccess", s)
 		}
 	})
 
@@ -691,8 +694,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
 		}
-		errorsMap := map[string]string{
-			"ackID1": "TRANSIENT_FAILURE_INVALID_ACK_ID",
+		errorsMap := map[string]error{
+			"ackID1": transientInvalidAckError,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 0, 1)
@@ -703,18 +706,18 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
 		}
-		errorsMap := map[string]string{
-			"ackID1": "unknown_error",
+		errorsMap := map[string]error{
+			"ackID1": errors.New("unknown_error"),
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 
 		s, err := r.Get(ctx)
 		if s != AcknowledgeStatusOther {
-			t.Errorf("expected AcknowledgeStatusOther, got %v", s)
+			t.Errorf("got %v, want AcknowledgeStatusOther", s)
 		}
 		if err == nil || err.Error() != "unknown_error" {
-			t.Errorf("expected unknown_error, got: %s", err.Error())
+			t.Errorf("AckResult err: got %s, want unknown_error", err.Error())
 		}
 	})
 
@@ -728,10 +731,10 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
-			t.Error("expected error from AckResult, got nil\n")
+			t.Error("AckResult err: got nil, want err")
 		}
 		if s != AcknowledgeStatusPermissionDenied {
-			t.Errorf("expected AcknowledgeStatusPermissionDenied, got %v", s)
+			t.Errorf("got %v, want AcknowledgeStatusPermissionDenied", s)
 		}
 	})
 
@@ -745,10 +748,10 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
-			t.Error("expected error from AckResult, got nil\n")
+			t.Error("AckResult err: got nil, want err")
 		}
 		if s != AcknowledgeStatusFailedPrecondition {
-			t.Errorf("expected AcknowledgeStatusFailedPrecondition, got %v", s)
+			t.Errorf("got %v, want AcknowledgeStatusFailedPrecondition", s)
 		}
 	})
 
@@ -762,10 +765,10 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
 		s, err := r.Get(ctx)
 		if err == nil {
-			t.Error("expected error from AckResult, got nil\n")
+			t.Error("AckResult err: got nil, want err")
 		}
 		if s != AcknowledgeStatusOther {
-			t.Errorf("expected AcknowledgeStatusOther, got %v", s)
+			t.Errorf("got %v, want AcknowledgeStatusOther", s)
 		}
 	})
 
@@ -778,41 +781,41 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID2": r2,
 			"ackID3": r3,
 		}
-		errorsMap := map[string]string{
-			"ackID1": "PERMANENT_FAILURE_INVALID_ACK_ID",
-			"ackID2": "TRANSIENT_FAILURE_INVALID_ACK_ID",
+		errorsMap := map[string]error{
+			"ackID1": permanentInvalidAckError,
+			"ackID2": transientInvalidAckError,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 2, 1)
 		// message with ackID "ackID1" fails
 		s, err := r1.Get(ctx)
 		if err == nil {
-			t.Error("r1: expected error from AckResult, got nil\n")
+			t.Error("r1: AckResult err: got nil, want err")
 		}
 		if s != AcknowledgeStatusInvalidAckID {
-			t.Errorf("r1: expected AcknowledgeInvalidAckID, got %v", s)
+			t.Errorf("r1: got %v, want AcknowledgeInvalidAckID", s)
 		}
 
 		// message with ackID "ackID2" is to be retried
 		ctx2, cancel := context.WithTimeout(ctx, 2*time.Second)
 		defer cancel()
 		_, err = r2.Get(ctx2)
-		if err.Error() != "context deadline exceeded" {
-			t.Errorf("r2: expected AckResult.Get to timeout, got: %v", err)
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("r2: AckResult.Get should timeout, got: %v", err)
 		}
 
 		// message with ackID "ackID3" succeeds
 		s, err = r3.Get(ctx)
 		if err != nil {
-			t.Errorf("r3: got err from AckResult.Get: %v\n", err)
+			t.Errorf("r3: AckResult err: got %v, want nil\n", err)
 		}
 		if s != AcknowledgeStatusSuccess {
-			t.Errorf("r3: expected AcknowledgeStatusSuccess, got %v", s)
+			t.Errorf("r3: got %v, want AcknowledgeStatusSuccess", s)
 		}
 	})
 
 	t.Run("RetriableErrorStatusReturnsRequestForRetrying", func(t *testing.T) {
-		for _, c := range exactlyOnceDeliveryTemporaryRetryErrors {
+		for c := range exactlyOnceDeliveryTemporaryRetryErrors {
 			r := ipubsub.NewAckResult()
 			ackReqMap := map[string]*AckResult{
 				"ackID1": r,

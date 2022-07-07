@@ -108,22 +108,17 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 }
 
 var (
-	exactlyOnceDeliveryTemporaryRetryErrors = []codes.Code{
-		codes.DeadlineExceeded,
-		codes.ResourceExhausted,
-		codes.Aborted,
-		codes.Internal,
-		codes.Unavailable,
+	exactlyOnceDeliveryTemporaryRetryErrors = map[codes.Code]struct{}{
+		codes.DeadlineExceeded:  {},
+		codes.ResourceExhausted: {},
+		codes.Aborted:           {},
+		codes.Internal:          {},
+		codes.Unavailable:       {},
 	}
 )
 
-// contains checks if grpc code v is in t, a slice of retryable error codes.
-// Consider replacing with generics's slice.Contains once go 1.18 is the min version.
-func contains(v codes.Code, t []codes.Code) bool {
-	for _, c := range t {
-		if v == c {
-			return true
-		}
-	}
-	return false
+// contains checks if grpc code v is in t, a set of retryable error codes.
+func contains(v codes.Code, t map[codes.Code]struct{}) bool {
+	_, ok := t[v]
+	return ok
 }
