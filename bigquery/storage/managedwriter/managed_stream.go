@@ -245,6 +245,12 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 // lockingAppend handles a single append attempt.  When successful, it returns the number of rows
 // in the request for metrics tracking.
 func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWrite) (int64, error) {
+
+	// Don't both calling/retrying if this append's context is already expired.
+	if err := requestCtx.Err(); err != nil {
+		return 0, err
+	}
+
 	// critical section:  Things that need to happen inside the critical section:
 	//
 	// * Getting the stream connection (in case of reconnects)
@@ -256,11 +262,6 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 	var ch chan *pendingWrite
 	var err error
-
-	// Don't both calling/retrying if this append's context is already expired.
-	if err = requestCtx.Err(); err != nil {
-		return 0, err
-	}
 
 	// If an updated schema is present, we need to reconnect the stream and update the reference
 	// schema for the stream.
