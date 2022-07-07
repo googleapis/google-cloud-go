@@ -474,6 +474,24 @@ func ExampleClusterManagerClient_DeleteNodePool() {
 	_ = resp
 }
 
+func ExampleClusterManagerClient_CompleteNodePoolUpgrade() {
+	ctx := context.Background()
+	c, err := container.NewClusterManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &containerpb.CompleteNodePoolUpgradeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#CompleteNodePoolUpgradeRequest.
+	}
+	err = c.CompleteNodePoolUpgrade(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClusterManagerClient_RollbackNodePoolUpgrade() {
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)

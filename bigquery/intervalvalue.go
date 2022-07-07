@@ -202,7 +202,7 @@ func getNumVal(part intervalPart, s string) (string, int32, error) {
 	}
 	parsed, err := strconv.ParseInt(captured, 10, 32)
 	if err != nil {
-		return "", 0, fmt.Errorf("error parsing value %s for %s: %v", captured, part.String(), err)
+		return "", 0, fmt.Errorf("error parsing value %s for %s: %w", captured, part.String(), err)
 	}
 	return s, int32(parsed), nil
 }

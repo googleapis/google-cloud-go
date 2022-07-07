@@ -47,7 +47,15 @@ type DiskTypesCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalDiskTypesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultDiskTypesRESTCallOptions() *DiskTypesCallOptions {
+	return &DiskTypesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalDiskTypesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalDiskTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -116,6 +124,9 @@ type diskTypesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing DiskTypesClient
+	CallOptions **DiskTypesCallOptions
 }
 
 // NewDiskTypesRESTClient creates a new disk types rest client.
@@ -128,13 +139,15 @@ func NewDiskTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		return nil, err
 	}
 
+	callOpts := defaultDiskTypesRESTCallOptions()
 	c := &diskTypesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &DiskTypesClient{internalClient: c, CallOptions: &DiskTypesCallOptions{}}, nil
+	return &DiskTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultDiskTypesRESTClientOptions() []option.ClientOption {
@@ -288,6 +301,7 @@ func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTyp
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "disk_type", url.QueryEscape(req.GetDiskType())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.DiskType{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

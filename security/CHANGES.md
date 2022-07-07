@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.3.0...security/v1.4.0) (2022-05-24)
+
+
+### Features
+
+* **security/privateca:** Provide interfaces for location and IAM policy calls ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.2.1...security/v1.3.0) (2022-02-23)
 
 

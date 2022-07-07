@@ -54,7 +54,7 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 	}
 }
 
-// internalSubscriberClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalSubscriberClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalSubscriberClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

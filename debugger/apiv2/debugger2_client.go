@@ -110,7 +110,7 @@ func defaultDebugger2CallOptions() *Debugger2CallOptions {
 	}
 }
 
-// internalDebugger2Client is an interface that defines the methods availaible from Stackdriver Debugger API.
+// internalDebugger2Client is an interface that defines the methods available from Stackdriver Debugger API.
 type internalDebugger2Client interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -48,7 +48,16 @@ type RegionNetworkEndpointGroupsCallOptions struct {
 	List   []gax.CallOption
 }
 
-// internalRegionNetworkEndpointGroupsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionNetworkEndpointGroupsRESTCallOptions() *RegionNetworkEndpointGroupsCallOptions {
+	return &RegionNetworkEndpointGroupsCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+	}
+}
+
+// internalRegionNetworkEndpointGroupsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionNetworkEndpointGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -126,6 +135,9 @@ type regionNetworkEndpointGroupsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionNetworkEndpointGroupsClient
+	CallOptions **RegionNetworkEndpointGroupsCallOptions
 }
 
 // NewRegionNetworkEndpointGroupsRESTClient creates a new region network endpoint groups rest client.
@@ -138,9 +150,11 @@ func NewRegionNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...optio
 		return nil, err
 	}
 
+	callOpts := defaultRegionNetworkEndpointGroupsRESTCallOptions()
 	c := &regionNetworkEndpointGroupsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -154,7 +168,7 @@ func NewRegionNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...optio
 	}
 	c.operationClient = opC
 
-	return &RegionNetworkEndpointGroupsClient{internalClient: c, CallOptions: &RegionNetworkEndpointGroupsCallOptions{}}, nil
+	return &RegionNetworkEndpointGroupsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionNetworkEndpointGroupsRESTClientOptions() []option.ClientOption {
@@ -212,6 +226,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "network_endpoint_group", url.QueryEscape(req.GetNetworkEndpointGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -272,6 +287,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "network_endpoint_group", url.QueryEscape(req.GetNetworkEndpointGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworkEndpointGroup{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -338,6 +354,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

@@ -86,9 +86,9 @@ var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 // dependencyCache is used to reduce the number of unique messages we generate by caching based on the tableschema.
 //
 // keys are based on the base64-encoded serialized tableschema value.
-type dependencyCache map[string]protoreflect.Descriptor
+type dependencyCache map[string]protoreflect.MessageDescriptor
 
-func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descriptor {
+func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.MessageDescriptor {
 	if dm == nil {
 		return nil
 	}
@@ -103,13 +103,24 @@ func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descri
 	return nil
 }
 
-func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.Descriptor) error {
+func (dm dependencyCache) getFileDescriptorProtos() []*descriptorpb.FileDescriptorProto {
+	var fdpList []*descriptorpb.FileDescriptorProto
+	for _, d := range dm {
+		if fd := d.ParentFile(); fd != nil {
+			fdp := protodesc.ToFileDescriptorProto(fd)
+			fdpList = append(fdpList, fdp)
+		}
+	}
+	return fdpList
+}
+
+func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.MessageDescriptor) error {
 	if dm == nil {
 		return fmt.Errorf("cache is nil")
 	}
 	b, err := proto.Marshal(schema)
 	if err != nil {
-		return fmt.Errorf("failed to serialize tableschema: %v", err)
+		return fmt.Errorf("failed to serialize tableschema: %w", err)
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	(dm)[encoded] = descriptor
@@ -133,7 +144,7 @@ func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope stri
 }
 
 // internal implementation of the conversion code.
-func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.Descriptor, error) {
+func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.MessageDescriptor, error) {
 	if inSchema == nil {
 		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
 	}
@@ -166,7 +177,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				// construct field descriptor for the message
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
 				if err != nil {
-					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %v", err))
+					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %w", err))
 				}
 				fields = append(fields, fdp)
 			} else {
@@ -176,18 +187,18 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				}
 				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, useProto3)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %w", err))
 				}
 				// Now that we have the submessage definition, we append it both to the local dependencies, as well
 				// as inserting it into the cache for possible reuse elsewhere.
 				deps = append(deps, desc.ParentFile())
 				err = cache.add(ts, desc)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %w", err))
 				}
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, useProto3)
 				if err != nil {
-					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %v", err))
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %w", err))
 				}
 				fields = append(fields, fdp)
 			}
@@ -206,9 +217,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	}
 
 	// Use the local dependencies to generate a list of filenames.
-	depNames := []string{
-		wellKnownTypesWrapperName,
-	}
+	depNames := []string{wellKnownTypesWrapperName}
 	for _, d := range deps {
 		depNames = append(depNames, d.ParentFile().Path())
 	}
@@ -226,14 +235,15 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 
 	// We'll need a FileDescriptorSet as we have a FileDescriptorProto for the current
 	// descriptor we're building, but we need to include all the referenced dependencies.
-	fds := &descriptorpb.FileDescriptorSet{
-		File: []*descriptorpb.FileDescriptorProto{
-			fdp,
-			protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
-		},
+
+	fdpList := []*descriptorpb.FileDescriptorProto{
+		fdp,
+		protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
 	}
-	for _, d := range deps {
-		fds.File = append(fds.File, protodesc.ToFileDescriptorProto(d))
+	fdpList = append(fdpList, cache.getFileDescriptorProtos()...)
+
+	fds := &descriptorpb.FileDescriptorSet{
+		File: fdpList,
 	}
 
 	// Load the set into a registry, then interrogate it for the descriptor corresponding to the top level message.
@@ -241,7 +251,11 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	if err != nil {
 		return nil, err
 	}
-	return files.FindDescriptorByName(protoreflect.FullName(scope))
+	found, err := files.FindDescriptorByName(protoreflect.FullName(scope))
+	if err != nil {
+		return nil, err
+	}
+	return found.(protoreflect.MessageDescriptor), nil
 }
 
 // tableFieldSchemaToFieldDescriptorProto builds individual field descriptors for a proto message.
@@ -293,6 +307,9 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 // In addition to nesting messages, this method also handles some encapsulation of enum types to avoid possible
 // conflicts due to ambiguities, and clears oneof indices as oneof isn't a concept that maps into BigQuery
 // schemas.
+//
+// To enable proto3 usage, this function will also rewrite proto3 descriptors into equivalent proto2 form.
+// Such rewrites include setting the appropriate default values for proto3 fields.
 func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.DescriptorProto, error) {
 	return normalizeDescriptorInternal(in, newStringSet(), newStringSet(), newStringSet(), nil)
 }
@@ -311,6 +328,41 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
 		resultFDP := protodesc.ToFieldDescriptorProto(inField)
+		// For proto3 messages without presence, use proto2 default values to match proto3
+		// behavior in default values.
+		if inField.Syntax() == protoreflect.Proto3 && inField.Cardinality() != protoreflect.Repeated {
+			// Only set default value if there's no field presence.
+			if resultFDP.Proto3Optional == nil || !resultFDP.GetProto3Optional() {
+				switch resultFDP.GetType() {
+				case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
+					resultFDP.DefaultValue = proto.String("false")
+				case descriptorpb.FieldDescriptorProto_TYPE_BYTES, descriptorpb.FieldDescriptorProto_TYPE_STRING:
+					resultFDP.DefaultValue = proto.String("")
+				case descriptorpb.FieldDescriptorProto_TYPE_ENUM:
+					// Resolve the proto3 default value.  The default value should be the value name.
+					defValue := inField.Enum().Values().ByNumber(inField.Default().Enum())
+					resultFDP.DefaultValue = proto.String(string(defValue.Name()))
+				case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
+					descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
+					descriptorpb.FieldDescriptorProto_TYPE_INT64,
+					descriptorpb.FieldDescriptorProto_TYPE_UINT64,
+					descriptorpb.FieldDescriptorProto_TYPE_INT32,
+					descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
+					descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
+					descriptorpb.FieldDescriptorProto_TYPE_UINT32,
+					descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
+					descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
+					descriptorpb.FieldDescriptorProto_TYPE_SINT32,
+					descriptorpb.FieldDescriptorProto_TYPE_SINT64:
+					resultFDP.DefaultValue = proto.String("0")
+				}
+			}
+		}
+		// Clear proto3 optional annotation, as the backend converter can
+		// treat this as a proto2 optional.
+		if resultFDP.Proto3Optional != nil {
+			resultFDP.Proto3Optional = nil
+		}
 		if resultFDP.OneofIndex != nil {
 			resultFDP.OneofIndex = nil
 		}

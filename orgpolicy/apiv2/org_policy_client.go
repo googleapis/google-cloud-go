@@ -149,7 +149,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Organization Policy API.
+// internalClient is an interface that defines the methods available from Organization Policy API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.3.0...functions/v1.4.0) (2022-06-16)
+
+
+### Features
+
+* **functions:** added support for CMEK docs: clarified wording around quota usage ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.2.0...functions/v1.3.0) (2022-02-23)
 
 

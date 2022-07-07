@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/appengine/apiv1",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "language": "GO",
     "apis": [
       {
@@ -152,7 +152,7 @@
     {
       "regionTag": "appengine_v1_generated_Applications_UpdateApplication_sync",
       "title": "appengine UpdateApplication Sample",
-      "description": "UpdateApplication updates the specified Application resource.\nYou can update the following fields: \n\n  auth_domain - Google authentication domain for controlling user access to the application.\n\n  default_cookie_expiration - Cookie expiration policy for the application.",
+      "description": "UpdateApplication updates the specified Application resource.\nYou can update the following fields: \n\n  auth_domain - Google authentication domain for controlling user access to the application.\n\n  default_cookie_expiration - Cookie expiration policy for the application.\n\n  iap - Identity-Aware Proxy properties for the application.",
       "file": "ApplicationsClient/UpdateApplication/main.go",
       "language": "GO",
       "clientMethod": {

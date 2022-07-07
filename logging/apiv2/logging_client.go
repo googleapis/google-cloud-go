@@ -143,7 +143,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Logging API.
+// internalClient is an interface that defines the methods available from Cloud Logging API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
