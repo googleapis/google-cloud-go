@@ -30,10 +30,10 @@ func TestGcRuleToString(t *testing.T) {
 		proto *bttdpb.GcRule
 		want  string
 	}{
-		{MaxAgePolicy(72 * time.Hour).proto(), "age() > 3d"},
-		{MaxVersionsPolicy(5).proto(), "versions() > 5"},
-		{intersection.proto(), "(versions() > 5 && versions() > 10 && age() > 16h)"},
-		{UnionPolicy(intersection, MaxAgePolicy(72*time.Hour)).proto(),
+		{MaxAgePolicy(72 * time.Hour).Proto(), "age() > 3d"},
+		{MaxVersionsPolicy(5).Proto(), "versions() > 5"},
+		{intersection.Proto(), "(versions() > 5 && versions() > 10 && age() > 16h)"},
+		{UnionPolicy(intersection, MaxAgePolicy(72*time.Hour)).Proto(),
 			"((versions() > 5 && versions() > 10 && age() > 16h) || age() > 3d)"},
 	}
 
@@ -50,13 +50,13 @@ func TestGCRuleToPolicy(t *testing.T) {
 		proto *bttdpb.GcRule
 		want  string
 	}{
-		{MaxAgePolicy(72 * time.Hour).proto(), "age() > 3d"},
-		{MaxVersionsPolicy(5).proto(), "versions() > 5"},
-		{IntersectionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)).proto(),
+		{MaxAgePolicy(72 * time.Hour).Proto(), "age() > 3d"},
+		{MaxVersionsPolicy(5).Proto(), "versions() > 5"},
+		{IntersectionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)).Proto(),
 			"(age() > 5h && versions() > 4)"},
-		{UnionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)).proto(),
+		{UnionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)).Proto(),
 			"(age() > 5h || versions() > 4)"},
-		{IntersectionPolicy(UnionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)), MaxVersionsPolicy(8)).proto(),
+		{IntersectionPolicy(UnionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)), MaxVersionsPolicy(8)).Proto(),
 			"((age() > 5h || versions() > 4) && versions() > 8)"},
 	}
 
