@@ -292,7 +292,7 @@ type SubscriptionConfig struct {
 	// and will be ignored if sent in a request.
 	TopicMessageRetentionDuration time.Duration
 
-	// EnableExcactlyOnceDelivery configures Pub/Sub to provide the following guarantees
+	// EnableExactlyOnceDelivery configures Pub/Sub to provide the following guarantees
 	// for the delivery of a message with a given MessageID on this subscription:
 	//
 	// The message sent to a subscriber is guaranteed not to be resent

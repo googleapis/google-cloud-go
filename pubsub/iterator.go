@@ -662,3 +662,56 @@ func maxDuration(x, y time.Duration) time.Duration {
 	}
 	return y
 }
+
+const (
+	transientErrStringPrefix     = "TRANSIENT_"
+	transientInvalidAckErrString = transientErrStringPrefix + "FAILURE_INVALID_ACK_ID"
+	permanentInvalidAckErrString = "PERMANENT_FAILURE_INVALID_ACK_ID"
+)
+
+// processResults processes AckResults by referring to errorStatus and errorsMap.
+// The errors returned by the server in `errorStatus` or in `errorsByAckID`
+// are used to complete the AckResults in `ackResMap` (with a success
+// or error) or to return requests for further retries.
+// Logic is derived from python-pubsub: https://github.com/googleapis/python-pubsub/blob/main/google/cloud/pubsub_v1/subscriber/_protocol/streaming_pull_manager.py#L161-L220
+func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult, errorsByAckID map[string]error) ([]*AckResult, []*AckResult) {
+	var completedResults, retryResults []*AckResult
+	for ackID, res := range ackResMap {
+		// Handle special errors returned for ack/modack RPCs via the ErrorInfo
+		// sidecar metadata when exactly-once delivery is enabled.
+		if errAckID, ok := errorsByAckID[ackID]; ok {
+			errAckIDStr := errAckID.Error()
+			if strings.HasPrefix(errAckIDStr, transientErrStringPrefix) {
+				retryResults = append(retryResults, res)
+			} else {
+				if errAckIDStr == permanentInvalidAckErrString {
+					ipubsub.SetAckResult(res, AcknowledgeStatusInvalidAckID, errAckID)
+				} else {
+					ipubsub.SetAckResult(res, AcknowledgeStatusOther, errAckID)
+				}
+				completedResults = append(completedResults, res)
+			}
+		} else if errorStatus != nil && contains(errorStatus.Code(), exactlyOnceDeliveryTemporaryRetryErrors) {
+			retryResults = append(retryResults, ackResMap[ackID])
+		} else if errorStatus != nil {
+			// Other gRPC errors are not retried.
+			switch errorStatus.Code() {
+			case codes.PermissionDenied:
+				ipubsub.SetAckResult(res, AcknowledgeStatusPermissionDenied, errorStatus.Err())
+			case codes.FailedPrecondition:
+				ipubsub.SetAckResult(res, AcknowledgeStatusFailedPrecondition, errorStatus.Err())
+			default:
+				ipubsub.SetAckResult(res, AcknowledgeStatusOther, errorStatus.Err())
+			}
+			completedResults = append(completedResults, res)
+		} else if res != nil {
+			// Since no error occurred, requests with AckResults are completed successfully.
+			ipubsub.SetAckResult(res, AcknowledgeStatusSuccess, nil)
+			completedResults = append(completedResults, res)
+		} else {
+			// All other requests are considered completed.
+			completedResults = append(completedResults, res)
+		}
+	}
+	return completedResults, retryResults
+}
