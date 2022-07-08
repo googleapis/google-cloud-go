@@ -64,9 +64,23 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 }
 
 // primitive types which can leverage packed encoding when repeated/arrays.
+// Note: many/most of these aren't used when doing schema to proto conversion, but
+// are included for completeness.
 var packedTypes = []descriptorpb.FieldDescriptorProto_Type{
 	descriptorpb.FieldDescriptorProto_TYPE_INT32,
 	descriptorpb.FieldDescriptorProto_TYPE_INT64,
+	descriptorpb.FieldDescriptorProto_TYPE_UINT32,
+	descriptorpb.FieldDescriptorProto_TYPE_UINT64,
+	descriptorpb.FieldDescriptorProto_TYPE_SINT32,
+	descriptorpb.FieldDescriptorProto_TYPE_SINT64,
+	descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
+	descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
+	descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
+	descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
+	descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
+	descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
+	descriptorpb.FieldDescriptorProto_TYPE_BOOL,
+	descriptorpb.FieldDescriptorProto_TYPE_ENUM,
 }
 
 // For TableFieldSchema OPTIONAL mode, we use the wrapper types to allow for the
