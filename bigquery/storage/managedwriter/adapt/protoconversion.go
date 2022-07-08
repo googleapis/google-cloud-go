@@ -63,7 +63,8 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 	storagepb.TableFieldSchema_TIMESTAMP:  descriptorpb.FieldDescriptorProto_TYPE_INT64,
 }
 
-// primitive types which can leverage packed encoding when repeated/arrays.
+// Primitive types which can leverage packed encoding when repeated/arrays.
+//
 // Note: many/most of these aren't used when doing schema to proto conversion, but
 // are included for completeness.
 var packedTypes = []descriptorpb.FieldDescriptorProto_Type{
@@ -105,7 +106,7 @@ var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 
 // dependencyCache is used to reduce the number of unique messages we generate by caching based on the tableschema.
 //
-// keys are based on the base64-encoded serialized tableschema value.
+// Keys are based on the base64-encoded serialized tableschema value.
 type dependencyCache map[string]protoreflect.MessageDescriptor
 
 func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.MessageDescriptor {
@@ -163,7 +164,7 @@ func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope stri
 	return storageSchemaToDescriptorInternal(inSchema, scope, &dc, true)
 }
 
-// internal implementation of the conversion code.
+// Internal implementation of the conversion code.
 func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.MessageDescriptor, error) {
 	if inSchema == nil {
 		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
@@ -190,11 +191,11 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 						break
 					}
 				}
-				// if dep is missing, add to current dependencies
+				// If dep is missing, add to current dependencies.
 				if !haveDep {
 					deps = append(deps, foundDesc.ParentFile())
 				}
-				// construct field descriptor for the message
+				// Construct field descriptor for the message.
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
 				if err != nil {
 					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %w", err))
@@ -478,7 +479,7 @@ func normalizeName(in string) string {
 	return strings.Replace(in, ".", "_", -1)
 }
 
-// these types don't get normalized into the fully-contained structure.
+// These types don't get normalized into the fully-contained structure.
 var normalizationSkipList = []string{
 	/*
 		TODO: when backend supports resolving well known types, this list should be enabled.
