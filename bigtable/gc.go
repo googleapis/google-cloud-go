@@ -35,7 +35,7 @@ const (
 // A GCPolicy represents a rule that determines which cells are eligible for garbage collection.
 type GCPolicy interface {
 	String() string
-	proto() *bttdpb.GcRule
+	Proto() *bttdpb.GcRule
 }
 
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
