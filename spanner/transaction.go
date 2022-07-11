@@ -337,8 +337,9 @@ func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transac
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.query(ctx, statement, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 }
 
@@ -355,8 +356,9 @@ func (t *txReadOnly) QueryWithOptions(ctx context.Context, statement Statement, 
 func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_PROFILE
 	return t.query(ctx, statement, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 }
 
@@ -364,8 +366,9 @@ func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *R
 func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
 	mode := sppb.ExecuteSqlRequest_PLAN
 	iter := t.query(ctx, statement, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 	defer iter.Stop()
 	for {
@@ -909,8 +912,9 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowCount int64, err error) {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.update(ctx, stmt, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:     &mode,
+		Options:  t.qo.Options,
+		Priority: t.qo.Priority,
 	})
 }
 

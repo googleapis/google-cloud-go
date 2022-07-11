@@ -745,7 +745,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/talent/apiv4",
 		GRPCServiceConfigPath: "talent_grpc_service_config.json",
 		ApiServiceConfigPath:  "jobs_v4.yaml",
-		ReleaseLevel:          "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/talent/v4beta1",
@@ -1551,6 +1551,24 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
 		ApiServiceConfigPath:  "videointelligence_v1p3beta1.yaml",
 		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/functions/v2beta",
+		Pkg:                   "functions",
+		ImportPath:            "cloud.google.com/go/functions/apiv2beta",
+		GRPCServiceConfigPath: "functions_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudfunctions_v2beta.yaml",
+		Transports:            []string{"grpc", "rest"},
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/dataform/v1alpha2",
+		Pkg:                   "dataform",
+		ImportPath:            "cloud.google.com/go/dataform/apiv1alpha2",
+		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
+		ApiServiceConfigPath:  "dataform_v1alpha2.yaml",
+		Transports:            []string{"grpc", "rest"},
+		ReleaseLevel:          "alpha",
 	},
 
 	// Non-Cloud APIs
