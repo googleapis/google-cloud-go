@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.34.1...bigquery/v1.35.0) (2022-07-07)
+
+
+### Features
+
+* **bigquery:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedstorage:** improve internal locking ([#6304](https://github.com/googleapis/google-cloud-go/issues/6304)) ([a2925ce](https://github.com/googleapis/google-cloud-go/commit/a2925ce2f96c538d3994e2d0cef49fbcdd727217))
+* **bigquery/storage/managedwriter/adapt:** schema->protodescriptor ([#6267](https://github.com/googleapis/google-cloud-go/issues/6267)) ([a017230](https://github.com/googleapis/google-cloud-go/commit/a01723055cb7604047c4fddd7d00213d800e4122)), refs [#6258](https://github.com/googleapis/google-cloud-go/issues/6258)
+* **bigquery/storage:** Modify client lib retry policy for CreateWriteStream with longer backoff, more error code and longer overall time ([199b725](https://github.com/googleapis/google-cloud-go/commit/199b7250f474b1a6f53dcf0aac0c2966f4987b68))
+
 ## [1.34.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.34.0...bigquery/v1.34.1) (2022-06-23)
 
 
