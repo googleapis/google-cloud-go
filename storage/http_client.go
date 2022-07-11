@@ -641,7 +641,47 @@ func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 // Media operations.
 
 func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	rawReq := &raw.ComposeRequest{}
+	// Compose requires a non-empty Destination, so we always set it,
+	// even if the caller-provided ObjectAttrs is the zero value.
+	rawReq.Destination = req.dstObject.attrs.toRawObject(req.dstBucket)
+	if req.sendCRC32C {
+		rawReq.Destination.Crc32c = encodeUint32(req.dstObject.attrs.CRC32C)
+	}
+	for _, src := range req.srcs {
+		srcObj := &raw.ComposeRequestSourceObjects{
+			Name: src.name,
+		}
+		if err := applyConds("ComposeFrom source", src.gen, src.conds, composeSourceObj{srcObj}); err != nil {
+			return nil, err
+		}
+		rawReq.SourceObjects = append(rawReq.SourceObjects, srcObj)
+	}
+
+	call := c.raw.Objects.Compose(req.dstBucket, req.dstObject.name, rawReq).Context(ctx)
+	if err := applyConds("ComposeFrom destination", -1, req.dstObject.conds, call); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	if req.predefinedACL != "" {
+		call.DestinationPredefinedAcl(req.predefinedACL)
+	}
+	if err := setEncryptionHeaders(call.Header(), req.encryptionKey, false); err != nil {
+		return nil, err
+	}
+	var obj *raw.Object
+	setClientHeader(call.Header())
+
+	var err error
+	retryCall := func() error { obj, err = call.Do(); return err }
+
+	if err := run(ctx, retryCall, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+		return nil, err
+	}
+	return newObject(obj), nil
 }
 func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
 	s := callSettings(c.settings, opts...)

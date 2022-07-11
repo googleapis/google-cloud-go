@@ -278,11 +278,23 @@ type newRangeReaderParams struct {
 
 type composeObjectRequest struct {
 	dstBucket     string
-	dstObject     string
-	srcs          []string
-	gen           int64
-	conds         *Conditions
+	dstObject     composeDstObject
+	srcs          []composeSrcObject
 	predefinedACL string
+	encryptionKey []byte
+	sendCRC32C    bool
+}
+
+type composeSrcObject struct {
+	name  string
+	gen   int64
+	conds *Conditions
+}
+
+type composeDstObject struct {
+	name  string
+	conds *Conditions
+	attrs *ObjectAttrs // attrs to set on the destination object.
 }
 
 type rewriteObjectRequest struct {

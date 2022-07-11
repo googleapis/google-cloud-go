@@ -990,6 +990,64 @@ func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
 	})
 }
 
+func TestComposeEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		srcNames := []string{
+			fmt.Sprintf("%d-object1", prefix),
+			fmt.Sprintf("%d-object2", prefix),
+		}
+
+		for _, n := range srcNames {
+			w := veneerClient.Bucket(bucket).Object(n).NewWriter(ctx)
+			if _, err := w.Write(randomBytesToWrite); err != nil {
+				t.Fatalf("failed to populate test data: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing object: %v", err)
+			}
+		}
+
+		dstName := fmt.Sprintf("%d-object3", prefix)
+		req := composeObjectRequest{
+			dstBucket: bucket,
+			dstObject: composeDstObject{
+				name:  dstName,
+				attrs: &ObjectAttrs{StorageClass: "COLDLINE"},
+			},
+			srcs: []composeSrcObject{
+				{name: srcNames[0]},
+				{name: srcNames[1]},
+			},
+		}
+		attrs, err := client.ComposeObject(ctx, &req)
+		if err != nil {
+			t.Fatalf("client.ComposeObject(): %v", err)
+		}
+		if got := attrs.Name; got != dstName {
+			t.Errorf("attrs.Name: got %v, want %v", got, dstName)
+		}
+		// Check that the destination object size is equal to the sum of its
+		// sources.
+		if got, want := attrs.Size, 2*len(randomBytesToWrite); got != int64(want) {
+			t.Errorf("attrs.Size: got %v, want %v", got, want)
+		}
+		// Check that destination attrs set via object attrs are preserved.
+		if got, want := attrs.StorageClass, "COLDLINE"; got != want {
+			t.Errorf("attrs.StorageClass: got %v, want %v", got, want)
+		}
+	})
+}
+
 func TestHMACKeyCRUDEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
