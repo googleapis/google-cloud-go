@@ -245,7 +245,7 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 	if conf.Families != nil {
 		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
 		for fam, policy := range conf.Families {
-			tbl.ColumnFamilies[fam] = &btapb.ColumnFamily{GcRule: policy.Proto()}
+			tbl.ColumnFamilies[fam] = &btapb.ColumnFamily{GcRule: policy.proto()}
 		}
 	}
 	prefix := ac.instancePrefix()
@@ -367,7 +367,7 @@ func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, po
 		Name: prefix + "/tables/" + table,
 		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
 			Id:  family,
-			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: &btapb.ColumnFamily{GcRule: policy.Proto()}},
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: &btapb.ColumnFamily{GcRule: policy.proto()}},
 		}},
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)

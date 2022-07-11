@@ -35,7 +35,7 @@ const (
 // A GCPolicy represents a rule that determines which cells are eligible for garbage collection.
 type GCPolicy interface {
 	String() string
-	Proto() *bttdpb.GcRule
+	proto() *bttdpb.GcRule
 }
 
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
@@ -53,10 +53,10 @@ func (ip intersectionPolicy) String() string {
 	return "(" + strings.Join(ss, " && ") + ")"
 }
 
-func (ip intersectionPolicy) Proto() *bttdpb.GcRule {
+func (ip intersectionPolicy) proto() *bttdpb.GcRule {
 	inter := &bttdpb.GcRule_Intersection{}
 	for _, sp := range ip.sub {
-		inter.Rules = append(inter.Rules, sp.Proto())
+		inter.Rules = append(inter.Rules, sp.proto())
 	}
 	return &bttdpb.GcRule{
 		Rule: &bttdpb.GcRule_Intersection_{Intersection: inter},
@@ -78,10 +78,10 @@ func (up unionPolicy) String() string {
 	return "(" + strings.Join(ss, " || ") + ")"
 }
 
-func (up unionPolicy) Proto() *bttdpb.GcRule {
+func (up unionPolicy) proto() *bttdpb.GcRule {
 	union := &bttdpb.GcRule_Union{}
 	for _, sp := range up.sub {
-		union.Rules = append(union.Rules, sp.Proto())
+		union.Rules = append(union.Rules, sp.proto())
 	}
 	return &bttdpb.GcRule{
 		Rule: &bttdpb.GcRule_Union_{Union: union},
@@ -96,7 +96,7 @@ type maxVersionsPolicy int
 
 func (mvp maxVersionsPolicy) String() string { return fmt.Sprintf("versions() > %d", int(mvp)) }
 
-func (mvp maxVersionsPolicy) Proto() *bttdpb.GcRule {
+func (mvp maxVersionsPolicy) proto() *bttdpb.GcRule {
 	return &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: int32(mvp)}}
 }
 
@@ -125,7 +125,7 @@ func (ma maxAgePolicy) String() string {
 	return fmt.Sprintf("age() > %d", d/time.Microsecond)
 }
 
-func (ma maxAgePolicy) Proto() *bttdpb.GcRule {
+func (ma maxAgePolicy) proto() *bttdpb.GcRule {
 	// This doesn't handle overflows, etc.
 	// Fix this if people care about GC policies over 290 years.
 	ns := time.Duration(ma).Nanoseconds()
@@ -141,7 +141,7 @@ type noGCPolicy struct{}
 
 func (n noGCPolicy) String() string { return "" }
 
-func (n noGCPolicy) Proto() *bttdpb.GcRule { return &bttdpb.GcRule{Rule: nil} }
+func (n noGCPolicy) proto() *bttdpb.GcRule { return &bttdpb.GcRule{Rule: nil} }
 
 // NoGcPolicy applies to all cells setting maxage and maxversions to nil implies no gc policies
 func NoGcPolicy() GCPolicy { return noGCPolicy{} }
