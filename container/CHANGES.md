@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.2.0...container/v1.3.0) (2022-07-12)
+
+
+### Features
+
+* **container:** add support to modify kubelet pod pid limit in node system configuration feat: support spot VM feat: support Tier 1 bandwidth feat: update support for node pool labels, taints and network tags feat: add Binauthz Evaluation mode support to GKE Classic feat: add GKE Identity Service feat: add network tags to autopilot cluster feat: support enabling Confidential Nodes in the node pool feat: support node pool blue-green upgrade feat: add Location Policy API feat: support GPU timesharing feat: add managed prometheus feature ([963efe2](https://github.com/googleapis/google-cloud-go/commit/963efe22cf67bc04fed09b5fa8f9cb20b9edf1a3))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.1.0...container/v1.2.0) (2022-02-23)
 
 
