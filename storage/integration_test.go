@@ -320,7 +320,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 		Labels                map[string]string
 		Location              string
 		Lifecycle             Lifecycle
-		CustomPlacementConfig *BucketCustomPlacementConfig
+		CustomPlacementConfig *CustomPlacementConfig
 	}
 
 	for _, test := range []struct {
@@ -360,7 +360,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 			name: "dual-region",
 			attrs: &BucketAttrs{
 				Location: "US",
-				CustomPlacementConfig: &BucketCustomPlacementConfig{
+				CustomPlacementConfig: &CustomPlacementConfig{
 					DataLocations: []string{"US-EAST1", "US-WEST1"},
 				},
 			},
@@ -368,7 +368,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				Location:     "US",
 				LocationType: "dual-region",
 				StorageClass: "STANDARD",
-				CustomPlacementConfig: &BucketCustomPlacementConfig{
+				CustomPlacementConfig: &CustomPlacementConfig{
 					DataLocations: []string{"US-EAST1", "US-WEST1"},
 				},
 			},

@@ -464,6 +464,10 @@ type BucketAttrs struct {
 	// If specifying a dual-region, CustomPlacementConfig should be set in conjunction.
 	Location string
 
+	// The bucket's custom placement configuration that holds a list of
+	// regional locations for custom dual regions.
+	CustomPlacementConfig *CustomPlacementConfig
+
 	// MetaGeneration is the metadata generation of the bucket.
 	// This field is read-only.
 	MetaGeneration int64
@@ -534,9 +538,6 @@ type BucketAttrs struct {
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
-
-	// The bucket's custom placement configuration for Custom Dual Regions.
-	CustomPlacementConfig *BucketCustomPlacementConfig
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -786,10 +787,10 @@ type BucketWebsite struct {
 	NotFoundPage string
 }
 
-// BucketCustomPlacementConfig holds the bucket's custom placement
+// CustomPlacementConfig holds the bucket's custom placement
 // configuration for Custom Dual Regions. See
 // https://cloud.google.com/storage/docs/locations for more information.
-type BucketCustomPlacementConfig struct {
+type CustomPlacementConfig struct {
 	// The list of regional locations in which data is placed.
 	// Custom Dual Regions require exactly 2 regional locations.
 	DataLocations []string
@@ -828,7 +829,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		LocationType:             b.LocationType,
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
-		CustomPlacementConfig:    toBucketCustomPlacementConfig(b.CustomPlacementConfig),
+		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
 	}, nil
 }
 
@@ -859,7 +860,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		PublicAccessPrevention:   toPublicAccessPreventionFromProto(b.GetIamConfig()),
 		LocationType:             b.GetLocationType(),
 		RPO:                      toRPOFromProto(b),
-		CustomPlacementConfig:    toBucketCustomPlacementConfigFromProto(b.GetCustomPlacementConfig()),
+		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
 	}
 }
 
@@ -913,7 +914,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Website:               b.Website.toRawBucketWebsite(),
 		IamConfiguration:      bktIAM,
 		Rpo:                   b.RPO.String(),
-		CustomPlacementConfig: b.CustomPlacementConfig.toRawBucketCustomPlacementConfig(),
+		CustomPlacementConfig: b.CustomPlacementConfig.toRawCustomPlacement(),
 	}
 }
 
@@ -972,7 +973,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 		Website:               b.Website.toProtoBucketWebsite(),
 		IamConfig:             bktIAM,
 		Rpo:                   b.RPO.String(),
-		CustomPlacementConfig: b.CustomPlacementConfig.toProtoBucketCustomPlacementConfig(),
+		CustomPlacementConfig: b.CustomPlacementConfig.toProtoCustomPlacement(),
 	}
 }
 
@@ -1921,14 +1922,14 @@ func toRPOFromProto(b *storagepb.Bucket) RPO {
 	}
 }
 
-func toBucketCustomPlacementConfig(c *raw.BucketCustomPlacementConfig) *BucketCustomPlacementConfig {
+func customPlacementFromRaw(c *raw.BucketCustomPlacementConfig) *CustomPlacementConfig {
 	if c == nil {
 		return nil
 	}
-	return &BucketCustomPlacementConfig{DataLocations: c.DataLocations}
+	return &CustomPlacementConfig{DataLocations: c.DataLocations}
 }
 
-func (c *BucketCustomPlacementConfig) toRawBucketCustomPlacementConfig() *raw.BucketCustomPlacementConfig {
+func (c *CustomPlacementConfig) toRawCustomPlacement() *raw.BucketCustomPlacementConfig {
 	if c == nil {
 		return nil
 	}
@@ -1937,7 +1938,7 @@ func (c *BucketCustomPlacementConfig) toRawBucketCustomPlacementConfig() *raw.Bu
 	}
 }
 
-func (c *BucketCustomPlacementConfig) toProtoBucketCustomPlacementConfig() *storagepb.Bucket_CustomPlacementConfig {
+func (c *CustomPlacementConfig) toProtoCustomPlacement() *storagepb.Bucket_CustomPlacementConfig {
 	if c == nil {
 		return nil
 	}
@@ -1946,11 +1947,11 @@ func (c *BucketCustomPlacementConfig) toProtoBucketCustomPlacementConfig() *stor
 	}
 }
 
-func toBucketCustomPlacementConfigFromProto(c *storagepb.Bucket_CustomPlacementConfig) *BucketCustomPlacementConfig {
+func customPlacementFromProto(c *storagepb.Bucket_CustomPlacementConfig) *CustomPlacementConfig {
 	if c == nil {
 		return nil
 	}
-	return &BucketCustomPlacementConfig{DataLocations: c.GetDataLocations()}
+	return &CustomPlacementConfig{DataLocations: c.GetDataLocations()}
 }
 
 // Objects returns an iterator over the objects in the bucket that match the
