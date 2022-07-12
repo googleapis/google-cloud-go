@@ -1570,6 +1570,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/functions/v2",
+		Pkg:                   "functions",
+		ImportPath:            "cloud.google.com/go/functions/apiv2",
+		GRPCServiceConfigPath: "functions_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudfunctions_v2.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
