@@ -23,6 +23,10 @@ import (
 	"cloud.google.com/go/bigquery/storage/managedwriter/adapt"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protodesc"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/dynamicpb"
 )
 
 func TestValidation_Values(t *testing.T) {
@@ -443,5 +447,79 @@ func TestValidation_Values(t *testing.T) {
 		}
 		// Validate table.
 		validateTableConstraints(ctx, t, bqClient, testTable, tc.description, tc.constraints...)
+	}
+}
+
+func TestValidationRoundtripRepeated(t *testing.T) {
+	// This test exists to confirm packed values are backwards compatible.
+	// We create a message using a packed descriptor, and normalize it which
+	// loses the packed option, and confirm we can decode the values using the
+	// normalized descriptor.
+	input := &testdata.ValidationP3PackedRepeated{
+		Id:            proto.Int64(2022),
+		Int64Repeated: []int64{1, 2, 4, -88},
+	}
+	b, err := proto.Marshal(input)
+	if err != nil {
+		t.Fatalf("proto.Marshal: %v", err)
+	}
+
+	// Verify original packed option (proto3 is default packed)
+	origDescriptor := input.ProtoReflect().Descriptor()
+	origFD := origDescriptor.Fields().ByName(protoreflect.Name("int64_repeated"))
+	if !origFD.IsPacked() {
+		t.Errorf("expected original field to be packed, wasn't")
+	}
+
+	// Normalize and use it to get a new descriptor.
+	normalized, err := adapt.NormalizeDescriptor(input.ProtoReflect().Descriptor())
+	if err != nil {
+		t.Fatalf("NormalizeDescriptor: %v", err)
+	}
+	fdp := &descriptorpb.FileDescriptorProto{
+		MessageType: []*descriptorpb.DescriptorProto{normalized},
+		Name:        proto.String("lookup"),
+		Syntax:      proto.String("proto2"),
+	}
+	fds := &descriptorpb.FileDescriptorSet{
+		File: []*descriptorpb.FileDescriptorProto{fdp},
+	}
+	files, err := protodesc.NewFiles(fds)
+	if err != nil {
+		t.Fatalf("protodesc.NewFiles: %v", err)
+	}
+	found, err := files.FindDescriptorByName("testdata_ValidationP3PackedRepeated")
+	if err != nil {
+		t.Fatalf("FindDescriptorByName: %v", err)
+	}
+	md := found.(protoreflect.MessageDescriptor)
+
+	// Use the new, normalized descriptor to unmarshal the bytes and verify.
+	msg := dynamicpb.NewMessage(md)
+	if err := proto.Unmarshal(b, msg); err != nil {
+		t.Fatalf("Unmarshal: %v", err)
+	}
+
+	//
+	int64FD := msg.Descriptor().Fields().ByName(protoreflect.Name("int64_repeated")) // int64_repeated again
+	if int64FD == nil {
+		t.Fatalf("failed to get field")
+	}
+	if int64FD.IsPacked() {
+		t.Errorf("expected normalized descriptor to be un-packed, but it was")
+	}
+	// Ensure we got the expected values out the other side.
+	list := msg.Get(int64FD).List()
+	wantLen := 4
+	if list.Len() != wantLen {
+		t.Errorf("wanted %d values, got %d", wantLen, list.Len())
+	}
+	// Confirm the same values out the other side.
+	wantVals := []int64{1, 2, 4, -88}
+	for i := 0; i < list.Len(); i++ {
+		got := list.Get(i).Int()
+		if got != wantVals[i] {
+			t.Errorf("expected elem %d to be %d, was %d", i, wantVals[i], got)
+		}
 	}
 }
