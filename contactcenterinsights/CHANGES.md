@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.0...contactcenterinsights/v1.2.1) (2022-07-12)
+
+
+### Documentation
+
+* **contactcenterinsights:** Updating comments ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.1.0...contactcenterinsights/v1.2.0) (2022-02-23)
 
 
