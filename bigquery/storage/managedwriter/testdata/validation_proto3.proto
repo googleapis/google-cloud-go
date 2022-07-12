@@ -89,3 +89,20 @@ message ValidationP3Wrappers {
     Proto3ExampleEnum enum_field = 16;
 }
 
+// Validating the behavior of packed repeated scalar values.
+// Proto3 behavior is to pack values by default.
+message ValidationP3PackedRepeated {
+    optional int64 id = 1;
+    repeated double double_repeated = 2;
+    repeated float float_repeated = 3;
+    repeated int32 int32_repeated = 4;
+    repeated int64 int64_repeated = 5;
+    repeated uint32 uint32_repeated = 6;
+    repeated sint32 sint32_repeated = 7;
+    repeated sint64 sint64_repeated = 8;
+    repeated fixed32 fixed32_repeated = 9;
+    repeated sfixed32 sfixed32_repeated = 10;
+    repeated sfixed64 sfixed64_repeated = 11;
+    repeated bool bool_repeated = 12;
+    repeated Proto3ExampleEnum enum_repeated = 13;
+}
