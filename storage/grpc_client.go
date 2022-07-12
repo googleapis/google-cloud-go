@@ -548,7 +548,7 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 		}
 	}
 	if invalidEntity {
-		return fmt.Errorf("entity was not found, got %v. %v", attrs.DefaultObjectACL, errEntityNotSupported)
+		return fmt.Errorf("entity was not found, got %v. %w", attrs.DefaultObjectACL, errEntityNotSupported)
 	}
 	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -610,7 +610,7 @@ func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 		}
 	}
 	if invalidEntity {
-		return fmt.Errorf("entity was not found, got %v. %v", attrs.ACL, errEntityNotSupported)
+		return fmt.Errorf("entity was not found, got %v. %w", attrs.ACL, errEntityNotSupported)
 	}
 	uattrs := &BucketAttrsToUpdate{acl: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -672,7 +672,7 @@ func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object 
 		}
 	}
 	if invalidEntity {
-		return fmt.Errorf("entity was not found, got %v. %v", attrs.ACL, errEntityNotSupported)
+		return fmt.Errorf("entity was not found, got %v. %w", attrs.ACL, errEntityNotSupported)
 	}
 	uattrs := &ObjectAttrsToUpdate{ACL: acl}
 	// Call UpdateObject with the specified metageneration.

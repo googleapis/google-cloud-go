@@ -563,14 +563,10 @@ func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket s
 	var err error
 	req = c.raw.DefaultObjectAccessControls.Update(bucket, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
-	err = run(ctx, func() error {
+	return run(ctx, func() error {
 		_, err = req.Do()
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // Bucket ACL methods.
@@ -608,14 +604,10 @@ func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 	req := c.raw.BucketAccessControls.Update(bucket, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
 	var err error
-	err = run(ctx, func() error {
+	return run(ctx, func() error {
 		_, err = req.Do()
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // configureACLCall sets the context, user project and headers on the apiary library call.
@@ -672,14 +664,10 @@ func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 	var err error
 	req = c.raw.ObjectAccessControls.Update(bucket, object, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
-	err = run(ctx, func() error {
+	return run(ctx, func() error {
 		_, err = req.Do()
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // Media operations.
