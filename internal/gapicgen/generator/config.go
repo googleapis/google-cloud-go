@@ -1579,6 +1579,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/08/12
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/appconnections/v1",
+		Pkg:                   "appconnections",
+		ImportPath:            "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-appconnections_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
