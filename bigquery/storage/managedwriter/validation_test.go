@@ -506,7 +506,7 @@ func TestValidationRoundtripRepeated(t *testing.T) {
 		t.Fatalf("failed to get field")
 	}
 	if int64FD.IsPacked() {
-		t.Errorf("expected normalized descriptor to be un-packed, but it was")
+		t.Errorf("expected normalized descriptor to be un-packed, but it was packed")
 	}
 	// Ensure we got the expected values out the other side.
 	list := msg.Get(int64FD).List()
