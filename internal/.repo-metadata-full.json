@@ -179,6 +179,42 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/beyondcorp/appconnectors/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/appconnectors/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/appconnectors/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/appgateways/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/appgateways/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/appgateways/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/clientconnectorservices/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/clientgateways/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/clientgateways/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/clientgateways/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/bigquery": {
     "distribution_name": "cloud.google.com/go/bigquery",
     "description": "BigQuery",
