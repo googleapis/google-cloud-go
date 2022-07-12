@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/gaming/v1.3.0...gaming/v1.3.1) (2022-07-12)
+
+
+### Bug Fixes
+
+* **gaming:** publish v1beta LRO HTTP rules ([963efe2](https://github.com/googleapis/google-cloud-go/commit/963efe22cf67bc04fed09b5fa8f9cb20b9edf1a3))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/gaming/v1.2.0...gaming/v1.3.0) (2022-06-29)
 
 
