@@ -467,7 +467,7 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 		// transient (since the deadline is relative to the current time) and it
 		// isn't crucial for correctness (since expired messages will just be
 		// resent).
-		cctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		cctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 		defer cancel()
 		bo := gax.Backoff{
 			Initial:    100 * time.Millisecond,

@@ -15,6 +15,8 @@
 package managedwriter
 
 import (
+	"context"
+	"errors"
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
@@ -31,7 +33,11 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	// retry predicates in addition to statuscode-based.
 	s, ok := status.FromError(err)
 	if !ok {
-		// non-status based errors as retryable
+		// Treat context errors as non-retriable.
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			return r.bo.Pause(), false
+		}
+		// Any other non-status based errors treated as retryable.
 		return r.bo.Pause(), true
 	}
 	switch s.Code() {
