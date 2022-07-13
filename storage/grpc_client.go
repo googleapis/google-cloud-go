@@ -48,6 +48,11 @@ const (
 	//
 	// This is only used for the gRPC API.
 	globalProjectAlias = "_"
+
+	// msgEntityNotSupported indicates ACL entites using project ID are not currently supported.
+	//
+	// This is only used for the gRPC API.
+	msgEntityNotSupported = "The gRPC API currently does not support ACL entites using project ID, use project numbers instead"
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -548,7 +553,7 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 		}
 	}
 	if invalidEntity {
-		return fmt.Errorf("entity was not found, got %v. %w", attrs.DefaultObjectACL, errEntityNotSupported)
+		return fmt.Errorf("storage: entity %v was not found on bucket %v, got %v. %v", entity, bucket, attrs.DefaultObjectACL, msgEntityNotSupported)
 	}
 	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -610,7 +615,7 @@ func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 		}
 	}
 	if invalidEntity {
-		return fmt.Errorf("entity was not found, got %v. %w", attrs.ACL, errEntityNotSupported)
+		return fmt.Errorf("storage: entity %v was not found on bucket %v, got %v. %v", entity, bucket, attrs.ACL, msgEntityNotSupported)
 	}
 	uattrs := &BucketAttrsToUpdate{acl: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -672,7 +677,7 @@ func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object 
 		}
 	}
 	if invalidEntity {
-		return fmt.Errorf("entity was not found, got %v. %w", attrs.ACL, errEntityNotSupported)
+		return fmt.Errorf("storage: entity %v was not found on bucket %v, got %v. %v", entity, bucket, attrs.ACL, msgEntityNotSupported)
 	}
 	uattrs := &ObjectAttrsToUpdate{ACL: acl}
 	// Call UpdateObject with the specified metageneration.
