@@ -26,13 +26,13 @@ const (
 
 // BulkWriterJob provides read-only access to the results of a BulkWriter write attempt.
 type BulkWriterJob struct {
-	err         chan error           // send error responses to this channel
-	result      chan *pb.WriteResult // send the write results to this channel
+	errChan     chan error           // send error responses to this channel
+	resultChan  chan *pb.WriteResult // send the write results to this channel
 	write       *pb.Write            // the writes to apply to the database
 	attempts    int                  // number of times this write has been attempted
 	resultsLock sync.Mutex           // guards the cached wr and e values for the job
-	wr          *WriteResult         // (cached) result from the operation
-	e           error                // (cached) any errors that occurred
+	result      *WriteResult         // (cached) result from the operation
+	err         error                // (cached) any errors that occurred
 	ctx         context.Context      // context for canceling/timing out results
 }
 
@@ -42,10 +42,10 @@ type BulkWriterJob struct {
 func (j *BulkWriterJob) Results() (*WriteResult, error) {
 	j.resultsLock.Lock()
 	defer j.resultsLock.Unlock()
-	if j.wr == nil && j.e == nil {
-		j.wr, j.e = j.processResults() // cache the results for additional calls
+	if j.result == nil && j.err == nil {
+		j.result, j.err = j.processResults() // cache the results for additional calls
 	}
-	return j.wr, j.e
+	return j.result, j.err
 }
 
 // processResults checks for errors returned from send() and packages up the
@@ -54,17 +54,17 @@ func (j *BulkWriterJob) processResults() (*WriteResult, error) {
 	select {
 	case <-j.ctx.Done():
 		return nil, fmt.Errorf("firestore: BulkWriter early write cancellation")
-	case wpb := <-j.result:
+	case wpb := <-j.resultChan:
 		return writeResultFromProto(wpb)
-	case err := <-j.err:
+	case err := <-j.errChan:
 		return nil, err
 	}
 }
 
 // setError ensures that an error is returned on the error channel of BulkWriterJob.
 func (j *BulkWriterJob) setError(e error) {
-	j.err <- e
-	close(j.result)
+	j.errChan <- e
+	close(j.resultChan)
 }
 
 // A BulkWriter supports concurrent writes to multiple documents. The BulkWriter
@@ -224,10 +224,11 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 // receives a nil document reference.
 func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 	bw.openLock.Lock()
-	if !bw.isOpen {
+	open := bw.isOpen
+	bw.openLock.Unlock()
+	if !open {
 		return errors.New("firestore: BulkWriter has been closed")
 	}
-	bw.openLock.Unlock()
 
 	if doc == nil {
 		return errors.New("firestore: nil document contents")
@@ -247,10 +248,10 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 func (bw *BulkWriter) write(w *pb.Write) *BulkWriterJob {
 
 	j := &BulkWriterJob{
-		result: make(chan *pb.WriteResult, 1),
-		write:  w,
-		err:    make(chan error, 1),
-		ctx:    bw.ctx,
+		resultChan: make(chan *pb.WriteResult, 1),
+		write:      w,
+		errChan:    make(chan error, 1),
+		ctx:        bw.ctx,
 	}
 
 	bw.limiter.Wait(bw.ctx)
@@ -300,14 +301,16 @@ func (bw *BulkWriter) send(i interface{}) {
 				j := &bwj[i]
 				(*j).attempts++
 
-				// Do we need separate retry bundler
+				// Do we need separate retry bundler?
 				if (*j).attempts < maxRetryAttempts {
 					bw.bundler.Add(j, 0) // ignore operation size constraints; can't be inferred at compile time
+				} else {
+					(*j).errChan <- fmt.Errorf("firestore: write failed with status: %v", s)
 				}
 				continue
 			}
 
-			bwj[i].result <- res
+			bwj[i].resultChan <- res
 		}
 	}
 }

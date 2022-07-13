@@ -175,7 +175,7 @@ func TestBulkWriter(t *testing.T) {
 				t.Errorf("bulkwriter: cannot call %s for document\n", tc.name)
 			}
 			if j == nil {
-				t.Errorf("bulkwriter: got nil WriteResult for call to %s\n", tc.name)
+				t.Fatalf("bulkwriter: got nil WriteResult for call to %s\n", tc.name)
 			}
 
 			bw.Flush()
