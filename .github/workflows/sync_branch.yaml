@@ -5,9 +5,9 @@ on:
   workflow_dispatch: {} # Allow manual triggering
 
 jobs:
-  sync-branches:
+  sync-storage-refactor:
     runs-on: ubuntu-latest
-    name: Syncing branches
+    name: Syncing storage-refactor
     steps:
       - name: Checkout
         uses: actions/checkout@v3
