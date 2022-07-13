@@ -299,6 +299,8 @@ func (c *Client) Batch() *WriteBatch {
 }
 
 // BulkWriter returns a BulkWriter instance.
+// The context passed to the BulkWriter remains stored through the lifecycle
+// of the object. This context allows callers to cancel BulkWriter operations.
 func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 	bw := newBulkWriter(ctx, c, c.path())
 	return bw
