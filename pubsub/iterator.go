@@ -246,11 +246,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	}
 	deadline := it.ackDeadline()
 	it.mu.Unlock()
-	if len(ackIDs) > 0 {
-		if !it.sendModAck(ackIDs, deadline) {
-			return nil, it.err
+	go func() {
+		if len(ackIDs) > 0 {
+			if !it.sendModAck(ackIDs, deadline) {
+				it.fail(it.err)
+			}
 		}
-	}
+	}()
 	return msgs, nil
 }
 
