@@ -8,6 +8,7 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	"golang.org/x/time/rate"
 	"google.golang.org/api/support/bundler"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
@@ -15,12 +16,12 @@ import (
 const (
 	// maxBatchSize is the max number of writes to send in a request
 	maxBatchSize = 20
-	// retryMaxBatchSize is the max number of writes to send in a retry request
-	retryMaxBatchSize = 10
 	// maxRetryAttempts is the max number of times to retry a write
 	maxRetryAttempts = 10
 	// defaultStartingMaximumOpsPerSecond is the starting max number of requests to the service per second
 	defaultStartingMaximumOpsPerSecond = 500
+	// maxWritesPerSecond is the starting limit of writes allowed to callers per second
+	maxWritesPerSecond = maxBatchSize * defaultStartingMaximumOpsPerSecond
 )
 
 // BulkWriterJob provides read-only access to the results of a BulkWriter write attempt.
@@ -39,8 +40,8 @@ type BulkWriterJob struct {
 // This method blocks if the results for this BulkWriterJob haven't been
 // received.
 func (j *BulkWriterJob) Results() (*WriteResult, error) {
-	j.resultLock.Lock()
-	defer j.resultLock.Unlock()
+	//j.resultLock.Lock()
+	//defer j.resultLock.Unlock()
 	if j.wr == nil && j.e == nil {
 		j.wr, j.e = j.processResults() // cache the results for additional calls
 	}
@@ -52,7 +53,7 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 func (j *BulkWriterJob) processResults() (*WriteResult, error) {
 	select {
 	case <-j.ctx.Done():
-		return nil, fmt.Errorf("bulkwriter: early write cancellation")
+		return nil, fmt.Errorf("firestore: bulkwriter: early write cancellation")
 	case wpb := <-j.result:
 		return writeResultFromProto(wpb)
 	case err := <-j.err:
@@ -88,6 +89,7 @@ type BulkWriter struct {
 	maxOpsPerSecond int                // number of requests that can be sent per second
 	docUpdatePaths  map[string]bool    // document paths with corresponding writes in the queue
 	cancel          context.CancelFunc // context to send cancel message
+	limiter         rate.Limiter       // limit requests to server to <= 500 qps
 	bundler         *bundler.Bundler   // handle bundling up writes to Firestore
 	ctx             context.Context    // context for canceling all BulkWriter operations
 	openLock        sync.Mutex         // guards against setting isOpen concurrently
@@ -111,6 +113,7 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		docUpdatePaths:  make(map[string]bool),
 		cancel:          cancel,
 		ctx:             ctx,
+		limiter:         *rate.NewLimiter(rate.Limit(500), 1),
 	}
 
 	// can't initialize with struct above; need instance reference to BulkWriter.send()
@@ -257,7 +260,8 @@ func (bw *BulkWriter) write(w *pb.Write) *BulkWriterJob {
 		ctx:    bw.ctx,
 	}
 
-	err := bw.bundler.Add(j, 0) // ignore operation size constraints; can't be inferred at compile time
+	//bw.limiter.Wait(bw.ctx)
+	err := bw.bundler.Add(*j, 0) // ignore operation size constraints; can't be inferred at compile time
 	if err != nil {
 		j.setError(err)
 	}
@@ -296,14 +300,12 @@ func (bw *BulkWriter) send(i interface{}) {
 			}
 			return
 		}
-		// Iterate over the response. Match successful requests with unsuccessful
-		// requests.
+		// Match write results with BulkWriterJob objects
 		for i, res := range resp.WriteResults {
-			// Get the status code for this WriteResult
 			s := resp.Status[i]
 			c := s.GetCode()
 			if c != 0 { // Should we do an explicit check against rpc.Code enum?
-				j := bwj[i]
+				j := &bwj[i]
 				j.attempts++
 
 				// Do we need separate retry bundler
@@ -315,6 +317,5 @@ func (bw *BulkWriter) send(i interface{}) {
 
 			bwj[i].setResult(res)
 		}
-		// This means the writes are now finalized, all retries completed
 	}
 }
