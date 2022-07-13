@@ -55,7 +55,7 @@ To receive messages published to a topic, clients create subscriptions
 to the topic. There may be more than one subscription per topic; each message
 that is published to the topic will be delivered to all of its subscriptions.
 
-Subsciptions may be created like so:
+Subscriptions may be created like so:
 
  sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name",
 	pubsub.SubscriptionConfig{Topic: topic})

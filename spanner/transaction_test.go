@@ -29,6 +29,7 @@ import (
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
@@ -617,6 +618,79 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 		t.Errorf("got %d, want %d", got, want)
 	}
 	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+}
+
+func TestPriorityInQueryOptions(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
+		t, ClientConfig{QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
+		[]option.ClientOption{},
+	)
+	defer teardown()
+
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	var iter *RowIterator
+	iter = tx.txReadOnly.Query(ctx, NewStatement("SELECT 1"))
+	err = iter.Do(func(r *Row) error { return nil })
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	iter = tx.txReadOnly.QueryWithOptions(ctx, NewStatement("SELECT 1"),
+		QueryOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM})
+	err = iter.Do(func(r *Row) error { return nil })
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	iter = tx.txReadOnly.QueryWithStats(ctx, NewStatement("SELECT 1"))
+	err = iter.Do(func(r *Row) error { return nil })
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	_, err = tx.txReadOnly.AnalyzeQuery(ctx, NewStatement("SELECT 1"))
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.UpdateWithOptions(ctx, Statement{SQL: UpdateBarSetFoo}, QueryOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+
+	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[5].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[6].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[7].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }

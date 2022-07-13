@@ -86,9 +86,9 @@ var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 // dependencyCache is used to reduce the number of unique messages we generate by caching based on the tableschema.
 //
 // keys are based on the base64-encoded serialized tableschema value.
-type dependencyCache map[string]protoreflect.Descriptor
+type dependencyCache map[string]protoreflect.MessageDescriptor
 
-func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descriptor {
+func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.MessageDescriptor {
 	if dm == nil {
 		return nil
 	}
@@ -103,7 +103,18 @@ func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descri
 	return nil
 }
 
-func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.Descriptor) error {
+func (dm dependencyCache) getFileDescriptorProtos() []*descriptorpb.FileDescriptorProto {
+	var fdpList []*descriptorpb.FileDescriptorProto
+	for _, d := range dm {
+		if fd := d.ParentFile(); fd != nil {
+			fdp := protodesc.ToFileDescriptorProto(fd)
+			fdpList = append(fdpList, fdp)
+		}
+	}
+	return fdpList
+}
+
+func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.MessageDescriptor) error {
 	if dm == nil {
 		return fmt.Errorf("cache is nil")
 	}
@@ -133,7 +144,7 @@ func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope stri
 }
 
 // internal implementation of the conversion code.
-func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.Descriptor, error) {
+func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.MessageDescriptor, error) {
 	if inSchema == nil {
 		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
 	}
@@ -206,9 +217,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	}
 
 	// Use the local dependencies to generate a list of filenames.
-	depNames := []string{
-		wellKnownTypesWrapperName,
-	}
+	depNames := []string{wellKnownTypesWrapperName}
 	for _, d := range deps {
 		depNames = append(depNames, d.ParentFile().Path())
 	}
@@ -226,14 +235,15 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 
 	// We'll need a FileDescriptorSet as we have a FileDescriptorProto for the current
 	// descriptor we're building, but we need to include all the referenced dependencies.
-	fds := &descriptorpb.FileDescriptorSet{
-		File: []*descriptorpb.FileDescriptorProto{
-			fdp,
-			protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
-		},
+
+	fdpList := []*descriptorpb.FileDescriptorProto{
+		fdp,
+		protodesc.ToFileDescriptorProto(wrapperspb.File_google_protobuf_wrappers_proto),
 	}
-	for _, d := range deps {
-		fds.File = append(fds.File, protodesc.ToFileDescriptorProto(d))
+	fdpList = append(fdpList, cache.getFileDescriptorProtos()...)
+
+	fds := &descriptorpb.FileDescriptorSet{
+		File: fdpList,
 	}
 
 	// Load the set into a registry, then interrogate it for the descriptor corresponding to the top level message.
@@ -241,7 +251,11 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	if err != nil {
 		return nil, err
 	}
-	return files.FindDescriptorByName(protoreflect.FullName(scope))
+	found, err := files.FindDescriptorByName(protoreflect.FullName(scope))
+	if err != nil {
+		return nil, err
+	}
+	return found.(protoreflect.MessageDescriptor), nil
 }
 
 // tableFieldSchemaToFieldDescriptorProto builds individual field descriptors for a proto message.

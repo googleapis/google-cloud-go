@@ -21,8 +21,6 @@
 // policy control for images deployed to Kubernetes Engine clusters, Anthos
 // clusters on VMware, and Cloud Run.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Example usage
 //
 // To get started with this package, create a client.

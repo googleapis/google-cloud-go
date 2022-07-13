@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"sync"
 	"testing"
 	"time"
 
@@ -633,19 +634,29 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
-	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto), WithOffset(curOffset))
-	if err != nil {
-		t.Errorf("failed evolved append: %v", err)
+	// Try to force connection errors from concurrent appends.
+	// We drop setting of offset to avoid commingling out-of-order append errors.
+	var wg sync.WaitGroup
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+			if err != nil {
+				t.Errorf("failed evolved append: %v", err)
+			}
+			_, err = res.GetResult(ctx)
+			if err != nil {
+				t.Errorf("error on evolved append: %v", err)
+			}
+			wg.Done()
+		}()
 	}
-	_, err = result.GetResult(ctx)
-	if err != nil {
-		t.Errorf("error on evolved append: %v", err)
-	}
+	wg.Wait()
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
-		withExactRowCount(int64(curOffset+1)),
+		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
-		withNonNullCount("other", 1),
+		withNonNullCount("other", 5),
 	)
 }
 

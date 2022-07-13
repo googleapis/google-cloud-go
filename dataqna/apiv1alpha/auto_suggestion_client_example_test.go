@@ -35,6 +35,18 @@ func ExampleNewAutoSuggestionClient() {
 	_ = c
 }
 
+func ExampleNewAutoSuggestionRESTClient() {
+	ctx := context.Background()
+	c, err := dataqna.NewAutoSuggestionRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAutoSuggestionClient_SuggestQueries() {
 	ctx := context.Background()
 	c, err := dataqna.NewAutoSuggestionClient(ctx)

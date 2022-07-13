@@ -1455,3 +1455,101 @@ func TestTopicRetentionAdmin(t *testing.T) {
 		t.Errorf("sub.TopicMessageRetentionDuration mismatch: %s", diff)
 	}
 }
+
+func TestSubscriptionPushPull(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{
+		Name: "projects/P/topics/T",
+	})
+
+	// Create a push subscription.
+	pc := &pb.PushConfig{
+		PushEndpoint: "some-endpoint",
+	}
+	got := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		PushConfig:         pc,
+	})
+
+	if diff := testutil.Diff(got.PushConfig, pc); diff != "" {
+		t.Errorf("sub.PushConfig mismatch: %s", diff)
+	}
+
+	// Update the subscription to write to BigQuery instead.
+	updateSub := got
+	updateSub.PushConfig = &pb.PushConfig{}
+	bqc := &pb.BigQueryConfig{
+		Table: "some-table",
+	}
+	updateSub.BigqueryConfig = bqc
+	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: updateSub,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"push_config", "bigquery_config"}},
+	})
+	if diff := testutil.Diff(got.PushConfig, new(pb.PushConfig)); diff != "" {
+		t.Errorf("sub.PushConfig should be zero value\n%s", diff)
+	}
+	want := bqc
+	want.State = pb.BigQueryConfig_ACTIVE
+	if diff := testutil.Diff(got.BigqueryConfig, want); diff != "" {
+		t.Errorf("sub.BigQueryConfig mismatch: %s", diff)
+	}
+
+	// Switch back to a pull subscription.
+	updateSub.BigqueryConfig = &pb.BigQueryConfig{}
+	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: updateSub,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"bigquery_config"}},
+	})
+	if diff := testutil.Diff(got.PushConfig, new(pb.PushConfig)); diff != "" {
+		t.Errorf("sub.PushConfig should be zero value\n%s", diff)
+	}
+	if diff := testutil.Diff(got.BigqueryConfig, new(pb.BigQueryConfig)); diff != "" {
+		t.Errorf("sub.BigqueryConfig should be zero value\n%s", diff)
+	}
+}
+
+func TestSubscriptionMessageOrdering(t *testing.T) {
+	ctx := context.Background()
+
+	s := NewServer()
+	defer s.Close()
+
+	top, err := s.GServer.CreateTopic(ctx, &pb.Topic{Name: "projects/p/topics/t"})
+	if err != nil {
+		t.Errorf("Failed to init pubsub topic: %v", err)
+	}
+	sub, err := s.GServer.CreateSubscription(ctx, &pb.Subscription{
+		Name:                  "projects/p/subscriptions/s",
+		Topic:                 top.Name,
+		AckDeadlineSeconds:    30,
+		EnableMessageOrdering: true,
+	})
+	if err != nil {
+		t.Errorf("Failed to init pubsub subscription: %v", err)
+	}
+
+	const orderingKey = "ordering-key"
+	var ids []string
+	for i := 0; i < 1000; i++ {
+		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
+	}
+	for len(ids) > 0 {
+		pull, err := s.GServer.Pull(ctx, &pb.PullRequest{Subscription: sub.Name})
+		if err != nil {
+			t.Errorf("Failed to pull from server: %v", err)
+		}
+		for i, msg := range pull.ReceivedMessages {
+			if msg.Message.MessageId != ids[i] {
+				t.Errorf("want %s, got %s", ids[i], msg.AckId)
+			}
+			s.GServer.Acknowledge(ctx, &pb.AcknowledgeRequest{Subscription: sub.Name, AckIds: []string{msg.AckId}})
+		}
+		ids = ids[len(pull.ReceivedMessages):]
+	}
+}
