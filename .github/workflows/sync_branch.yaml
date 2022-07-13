@@ -1,7 +1,7 @@
 name: Sync storage-refactor
 on:
   schedule:
-    - cron: 0 23 * * * # Daily at 23:00 UTC / 16:00 PST
+    - cron: 0 23 * * 1-5 # Week-daily at 23:00 UTC / 16:00 PST
   workflow_dispatch: {} # Allow manual triggering
 
 jobs:
