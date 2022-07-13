@@ -26,6 +26,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -42,6 +43,14 @@ const (
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
+)
+
+const (
+	// Scope is the scope for Cloud Spanner Data API.
+	Scope = "https://www.googleapis.com/auth/spanner.data"
+
+	// AdminScope is the scope for Cloud Spanner Admin APIs.
+	AdminScope = "https://www.googleapis.com/auth/spanner.admin"
 )
 
 var (
@@ -72,6 +81,13 @@ type Client struct {
 	idleSessions *sessionPool
 	logger       *log.Logger
 	qo           QueryOptions
+	ct           *commonTags
+}
+
+// DatabaseName returns the full name of a database, e.g.,
+// "projects/spanner-cloud-test/instances/foo/databases/foodb".
+func (c *Client) DatabaseName() string {
+	return c.sc.database
 }
 
 // ClientConfig has configurations for the client.
@@ -190,6 +206,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		idleSessions: sp,
 		logger:       config.logger,
 		qo:           getQueryOptions(config.QueryOptions),
+		ct:           getCommonTags(sc),
 	}
 	return c, nil
 }
@@ -201,7 +218,7 @@ func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.Cl
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
-		option.WithUserAgent(clientUserAgent),
+		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.EnableDirectPath(true),
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
@@ -213,12 +230,16 @@ func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.Cl
 // via application-level configuration. If the environment variables are set,
 // this will return the overwritten query options.
 func getQueryOptions(opts QueryOptions) QueryOptions {
+	if opts.Options == nil {
+		opts.Options = &sppb.ExecuteSqlRequest_QueryOptions{}
+	}
 	opv := os.Getenv("SPANNER_OPTIMIZER_VERSION")
 	if opv != "" {
-		if opts.Options == nil {
-			opts.Options = &sppb.ExecuteSqlRequest_QueryOptions{}
-		}
 		opts.Options.OptimizerVersion = opv
+	}
+	opsp := os.Getenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE")
+	if opsp != "" {
+		opts.Options.OptimizerStatisticsPackage = opsp
 	}
 	return opts
 }
@@ -226,7 +247,9 @@ func getQueryOptions(opts QueryOptions) QueryOptions {
 // Close closes the client.
 func (c *Client) Close() {
 	if c.idleSessions != nil {
-		c.idleSessions.close()
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		c.idleSessions.close(ctx)
 	}
 	c.sc.close()
 }
@@ -260,6 +283,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
+	t.ct = c.ct
 	return t
 }
 
@@ -280,6 +304,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.ct = c.ct
 	return t
 }
 
@@ -348,6 +373,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.ct = c.ct
 	return t, nil
 }
 
@@ -375,6 +401,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.ct = c.ct
 	return t
 }
 
@@ -460,6 +487,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txOpts = options
+		t.ct = c.ct
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")
@@ -477,6 +505,10 @@ type applyOption struct {
 	// If atLeastOnce == true, Client.Apply will execute the mutations on Cloud
 	// Spanner at least once.
 	atLeastOnce bool
+	// transactionTag will be included with the CommitRequest.
+	transactionTag string
+	// priority is the RPC priority that is used for the commit operation.
+	priority sppb.RequestOptions_Priority
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -499,6 +531,22 @@ func ApplyAtLeastOnce() ApplyOption {
 	}
 }
 
+// TransactionTag returns an ApplyOption that will include the given tag as a
+// transaction tag for a write-only transaction.
+func TransactionTag(tag string) ApplyOption {
+	return func(ao *applyOption) {
+		ao.transactionTag = tag
+	}
+}
+
+// Priority returns an ApplyOptions that sets the RPC priority to use for the
+// commit operation.
+func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
+	return func(ao *applyOption) {
+		ao.priority = priority
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -510,11 +558,12 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if !ao.atLeastOnce {
-		return c.ReadWriteTransaction(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
+		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag})
+		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{c.idleSessions}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 

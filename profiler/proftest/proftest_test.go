@@ -120,8 +120,24 @@ func TestParseBackoffDuration(t *testing.T) {
 		wantErr        bool
 	}{
 		{
-			desc:           "a valid backoff duration is parsed correctly",
-			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 32m0s",
+			desc:           "a valid backoff duration is parsed correctly when at the end of the message",
+			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: action throttled, backoff for 32m0s",
+			wantBackoffDur: 32 * time.Minute,
+		},
+		{
+			desc:           "a valid backoff duration is parsed correctly when at the end of a message ending with a period",
+			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 32m0s.",
+			wantBackoffDur: 32 * time.Minute,
+		},
+		{
+			desc:           "a valid backoff duration in a structured log statement is parsed correctly",
+			line:           `Mon Dec 20 20:21:40 UTC 2021: benchmark 39: {"timestamp":"2021-12-20T20:21:39.973Z","severity":"DEBUG","logging.googleapis.com/insertId":"..........K231soqV4EIcG8w42yR2.3","message":"Must wait 35m to create profile: Error: generic::aborted: action throttled, backoff for 35m0s","logName":"projects/{{projectId}}/logs/%40google-cloud%2Fprofiler","resource":{"type":"gae_app","labels":{"module_id":"profiler-backoff-test-node12-2021-12-20-12-18-47-077307-0800","zone":"us-east4-b"}}}`,
+			wantBackoffDur: 35 * time.Minute,
+		},
+
+		{
+			desc:           "a valid backoff duration is parsed correctly when in the middle of the message",
+			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 32m0s ... more information",
 			wantBackoffDur: 32 * time.Minute,
 		},
 		{
@@ -138,6 +154,11 @@ func TestParseBackoffDuration(t *testing.T) {
 			desc:           "a backoff duration specifying hours, minutes, seconds, milliseconds and microseconds is parsed correctly.",
 			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 1h1m1s1ms1us",
 			wantBackoffDur: time.Hour + time.Minute + time.Second + time.Millisecond + time.Microsecond,
+		},
+		{
+			desc:           "a backoff duration at the start of the message is parsed correctly",
+			line:           "1h1m1s1ms",
+			wantBackoffDur: time.Hour + time.Minute + time.Second + time.Millisecond,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {

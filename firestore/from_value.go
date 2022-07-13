@@ -20,6 +20,7 @@ import (
 	"reflect"
 	"strings"
 
+	"cloud.google.com/go/internal/fields"
 	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
@@ -306,15 +307,38 @@ func createMapFromValueMap(pm map[string]*pb.Value, c *Client) (map[string]inter
 // populateStruct sets the fields of vs, which must be a struct, from
 // the matching elements of pm.
 func populateStruct(vs reflect.Value, pm map[string]*pb.Value, c *Client) error {
-	fields, err := fieldCache.Fields(vs.Type())
+	fs, err := fieldCache.Fields(vs.Type())
 	if err != nil {
 		return err
 	}
+
+	type match struct {
+		vproto *pb.Value
+		f      *fields.Field
+	}
+	// Find best field matches
+	matched := make(map[string]match)
 	for k, vproto := range pm {
-		f := fields.Match(k)
+		f := fs.Match(k)
 		if f == nil {
 			continue
 		}
+		if _, ok := matched[f.Name]; ok {
+			// If multiple case insensitive fields match, the exact match
+			// should win.
+			if f.Name == k {
+				matched[k] = match{vproto: vproto, f: f}
+			}
+		} else {
+			matched[f.Name] = match{vproto: vproto, f: f}
+		}
+	}
+
+	// Reflect values
+	for _, v := range matched {
+		f := v.f
+		vproto := v.vproto
+
 		if err := setReflectFromProtoValue(vs.FieldByIndex(f.Index), vproto, c); err != nil {
 			return fmt.Errorf("%s.%s: %v", vs.Type(), f.Name, err)
 		}

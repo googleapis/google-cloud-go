@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,35 @@ func ExampleNewGrafeasV1Beta1Client() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewGrafeasV1Beta1RESTClient() {
+	ctx := context.Background()
+	c, err := containeranalysis.NewGrafeasV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleGrafeasV1Beta1Client_GetOccurrence() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.GetOccurrenceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetOccurrenceRequest.
 	}
 	resp, err := c.GetOccurrence(ctx, req)
 	if err != nil {
@@ -55,17 +69,16 @@ func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 }
 
 func ExampleGrafeasV1Beta1Client_ListOccurrences() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.ListOccurrencesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListOccurrencesRequest.
 	}
 	it := c.ListOccurrences(ctx, req)
 	for {
@@ -87,9 +100,11 @@ func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.DeleteOccurrenceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#DeleteOccurrenceRequest.
 	}
 	err = c.DeleteOccurrence(ctx, req)
 	if err != nil {
@@ -98,16 +113,16 @@ func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 }
 
 func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.CreateOccurrenceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#CreateOccurrenceRequest.
 	}
 	resp, err := c.CreateOccurrence(ctx, req)
 	if err != nil {
@@ -118,16 +133,16 @@ func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
 }
 
 func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.BatchCreateOccurrencesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#BatchCreateOccurrencesRequest.
 	}
 	resp, err := c.BatchCreateOccurrences(ctx, req)
 	if err != nil {
@@ -138,16 +153,16 @@ func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
 }
 
 func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.UpdateOccurrenceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#UpdateOccurrenceRequest.
 	}
 	resp, err := c.UpdateOccurrence(ctx, req)
 	if err != nil {
@@ -158,16 +173,16 @@ func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
 }
 
 func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.GetOccurrenceNoteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetOccurrenceNoteRequest.
 	}
 	resp, err := c.GetOccurrenceNote(ctx, req)
 	if err != nil {
@@ -178,16 +193,16 @@ func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
 }
 
 func ExampleGrafeasV1Beta1Client_GetNote() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.GetNoteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetNoteRequest.
 	}
 	resp, err := c.GetNote(ctx, req)
 	if err != nil {
@@ -198,17 +213,16 @@ func ExampleGrafeasV1Beta1Client_GetNote() {
 }
 
 func ExampleGrafeasV1Beta1Client_ListNotes() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.ListNotesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListNotesRequest.
 	}
 	it := c.ListNotes(ctx, req)
 	for {
@@ -230,9 +244,11 @@ func ExampleGrafeasV1Beta1Client_DeleteNote() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.DeleteNoteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#DeleteNoteRequest.
 	}
 	err = c.DeleteNote(ctx, req)
 	if err != nil {
@@ -241,16 +257,16 @@ func ExampleGrafeasV1Beta1Client_DeleteNote() {
 }
 
 func ExampleGrafeasV1Beta1Client_CreateNote() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.CreateNoteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#CreateNoteRequest.
 	}
 	resp, err := c.CreateNote(ctx, req)
 	if err != nil {
@@ -261,16 +277,16 @@ func ExampleGrafeasV1Beta1Client_CreateNote() {
 }
 
 func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.BatchCreateNotesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#BatchCreateNotesRequest.
 	}
 	resp, err := c.BatchCreateNotes(ctx, req)
 	if err != nil {
@@ -281,16 +297,16 @@ func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
 }
 
 func ExampleGrafeasV1Beta1Client_UpdateNote() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.UpdateNoteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#UpdateNoteRequest.
 	}
 	resp, err := c.UpdateNote(ctx, req)
 	if err != nil {
@@ -301,17 +317,16 @@ func ExampleGrafeasV1Beta1Client_UpdateNote() {
 }
 
 func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.ListNoteOccurrencesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListNoteOccurrencesRequest.
 	}
 	it := c.ListNoteOccurrences(ctx, req)
 	for {
@@ -328,16 +343,16 @@ func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
 }
 
 func ExampleGrafeasV1Beta1Client_GetVulnerabilityOccurrencesSummary() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.GetVulnerabilityOccurrencesSummaryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetVulnerabilityOccurrencesSummaryRequest.
 	}
 	resp, err := c.GetVulnerabilityOccurrencesSummary(ctx, req)
 	if err != nil {

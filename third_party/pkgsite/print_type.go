@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build go1.15
 // +build go1.15
 
 // Package pkgsite is not for external use. May change at any time without
@@ -17,12 +18,13 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
-	"go/doc"
 	"go/printer"
 	"go/scanner"
 	"go/token"
 	"strconv"
 	"strings"
+
+	"cloud.google.com/go/third_party/go/doc"
 )
 
 // PrintType returns a string representation of the decl.

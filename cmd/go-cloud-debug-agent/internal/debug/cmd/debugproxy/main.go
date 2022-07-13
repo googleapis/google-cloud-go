@@ -15,6 +15,7 @@
 // debugproxy connects to the target binary, and serves an RPC interface using
 // the types in server/protocol to access and control it.
 
+//go:build linux
 // +build linux
 
 package main

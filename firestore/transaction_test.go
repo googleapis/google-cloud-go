@@ -258,6 +258,21 @@ func TestTransactionErrors(t *testing.T) {
 		t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
 	}
 
+	// Read after write, with query and GetAll.
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(rollbackReq, &empty.Empty{})
+	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+		if err := tx.Delete(c.Doc("C/a")); err != nil {
+			return err
+		}
+		_, err := tx.Documents(c.Collection("C").Select("x")).GetAll()
+		return err
+	})
+	if err != errReadAfterWrite {
+		t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+	}
+
 	// Read after write fails even if the user ignores the read's error.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)

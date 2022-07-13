@@ -27,13 +27,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/api/option"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
@@ -44,7 +43,6 @@ import (
 )
 
 var _ = io.EOF
-var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockPublisherServer struct {

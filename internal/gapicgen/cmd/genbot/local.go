@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 package main
@@ -35,6 +36,9 @@ type localConfig struct {
 	protoDir        string
 	gapicToGenerate string
 	onlyGapics      bool
+	regenOnly       bool
+	forceAll        bool
+	genModule       bool
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
@@ -68,6 +72,9 @@ func genLocal(ctx context.Context, c localConfig) error {
 		GapicToGenerate:   c.gapicToGenerate,
 		OnlyGenerateGapic: c.onlyGapics,
 		LocalMode:         true,
+		RegenOnly:         c.regenOnly,
+		ForceAll:          c.forceAll,
+		GenModule:         c.genModule,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)

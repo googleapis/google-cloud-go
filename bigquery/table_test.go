@@ -113,7 +113,7 @@ func TestBQToTableMetadata(t *testing.T) {
 			},
 		},
 	} {
-		got, err := bqToTableMetadata(test.in)
+		got, err := bqToTableMetadata(test.in, &Client{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -399,6 +399,12 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 				ForceSendFields:        []string{"RequirePartitionFilter"},
 			},
 		},
+		{
+			tm: TableMetadataToUpdate{Clustering: &Clustering{Fields: []string{"foo", "bar"}}},
+			want: &bq.Table{
+				Clustering: &bq.Clustering{Fields: []string{"foo", "bar"}},
+			},
+		},
 	} {
 		got, _ := test.tm.toBQ()
 		if !testutil.Equal(got, test.want) {
@@ -432,6 +438,67 @@ func TestTableMetadataToUpdateToBQErrors(t *testing.T) {
 		}
 		if !test.wantErr && err != nil {
 			t.Errorf("[%s] got error, want no error", test.desc)
+		}
+	}
+}
+
+func TestTableIdentifiers(t *testing.T) {
+	testTable := &Table{
+		ProjectID: "p",
+		DatasetID: "d",
+		TableID:   "t",
+		c:         nil,
+	}
+	for _, tc := range []struct {
+		description string
+		in          *Table
+		format      IdentifierFormat
+		want        string
+		wantErr     bool
+	}{
+		{
+			description: "empty format string",
+			in:          testTable,
+			format:      "",
+			wantErr:     true,
+		},
+		{
+			description: "legacy",
+			in:          testTable,
+			format:      LegacySQLID,
+			want:        "p:d.t",
+		},
+		{
+			description: "standard unquoted",
+			in:          testTable,
+			format:      StandardSQLID,
+			want:        "p.d.t",
+		},
+		{
+			description: "standard w/dash",
+			in:          &Table{ProjectID: "p-p", DatasetID: "d", TableID: "t"},
+			format:      StandardSQLID,
+			want:        "p-p.d.t",
+		},
+		{
+			description: "api resource",
+			in:          testTable,
+			format:      StorageAPIResourceID,
+			want:        "projects/p/datasets/d/tables/t",
+		},
+	} {
+		got, err := tc.in.Identifier(tc.format)
+		if tc.wantErr && err == nil {
+			t.Errorf("case %q: wanted err, was success", tc.description)
+		}
+		if !tc.wantErr {
+			if err != nil {
+				t.Errorf("case %q: wanted success, got err: %v", tc.description, err)
+			} else {
+				if got != tc.want {
+					t.Errorf("case %q:  got %s, want %s", tc.description, got, tc.want)
+				}
+			}
 		}
 	}
 }

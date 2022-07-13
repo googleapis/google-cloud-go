@@ -120,3 +120,64 @@ func TestModelMetadataUpdateToBQ(t *testing.T) {
 		}
 	}
 }
+
+func TestModelIdentifiers(t *testing.T) {
+	testModel := &Model{
+		ProjectID: "p",
+		DatasetID: "d",
+		ModelID:   "m",
+		c:         nil,
+	}
+	for _, tc := range []struct {
+		description string
+		in          *Model
+		format      IdentifierFormat
+		want        string
+		wantErr     bool
+	}{
+		{
+			description: "empty format string",
+			in:          testModel,
+			format:      "",
+			wantErr:     true,
+		},
+		{
+			description: "legacy",
+			in:          testModel,
+			format:      LegacySQLID,
+			want:        "p:d.m",
+		},
+		{
+			description: "standard unquoted",
+			in:          testModel,
+			format:      StandardSQLID,
+			want:        "p.d.m",
+		},
+		{
+			description: "standard w/dash",
+			in:          &Model{ProjectID: "p-p", DatasetID: "d", ModelID: "m"},
+			format:      StandardSQLID,
+			want:        "`p-p.d.m`",
+		},
+		{
+			description: "api resource",
+			in:          testModel,
+			format:      StorageAPIResourceID,
+			wantErr:     true,
+		},
+	} {
+		got, err := tc.in.Identifier(tc.format)
+		if tc.wantErr && err == nil {
+			t.Errorf("case %q: wanted err, was success", tc.description)
+		}
+		if !tc.wantErr {
+			if err != nil {
+				t.Errorf("case %q: wanted success, got err: %v", tc.description, err)
+			} else {
+				if got != tc.want {
+					t.Errorf("case %q:  got %s, want %s", tc.description, got, tc.want)
+				}
+			}
+		}
+	}
+}

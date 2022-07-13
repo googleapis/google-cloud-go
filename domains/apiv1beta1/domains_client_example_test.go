@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,35 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	c, err := domains.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_SearchDomains() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.SearchDomainsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#SearchDomainsRequest.
 	}
 	resp, err := c.SearchDomains(ctx, req)
 	if err != nil {
@@ -55,16 +69,16 @@ func ExampleClient_SearchDomains() {
 }
 
 func ExampleClient_RetrieveRegisterParameters() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.RetrieveRegisterParametersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveRegisterParametersRequest.
 	}
 	resp, err := c.RetrieveRegisterParameters(ctx, req)
 	if err != nil {
@@ -75,16 +89,16 @@ func ExampleClient_RetrieveRegisterParameters() {
 }
 
 func ExampleClient_RegisterDomain() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.RegisterDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RegisterDomainRequest.
 	}
 	op, err := c.RegisterDomain(ctx, req)
 	if err != nil {
@@ -99,18 +113,62 @@ func ExampleClient_RegisterDomain() {
 	_ = resp
 }
 
-func ExampleClient_ListRegistrations() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-	// import "google.golang.org/api/iterator"
-
+func ExampleClient_RetrieveTransferParameters() {
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &domainspb.RetrieveTransferParametersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveTransferParametersRequest.
+	}
+	resp, err := c.RetrieveTransferParameters(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_TransferDomain() {
+	ctx := context.Background()
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.TransferDomainRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#TransferDomainRequest.
+	}
+	op, err := c.TransferDomain(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListRegistrations() {
+	ctx := context.Background()
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &domainspb.ListRegistrationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ListRegistrationsRequest.
 	}
 	it := c.ListRegistrations(ctx, req)
 	for {
@@ -127,16 +185,16 @@ func ExampleClient_ListRegistrations() {
 }
 
 func ExampleClient_GetRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.GetRegistrationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#GetRegistrationRequest.
 	}
 	resp, err := c.GetRegistration(ctx, req)
 	if err != nil {
@@ -147,16 +205,16 @@ func ExampleClient_GetRegistration() {
 }
 
 func ExampleClient_UpdateRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.UpdateRegistrationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#UpdateRegistrationRequest.
 	}
 	op, err := c.UpdateRegistration(ctx, req)
 	if err != nil {
@@ -172,16 +230,16 @@ func ExampleClient_UpdateRegistration() {
 }
 
 func ExampleClient_ConfigureManagementSettings() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ConfigureManagementSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureManagementSettingsRequest.
 	}
 	op, err := c.ConfigureManagementSettings(ctx, req)
 	if err != nil {
@@ -197,16 +255,16 @@ func ExampleClient_ConfigureManagementSettings() {
 }
 
 func ExampleClient_ConfigureDnsSettings() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ConfigureDnsSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureDnsSettingsRequest.
 	}
 	op, err := c.ConfigureDnsSettings(ctx, req)
 	if err != nil {
@@ -222,16 +280,16 @@ func ExampleClient_ConfigureDnsSettings() {
 }
 
 func ExampleClient_ConfigureContactSettings() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ConfigureContactSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureContactSettingsRequest.
 	}
 	op, err := c.ConfigureContactSettings(ctx, req)
 	if err != nil {
@@ -247,16 +305,16 @@ func ExampleClient_ConfigureContactSettings() {
 }
 
 func ExampleClient_ExportRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ExportRegistrationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ExportRegistrationRequest.
 	}
 	op, err := c.ExportRegistration(ctx, req)
 	if err != nil {
@@ -272,16 +330,16 @@ func ExampleClient_ExportRegistration() {
 }
 
 func ExampleClient_DeleteRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.DeleteRegistrationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#DeleteRegistrationRequest.
 	}
 	op, err := c.DeleteRegistration(ctx, req)
 	if err != nil {
@@ -295,16 +353,16 @@ func ExampleClient_DeleteRegistration() {
 }
 
 func ExampleClient_RetrieveAuthorizationCode() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.RetrieveAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveAuthorizationCodeRequest.
 	}
 	resp, err := c.RetrieveAuthorizationCode(ctx, req)
 	if err != nil {
@@ -315,16 +373,16 @@ func ExampleClient_RetrieveAuthorizationCode() {
 }
 
 func ExampleClient_ResetAuthorizationCode() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ResetAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ResetAuthorizationCodeRequest.
 	}
 	resp, err := c.ResetAuthorizationCode(ctx, req)
 	if err != nil {

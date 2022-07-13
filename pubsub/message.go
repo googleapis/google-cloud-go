@@ -19,7 +19,6 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
@@ -72,10 +71,7 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 		return msg, nil
 	}
 
-	pubTime, err := ptypes.Timestamp(resp.Message.PublishTime)
-	if err != nil {
-		return nil, err
-	}
+	pubTime := resp.Message.PublishTime.AsTime()
 
 	var deliveryAttempt *int
 	if resp.DeliveryAttempt > 0 {

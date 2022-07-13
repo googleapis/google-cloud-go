@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type mockServer struct {

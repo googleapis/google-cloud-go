@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.gkeconnect.gateway.v1beta1",
+  "libraryPackage": "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+  "services": {
+    "GatewayService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "DeleteResource": {
+              "methods": [
+                "DeleteResource"
+              ]
+            },
+            "GetResource": {
+              "methods": [
+                "GetResource"
+              ]
+            },
+            "PatchResource": {
+              "methods": [
+                "PatchResource"
+              ]
+            },
+            "PostResource": {
+              "methods": [
+                "PostResource"
+              ]
+            },
+            "PutResource": {
+              "methods": [
+                "PutResource"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

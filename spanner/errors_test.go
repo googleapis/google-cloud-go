@@ -22,6 +22,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -99,5 +100,37 @@ func TestToSpannerError(t *testing.T) {
 				t.Errorf("%v: Wrapped commit error mismatch\nGot: %v\nWant: %v", test.err, gotWrappedDuringCommit, wantWrappedDuringCommit)
 			}
 		}
+	}
+}
+
+func TestAPIErrorBackwardCompatibility(t *testing.T) {
+	apiError, _ := apierror.FromError(status.Error(codes.InvalidArgument, "bad"))
+	testCases := []struct {
+		name        string
+		clientError error
+		want        *apierror.APIError
+	}{
+		{
+			name:        "when client returns spanner.Error",
+			clientError: spannerErrorf(codes.InvalidArgument, "bad"),
+			want:        apiError,
+		},
+		{
+			name:        "when client returns apierror.APIError",
+			clientError: apiError,
+			want:        apiError,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var got *apierror.APIError
+			ok := errorAs(tc.clientError, &got)
+			if !ok {
+				t.Error("error unwrapping spanner.Error to apierror.APIError")
+			}
+			if got.Error() != tc.want.Error() {
+				t.Errorf("Wrapped error mismatch\nGot: %v\nWant: %v", got, tc.want)
+			}
+		})
 	}
 }

@@ -33,6 +33,15 @@ cd $(dirname $0)/..
 export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profiler-e2e-service-account-key"
 export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 
+# Ensure a newer version of Go is used so it is compatible with newer libraries.
+# Here we install v1.17.7 which is the current version as of when this code
+# was written, following instructions from https://go.dev/doc/manage-install.
+# Go modules might not be on for previous versions of Go, so we also have to
+# enable the module system explicitly.
+export GO111MODULE=on
+go install golang.org/dl/go1.17.7
+go1.17.7 download
+
 # Run test.
-retry go mod download
-go test -run TestAgentIntegration -run_only_profiler_backoff_test -timeout 1h
+retry go1.17.7 mod download
+go1.17.7 test -run TestAgentIntegration -run_only_profiler_backoff_test -timeout 1h

@@ -120,6 +120,14 @@ type TableMetadata struct {
 	// This does not include data that is being buffered during a streaming insert.
 	NumRows uint64
 
+	// SnapshotDefinition contains additional information about the provenance of a
+	// given snapshot table.
+	SnapshotDefinition *SnapshotDefinition
+
+	// CloneDefinition contains additional information about the provenance of a
+	// given cloned table.
+	CloneDefinition *CloneDefinition
+
 	// Contains information regarding this table's streaming buffer, if one is
 	// present. This field will be nil if the table is not being streamed to or if
 	// there is no data in the streaming buffer.
@@ -177,6 +185,9 @@ const (
 	// MaterializedView represents a managed storage table that's derived from
 	// a base table.
 	MaterializedView TableType = "MATERIALIZED_VIEW"
+	// Snapshot represents an immutable point in time snapshot of some other
+	// table.
+	Snapshot TableType = "SNAPSHOT"
 )
 
 // MaterializedViewDefinition contains information for materialized views.
@@ -221,6 +232,78 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
 		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
 	}
+}
+
+// SnapshotDefinition provides metadata related to the origin of a snapshot.
+type SnapshotDefinition struct {
+
+	// BaseTableReference describes the ID of the table that this snapshot
+	// came from.
+	BaseTableReference *Table
+
+	// SnapshotTime indicates when the base table was snapshot.
+	SnapshotTime time.Time
+}
+
+func (sd *SnapshotDefinition) toBQ() *bq.SnapshotDefinition {
+	if sd == nil {
+		return nil
+	}
+	return &bq.SnapshotDefinition{
+		BaseTableReference: sd.BaseTableReference.toBQ(),
+		SnapshotTime:       sd.SnapshotTime.Format(time.RFC3339),
+	}
+}
+
+func bqToSnapshotDefinition(q *bq.SnapshotDefinition, c *Client) *SnapshotDefinition {
+	if q == nil {
+		return nil
+	}
+	sd := &SnapshotDefinition{
+		BaseTableReference: bqToTable(q.BaseTableReference, c),
+	}
+	// It's possible we could fail to populate SnapshotTime if we fail to parse
+	// the backend representation.
+	if t, err := time.Parse(time.RFC3339, q.SnapshotTime); err == nil {
+		sd.SnapshotTime = t
+	}
+	return sd
+}
+
+// CloneDefinition provides metadata related to the origin of a clone.
+type CloneDefinition struct {
+
+	// BaseTableReference describes the ID of the table that this clone
+	// came from.
+	BaseTableReference *Table
+
+	// CloneTime indicates when the base table was cloned.
+	CloneTime time.Time
+}
+
+func (cd *CloneDefinition) toBQ() *bq.CloneDefinition {
+	if cd == nil {
+		return nil
+	}
+	return &bq.CloneDefinition{
+		BaseTableReference: cd.BaseTableReference.toBQ(),
+		CloneTime:          cd.CloneTime.Format(time.RFC3339),
+	}
+}
+
+func bqToCloneDefinition(q *bq.CloneDefinition, c *Client) *CloneDefinition {
+	if q == nil {
+		return nil
+	}
+	cd := &CloneDefinition{
+		BaseTableReference: bqToTable(q.BaseTableReference, c),
+	}
+	// It's possible we could fail to populate CloneTime if we fail to parse
+	// the backend representation.
+	if t, err := time.Parse(time.RFC3339, q.CloneTime); err == nil {
+		cd.CloneTime = t
+	}
+	return cd
 }
 
 // TimePartitioningType defines the interval used to partition managed data.
@@ -356,7 +439,7 @@ func (rpr *RangePartitioningRange) toBQ() *bq.RangePartitioningRange {
 	}
 }
 
-// Clustering governs the organization of data within a partitioned table.
+// Clustering governs the organization of data within a managed table.
 // For more information, see https://cloud.google.com/bigquery/docs/clustered-tables
 type Clustering struct {
 	Fields []string
@@ -428,9 +511,46 @@ func (t *Table) toBQ() *bq.TableReference {
 	}
 }
 
+// IdentifierFormat represents a how certain resource identifiers such as table references
+// are formatted.
+type IdentifierFormat string
+
+var (
+	// StandardSQLID returns an identifier suitable for use with Standard SQL.
+	StandardSQLID IdentifierFormat = "SQL"
+
+	// LegacySQLID returns an identifier suitable for use with Legacy SQL.
+	LegacySQLID IdentifierFormat = "LEGACY_SQL"
+
+	// StorageAPIResourceID returns an identifier suitable for use with the Storage API.  Namely, it's for formatting
+	// a table resource for invoking read and write functionality.
+	StorageAPIResourceID IdentifierFormat = "STORAGE_API_RESOURCE"
+
+	// ErrUnknownIdentifierFormat is indicative of requesting an identifier in a format that is
+	// not supported.
+	ErrUnknownIdentifierFormat = errors.New("unknown identifier format")
+)
+
+// Identifier returns the ID of the table in the requested format.
+func (t *Table) Identifier(f IdentifierFormat) (string, error) {
+	switch f {
+	case LegacySQLID:
+		return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	case StorageAPIResourceID:
+		return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	case StandardSQLID:
+		// Note we don't need to quote the project ID here, as StandardSQL has special rules to allow
+		// dash identifiers for projects without issue in table identifiers.
+		return fmt.Sprintf("%s.%s.%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	default:
+		return "", ErrUnknownIdentifierFormat
+	}
+}
+
 // FullyQualifiedName returns the ID of the table in projectID:datasetID.tableID format.
 func (t *Table) FullyQualifiedName() string {
-	return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID)
+	s, _ := t.Identifier(LegacySQLID)
+	return s
 }
 
 // implicitTable reports whether Table is an empty placeholder, which signifies that a new table should be created with an auto-generated Table ID.
@@ -457,10 +577,13 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 		DatasetId: t.DatasetID,
 		TableId:   t.TableID,
 	}
+
 	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
 	setClientHeader(req.Header())
-	_, err = req.Do()
-	return err
+	return runWithRetry(ctx, func() (err error) {
+		_, err = req.Do()
+		return err
+	})
 }
 
 func (tm *TableMetadata) toBQ() (*bq.Table, error) {
@@ -496,6 +619,8 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	t.RangePartitioning = tm.RangePartitioning.toBQ()
 	t.Clustering = tm.Clustering.toBQ()
 	t.RequirePartitionFilter = tm.RequirePartitionFilter
+	t.SnapshotDefinition = tm.SnapshotDefinition.toBQ()
+	t.CloneDefinition = tm.CloneDefinition.toBQ()
 
 	if !validExpiration(tm.ExpirationTime) {
 		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
@@ -539,25 +664,67 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	return t, nil
 }
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tableGetCall struct {
+	call *bq.TablesGetCall
+}
+
+// TableMetadataOption allow requests to alter requests for table metadata.
+type TableMetadataOption func(*tableGetCall)
+
+// TableMetadataView specifies which details about a table are desired.
+type TableMetadataView string
+
+const (
+	// BasicMetadataView populates basic table information including schema partitioning,
+	// but does not contain storage statistics like number or rows or bytes.  This is a more
+	// efficient view to use for large tables or higher metadata query rates.
+	BasicMetadataView TableMetadataView = "BASIC"
+
+	// FullMetadataView returns all table information, including storage statistics.  It currently
+	// returns the same information as StorageStatsMetadataView, but may include additional information
+	// in the future.
+	FullMetadataView TableMetadataView = "FULL"
+
+	// StorageStatsMetadataView includes all information from the basic view, and includes storage statistics.  It currently
+	StorageStatsMetadataView TableMetadataView = "STORAGE_STATS"
+)
+
+// WithMetadataView is used to customize what details are returned when interrogating a
+// table via the Metadata() call.  Generally this is used to limit data returned for performance
+// reasons (such as large tables that take time computing storage statistics).
+func WithMetadataView(tmv TableMetadataView) TableMetadataOption {
+	return func(tgc *tableGetCall) {
+		tgc.call.View(string(tmv))
+	}
+}
+
 // Metadata fetches the metadata for the table.
-func (t *Table) Metadata(ctx context.Context) (md *TableMetadata, err error) {
+func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req := t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
-	setClientHeader(req.Header())
-	var table *bq.Table
-	err = runWithRetry(ctx, func() (err error) {
-		table, err = req.Do()
+	tgc := &tableGetCall{
+		call: t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tgc)
+	}
+
+	setClientHeader(tgc.call.Header())
+	var res *bq.Table
+	if err := runWithRetry(ctx, func() (err error) {
+		res, err = tgc.call.Do()
 		return err
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
-	return bqToTableMetadata(table)
+	return bqToTableMetadata(res, t.c)
 }
 
-func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
+func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 	md := &TableMetadata{
 		Description:            t.Description,
 		Name:                   t.FriendlyName,
@@ -574,6 +741,8 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		ETag:                   t.Etag,
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
+		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
+		CloneDefinition:        bqToCloneDefinition(t.CloneDefinition, c),
 	}
 	if t.MaterializedView != nil {
 		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
@@ -631,8 +800,25 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 // NeverExpire is a sentinel value used to remove a table'e expiration time.
 var NeverExpire = time.Time{}.Add(-1)
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tablePatchCall struct {
+	call *bq.TablesPatchCall
+}
+
+// TableUpdateOption allow requests to update table metadata.
+type TableUpdateOption func(*tablePatchCall)
+
+// WithAutoDetectSchema governs whether the schema autodetection occurs as part of the table update.
+// This is relevant in cases like external tables where schema is detected from the source data.
+func WithAutoDetectSchema(b bool) TableUpdateOption {
+	return func(tpc *tablePatchCall) {
+		tpc.call.AutodetectSchema(b)
+	}
+}
+
 // Update modifies specific Table metadata fields.
-func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (md *TableMetadata, err error) {
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string, opts ...TableUpdateOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -640,19 +826,27 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	if err != nil {
 		return nil, err
 	}
-	call := t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx)
-	setClientHeader(call.Header())
+
+	tpc := &tablePatchCall{
+		call: t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tpc)
+	}
+
+	setClientHeader(tpc.call.Header())
 	if etag != "" {
-		call.Header().Set("If-Match", etag)
+		tpc.call.Header().Set("If-Match", etag)
 	}
 	var res *bq.Table
 	if err := runWithRetry(ctx, func() (err error) {
-		res, err = call.Do()
+		res, err = tpc.call.Do()
 		return err
 	}); err != nil {
 		return nil, err
 	}
-	return bqToTableMetadata(res)
+	return bqToTableMetadata(res, t.c)
 }
 
 func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
@@ -679,6 +873,14 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.EncryptionConfig != nil {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
+	}
+	if tm.ExternalDataConfig != nil {
+		cfg := tm.ExternalDataConfig.toBQ()
+		t.ExternalDataConfiguration = &cfg
+	}
+
+	if tm.Clustering != nil {
+		t.Clustering = tm.Clustering.toBQ()
 	}
 
 	if !validExpiration(tm.ExpirationTime) {
@@ -750,12 +952,21 @@ type TableMetadataToUpdate struct {
 	// When updating a schema, you can add columns but not remove them.
 	Schema Schema
 
+	// The table's clustering configuration.
+	// For more information on how modifying clustering affects the table, see:
+	// https://cloud.google.com/bigquery/docs/creating-clustered-tables#modifying-cluster-spec
+	Clustering *Clustering
+
 	// The table's encryption configuration.
 	EncryptionConfig *EncryptionConfig
 
 	// The time when this table expires. To remove a table's expiration,
 	// set ExpirationTime to NeverExpire. The zero value is ignored.
 	ExpirationTime time.Time
+
+	// ExternalDataConfig controls the definition of a table defined against
+	// an external source, such as one based on files in Google Cloud Storage.
+	ExternalDataConfig *ExternalDataConfig
 
 	// The query to use for a view.
 	ViewQuery optional.String

@@ -1,7 +1,6 @@
 # Wire
 
-This directory contains internal implementation details for Cloud Pub/Sub Lite.
-Its exported interface can change at any time.
+This directory contains internal implementation details for Pub/Sub Lite.
 
 ## Conventions
 

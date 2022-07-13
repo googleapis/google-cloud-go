@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,21 +29,23 @@ func ExampleNewQuotaControllerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleQuotaControllerClient_AllocateQuota() {
-	// import servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
-
 	ctx := context.Background()
 	c, err := servicecontrol.NewQuotaControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicecontrolpb.AllocateQuotaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#AllocateQuotaRequest.
 	}
 	resp, err := c.AllocateQuota(ctx, req)
 	if err != nil {

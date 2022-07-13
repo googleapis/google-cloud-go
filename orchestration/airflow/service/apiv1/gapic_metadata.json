@@ -1,0 +1,57 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.orchestration.airflow.service.v1",
+  "libraryPackage": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+  "services": {
+    "Environments": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EnvironmentsClient",
+          "rpcs": {
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "UpdateEnvironment": {
+              "methods": [
+                "UpdateEnvironment"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ImageVersions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ImageVersionsClient",
+          "rpcs": {
+            "ListImageVersions": {
+              "methods": [
+                "ListImageVersions"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

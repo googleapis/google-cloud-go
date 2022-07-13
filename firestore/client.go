@@ -24,8 +24,8 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	"cloud.google.com/go/firestore/internal"
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -60,6 +60,9 @@ type Client struct {
 
 // NewClient creates a new Firestore client that uses the given project.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	if projectID == "" {
+		return nil, errors.New("firestore: projectID was empty")
+	}
 	var o []option.ClientOption
 	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {
@@ -89,7 +92,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, err
 	}
-	vc.SetGoogleClientInfo("gccl", version.Repo)
+	vc.SetGoogleClientInfo("gccl", internal.Version)
 	c := &Client{
 		c:          vc,
 		projectID:  projectID,

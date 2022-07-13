@@ -1,0 +1,28 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.eventarc.publishing.v1",
+  "libraryPackage": "cloud.google.com/go/eventarc/publishing/apiv1",
+  "services": {
+    "Publisher": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PublisherClient",
+          "rpcs": {
+            "PublishChannelConnectionEvents": {
+              "methods": [
+                "PublishChannelConnectionEvents"
+              ]
+            },
+            "PublishEvents": {
+              "methods": [
+                "PublishEvents"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

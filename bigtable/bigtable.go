@@ -79,9 +79,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		option.WithGRPCConnectionPool(4),
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
-		// TODO(grpc/grpc-go#1388) using connection pool without WithBlock
-		// can cause RPCs to fail randomly. We can delete this after the issue is fixed.
-		option.WithGRPCDialOption(grpc.WithBlock()))
+	)
 	// Attempts direct access to spanner service over gRPC to improve throughput,
 	// whether the attempt is allowed is totally controlled by service owner.
 	o = append(o, internaloption.EnableDirectPath(true))
@@ -253,7 +251,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 }
 
 // ReadRow is a convenience implementation of a single-row reader.
-// A missing row will return a zero-length map and a nil error.
+// A missing row will return nil for both Row and error.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
 	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {

@@ -46,6 +46,7 @@ const (
 	batchDuration           = 50 * time.Millisecond
 	serverDelay             = 200 * time.Millisecond
 	maxOutstandingPublishes = 1600 // max_outstanding_messages in run.py
+	useOrdered              = true
 )
 
 func BenchmarkPublishThroughput(b *testing.B) {
@@ -53,7 +54,8 @@ func BenchmarkPublishThroughput(b *testing.B) {
 	client := perfClient(serverDelay, 1, b)
 
 	lts := &PubServer{ID: "xxx"}
-	lts.init(client, "t", messageSize, batchSize, batchDuration)
+	lts.init(client, "t", messageSize, batchSize, batchDuration, useOrdered)
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		runOnce(lts)

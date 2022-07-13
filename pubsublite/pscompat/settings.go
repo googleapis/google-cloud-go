@@ -67,9 +67,14 @@ type PublishSettings struct {
 	// to the server. If Timeout is 0, it will be treated as
 	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
 	//
-	// The timeout is exceeded, the publisher will terminate with the last error
-	// that occurred while trying to reconnect. Note that if the timeout duration
-	// is long, ErrOverflow may occur first.
+	// If your application has a low tolerance to backend unavailability, set
+	// Timeout to a lower duration to detect and handle. When the timeout is
+	// exceeded, the PublisherClient will terminate with ErrBackendUnavailable and
+	// details of the last error that occurred while trying to reconnect to
+	// backends. Note that if the timeout duration is long, ErrOverflow may occur
+	// first.
+	//
+	// It is not recommended to set Timeout below 2 minutes.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -95,6 +100,10 @@ type PublishSettings struct {
 	// Optional custom function that transforms a pubsub.Message to a
 	// PubSubMessage API proto.
 	MessageTransformer PublishMessageTransformerFunc
+
+	// The polling interval to watch for topic partition count updates.
+	// Currently internal only and overridden in tests.
+	configPollPeriod time.Duration
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -102,8 +111,8 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold:    10 * time.Millisecond,
 	CountThreshold:    100,
 	ByteThreshold:     1e6,
-	Timeout:           60 * time.Second,
-	BufferedByteLimit: 1e8,
+	Timeout:           7 * 24 * time.Hour,
+	BufferedByteLimit: 1e10,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
@@ -132,6 +141,9 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 	if s.BufferedByteLimit != 0 {
 		wireSettings.BufferedByteLimit = s.BufferedByteLimit
 	}
+	if s.configPollPeriod != 0 {
+		wireSettings.ConfigPollPeriod = s.configPollPeriod
+	}
 	return wireSettings
 }
 
@@ -151,6 +163,30 @@ type NackHandler func(*pubsub.Message) error
 // If this returns an error, the SubscriberClient will consider this a fatal
 // error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
+
+// ReassignmentHandlerFunc is called any time a new partition assignment is
+// received from the server. It will be called with both the previous and new
+// partition numbers as decided by the server. Both slices of partition numbers
+// are sorted in ascending order.
+//
+// When this handler is called, partitions that are being assigned away are
+// stopping and new partitions are starting. Acks and nacks for messages from
+// partitions that are being assigned away will have no effect, but message
+// deliveries may still be in flight.
+//
+// The client library will not acknowledge the assignment until this handler
+// returns. The server will not assign any of the partitions in
+// `previousPartitions` to another client unless the assignment is acknowledged,
+// or a client takes too long to acknowledge (currently 30 seconds from the time
+// the assignment is sent from server's point of view).
+//
+// Because of the above, as long as reassignment handling is processed quickly,
+// it can be used to abort outstanding operations on partitions which are being
+// assigned away from this client.
+//
+// If this handler returns an error, the SubscriberClient will consider this a
+// fatal error and terminate.
+type ReassignmentHandlerFunc func(previousPartitions, nextPartitions []int) error
 
 // ReceiveSettings configure the SubscriberClient. Flow control settings
 // (MaxOutstandingMessages, MaxOutstandingBytes) apply per partition.
@@ -176,8 +212,13 @@ type ReceiveSettings struct {
 	// to the server. If Timeout is 0, it will be treated as
 	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
 	//
-	// The timeout is exceeded, the SubscriberClient will terminate with the last
-	// error that occurred while trying to reconnect.
+	// If your application has a low tolerance to backend unavailability, set
+	// Timeout to a lower duration to detect and handle. When the timeout is
+	// exceeded, the SubscriberClient will terminate with ErrBackendUnavailable
+	// and details of the last error that occurred while trying to reconnect to
+	// backends.
+	//
+	// It is not recommended to set Timeout below 2 minutes.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.
@@ -193,13 +234,17 @@ type ReceiveSettings struct {
 	// Optional custom function that transforms a SequencedMessage API proto to a
 	// pubsub.Message.
 	MessageTransformer ReceiveMessageTransformerFunc
+
+	// Optional custom function that is called when a new partition assignment has
+	// been delivered to the client.
+	ReassignmentHandler ReassignmentHandlerFunc
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9,
-	Timeout:                60 * time.Second,
+	Timeout:                7 * 24 * time.Hour,
 }
 
 func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {

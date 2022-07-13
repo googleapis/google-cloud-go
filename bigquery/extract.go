@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
@@ -46,6 +47,16 @@ type ExtractConfig struct {
 	// an integer column annotated with the appropriate timestamp-micros/millis annotation
 	// in the resulting Avro files.
 	UseAvroLogicalTypes bool
+
+	// Sets a best-effort deadline on a specific job.  If job execution exceeds this
+	// timeout, BigQuery may attempt to cancel this work automatically.
+	//
+	// This deadline cannot be adjusted or removed once the job is created.  Consider
+	// using Job.Cancel in situations where you need more dynamic behavior.
+	//
+	// Experimental: this option is experimental and may be modified or removed in future versions,
+	// regardless of any other documented package stability guarantees.
+	JobTimeout time.Duration
 }
 
 func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
@@ -65,6 +76,7 @@ func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
 			PrintHeader:         printHeader,
 			UseAvroLogicalTypes: e.UseAvroLogicalTypes,
 		},
+		JobTimeoutMs: e.JobTimeout.Milliseconds(),
 	}
 	if e.Src != nil {
 		cfg.Extract.SourceTable = e.Src.toBQ()
@@ -93,6 +105,7 @@ func bqToExtractConfig(q *bq.JobConfiguration, c *Client) *ExtractConfig {
 		Src:                 bqToTable(qe.SourceTable, c),
 		SrcModel:            bqToModel(qe.SourceModel, c),
 		UseAvroLogicalTypes: qe.UseAvroLogicalTypes,
+		JobTimeout:          time.Duration(q.JobTimeoutMs) * time.Millisecond,
 	}
 }
 

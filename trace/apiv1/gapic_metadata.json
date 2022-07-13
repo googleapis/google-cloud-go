@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.devtools.cloudtrace.v1",
+  "libraryPackage": "cloud.google.com/go/trace/apiv1",
+  "services": {
+    "TraceService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetTrace": {
+              "methods": [
+                "GetTrace"
+              ]
+            },
+            "ListTraces": {
+              "methods": [
+                "ListTraces"
+              ]
+            },
+            "PatchTraces": {
+              "methods": [
+                "PatchTraces"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

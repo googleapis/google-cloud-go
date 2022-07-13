@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newServiceManagerClientHook clientHook
@@ -55,17 +55,15 @@ type ServiceManagerCallOptions struct {
 	GetServiceRollout    []gax.CallOption
 	CreateServiceRollout []gax.CallOption
 	GenerateConfigReport []gax.CallOption
-	EnableService        []gax.CallOption
-	DisableService       []gax.CallOption
 }
 
-func defaultServiceManagerClientOptions() []option.ClientOption {
+func defaultServiceManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("servicemanagement.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("servicemanagement.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://servicemanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -86,42 +84,274 @@ func defaultServiceManagerCallOptions() *ServiceManagerCallOptions {
 		GetServiceRollout:    []gax.CallOption{},
 		CreateServiceRollout: []gax.CallOption{},
 		GenerateConfigReport: []gax.CallOption{},
-		EnableService:        []gax.CallOption{},
-		DisableService:       []gax.CallOption{},
 	}
 }
 
-// ServiceManagerClient is a client for interacting with .
+// internalServiceManagerClient is an interface that defines the methods available from Service Management API.
+type internalServiceManagerClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListServices(context.Context, *servicemanagementpb.ListServicesRequest, ...gax.CallOption) *ManagedServiceIterator
+	GetService(context.Context, *servicemanagementpb.GetServiceRequest, ...gax.CallOption) (*servicemanagementpb.ManagedService, error)
+	CreateService(context.Context, *servicemanagementpb.CreateServiceRequest, ...gax.CallOption) (*CreateServiceOperation, error)
+	CreateServiceOperation(name string) *CreateServiceOperation
+	DeleteService(context.Context, *servicemanagementpb.DeleteServiceRequest, ...gax.CallOption) (*DeleteServiceOperation, error)
+	DeleteServiceOperation(name string) *DeleteServiceOperation
+	UndeleteService(context.Context, *servicemanagementpb.UndeleteServiceRequest, ...gax.CallOption) (*UndeleteServiceOperation, error)
+	UndeleteServiceOperation(name string) *UndeleteServiceOperation
+	ListServiceConfigs(context.Context, *servicemanagementpb.ListServiceConfigsRequest, ...gax.CallOption) *ServiceIterator
+	GetServiceConfig(context.Context, *servicemanagementpb.GetServiceConfigRequest, ...gax.CallOption) (*serviceconfigpb.Service, error)
+	CreateServiceConfig(context.Context, *servicemanagementpb.CreateServiceConfigRequest, ...gax.CallOption) (*serviceconfigpb.Service, error)
+	SubmitConfigSource(context.Context, *servicemanagementpb.SubmitConfigSourceRequest, ...gax.CallOption) (*SubmitConfigSourceOperation, error)
+	SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation
+	ListServiceRollouts(context.Context, *servicemanagementpb.ListServiceRolloutsRequest, ...gax.CallOption) *RolloutIterator
+	GetServiceRollout(context.Context, *servicemanagementpb.GetServiceRolloutRequest, ...gax.CallOption) (*servicemanagementpb.Rollout, error)
+	CreateServiceRollout(context.Context, *servicemanagementpb.CreateServiceRolloutRequest, ...gax.CallOption) (*CreateServiceRolloutOperation, error)
+	CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation
+	GenerateConfigReport(context.Context, *servicemanagementpb.GenerateConfigReportRequest, ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error)
+}
+
+// ServiceManagerClient is a client for interacting with Service Management API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Google Service Management
+// API (at https://cloud.google.com/service-infrastructure/docs/overview)
+type ServiceManagerClient struct {
+	// The internal transport-dependent client.
+	internalClient internalServiceManagerClient
+
+	// The call options for this service.
+	CallOptions *ServiceManagerCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ServiceManagerClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ServiceManagerClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ServiceManagerClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListServices lists managed services.
+//
+// Returns all public services. For authenticated users, also returns all
+// services the calling user has “servicemanagement.services.get” permission
+// for.
+func (c *ServiceManagerClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
+	return c.internalClient.ListServices(ctx, req, opts...)
+}
+
+// GetService gets a managed service. Authentication is required unless the service is
+// public.
+func (c *ServiceManagerClient) GetService(ctx context.Context, req *servicemanagementpb.GetServiceRequest, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
+	return c.internalClient.GetService(ctx, req, opts...)
+}
+
+// CreateService creates a new managed service.
+//
+// A managed service is immutable, and is subject to mandatory 30-day
+// data retention. You cannot move a service or recreate it within 30 days
+// after deletion.
+//
+// One producer project can own no more than 500 services. For security and
+// reliability purposes, a production service should be hosted in a
+// dedicated producer project.
+//
+// Operation<response: ManagedService>
+func (c *ServiceManagerClient) CreateService(ctx context.Context, req *servicemanagementpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
+	return c.internalClient.CreateService(ctx, req, opts...)
+}
+
+// CreateServiceOperation returns a new CreateServiceOperation from a given name.
+// The name must be that of a previously created CreateServiceOperation, possibly from a different process.
+func (c *ServiceManagerClient) CreateServiceOperation(name string) *CreateServiceOperation {
+	return c.internalClient.CreateServiceOperation(name)
+}
+
+// DeleteService deletes a managed service. This method will change the service to the
+// Soft-Delete state for 30 days. Within this period, service producers may
+// call
+// UndeleteService
+// to restore the service. After 30 days, the service will be permanently
+// deleted.
+//
+// Operation<response: google.protobuf.Empty>
+func (c *ServiceManagerClient) DeleteService(ctx context.Context, req *servicemanagementpb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
+	return c.internalClient.DeleteService(ctx, req, opts...)
+}
+
+// DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
+// The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
+func (c *ServiceManagerClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
+	return c.internalClient.DeleteServiceOperation(name)
+}
+
+// UndeleteService revives a previously deleted managed service. The method restores the
+// service using the configuration at the time the service was deleted.
+// The target service must exist and must have been deleted within the
+// last 30 days.
+//
+// Operation<response: UndeleteServiceResponse>
+func (c *ServiceManagerClient) UndeleteService(ctx context.Context, req *servicemanagementpb.UndeleteServiceRequest, opts ...gax.CallOption) (*UndeleteServiceOperation, error) {
+	return c.internalClient.UndeleteService(ctx, req, opts...)
+}
+
+// UndeleteServiceOperation returns a new UndeleteServiceOperation from a given name.
+// The name must be that of a previously created UndeleteServiceOperation, possibly from a different process.
+func (c *ServiceManagerClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
+	return c.internalClient.UndeleteServiceOperation(name)
+}
+
+// ListServiceConfigs lists the history of the service configuration for a managed service,
+// from the newest to the oldest.
+func (c *ServiceManagerClient) ListServiceConfigs(ctx context.Context, req *servicemanagementpb.ListServiceConfigsRequest, opts ...gax.CallOption) *ServiceIterator {
+	return c.internalClient.ListServiceConfigs(ctx, req, opts...)
+}
+
+// GetServiceConfig gets a service configuration (version) for a managed service.
+func (c *ServiceManagerClient) GetServiceConfig(ctx context.Context, req *servicemanagementpb.GetServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
+	return c.internalClient.GetServiceConfig(ctx, req, opts...)
+}
+
+// CreateServiceConfig creates a new service configuration (version) for a managed service.
+// This method only stores the service configuration. To roll out the service
+// configuration to backend systems please call
+// CreateServiceRollout.
+//
+// Only the 100 most recent service configurations and ones referenced by
+// existing rollouts are kept for each service. The rest will be deleted
+// eventually.
+func (c *ServiceManagerClient) CreateServiceConfig(ctx context.Context, req *servicemanagementpb.CreateServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
+	return c.internalClient.CreateServiceConfig(ctx, req, opts...)
+}
+
+// SubmitConfigSource creates a new service configuration (version) for a managed service based
+// on
+// user-supplied configuration source files (for example: OpenAPI
+// Specification). This method stores the source configurations as well as the
+// generated service configuration. To rollout the service configuration to
+// other services,
+// please call
+// CreateServiceRollout.
+//
+// Only the 100 most recent configuration sources and ones referenced by
+// existing service configurtions are kept for each service. The rest will be
+// deleted eventually.
+//
+// Operation<response: SubmitConfigSourceResponse>
+func (c *ServiceManagerClient) SubmitConfigSource(ctx context.Context, req *servicemanagementpb.SubmitConfigSourceRequest, opts ...gax.CallOption) (*SubmitConfigSourceOperation, error) {
+	return c.internalClient.SubmitConfigSource(ctx, req, opts...)
+}
+
+// SubmitConfigSourceOperation returns a new SubmitConfigSourceOperation from a given name.
+// The name must be that of a previously created SubmitConfigSourceOperation, possibly from a different process.
+func (c *ServiceManagerClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
+	return c.internalClient.SubmitConfigSourceOperation(name)
+}
+
+// ListServiceRollouts lists the history of the service configuration rollouts for a managed
+// service, from the newest to the oldest.
+func (c *ServiceManagerClient) ListServiceRollouts(ctx context.Context, req *servicemanagementpb.ListServiceRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
+	return c.internalClient.ListServiceRollouts(ctx, req, opts...)
+}
+
+// GetServiceRollout gets a service configuration
+// rollout.
+func (c *ServiceManagerClient) GetServiceRollout(ctx context.Context, req *servicemanagementpb.GetServiceRolloutRequest, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
+	return c.internalClient.GetServiceRollout(ctx, req, opts...)
+}
+
+// CreateServiceRollout creates a new service configuration rollout. Based on rollout, the
+// Google Service Management will roll out the service configurations to
+// different backend services. For example, the logging configuration will be
+// pushed to Google Cloud Logging.
+//
+// Please note that any previous pending and running Rollouts and associated
+// Operations will be automatically cancelled so that the latest Rollout will
+// not be blocked by previous Rollouts.
+//
+// Only the 100 most recent (in any state) and the last 10 successful (if not
+// already part of the set of 100 most recent) rollouts are kept for each
+// service. The rest will be deleted eventually.
+//
+// Operation<response: Rollout>
+func (c *ServiceManagerClient) CreateServiceRollout(ctx context.Context, req *servicemanagementpb.CreateServiceRolloutRequest, opts ...gax.CallOption) (*CreateServiceRolloutOperation, error) {
+	return c.internalClient.CreateServiceRollout(ctx, req, opts...)
+}
+
+// CreateServiceRolloutOperation returns a new CreateServiceRolloutOperation from a given name.
+// The name must be that of a previously created CreateServiceRolloutOperation, possibly from a different process.
+func (c *ServiceManagerClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
+	return c.internalClient.CreateServiceRolloutOperation(name)
+}
+
+// GenerateConfigReport generates and returns a report (errors, warnings and changes from
+// existing configurations) associated with
+// GenerateConfigReportRequest.new_value
+//
+// If GenerateConfigReportRequest.old_value is specified,
+// GenerateConfigReportRequest will contain a single ChangeReport based on the
+// comparison between GenerateConfigReportRequest.new_value and
+// GenerateConfigReportRequest.old_value.
+// If GenerateConfigReportRequest.old_value is not specified, this method
+// will compare GenerateConfigReportRequest.new_value with the last pushed
+// service configuration.
+func (c *ServiceManagerClient) GenerateConfigReport(ctx context.Context, req *servicemanagementpb.GenerateConfigReportRequest, opts ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error) {
+	return c.internalClient.GenerateConfigReport(ctx, req, opts...)
+}
+
+// serviceManagerGRPCClient is a client for interacting with Service Management API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ServiceManagerClient struct {
+type serviceManagerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ServiceManagerClient
+	CallOptions **ServiceManagerCallOptions
+
 	// The gRPC API client.
 	serviceManagerClient servicemanagementpb.ServiceManagerClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *ServiceManagerCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewServiceManagerClient creates a new service manager client.
+// NewServiceManagerClient creates a new service manager client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Service Management API (at /service-management/overview)
+// Google Service Management
+// API (at https://cloud.google.com/service-infrastructure/docs/overview)
 func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceManagerClient, error) {
-	clientOpts := defaultServiceManagerClientOptions()
-
+	clientOpts := defaultServiceManagerGRPCClientOptions()
 	if newServiceManagerClientHook != nil {
 		hookOpts, err := newServiceManagerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -139,16 +369,19 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-	c := &ServiceManagerClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultServiceManagerCallOptions(),
+	client := ServiceManagerClient{CallOptions: defaultServiceManagerCallOptions()}
 
+	c := &serviceManagerGRPCClient{
+		connPool:             connPool,
+		disableDeadlines:     disableDeadlines,
 		serviceManagerClient: servicemanagementpb.NewServiceManagerClient(connPool),
+		CallOptions:          &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -158,51 +391,45 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ServiceManagerClient) Connection() *grpc.ClientConn {
+func (c *serviceManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ServiceManagerClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ServiceManagerClient) setGoogleClientInfo(keyval ...string) {
+func (c *serviceManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListServices lists managed services.
-//
-// Returns all public services. For authenticated users, also returns all
-// services the calling user has “servicemanagement.services.get” permission
-// for.
-//
-// BETA: If the caller specifies the consumer_id, it returns only the
-// services enabled on the consumer. The consumer_id must have the format
-// of “project:{PROJECT-ID}”.
-func (c *ServiceManagerClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *serviceManagerGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListServices[0:len(c.CallOptions.ListServices):len(c.CallOptions.ListServices)], opts...)
+	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ManagedServiceIterator{}
 	req = proto.Clone(req).(*servicemanagementpb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.ManagedService, string, error) {
-		var resp *servicemanagementpb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &servicemanagementpb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -225,23 +452,24 @@ func (c *ServiceManagerClient) ListServices(ctx context.Context, req *serviceman
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetService gets a managed service. Authentication is required unless the service is
-// public.
-func (c *ServiceManagerClient) GetService(ctx context.Context, req *servicemanagementpb.GetServiceRequest, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
+func (c *serviceManagerGRPCClient) GetService(ctx context.Context, req *servicemanagementpb.GetServiceRequest, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetService[0:len(c.CallOptions.GetService):len(c.CallOptions.GetService)], opts...)
+	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *servicemanagementpb.ManagedService
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -254,18 +482,14 @@ func (c *ServiceManagerClient) GetService(ctx context.Context, req *servicemanag
 	return resp, nil
 }
 
-// CreateService creates a new managed service.
-// Please note one producer project can own no more than 20 services.
-//
-// Operation<response: ManagedService>
-func (c *ServiceManagerClient) CreateService(ctx context.Context, req *servicemanagementpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
+func (c *serviceManagerGRPCClient) CreateService(ctx context.Context, req *servicemanagementpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.CreateService[0:len(c.CallOptions.CreateService):len(c.CallOptions.CreateService)], opts...)
+	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -276,25 +500,20 @@ func (c *ServiceManagerClient) CreateService(ctx context.Context, req *servicema
 		return nil, err
 	}
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteService deletes a managed service. This method will change the service to the
-// Soft-Delete state for 30 days. Within this period, service producers may
-// call UndeleteService to restore the service.
-// After 30 days, the service will be permanently deleted.
-//
-// Operation<response: google.protobuf.Empty>
-func (c *ServiceManagerClient) DeleteService(ctx context.Context, req *servicemanagementpb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
+func (c *serviceManagerGRPCClient) DeleteService(ctx context.Context, req *servicemanagementpb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteService[0:len(c.CallOptions.DeleteService):len(c.CallOptions.DeleteService)], opts...)
+	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -305,25 +524,20 @@ func (c *ServiceManagerClient) DeleteService(ctx context.Context, req *servicema
 		return nil, err
 	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UndeleteService revives a previously deleted managed service. The method restores the
-// service using the configuration at the time the service was deleted.
-// The target service must exist and must have been deleted within the
-// last 30 days.
-//
-// Operation<response: UndeleteServiceResponse>
-func (c *ServiceManagerClient) UndeleteService(ctx context.Context, req *servicemanagementpb.UndeleteServiceRequest, opts ...gax.CallOption) (*UndeleteServiceOperation, error) {
+func (c *serviceManagerGRPCClient) UndeleteService(ctx context.Context, req *servicemanagementpb.UndeleteServiceRequest, opts ...gax.CallOption) (*UndeleteServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UndeleteService[0:len(c.CallOptions.UndeleteService):len(c.CallOptions.UndeleteService)], opts...)
+	opts = append((*c.CallOptions).UndeleteService[0:len((*c.CallOptions).UndeleteService):len((*c.CallOptions).UndeleteService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -334,24 +548,25 @@ func (c *ServiceManagerClient) UndeleteService(ctx context.Context, req *service
 		return nil, err
 	}
 	return &UndeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListServiceConfigs lists the history of the service configuration for a managed service,
-// from the newest to the oldest.
-func (c *ServiceManagerClient) ListServiceConfigs(ctx context.Context, req *servicemanagementpb.ListServiceConfigsRequest, opts ...gax.CallOption) *ServiceIterator {
+func (c *serviceManagerGRPCClient) ListServiceConfigs(ctx context.Context, req *servicemanagementpb.ListServiceConfigsRequest, opts ...gax.CallOption) *ServiceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListServiceConfigs[0:len(c.CallOptions.ListServiceConfigs):len(c.CallOptions.ListServiceConfigs)], opts...)
+	opts = append((*c.CallOptions).ListServiceConfigs[0:len((*c.CallOptions).ListServiceConfigs):len((*c.CallOptions).ListServiceConfigs)], opts...)
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*servicemanagementpb.ListServiceConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceconfigpb.Service, string, error) {
-		var resp *servicemanagementpb.ListServiceConfigsResponse
-		req.PageToken = pageToken
+		resp := &servicemanagementpb.ListServiceConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -374,22 +589,24 @@ func (c *ServiceManagerClient) ListServiceConfigs(ctx context.Context, req *serv
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetServiceConfig gets a service configuration (version) for a managed service.
-func (c *ServiceManagerClient) GetServiceConfig(ctx context.Context, req *servicemanagementpb.GetServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
+func (c *serviceManagerGRPCClient) GetServiceConfig(ctx context.Context, req *servicemanagementpb.GetServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "service_name", url.QueryEscape(req.GetServiceName()), "config_id", url.QueryEscape(req.GetConfigId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetServiceConfig[0:len(c.CallOptions.GetServiceConfig):len(c.CallOptions.GetServiceConfig)], opts...)
+	opts = append((*c.CallOptions).GetServiceConfig[0:len((*c.CallOptions).GetServiceConfig):len((*c.CallOptions).GetServiceConfig)], opts...)
 	var resp *serviceconfigpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -402,23 +619,16 @@ func (c *ServiceManagerClient) GetServiceConfig(ctx context.Context, req *servic
 	return resp, nil
 }
 
-// CreateServiceConfig creates a new service configuration (version) for a managed service.
-// This method only stores the service configuration. To roll out the service
-// configuration to backend systems please call
-// CreateServiceRollout.
-//
-// Only the 100 most recent service configurations and ones referenced by
-// existing rollouts are kept for each service. The rest will be deleted
-// eventually.
-func (c *ServiceManagerClient) CreateServiceConfig(ctx context.Context, req *servicemanagementpb.CreateServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
+func (c *serviceManagerGRPCClient) CreateServiceConfig(ctx context.Context, req *servicemanagementpb.CreateServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateServiceConfig[0:len(c.CallOptions.CreateServiceConfig):len(c.CallOptions.CreateServiceConfig)], opts...)
+	opts = append((*c.CallOptions).CreateServiceConfig[0:len((*c.CallOptions).CreateServiceConfig):len((*c.CallOptions).CreateServiceConfig)], opts...)
 	var resp *serviceconfigpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -431,28 +641,16 @@ func (c *ServiceManagerClient) CreateServiceConfig(ctx context.Context, req *ser
 	return resp, nil
 }
 
-// SubmitConfigSource creates a new service configuration (version) for a managed service based
-// on
-// user-supplied configuration source files (for example: OpenAPI
-// Specification). This method stores the source configurations as well as the
-// generated service configuration. To rollout the service configuration to
-// other services,
-// please call CreateServiceRollout.
-//
-// Only the 100 most recent configuration sources and ones referenced by
-// existing service configurtions are kept for each service. The rest will be
-// deleted eventually.
-//
-// Operation<response: SubmitConfigSourceResponse>
-func (c *ServiceManagerClient) SubmitConfigSource(ctx context.Context, req *servicemanagementpb.SubmitConfigSourceRequest, opts ...gax.CallOption) (*SubmitConfigSourceOperation, error) {
+func (c *serviceManagerGRPCClient) SubmitConfigSource(ctx context.Context, req *servicemanagementpb.SubmitConfigSourceRequest, opts ...gax.CallOption) (*SubmitConfigSourceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SubmitConfigSource[0:len(c.CallOptions.SubmitConfigSource):len(c.CallOptions.SubmitConfigSource)], opts...)
+	opts = append((*c.CallOptions).SubmitConfigSource[0:len((*c.CallOptions).SubmitConfigSource):len((*c.CallOptions).SubmitConfigSource)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -463,24 +661,25 @@ func (c *ServiceManagerClient) SubmitConfigSource(ctx context.Context, req *serv
 		return nil, err
 	}
 	return &SubmitConfigSourceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListServiceRollouts lists the history of the service configuration rollouts for a managed
-// service, from the newest to the oldest.
-func (c *ServiceManagerClient) ListServiceRollouts(ctx context.Context, req *servicemanagementpb.ListServiceRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
+func (c *serviceManagerGRPCClient) ListServiceRollouts(ctx context.Context, req *servicemanagementpb.ListServiceRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListServiceRollouts[0:len(c.CallOptions.ListServiceRollouts):len(c.CallOptions.ListServiceRollouts)], opts...)
+	opts = append((*c.CallOptions).ListServiceRollouts[0:len((*c.CallOptions).ListServiceRollouts):len((*c.CallOptions).ListServiceRollouts)], opts...)
 	it := &RolloutIterator{}
 	req = proto.Clone(req).(*servicemanagementpb.ListServiceRolloutsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.Rollout, string, error) {
-		var resp *servicemanagementpb.ListServiceRolloutsResponse
-		req.PageToken = pageToken
+		resp := &servicemanagementpb.ListServiceRolloutsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -503,22 +702,24 @@ func (c *ServiceManagerClient) ListServiceRollouts(ctx context.Context, req *ser
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetServiceRollout gets a service configuration rollout.
-func (c *ServiceManagerClient) GetServiceRollout(ctx context.Context, req *servicemanagementpb.GetServiceRolloutRequest, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
+func (c *serviceManagerGRPCClient) GetServiceRollout(ctx context.Context, req *servicemanagementpb.GetServiceRolloutRequest, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "service_name", url.QueryEscape(req.GetServiceName()), "rollout_id", url.QueryEscape(req.GetRolloutId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetServiceRollout[0:len(c.CallOptions.GetServiceRollout):len(c.CallOptions.GetServiceRollout)], opts...)
+	opts = append((*c.CallOptions).GetServiceRollout[0:len((*c.CallOptions).GetServiceRollout):len((*c.CallOptions).GetServiceRollout)], opts...)
 	var resp *servicemanagementpb.Rollout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -531,29 +732,16 @@ func (c *ServiceManagerClient) GetServiceRollout(ctx context.Context, req *servi
 	return resp, nil
 }
 
-// CreateServiceRollout creates a new service configuration rollout. Based on rollout, the
-// Google Service Management will roll out the service configurations to
-// different backend services. For example, the logging configuration will be
-// pushed to Google Cloud Logging.
-//
-// Please note that any previous pending and running Rollouts and associated
-// Operations will be automatically cancelled so that the latest Rollout will
-// not be blocked by previous Rollouts.
-//
-// Only the 100 most recent (in any state) and the last 10 successful (if not
-// already part of the set of 100 most recent) rollouts are kept for each
-// service. The rest will be deleted eventually.
-//
-// Operation<response: Rollout>
-func (c *ServiceManagerClient) CreateServiceRollout(ctx context.Context, req *servicemanagementpb.CreateServiceRolloutRequest, opts ...gax.CallOption) (*CreateServiceRolloutOperation, error) {
+func (c *serviceManagerGRPCClient) CreateServiceRollout(ctx context.Context, req *servicemanagementpb.CreateServiceRolloutRequest, opts ...gax.CallOption) (*CreateServiceRolloutOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateServiceRollout[0:len(c.CallOptions.CreateServiceRollout):len(c.CallOptions.CreateServiceRollout)], opts...)
+	opts = append((*c.CallOptions).CreateServiceRollout[0:len((*c.CallOptions).CreateServiceRollout):len((*c.CallOptions).CreateServiceRollout)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -564,29 +752,18 @@ func (c *ServiceManagerClient) CreateServiceRollout(ctx context.Context, req *se
 		return nil, err
 	}
 	return &CreateServiceRolloutOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GenerateConfigReport generates and returns a report (errors, warnings and changes from
-// existing configurations) associated with
-// GenerateConfigReportRequest.new_value
-//
-// If GenerateConfigReportRequest.old_value is specified,
-// GenerateConfigReportRequest will contain a single ChangeReport based on the
-// comparison between GenerateConfigReportRequest.new_value and
-// GenerateConfigReportRequest.old_value.
-// If GenerateConfigReportRequest.old_value is not specified, this method
-// will compare GenerateConfigReportRequest.new_value with the last pushed
-// service configuration.
-func (c *ServiceManagerClient) GenerateConfigReport(ctx context.Context, req *servicemanagementpb.GenerateConfigReportRequest, opts ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error) {
+func (c *serviceManagerGRPCClient) GenerateConfigReport(ctx context.Context, req *servicemanagementpb.GenerateConfigReportRequest, opts ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.GenerateConfigReport[0:len(c.CallOptions.GenerateConfigReport):len(c.CallOptions.GenerateConfigReport)], opts...)
+	opts = append((*c.CallOptions).GenerateConfigReport[0:len((*c.CallOptions).GenerateConfigReport):len((*c.CallOptions).GenerateConfigReport)], opts...)
 	var resp *servicemanagementpb.GenerateConfigReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -599,63 +776,6 @@ func (c *ServiceManagerClient) GenerateConfigReport(ctx context.Context, req *se
 	return resp, nil
 }
 
-// EnableService enables a service for a project, so it can be used
-// for the project. See
-// Cloud Auth Guide (at https://cloud.google.com/docs/authentication) for
-// more information.
-//
-// Operation<response: EnableServiceResponse>
-func (c *ServiceManagerClient) EnableService(ctx context.Context, req *servicemanagementpb.EnableServiceRequest, opts ...gax.CallOption) (*EnableServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.EnableService[0:len(c.CallOptions.EnableService):len(c.CallOptions.EnableService)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.serviceManagerClient.EnableService(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// DisableService disables a service for a project, so it can no longer be
-// be used for the project. It prevents accidental usage that may cause
-// unexpected billing charges or security leaks.
-//
-// Operation<response: DisableServiceResponse>
-func (c *ServiceManagerClient) DisableService(ctx context.Context, req *servicemanagementpb.DisableServiceRequest, opts ...gax.CallOption) (*DisableServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DisableService[0:len(c.CallOptions.DisableService):len(c.CallOptions.DisableService)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.serviceManagerClient.DisableService(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
 // CreateServiceOperation manages a long-running operation from CreateService.
 type CreateServiceOperation struct {
 	lro *longrunning.Operation
@@ -663,9 +783,9 @@ type CreateServiceOperation struct {
 
 // CreateServiceOperation returns a new CreateServiceOperation from a given name.
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
-func (c *ServiceManagerClient) CreateServiceOperation(name string) *CreateServiceOperation {
+func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -732,9 +852,9 @@ type CreateServiceRolloutOperation struct {
 
 // CreateServiceRolloutOperation returns a new CreateServiceRolloutOperation from a given name.
 // The name must be that of a previously created CreateServiceRolloutOperation, possibly from a different process.
-func (c *ServiceManagerClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
+func (c *serviceManagerGRPCClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
 	return &CreateServiceRolloutOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -801,9 +921,9 @@ type DeleteServiceOperation struct {
 
 // DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
-func (c *ServiceManagerClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
+func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -852,144 +972,6 @@ func (op *DeleteServiceOperation) Name() string {
 	return op.lro.Name()
 }
 
-// DisableServiceOperation manages a long-running operation from DisableService.
-type DisableServiceOperation struct {
-	lro *longrunning.Operation
-}
-
-// DisableServiceOperation returns a new DisableServiceOperation from a given name.
-// The name must be that of a previously created DisableServiceOperation, possibly from a different process.
-func (c *ServiceManagerClient) DisableServiceOperation(name string) *DisableServiceOperation {
-	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DisableServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.DisableServiceResponse, error) {
-	var resp servicemanagementpb.DisableServiceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DisableServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.DisableServiceResponse, error) {
-	var resp servicemanagementpb.DisableServiceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DisableServiceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DisableServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DisableServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EnableServiceOperation manages a long-running operation from EnableService.
-type EnableServiceOperation struct {
-	lro *longrunning.Operation
-}
-
-// EnableServiceOperation returns a new EnableServiceOperation from a given name.
-// The name must be that of a previously created EnableServiceOperation, possibly from a different process.
-func (c *ServiceManagerClient) EnableServiceOperation(name string) *EnableServiceOperation {
-	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *EnableServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.EnableServiceResponse, error) {
-	var resp servicemanagementpb.EnableServiceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *EnableServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.EnableServiceResponse, error) {
-	var resp servicemanagementpb.EnableServiceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *EnableServiceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *EnableServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *EnableServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
 // SubmitConfigSourceOperation manages a long-running operation from SubmitConfigSource.
 type SubmitConfigSourceOperation struct {
 	lro *longrunning.Operation
@@ -997,9 +979,9 @@ type SubmitConfigSourceOperation struct {
 
 // SubmitConfigSourceOperation returns a new SubmitConfigSourceOperation from a given name.
 // The name must be that of a previously created SubmitConfigSourceOperation, possibly from a different process.
-func (c *ServiceManagerClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
+func (c *serviceManagerGRPCClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
 	return &SubmitConfigSourceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1066,9 +1048,9 @@ type UndeleteServiceOperation struct {
 
 // UndeleteServiceOperation returns a new UndeleteServiceOperation from a given name.
 // The name must be that of a previously created UndeleteServiceOperation, possibly from a different process.
-func (c *ServiceManagerClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
+func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
 	return &UndeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

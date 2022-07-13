@@ -93,7 +93,7 @@ docker run --rm \
    -e ONLY_GAPICS=true \
    -e GOCLOUD_DIR=/gapicgen \
    -e GAPIC_TO_GENERATE=cloud.google.com/go/foo/apiv1 \
-   genbot \
+   genbot
 ```
 
 Note you can optionally mount in your Go module cache if you have Go installed.
@@ -109,7 +109,7 @@ This will speed up the build a bit:
 
 ```shell
 cd /path/to/internal/gapicgen
-go get -u github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
+go get -d github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
 ```
 
 (it's just based on the go.mod entry)

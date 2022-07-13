@@ -1,0 +1,82 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.run.v2",
+  "libraryPackage": "cloud.google.com/go/run/apiv2",
+  "services": {
+    "Revisions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RevisionsClient",
+          "rpcs": {
+            "DeleteRevision": {
+              "methods": [
+                "DeleteRevision"
+              ]
+            },
+            "GetRevision": {
+              "methods": [
+                "GetRevision"
+              ]
+            },
+            "ListRevisions": {
+              "methods": [
+                "ListRevisions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Services": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ServicesClient",
+          "rpcs": {
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

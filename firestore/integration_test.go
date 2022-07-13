@@ -462,6 +462,19 @@ func TestIntegration_Update(t *testing.T) {
 		er(doc.Update(ctx, fpus, LastUpdateTime(wr.UpdateTime.Add(-time.Millisecond)))))
 	codeEq(t, "Update with right LastUpdateTime", codes.OK,
 		er(doc.Update(ctx, fpus, LastUpdateTime(wr.UpdateTime))))
+
+	// Verify that map value deletion is respected
+	fpus = []Update{
+		{FieldPath: []string{"*", "`"}, Value: Delete},
+	}
+	_ = h.mustUpdate(doc, fpus)
+	ds = h.mustGet(doc)
+	got = ds.Data()
+	want = copyMap(want)
+	want["*"] = map[string]interface{}{}
+	if !testEqual(got, want) {
+		t.Errorf("got\n%#v\nwant\n%#v", got, want)
+	}
 }
 
 func TestIntegration_Collections(t *testing.T) {
@@ -1586,5 +1599,124 @@ func TestDetectProjectID(t *testing.T) {
 	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
 	if err == nil || err.Error() != "firestore: see the docs on DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
+	}
+}
+
+func TestIntegration_ColGroupRefPartitions(t *testing.T) {
+	h := testHelper{t}
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	ctx := context.Background()
+
+	// Create a doc in the test collection so a collectionID is live for testing
+	doc := coll.NewDoc()
+	h.mustCreate(doc, integrationTestMap)
+	defer doc.Delete(ctx)
+
+	// Verify partitions are within an expected range. Paritioning isn't exact
+	// so a fuzzy count needs to be used.
+	for idx, tc := range []struct {
+		collectionID              string
+		minExpectedPartitionCount int
+		maxExpectedPartitionCount int
+	}{
+		// Verify no failures if a collection doesn't exist
+		{collectionID: "does-not-exist", minExpectedPartitionCount: 1, maxExpectedPartitionCount: 1},
+		// Verify a collectionID with a small number of results returns a partition
+		{collectionID: coll.collectionID, minExpectedPartitionCount: 1, maxExpectedPartitionCount: 2},
+	} {
+		colGroup := iClient.CollectionGroup(tc.collectionID)
+		partitions, err := colGroup.GetPartitionedQueries(ctx, 10)
+		if err != nil {
+			t.Fatalf("getPartitions: received unexpected error: %v", err)
+		}
+		got, minWant, maxWant := len(partitions), tc.minExpectedPartitionCount, tc.maxExpectedPartitionCount
+		if got < minWant || got > maxWant {
+			t.Errorf(
+				"Unexpected Partition Count:index:%d, got %d, want min:%d max:%d",
+				idx, got, minWant, maxWant,
+			)
+			for _, v := range partitions {
+				t.Errorf(
+					"Partition: startDoc:%v, endDoc:%v, startVals:%v, endVals:%v",
+					v.startDoc, v.endDoc, v.startVals, v.endVals,
+				)
+			}
+		}
+	}
+
+}
+
+func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
+	// Create collection with enough documents to have multiple partitions.
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	collectionID := coll.collectionID
+
+	ctx := context.Background()
+
+	documentCount := 2*128 + 127 // Minimum partition size is 128.
+
+	// Create documents in a collection sufficient to trigger multiple partitions.
+	batch := iClient.Batch()
+	deleteBatch := iClient.Batch()
+	for i := 0; i < documentCount; i++ {
+		doc := coll.Doc(fmt.Sprintf("doc%d", i))
+		batch.Create(doc, integrationTestMap)
+		deleteBatch.Delete(doc)
+	}
+	batch.Commit(ctx)
+	defer deleteBatch.Commit(ctx)
+
+	// Verify that we retrieve 383 documents for the colGroup (128*2 + 127)
+	colGroup := iClient.CollectionGroup(collectionID)
+	docs, err := colGroup.Documents(ctx).GetAll()
+	if err != nil {
+		t.Fatalf("GetAll(): received unexpected error: %v", err)
+	}
+	if got, want := len(docs), documentCount; got != want {
+		t.Errorf("Unexpected number of documents in collection group: got %d, want %d", got, want)
+	}
+
+	// Get partitions, allow up to 10 to come back, expect less will be returned.
+	partitions, err := colGroup.GetPartitionedQueries(ctx, 10)
+	if err != nil {
+		t.Fatalf("GetPartitionedQueries: received unexpected error: %v", err)
+	}
+	if len(partitions) < 2 {
+		t.Errorf("Unexpected Partition Count. Expected 2 or more: got %d, want 2+", len(partitions))
+	}
+
+	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
+	totalCount := 0
+	for _, query := range partitions {
+		allDocs, err := query.Documents(ctx).GetAll()
+		if err != nil {
+			t.Fatalf("GetAll(): received unexpected error: %v", err)
+		}
+		totalCount += len(allDocs)
+
+		// Verify that serialization round-trips. Check that the same results are
+		// returned even if we use the proto converted query
+		queryBytes, err := query.Serialize()
+		if err != nil {
+			t.Fatalf("Serialize error: %v", err)
+		}
+		q, err := iClient.CollectionGroup("DNE").Deserialize(queryBytes)
+		if err != nil {
+			t.Fatalf("Deserialize error: %v", err)
+		}
+
+		protoReturnedDocs, err := q.Documents(ctx).GetAll()
+		if err != nil {
+			t.Fatalf("GetAll error: %v", err)
+		}
+		if len(allDocs) != len(protoReturnedDocs) {
+			t.Fatalf("Expected document count to be the same on both query runs: %v", err)
+		}
+	}
+
+	if got, want := totalCount, documentCount; got != want {
+		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
 	}
 }

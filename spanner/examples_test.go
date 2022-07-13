@@ -98,9 +98,9 @@ func ExampleClient_ReadWriteTransaction() {
 		}
 		balance -= 10
 		m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
-		return txn.BufferWrite([]*spanner.Mutation{m})
 		// The buffered mutation will be committed. If the commit fails with an
 		// IsAborted error, this function will be called again.
+		return txn.BufferWrite([]*spanner.Mutation{m})
 	})
 	if err != nil {
 		// TODO: Handle error.
@@ -399,6 +399,30 @@ func ExampleRow_ToStruct() {
 
 	var acct Account
 	if err := row.ToStruct(&acct); err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(acct)
+}
+
+func ExampleRow_ToStructLenient() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	row, err := client.Single().ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"accountID", "name", "balance"})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	type Account struct {
+		Name     string
+		Balance  int64
+		NickName string
+	}
+
+	var acct Account
+	if err := row.ToStructLenient(&acct); err != nil {
 		// TODO: Handle error.
 	}
 	fmt.Println(acct)

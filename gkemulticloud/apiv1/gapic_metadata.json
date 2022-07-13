@@ -1,0 +1,167 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.gkemulticloud.v1",
+  "libraryPackage": "cloud.google.com/go/gkemulticloud/apiv1",
+  "services": {
+    "AwsClusters": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AwsClustersClient",
+          "rpcs": {
+            "CreateAwsCluster": {
+              "methods": [
+                "CreateAwsCluster"
+              ]
+            },
+            "CreateAwsNodePool": {
+              "methods": [
+                "CreateAwsNodePool"
+              ]
+            },
+            "DeleteAwsCluster": {
+              "methods": [
+                "DeleteAwsCluster"
+              ]
+            },
+            "DeleteAwsNodePool": {
+              "methods": [
+                "DeleteAwsNodePool"
+              ]
+            },
+            "GenerateAwsAccessToken": {
+              "methods": [
+                "GenerateAwsAccessToken"
+              ]
+            },
+            "GetAwsCluster": {
+              "methods": [
+                "GetAwsCluster"
+              ]
+            },
+            "GetAwsNodePool": {
+              "methods": [
+                "GetAwsNodePool"
+              ]
+            },
+            "GetAwsServerConfig": {
+              "methods": [
+                "GetAwsServerConfig"
+              ]
+            },
+            "ListAwsClusters": {
+              "methods": [
+                "ListAwsClusters"
+              ]
+            },
+            "ListAwsNodePools": {
+              "methods": [
+                "ListAwsNodePools"
+              ]
+            },
+            "UpdateAwsCluster": {
+              "methods": [
+                "UpdateAwsCluster"
+              ]
+            },
+            "UpdateAwsNodePool": {
+              "methods": [
+                "UpdateAwsNodePool"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AzureClusters": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AzureClustersClient",
+          "rpcs": {
+            "CreateAzureClient": {
+              "methods": [
+                "CreateAzureClient"
+              ]
+            },
+            "CreateAzureCluster": {
+              "methods": [
+                "CreateAzureCluster"
+              ]
+            },
+            "CreateAzureNodePool": {
+              "methods": [
+                "CreateAzureNodePool"
+              ]
+            },
+            "DeleteAzureClient": {
+              "methods": [
+                "DeleteAzureClient"
+              ]
+            },
+            "DeleteAzureCluster": {
+              "methods": [
+                "DeleteAzureCluster"
+              ]
+            },
+            "DeleteAzureNodePool": {
+              "methods": [
+                "DeleteAzureNodePool"
+              ]
+            },
+            "GenerateAzureAccessToken": {
+              "methods": [
+                "GenerateAzureAccessToken"
+              ]
+            },
+            "GetAzureClient": {
+              "methods": [
+                "GetAzureClient"
+              ]
+            },
+            "GetAzureCluster": {
+              "methods": [
+                "GetAzureCluster"
+              ]
+            },
+            "GetAzureNodePool": {
+              "methods": [
+                "GetAzureNodePool"
+              ]
+            },
+            "GetAzureServerConfig": {
+              "methods": [
+                "GetAzureServerConfig"
+              ]
+            },
+            "ListAzureClients": {
+              "methods": [
+                "ListAzureClients"
+              ]
+            },
+            "ListAzureClusters": {
+              "methods": [
+                "ListAzureClusters"
+              ]
+            },
+            "ListAzureNodePools": {
+              "methods": [
+                "ListAzureNodePools"
+              ]
+            },
+            "UpdateAzureCluster": {
+              "methods": [
+                "UpdateAzureCluster"
+              ]
+            },
+            "UpdateAzureNodePool": {
+              "methods": [
+                "UpdateAzureNodePool"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -15,25 +15,100 @@ package wire
 
 import (
 	"encoding/base64"
+	"errors"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
+	"cloud.google.com/go/pubsublite/internal/test"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	spb "google.golang.org/genproto/googleapis/rpc/status"
 )
+
+func makeStreamResetSignal() error {
+	statuspb := &spb.Status{
+		Code: int32(codes.Aborted),
+		Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{
+			Reason: "RESET", Domain: "pubsublite.googleapis.com",
+		})},
+	}
+	return status.ErrorProto(statuspb)
+}
+
+func TestIsStreamResetSignal(t *testing.T) {
+	for _, tc := range []struct {
+		desc string
+		err  error
+		want bool
+	}{
+		{
+			desc: "reset signal",
+			err:  makeStreamResetSignal(),
+			want: true,
+		},
+		{
+			desc: "non-retryable code",
+			err: status.ErrorProto(&spb.Status{
+				Code:    int32(codes.FailedPrecondition),
+				Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{Reason: "RESET", Domain: "pubsublite.googleapis.com"})},
+			}),
+			want: false,
+		},
+		{
+			desc: "wrong domain",
+			err: status.ErrorProto(&spb.Status{
+				Code:    int32(codes.Aborted),
+				Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{Reason: "RESET"})},
+			}),
+			want: false,
+		},
+		{
+			desc: "wrong reason",
+			err: status.ErrorProto(&spb.Status{
+				Code:    int32(codes.Aborted),
+				Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{Domain: "pubsublite.googleapis.com"})},
+			}),
+			want: false,
+		},
+		{
+			desc: "missing details",
+			err:  status.ErrorProto(&spb.Status{Code: int32(codes.Aborted)}),
+			want: false,
+		},
+		{
+			desc: "nil error",
+			err:  nil,
+			want: false,
+		},
+		{
+			desc: "generic error",
+			err:  errors.New(""),
+			want: false,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			if got := isStreamResetSignal(tc.err); got != tc.want {
+				t.Errorf("isStreamResetSignal() got: %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
 
 func TestPubsubMetadataAddClientInfo(t *testing.T) {
 	for _, tc := range []struct {
 		desc           string
 		framework      FrameworkType
-		libraryVersion func() (version, bool)
+		libraryVersion string
 		wantClientInfo *structpb.Struct
 	}{
 		{
-			desc: "minimal",
-			libraryVersion: func() (version, bool) {
-				return version{}, false
-			},
+			desc:           "minimal",
+			libraryVersion: "",
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language": stringValue("GOLANG"),
@@ -41,11 +116,9 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 			},
 		},
 		{
-			desc:      "cps shim",
-			framework: FrameworkCloudPubSubShim,
-			libraryVersion: func() (version, bool) {
-				return version{}, false
-			},
+			desc:           "cps shim",
+			framework:      FrameworkCloudPubSubShim,
+			libraryVersion: "",
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language":  stringValue("GOLANG"),
@@ -54,17 +127,15 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 			},
 		},
 		{
-			desc:      "version valid",
-			framework: FrameworkCloudPubSubShim,
-			libraryVersion: func() (version, bool) {
-				return version{Major: "1", Minor: "2"}, true
-			},
+			desc:           "version valid",
+			framework:      FrameworkCloudPubSubShim,
+			libraryVersion: "1.2.3",
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language":      stringValue("GOLANG"),
 					"framework":     stringValue("CLOUD_PUBSUB_SHIM"),
-					"major_version": stringValue("1"),
-					"minor_version": stringValue("2"),
+					"major_version": numberValue(1),
+					"minor_version": numberValue(2),
 				},
 			},
 		},

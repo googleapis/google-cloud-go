@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewAuthorizedDomainsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAuthorizedDomainsClient_ListAuthorizedDomains() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewAuthorizedDomainsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListAuthorizedDomainsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListAuthorizedDomainsRequest.
 	}
 	it := c.ListAuthorizedDomains(ctx, req)
 	for {
