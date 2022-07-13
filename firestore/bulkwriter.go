@@ -77,17 +77,16 @@ func (j *BulkWriterJob) setError(e error) {
 // independent of each other. Bulkwriter does not apply writes in any set order;
 // thus a document can't have set on it immediately after creation.
 type BulkWriter struct {
-	database        string             // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
-	start           time.Time          // when this BulkWriter was started; used to calculate qps and rate increases
-	vc              *vkit.Client       // internal client
-	maxOpsPerSecond int                // number of requests that can be sent per second
-	docUpdatePaths  map[string]bool    // document paths with corresponding writes in the queue
-	cancel          context.CancelFunc // context to send cancel message
-	limiter         rate.Limiter       // limit requests to server to <= 500 qps
-	bundler         *bundler.Bundler   // handle bundling up writes to Firestore
-	ctx             context.Context    // context for canceling all BulkWriter operations
-	openLock        sync.Mutex         // guards against setting isOpen concurrently
-	isOpen          bool               // flag that the BulkWriter is closed
+	database        string           // the database as resource name: projects/[PROJECT]/databases/[DATABASE]
+	start           time.Time        // when this BulkWriter was started; used to calculate qps and rate increases
+	vc              *vkit.Client     // internal client
+	maxOpsPerSecond int              // number of requests that can be sent per second
+	docUpdatePaths  map[string]bool  // document paths with corresponding writes in the queue
+	limiter         rate.Limiter     // limit requests to server to <= 500 qps
+	bundler         *bundler.Bundler // handle bundling up writes to Firestore
+	ctx             context.Context  // context for canceling all BulkWriter operations
+	openLock        sync.Mutex       // guards against setting isOpen concurrently
+	isOpen          bool             // flag that the BulkWriter is closed
 }
 
 // newBulkWriter creates a new instance of the BulkWriter. This
@@ -96,7 +95,7 @@ type BulkWriter struct {
 func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter {
 	// Although typically we shouldn't store Context objects, in this case we
 	// need to pass this Context through to the Bundler handler.
-	ctx, cancel := context.WithCancel(withResourceHeader(ctx, c.path()))
+	ctx = withResourceHeader(ctx, c.path())
 
 	bw := &BulkWriter{
 		database:        database,
@@ -105,7 +104,6 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 		isOpen:          true,
 		maxOpsPerSecond: defaultStartingMaximumOpsPerSecond,
 		docUpdatePaths:  make(map[string]bool),
-		cancel:          cancel,
 		ctx:             ctx,
 		limiter:         *rate.NewLimiter(rate.Limit(maxWritesPerSecond), 1),
 	}
@@ -127,7 +125,6 @@ func (bw *BulkWriter) End() {
 	bw.openLock.Lock()
 	bw.isOpen = false
 	bw.openLock.Unlock()
-	bw.cancel()
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.

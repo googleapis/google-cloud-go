@@ -14,12 +14,9 @@ type bulkwriterTestCase struct {
 	test func(*BulkWriter) (*BulkWriterJob, error)
 }
 
-func TestBulkWriter(t *testing.T) {
-	c, srv, cleanup := newMock(t)
-	defer cleanup()
-
-	docPrefix := c.Collection("C").Path + "/"
-
+// setupMockServer adds expected write requests and correct mocked responses
+// to the mockServer.
+func setupMockServer(c *Client, docPrefix string, srv *mockServer) {
 	// Create
 	srv.addRPC(
 		&pb.BatchWriteRequest{
@@ -139,6 +136,15 @@ func TestBulkWriter(t *testing.T) {
 			},
 		},
 	)
+}
+
+func TestBulkWriter(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	docPrefix := c.Collection("C").Path + "/"
+
+	setupMockServer(c, docPrefix, srv)
 
 	ctx := context.Background()
 	bw := c.BulkWriter(ctx)
@@ -195,7 +201,7 @@ func TestBulkWriter(t *testing.T) {
 func TestBulkWriterErrors(t *testing.T) {
 	c, _, cleanup := newMock(t)
 	defer cleanup()
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
 	b := c.BulkWriter(ctx)
 
 	tcs := []bulkwriterTestCase{
@@ -215,7 +221,7 @@ func TestBulkWriterErrors(t *testing.T) {
 		{
 			name: "cannot ask a closed BulkWriter to write",
 			test: func(b *BulkWriter) (*BulkWriterJob, error) {
-				b.cancel()
+				cancel()
 				b.End()
 				return b.Delete(c.Doc("C/b"))
 			},
