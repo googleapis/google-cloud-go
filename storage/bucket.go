@@ -789,7 +789,7 @@ type BucketWebsite struct {
 
 // CustomPlacementConfig holds the bucket's custom placement
 // configuration for Custom Dual Regions. See
-// https://cloud.google.com/storage/docs/locations for more information.
+// https://cloud.google.com/storage/docs/locations#location-dr for more information.
 type CustomPlacementConfig struct {
 	// The list of regional locations in which data is placed.
 	// Custom Dual Regions require exactly 2 regional locations.
