@@ -10,17 +10,22 @@ jobs:
     name: Syncing branches
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: Get change notes
+        id: changes
+        run: echo ::set-output name=change_notes::$(git log storage-refactor..main --oneline --pretty=format:%s)
       - name: Opening pull request
         id: pull
+        # https://github.com/marketplace/actions/sync-branches
         uses: tretuna/sync-branches@1.4.0
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           FROM_BRANCH: "main"
           TO_BRANCH: "storage-refactor"
-          PULL_REQUEST_TITLE: "chore: sync main to storage-refactor"
           REVIEWERS: '["noahdietz"]'
+          PULL_REQUEST_TITLE: "chore: sync main to storage-refactor"
+          PULL_REQUEST_BODY: "${{ steps.changes.outputs.change_notes }}"
