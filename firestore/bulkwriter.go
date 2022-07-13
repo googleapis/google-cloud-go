@@ -89,9 +89,7 @@ type BulkWriter struct {
 	isOpen          bool             // flag that the BulkWriter is closed
 }
 
-// newBulkWriter creates a new instance of the BulkWriter. This
-// version of BulkWriter is intended to be used within go routines by the
-// callers.
+// newBulkWriter creates a new instance of the BulkWriter.
 func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter {
 	// Although typically we shouldn't store Context objects, in this case we
 	// need to pass this Context through to the Bundler handler.
