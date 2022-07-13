@@ -53,7 +53,7 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 func (j *BulkWriterJob) processResults() (*WriteResult, error) {
 	select {
 	case <-j.ctx.Done():
-		return nil, fmt.Errorf("firestore: BulkWriter early write cancellation")
+		return nil, j.ctx.Err()
 	case wpb := <-j.resultChan:
 		return writeResultFromProto(wpb)
 	case err := <-j.errChan:
@@ -127,6 +127,7 @@ func (bw *BulkWriter) End() {
 	bw.openLock.Lock()
 	bw.isOpen = false
 	bw.openLock.Unlock()
+	bw.cancel()
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
