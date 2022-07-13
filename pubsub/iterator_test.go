@@ -51,16 +51,17 @@ func TestSplitRequestIDs(t *testing.T) {
 		ids        []string
 		splitIndex int
 	}{
-		{[]string{}, 0},
-		{ids, 2},
-		{ids[:2], 2},
+		{[]string{}, 0}, // empty slice, no split
+		{ids, 2},        // slice of size 5, split at index 2
+		{ids[:2], 2},    // slice of size 3, split at index 2
+		{ids[:1], 1},    // slice of size 1, split at index 1
 	} {
-		got1, got2 := splitRequestIDs(test.ids, 15)
+		got1, got2 := splitRequestIDs(test.ids, 2)
 		want1, want2 := test.ids[:test.splitIndex], test.ids[test.splitIndex:]
-		if !testutil.Equal(got1, want1) {
+		if !testutil.Equal(len(got1), len(want1)) {
 			t.Errorf("%v, 1: got %v, want %v", test, got1, want1)
 		}
-		if !testutil.Equal(got2, want2) {
+		if !testutil.Equal(len(got2), len(want2)) {
 			t.Errorf("%v, 2: got %v, want %v", test, got2, want2)
 		}
 	}
@@ -632,9 +633,6 @@ func compareCompletedRetryLengths(t *testing.T, completed, retry []*AckResult, w
 func TestExactlyOnceProcessRequests(t *testing.T) {
 	ctx := context.Background()
 
-	transientInvalidAckError := errors.New(transientInvalidAckErrString)
-	permanentInvalidAckError := errors.New(permanentInvalidAckErrString)
-
 	t.Run("NoResults", func(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
 		// nil maps here behave the same as if they were empty maps.
@@ -675,8 +673,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
 		}
-		errorsMap := map[string]error{
-			"ackID1": permanentInvalidAckError,
+		errorsMap := map[string]string{
+			"ackID1": permanentInvalidAckErrString,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
@@ -694,8 +692,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
 		}
-		errorsMap := map[string]error{
-			"ackID1": transientInvalidAckError,
+		errorsMap := map[string]string{
+			"ackID1": transientInvalidAckErrString,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 0, 1)
@@ -706,8 +704,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		ackReqMap := map[string]*AckResult{
 			"ackID1": r,
 		}
-		errorsMap := map[string]error{
-			"ackID1": errors.New("unknown_error"),
+		errorsMap := map[string]string{
+			"ackID1": "unknown_error",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
@@ -781,9 +779,9 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID2": r2,
 			"ackID3": r3,
 		}
-		errorsMap := map[string]error{
-			"ackID1": permanentInvalidAckError,
-			"ackID2": transientInvalidAckError,
+		errorsMap := map[string]string{
+			"ackID1": permanentInvalidAckErrString,
+			"ackID2": transientInvalidAckErrString,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 2, 1)
