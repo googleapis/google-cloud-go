@@ -248,9 +248,10 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Unlock()
 	go func() {
 		if len(ackIDs) > 0 {
-			if !it.sendModAck(ackIDs, deadline) {
-				it.fail(it.err)
-			}
+			// Don't check the return value of this for now. We will be changing this
+			// for exactly once delivery and right now modacks are fire-and-forget anyway.
+			// Modacks errors should not be propagated to the client.
+			it.sendModAck(ackIDs, deadline)
 		}
 	}()
 	return msgs, nil
