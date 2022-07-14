@@ -35,6 +35,18 @@ func ExampleNewWorkflowsServiceV2BetaClient() {
 	_ = c
 }
 
+func ExampleNewWorkflowsServiceV2BetaRESTClient() {
+	ctx := context.Background()
+	c, err := lifesciences.NewWorkflowsServiceV2BetaRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleWorkflowsServiceV2BetaClient_RunPipeline() {
 	ctx := context.Background()
 	c, err := lifesciences.NewWorkflowsServiceV2BetaClient(ctx)

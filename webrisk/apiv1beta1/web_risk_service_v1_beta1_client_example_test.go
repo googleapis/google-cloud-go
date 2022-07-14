@@ -35,6 +35,18 @@ func ExampleNewWebRiskServiceV1Beta1Client() {
 	_ = c
 }
 
+func ExampleNewWebRiskServiceV1Beta1RESTClient() {
+	ctx := context.Background()
+	c, err := webrisk.NewWebRiskServiceV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)

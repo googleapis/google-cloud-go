@@ -36,6 +36,18 @@ func ExampleNewCloudMemcacheClient() {
 	_ = c
 }
 
+func ExampleNewCloudMemcacheRESTClient() {
+	ctx := context.Background()
+	c, err := memcache.NewCloudMemcacheRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudMemcacheClient_ListInstances() {
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)

@@ -27,14 +27,13 @@ import (
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/googleapis/go-type-adapters/adapters"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
-	"google.golang.org/genproto/googleapis/storage/v2"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -461,7 +460,12 @@ type BucketAttrs struct {
 	PredefinedDefaultObjectACL string
 
 	// Location is the location of the bucket. It defaults to "US".
+	// If specifying a dual-region, CustomPlacementConfig should be set in conjunction.
 	Location string
+
+	// The bucket's custom placement configuration that holds a list of
+	// regional locations for custom dual regions.
+	CustomPlacementConfig *CustomPlacementConfig
 
 	// MetaGeneration is the metadata generation of the bucket.
 	// This field is read-only.
@@ -782,6 +786,15 @@ type BucketWebsite struct {
 	NotFoundPage string
 }
 
+// CustomPlacementConfig holds the bucket's custom placement
+// configuration for Custom Dual Regions. See
+// https://cloud.google.com/storage/docs/locations#location-dr for more information.
+type CustomPlacementConfig struct {
+	// The list of regional locations in which data is placed.
+	// Custom Dual Regions require exactly 2 regional locations.
+	DataLocations []string
+}
+
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -815,6 +828,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		LocationType:             b.LocationType,
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
+		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
 	}, nil
 }
 
@@ -845,6 +859,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		PublicAccessPrevention:   toPublicAccessPreventionFromProto(b.GetIamConfig()),
 		LocationType:             b.GetLocationType(),
 		RPO:                      toRPOFromProto(b),
+		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
 	}
 }
 
@@ -882,22 +897,23 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		}
 	}
 	return &raw.Bucket{
-		Name:             b.Name,
-		Location:         b.Location,
-		StorageClass:     b.StorageClass,
-		Acl:              toRawBucketACL(b.ACL),
-		DefaultObjectAcl: toRawObjectACL(b.DefaultObjectACL),
-		Versioning:       v,
-		Labels:           labels,
-		Billing:          bb,
-		Lifecycle:        toRawLifecycle(b.Lifecycle),
-		RetentionPolicy:  b.RetentionPolicy.toRawRetentionPolicy(),
-		Cors:             toRawCORS(b.CORS),
-		Encryption:       b.Encryption.toRawBucketEncryption(),
-		Logging:          b.Logging.toRawBucketLogging(),
-		Website:          b.Website.toRawBucketWebsite(),
-		IamConfiguration: bktIAM,
-		Rpo:              b.RPO.String(),
+		Name:                  b.Name,
+		Location:              b.Location,
+		StorageClass:          b.StorageClass,
+		Acl:                   toRawBucketACL(b.ACL),
+		DefaultObjectAcl:      toRawObjectACL(b.DefaultObjectACL),
+		Versioning:            v,
+		Labels:                labels,
+		Billing:               bb,
+		Lifecycle:             toRawLifecycle(b.Lifecycle),
+		RetentionPolicy:       b.RetentionPolicy.toRawRetentionPolicy(),
+		Cors:                  toRawCORS(b.CORS),
+		Encryption:            b.Encryption.toRawBucketEncryption(),
+		Logging:               b.Logging.toRawBucketLogging(),
+		Website:               b.Website.toRawBucketWebsite(),
+		IamConfiguration:      bktIAM,
+		Rpo:                   b.RPO.String(),
+		CustomPlacementConfig: b.CustomPlacementConfig.toRawCustomPlacement(),
 	}
 }
 
@@ -924,7 +940,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 	}
 	var bb *storagepb.Bucket_Billing
 	if b.RequesterPays {
-		bb = &storage.Bucket_Billing{RequesterPays: true}
+		bb = &storagepb.Bucket_Billing{RequesterPays: true}
 	}
 	var bktIAM *storagepb.Bucket_IamConfig
 	if b.UniformBucketLevelAccess.Enabled || b.BucketPolicyOnly.Enabled || b.PublicAccessPrevention != PublicAccessPreventionUnknown {
@@ -940,22 +956,23 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 	}
 
 	return &storagepb.Bucket{
-		Name:             b.Name,
-		Location:         b.Location,
-		StorageClass:     b.StorageClass,
-		Acl:              toProtoBucketACL(b.ACL),
-		DefaultObjectAcl: toProtoObjectACL(b.DefaultObjectACL),
-		Versioning:       v,
-		Labels:           labels,
-		Billing:          bb,
-		Lifecycle:        toProtoLifecycle(b.Lifecycle),
-		RetentionPolicy:  b.RetentionPolicy.toProtoRetentionPolicy(),
-		Cors:             toProtoCORS(b.CORS),
-		Encryption:       b.Encryption.toProtoBucketEncryption(),
-		Logging:          b.Logging.toProtoBucketLogging(),
-		Website:          b.Website.toProtoBucketWebsite(),
-		IamConfig:        bktIAM,
-		Rpo:              b.RPO.String(),
+		Name:                  b.Name,
+		Location:              b.Location,
+		StorageClass:          b.StorageClass,
+		Acl:                   toProtoBucketACL(b.ACL),
+		DefaultObjectAcl:      toProtoObjectACL(b.DefaultObjectACL),
+		Versioning:            v,
+		Labels:                labels,
+		Billing:               bb,
+		Lifecycle:             toProtoLifecycle(b.Lifecycle),
+		RetentionPolicy:       b.RetentionPolicy.toProtoRetentionPolicy(),
+		Cors:                  toProtoCORS(b.CORS),
+		Encryption:            b.Encryption.toProtoBucketEncryption(),
+		Logging:               b.Logging.toProtoBucketLogging(),
+		Website:               b.Website.toProtoBucketWebsite(),
+		IamConfig:             bktIAM,
+		Rpo:                   b.RPO.String(),
+		CustomPlacementConfig: b.CustomPlacementConfig.toProtoCustomPlacement(),
 	}
 }
 
@@ -972,7 +989,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 	}
 	var bb *storagepb.Bucket_Billing
 	if ua.RequesterPays != nil {
-		bb = &storage.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
+		bb = &storagepb.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
 	}
 	var bktIAM *storagepb.Bucket_IamConfig
 	var ublaEnabled bool
@@ -1931,6 +1948,38 @@ func toRPOFromProto(b *storagepb.Bucket) RPO {
 	default:
 		return RPOUnknown
 	}
+}
+
+func customPlacementFromRaw(c *raw.BucketCustomPlacementConfig) *CustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &CustomPlacementConfig{DataLocations: c.DataLocations}
+}
+
+func (c *CustomPlacementConfig) toRawCustomPlacement() *raw.BucketCustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &raw.BucketCustomPlacementConfig{
+		DataLocations: c.DataLocations,
+	}
+}
+
+func (c *CustomPlacementConfig) toProtoCustomPlacement() *storagepb.Bucket_CustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &storagepb.Bucket_CustomPlacementConfig{
+		DataLocations: c.DataLocations,
+	}
+}
+
+func customPlacementFromProto(c *storagepb.Bucket_CustomPlacementConfig) *CustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &CustomPlacementConfig{DataLocations: c.GetDataLocations()}
 }
 
 // Objects returns an iterator over the objects in the bucket that match the

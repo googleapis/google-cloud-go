@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v0.4.0...notebooks/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **notebooks:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+
+
+### Miscellaneous Chores
+
+* **notebooks:** release 1.0.0 ([1b39bf4](https://github.com/googleapis/google-cloud-go/commit/1b39bf40f7fd25c3a4a60661929ec37f6a814898))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v0.3.0...notebooks/v0.4.0) (2022-05-09)
 
 
