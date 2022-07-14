@@ -26,6 +26,6 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           FROM_BRANCH: "main"
           TO_BRANCH: "storage-refactor"
-          REVIEWERS: '["noahdietz"]'
+          REVIEWERS: '["noahdietz", "cloud-storage-dpe"]'
           PULL_REQUEST_TITLE: "chore: sync main to storage-refactor"
           PULL_REQUEST_BODY: "${{ steps.changes.outputs.change_notes }}"
