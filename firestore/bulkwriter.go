@@ -251,10 +251,10 @@ func (bw *BulkWriter) write(w *pb.Write) *BulkWriterJob {
 	}
 
 	bw.limiter.Wait(bw.ctx)
-	err := bw.bundler.Add(j, 0) // ignore operation size constraints; can't be inferred at compile time
-	if err != nil {
-		j.setError(err)
-	}
+	// ignore operation size constraints and related errors; can't be inferred at compile time
+	// Bundler is set to accept an unlimited amount of bytes
+	_ = bw.bundler.Add(j, 0)
+
 	return j
 }
 
@@ -294,14 +294,16 @@ func (bw *BulkWriter) send(i interface{}) {
 			s := resp.Status[i]
 			c := s.GetCode()
 			if c != 0 { // Should we do an explicit check against rpc.Code enum?
-				j := &bwj[i]
-				(*j).attempts++
+				j := bwj[i]
+				j.attempts++
 
 				// Do we need separate retry bundler?
-				if (*j).attempts < maxRetryAttempts {
-					bw.bundler.Add(j, 0) // ignore operation size constraints; can't be inferred at compile time
+				if j.attempts < maxRetryAttempts {
+					// ignore operation size constraints and related errors; job size can't be inferred at compile time
+					// Bundler is set to accept an unlimited amount of bytes
+					_ = bw.bundler.Add(j, 0)
 				} else {
-					(*j).errChan <- fmt.Errorf("firestore: write failed with status: %v", s)
+					j.setError(fmt.Errorf("firestore: write failed with status: %v", s))
 				}
 				continue
 			}
