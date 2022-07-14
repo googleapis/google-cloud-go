@@ -236,3 +236,47 @@ func withFloatValueCount(colname string, wantValue float64, valueCount int64) co
 		}
 	}
 }
+
+// withArrayLength validates how many rows in an ARRAY column have a given length.
+func withArrayLength(colname string, wantLen int64, wantCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("arraylength_value_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(ARRAY_LENGTH(%s) = %d) as %s", colname, wantLen, resultCol),
+			expectedValue: wantCount,
+		}
+	}
+}
+
+// withDistinctArrayValues validates how many elements of an ARRAY column have a given cardinality.
+func withDistinctArrayValues(colname string, distinctVals, wantCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("distinct_array_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(ARRAY_LENGTH(ARRAY(SELECT DISTINCT element FROM UNNEST(%s) as element)) = %d) AS %s", colname, distinctVals, resultCol),
+			expectedValue: wantCount,
+		}
+	}
+}
+
+// withIntegerArraySum validates the total sum of values in an ARRAY<INT64?> column.
+func withIntegerArraySum(colname string, arraySum int64, wantCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("arraysum_int64_value_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF((SELECT SUM(elem) FROM UNNEST(%s) as elem) = %d) as %s", colname, arraySum, resultCol),
+			expectedValue: wantCount,
+		}
+	}
+}
+
+// withFloatArraySum validates how many rows in an an ARRAY<INT64?> column have a given sum, within an error bound.
+func withFloatArraySum(colname string, floatSum float64, wantCount int64) constraintOption {
+	return func(vi *validationInfo) {
+		resultCol := fmt.Sprintf("arraysum_float_value_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(((SELECT ABS(SUM(elem)) FROM UNNEST(%s) as elem) - ABS(%f)) / ABS(%f) < 0.0001) as %s", colname, floatSum, floatSum, resultCol),
+			expectedValue: wantCount,
+		}
+	}
+}
