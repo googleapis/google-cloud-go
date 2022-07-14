@@ -19,6 +19,7 @@ import (
 	"reflect"
 	"testing"
 
+	"cloud.google.com/go/bigquery/storage/managedwriter/internal/annotations"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
@@ -383,6 +384,43 @@ func TestSchemaToProtoConversion(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			description: "unicode",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "foo", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
+					{Name: "💩", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
+					{Name: "☕_addict", Type: storagepb.TableFieldSchema_BYTES, Mode: storagepb.TableFieldSchema_REPEATED},
+				}},
+			wantProto2: func() *descriptorpb.DescriptorProto {
+				dp := &descriptorpb.DescriptorProto{
+					Name: proto.String("root"),
+					Field: []*descriptorpb.FieldDescriptorProto{
+						{
+							Name:   proto.String("foo"),
+							Number: proto.Int32(1),
+							Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+							Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+						{
+							Name:    proto.String("unicode_field_2"),
+							Number:  proto.Int32(2),
+							Type:    descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+							Options: &descriptorpb.FieldOptions{},
+							Label:   descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum()},
+						{
+							Name:    proto.String("unicode_field_3"),
+							Number:  proto.Int32(3),
+							Type:    descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(),
+							Options: &descriptorpb.FieldOptions{},
+							Label:   descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+						},
+					},
+				}
+				proto.SetExtension(dp.Field[1].Options, annotations.E_ColumnName, "💩")
+				proto.SetExtension(dp.Field[2].Options, annotations.E_ColumnName, "☕_addict")
+				return dp
+			}(),
 		},
 	}
 	for _, tc := range testCases {

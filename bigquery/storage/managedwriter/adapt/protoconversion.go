@@ -18,7 +18,9 @@ import (
 	"encoding/base64"
 	"fmt"
 	"strings"
+	"unicode"
 
+	"cloud.google.com/go/bigquery/storage/managedwriter/internal/annotations"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -265,33 +267,58 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 //
 // Messages are always nullable, and repeated fields are as well.
 func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) (*descriptorpb.FieldDescriptorProto, error) {
+
 	name := strings.ToLower(field.GetName())
+	var fdp *descriptorpb.FieldDescriptorProto
+
 	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
-		return &descriptorpb.FieldDescriptorProto{
+		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(scope),
 			Label:    convertModeToLabel(field.GetMode(), useProto3),
-		}, nil
+		}
+	} else {
+		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
+		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
+			fdp = &descriptorpb.FieldDescriptorProto{
+				Name:   proto.String(name),
+				Number: proto.Int32(idx),
+				Type:   bqTypeToFieldTypeMap[field.GetType()].Enum(),
+				Label:  convertModeToLabel(field.GetMode(), useProto3),
+			}
+		} else {
+			// For NULLABLE proto3 fields, use a wrapper type.
+			fdp = &descriptorpb.FieldDescriptorProto{
+				Name:     proto.String(name),
+				Number:   proto.Int32(idx),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			}
+		}
 	}
+	if nameRequiresAnnotation(name) {
+		// TODO: need agreement across implementations on how to normalize?
+		// Possibly use golang.org/x/text/unicode/norm for ascii-fying?
+		fdp.Name = proto.String(fmt.Sprintf("unicode_field_%d", fdp.GetNumber()))
+		opts := fdp.GetOptions()
+		if opts == nil {
+			fdp.Options = &descriptorpb.FieldOptions{}
+		}
+		proto.SetExtension(fdp.Options, annotations.E_ColumnName, name)
+	}
+	return fdp, nil
+}
 
-	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
-	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
-		return &descriptorpb.FieldDescriptorProto{
-			Name:   proto.String(name),
-			Number: proto.Int32(idx),
-			Type:   bqTypeToFieldTypeMap[field.GetType()].Enum(),
-			Label:  convertModeToLabel(field.GetMode(), useProto3),
-		}, nil
+// nameRequiresAnnotation determines whether a field name requires unicode-annotation.
+func nameRequiresAnnotation(in string) bool {
+	for i := 0; i < len(in); i++ {
+		if in[i] > unicode.MaxASCII {
+			return true
+		}
 	}
-	// For NULLABLE proto3 fields, use a wrapper type.
-	return &descriptorpb.FieldDescriptorProto{
-		Name:     proto.String(name),
-		Number:   proto.Int32(idx),
-		Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-		TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
-		Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
-	}, nil
+	return false
 }
 
 // NormalizeDescriptor builds a self-contained DescriptorProto suitable for communicating schema
