@@ -636,13 +636,6 @@ type filter struct {
 	value     interface{}
 }
 
-// arrayOperators contains the set of FieldFilter operators that require an ArrayValue operand.
-var arrayOperators = map[pb.StructuredQuery_FieldFilter_Operator]bool{
-	pb.StructuredQuery_FieldFilter_IN:                 true,
-	pb.StructuredQuery_FieldFilter_NOT_IN:             true,
-	pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY: true,
-}
-
 func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if err := f.fieldPath.validate(); err != nil {
 		return nil, err
@@ -695,7 +688,8 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	if _, ok := arrayOperators[op]; ok {
+	// Log a warning if an array operator is passed a non-array-type value.
+	if op == pb.StructuredQuery_FieldFilter_IN || op == pb.StructuredQuery_FieldFilter_NOT_IN || op == pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY {
 		switch val.GetValueType().(type) {
 		case *pb.Value_ArrayValue:
 			break
