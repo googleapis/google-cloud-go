@@ -39,6 +39,7 @@ export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 # Go modules might not be on for previous versions of Go, so we also have to
 # enable the module system explicitly.
 export GO111MODULE=on
+go version
 go install golang.org/dl/go1.17.7
 go1.17.7 download
 
