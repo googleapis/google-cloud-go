@@ -53,10 +53,14 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 func (j *BulkWriterJob) processResults() (*WriteResult, error) {
 	select {
 	case <-j.ctx.Done():
+		close(j.resultChan)
+		close(j.errChan)
 		return nil, j.ctx.Err()
 	case wpb := <-j.resultChan:
+		close(j.errChan)
 		return writeResultFromProto(wpb)
 	case err := <-j.errChan:
+		close(j.resultChan)
 		return nil, err
 	}
 }
