@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"sync"
@@ -308,7 +309,7 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 	if err != nil {
 		// Transient connection loss.  If we got io.EOF from a send, we want subsequent appends to
 		// reconnect the network connection for the stream.
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			ms.reconnect = true
 		}
 		return 0, err
