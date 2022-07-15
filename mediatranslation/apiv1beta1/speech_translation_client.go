@@ -54,7 +54,7 @@ func defaultSpeechTranslationCallOptions() *SpeechTranslationCallOptions {
 	}
 }
 
-// internalSpeechTranslationClient is an interface that defines the methods availaible from Media Translation API.
+// internalSpeechTranslationClient is an interface that defines the methods available from Media Translation API.
 type internalSpeechTranslationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

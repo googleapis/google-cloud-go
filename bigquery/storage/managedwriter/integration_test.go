@@ -18,6 +18,8 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -26,9 +28,11 @@ import (
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opencensus.io/stats/view"
 	"google.golang.org/api/option"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -41,7 +45,7 @@ import (
 var (
 	datasetIDs         = uid.NewSpace("managedwriter_test_dataset", &uid.Options{Sep: '_', Time: time.Now()})
 	tableIDs           = uid.NewSpace("table", &uid.Options{Sep: '_', Time: time.Now()})
-	defaultTestTimeout = 30 * time.Second
+	defaultTestTimeout = 45 * time.Second
 )
 
 // our test data has cardinality 5 for names, 3 for values
@@ -151,6 +155,9 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		t.Run("Instrumentation", func(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
+		})
+		t.Run("TestLargeInsert", func(t *testing.T) {
+			testLargeInsert(ctx, t, mwClient, bqClient, dataset)
 		})
 	})
 }
@@ -468,6 +475,75 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		withExactRowCount(int64(len(testSimpleData))))
 }
 
+func testLargeInsert(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.SimpleMessageProto2{}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(CommittedStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	// Construct a Very Large request.
+	var data [][]byte
+	targetSize := 11 * 1024 * 1024 // 11 MB
+	b, err := proto.Marshal(testSimpleData[0])
+	if err != nil {
+		t.Errorf("failed to marshal message: %v", err)
+	}
+
+	numRows := targetSize / len(b)
+	data = make([][]byte, numRows)
+
+	for i := 0; i < numRows; i++ {
+		data[i] = b
+	}
+
+	result, err := ms.AppendRows(ctx, data, WithOffset(0))
+	if err != nil {
+		t.Errorf("single append failed: %v", err)
+	}
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		apiErr, ok := apierror.FromError(err)
+		if !ok {
+			t.Errorf("GetResult error was not an instance of ApiError")
+		}
+		if status := apiErr.GRPCStatus(); status.Code() != codes.InvalidArgument {
+			t.Errorf("expected InvalidArgument status, got %v", status)
+		}
+
+		details := apiErr.Details()
+		if details.DebugInfo == nil {
+			t.Errorf("expected DebugInfo to be populated, was nil")
+		}
+		wantSubstring := "Message size exceed the limitation of byte based flow control."
+		if detail := details.DebugInfo.GetDetail(); !strings.Contains(detail, wantSubstring) {
+			t.Errorf("detail missing desired substring: %s", detail)
+		}
+	}
+	// send a subsequent append as verification we can proceed.
+	result, err = ms.AppendRows(ctx, [][]byte{b})
+	if err != nil {
+		t.Fatalf("subsequent append failed: %v", err)
+	}
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("failure result from second append: %v", err)
+	}
+}
+
 func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testedViews := []*view.View{
 		AppendRequestsView,
@@ -611,10 +687,6 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 			break
 		}
 		curOffset = curOffset + 1
-		if err != nil {
-			t.Errorf("got error on offset %d: %v", curOffset, err)
-			break
-		}
 		s, err := resp.UpdatedSchema(ctx)
 		if err != nil {
 			t.Errorf("getting schema error: %v", err)
@@ -637,19 +709,29 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
-	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto), WithOffset(curOffset))
-	if err != nil {
-		t.Errorf("failed evolved append: %v", err)
+	// Try to force connection errors from concurrent appends.
+	// We drop setting of offset to avoid commingling out-of-order append errors.
+	var wg sync.WaitGroup
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+			if err != nil {
+				t.Errorf("failed evolved append: %v", err)
+			}
+			_, err = res.GetResult(ctx)
+			if err != nil {
+				t.Errorf("error on evolved append: %v", err)
+			}
+			wg.Done()
+		}()
 	}
-	_, err = result.GetResult(ctx)
-	if err != nil {
-		t.Errorf("error on evolved append: %v", err)
-	}
+	wg.Wait()
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
-		withExactRowCount(int64(curOffset+1)),
+		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
-		withNonNullCount("other", 1),
+		withNonNullCount("other", 5),
 	)
 }
 

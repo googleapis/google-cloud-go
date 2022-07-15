@@ -27,14 +27,13 @@ import (
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/googleapis/go-type-adapters/adapters"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
-	"google.golang.org/genproto/googleapis/storage/v2"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -103,7 +102,7 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
-	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true)
+	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // Delete deletes the Bucket.
@@ -116,7 +115,7 @@ func (b *BucketHandle) Delete(ctx context.Context) (err error) {
 		return err
 	}
 
-	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true)
+	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 func (b *BucketHandle) newDeleteCall() (*raw.BucketsDeleteCall, error) {
@@ -184,7 +183,7 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 	err = run(ctx, func() error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
@@ -232,7 +231,7 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 		return err
 	}
 
-	if err := run(ctx, call, b.retry, isIdempotent); err != nil {
+	if err := run(ctx, call, b.retry, isIdempotent, setRetryHeaderHTTP(req)); err != nil {
 		return nil, err
 	}
 	return newBucket(rawBucket)
@@ -461,7 +460,12 @@ type BucketAttrs struct {
 	PredefinedDefaultObjectACL string
 
 	// Location is the location of the bucket. It defaults to "US".
+	// If specifying a dual-region, CustomPlacementConfig should be set in conjunction.
 	Location string
+
+	// The bucket's custom placement configuration that holds a list of
+	// regional locations for custom dual regions.
+	CustomPlacementConfig *CustomPlacementConfig
 
 	// MetaGeneration is the metadata generation of the bucket.
 	// This field is read-only.
@@ -645,6 +649,13 @@ const (
 	// SetStorageClassAction changes the storage class of live and/or archived
 	// objects.
 	SetStorageClassAction = "SetStorageClass"
+
+	// AbortIncompleteMPUAction is a lifecycle action that aborts an incomplete
+	// multipart upload when the multipart upload meets the conditions specified
+	// in the lifecycle rule. The AgeInDays condition is the only allowed
+	// condition for this action. AgeInDays is measured from the time the
+	// multipart upload was created.
+	AbortIncompleteMPUAction = "AbortIncompleteMultipartUpload"
 )
 
 // LifecycleRule is a lifecycle configuration rule.
@@ -665,9 +676,8 @@ type LifecycleRule struct {
 type LifecycleAction struct {
 	// Type is the type of action to take on matching objects.
 	//
-	// Acceptable values are "Delete" to delete matching objects and
-	// "SetStorageClass" to set the storage class defined in StorageClass on
-	// matching objects.
+	// Acceptable values are storage.DeleteAction, storage.SetStorageClassAction,
+	// and storage.AbortIncompleteMPUAction.
 	Type string
 
 	// StorageClass is the storage class to set on matching objects if the Action
@@ -719,11 +729,19 @@ type LifecycleCondition struct {
 	// Liveness specifies the object's liveness. Relevant only for versioned objects
 	Liveness Liveness
 
+	// MatchesPrefix is the condition matching an object if any of the
+	// matches_prefix strings are an exact prefix of the object's name.
+	MatchesPrefix []string
+
 	// MatchesStorageClasses is the condition matching the object's storage
 	// class.
 	//
 	// Values include "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE".
 	MatchesStorageClasses []string
+
+	// MatchesSuffix is the condition matching an object if any of the
+	// matches_suffix strings are an exact suffix of the object's name.
+	MatchesSuffix []string
 
 	// NoncurrentTimeBefore is the noncurrent timestamp of the object. This
 	// condition is satisfied when an object's noncurrent timestamp is before
@@ -768,6 +786,15 @@ type BucketWebsite struct {
 	NotFoundPage string
 }
 
+// CustomPlacementConfig holds the bucket's custom placement
+// configuration for Custom Dual Regions. See
+// https://cloud.google.com/storage/docs/locations#location-dr for more information.
+type CustomPlacementConfig struct {
+	// The list of regional locations in which data is placed.
+	// Custom Dual Regions require exactly 2 regional locations.
+	DataLocations []string
+}
+
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -801,6 +828,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		LocationType:             b.LocationType,
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
+		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
 	}, nil
 }
 
@@ -831,6 +859,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		PublicAccessPrevention:   toPublicAccessPreventionFromProto(b.GetIamConfig()),
 		LocationType:             b.GetLocationType(),
 		RPO:                      toRPOFromProto(b),
+		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
 	}
 }
 
@@ -868,22 +897,23 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		}
 	}
 	return &raw.Bucket{
-		Name:             b.Name,
-		Location:         b.Location,
-		StorageClass:     b.StorageClass,
-		Acl:              toRawBucketACL(b.ACL),
-		DefaultObjectAcl: toRawObjectACL(b.DefaultObjectACL),
-		Versioning:       v,
-		Labels:           labels,
-		Billing:          bb,
-		Lifecycle:        toRawLifecycle(b.Lifecycle),
-		RetentionPolicy:  b.RetentionPolicy.toRawRetentionPolicy(),
-		Cors:             toRawCORS(b.CORS),
-		Encryption:       b.Encryption.toRawBucketEncryption(),
-		Logging:          b.Logging.toRawBucketLogging(),
-		Website:          b.Website.toRawBucketWebsite(),
-		IamConfiguration: bktIAM,
-		Rpo:              b.RPO.String(),
+		Name:                  b.Name,
+		Location:              b.Location,
+		StorageClass:          b.StorageClass,
+		Acl:                   toRawBucketACL(b.ACL),
+		DefaultObjectAcl:      toRawObjectACL(b.DefaultObjectACL),
+		Versioning:            v,
+		Labels:                labels,
+		Billing:               bb,
+		Lifecycle:             toRawLifecycle(b.Lifecycle),
+		RetentionPolicy:       b.RetentionPolicy.toRawRetentionPolicy(),
+		Cors:                  toRawCORS(b.CORS),
+		Encryption:            b.Encryption.toRawBucketEncryption(),
+		Logging:               b.Logging.toRawBucketLogging(),
+		Website:               b.Website.toRawBucketWebsite(),
+		IamConfiguration:      bktIAM,
+		Rpo:                   b.RPO.String(),
+		CustomPlacementConfig: b.CustomPlacementConfig.toRawCustomPlacement(),
 	}
 }
 
@@ -910,7 +940,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 	}
 	var bb *storagepb.Bucket_Billing
 	if b.RequesterPays {
-		bb = &storage.Bucket_Billing{RequesterPays: true}
+		bb = &storagepb.Bucket_Billing{RequesterPays: true}
 	}
 	var bktIAM *storagepb.Bucket_IamConfig
 	if b.UniformBucketLevelAccess.Enabled || b.BucketPolicyOnly.Enabled || b.PublicAccessPrevention != PublicAccessPreventionUnknown {
@@ -926,22 +956,23 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 	}
 
 	return &storagepb.Bucket{
-		Name:             b.Name,
-		Location:         b.Location,
-		StorageClass:     b.StorageClass,
-		Acl:              toProtoBucketACL(b.ACL),
-		DefaultObjectAcl: toProtoObjectACL(b.DefaultObjectACL),
-		Versioning:       v,
-		Labels:           labels,
-		Billing:          bb,
-		Lifecycle:        toProtoLifecycle(b.Lifecycle),
-		RetentionPolicy:  b.RetentionPolicy.toProtoRetentionPolicy(),
-		Cors:             toProtoCORS(b.CORS),
-		Encryption:       b.Encryption.toProtoBucketEncryption(),
-		Logging:          b.Logging.toProtoBucketLogging(),
-		Website:          b.Website.toProtoBucketWebsite(),
-		IamConfig:        bktIAM,
-		Rpo:              b.RPO.String(),
+		Name:                  b.Name,
+		Location:              b.Location,
+		StorageClass:          b.StorageClass,
+		Acl:                   toProtoBucketACL(b.ACL),
+		DefaultObjectAcl:      toProtoObjectACL(b.DefaultObjectACL),
+		Versioning:            v,
+		Labels:                labels,
+		Billing:               bb,
+		Lifecycle:             toProtoLifecycle(b.Lifecycle),
+		RetentionPolicy:       b.RetentionPolicy.toProtoRetentionPolicy(),
+		Cors:                  toProtoCORS(b.CORS),
+		Encryption:            b.Encryption.toProtoBucketEncryption(),
+		Logging:               b.Logging.toProtoBucketLogging(),
+		Website:               b.Website.toProtoBucketWebsite(),
+		IamConfig:             bktIAM,
+		Rpo:                   b.RPO.String(),
+		CustomPlacementConfig: b.CustomPlacementConfig.toProtoCustomPlacement(),
 	}
 }
 
@@ -958,7 +989,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 	}
 	var bb *storagepb.Bucket_Billing
 	if ua.RequesterPays != nil {
-		bb = &storage.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
+		bb = &storagepb.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
 	}
 	var bktIAM *storagepb.Bucket_IamConfig
 	var ublaEnabled bool
@@ -986,11 +1017,17 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		lifecycle = *ua.Lifecycle
 	}
 	var bktACL []*storagepb.BucketAccessControl
+	if ua.acl != nil {
+		bktACL = toProtoBucketACL(ua.acl)
+	}
 	if ua.PredefinedACL != "" {
 		// Clear ACL or the call will fail.
 		bktACL = nil
 	}
 	var bktDefaultObjectACL []*storagepb.ObjectAccessControl
+	if ua.defaultObjectACL != nil {
+		bktDefaultObjectACL = toProtoObjectACL(ua.defaultObjectACL)
+	}
 	if ua.PredefinedDefaultObjectACL != "" {
 		// Clear ACLs or the call will fail.
 		bktDefaultObjectACL = nil
@@ -1125,6 +1162,17 @@ type BucketAttrsToUpdate struct {
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
+
+	// acl is the list of access control rules on the bucket.
+	// It is unexported and only used internally by the gRPC client.
+	// Library users should use ACLHandle methods directly.
+	acl []ACLRule
+
+	// defaultObjectACL is the list of access controls to
+	// apply to new objects when no object ACL is provided.
+	// It is unexported and only used internally by the gRPC client.
+	// Library users should use ACLHandle methods directly.
+	defaultObjectACL []ACLRule
 
 	setLabels    map[string]string
 	deleteLabels map[string]bool
@@ -1324,7 +1372,7 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	return run(ctx, func() error {
 		_, err := req.Context(ctx).Do()
 		return err
-	}, b.retry, true)
+	}, b.retry, true, setRetryHeaderHTTP(req))
 }
 
 // applyBucketConds modifies the provided call using the conditions in conds.
@@ -1395,7 +1443,7 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 }
 
 func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) {
-	if rp == nil {
+	if rp == nil || rp.EffectiveTime == "" {
 		return nil, nil
 	}
 	t, err := time.Parse(time.RFC3339, rp.EffectiveTime)
@@ -1472,6 +1520,19 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 	return out
 }
 
+// Used to handle breaking change in Autogen Storage client OLM Age field
+// from int64 to *int64 gracefully in the manual client
+// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
+func setAgeCondition(age int64, ageField interface{}) {
+	c := reflect.ValueOf(ageField).Elem()
+	switch c.Kind() {
+	case reflect.Int64:
+		c.SetInt(age)
+	case reflect.Ptr:
+		c.Set(reflect.ValueOf(&age))
+	}
+}
+
 func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 	var rl raw.BucketLifecycle
 	if len(l.Rules) == 0 {
@@ -1484,13 +1545,16 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				StorageClass: r.Action.StorageClass,
 			},
 			Condition: &raw.BucketLifecycleRuleCondition{
-				Age:                     r.Condition.AgeInDays,
 				DaysSinceCustomTime:     r.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: r.Condition.DaysSinceNoncurrentTime,
+				MatchesPrefix:           r.Condition.MatchesPrefix,
 				MatchesStorageClass:     r.Condition.MatchesStorageClasses,
+				MatchesSuffix:           r.Condition.MatchesSuffix,
 				NumNewerVersions:        r.Condition.NumNewerVersions,
 			},
 		}
+
+		setAgeCondition(r.Condition.AgeInDays, &rr.Condition.Age)
 
 		switch r.Condition.Liveness {
 		case LiveAndArchived:
@@ -1532,7 +1596,9 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 				AgeDays:                 proto.Int32(int32(r.Condition.AgeInDays)),
 				DaysSinceCustomTime:     proto.Int32(int32(r.Condition.DaysSinceCustomTime)),
 				DaysSinceNoncurrentTime: proto.Int32(int32(r.Condition.DaysSinceNoncurrentTime)),
+				MatchesPrefix:           r.Condition.MatchesPrefix,
 				MatchesStorageClass:     r.Condition.MatchesStorageClasses,
+				MatchesSuffix:           r.Condition.MatchesSuffix,
 				NumNewerVersions:        proto.Int32(int32(r.Condition.NumNewerVersions)),
 			},
 		}
@@ -1560,6 +1626,21 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 	return &rl
 }
 
+// Used to handle breaking change in Autogen Storage client OLM Age field
+// from int64 to *int64 gracefully in the manual client
+// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
+func getAgeCondition(ageField interface{}) int64 {
+	v := reflect.ValueOf(ageField)
+	if v.Kind() == reflect.Int64 {
+		return v.Interface().(int64)
+	} else if v.Kind() == reflect.Ptr {
+		if val, ok := v.Interface().(*int64); ok {
+			return *val
+		}
+	}
+	return 0
+}
+
 func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 	var l Lifecycle
 	if rl == nil {
@@ -1572,13 +1653,15 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				StorageClass: rr.Action.StorageClass,
 			},
 			Condition: LifecycleCondition{
-				AgeInDays:               rr.Condition.Age,
 				DaysSinceCustomTime:     rr.Condition.DaysSinceCustomTime,
 				DaysSinceNoncurrentTime: rr.Condition.DaysSinceNoncurrentTime,
+				MatchesPrefix:           rr.Condition.MatchesPrefix,
 				MatchesStorageClasses:   rr.Condition.MatchesStorageClass,
+				MatchesSuffix:           rr.Condition.MatchesSuffix,
 				NumNewerVersions:        rr.Condition.NumNewerVersions,
 			},
 		}
+		r.Condition.AgeInDays = getAgeCondition(rr.Condition.Age)
 
 		if rr.Condition.IsLive == nil {
 			r.Condition.Liveness = LiveAndArchived
@@ -1617,7 +1700,9 @@ func toLifecycleFromProto(rl *storagepb.Bucket_Lifecycle) Lifecycle {
 				AgeInDays:               int64(rr.GetCondition().GetAgeDays()),
 				DaysSinceCustomTime:     int64(rr.GetCondition().GetDaysSinceCustomTime()),
 				DaysSinceNoncurrentTime: int64(rr.GetCondition().GetDaysSinceNoncurrentTime()),
+				MatchesPrefix:           rr.GetCondition().GetMatchesPrefix(),
 				MatchesStorageClasses:   rr.GetCondition().GetMatchesStorageClass(),
+				MatchesSuffix:           rr.GetCondition().GetMatchesSuffix(),
 				NumNewerVersions:        int64(rr.GetCondition().GetNumNewerVersions()),
 			},
 		}
@@ -1691,7 +1776,7 @@ func (b *BucketLogging) toProtoBucketLogging() *storagepb.Bucket_Logging {
 		return nil
 	}
 	return &storagepb.Bucket_Logging{
-		LogBucket:       b.LogBucket,
+		LogBucket:       bucketResourceName(globalProjectAlias, b.LogBucket),
 		LogObjectPrefix: b.LogObjectPrefix,
 	}
 }
@@ -1710,8 +1795,9 @@ func toBucketLoggingFromProto(b *storagepb.Bucket_Logging) *BucketLogging {
 	if b == nil {
 		return nil
 	}
+	lb := parseBucketName(b.GetLogBucket())
 	return &BucketLogging{
-		LogBucket:       b.GetLogBucket(),
+		LogBucket:       lb,
 		LogObjectPrefix: b.GetLogObjectPrefix(),
 	}
 }
@@ -1864,6 +1950,38 @@ func toRPOFromProto(b *storagepb.Bucket) RPO {
 	}
 }
 
+func customPlacementFromRaw(c *raw.BucketCustomPlacementConfig) *CustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &CustomPlacementConfig{DataLocations: c.DataLocations}
+}
+
+func (c *CustomPlacementConfig) toRawCustomPlacement() *raw.BucketCustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &raw.BucketCustomPlacementConfig{
+		DataLocations: c.DataLocations,
+	}
+}
+
+func (c *CustomPlacementConfig) toProtoCustomPlacement() *storagepb.Bucket_CustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &storagepb.Bucket_CustomPlacementConfig{
+		DataLocations: c.DataLocations,
+	}
+}
+
+func customPlacementFromProto(c *storagepb.Bucket_CustomPlacementConfig) *CustomPlacementConfig {
+	if c == nil {
+		return nil
+	}
+	return &CustomPlacementConfig{DataLocations: c.GetDataLocations()}
+}
+
 // Objects returns an iterator over the objects in the bucket that match the
 // Query q. If q is nil, no filtering is done. Objects will be iterated over
 // lexicographically by name.
@@ -1982,7 +2100,7 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.bucket.retry, true)
+	}, it.bucket.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		var e *googleapi.Error
 		if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -2069,7 +2187,7 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	}, it.client.retry, true)
+	}, it.client.retry, true, setRetryHeaderHTTP(req))
 	if err != nil {
 		return "", err
 	}

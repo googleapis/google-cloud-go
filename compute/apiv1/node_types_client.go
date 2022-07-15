@@ -47,7 +47,15 @@ type NodeTypesCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalNodeTypesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultNodeTypesRESTCallOptions() *NodeTypesCallOptions {
+	return &NodeTypesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalNodeTypesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalNodeTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -116,6 +124,9 @@ type nodeTypesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing NodeTypesClient
+	CallOptions **NodeTypesCallOptions
 }
 
 // NewNodeTypesRESTClient creates a new node types rest client.
@@ -128,13 +139,15 @@ func NewNodeTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		return nil, err
 	}
 
+	callOpts := defaultNodeTypesRESTCallOptions()
 	c := &nodeTypesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &NodeTypesClient{internalClient: c, CallOptions: &NodeTypesCallOptions{}}, nil
+	return &NodeTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultNodeTypesRESTClientOptions() []option.ClientOption {
@@ -288,6 +301,7 @@ func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTyp
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_type", url.QueryEscape(req.GetNodeType())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NodeType{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

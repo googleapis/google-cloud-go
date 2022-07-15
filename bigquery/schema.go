@@ -568,7 +568,7 @@ func validateKnownType(in FieldType) (FieldType, error) {
 		if resolved, ok := fieldAliases[in]; ok {
 			return resolved, nil
 		}
-		return "", fmt.Errorf("unknown field type (%v)", in)
+		return "", fmt.Errorf("unknown field type (%s)", in)
 	}
 	return in, nil
 }

@@ -45,7 +45,14 @@ type ZonesCallOptions struct {
 	List []gax.CallOption
 }
 
-// internalZonesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultZonesRESTCallOptions() *ZonesCallOptions {
+	return &ZonesCallOptions{
+		Get:  []gax.CallOption{},
+		List: []gax.CallOption{},
+	}
+}
+
+// internalZonesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalZonesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,6 +115,9 @@ type zonesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ZonesClient
+	CallOptions **ZonesCallOptions
 }
 
 // NewZonesRESTClient creates a new zones rest client.
@@ -120,13 +130,15 @@ func NewZonesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Zone
 		return nil, err
 	}
 
+	callOpts := defaultZonesRESTCallOptions()
 	c := &zonesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &ZonesClient{internalClient: c, CallOptions: &ZonesCallOptions{}}, nil
+	return &ZonesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultZonesRESTClientOptions() []option.ClientOption {
@@ -174,6 +186,7 @@ func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Zone{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

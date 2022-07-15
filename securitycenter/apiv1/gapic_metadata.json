@@ -15,6 +15,11 @@
                 "BulkMuteFindings"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBigQueryExport": {
               "methods": [
                 "CreateBigQueryExport"
@@ -55,6 +60,11 @@
                 "DeleteNotificationConfig"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetBigQueryExport": {
               "methods": [
                 "GetBigQueryExport"
@@ -73,6 +83,11 @@
             "GetNotificationConfig": {
               "methods": [
                 "GetNotificationConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetOrganizationSettings": {
@@ -118,6 +133,11 @@
             "ListNotificationConfigs": {
               "methods": [
                 "ListNotificationConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListSources": {

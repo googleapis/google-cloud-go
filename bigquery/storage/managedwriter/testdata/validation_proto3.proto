@@ -1,0 +1,108 @@
+// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package testdata;
+option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
+
+
+enum Proto3ExampleEnum {
+        P3_UNDEFINED = 0;
+        P3_THING = 1;
+        P3_OTHER_THING = 2;
+        P3_THIRD_THING = 3;
+}
+
+// Validation message in proto3 syntax with default value behavior.
+message ValidationP3Defaults {
+    double double_field = 1;
+    float float_field = 2;
+    int32 int32_field = 3;
+    int64 int64_field = 4;
+    uint32 uint32_field = 5;
+    //uint64 uint64_field = 6;  
+    sint32 sint32_field = 7;
+    sint64 sint64_field = 8;
+    fixed32 fixed32_field = 9;
+    //fixed64 fixed64_field = 10;
+    sfixed32 sfixed32_field = 11;
+    sfixed64 sfixed64_field = 12;
+    bool bool_field = 13;
+    string string_field = 14;
+    bytes bytes_field = 15;
+    Proto3ExampleEnum enum_field = 16;
+}
+
+// Validation message in proto2 syntax with field presence via optional keyword.
+message ValidationP3Optional {
+    optional double double_field = 1;
+    optional float float_field = 2;
+    optional int32 int32_field = 3;
+    optional int64 int64_field = 4;
+    optional uint32 uint32_field = 5;
+    //optional uint64 uint64_field = 6;
+    optional sint32 sint32_field = 7;
+    optional sint64 sint64_field = 8;
+    optional fixed32 fixed32_field = 9;
+    //optional fixed64 fixed64_field = 10;
+    optional sfixed32 sfixed32_field = 11;
+    optional sfixed64 sfixed64_field = 12;
+    optional bool bool_field = 13;
+    optional string string_field = 14;
+    optional bytes bytes_field = 15;
+    optional Proto3ExampleEnum enum_field = 16;
+}
+
+// Validation message in proto2 syntax with all well-known
+// wraper types.
+// Note: There are no well-known sint/fixed/sfixed.
+message ValidationP3Wrappers {
+    google.protobuf.DoubleValue double_field = 1;
+    google.protobuf.FloatValue float_field = 2;
+    google.protobuf.Int32Value int32_field = 3;
+    google.protobuf.Int64Value int64_field = 4;
+    google.protobuf.UInt32Value uint32_field = 5;
+    //google.protobuf.UInt64Value uint64_field = 6;
+    sint32 sint32_field = 7;
+    sint64 sint64_field = 8;
+    fixed32 fixed32_field = 9;
+    //fixed64 fixed64_field = 10;
+    sfixed32 sfixed32_field = 11;
+    sfixed64 sfixed64_field = 12;
+    google.protobuf.BoolValue bool_field = 13;
+    google.protobuf.StringValue string_field = 14;
+    google.protobuf.BytesValue bytes_field = 15;
+    Proto3ExampleEnum enum_field = 16;
+}
+
+// Validating the behavior of packed repeated scalar values.
+// Proto3 behavior is to pack values by default.
+message ValidationP3PackedRepeated {
+    optional int64 id = 1;
+    repeated double double_repeated = 2;
+    repeated float float_repeated = 3;
+    repeated int32 int32_repeated = 4;
+    repeated int64 int64_repeated = 5;
+    repeated uint32 uint32_repeated = 6;
+    repeated sint32 sint32_repeated = 7;
+    repeated sint64 sint64_repeated = 8;
+    repeated fixed32 fixed32_repeated = 9;
+    repeated sfixed32 sfixed32_repeated = 10;
+    repeated sfixed64 sfixed64_repeated = 11;
+    repeated bool bool_repeated = 12;
+    repeated Proto3ExampleEnum enum_repeated = 13;
+}

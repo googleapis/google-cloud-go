@@ -80,7 +80,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 	bqs, err := bq.NewService(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("bigquery: constructing client: %v", err)
+		return nil, fmt.Errorf("bigquery: constructing client: %w", err)
 	}
 
 	// Handle project autodetection.

@@ -918,7 +918,7 @@ func (j *Job) setStatus(qs *bq.JobStatus) error {
 	}
 	state, ok := stateMap[qs.State]
 	if !ok {
-		return fmt.Errorf("unexpected job state: %v", qs.State)
+		return fmt.Errorf("unexpected job state: %s", qs.State)
 	}
 	j.lastStatus = &JobStatus{
 		State: state,

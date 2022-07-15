@@ -278,6 +278,52 @@ func ExampleClient_DeleteChannel() {
 	_ = resp
 }
 
+func ExampleClient_GetProvider() {
+	ctx := context.Background()
+	c, err := eventarc.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &eventarcpb.GetProviderRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#GetProviderRequest.
+	}
+	resp, err := c.GetProvider(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListProviders() {
+	ctx := context.Background()
+	c, err := eventarc.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &eventarcpb.ListProvidersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListProvidersRequest.
+	}
+	it := c.ListProviders(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_GetChannelConnection() {
 	ctx := context.Background()
 	c, err := eventarc.NewClient(ctx)

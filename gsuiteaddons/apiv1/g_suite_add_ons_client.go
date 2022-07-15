@@ -142,7 +142,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Google Workspace Add-ons API.
+// internalClient is an interface that defines the methods available from Google Workspace Add-ons API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

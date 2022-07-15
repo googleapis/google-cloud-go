@@ -129,7 +129,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 	}
 }
 
-// internalGameServerDeploymentsClient is an interface that defines the methods availaible from Game Services API.
+// internalGameServerDeploymentsClient is an interface that defines the methods available from Game Services API.
 type internalGameServerDeploymentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -104,7 +104,7 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 	}
 }
 
-// internalTopicStatsClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalTopicStatsClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalTopicStatsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

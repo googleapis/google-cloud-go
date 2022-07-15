@@ -89,7 +89,7 @@ func defaultGameServerConfigsCallOptions() *GameServerConfigsCallOptions {
 	}
 }
 
-// internalGameServerConfigsClient is an interface that defines the methods availaible from Game Services API.
+// internalGameServerConfigsClient is an interface that defines the methods available from Game Services API.
 type internalGameServerConfigsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

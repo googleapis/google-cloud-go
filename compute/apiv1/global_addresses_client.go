@@ -48,7 +48,16 @@ type GlobalAddressesCallOptions struct {
 	List   []gax.CallOption
 }
 
-// internalGlobalAddressesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultGlobalAddressesRESTCallOptions() *GlobalAddressesCallOptions {
+	return &GlobalAddressesCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+	}
+}
+
+// internalGlobalAddressesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalGlobalAddressesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -126,6 +135,9 @@ type globalAddressesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing GlobalAddressesClient
+	CallOptions **GlobalAddressesCallOptions
 }
 
 // NewGlobalAddressesRESTClient creates a new global addresses rest client.
@@ -138,9 +150,11 @@ func NewGlobalAddressesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		return nil, err
 	}
 
+	callOpts := defaultGlobalAddressesRESTCallOptions()
 	c := &globalAddressesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -154,7 +168,7 @@ func NewGlobalAddressesRESTClient(ctx context.Context, opts ...option.ClientOpti
 	}
 	c.operationClient = opC
 
-	return &GlobalAddressesClient{internalClient: c, CallOptions: &GlobalAddressesCallOptions{}}, nil
+	return &GlobalAddressesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultGlobalAddressesRESTClientOptions() []option.ClientOption {
@@ -212,6 +226,7 @@ func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.D
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "address", url.QueryEscape(req.GetAddress())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -271,6 +286,7 @@ func (c *globalAddressesRESTClient) Get(ctx context.Context, req *computepb.GetG
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "address", url.QueryEscape(req.GetAddress())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Address{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -337,6 +353,7 @@ func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.I
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

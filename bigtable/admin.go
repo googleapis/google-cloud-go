@@ -310,8 +310,9 @@ type TableInfo struct {
 
 // FamilyInfo represents information about a column family.
 type FamilyInfo struct {
-	Name     string
-	GCPolicy string
+	Name         string
+	GCPolicy     string
+	FullGCPolicy GCPolicy
 }
 
 func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
@@ -347,7 +348,11 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	ti := &TableInfo{}
 	for name, fam := range res.ColumnFamilies {
 		ti.Families = append(ti.Families, name)
-		ti.FamilyInfos = append(ti.FamilyInfos, FamilyInfo{Name: name, GCPolicy: GCRuleToString(fam.GcRule)})
+		ti.FamilyInfos = append(ti.FamilyInfos, FamilyInfo{
+			Name:         name,
+			GCPolicy:     GCRuleToString(fam.GcRule),
+			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
+		})
 	}
 	return ti, nil
 }
@@ -1057,6 +1062,12 @@ type AutoscalingConfig struct {
 	// CPUTargetPercent sets the CPU utilization target for your cluster's
 	// workload.
 	CPUTargetPercent int
+	// StorageUtilizationPerNode sets the storage usage target, in GB, for
+	// each node in a cluster. This number is limited between 2560 (2.5TiB) and
+	// 5120 (5TiB) for a SSD cluster and between 8192 (8TiB) and 16384 (16 TiB)
+	// for an HDD cluster. If set to zero, the default values are used:
+	// 2560 for SSD and 8192 for HDD.
+	StorageUtilizationPerNode int
 }
 
 func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
@@ -1069,7 +1080,8 @@ func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
 			MaxServeNodes: int32(a.MaxNodes),
 		},
 		AutoscalingTargets: &btapb.AutoscalingTargets{
-			CpuUtilizationPercent: int32(a.CPUTargetPercent),
+			CpuUtilizationPercent:        int32(a.CPUTargetPercent),
+			StorageUtilizationGibPerNode: int32(a.StorageUtilizationPerNode),
 		},
 	}
 }
@@ -1335,9 +1347,10 @@ func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) *AutoscalingConfig {
 		return nil
 	}
 	return &AutoscalingConfig{
-		MinNodes:         int(got.AutoscalingLimits.MinServeNodes),
-		MaxNodes:         int(got.AutoscalingLimits.MaxServeNodes),
-		CPUTargetPercent: int(got.AutoscalingTargets.CpuUtilizationPercent),
+		MinNodes:                  int(got.AutoscalingLimits.MinServeNodes),
+		MaxNodes:                  int(got.AutoscalingLimits.MaxServeNodes),
+		CPUTargetPercent:          int(got.AutoscalingTargets.CpuUtilizationPercent),
+		StorageUtilizationPerNode: int(got.AutoscalingTargets.StorageUtilizationGibPerNode),
 	}
 }
 

@@ -54,7 +54,21 @@ type UrlMapsCallOptions struct {
 	Validate        []gax.CallOption
 }
 
-// internalUrlMapsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
+	return &UrlMapsCallOptions{
+		AggregatedList:  []gax.CallOption{},
+		Delete:          []gax.CallOption{},
+		Get:             []gax.CallOption{},
+		Insert:          []gax.CallOption{},
+		InvalidateCache: []gax.CallOption{},
+		List:            []gax.CallOption{},
+		Patch:           []gax.CallOption{},
+		Update:          []gax.CallOption{},
+		Validate:        []gax.CallOption{},
+	}
+}
+
+// internalUrlMapsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalUrlMapsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -162,6 +176,9 @@ type urlMapsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing UrlMapsClient
+	CallOptions **UrlMapsCallOptions
 }
 
 // NewUrlMapsRESTClient creates a new url maps rest client.
@@ -174,9 +191,11 @@ func NewUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ur
 		return nil, err
 	}
 
+	callOpts := defaultUrlMapsRESTCallOptions()
 	c := &urlMapsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -190,7 +209,7 @@ func NewUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ur
 	}
 	c.operationClient = opC
 
-	return &UrlMapsClient{internalClient: c, CallOptions: &UrlMapsCallOptions{}}, nil
+	return &UrlMapsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultUrlMapsRESTClientOptions() []option.ClientOption {
@@ -354,6 +373,7 @@ func (c *urlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteUrl
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -413,6 +433,7 @@ func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapReq
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.UrlMap{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -479,6 +500,7 @@ func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrl
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -552,6 +574,7 @@ func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).InvalidateCache[0:len((*c.CallOptions).InvalidateCache):len((*c.CallOptions).InvalidateCache)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -721,6 +744,7 @@ func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMa
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -794,6 +818,7 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -860,6 +885,7 @@ func (c *urlMapsRESTClient) Validate(ctx context.Context, req *computepb.Validat
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Validate[0:len((*c.CallOptions).Validate):len((*c.CallOptions).Validate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.UrlMapsValidateResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

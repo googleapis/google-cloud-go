@@ -321,3 +321,127 @@ func ExampleClient_AnalyzeMove() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleClient_CreateSavedQuery() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.CreateSavedQueryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#CreateSavedQueryRequest.
+	}
+	resp, err := c.CreateSavedQuery(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetSavedQuery() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.GetSavedQueryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#GetSavedQueryRequest.
+	}
+	resp, err := c.GetSavedQuery(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListSavedQueries() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.ListSavedQueriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#ListSavedQueriesRequest.
+	}
+	it := c.ListSavedQueries(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_UpdateSavedQuery() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.UpdateSavedQueryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#UpdateSavedQueryRequest.
+	}
+	resp, err := c.UpdateSavedQuery(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteSavedQuery() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.DeleteSavedQueryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#DeleteSavedQueryRequest.
+	}
+	err = c.DeleteSavedQuery(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_BatchGetEffectiveIamPolicies() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.BatchGetEffectiveIamPoliciesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#BatchGetEffectiveIamPoliciesRequest.
+	}
+	resp, err := c.BatchGetEffectiveIamPolicies(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

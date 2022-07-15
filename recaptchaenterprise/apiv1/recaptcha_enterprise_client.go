@@ -579,7 +579,7 @@ func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req
 }
 
 func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, req *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, opts ...gax.CallOption) *RelatedAccountGroupMembershipIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchRelatedAccountGroupMemberships[0:len((*c.CallOptions).SearchRelatedAccountGroupMemberships):len((*c.CallOptions).SearchRelatedAccountGroupMemberships)], opts...)

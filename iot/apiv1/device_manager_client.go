@@ -209,7 +209,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 	}
 }
 
-// internalDeviceManagerClient is an interface that defines the methods availaible from Cloud IoT API.
+// internalDeviceManagerClient is an interface that defines the methods available from Cloud IoT API.
 type internalDeviceManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

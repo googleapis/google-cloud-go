@@ -52,6 +52,13 @@ const (
 	MaxPublishRequestBytes = 1e7
 )
 
+const (
+	// TODO: math.MaxInt was added in Go 1.17. We should use that once 1.17
+	// becomes the minimum supported version of Go.
+	intSize = 32 << (^uint(0) >> 63)
+	maxInt  = 1<<(intSize-1) - 1
+)
+
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
 var ErrOversizedMessage = bundler.ErrOversizedItem
 
@@ -105,7 +112,7 @@ type PublishSettings struct {
 	// If MaxOutstandingBytes is set, that value will override BufferedByteLimit.
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
-	// Deprecated: Set `topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
+	// Deprecated: Set `Topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
 	BufferedByteLimit int
 
 	// FlowControlSettings defines publisher flow control settings.
@@ -522,6 +529,11 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
+	if err != nil {
+		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
+	}
+
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
@@ -550,8 +562,9 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		return r
 	}
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
+	err = t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
 	if err != nil {
+		fmt.Printf("got err: %v\n", err)
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 	}
@@ -628,20 +641,22 @@ func (t *Topic) initBundler() {
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	fcs := DefaultPublishSettings.FlowControlSettings
-	if t.PublishSettings.FlowControlSettings.LimitExceededBehavior != FlowControlBlock {
-		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
-	}
+	fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
 		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
 		fcs.MaxOutstandingBytes = b
-		// If MaxOutstandingBytes is set, override BufferedByteLimit.
-		t.PublishSettings.BufferedByteLimit = b
+
+		// If MaxOutstandingBytes is set, disable BufferedByteLimit by setting it to maxint.
+		// This is because there's no way to set "unlimited" for BufferedByteLimit,
+		// and simply setting it to MaxOutstandingBytes occasionally leads to issues where
+		// BufferedByteLimit is reached even though there are resources available.
+		t.PublishSettings.BufferedByteLimit = maxInt
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
 	}
 
-	t.flowController = newFlowController(fcs)
+	t.flowController = newTopicFlowController(fcs)
 
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
