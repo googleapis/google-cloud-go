@@ -112,7 +112,9 @@ func MaxVersionsPolicy(n int) GCPolicy { return MaxVersionsGCPolicy(n) }
 
 type MaxVersionsGCPolicy int
 
-func (mvp MaxVersionsGCPolicy) String() string { return fmt.Sprintf("versions() > %d", int(mvp)) }
+func (mvp MaxVersionsGCPolicy) String() string {
+	return fmt.Sprintf("versions() > %d", int(mvp))
+}
 
 func (mvp MaxVersionsGCPolicy) proto() *bttdpb.GcRule {
 	return &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: int32(mvp)}}
