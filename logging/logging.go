@@ -254,6 +254,7 @@ type Logger struct {
 	populateSourceLocation int
 	partialSuccess         bool
 	redirectOutputWriter   io.Writer
+	minimalLoggedSeverity  Severity
 }
 
 // Logger returns a Logger that will write entries with the given log ID, such as
@@ -274,6 +275,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 		populateSourceLocation: DoNotPopulateSourceLocation,
 		partialSuccess:         false,
 		redirectOutputWriter:   nil,
+		minimalLoggedSeverity:  Default,
 	}
 	l.bundler = bundler.NewBundler(&logpb.LogEntry{}, func(entries interface{}) {
 		l.writeLogEntries(entries.([]*logpb.LogEntry))
@@ -630,6 +632,9 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 // and will block, it is intended primarily for debugging or critical errors.
 // Prefer Log for most uses.
 func (l *Logger) LogSync(ctx context.Context, e Entry) error {
+	if e.Severity < l.minimalLoggedSeverity {
+		return nil
+	}
 	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
 	if err != nil {
 		return err
@@ -656,6 +661,10 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
+	if e.Severity < l.minimalLoggedSeverity {
+		return
+	}
+
 	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
 	if err != nil {
 		l.client.error(err)

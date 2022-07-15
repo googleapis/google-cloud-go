@@ -187,3 +187,11 @@ type redirectOutputOption struct {
 func (o *redirectOutputOption) set(l *Logger) {
 	l.redirectOutputWriter = o.writer
 }
+
+// MinimalLoggedSeverity is the allowed severity of log entries.
+// If the log entry has the severity lesser than the minimal severity, then the log entry will be ignored.
+func MinimalLoggedSeverity(s Severity) LoggerOption { return minimalLoggedSeverity(s) }
+
+type minimalLoggedSeverity Severity
+
+func (s minimalLoggedSeverity) set(l *Logger) { l.minimalLoggedSeverity = Severity(s) }

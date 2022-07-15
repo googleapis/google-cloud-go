@@ -89,6 +89,16 @@ func ExampleClient_Logger() {
 	_ = lg // TODO: use the Logger.
 }
 
+func ExampleClient_Logger_with_minimal_severity() {
+	ctx := context.Background()
+	client, err := logging.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	lg := client.Logger("my-log", logging.MinimalLoggedSeverity(logging.Info))
+	_ = lg // TODO: use the Logger. Log entries with severity lesser than Info will be ignored.
+}
+
 func ExampleHTTPRequest() {
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")

@@ -208,6 +208,45 @@ func TestLogSync(t *testing.T) {
 	}
 }
 
+func TestLogSyncWithMinimalLoggedSeverity(t *testing.T) {
+	initLogs() // Generate new testLogID
+	ctx := context.Background()
+	lg := client.Logger(testLogID, logging.MinimalLoggedSeverity(logging.Info))
+	err := lg.LogSync(ctx, logging.Entry{
+		Payload:  "debug message",
+		Severity: logging.Debug,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = lg.LogSync(ctx, logging.Entry{
+		Payload:  "info message",
+		Severity: logging.Info,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []*logging.Entry{}
+	e := entryForTesting("info message")
+	e.Severity = logging.Info
+	want = append(want, e)
+	var got []*logging.Entry
+	ok := waitFor(func() bool {
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			t.Log("fetching log entries: ", err)
+			return false
+		}
+		return len(got) == len(want)
+	})
+	if !ok {
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), len(want))
+	}
+	if msg, ok := compareEntries(got, want); !ok {
+		t.Error(msg)
+	}
+}
+
 func TestLogAndEntries(t *testing.T) {
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
@@ -224,6 +263,43 @@ func TestLogAndEntries(t *testing.T) {
 	for _, p := range payloads {
 		want = append(want, entryForTesting(p))
 	}
+	var got []*logging.Entry
+	ok := waitFor(func() bool {
+		var err error
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			t.Log("fetching log entries: ", err)
+			return false
+		}
+		return len(got) == len(want)
+	})
+	if !ok {
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), len(want))
+	}
+	if msg, ok := compareEntries(got, want); !ok {
+		t.Error(msg)
+	}
+}
+
+func TestLogWithMinimalLoggedSeverity(t *testing.T) {
+	initLogs() // Generate new testLogID
+	ctx := context.Background()
+	lg := client.Logger(testLogID, logging.MinimalLoggedSeverity(logging.Info))
+	lg.Log(logging.Entry{
+		Payload:  "debug message",
+		Severity: logging.Debug,
+	})
+	lg.Log(logging.Entry{
+		Payload:  "info message",
+		Severity: logging.Info,
+	})
+	if err := lg.Flush(); err != nil {
+		t.Fatal(err)
+	}
+	var want []*logging.Entry
+	e := entryForTesting("info message")
+	e.Severity = logging.Info
+	want = append(want, e)
 	var got []*logging.Entry
 	ok := waitFor(func() bool {
 		var err error
