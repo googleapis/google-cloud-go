@@ -24,16 +24,22 @@ const (
 	maxWritesPerSecond = maxBatchSize * defaultStartingMaximumOpsPerSecond
 )
 
+// bulkWriterResult contains the WriteResult or error results from an individual
+// write to the database.
+type bulkWriterResult struct {
+	result *pb.WriteResult // (cached) result from the operation
+	err    error           // (cached) any errors that occurred
+}
+
 // BulkWriterJob provides read-only access to the results of a BulkWriter write attempt.
 type BulkWriterJob struct {
-	errChan     chan error           // send error responses to this channel
-	resultChan  chan *pb.WriteResult // send the write results to this channel
-	write       *pb.Write            // the writes to apply to the database
-	attempts    int                  // number of times this write has been attempted
-	resultsLock sync.Mutex           // guards the cached wr and e values for the job
-	result      *WriteResult         // (cached) result from the operation
-	err         error                // (cached) any errors that occurred
-	ctx         context.Context      // context for canceling/timing out results
+	resultChan  chan bulkWriterResult // send errors and results to this channel
+	write       *pb.Write             // the writes to apply to the database
+	attempts    int                   // number of times this write has been attempted
+	resultsLock sync.Mutex            // guards the cached wr and e values for the job
+	result      *WriteResult          // (cached) result from the operation
+	err         error                 // (cached) any errors that occurred
+	ctx         context.Context       // context for canceling/timing out results
 }
 
 // Results gets the results of the BulkWriter write attempt.
@@ -53,21 +59,23 @@ func (j *BulkWriterJob) Results() (*WriteResult, error) {
 func (j *BulkWriterJob) processResults() (*WriteResult, error) {
 	select {
 	case <-j.ctx.Done():
-		close(j.resultChan)
-		close(j.errChan)
 		return nil, j.ctx.Err()
-	case wpb := <-j.resultChan:
-		close(j.errChan)
-		return writeResultFromProto(wpb)
-	case err := <-j.errChan:
-		close(j.resultChan)
-		return nil, err
+	case bwr := <-j.resultChan:
+		if bwr.err != nil {
+			return nil, bwr.err
+		} else {
+			return writeResultFromProto(bwr.result)
+		}
 	}
 }
 
 // setError ensures that an error is returned on the error channel of BulkWriterJob.
 func (j *BulkWriterJob) setError(e error) {
-	j.errChan <- e
+	bwr := bulkWriterResult{
+		err:    e,
+		result: nil,
+	}
+	j.resultChan <- bwr
 	close(j.resultChan)
 }
 
@@ -248,9 +256,8 @@ func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
 func (bw *BulkWriter) write(w *pb.Write) *BulkWriterJob {
 
 	j := &BulkWriterJob{
-		resultChan: make(chan *pb.WriteResult, 1),
+		resultChan: make(chan bulkWriterResult, 1),
 		write:      w,
-		errChan:    make(chan error, 1),
 		ctx:        bw.ctx,
 	}
 
@@ -312,7 +319,7 @@ func (bw *BulkWriter) send(i interface{}) {
 				continue
 			}
 
-			bwj[i].resultChan <- res
+			bwj[i].resultChan <- bulkWriterResult{err: nil, result: res}
 		}
 	}
 }
