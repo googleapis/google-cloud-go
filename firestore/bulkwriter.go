@@ -320,6 +320,7 @@ func (bw *BulkWriter) send(i interface{}) {
 			}
 
 			bwj[i].resultChan <- bulkWriterResult{err: nil, result: res}
+			close(bwj[i].resultChan)
 		}
 	}
 }
