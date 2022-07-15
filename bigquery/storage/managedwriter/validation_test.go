@@ -388,6 +388,21 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerArraySum("enum_repeated", 7, 1),
 			},
 		},
+		{
+			description: "proto2 w/column annotations",
+			tableSchema: testdata.ValidationColumnAnnotations,
+			inputRow: &testdata.ValidationP2ColumnAnnotations{
+				First:  proto.String("first_val"),
+				Second: proto.String("second_val"),
+				Third:  proto.String("third_val"),
+			},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+				withStringValueCount("first", "first_val", 1),
+				withStringValueCount("second", "third_val", 1),
+				withStringValueCount("😎🔥", "second_val", 1),
+			},
+		},
 	}
 
 	// Common setup.
