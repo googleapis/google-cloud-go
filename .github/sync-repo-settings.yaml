@@ -11,6 +11,14 @@ branchProtectionRules:
   requiredApprovingReviewCount: 1
   requiresCodeOwnerReviews: true
   requiresStrictStatusChecks: true
+- pattern: storage-refactor
+  isAdminEnforced: true
+  requiredStatusCheckContexts:
+    - 'kokoro'
+    - 'conventionalcommits.org'
+    - 'cla/google'
+  requiredApprovingReviewCount: 1
+  requiresStrictStatusChecks: true
 permissionRules:
   - team: actools
     permission: admin
