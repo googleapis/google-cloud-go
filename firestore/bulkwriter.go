@@ -63,9 +63,8 @@ func (j *BulkWriterJob) processResults() (*WriteResult, error) {
 	case bwr := <-j.resultChan:
 		if bwr.err != nil {
 			return nil, bwr.err
-		} else {
-			return writeResultFromProto(bwr.result)
 		}
+		return writeResultFromProto(bwr.result)
 	}
 }
 
