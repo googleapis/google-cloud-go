@@ -23,7 +23,7 @@ jobs:
         # https://github.com/marketplace/actions/sync-branches
         uses: tretuna/sync-branches@1.4.0
         with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.YOSHI_CODE_BOT_TOKEN}}
           FROM_BRANCH: "main"
           TO_BRANCH: "storage-refactor"
           REVIEWERS: '["noahdietz", "cloud-storage-dpe"]'
