@@ -34,8 +34,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profil
 export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 
 # Ensure a newer version of Go is used so it is compatible with newer libraries.
-# Here we install v1.18.4 which is the current version as of when this code
-# was written.
+# Here we install v1.18.4 which is the current version as of July 2022.
 mkdir -p /tmp/bin
 GIMME=/tmp/bin/gimme
 retry curl -sL -o "$GIMME" https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
