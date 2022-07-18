@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.35.0...bigquery/v1.36.0) (2022-07-18)
+
+
+### Features
+
+* **bigquery/migration:** Add Presto dialect to bigquerymigration v2 client library ([89a049a](https://github.com/googleapis/google-cloud-go/commit/89a049a98e1d18b922cc6ad08622161448544902))
+* **bigquery/storage/managedwriter/adapt:** support packed field option ([#6312](https://github.com/googleapis/google-cloud-go/issues/6312)) ([fc3417b](https://github.com/googleapis/google-cloud-go/commit/fc3417be70cd01a0044ec934c5c6426ea833d90c))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** improve network reconnection ([#6338](https://github.com/googleapis/google-cloud-go/issues/6338)) ([085a038](https://github.com/googleapis/google-cloud-go/commit/085a03865d20122c74e107ea43883ae33bdf25bc))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.34.1...bigquery/v1.35.0) (2022-07-07)
 
 
