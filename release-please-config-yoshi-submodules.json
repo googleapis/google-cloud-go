@@ -45,6 +45,9 @@
         "batch": {
             "component": "batch"
         },
+        "beyondcorp": {
+            "component": "beyondcorp"
+        },
         "billing": {
             "component": "billing"
         },

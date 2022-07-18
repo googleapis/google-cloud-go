@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.5.0...dataflow/v0.5.1) (2022-07-12)
+
+
+### Documentation
+
+* **dataflow:** corrected the Dataflow job name regex ([1732e43](https://github.com/googleapis/google-cloud-go/commit/1732e4334c84019d93775d861be5c0008e3f5245))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.4.0...dataflow/v0.5.0) (2022-06-29)
 
 
