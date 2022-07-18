@@ -59,7 +59,9 @@ func GetPolicyType(gc GCPolicy) PolicyType {
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
 func IntersectionPolicy(sub ...GCPolicy) GCPolicy { return IntersectionGCPolicy{sub} }
 
+// IntersectionGCPolicy with list of children
 type IntersectionGCPolicy struct {
+	// List of children policy in the intersection
 	Children []GCPolicy
 }
 
@@ -84,7 +86,9 @@ func (ip IntersectionGCPolicy) proto() *bttdpb.GcRule {
 // UnionPolicy returns a GC policy that applies when any of its sub-policies apply.
 func UnionPolicy(sub ...GCPolicy) GCPolicy { return UnionGCPolicy{sub} }
 
+// UnionGCPolicy with list of children
 type UnionGCPolicy struct {
+	// List of children policy in the union
 	Children []GCPolicy
 }
 
@@ -110,6 +114,7 @@ func (up UnionGCPolicy) proto() *bttdpb.GcRule {
 // except for the most recent n.
 func MaxVersionsPolicy(n int) GCPolicy { return MaxVersionsGCPolicy(n) }
 
+// Type alias for MaxVersionGCPolicy
 type MaxVersionsGCPolicy int
 
 func (mvp MaxVersionsGCPolicy) String() string {
@@ -124,6 +129,7 @@ func (mvp MaxVersionsGCPolicy) proto() *bttdpb.GcRule {
 // older than the given age.
 func MaxAgePolicy(d time.Duration) GCPolicy { return MaxAgeGCPolicy(d) }
 
+// Type alias for MaxAgeGCPolicy
 type MaxAgeGCPolicy time.Duration
 
 var units = []struct {
