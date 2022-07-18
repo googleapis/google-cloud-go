@@ -28,12 +28,12 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
-	"github.com/googleapis/go-type-adapters/adapters"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
+	dpb "google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -1613,13 +1613,13 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 		}
 
 		if !r.Condition.CreatedBefore.IsZero() {
-			rr.Condition.CreatedBefore = adapters.TimeToProtoDate(r.Condition.CreatedBefore)
+			rr.Condition.CreatedBefore = timeToProtoDate(r.Condition.CreatedBefore)
 		}
 		if !r.Condition.CustomTimeBefore.IsZero() {
-			rr.Condition.CustomTimeBefore = adapters.TimeToProtoDate(r.Condition.CustomTimeBefore)
+			rr.Condition.CustomTimeBefore = timeToProtoDate(r.Condition.CustomTimeBefore)
 		}
 		if !r.Condition.NoncurrentTimeBefore.IsZero() {
-			rr.Condition.NoncurrentTimeBefore = adapters.TimeToProtoDate(r.Condition.NoncurrentTimeBefore)
+			rr.Condition.NoncurrentTimeBefore = timeToProtoDate(r.Condition.NoncurrentTimeBefore)
 		}
 		rl.Rule = append(rl.Rule, rr)
 	}
@@ -1716,13 +1716,13 @@ func toLifecycleFromProto(rl *storagepb.Bucket_Lifecycle) Lifecycle {
 		}
 
 		if rr.GetCondition().GetCreatedBefore() != nil {
-			r.Condition.CreatedBefore = adapters.ProtoDateToUTCTime(rr.GetCondition().GetCreatedBefore())
+			r.Condition.CreatedBefore = protoDateToUTCTime(rr.GetCondition().GetCreatedBefore())
 		}
 		if rr.GetCondition().GetCustomTimeBefore() != nil {
-			r.Condition.CustomTimeBefore = adapters.ProtoDateToUTCTime(rr.GetCondition().GetCustomTimeBefore())
+			r.Condition.CustomTimeBefore = protoDateToUTCTime(rr.GetCondition().GetCustomTimeBefore())
 		}
 		if rr.GetCondition().GetNoncurrentTimeBefore() != nil {
-			r.Condition.NoncurrentTimeBefore = adapters.ProtoDateToUTCTime(rr.GetCondition().GetNoncurrentTimeBefore())
+			r.Condition.NoncurrentTimeBefore = protoDateToUTCTime(rr.GetCondition().GetNoncurrentTimeBefore())
 		}
 		l.Rules = append(l.Rules, r)
 	}
@@ -2234,5 +2234,30 @@ func (rpo RPO) String() string {
 		return rpoAsyncTurbo
 	default:
 		return rpoUnknown
+	}
+}
+
+// protoDateToUTCTime returns a new Time based on the google.type.Date, in UTC.
+//
+// Hours, minutes, seconds, and nanoseconds are set to 0.
+func protoDateToUTCTime(d *dpb.Date) time.Time {
+	return protoDateToTime(d, time.UTC)
+}
+
+// protoDateToTime returns a new Time based on the google.type.Date and provided
+// *time.Location.
+//
+// Hours, minutes, seconds, and nanoseconds are set to 0.
+func protoDateToTime(d *dpb.Date, l *time.Location) time.Time {
+	return time.Date(int(d.GetYear()), time.Month(d.GetMonth()), int(d.GetDay()), 0, 0, 0, 0, l)
+}
+
+// timeToProtoDate returns a new google.type.Date based on the provided time.Time.
+// The location is ignored, as is anything more precise than the day.
+func timeToProtoDate(t time.Time) *dpb.Date {
+	return &dpb.Date{
+		Year:  int32(t.Year()),
+		Month: int32(t.Month()),
+		Day:   int32(t.Day()),
 	}
 }
