@@ -2265,7 +2265,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 
 	uniqueID := make([]byte, 4)
 	rand.Read(uniqueID)
-	profileID := fmt.Sprintf("app_profile%x", uniqueID)
+	profileID := fmt.Sprintf("app_profile_id%x", uniqueID)
 
 	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
 
