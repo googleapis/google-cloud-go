@@ -736,7 +736,6 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if err := applySourceConds(req.srcGen, req.srcConds, call); err != nil {
 		return nil, err
 	}
-	// The userProject, whether source or destination project, is decided by the code calling the interface.
 	if s.userProject != "" {
 		call.UserProject(s.userProject)
 	}
