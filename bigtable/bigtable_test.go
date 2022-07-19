@@ -285,7 +285,7 @@ func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	if got, want := len(requestParamsHeaderValue), 1; got != want {
 		t.Fatalf("Incorrect number of header values in requestParamsHeader. Got %d, want %d", got, want)
 	}
-	if got, want := requestParamsHeaderValue[0], "table_name=projects%2Fmy-project%2Finstances%2Fmy-instance%2Ftables%2Fmy-table&app_profile=my-app-profile"; got != want {
+	if got, want := requestParamsHeaderValue[0], "table_name=projects%2Fmy-project%2Finstances%2Fmy-instance%2Ftables%2Fmy-table&app_profile_id=my-app-profile"; got != want {
 		t.Errorf("Incorrect value in resourcePrefixHeader. Got %s, want %s", got, want)
 	}
 }
