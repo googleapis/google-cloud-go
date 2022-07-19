@@ -745,7 +745,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/talent/apiv4",
 		GRPCServiceConfigPath: "talent_grpc_service_config.json",
 		ApiServiceConfigPath:  "jobs_v4.yaml",
-		ReleaseLevel:          "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/talent/v4beta1",
@@ -949,7 +949,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
-		ApiServiceConfigPath:  "assuredworkloads.yaml",
+		ApiServiceConfigPath:  "assuredworkloads_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
@@ -1551,6 +1551,78 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
 		ApiServiceConfigPath:  "videointelligence_v1p3beta1.yaml",
 		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/functions/v2beta",
+		Pkg:                   "functions",
+		ImportPath:            "cloud.google.com/go/functions/apiv2beta",
+		GRPCServiceConfigPath: "functions_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudfunctions_v2beta.yaml",
+		Transports:            []string{"grpc", "rest"},
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/dataform/v1alpha2",
+		Pkg:                   "dataform",
+		ImportPath:            "cloud.google.com/go/dataform/apiv1alpha2",
+		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
+		ApiServiceConfigPath:  "dataform_v1alpha2.yaml",
+		Transports:            []string{"grpc", "rest"},
+		ReleaseLevel:          "alpha",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/functions/v2",
+		Pkg:                   "functions",
+		ImportPath:            "cloud.google.com/go/functions/apiv2",
+		GRPCServiceConfigPath: "functions_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudfunctions_v2.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/appconnections/v1",
+		Pkg:                   "appconnections",
+		ImportPath:            "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-appconnections_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/appconnectors/v1",
+		Pkg:                   "appconnectors",
+		ImportPath:            "cloud.google.com/go/beyondcorp/appconnectors/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-appconnectors_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/appgateways/v1",
+		Pkg:                   "appgateways",
+		ImportPath:            "cloud.google.com/go/beyondcorp/appgateways/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-appgateways_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/clientconnectorservices/v1",
+		Pkg:                   "clientconnectorservices",
+		ImportPath:            "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-clientconnectorservices_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/clientgateways/v1",
+		Pkg:                   "clientgateways",
+		ImportPath:            "cloud.google.com/go/beyondcorp/clientgateways/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-clientgateways_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
 	},
 
 	// Non-Cloud APIs

@@ -552,6 +552,151 @@ func (x *ValidationP3Wrappers) GetEnumField() Proto3ExampleEnum {
 	return Proto3ExampleEnum_P3_UNDEFINED
 }
 
+// Validating the behavior of packed repeated scalar values.
+// Proto3 behavior is to pack values by default.
+type ValidationP3PackedRepeated struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id               *int64              `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
+	DoubleRepeated   []float64           `protobuf:"fixed64,2,rep,packed,name=double_repeated,json=doubleRepeated,proto3" json:"double_repeated,omitempty"`
+	FloatRepeated    []float32           `protobuf:"fixed32,3,rep,packed,name=float_repeated,json=floatRepeated,proto3" json:"float_repeated,omitempty"`
+	Int32Repeated    []int32             `protobuf:"varint,4,rep,packed,name=int32_repeated,json=int32Repeated,proto3" json:"int32_repeated,omitempty"`
+	Int64Repeated    []int64             `protobuf:"varint,5,rep,packed,name=int64_repeated,json=int64Repeated,proto3" json:"int64_repeated,omitempty"`
+	Uint32Repeated   []uint32            `protobuf:"varint,6,rep,packed,name=uint32_repeated,json=uint32Repeated,proto3" json:"uint32_repeated,omitempty"`
+	Sint32Repeated   []int32             `protobuf:"zigzag32,7,rep,packed,name=sint32_repeated,json=sint32Repeated,proto3" json:"sint32_repeated,omitempty"`
+	Sint64Repeated   []int64             `protobuf:"zigzag64,8,rep,packed,name=sint64_repeated,json=sint64Repeated,proto3" json:"sint64_repeated,omitempty"`
+	Fixed32Repeated  []uint32            `protobuf:"fixed32,9,rep,packed,name=fixed32_repeated,json=fixed32Repeated,proto3" json:"fixed32_repeated,omitempty"`
+	Sfixed32Repeated []int32             `protobuf:"fixed32,10,rep,packed,name=sfixed32_repeated,json=sfixed32Repeated,proto3" json:"sfixed32_repeated,omitempty"`
+	Sfixed64Repeated []int64             `protobuf:"fixed64,11,rep,packed,name=sfixed64_repeated,json=sfixed64Repeated,proto3" json:"sfixed64_repeated,omitempty"`
+	BoolRepeated     []bool              `protobuf:"varint,12,rep,packed,name=bool_repeated,json=boolRepeated,proto3" json:"bool_repeated,omitempty"`
+	EnumRepeated     []Proto3ExampleEnum `protobuf:"varint,13,rep,packed,name=enum_repeated,json=enumRepeated,proto3,enum=testdata.Proto3ExampleEnum" json:"enum_repeated,omitempty"`
+}
+
+func (x *ValidationP3PackedRepeated) Reset() {
+	*x = ValidationP3PackedRepeated{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_validation_proto3_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ValidationP3PackedRepeated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidationP3PackedRepeated) ProtoMessage() {}
+
+func (x *ValidationP3PackedRepeated) ProtoReflect() protoreflect.Message {
+	mi := &file_validation_proto3_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidationP3PackedRepeated.ProtoReflect.Descriptor instead.
+func (*ValidationP3PackedRepeated) Descriptor() ([]byte, []int) {
+	return file_validation_proto3_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ValidationP3PackedRepeated) GetId() int64 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *ValidationP3PackedRepeated) GetDoubleRepeated() []float64 {
+	if x != nil {
+		return x.DoubleRepeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetFloatRepeated() []float32 {
+	if x != nil {
+		return x.FloatRepeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetInt32Repeated() []int32 {
+	if x != nil {
+		return x.Int32Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetInt64Repeated() []int64 {
+	if x != nil {
+		return x.Int64Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetUint32Repeated() []uint32 {
+	if x != nil {
+		return x.Uint32Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetSint32Repeated() []int32 {
+	if x != nil {
+		return x.Sint32Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetSint64Repeated() []int64 {
+	if x != nil {
+		return x.Sint64Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetFixed32Repeated() []uint32 {
+	if x != nil {
+		return x.Fixed32Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetSfixed32Repeated() []int32 {
+	if x != nil {
+		return x.Sfixed32Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetSfixed64Repeated() []int64 {
+	if x != nil {
+		return x.Sfixed64Repeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetBoolRepeated() []bool {
+	if x != nil {
+		return x.BoolRepeated
+	}
+	return nil
+}
+
+func (x *ValidationP3PackedRepeated) GetEnumRepeated() []Proto3ExampleEnum {
+	if x != nil {
+		return x.EnumRepeated
+	}
+	return nil
+}
+
 var File_validation_proto3_proto protoreflect.FileDescriptor
 
 var file_validation_proto3_proto_rawDesc = []byte{
@@ -693,7 +838,43 @@ var file_validation_proto3_proto_rawDesc = []byte{
 	0x12, 0x3a, 0x0a, 0x0a, 0x65, 0x6e, 0x75, 0x6d, 0x5f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x18, 0x10,
 	0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e,
 	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x45, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x45, 0x6e, 0x75,
-	0x6d, 0x52, 0x09, 0x65, 0x6e, 0x75, 0x6d, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x2a, 0x5b, 0x0a, 0x11,
+	0x6d, 0x52, 0x09, 0x65, 0x6e, 0x75, 0x6d, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x22, 0xbd, 0x04, 0x0a,
+	0x1a, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x33, 0x50, 0x61, 0x63,
+	0x6b, 0x65, 0x64, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x13, 0x0a, 0x02, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x48, 0x00, 0x52, 0x02, 0x69, 0x64, 0x88, 0x01, 0x01,
+	0x12, 0x27, 0x0a, 0x0f, 0x64, 0x6f, 0x75, 0x62, 0x6c, 0x65, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61,
+	0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x03, 0x28, 0x01, 0x52, 0x0e, 0x64, 0x6f, 0x75, 0x62, 0x6c,
+	0x65, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x66, 0x6c, 0x6f,
+	0x61, 0x74, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x03, 0x28,
+	0x02, 0x52, 0x0d, 0x66, 0x6c, 0x6f, 0x61, 0x74, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64,
+	0x12, 0x25, 0x0a, 0x0e, 0x69, 0x6e, 0x74, 0x33, 0x32, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74,
+	0x65, 0x64, 0x18, 0x04, 0x20, 0x03, 0x28, 0x05, 0x52, 0x0d, 0x69, 0x6e, 0x74, 0x33, 0x32, 0x52,
+	0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x69, 0x6e, 0x74, 0x36, 0x34,
+	0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x05, 0x20, 0x03, 0x28, 0x03, 0x52,
+	0x0d, 0x69, 0x6e, 0x74, 0x36, 0x34, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x27,
+	0x0a, 0x0f, 0x75, 0x69, 0x6e, 0x74, 0x33, 0x32, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0d, 0x52, 0x0e, 0x75, 0x69, 0x6e, 0x74, 0x33, 0x32, 0x52,
+	0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x27, 0x0a, 0x0f, 0x73, 0x69, 0x6e, 0x74, 0x33,
+	0x32, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x07, 0x20, 0x03, 0x28, 0x11,
+	0x52, 0x0e, 0x73, 0x69, 0x6e, 0x74, 0x33, 0x32, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64,
+	0x12, 0x27, 0x0a, 0x0f, 0x73, 0x69, 0x6e, 0x74, 0x36, 0x34, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61,
+	0x74, 0x65, 0x64, 0x18, 0x08, 0x20, 0x03, 0x28, 0x12, 0x52, 0x0e, 0x73, 0x69, 0x6e, 0x74, 0x36,
+	0x34, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x29, 0x0a, 0x10, 0x66, 0x69, 0x78,
+	0x65, 0x64, 0x33, 0x32, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x09, 0x20,
+	0x03, 0x28, 0x07, 0x52, 0x0f, 0x66, 0x69, 0x78, 0x65, 0x64, 0x33, 0x32, 0x52, 0x65, 0x70, 0x65,
+	0x61, 0x74, 0x65, 0x64, 0x12, 0x2b, 0x0a, 0x11, 0x73, 0x66, 0x69, 0x78, 0x65, 0x64, 0x33, 0x32,
+	0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x0f, 0x52,
+	0x10, 0x73, 0x66, 0x69, 0x78, 0x65, 0x64, 0x33, 0x32, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x12, 0x2b, 0x0a, 0x11, 0x73, 0x66, 0x69, 0x78, 0x65, 0x64, 0x36, 0x34, 0x5f, 0x72, 0x65,
+	0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x0b, 0x20, 0x03, 0x28, 0x10, 0x52, 0x10, 0x73, 0x66,
+	0x69, 0x78, 0x65, 0x64, 0x36, 0x34, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x23,
+	0x0a, 0x0d, 0x62, 0x6f, 0x6f, 0x6c, 0x5f, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18,
+	0x0c, 0x20, 0x03, 0x28, 0x08, 0x52, 0x0c, 0x62, 0x6f, 0x6f, 0x6c, 0x52, 0x65, 0x70, 0x65, 0x61,
+	0x74, 0x65, 0x64, 0x12, 0x40, 0x0a, 0x0d, 0x65, 0x6e, 0x75, 0x6d, 0x5f, 0x72, 0x65, 0x70, 0x65,
+	0x61, 0x74, 0x65, 0x64, 0x18, 0x0d, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x74, 0x65, 0x73,
+	0x74, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x45, 0x78, 0x61, 0x6d,
+	0x70, 0x6c, 0x65, 0x45, 0x6e, 0x75, 0x6d, 0x52, 0x0c, 0x65, 0x6e, 0x75, 0x6d, 0x52, 0x65, 0x70,
+	0x65, 0x61, 0x74, 0x65, 0x64, 0x42, 0x05, 0x0a, 0x03, 0x5f, 0x69, 0x64, 0x2a, 0x5b, 0x0a, 0x11,
 	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x33, 0x45, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x45, 0x6e, 0x75,
 	0x6d, 0x12, 0x10, 0x0a, 0x0c, 0x50, 0x33, 0x5f, 0x55, 0x4e, 0x44, 0x45, 0x46, 0x49, 0x4e, 0x45,
 	0x44, 0x10, 0x00, 0x12, 0x0c, 0x0a, 0x08, 0x50, 0x33, 0x5f, 0x54, 0x48, 0x49, 0x4e, 0x47, 0x10,
@@ -719,38 +900,40 @@ func file_validation_proto3_proto_rawDescGZIP() []byte {
 }
 
 var file_validation_proto3_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_validation_proto3_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_validation_proto3_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_validation_proto3_proto_goTypes = []interface{}{
-	(Proto3ExampleEnum)(0),         // 0: testdata.Proto3ExampleEnum
-	(*ValidationP3Defaults)(nil),   // 1: testdata.ValidationP3Defaults
-	(*ValidationP3Optional)(nil),   // 2: testdata.ValidationP3Optional
-	(*ValidationP3Wrappers)(nil),   // 3: testdata.ValidationP3Wrappers
-	(*wrapperspb.DoubleValue)(nil), // 4: google.protobuf.DoubleValue
-	(*wrapperspb.FloatValue)(nil),  // 5: google.protobuf.FloatValue
-	(*wrapperspb.Int32Value)(nil),  // 6: google.protobuf.Int32Value
-	(*wrapperspb.Int64Value)(nil),  // 7: google.protobuf.Int64Value
-	(*wrapperspb.UInt32Value)(nil), // 8: google.protobuf.UInt32Value
-	(*wrapperspb.BoolValue)(nil),   // 9: google.protobuf.BoolValue
-	(*wrapperspb.StringValue)(nil), // 10: google.protobuf.StringValue
-	(*wrapperspb.BytesValue)(nil),  // 11: google.protobuf.BytesValue
+	(Proto3ExampleEnum)(0),             // 0: testdata.Proto3ExampleEnum
+	(*ValidationP3Defaults)(nil),       // 1: testdata.ValidationP3Defaults
+	(*ValidationP3Optional)(nil),       // 2: testdata.ValidationP3Optional
+	(*ValidationP3Wrappers)(nil),       // 3: testdata.ValidationP3Wrappers
+	(*ValidationP3PackedRepeated)(nil), // 4: testdata.ValidationP3PackedRepeated
+	(*wrapperspb.DoubleValue)(nil),     // 5: google.protobuf.DoubleValue
+	(*wrapperspb.FloatValue)(nil),      // 6: google.protobuf.FloatValue
+	(*wrapperspb.Int32Value)(nil),      // 7: google.protobuf.Int32Value
+	(*wrapperspb.Int64Value)(nil),      // 8: google.protobuf.Int64Value
+	(*wrapperspb.UInt32Value)(nil),     // 9: google.protobuf.UInt32Value
+	(*wrapperspb.BoolValue)(nil),       // 10: google.protobuf.BoolValue
+	(*wrapperspb.StringValue)(nil),     // 11: google.protobuf.StringValue
+	(*wrapperspb.BytesValue)(nil),      // 12: google.protobuf.BytesValue
 }
 var file_validation_proto3_proto_depIdxs = []int32{
 	0,  // 0: testdata.ValidationP3Defaults.enum_field:type_name -> testdata.Proto3ExampleEnum
 	0,  // 1: testdata.ValidationP3Optional.enum_field:type_name -> testdata.Proto3ExampleEnum
-	4,  // 2: testdata.ValidationP3Wrappers.double_field:type_name -> google.protobuf.DoubleValue
-	5,  // 3: testdata.ValidationP3Wrappers.float_field:type_name -> google.protobuf.FloatValue
-	6,  // 4: testdata.ValidationP3Wrappers.int32_field:type_name -> google.protobuf.Int32Value
-	7,  // 5: testdata.ValidationP3Wrappers.int64_field:type_name -> google.protobuf.Int64Value
-	8,  // 6: testdata.ValidationP3Wrappers.uint32_field:type_name -> google.protobuf.UInt32Value
-	9,  // 7: testdata.ValidationP3Wrappers.bool_field:type_name -> google.protobuf.BoolValue
-	10, // 8: testdata.ValidationP3Wrappers.string_field:type_name -> google.protobuf.StringValue
-	11, // 9: testdata.ValidationP3Wrappers.bytes_field:type_name -> google.protobuf.BytesValue
+	5,  // 2: testdata.ValidationP3Wrappers.double_field:type_name -> google.protobuf.DoubleValue
+	6,  // 3: testdata.ValidationP3Wrappers.float_field:type_name -> google.protobuf.FloatValue
+	7,  // 4: testdata.ValidationP3Wrappers.int32_field:type_name -> google.protobuf.Int32Value
+	8,  // 5: testdata.ValidationP3Wrappers.int64_field:type_name -> google.protobuf.Int64Value
+	9,  // 6: testdata.ValidationP3Wrappers.uint32_field:type_name -> google.protobuf.UInt32Value
+	10, // 7: testdata.ValidationP3Wrappers.bool_field:type_name -> google.protobuf.BoolValue
+	11, // 8: testdata.ValidationP3Wrappers.string_field:type_name -> google.protobuf.StringValue
+	12, // 9: testdata.ValidationP3Wrappers.bytes_field:type_name -> google.protobuf.BytesValue
 	0,  // 10: testdata.ValidationP3Wrappers.enum_field:type_name -> testdata.Proto3ExampleEnum
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	0,  // 11: testdata.ValidationP3PackedRepeated.enum_repeated:type_name -> testdata.Proto3ExampleEnum
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_validation_proto3_proto_init() }
@@ -795,15 +978,28 @@ func file_validation_proto3_proto_init() {
 				return nil
 			}
 		}
+		file_validation_proto3_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ValidationP3PackedRepeated); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_validation_proto3_proto_msgTypes[1].OneofWrappers = []interface{}{}
+	file_validation_proto3_proto_msgTypes[3].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_validation_proto3_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
