@@ -3007,6 +3007,9 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	case tok.caseEqual("CASE"):
 		p.back()
 		return p.parseCaseExpr()
+	case tok.caseEqual("IF"):
+		p.back()
+		return p.parseIfExpr()
 	}
 
 	// Handle typed literals.
@@ -3115,6 +3118,38 @@ func (p *parser) parseWhenClause() (WhenClause, *parseError) {
 		return WhenClause{}, err
 	}
 	return WhenClause{Cond: cond, Result: result}, nil
+}
+
+func (p *parser) parseIfExpr() (If, *parseError) {
+	if err := p.expect("IF", "("); err != nil {
+		return If{}, err
+	}
+
+	expr, err := p.parseBoolExpr()
+	if err != nil {
+		return If{}, err
+	}
+	if err := p.expect(","); err != nil {
+		return If{}, err
+	}
+
+	trueResult, err := p.parseExpr()
+	if err != nil {
+		return If{}, err
+	}
+	if err := p.expect(","); err != nil {
+		return If{}, err
+	}
+
+	elseResult, err := p.parseExpr()
+	if err != nil {
+		return If{}, err
+	}
+	if err := p.expect(")"); err != nil {
+		return If{}, err
+	}
+
+	return If{Expr: expr, TrueResult: trueResult, ElseResult: elseResult}, nil
 }
 
 func (p *parser) parseArrayLit() (Array, *parseError) {
