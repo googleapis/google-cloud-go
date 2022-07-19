@@ -949,7 +949,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
-		ApiServiceConfigPath:  "assuredworkloads.yaml",
+		ApiServiceConfigPath:  "assuredworkloads_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
