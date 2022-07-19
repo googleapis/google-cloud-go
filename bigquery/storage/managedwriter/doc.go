@@ -197,7 +197,7 @@ by the service.
 	// Once again, let's assume the response from an append call returns an error.
 	_, err := result.GetResult(ctx)
 	if se = StorageErrorFromError(err); se != nil {
-		log.Printf("storage error code was %s, message was %d, se.GetCode().String(), se.GetErrorMessage())
+		log.Printf("storage error code was %s, message was %s, se.GetCode().String(), se.GetErrorMessage())
 	}
 */
 package managedwriter
