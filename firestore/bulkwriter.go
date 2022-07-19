@@ -96,7 +96,7 @@ type BulkWriter struct {
 	limiter         rate.Limiter     // limit requests to server to <= 500 qps
 	bundler         *bundler.Bundler // handle bundling up writes to Firestore
 	ctx             context.Context  // context for canceling all BulkWriter operations
-	openLock        sync.Mutex       // guards against setting isOpen concurrently
+	isOpenLock      sync.Mutex       // guards against setting isOpen concurrently
 	isOpen          bool             // flag that the BulkWriter is closed
 }
 
@@ -130,10 +130,10 @@ func newBulkWriter(ctx context.Context, c *Client, database string) *BulkWriter 
 // with an error. This method completes when there are no more pending writes
 // in the queue.
 func (bw *BulkWriter) End() {
-	bw.Flush()
-	bw.openLock.Lock()
+	bw.isOpenLock.Lock()
 	bw.isOpen = false
-	bw.openLock.Unlock()
+	bw.isOpenLock.Unlock()
+	bw.Flush()
 }
 
 // Flush commits all writes that have been enqueued up to this point in parallel.
@@ -230,9 +230,9 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 // an error if either the BulkWriter has already been closed or if it
 // receives a nil document reference.
 func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
-	bw.openLock.Lock()
+	bw.isOpenLock.Lock()
 	open := bw.isOpen
-	bw.openLock.Unlock()
+	bw.isOpenLock.Unlock()
 	if !open {
 		return errors.New("firestore: BulkWriter has been closed")
 	}
