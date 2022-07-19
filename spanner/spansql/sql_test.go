@@ -656,6 +656,21 @@ func TestSQL(t *testing.T) {
 			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
 			reparseQuery,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						If{
+							Expr:       ComparisonOp{LHS: IntegerLiteral(1), Op: Lt, RHS: IntegerLiteral(2)},
+							TrueResult: True,
+							ElseResult: False,
+						},
+					},
+				},
+			},
+			`SELECT IF(1 < 2, TRUE, FALSE)`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
