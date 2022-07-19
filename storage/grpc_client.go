@@ -1229,7 +1229,7 @@ func (r *gRPCReader) Close() error {
 // an attempt to reopen the stream.
 func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
-	if err != nil && shouldRetry(err) {
+	if err != nil && ShouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
@@ -1408,7 +1408,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// resend the entire buffer via a new stream.
 			// If not retriable, falling through will return the error received
 			// from closing the stream.
-			if shouldRetry(err) {
+			if ShouldRetry(err) {
 				sent = 0
 				finishWrite = false
 				// TODO: Add test case for failure modes of querying progress.
@@ -1439,7 +1439,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// resend the entire buffer via a new stream.
 		// If not retriable, falling through will return the error received
 		// from closing the stream.
-		if shouldRetry(err) {
+		if ShouldRetry(err) {
 			sent = 0
 			finishWrite = false
 			offset, err = w.determineOffset(start)
