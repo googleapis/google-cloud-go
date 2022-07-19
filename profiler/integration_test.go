@@ -118,13 +118,17 @@ echo "{{.FinishString}}"
 {{ define "integration_backoff" -}}
 {{- template "prologue" . }}
 {{- template "setup" . }}
+
+# Compile first so each spawned process can just use the same binary.
+go build busybench.go
+
 # Do not display commands being run to simplify logging output.
 set +x
 
 # Run benchmarks with agent.
 echo "Starting {{.NumBackoffBenchmarks}} benchmarks."
 for (( i = 0; i < {{.NumBackoffBenchmarks}}; i++ )); do
-	(go run busybench.go --service="{{.Service}}" --duration={{.DurationSec}} \
+	(./busybench --service="{{.Service}}" --duration={{.DurationSec}} \
 		--num_busyworkers=1) |& while read line; \
 		do echo "benchmark $i: ${line}"; done &
 done
@@ -330,6 +334,7 @@ func TestAgentIntegration(t *testing.T) {
 	runtime.GOMAXPROCS(len(testcases))
 	for _, tc := range testcases {
 		tc := tc // capture range variable
+
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			if err := tc.initializeStartupScript(template, commit); err != nil {
