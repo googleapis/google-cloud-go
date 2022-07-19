@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.1.0...assuredworkloads/v1.2.0) (2022-07-19)
+
+
+### Features
+
+* **assuredworkloads:** Updated the method signature of analyzeWorkloadMove for v1beta API ([53246aa](https://github.com/googleapis/google-cloud-go/commit/53246aa18cb9c79471ecc84878b5e3f166086404))
+* **assuredworkloads:** Updated the method signature of analyzeWorkloadMove for v1beta API to accept project as source. AnalyzeWorkloadMove now also returns information about org policy differences between the project and target folder ([53246aa](https://github.com/googleapis/google-cloud-go/commit/53246aa18cb9c79471ecc84878b5e3f166086404))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.0.0...assuredworkloads/v1.1.0) (2022-07-12)
 
 

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.0.0...dataplex/v1.1.0) (2022-07-19)
+
+
+### Features
+
+* **dataplex:** Add IAM support for Explore content APIs feat: Add support for custom container for Task feat: Add support for cross project for Task feat: Add support for custom encryption key to be used for encrypt data on the PDs associated with the VMs in your Dataproc cluster for Task feat: Add support for Latest job in Task resource feat: User mode filter in Explore list sessions API feat: Support logging sampled file paths per partition to Cloud logging for Discovery event ([8b17366](https://github.com/googleapis/google-cloud-go/commit/8b17366c46bbd8a0b2adf39ec3b058eb83192933))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.4.0...dataplex/v1.0.0) (2022-06-29)
 
 
