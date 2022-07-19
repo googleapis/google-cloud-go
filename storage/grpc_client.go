@@ -52,7 +52,7 @@ const (
 	// msgEntityNotSupported indicates ACL entites using project ID are not currently supported.
 	//
 	// This is only used for the gRPC API.
-	msgEntityNotSupported = "The gRPC API currently does not support ACL entites using project ID, use project numbers instead"
+	msgEntityNotSupported = "The gRPC API currently does not support ACL entities using project ID, use project numbers instead"
 )
 
 // defaultGRPCOptions returns a set of the default client options
