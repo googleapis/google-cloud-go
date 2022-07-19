@@ -334,7 +334,6 @@ func TestAgentIntegration(t *testing.T) {
 	runtime.GOMAXPROCS(len(testcases))
 	for _, tc := range testcases {
 		tc := tc // capture range variable
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			if err := tc.initializeStartupScript(template, commit); err != nil {
