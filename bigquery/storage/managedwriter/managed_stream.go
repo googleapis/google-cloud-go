@@ -16,7 +16,6 @@ package managedwriter
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"sync"
@@ -85,7 +84,6 @@ type ManagedStream struct {
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
-	reconnect   bool                                      // Request a reconnect before issuing another send.
 	err         error                                     // terminal error
 	pending     chan *pendingWrite                        // writes awaiting status
 	streamSetup *sync.Once                                // handles amending the first request in a new stream
@@ -186,21 +184,13 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 		return nil, nil, ms.err
 	}
 
-	// Previous activity on the stream indicated it is not healthy, so propagate that as a reconnect.
-	if ms.reconnect {
-		forceReconnect = true
-		ms.reconnect = false
-	}
 	// Always return the retained ARC if the arg differs.
 	if arc != ms.arc && !forceReconnect {
 		return ms.arc, ms.pending, nil
 	}
 	if arc != ms.arc && forceReconnect && ms.arc != nil {
-		// In this case, we're forcing a close on the existing stream.
-		// This is due to either needing to reconnect to satisfy the needs of
-		// the current request (e.g. to signal a schema change), or because
-		// a previous request on the stream yielded a transient error and we
-		// want to reconnect before issuing a subsequent request.
+		// In this case, we're forcing a close to apply changes to the stream
+		// that currently can't be modified on an established connection.
 		//
 		// TODO: clean this up once internal issue 205756033 is resolved.
 		(*ms.arc).CloseSend()
@@ -307,11 +297,6 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 		err = (*arc).Send(pw.request)
 	}
 	if err != nil {
-		// Transient connection loss.  If we got io.EOF from a send, we want subsequent appends to
-		// reconnect the network connection for the stream.
-		if errors.Is(err, io.EOF) {
-			ms.reconnect = true
-		}
 		return 0, err
 	}
 	// Compute numRows, once we pass ownership to the channel the request may be
