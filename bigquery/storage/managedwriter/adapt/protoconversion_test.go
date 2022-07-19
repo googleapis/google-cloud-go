@@ -384,35 +384,6 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				},
 			},
 		},
-		{
-			description: "repeated w/packed",
-			bq: &storagepb.TableSchema{
-				Fields: []*storagepb.TableFieldSchema{
-					{Name: "name", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
-					{Name: "some_lengths", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REPEATED},
-					{Name: "nicknames", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REPEATED},
-				}},
-			wantProto2: &descriptorpb.DescriptorProto{
-				Name: proto.String("root"),
-				Field: []*descriptorpb.FieldDescriptorProto{
-					{
-						Name:   proto.String("name"),
-						Number: proto.Int32(1),
-						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
-						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
-					{
-						Name:   proto.String("some_lengths"),
-						Number: proto.Int32(2),
-						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
-						Label:  descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
-						Options: &descriptorpb.FieldOptions{
-							Packed: proto.Bool(true),
-						},
-					},
-					{Name: proto.String("nicknames"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
-				},
-			},
-		},
 	}
 	for _, tc := range testCases {
 		// Proto2
