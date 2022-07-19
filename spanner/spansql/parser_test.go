@@ -411,6 +411,13 @@ func TestParseExpr(t *testing.T) {
 				},
 			},
 		},
+		{`IF(A < B, TRUE, FALSE)`,
+			If{
+				Expr:       ComparisonOp{LHS: ID("A"), Op: Lt, RHS: ID("B")},
+				TrueResult: True,
+				ElseResult: False,
+			},
+		},
 
 		// String literal:
 		// Accept double quote and single quote.
