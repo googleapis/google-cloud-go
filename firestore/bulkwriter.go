@@ -96,7 +96,7 @@ type BulkWriter struct {
 	limiter         rate.Limiter     // limit requests to server to <= 500 qps
 	bundler         *bundler.Bundler // handle bundling up writes to Firestore
 	ctx             context.Context  // context for canceling all BulkWriter operations
-	isOpenLock      sync.Mutex       // guards against setting isOpen concurrently
+	isOpenLock      sync.RWMutex     // guards against setting isOpen concurrently
 	isOpen          bool             // flag that the BulkWriter is closed
 }
 
@@ -145,6 +145,8 @@ func (bw *BulkWriter) Flush() {
 // Create adds a document creation write to the queue of writes to send.
 // Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJob, error) {
+	bw.isOpenLock.Lock()
+	defer bw.isOpenLock.Unlock()
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -166,6 +168,8 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJo
 // Delete adds a document deletion write to the queue of writes to send.
 // Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkWriterJob, error) {
+	bw.isOpenLock.Lock()
+	defer bw.isOpenLock.Unlock()
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -187,6 +191,8 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkW
 // Set adds a document set write to the queue of writes to send.
 // Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption) (*BulkWriterJob, error) {
+	bw.isOpenLock.Lock()
+	defer bw.isOpenLock.Unlock()
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -208,6 +214,8 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 // Update adds a document update write to the queue of writes to send.
 // Note: You cannot write to (Create, Update, Set, or Delete) the same document more than once.
 func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Precondition) (*BulkWriterJob, error) {
+	bw.isOpenLock.Lock()
+	defer bw.isOpenLock.Unlock()
 	err := bw.checkWriteConditions(doc)
 	if err != nil {
 		return nil, err
@@ -230,9 +238,7 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 // an error if either the BulkWriter has already been closed or if it
 // receives a nil document reference.
 func (bw *BulkWriter) checkWriteConditions(doc *DocumentRef) error {
-	bw.isOpenLock.Lock()
 	open := bw.isOpen
-	bw.isOpenLock.Unlock()
 	if !open {
 		return errors.New("firestore: BulkWriter has been closed")
 	}
