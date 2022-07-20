@@ -224,6 +224,11 @@
               "methods": [
                 "UpdateTargetProject"
               ]
+            },
+            "UpgradeAppliance": {
+              "methods": [
+                "UpgradeAppliance"
+              ]
             }
           }
         }
