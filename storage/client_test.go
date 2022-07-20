@@ -276,6 +276,51 @@ func TestGetObjectEmulated(t *testing.T) {
 	})
 }
 
+func TestRewriteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		src := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(src.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		req := &rewriteObjectRequest{
+			dstObject: destinationObject{
+				bucket: bucket,
+				name:   fmt.Sprintf("copy-of-%s", src.Name),
+				attrs:  &ObjectAttrs{},
+			},
+			srcObject: sourceObject{
+				bucket: bucket,
+				name:   src.Name,
+				gen:    defaultGen,
+			},
+		}
+		got, err := client.RewriteObject(context.Background(), req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !got.done {
+			t.Fatal("didn't finish writing!")
+		}
+		if want := int64(len(randomBytesToWrite)); got.written != want {
+			t.Errorf("Bytes written: got %d, want %d", got.written, want)
+		}
+	})
+}
+
 func TestUpdateObjectEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
@@ -986,11 +1031,11 @@ func TestComposeEmulated(t *testing.T) {
 		dstName := fmt.Sprintf("%d-object3", prefix)
 		req := composeObjectRequest{
 			dstBucket: bucket,
-			dstObject: composeDstObject{
+			dstObject: destinationObject{
 				name:  dstName,
 				attrs: &ObjectAttrs{StorageClass: "COLDLINE"},
 			},
-			srcs: []composeSrcObject{
+			srcs: []sourceObject{
 				{name: srcNames[0]},
 				{name: srcNames[1]},
 			},
