@@ -526,7 +526,7 @@ func testLargeInsert(ctx context.Context, t *testing.T, mwClient *Client, bqClie
 
 		details := apiErr.Details()
 		if details.DebugInfo == nil {
-			t.Errorf("expected DebugInfo to be populated, was nil")
+			t.Errorf("expected DebugInfo to be populated, was nil. apiError is %v, Unwrapped error is %T", apiErr, apiErr.Unwrap())
 		}
 		wantSubstring := "Message size exceed the limitation of byte based flow control."
 		if detail := details.DebugInfo.GetDetail(); !strings.Contains(detail, wantSubstring) {
