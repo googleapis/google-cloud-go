@@ -783,7 +783,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	if err := applyCondsProto("Copy destination", req.srcObject.gen, req.dstObject.conds, call); err != nil {
+	if err := applyCondsProto("Copy destination", defaultGen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
 	if err := applySourceCondsProto(req.srcObject.gen, req.srcObject.conds, call); err != nil {

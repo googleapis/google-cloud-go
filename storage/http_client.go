@@ -730,7 +730,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if req.predefinedACL != "" {
 		call.DestinationPredefinedAcl(req.predefinedACL)
 	}
-	if err := applyConds("Copy destination", req.srcObject.gen, req.dstObject.conds, call); err != nil {
+	if err := applyConds("Copy destination", defaultGen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
 	if err := applySourceConds(req.srcObject.gen, req.srcObject.conds, call); err != nil {
