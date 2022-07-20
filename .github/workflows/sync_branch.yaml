@@ -1,0 +1,31 @@
+name: Sync storage-refactor
+on:
+  schedule:
+    - cron: 0 23 * * 1-5 # Week-daily at 23:00 UTC / 16:00 PST
+  workflow_dispatch: {} # Allow manual triggering
+
+jobs:
+  sync-storage-refactor:
+    runs-on: ubuntu-latest
+    name: Syncing storage-refactor
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Get change notes
+        id: changes
+        run: echo ::set-output name=change_notes::$(git log storage-refactor..main --oneline --pretty=format:%s)
+      - name: Opening pull request
+        id: pull
+        # https://github.com/marketplace/actions/sync-branches
+        uses: tretuna/sync-branches@1.4.0
+        with:
+          GITHUB_TOKEN: ${{secrets.YOSHI_CODE_BOT_TOKEN}}
+          FROM_BRANCH: "main"
+          TO_BRANCH: "storage-refactor"
+          REVIEWERS: '["noahdietz", "cloud-storage-dpe"]'
+          PULL_REQUEST_TITLE: "chore: sync main to storage-refactor"
+          PULL_REQUEST_BODY: "${{ steps.changes.outputs.change_notes }}"
