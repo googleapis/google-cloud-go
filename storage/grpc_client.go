@@ -767,7 +767,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 }
 func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
 	s := callSettings(c.settings, opts...)
-	obj := req.attrs.toProtoObject("")
+	obj := req.dstObject.attrs.toProtoObject("")
 	call := &storagepb.RewriteObjectRequest{
 		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcObject.bucket),
 		SourceObject:             req.srcObject.name,
@@ -783,7 +783,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	if err := applyCondsProto("Copy destination", req.gen, req.conds, call); err != nil {
+	if err := applyCondsProto("Copy destination", req.srcObject.gen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
 	if err := applySourceCondsProto(req.srcObject.gen, req.srcObject.conds, call); err != nil {

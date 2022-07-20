@@ -305,9 +305,6 @@ type destinationObject struct {
 type rewriteObjectRequest struct {
 	srcObject     sourceObject
 	dstObject     destinationObject
-	attrs         *ObjectAttrs
-	gen           int64
-	conds         *Conditions
 	predefinedACL string
 	token         string
 }

@@ -306,8 +306,6 @@ func TestRewriteObjectEmulated(t *testing.T) {
 				name:   src.Name,
 				gen:    defaultGen,
 			},
-			attrs: &ObjectAttrs{},
-			gen:   defaultGen,
 		}
 		got, err := client.RewriteObject(context.Background(), req)
 		if err != nil {
