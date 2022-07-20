@@ -318,12 +318,14 @@ func (s *session) getNextCheck() time.Time {
 // recycle turns the session back to its home session pool.
 func (s *session) recycle() {
 	s.setTransactionID(nil)
-	if !s.pool.recycle(s) {
+	s.pool.mu.Lock()
+	defer s.pool.mu.Unlock()
+	if !s.pool.recycleLocked(s) {
 		// s is rejected by its home session pool because it expired and the
 		// session pool currently has enough open sessions.
 		s.destroy(false)
 	}
-	s.pool.decNumInUse(context.Background())
+	s.pool.decNumInUseLocked(context.Background())
 }
 
 // destroy removes the session from its home session pool, healthcheck queue
@@ -1079,6 +1081,10 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 func (p *sessionPool) recycle(s *session) bool {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	return p.recycleLocked(s)
+}
+
+func (p *sessionPool) recycleLocked(s *session) bool {
 	if !s.isValid() || !p.valid {
 		// Reject the session if session is invalid or pool itself is invalid.
 		return false
@@ -1153,12 +1159,6 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 		p.maxNumInUse = p.numInUse
 		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxNumInUse))
 	}
-}
-
-func (p *sessionPool) decNumInUse(ctx context.Context) {
-	p.mu.Lock()
-	p.decNumInUseLocked(ctx)
-	p.mu.Unlock()
 }
 
 func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
