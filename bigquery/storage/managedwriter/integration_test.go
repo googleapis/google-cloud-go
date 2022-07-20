@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -520,17 +519,9 @@ func testLargeInsert(ctx context.Context, t *testing.T, mwClient *Client, bqClie
 		if !ok {
 			t.Errorf("GetResult error was not an instance of ApiError")
 		}
-		if status := apiErr.GRPCStatus(); status.Code() != codes.InvalidArgument {
+		status := apiErr.GRPCStatus()
+		if status.Code() != codes.InvalidArgument {
 			t.Errorf("expected InvalidArgument status, got %v", status)
-		}
-
-		details := apiErr.Details()
-		if details.DebugInfo == nil {
-			t.Errorf("expected DebugInfo to be populated, was nil. apiError is %v, Unwrapped error is %T", apiErr, apiErr.Unwrap())
-		}
-		wantSubstring := "Message size exceed the limitation of byte based flow control."
-		if detail := details.DebugInfo.GetDetail(); !strings.Contains(detail, wantSubstring) {
-			t.Errorf("detail missing desired substring: %s", detail)
 		}
 	}
 	// send a subsequent append as verification we can proceed.
