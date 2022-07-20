@@ -300,6 +300,7 @@ func TestRewriteObjectEmulated(t *testing.T) {
 			dstObject: destinationObject{
 				bucket: bucket,
 				name:   fmt.Sprintf("copy-of-%s", src.Name),
+				attrs:  &ObjectAttrs{},
 			},
 			srcObject: sourceObject{
 				bucket: bucket,
