@@ -297,13 +297,17 @@ func TestRewriteObjectEmulated(t *testing.T) {
 			t.Fatalf("closing object: %v", err)
 		}
 		req := &rewriteObjectRequest{
-			dstBucket: bucket,
-			dstObject: fmt.Sprintf("copy-of-%s", src.Name),
-			srcBucket: bucket,
-			srcObject: src.Name,
-			attrs:     &ObjectAttrs{},
-			gen:       defaultGen,
-			srcGen:    defaultGen,
+			dstObject: destinationObject{
+				bucket: bucket,
+				name:   fmt.Sprintf("copy-of-%s", src.Name),
+			},
+			srcObject: sourceObject{
+				bucket: bucket,
+				name:   src.Name,
+				gen:    defaultGen,
+			},
+			attrs: &ObjectAttrs{},
+			gen:   defaultGen,
 		}
 		got, err := client.RewriteObject(context.Background(), req)
 		if err != nil {
@@ -1028,11 +1032,11 @@ func TestComposeEmulated(t *testing.T) {
 		dstName := fmt.Sprintf("%d-object3", prefix)
 		req := composeObjectRequest{
 			dstBucket: bucket,
-			dstObject: composeDstObject{
+			dstObject: destinationObject{
 				name:  dstName,
 				attrs: &ObjectAttrs{StorageClass: "COLDLINE"},
 			},
-			srcs: []composeSrcObject{
+			srcs: []sourceObject{
 				{name: srcNames[0]},
 				{name: srcNames[1]},
 			},

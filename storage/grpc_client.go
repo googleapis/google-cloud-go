@@ -769,13 +769,13 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	s := callSettings(c.settings, opts...)
 	obj := req.attrs.toProtoObject("")
 	call := &storagepb.RewriteObjectRequest{
-		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcBucket),
-		SourceObject:             req.srcObject,
+		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcObject.bucket),
+		SourceObject:             req.srcObject.name,
 		RewriteToken:             req.token,
-		DestinationBucket:        bucketResourceName(globalProjectAlias, req.dstBucket),
-		DestinationName:          req.dstObject,
+		DestinationBucket:        bucketResourceName(globalProjectAlias, req.dstObject.bucket),
+		DestinationName:          req.dstObject.name,
 		Destination:              obj,
-		DestinationKmsKey:        req.dstKeyName,
+		DestinationKmsKey:        req.dstObject.keyName,
 		DestinationPredefinedAcl: req.predefinedACL,
 	}
 
@@ -786,15 +786,15 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if err := applyCondsProto("Copy destination", req.gen, req.conds, call); err != nil {
 		return nil, err
 	}
-	if err := applySourceCondsProto(req.srcGen, req.srcConds, call); err != nil {
+	if err := applySourceCondsProto(req.srcObject.gen, req.srcObject.conds, call); err != nil {
 		return nil, err
 	}
 
-	if len(req.dstEncryptionKey) > 0 {
-		call.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstEncryptionKey)
+	if len(req.dstObject.encryptionKey) > 0 {
+		call.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstObject.encryptionKey)
 	}
-	if len(req.srcEncryptionKey) > 0 {
-		srcParams := toProtoCommonObjectRequestParams(req.srcEncryptionKey)
+	if len(req.srcObject.encryptionKey) > 0 {
+		srcParams := toProtoCommonObjectRequestParams(req.srcObject.encryptionKey)
 		call.CopySourceEncryptionAlgorithm = srcParams.GetEncryptionAlgorithm()
 		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
 		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
