@@ -76,6 +76,10 @@ func ParseDDL(filename, s string) (*DDL, error) {
 	return ddl, nil
 }
 
+// ParseDML parses a DML file.
+//
+// The provided filename is used for error reporting and will
+// appear in the returned structure.
 func ParseDML(filename, s string) (*DML, error) {
 	dml := &DML{}
 	if err := parseStatements(dml, filename, s); err != nil {
