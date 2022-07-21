@@ -88,14 +88,14 @@ type messageIterator struct {
 	// This technically does not need to be an AckResult, since it is just a set,
 	// but allows reuse of iterator.sendAckIDRPC.
 	pendingModAcks map[string]*AckResult
-	// This stores pending AckResults for cleaner shutdown when sub.Receive's ctx is cancelled.
-	// If exactly once delivery is not enabled, this map should not be populated.
-	pendingAckResults map[string]*AckResult
-	err               error // error from stream failure
+	err            error // error from stream failure
 
 	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
+	// This stores pending AckResults for cleaner shutdown when sub.Receive's ctx is cancelled.
+	// If exactly once delivery is not enabled, this map should not be populated.
+	pendingAckResults map[string]*AckResult
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -141,6 +141,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pendingAcks:        map[string]*AckResult{},
 		pendingNacks:       map[string]*AckResult{},
 		pendingModAcks:     map[string]*AckResult{},
+		pendingAckResults:  map[string]*AckResult{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -264,14 +265,15 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
 		if _, ok := it.pendingNacks[ackID]; !ok {
-			// Don't use the message's AckResult here.
-			// These ids are used for modacks which require an empty AckResult.
-			// Calling m.AckWithResult() (or NackWithResult) prematurely locks
-			// the message's ack/nack status.
-			ackIDs[ackID] = &ipubsub.AckResult{}
+			// Don't use the message's AckResult here since these are only for receipt modacks.
+			// ModAckResults are transparent to the user anyway so these can automatically succeed.
+			// We can't use an empty AckResult here either since SetAckResult will try to
+			// close the channel without checking if it exists.
+			ackIDs[ackID] = newSuccessAckResult()
 		}
 		// If exactly once is enabled, keep track of all pending AckResults
 		// so we can cleanly close them all at shutdown.
+		it.eoMu.Lock()
 		if it.enableExactlyOnceDelivery {
 			ackh, ok := ipubsub.MessageAckHandler(m).(*psAckHandler)
 			if !ok {
@@ -279,14 +281,17 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			}
 			it.pendingAckResults[ackID] = ackh.ackResult
 		}
+		it.eoMu.Unlock()
 	}
 	deadline := it.ackDeadline()
 	it.mu.Unlock()
-	if len(ackIDs) > 0 {
-		if !it.sendModAck(ackIDs, deadline) {
-			return nil, it.err
+	go func() {
+		if len(ackIDs) > 0 {
+			// Don't check the return value of this since modacks are fire and forget,
+			// meaning errors should not be propagated to the client.
+			it.sendModAck(ackIDs, deadline)
 		}
-	}
+	}()
 	return msgs, nil
 }
 
@@ -407,14 +412,10 @@ func (it *messageIterator) sender() {
 		}
 		if sendNacks {
 			// Nack indicated by modifying the deadline to zero.
-			if !it.sendModAck(nacks, 0) {
-				return
-			}
+			it.sendModAck(nacks, 0)
 		}
 		if sendModAcks {
-			if !it.sendModAck(modAcks, dl) {
-				return
-			}
+			it.sendModAck(modAcks, dl)
 		}
 		if sendPing {
 			it.pingStream()
@@ -436,9 +437,8 @@ func (it *messageIterator) handleKeepAlives() {
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
 		} else {
-			// This will not conflict with a nack, because nacking removes the ID from keepAliveDeadlines.
-			// Use an empty AckResult here since we don't propagate ModAcks back to the user.
-			it.pendingModAcks[id] = &ipubsub.AckResult{}
+			// Use a success AckResult since we don't propagate ModAcks back to the user.
+			it.pendingModAcks[id] = newSuccessAckResult()
 		}
 	}
 	it.checkDrained()
@@ -455,93 +455,83 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 
 		recordStat(it.ctx, AckCount, int64(len(toSend)))
 		addAcks(toSend)
-		for {
-			// Use context.Background() as the call's context, not it.ctx. We don't
-			// want to cancel this RPC when the iterator is stopped.
-			cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
-			defer cancel2()
-			err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
-				Subscription: it.subName,
-				AckIds:       toSend,
-			})
-			var eos bool
-			it.eoMu.RLock()
-			eos = it.enableExactlyOnceDelivery
-			it.eoMu.RUnlock()
-			if eos {
-				st, _ := apierror.FromError(err)
-				md := st.Metadata()
-				resultsByAckID := make(map[string]*AckResult)
-				for _, ackID := range ackIDs {
-					resultsByAckID[ackID] = m[ackID]
-				}
-				// TODO(hongalex): retry the AckResults marked retriable.
-				_, _ = processResults(st.GRPCStatus(), resultsByAckID, md)
+		// Use context.Background() as the call's context, not it.ctx. We don't
+		// want to cancel this RPC when the iterator is stopped.
+		cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+		defer cancel2()
+		err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
+			Subscription: it.subName,
+			AckIds:       toSend,
+		})
+		it.eoMu.RLock()
+		exactlyOnceDelivery := it.enableExactlyOnceDelivery
+		it.eoMu.RUnlock()
+		if exactlyOnceDelivery {
+			var md map[string]string
+			var st *status.Status
+			apiErr, ok := apierror.FromError(err)
+			if ok {
+				md = apiErr.Metadata()
+				st = apiErr.GRPCStatus()
 			}
+			resultsByAckID := make(map[string]*AckResult)
+			for _, ackID := range toSend {
+				resultsByAckID[ackID] = m[ackID]
+			}
+			// TODO(hongalex): retry the ackIDs with transient retriable errors.
+			_, _ = processResults(st, resultsByAckID, md)
 		}
 	}
-
 }
 
 // The receipt mod-ack amount is derived from a percentile distribution based
 // on the time it takes to process messages. The percentile chosen is the 99%th
 // percentile in order to capture the highest amount of time necessary without
 // considering 1% outliers.
-func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration) bool {
+func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration) {
 	deadlineSec := int32(deadline / time.Second)
-	// Account for the Subscription and AckDeadlineSeconds fields.
-	overhead := calcFieldSizeString(it.subName) + calcFieldSizeInt(int(deadlineSec))
-	return it.sendAckIDRPC(m, maxPayload-overhead, func(ids []string) error {
+
+	ackIDs := make([]string, 0, len(m))
+	for k := range m {
+		ackIDs = append(ackIDs, k)
+	}
+	var toSend []string
+	for len(ackIDs) > 0 {
+		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
 		if deadline == 0 {
-			recordStat(it.ctx, NackCount, int64(len(ids)))
+			recordStat(it.ctx, NackCount, int64(len(toSend)))
 		} else {
-			recordStat(it.ctx, ModAckCount, int64(len(ids)))
+			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
 		}
-		addModAcks(ids, deadlineSec)
-		// Retry this RPC on Unavailable for a short amount of time, then give up
-		// without returning a fatal error. The utility of this RPC is by nature
-		// transient (since the deadline is relative to the current time) and it
-		// isn't crucial for correctness (since expired messages will just be
-		// resent).
-		cctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-		bo := gax.Backoff{
-			Initial:    100 * time.Millisecond,
-			Max:        time.Second,
-			Multiplier: 2,
-		}
-		for {
-			err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
-				Subscription:       it.subName,
-				AckDeadlineSeconds: deadlineSec,
-				AckIds:             ids,
-			})
-			switch status.Code(err) {
-			case codes.Unavailable:
-				if err := gax.Sleep(cctx, bo.Pause()); err == nil {
-					continue
-				}
-				// Treat sleep timeout like RPC timeout.
-				fallthrough
-			case codes.DeadlineExceeded:
-				// Timeout. Not a fatal error, but note that it happened.
-				recordStat(it.ctx, ModAckTimeoutCount, 1)
-				return nil
-			default:
-				// This addresses an error where `context deadline exceeded` errors
-				// not captured by the previous case causes fatal errors.
-				// See https://github.com/googleapis/google-cloud-go/issues/3060
-				if err != nil && strings.Contains(err.Error(), "context deadline exceeded") {
-					recordStat(it.ctx, ModAckTimeoutCount, 1)
-					return nil
-				}
-				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
-				// since modacks are "fire and forget". Once EOS feature is out, retry these errors
-				// if exactly-once is enabled, which can be determined from StreamingPull response.
-				return nil
+		addModAcks(toSend, deadlineSec)
+		// Use context.Background() as the call's context, not it.ctx. We don't
+		// want to cancel this RPC when the iterator is stopped.
+		cctx, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+		defer cancel2()
+		err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
+			Subscription:       it.subName,
+			AckDeadlineSeconds: deadlineSec,
+			AckIds:             toSend,
+		})
+		it.eoMu.RLock()
+		exactlyOnceDelivery := it.enableExactlyOnceDelivery
+		it.eoMu.RUnlock()
+		if exactlyOnceDelivery {
+			var md map[string]string
+			var st *status.Status
+			apiErr, ok := apierror.FromError(err)
+			if ok {
+				md = apiErr.Metadata()
+				st = apiErr.GRPCStatus()
 			}
+			resultsByAckID := make(map[string]*AckResult)
+			for _, ackID := range toSend {
+				resultsByAckID[ackID] = m[ackID]
+			}
+			// TODO(hongalex): retry the ackIDs with transient retriable errors.
+			_, _ = processResults(st, resultsByAckID, md)
 		}
-	})
+	}
 }
 
 func (it *messageIterator) sendAckIDRPC(ackResultsByAckID map[string]*AckResult, maxSize int, call func([]string) error) bool {
@@ -665,14 +655,28 @@ const (
 	permanentInvalidAckErrString = "PERMANENT_FAILURE_INVALID_ACK_ID"
 )
 
+// ackResultWithID stores an ackResult with its corresponding ackID
+type ackResultWithID struct {
+	r     *AckResult
+	ackID string
+}
+
+func newAckResultWithID(r *AckResult, ackID string) *ackResultWithID {
+	return &ackResultWithID{
+		r:     r,
+		ackID: ackID,
+	}
+}
+
 // processResults processes AckResults by referring to errorStatus and errorsMap.
 // The errors returned by the server in `errorStatus` or in `errorsByAckID`
 // are used to complete the AckResults in `ackResMap` (with a success
 // or error) or to return requests for further retries.
 // Logic is derived from python-pubsub: https://github.com/googleapis/python-pubsub/blob/main/google/cloud/pubsub_v1/subscriber/_protocol/streaming_pull_manager.py#L161-L220
-func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult, errorsByAckID map[string]string) ([]*AckResult, []*AckResult) {
-	var completedResults, retryResults []*AckResult
-	for ackID, res := range ackResMap {
+func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult, errorsByAckID map[string]string) ([]*ackResultWithID, []*ackResultWithID) {
+	var completedResults, retryResults []*ackResultWithID
+	for ackID, ar := range ackResMap {
+		res := newAckResultWithID(ar, ackID)
 		// Handle special errors returned for ack/modack RPCs via the ErrorInfo
 		// sidecar metadata when exactly-once delivery is enabled.
 		if errAckID, ok := errorsByAckID[ackID]; ok {
@@ -680,28 +684,28 @@ func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult,
 				retryResults = append(retryResults, res)
 			} else {
 				if errAckID == permanentInvalidAckErrString {
-					ipubsub.SetAckResult(res, AcknowledgeStatusInvalidAckID, errors.New(errAckID))
+					ipubsub.SetAckResult(ar, AcknowledgeStatusInvalidAckID, errors.New(errAckID))
 				} else {
-					ipubsub.SetAckResult(res, AcknowledgeStatusOther, errors.New(errAckID))
+					ipubsub.SetAckResult(ar, AcknowledgeStatusOther, errors.New(errAckID))
 				}
 				completedResults = append(completedResults, res)
 			}
 		} else if errorStatus != nil && contains(errorStatus.Code(), exactlyOnceDeliveryTemporaryRetryErrors) {
-			retryResults = append(retryResults, ackResMap[ackID])
+			retryResults = append(retryResults, res)
 		} else if errorStatus != nil {
 			// Other gRPC errors are not retried.
 			switch errorStatus.Code() {
 			case codes.PermissionDenied:
-				ipubsub.SetAckResult(res, AcknowledgeStatusPermissionDenied, errorStatus.Err())
+				ipubsub.SetAckResult(ar, AcknowledgeStatusPermissionDenied, errorStatus.Err())
 			case codes.FailedPrecondition:
-				ipubsub.SetAckResult(res, AcknowledgeStatusFailedPrecondition, errorStatus.Err())
+				ipubsub.SetAckResult(ar, AcknowledgeStatusFailedPrecondition, errorStatus.Err())
 			default:
-				ipubsub.SetAckResult(res, AcknowledgeStatusOther, errorStatus.Err())
+				ipubsub.SetAckResult(ar, AcknowledgeStatusOther, errorStatus.Err())
 			}
 			completedResults = append(completedResults, res)
-		} else if res != nil {
+		} else if res.r != nil {
 			// Since no error occurred, requests with AckResults are completed successfully.
-			ipubsub.SetAckResult(res, AcknowledgeStatusSuccess, nil)
+			ipubsub.SetAckResult(ar, AcknowledgeStatusSuccess, nil)
 			completedResults = append(completedResults, res)
 		} else {
 			// All other requests are considered completed.

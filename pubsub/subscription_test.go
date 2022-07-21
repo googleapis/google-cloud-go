@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -437,4 +438,89 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 	orderSub.Receive(ctx, func(ctx context.Context, msg *Message) {
 		msg.Ack()
 	})
+}
+
+func TestExactlyOnceDelivery_Success(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	s.ReceiveSettings.NumGoroutines = 1
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusSuccess)
+		}
+		if err != nil {
+			t.Errorf("AckResult error got %v", err)
+		}
+		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
+
+func TestExactlyOnceDelivery_ErrorPermissionDenied(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.PermissionDenied, "insufficient permission"))
+	client, err := NewClient(ctx, projName,
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	s.ReceiveSettings.NumGoroutines = 1
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusPermissionDenied {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusPermissionDenied)
+		}
+		wantErr := status.Errorf(codes.PermissionDenied, "insufficient permission")
+		if !errors.Is(err, wantErr) {
+			t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
+		}
+		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
 }

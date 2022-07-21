@@ -621,7 +621,7 @@ func TestPingStreamAckDeadline(t *testing.T) {
 	iter.eoMu.RUnlock()
 }
 
-func compareCompletedRetryLengths(t *testing.T, completed, retry []*AckResult, wantCompleted, wantRetry int) {
+func compareCompletedRetryLengths(t *testing.T, completed, retry []*ackResultWithID, wantCompleted, wantRetry int) {
 	if l := len(completed); l != wantCompleted {
 		t.Errorf("completed slice length got %d, want %d", l, wantCompleted)
 	}
