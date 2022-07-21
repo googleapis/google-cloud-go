@@ -2362,7 +2362,7 @@ func TestIntegration_ACL(t *testing.T) {
 		for _, obj := range aclObjects {
 			c := randomContents()
 			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-				t.Errorf("Write for %v failed with %v", obj, err)
+				return fmt.Errorf("Write for %v failed with %v", obj, err)
 			}
 		}
 		acl, err = o.ACL().List(ctx)
@@ -2377,7 +2377,7 @@ func TestIntegration_ACL(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if err := o.ACL().Delete(ctx, entity); err != nil {
 		t.Errorf("object ACL: could not delete entity %s", entity)
@@ -4791,7 +4791,7 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.NewWriter(ctx)
+	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
 	w.ContentType = contentType
 	w.CacheControl = "public, max-age=60"
 	if contents != nil {
