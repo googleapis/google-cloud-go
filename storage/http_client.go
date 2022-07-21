@@ -716,55 +716,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	return newObject(obj), nil
 }
 func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
-	s := callSettings(c.settings, opts...)
-	rawObject := req.dstObject.attrs.toRawObject("")
-	call := c.raw.Objects.Rewrite(req.srcObject.bucket, req.srcObject.name, req.dstObject.bucket, req.dstObject.name, rawObject)
-
-	call.Context(ctx).Projection("full")
-	if req.token != "" {
-		call.RewriteToken(req.token)
-	}
-	if req.dstObject.keyName != "" {
-		call.DestinationKmsKeyName(req.dstObject.keyName)
-	}
-	if req.predefinedACL != "" {
-		call.DestinationPredefinedAcl(req.predefinedACL)
-	}
-	if err := applyConds("Copy destination", defaultGen, req.dstObject.conds, call); err != nil {
-		return nil, err
-	}
-	if err := applySourceConds(req.srcObject.gen, req.srcObject.conds, call); err != nil {
-		return nil, err
-	}
-	if s.userProject != "" {
-		call.UserProject(s.userProject)
-	}
-	// Set destination encryption headers.
-	if err := setEncryptionHeaders(call.Header(), req.dstObject.encryptionKey, false); err != nil {
-		return nil, err
-	}
-	// Set source encryption headers.
-	if err := setEncryptionHeaders(call.Header(), req.srcObject.encryptionKey, true); err != nil {
-		return nil, err
-	}
-	var res *raw.RewriteResponse
-	var err error
-	setClientHeader(call.Header())
-
-	retryCall := func() error { res, err = call.Do(); return err }
-
-	if err := run(ctx, retryCall, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
-		return nil, err
-	}
-
-	r := &rewriteObjectResponse{
-		done:     res.Done,
-		written:  res.TotalBytesRewritten,
-		token:    res.RewriteToken,
-		resource: newObject(res.Resource),
-	}
-
-	return r, nil
+	return nil, errMethodNotSupported
 }
 
 func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
