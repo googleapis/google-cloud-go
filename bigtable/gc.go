@@ -25,13 +25,19 @@ import (
 	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
+// Type of the GCPolicy
 type PolicyType int
 
 const (
+	// Type for NoGCPolicy
 	PolicyUnspecified PolicyType = iota
+	// Type for MaxAgeGCPolicy
 	PolicyMaxAge
+	// Type for MaxVersionGCPolicy
 	PolicyMaxVersion
+	// Type for UnionGCPolicy
 	PolicyUnion
+	// Type for IntersectionGCPolicy
 	PolicyIntersection
 )
 
@@ -41,6 +47,7 @@ type GCPolicy interface {
 	proto() *bttdpb.GcRule
 }
 
+// GetPolicyType takes a gc policy and return appropriate PolicyType
 func GetPolicyType(gc GCPolicy) PolicyType {
 	switch gc.proto().Rule.(type) {
 	case *bttdpb.GcRule_Intersection_:
@@ -114,7 +121,7 @@ func (up UnionGCPolicy) proto() *bttdpb.GcRule {
 // except for the most recent n.
 func MaxVersionsPolicy(n int) GCPolicy { return MaxVersionsGCPolicy(n) }
 
-// Type alias for MaxVersionGCPolicy
+// MaxVersionGCPolicy type alias
 type MaxVersionsGCPolicy int
 
 func (mvp MaxVersionsGCPolicy) String() string {
@@ -129,7 +136,7 @@ func (mvp MaxVersionsGCPolicy) proto() *bttdpb.GcRule {
 // older than the given age.
 func MaxAgePolicy(d time.Duration) GCPolicy { return MaxAgeGCPolicy(d) }
 
-// Type alias for MaxAgeGCPolicy
+// MaxAgeGCPolicy type alias
 type MaxAgeGCPolicy time.Duration
 
 var units = []struct {
@@ -145,6 +152,7 @@ func (ma MaxAgeGCPolicy) String() string {
 	return fmt.Sprintf("age() > %s", ma.GetDurationString())
 }
 
+// Get duration string of the MaxAgeGCPolicy
 func (ma MaxAgeGCPolicy) GetDurationString() string {
 	d := time.Duration(ma)
 	for _, u := range units {
