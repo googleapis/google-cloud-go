@@ -17,22 +17,28 @@
 package automl
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newPredictionClientHook clientHook
@@ -56,6 +62,13 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 }
 
 func defaultPredictionCallOptions() *PredictionCallOptions {
+	return &PredictionCallOptions{
+		Predict:      []gax.CallOption{},
+		BatchPredict: []gax.CallOption{},
+	}
+}
+
+func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
 		Predict:      []gax.CallOption{},
 		BatchPredict: []gax.CallOption{},
@@ -270,6 +283,92 @@ func (c *predictionGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type predictionRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing PredictionClient
+	CallOptions **PredictionCallOptions
+}
+
+// NewPredictionRESTClient creates a new prediction service rest client.
+//
+// AutoML Prediction API.
+//
+// On any input that is documented to expect a string parameter in
+// snake_case or kebab-case, either of those cases is accepted.
+func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
+	clientOpts := append(defaultPredictionRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultPredictionRESTCallOptions()
+	c := &predictionRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &PredictionClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultPredictionRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://automl.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://automl.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://automl.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *predictionRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *predictionRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *predictionRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *predictionGRPCClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -316,9 +415,173 @@ func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.B
 	}, nil
 }
 
+// Predict perform an online prediction. The prediction result will be directly
+// returned in the response.
+// Available for following ML problems, and their expected request payloads:
+//
+//   Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
+//
+//   Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
+//
+//   Text Classification - TextSnippet, content up to 60,000 characters,
+//   UTF-8 encoded.
+//
+//   Text Extraction - TextSnippet, content up to 30,000 characters,
+//   UTF-8 NFC encoded.
+//
+//   Translation - TextSnippet, content up to 25,000 characters, UTF-8
+//   encoded.
+//
+//   Tables - Row, with column values matching the columns of the model,
+//   up to 5MB. Not available for FORECASTING
+//
+// prediction_type.
+//
+//   Text Sentiment - TextSnippet, content up 500 characters, UTF-8
+//   encoded.
+func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:predict", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &automlpb.PredictResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchPredict perform a batch prediction. Unlike the online Predict, batch
+// prediction result won’t be immediately available in the response. Instead,
+// a long running operation object is returned. User can poll the operation
+// result via GetOperation
+// method. Once the operation is done, BatchPredictResult is returned in
+// the response field.
+// Available for following ML problems:
+//
+//   Image Classification
+//
+//   Image Object Detection
+//
+//   Video Classification
+//
+//   Video Object Tracking * Text Extraction
+//
+//   Tables
+func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchPredict", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &BatchPredictOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // BatchPredictOperation manages a long-running operation from BatchPredict.
 type BatchPredictOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // BatchPredictOperation returns a new BatchPredictOperation from a given name.
@@ -329,10 +592,21 @@ func (c *predictionGRPCClient) BatchPredictOperation(name string) *BatchPredictO
 	}
 }
 
+// BatchPredictOperation returns a new BatchPredictOperation from a given name.
+// The name must be that of a previously created BatchPredictOperation, possibly from a different process.
+func (c *predictionRESTClient) BatchPredictOperation(name string) *BatchPredictOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &BatchPredictOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *BatchPredictOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*automlpb.BatchPredictResult, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp automlpb.BatchPredictResult
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -350,6 +624,7 @@ func (op *BatchPredictOperation) Wait(ctx context.Context, opts ...gax.CallOptio
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *BatchPredictOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*automlpb.BatchPredictResult, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp automlpb.BatchPredictResult
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

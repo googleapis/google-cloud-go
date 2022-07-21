@@ -312,6 +312,13 @@ func TestParseDMLStmt(t *testing.T) {
 				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
 			},
 		},
+		{"INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+		},
 		{"INSERT Singers (SingerId, FirstName, LastName) SELECT * FROM UNNEST ([1, 2, 3]) AS data",
 			&Insert{
 				Table:   "Singers",
@@ -402,6 +409,13 @@ func TestParseExpr(t *testing.T) {
 					{Cond: True, Result: StringLiteral("X")},
 					{Cond: False, Result: StringLiteral("Y")},
 				},
+			},
+		},
+		{`IF(A < B, TRUE, FALSE)`,
+			If{
+				Expr:       ComparisonOp{LHS: ID("A"), Op: Lt, RHS: ID("B")},
+				TrueResult: True,
+				ElseResult: False,
 			},
 		},
 

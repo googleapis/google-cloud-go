@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/certificatemanager/apiv1",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CancelOperation_sync",
+      "title": "certificatemanager CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.certificatemanager.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CancelOperation",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificate_sync",
       "title": "certificatemanager CreateCertificate Sample",
@@ -380,6 +425,51 @@
       ]
     },
     {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteOperation_sync",
+      "title": "certificatemanager DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.certificatemanager.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteOperation",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificate_sync",
       "title": "certificatemanager GetCertificate Sample",
       "description": "GetCertificate gets details of a single Certificate.",
@@ -564,6 +654,98 @@
       ]
     },
     {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetLocation_sync",
+      "title": "certificatemanager GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.certificatemanager.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetLocation",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetOperation_sync",
+      "title": "certificatemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.certificatemanager.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetOperation",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateMapEntries_sync",
       "title": "certificatemanager ListCertificateMapEntries Sample",
       "description": "ListCertificateMapEntries lists CertificateMapEntries in a given project and location.",
@@ -732,6 +914,98 @@
         "method": {
           "shortName": "ListDnsAuthorizations",
           "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListDnsAuthorizations",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListLocations_sync",
+      "title": "certificatemanager ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.certificatemanager.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListLocations",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListOperations_sync",
+      "title": "certificatemanager ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.certificatemanager.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListOperations",
           "service": {
             "shortName": "CertificateManager",
             "fullName": "google.cloud.certificatemanager.v1.CertificateManager"

@@ -738,6 +738,15 @@ type WhenClause struct {
 	Result Expr
 }
 
+type If struct {
+	Expr       Expr
+	TrueResult Expr
+	ElseResult Expr
+}
+
+func (If) isBoolExpr() {} // possibly bool
+func (If) isExpr()     {}
+
 type BoolLiteral bool
 
 const (

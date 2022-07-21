@@ -36,12 +36,12 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
