@@ -92,7 +92,7 @@ func defaultCursorCallOptions() *CursorCallOptions {
 	}
 }
 
-// internalCursorClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalCursorClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalCursorClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

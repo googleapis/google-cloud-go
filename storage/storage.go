@@ -39,9 +39,8 @@ import (
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/storage/internal"
-	gapic "cloud.google.com/go/storage/internal/apiv2"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -50,7 +49,6 @@ import (
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -85,12 +83,19 @@ const (
 	// ScopeReadWrite grants permissions to manage your
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
+
+	// aes256Algorithm is the AES256 encryption algorithm used with the
+	// Customer-Supplied Encryption Keys feature.
+	aes256Algorithm = "AES256"
+
+	// defaultGen indicates the latest object generation by default,
+	// using a negative value.
+	defaultGen = int64(-1)
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
-
+// TODO: remove this once header with invocation ID is applied to all methods.
 func setClientHeader(headers http.Header) {
-	headers.Set("x-goog-api-client", xGoogHeader)
+	headers.Set("x-goog-api-client", xGoogDefaultHeader)
 }
 
 // Client is a client for interacting with Google Cloud Storage.
@@ -108,10 +113,8 @@ type Client struct {
 	creds *google.Credentials
 	retry *retryConfig
 
-	// gc is an optional gRPC-based, GAPIC client.
-	//
-	// This is an experimental field and not intended for public use.
-	gc *gapic.Client
+	// tc is the transport-agnostic client implemented with either gRPC or HTTP.
+	tc storageClient
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -207,12 +210,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // This is an experimental API and not intended for public use.
 func newGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	opts = append(defaultGRPCOptions(), opts...)
-	g, err := gapic.NewClient(ctx, opts...)
+	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{gc: g}, nil
+	return &Client{tc: tc}, nil
 }
 
 // Close closes the Client.
@@ -223,8 +226,8 @@ func (c *Client) Close() error {
 	c.hc = nil
 	c.raw = nil
 	c.creds = nil
-	if c.gc != nil {
-		return c.gc.Close()
+	if c.tc != nil {
+		return c.tc.Close()
 	}
 	return nil
 }
@@ -916,7 +919,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	}
 	var obj *raw.Object
 	setClientHeader(call.Header())
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true)
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true, setRetryHeaderHTTP(call))
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1021,7 +1024,7 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if o.conds != nil && o.conds.MetagenerationMatch != 0 {
 		isIdempotent = true
 	}
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent)
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent, setRetryHeaderHTTP(call))
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1091,7 +1094,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0 {
 		isIdempotent = true
 	}
-	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent)
+	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent, setRetryHeaderHTTP(call))
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
@@ -1205,8 +1208,11 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 	}
 
 	// For now, there are only globally unique buckets, and "_" is the alias
-	// project ID for such buckets.
-	b = bucketResourceName("_", b)
+	// project ID for such buckets. If the bucket is not provided, like in the
+	// destination ObjectAttrs of a Copy, do not attempt to format it.
+	if b != "" {
+		b = bucketResourceName(globalProjectAlias, b)
+	}
 
 	return &storagepb.Object{
 		Bucket:              b,
@@ -1231,6 +1237,49 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		Size:                o.Size,
 		Checksums:           checksums,
 	}
+}
+
+// toProtoObject copies the attributes to update from uattrs to the proto library's Object type.
+func (uattrs *ObjectAttrsToUpdate) toProtoObject(bucket, object string) *storagepb.Object {
+	o := &storagepb.Object{
+		Name:   object,
+		Bucket: bucket,
+	}
+	if uattrs == nil {
+		return o
+	}
+
+	if uattrs.EventBasedHold != nil {
+		o.EventBasedHold = proto.Bool(optional.ToBool(uattrs.EventBasedHold))
+	}
+	if uattrs.TemporaryHold != nil {
+		o.TemporaryHold = optional.ToBool(uattrs.TemporaryHold)
+	}
+	if uattrs.ContentType != nil {
+		o.ContentType = optional.ToString(uattrs.ContentType)
+	}
+	if uattrs.ContentLanguage != nil {
+		o.ContentLanguage = optional.ToString(uattrs.ContentLanguage)
+	}
+	if uattrs.ContentEncoding != nil {
+		o.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
+	}
+	if uattrs.ContentDisposition != nil {
+		o.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
+	}
+	if uattrs.CacheControl != nil {
+		o.CacheControl = optional.ToString(uattrs.CacheControl)
+	}
+	if !uattrs.CustomTime.IsZero() {
+		o.CustomTime = toProtoTimestamp(uattrs.CustomTime)
+	}
+	if uattrs.ACL != nil {
+		o.Acl = toProtoObjectACL(uattrs.ACL)
+	}
+
+	// TODO(cathyo): Handle metadata. Pending b/230510191.
+
+	return o
 }
 
 // ObjectAttrs represents the metadata for a Google Cloud Storage (GCS) object.
@@ -1314,6 +1363,10 @@ type ObjectAttrs struct {
 
 	// Metadata represents user-provided metadata, in key/value pairs.
 	// It can be nil if no metadata is provided.
+	//
+	// For object downloads using Reader, metadata keys are sent as headers.
+	// Therefore, avoid setting metadata keys using characters that are not valid
+	// for headers. See https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6.
 	Metadata map[string]string
 
 	// Generation is the generation number of the object's content.
@@ -1788,6 +1841,33 @@ func applySourceConds(gen int64, conds *Conditions, call *raw.ObjectsRewriteCall
 	return nil
 }
 
+func applySourceCondsProto(gen int64, conds *Conditions, call *storagepb.RewriteObjectRequest) error {
+	if gen >= 0 {
+		call.SourceGeneration = gen
+	}
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate("CopyTo source"); err != nil {
+		return err
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		call.IfSourceGenerationMatch = proto.Int64(conds.GenerationMatch)
+	case conds.GenerationNotMatch != 0:
+		call.IfSourceGenerationNotMatch = proto.Int64(conds.GenerationNotMatch)
+	case conds.DoesNotExist:
+		call.IfSourceGenerationMatch = proto.Int64(0)
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		call.IfSourceMetagenerationMatch = proto.Int64(conds.MetagenerationMatch)
+	case conds.MetagenerationNotMatch != 0:
+		call.IfSourceMetagenerationNotMatch = proto.Int64(conds.MetagenerationNotMatch)
+	}
+	return nil
+}
+
 // setConditionField sets a field on a *raw.WhateverCall.
 // We can't use anonymous interfaces because the return type is
 // different, since the field setters are builders.
@@ -1994,11 +2074,24 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 	if copySource {
 		cs = "copy-source-"
 	}
-	headers.Set("x-goog-"+cs+"encryption-algorithm", "AES256")
+	headers.Set("x-goog-"+cs+"encryption-algorithm", aes256Algorithm)
 	headers.Set("x-goog-"+cs+"encryption-key", base64.StdEncoding.EncodeToString(key))
 	keyHash := sha256.Sum256(key)
 	headers.Set("x-goog-"+cs+"encryption-key-sha256", base64.StdEncoding.EncodeToString(keyHash[:]))
 	return nil
+}
+
+// toProtoCommonObjectRequestParams sets customer-supplied encryption to the proto library's CommonObjectRequestParams.
+func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequestParams {
+	if key == nil {
+		return nil
+	}
+	keyHash := sha256.Sum256(key)
+	return &storagepb.CommonObjectRequestParams{
+		EncryptionAlgorithm:      aes256Algorithm,
+		EncryptionKeyBytes:       key,
+		EncryptionKeySha256Bytes: keyHash[:],
+	}
 }
 
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
@@ -2009,7 +2102,7 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	err = run(ctx, func() error {
 		res, err = r.Context(ctx).Do()
 		return err
-	}, c.retry, true)
+	}, c.retry, true, setRetryHeaderHTTP(r))
 	if err != nil {
 		return "", err
 	}

@@ -413,6 +413,10 @@ func TestBQToDatasetMetadata(t *testing.T) {
 				},
 			},
 		},
+		Tags: []*bq.DatasetTags{
+			{TagKey: "tag1", TagValue: "value1"},
+			{TagKey: "tag2", TagValue: "value2"},
+		},
 		Etag: "etag",
 	}
 	want := &DatasetMetadata{
@@ -436,6 +440,10 @@ func TestBQToDatasetMetadata(t *testing.T) {
 					TargetTypes: []string{"VIEWS"},
 				},
 			},
+		},
+		Tags: []*DatasetTag{
+			{TagKey: "tag1", TagValue: "value1"},
+			{TagKey: "tag2", TagValue: "value2"},
 		},
 		ETag: "etag",
 	}

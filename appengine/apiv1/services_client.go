@@ -68,7 +68,7 @@ func defaultServicesCallOptions() *ServicesCallOptions {
 	}
 }
 
-// internalServicesClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalServicesClient is an interface that defines the methods available from App Engine Admin API.
 type internalServicesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

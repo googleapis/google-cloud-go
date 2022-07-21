@@ -94,7 +94,7 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 	}
 }
 
-// internalBigQueryReadClient is an interface that defines the methods availaible from BigQuery Storage API.
+// internalBigQueryReadClient is an interface that defines the methods available from BigQuery Storage API.
 type internalBigQueryReadClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

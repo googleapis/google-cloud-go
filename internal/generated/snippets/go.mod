@@ -1,9 +1,9 @@
 module cloud.google.com/go/internal/generated
 
-go 1.16
+go 1.17
 
 require (
-	cloud.google.com/go v0.100.2
+	cloud.google.com/go v0.103.0
 	cloud.google.com/go/accessapproval v1.0.1
 	cloud.google.com/go/accesscontextmanager v0.1.1
 	cloud.google.com/go/aiplatform v1.2.0
@@ -16,6 +16,9 @@ require (
 	cloud.google.com/go/asset v1.0.1
 	cloud.google.com/go/assuredworkloads v0.3.0
 	cloud.google.com/go/automl v1.0.0
+	cloud.google.com/go/baremetalsolution v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/batch v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/beyondcorp v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/bigquery v1.26.0
 	cloud.google.com/go/billing v1.0.0
 	cloud.google.com/go/binaryauthorization v0.2.0
@@ -24,12 +27,13 @@ require (
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
 	cloud.google.com/go/cloudtasks v1.1.0
-	cloud.google.com/go/compute v1.6.0
+	cloud.google.com/go/compute v1.7.0
 	cloud.google.com/go/contactcenterinsights v0.4.0
 	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
 	cloud.google.com/go/datacatalog v1.3.0
 	cloud.google.com/go/dataflow v0.1.0
+	cloud.google.com/go/dataform v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/datafusion v1.0.0
 	cloud.google.com/go/datalabeling v0.1.0
 	cloud.google.com/go/dataplex v0.0.0-00010101000000-000000000000
@@ -49,8 +53,10 @@ require (
 	cloud.google.com/go/firestore v1.6.1
 	cloud.google.com/go/functions v1.1.0
 	cloud.google.com/go/gaming v1.0.0
+	cloud.google.com/go/gkebackup v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.2.0
+	cloud.google.com/go/gkemulticloud v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/gsuiteaddons v1.0.0
 	cloud.google.com/go/iam v0.3.0
 	cloud.google.com/go/iap v1.0.0
@@ -77,7 +83,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.20.0
+	cloud.google.com/go/pubsub v1.23.0
 	cloud.google.com/go/pubsublite v1.2.1
 	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
@@ -113,8 +119,23 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.77.0
-	google.golang.org/genproto v0.0.0-20220502173005-c8bf987b8c21
+	google.golang.org/api v0.87.0
+	google.golang.org/genproto v0.0.0-20220718134204-073382fd740c
+)
+
+require (
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
+	go.opencensus.io v0.23.0 // indirect
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
+	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2 // indirect
+	golang.org/x/sys v0.0.0-20220624220833-87e55d714810 // indirect
+	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/grpc v1.47.0 // indirect
+	google.golang.org/protobuf v1.28.0 // indirect
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -342,3 +363,19 @@ replace cloud.google.com/go/certificatemanager => ../../../certificatemanager
 replace cloud.google.com/go/optimization => ../../../optimization
 
 replace cloud.google.com/go/run => ../../../run
+
+replace cloud.google.com/go/gkebackup => ../../../gkebackup
+
+replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
+
+replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
+
+replace cloud.google.com/go/vision/v2 => ../../../vision/v2
+
+replace cloud.google.com/go/baremetalsolution => ../../../baremetalsolution
+
+replace cloud.google.com/go/batch => ../../../batch
+
+replace cloud.google.com/go/dataform => ../../../dataform
+
+replace cloud.google.com/go/beyondcorp => ../../../beyondcorp

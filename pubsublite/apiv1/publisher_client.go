@@ -54,7 +54,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 	}
 }
 
-// internalPublisherClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+// internalPublisherClient is an interface that defines the methods available from Pub/Sub Lite API.
 type internalPublisherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

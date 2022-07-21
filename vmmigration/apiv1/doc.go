@@ -17,10 +17,8 @@
 // Package vmmigration is an auto-generated package for the
 // VM Migration API.
 //
-// Use the Migrate for Compute Engine API to programmatically migrate
+// Use the Migrate to Virtual Machines API to programmatically migrate
 // workloads.
-//
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // Example usage
 //

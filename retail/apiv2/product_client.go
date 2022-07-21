@@ -204,7 +204,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 	}
 }
 
-// internalProductClient is an interface that defines the methods availaible from Retail API.
+// internalProductClient is an interface that defines the methods available from Retail API.
 type internalProductClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -295,7 +295,7 @@ func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteP
 
 // ImportProducts bulk import of multiple Products.
 //
-// Request processing may be synchronous. No partial updating is supported.
+// Request processing may be synchronous.
 // Non-existing items are created.
 //
 // Note that it is possible for a subset of the
@@ -344,7 +344,7 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 //
 // Pre-existing inventory information can only be updated with
 // SetInventory,
-// AddFulfillmentPlaces,
+// ProductService.AddFulfillmentPlaces,
 // and
 // RemoveFulfillmentPlaces.
 //

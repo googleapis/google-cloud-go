@@ -122,7 +122,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from BigQuery Migration API.
+// internalClient is an interface that defines the methods available from BigQuery Migration API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

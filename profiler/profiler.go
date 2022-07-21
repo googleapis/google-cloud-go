@@ -80,7 +80,7 @@ var (
 	sleep            = gax.Sleep
 	dialGRPC         = gtransport.DialPool
 	onGCE            = gcemd.OnGCE
-	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
+	serviceRegexp    = regexp.MustCompile(`^[a-z0-9]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
 
 	// For testing only.
 	// When the profiling loop has exited without error and this channel is

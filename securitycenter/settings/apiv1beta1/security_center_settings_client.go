@@ -227,7 +227,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 	}
 }
 
-// internalSecurityCenterSettingsClient is an interface that defines the methods availaible from Cloud Security Command Center API.
+// internalSecurityCenterSettingsClient is an interface that defines the methods available from Cloud Security Command Center API.
 type internalSecurityCenterSettingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

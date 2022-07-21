@@ -19,6 +19,10 @@ However, a `v1+` module may have breaking changes in two scenarios:
 * Packages with `alpha` or `beta` in the import path
 * The GoDoc has an explicit stability disclaimer (for example, for an experimental feature).
 
+## Google Cloud Samples
+
+To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples?l=go).
+
 ## Go Version Support
 
 See the [Go Versions Supported](https://github.com/googleapis/google-cloud-go#go-versions-supported)

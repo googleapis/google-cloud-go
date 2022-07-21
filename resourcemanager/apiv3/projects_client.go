@@ -114,7 +114,7 @@ func defaultProjectsCallOptions() *ProjectsCallOptions {
 	}
 }
 
-// internalProjectsClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalProjectsClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalProjectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

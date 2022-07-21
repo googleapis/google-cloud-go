@@ -134,8 +134,8 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 				Fields: map[string]*structpb.Value{
 					"language":      stringValue("GOLANG"),
 					"framework":     stringValue("CLOUD_PUBSUB_SHIM"),
-					"major_version": stringValue("1"),
-					"minor_version": stringValue("2"),
+					"major_version": numberValue(1),
+					"minor_version": numberValue(2),
 				},
 			},
 		},

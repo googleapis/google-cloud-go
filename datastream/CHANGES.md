@@ -1,5 +1,33 @@
 # Changes
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.5.0...datastream/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **datastream:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+* **datastream:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+
+### Miscellaneous Chores
+
+* **datastream:** release 1.0.0 ([53f7cbd](https://github.com/googleapis/google-cloud-go/commit/53f7cbdd253e4ac224fa7d8ed3fa378e0dc8c97e))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.4.0...datastream/v0.5.0) (2022-05-24)
+
+
+### Features
+
+* **datastream:** Include the location mixin client ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.3.0...datastream/v0.4.0) (2022-05-09)
+
+
+### Features
+
+* **datastream:** start generating apiv1 ([#6003](https://github.com/googleapis/google-cloud-go/issues/6003)) ([0c9e0f9](https://github.com/googleapis/google-cloud-go/commit/0c9e0f9d4c7ddfe020b61f0cf8540246c4c9695e)), refs [#5958](https://github.com/googleapis/google-cloud-go/issues/5958)
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.2.0...datastream/v0.3.0) (2022-02-23)
 
 

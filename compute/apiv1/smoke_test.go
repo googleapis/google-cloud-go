@@ -27,9 +27,6 @@ import (
 
 	"google.golang.org/api/option"
 
-	"cloud.google.com/go/internal"
-	"github.com/googleapis/gax-go/v2"
-
 	"github.com/google/go-cmp/cmp"
 
 	"cloud.google.com/go/internal/testutil"
@@ -476,17 +473,25 @@ func TestCapitalLetter(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() {
-		timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
-		defer cancel()
-		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
-			_, err = c.Delete(timeoutCtx,
+		var op *Operation
+		var err error
+		ok := testutil.Retry(t, 20, 10*time.Second, func(r *testutil.R) {
+			var err error
+			op, err = c.Delete(ctx,
 				&computepb.DeleteFirewallRequest{
 					Project:  projectId,
 					Firewall: name,
 				})
-			return err == nil, err
+			if err != nil {
+				r.Errorf("%v", err)
+			}
 		})
-		if err != nil {
+		if !ok {
+			t.Fatal(err)
+		}
+		timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
+		defer cancel()
+		if err = op.Wait(timeoutCtx); err != nil {
 			t.Error(err)
 		}
 	}()
@@ -495,7 +500,7 @@ func TestCapitalLetter(t *testing.T) {
 		Firewall: name,
 	})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("got(-),want(+):\n%s", diff)
@@ -637,11 +642,7 @@ func TestInstanceGroupResize(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
-			err = deleteOp.Wait(ctx)
-			return deleteOp.Done(), err
-		})
-		if err != nil {
+		if err := deleteOp.Wait(ctx); err != nil {
 			t.Error(err)
 		}
 	}()
