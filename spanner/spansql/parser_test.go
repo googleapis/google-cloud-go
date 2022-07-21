@@ -418,6 +418,12 @@ func TestParseExpr(t *testing.T) {
 				ElseResult: False,
 			},
 		},
+		{`IFNULL(NULL, TRUE)`,
+			IfNull{
+				Expr:       Null,
+				NullResult: True,
+			},
+		},
 
 		// String literal:
 		// Accept double quote and single quote.

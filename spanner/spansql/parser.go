@@ -3010,6 +3010,9 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	case tok.caseEqual("IF"):
 		p.back()
 		return p.parseIfExpr()
+	case tok.caseEqual("IFNULL"):
+		p.back()
+		return p.parseIfNullExpr()
 	}
 
 	// Handle typed literals.
@@ -3150,6 +3153,30 @@ func (p *parser) parseIfExpr() (If, *parseError) {
 	}
 
 	return If{Expr: expr, TrueResult: trueResult, ElseResult: elseResult}, nil
+}
+
+func (p *parser) parseIfNullExpr() (IfNull, *parseError) {
+	if err := p.expect("IFNULL", "("); err != nil {
+		return IfNull{}, err
+	}
+
+	expr, err := p.parseExpr()
+	if err != nil {
+		return IfNull{}, err
+	}
+	if err := p.expect(","); err != nil {
+		return IfNull{}, err
+	}
+
+	nullResult, err := p.parseExpr()
+	if err != nil {
+		return IfNull{}, err
+	}
+	if err := p.expect(")"); err != nil {
+		return IfNull{}, err
+	}
+
+	return IfNull{Expr: expr, NullResult: nullResult}, nil
 }
 
 func (p *parser) parseArrayLit() (Array, *parseError) {

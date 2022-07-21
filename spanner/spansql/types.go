@@ -747,6 +747,14 @@ type If struct {
 func (If) isBoolExpr() {} // possibly bool
 func (If) isExpr()     {}
 
+type IfNull struct {
+	Expr       Expr
+	NullResult Expr
+}
+
+func (IfNull) isBoolExpr() {} // possibly bool
+func (IfNull) isExpr()     {}
+
 type BoolLiteral bool
 
 const (

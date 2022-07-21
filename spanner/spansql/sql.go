@@ -744,6 +744,15 @@ func (i If) addSQL(sb *strings.Builder) {
 	sb.WriteString(")")
 }
 
+func (in IfNull) SQL() string { return buildSQL(in) }
+func (in IfNull) addSQL(sb *strings.Builder) {
+	sb.WriteString("IFNULL(")
+	in.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	in.NullResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
 func (b BoolLiteral) SQL() string { return buildSQL(b) }
 func (b BoolLiteral) addSQL(sb *strings.Builder) {
 	if b {
