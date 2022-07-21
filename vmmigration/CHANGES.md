@@ -1,13 +1,6 @@
 # Changes
 
 
-## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.0.0...vmmigration/v1.1.0) (2022-07-19)
-
-
-### Features
-
-* **vmmigration:** Rename product feat: API updates ([53246aa](https://github.com/googleapis/google-cloud-go/commit/53246aa18cb9c79471ecc84878b5e3f166086404))
-
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v0.3.0...vmmigration/v1.0.0) (2022-06-29)
 
 

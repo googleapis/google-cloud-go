@@ -766,56 +766,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	return newObjectFromProto(obj), nil
 }
 func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
-	s := callSettings(c.settings, opts...)
-	obj := req.dstObject.attrs.toProtoObject("")
-	call := &storagepb.RewriteObjectRequest{
-		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcObject.bucket),
-		SourceObject:             req.srcObject.name,
-		RewriteToken:             req.token,
-		DestinationBucket:        bucketResourceName(globalProjectAlias, req.dstObject.bucket),
-		DestinationName:          req.dstObject.name,
-		Destination:              obj,
-		DestinationKmsKey:        req.dstObject.keyName,
-		DestinationPredefinedAcl: req.predefinedACL,
-	}
-
-	// The userProject, whether source or destination project, is decided by the code calling the interface.
-	if s.userProject != "" {
-		ctx = setUserProjectMetadata(ctx, s.userProject)
-	}
-	if err := applyCondsProto("Copy destination", defaultGen, req.dstObject.conds, call); err != nil {
-		return nil, err
-	}
-	if err := applySourceCondsProto(req.srcObject.gen, req.srcObject.conds, call); err != nil {
-		return nil, err
-	}
-
-	if len(req.dstObject.encryptionKey) > 0 {
-		call.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstObject.encryptionKey)
-	}
-	if len(req.srcObject.encryptionKey) > 0 {
-		srcParams := toProtoCommonObjectRequestParams(req.srcObject.encryptionKey)
-		call.CopySourceEncryptionAlgorithm = srcParams.GetEncryptionAlgorithm()
-		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
-		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
-	}
-	var res *storagepb.RewriteResponse
-	var err error
-
-	retryCall := func() error { res, err = c.raw.RewriteObject(ctx, call, s.gax...); return err }
-
-	if err := run(ctx, retryCall, s.retry, s.idempotent, setRetryHeaderGRPC(ctx)); err != nil {
-		return nil, err
-	}
-
-	r := &rewriteObjectResponse{
-		done:     res.GetDone(),
-		written:  res.GetTotalBytesRewritten(),
-		token:    res.GetRewriteToken(),
-		resource: newObjectFromProto(res.GetResource()),
-	}
-
-	return r, nil
+	return nil, errMethodNotSupported
 }
 
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
