@@ -99,7 +99,13 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 		}
 		opts := []cmp.Option{
 			cmp.AllowUnexported(Message{}, psAckHandler{}),
-			cmpopts.IgnoreTypes(time.Time{}, func(string, bool, *AckResult, time.Time) {}),
+			cmpopts.IgnoreTypes(
+				time.Time{},
+				func(string, bool,
+					*AckResult, time.Time) {
+				},
+				AckResult{},
+			),
 		}
 		if !testutil.Equal(got, want, opts...) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
