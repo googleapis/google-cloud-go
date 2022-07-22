@@ -143,8 +143,8 @@ func TestPendingWrite(t *testing.T) {
 		if gotErr != wantErr {
 			t.Errorf("GetResult: mismatch in errors, got %v want %v", gotErr, wantErr)
 		}
-		// Now, check RawResponse.
-		gotResp, gotErr := pending.result.RawResponse(ctx)
+		// Now, check GetRawResult.
+		gotResp, gotErr := pending.result.GetRawResult(ctx)
 		if gotErr != wantErr {
 			t.Errorf("RawResponse: mismatch in errors, got %v want %v", gotErr, wantErr)
 		}
@@ -152,11 +152,4 @@ func TestPendingWrite(t *testing.T) {
 			t.Errorf("RawResponse diff: %s", diff)
 		}
 	}
-
-	// Now, check RawResponse:
-	select {
-	case <-time.After(100 * time.Millisecond):
-		t.Errorf("possible blocking on completed AppendResult")
-	}
-
 }

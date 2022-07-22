@@ -54,22 +54,41 @@ func newAppendResult(data [][]byte) *AppendResult {
 // which may be a successful append or an error.
 func (ar *AppendResult) Ready() <-chan struct{} { return ar.ready }
 
-// GetResult returns the optional offset of this row, or the associated
-// error.  It blocks until the result is ready.
+// GetResult returns the optional offset of this row, as well as any error encountered while
+// processing the append.
+//
+// This call blocks until the result is ready, or context is no longer valid.
 func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	select {
 	case <-ctx.Done():
 		return NoStreamOffset, ctx.Err()
 	case <-ar.Ready():
+		raw, err := ar.GetRawResult(ctx)
 		offset := NoStreamOffset
-		var err error
-		if ar.response != nil {
-			if result := ar.response.GetAppendResult(); result != nil {
+		if raw != nil {
+			if result := raw.GetAppendResult(); result != nil {
 				if off := result.GetOffset(); off != nil {
 					offset = off.GetValue()
 				}
 			}
 		}
+		return offset, err
+	}
+}
+
+// GetRawResult returns the full content of the AppendRows response, and any encountered while
+// processing the append.
+//
+// An error embedded in the raw response will be converted and returned as the error response,
+// so it is possible for this to return both a response and an error together.
+//
+// This call blocks until the result is ready, or context is no longer valid.
+func (ar *AppendResult) GetRawResult(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-ar.Ready():
+		var err error
 		if ar.err != nil {
 			err = ar.err
 		} else {
@@ -85,21 +104,10 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 				}
 			}
 		}
-		return offset, err
-	}
-}
-
-// RawResponse returns a copy of the raw response if present and error associated with the append.
-// It blocks until the result is ready.
-func (ar *AppendResult) RawResponse(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case <-ar.Ready():
 		if ar.response != nil {
-			return proto.Clone(ar.response).(*storagepb.AppendRowsResponse), ar.err
+			return proto.Clone(ar.response).(*storagepb.AppendRowsResponse), err
 		}
-		return nil, ar.err
+		return nil, err
 	}
 }
 
@@ -120,7 +128,9 @@ func (ar *AppendResult) offset(ctx context.Context) int64 {
 }
 
 // UpdatedSchema returns the updated schema for a table if supplied by the backend as part
-// of the append response.  It blocks until the result is ready.
+// of the append response.
+//
+// This call blocks until the result is ready, or context is no longer valid.
 func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
 	select {
 	case <-ctx.Done():
