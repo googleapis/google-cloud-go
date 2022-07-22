@@ -94,21 +94,33 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 	}
 	ctx := context.Background()
 
+	remoteOpts := &RemoteFunctionOptions{
+		Endpoint:           "https://test.domain.com/foo/bar",
+		Connection:         "projects/shollyman-demo-test/locations/us/connections/udf-connection",
+		MaxBatchingRows:    50,
+		UserDefinedContext: map[string]string{"foo": "bar"},
+	}
+
 	// Create a remote UDP via the API.
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
 	meta := &RoutineMetadata{
-		RemoteFunctionOptions: &RemoteFunctionOptions{
-			Endpoint:           "https://test.domain.com/foo/bar",
-			Connection:         "projects/shollyman-demo-test/locations/us/connections/udf-connection",
-			MaxBatchingRows:    50,
-			UserDefinedContext: map[string]string{"foo": "bar"},
-		},
-		Description: "defines a remote function",
-		ReturnType:  &StandardSQLDataType{TypeKind: "STRING"},
+		RemoteFunctionOptions: remoteOpts,
+		Description:           "defines a remote function",
+		Type:                  "SCALAR_FUNCTION",
+		ReturnType:            &StandardSQLDataType{TypeKind: "STRING"},
 	}
 	if err := routine.Create(ctx, meta); err != nil {
 		t.Fatalf("Create: %v", err)
+	}
+
+	gotMeta, err := routine.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("Metadata: %v", err)
+	}
+
+	if diff := testutil.Diff(gotMeta.RemoteFunctionOptions, remoteOpts); diff != "" {
+		t.Fatalf("RemoteFunctionOptions: -got, +want:\n%s", diff)
 	}
 }
 
