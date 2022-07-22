@@ -343,6 +343,26 @@ func ExampleClient_DeleteObject() {
 	}
 }
 
+func ExampleClient_CancelResumableWrite() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.CancelResumableWriteRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CancelResumableWriteRequest.
+	}
+	resp, err := c.CancelResumableWrite(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetObject() {
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
