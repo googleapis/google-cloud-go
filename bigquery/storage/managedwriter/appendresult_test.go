@@ -21,8 +21,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -136,11 +138,25 @@ func TestPendingWrite(t *testing.T) {
 	case <-pending.result.Ready():
 		gotOffset, gotErr := pending.result.GetResult(ctx)
 		if gotOffset != wantOffset {
-			t.Errorf("mismatch on completed AppendResult offset: got %d want %d", gotOffset, wantOffset)
+			t.Errorf("GetResult: mismatch on completed AppendResult offset: got %d want %d", gotOffset, wantOffset)
 		}
 		if gotErr != wantErr {
-			t.Errorf("mismatch in errors, got %v want %v", gotErr, wantErr)
+			t.Errorf("GetResult: mismatch in errors, got %v want %v", gotErr, wantErr)
 		}
+		// Now, check RawResponse.
+		gotResp, gotErr := pending.result.RawResponse(ctx)
+		if gotErr != wantErr {
+			t.Errorf("RawResponse: mismatch in errors, got %v want %v", gotErr, wantErr)
+		}
+		if diff := cmp.Diff(gotResp, testResp, protocmp.Transform()); diff != "" {
+			t.Errorf("RawResponse diff: %s", diff)
+		}
+	}
+
+	// Now, check RawResponse:
+	select {
+	case <-time.After(100 * time.Millisecond):
+		t.Errorf("possible blocking on completed AppendResult")
 	}
 
 }
