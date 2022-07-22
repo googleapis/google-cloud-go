@@ -642,7 +642,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("NoErrorsNilAckResult", func(t *testing.T) {
 		// No errors so request should be completed even without an AckResult.
-		ackReqMap := map[string]*AckResult{
+		ackReqMap := map[string]*ackResultWithID{
 			"ackID": nil,
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
@@ -652,8 +652,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 	t.Run("NoErrors", func(t *testing.T) {
 		// No errors so AckResult should be completed with success.
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
@@ -670,8 +670,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("PermanentErrorInvalidAckID", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		errorsMap := map[string]string{
 			"ackID1": permanentInvalidAckErrString,
@@ -689,8 +689,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("TransientErrorRetry", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		errorsMap := map[string]string{
 			"ackID1": transientInvalidAckErrString,
@@ -701,8 +701,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("UnknownError", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		errorsMap := map[string]string{
 			"ackID1": "unknown_error",
@@ -721,8 +721,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("PermissionDenied", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		st := status.New(codes.PermissionDenied, "permission denied")
 		completed, retry := processResults(st, ackReqMap, nil)
@@ -738,8 +738,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("FailedPrecondition", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		st := status.New(codes.FailedPrecondition, "failed_precondition")
 		completed, retry := processResults(st, ackReqMap, nil)
@@ -755,8 +755,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("OtherErrorStatus", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		st := status.New(codes.OutOfRange, "out of range")
 		completed, retry := processResults(st, ackReqMap, nil)
@@ -774,10 +774,10 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		r1 := ipubsub.NewAckResult()
 		r2 := ipubsub.NewAckResult()
 		r3 := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r1,
-			"ackID2": r2,
-			"ackID3": r3,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r1, "ackID1"),
+			"ackID2": newAckResultWithID(r2, "ackID2"),
+			"ackID3": newAckResultWithID(r3, "ackID3"),
 		}
 		errorsMap := map[string]string{
 			"ackID1": permanentInvalidAckErrString,
@@ -815,8 +815,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 	t.Run("RetriableErrorStatusReturnsRequestForRetrying", func(t *testing.T) {
 		for c := range exactlyOnceDeliveryTemporaryRetryErrors {
 			r := ipubsub.NewAckResult()
-			ackReqMap := map[string]*AckResult{
-				"ackID1": r,
+			ackReqMap := map[string]*ackResultWithID{
+				"ackID1": newAckResultWithID(r, "ackID1"),
 			}
 			st := status.New(c, "")
 			completed, retry := processResults(st, ackReqMap, nil)

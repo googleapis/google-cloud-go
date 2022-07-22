@@ -57,6 +57,19 @@ var (
 	minDurationPerLeaseExtensionExactlyOnce = 1 * time.Minute
 )
 
+// ackResultWithID stores an ackResult with its corresponding ackID
+type ackResultWithID struct {
+	r     *AckResult
+	ackID string
+}
+
+func newAckResultWithID(r *AckResult, ackID string) *ackResultWithID {
+	return &ackResultWithID{
+		r:     r,
+		ackID: ackID,
+	}
+}
+
 type messageIterator struct {
 	ctx        context.Context
 	cancel     func() // the function that will cancel ctx; called in stop
@@ -82,12 +95,11 @@ type messageIterator struct {
 	// to update ack deadlines (via modack), we'll consult this table and only include IDs
 	// that are not beyond their deadline.
 	keepAliveDeadlines map[string]time.Time
-	pendingAcks        map[string]*AckResult
-	pendingNacks       map[string]*AckResult
+	pendingAcks        map[string]*ackResultWithID
+	pendingNacks       map[string]*ackResultWithID
 	// ack IDs whose ack deadline is to be modified
-	// This technically does not need to be an AckResult, since it is just a set,
-	// but allows reuse of iterator.sendAckIDRPC.
-	pendingModAcks map[string]*AckResult
+	// ModAcks don't have AckResults but allows reuse of the SendModAck function.
+	pendingModAcks map[string]*ackResultWithID
 	err            error // error from stream failure
 
 	eoMu                      sync.RWMutex
@@ -95,7 +107,7 @@ type messageIterator struct {
 	sendNewAckDeadline        bool
 	// This stores pending AckResults for cleaner shutdown when sub.Receive's ctx is cancelled.
 	// If exactly once delivery is not enabled, this map should not be populated.
-	pendingAckResults map[string]*AckResult
+	pendingAckResults map[string]*ackResultWithID
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -138,10 +150,10 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		drained:            make(chan struct{}),
 		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
 		keepAliveDeadlines: map[string]time.Time{},
-		pendingAcks:        map[string]*AckResult{},
-		pendingNacks:       map[string]*AckResult{},
-		pendingModAcks:     map[string]*AckResult{},
-		pendingAckResults:  map[string]*AckResult{},
+		pendingAcks:        map[string]*ackResultWithID{},
+		pendingNacks:       map[string]*ackResultWithID{},
+		pendingModAcks:     map[string]*ackResultWithID{},
+		pendingAckResults:  map[string]*ackResultWithID{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -197,9 +209,9 @@ func (it *messageIterator) done(ackID string, ack bool, r *AckResult, receiveTim
 	delete(it.keepAliveDeadlines, ackID)
 	delete(it.pendingAckResults, ackID)
 	if ack {
-		it.pendingAcks[ackID] = r
+		it.pendingAcks[ackID] = newAckResultWithID(r, ackID)
 	} else {
-		it.pendingNacks[ackID] = r
+		it.pendingNacks[ackID] = newAckResultWithID(r, ackID)
 	}
 	it.checkDrained()
 }
@@ -256,7 +268,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	// We received some messages. Remember them so we can keep them alive. Also,
 	// do a receipt mod-ack when streaming.
 	maxExt := time.Now().Add(it.po.maxExtension)
-	ackIDs := map[string]*AckResult{}
+	ackIDs := map[string]*ackResultWithID{}
 	it.mu.Lock()
 	for _, m := range msgs {
 		ackID := msgAckID(m)
@@ -269,7 +281,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			// ModAckResults are transparent to the user anyway so these can automatically succeed.
 			// We can't use an empty AckResult here either since SetAckResult will try to
 			// close the channel without checking if it exists.
-			ackIDs[ackID] = newSuccessAckResult()
+			ackIDs[ackID] = newAckResultWithID(newSuccessAckResult(), ackID)
 		}
 		// If exactly once is enabled, keep track of all pending AckResults
 		// so we can cleanly close them all at shutdown.
@@ -279,7 +291,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			if !ok {
 				it.fail(errors.New("failed to assert type as psAckHandler"))
 			}
-			it.pendingAckResults[ackID] = ackh.ackResult
+			it.pendingAckResults[ackID] = newAckResultWithID(ackh.ackResult, ackID)
 		}
 		it.eoMu.Unlock()
 	}
@@ -392,18 +404,18 @@ func (it *messageIterator) sender() {
 			sendPing = !it.po.synchronous
 		}
 		// Lock is held here.
-		var acks, nacks, modAcks map[string]*AckResult
+		var acks, nacks, modAcks map[string]*ackResultWithID
 		if sendAcks {
 			acks = it.pendingAcks
-			it.pendingAcks = map[string]*AckResult{}
+			it.pendingAcks = map[string]*ackResultWithID{}
 		}
 		if sendNacks {
 			nacks = it.pendingNacks
-			it.pendingNacks = map[string]*AckResult{}
+			it.pendingNacks = map[string]*ackResultWithID{}
 		}
 		if sendModAcks {
 			modAcks = it.pendingModAcks
-			it.pendingModAcks = map[string]*AckResult{}
+			it.pendingModAcks = map[string]*ackResultWithID{}
 		}
 		it.mu.Unlock()
 		// Make Ack and ModAck RPCs.
@@ -438,13 +450,13 @@ func (it *messageIterator) handleKeepAlives() {
 			delete(it.keepAliveDeadlines, id)
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
-			it.pendingModAcks[id] = newSuccessAckResult()
+			it.pendingModAcks[id] = newAckResultWithID(newSuccessAckResult(), id)
 		}
 	}
 	it.checkDrained()
 }
 
-func (it *messageIterator) sendAck(m map[string]*AckResult) {
+func (it *messageIterator) sendAck(m map[string]*ackResultWithID) {
 	ackIDs := make([]string, 0, len(m))
 	for k := range m {
 		ackIDs = append(ackIDs, k)
@@ -474,7 +486,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 				md = apiErr.Metadata()
 				st = apiErr.GRPCStatus()
 			}
-			resultsByAckID := make(map[string]*AckResult)
+			resultsByAckID := make(map[string]*ackResultWithID)
 			for _, ackID := range toSend {
 				resultsByAckID[ackID] = m[ackID]
 			}
@@ -488,7 +500,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 // on the time it takes to process messages. The percentile chosen is the 99%th
 // percentile in order to capture the highest amount of time necessary without
 // considering 1% outliers.
-func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration) {
+func (it *messageIterator) sendModAck(m map[string]*ackResultWithID, deadline time.Duration) {
 	deadlineSec := int32(deadline / time.Second)
 
 	ackIDs := make([]string, 0, len(m))
@@ -524,7 +536,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 				md = apiErr.Metadata()
 				st = apiErr.GRPCStatus()
 			}
-			resultsByAckID := make(map[string]*AckResult)
+			resultsByAckID := make(map[string]*ackResultWithID)
 			for _, ackID := range toSend {
 				resultsByAckID[ackID] = m[ackID]
 			}
@@ -655,28 +667,15 @@ const (
 	permanentInvalidAckErrString = "PERMANENT_FAILURE_INVALID_ACK_ID"
 )
 
-// ackResultWithID stores an ackResult with its corresponding ackID
-type ackResultWithID struct {
-	r     *AckResult
-	ackID string
-}
-
-func newAckResultWithID(r *AckResult, ackID string) *ackResultWithID {
-	return &ackResultWithID{
-		r:     r,
-		ackID: ackID,
-	}
-}
-
 // processResults processes AckResults by referring to errorStatus and errorsMap.
 // The errors returned by the server in `errorStatus` or in `errorsByAckID`
 // are used to complete the AckResults in `ackResMap` (with a success
 // or error) or to return requests for further retries.
 // Logic is derived from python-pubsub: https://github.com/googleapis/python-pubsub/blob/main/google/cloud/pubsub_v1/subscriber/_protocol/streaming_pull_manager.py#L161-L220
-func processResults(errorStatus *status.Status, ackResMap map[string]*AckResult, errorsByAckID map[string]string) ([]*ackResultWithID, []*ackResultWithID) {
+func processResults(errorStatus *status.Status, ackResMap map[string]*ackResultWithID, errorsByAckID map[string]string) ([]*ackResultWithID, []*ackResultWithID) {
 	var completedResults, retryResults []*ackResultWithID
-	for ackID, ar := range ackResMap {
-		res := newAckResultWithID(ar, ackID)
+	for ackID, res := range ackResMap {
+		ar := res.r
 		// Handle special errors returned for ack/modack RPCs via the ErrorInfo
 		// sidecar metadata when exactly-once delivery is enabled.
 		if errAckID, ok := errorsByAckID[ackID]; ok {
