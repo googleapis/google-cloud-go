@@ -218,25 +218,28 @@ func TestTimeToString(t *testing.T) {
 		roundTrip bool // ParseTime(str).String() == str?
 	}{
 		{"13:26:33", Time{13, 26, 33, 0}, true},
-		{"01:02:03.000023456", Time{1, 2, 3, 23456}, true},
-		{"00:00:00.000000001", Time{0, 0, 0, 1}, true},
+		{"01:02:03.000023", Time{1, 2, 3, 23000}, true},
+		{"00:00:00.000001", Time{0, 0, 0, 1000}, true},
 		{"13:26:03.1", Time{13, 26, 3, 100000000}, false},
 		{"13:26:33.0000003", Time{13, 26, 33, 300}, false},
 	} {
-		gotTime, err := ParseTime(test.str)
-		if err != nil {
-			t.Errorf("ParseTime(%q): got error: %v", test.str, err)
-			continue
-		}
-		if gotTime != test.time {
-			t.Errorf("ParseTime(%q) = %+v, want %+v", test.str, gotTime, test.time)
-		}
-		if test.roundTrip {
-			gotStr := test.time.String()
-			if gotStr != test.str {
-				t.Errorf("%#v.String() = %q, want %q", test.time, gotStr, test.str)
+		t.Run(test.str, func(t *testing.T) {
+
+			gotTime, err := ParseTime(test.str)
+			if err != nil {
+				t.Errorf("ParseTime(%q): got error: %v", test.str, err)
+				return
 			}
-		}
+			if gotTime != test.time {
+				t.Errorf("ParseTime(%q) = %+v, want %+v", test.str, gotTime, test.time)
+			}
+			if test.roundTrip {
+				gotStr := test.time.String()
+				if gotStr != test.str {
+					t.Errorf("%#v.String() = %q, want %q", test.time, gotStr, test.str)
+				}
+			}
+		})
 	}
 }
 
@@ -337,23 +340,26 @@ func TestDateTimeToString(t *testing.T) {
 		roundTrip bool // ParseDateTime(str).String() == str?
 	}{
 		{"2016-03-22T13:26:33", DateTime{Date{2016, 03, 22}, Time{13, 26, 33, 0}}, true},
-		{"2016-03-22T13:26:33.000000600", DateTime{Date{2016, 03, 22}, Time{13, 26, 33, 600}}, true},
+		{"2016-03-22T13:26:33.000000600", DateTime{Date{2016, 03, 22}, Time{13, 26, 33, 600}}, false},
+		{"2016-03-22T13:26:33.000006", DateTime{Date{2016, 03, 22}, Time{13, 26, 33, 6000}}, true},
 		{"2016-03-22t13:26:33", DateTime{Date{2016, 03, 22}, Time{13, 26, 33, 0}}, false},
 	} {
-		gotDateTime, err := ParseDateTime(test.str)
-		if err != nil {
-			t.Errorf("ParseDateTime(%q): got error: %v", test.str, err)
-			continue
-		}
-		if gotDateTime != test.dateTime {
-			t.Errorf("ParseDateTime(%q) = %+v, want %+v", test.str, gotDateTime, test.dateTime)
-		}
-		if test.roundTrip {
-			gotStr := test.dateTime.String()
-			if gotStr != test.str {
-				t.Errorf("%#v.String() = %q, want %q", test.dateTime, gotStr, test.str)
+		t.Run(test.str, func(t *testing.T) {
+			gotDateTime, err := ParseDateTime(test.str)
+			if err != nil {
+				t.Errorf("ParseDateTime(%q): got error: %v", test.str, err)
+				return
 			}
-		}
+			if gotDateTime != test.dateTime {
+				t.Errorf("ParseDateTime(%q) = %+v, want %+v", test.str, gotDateTime, test.dateTime)
+			}
+			if test.roundTrip {
+				gotStr := test.dateTime.String()
+				if gotStr != test.str {
+					t.Errorf("%#v.String() = %q, want %q", test.dateTime, gotStr, test.str)
+				}
+			}
+		})
 	}
 }
 
