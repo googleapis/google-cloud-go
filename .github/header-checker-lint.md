@@ -4,6 +4,7 @@ allowedLicenses:
   - 'Apache-2.0'
 sourceFileExtensions:
   - 'go'
+  - 'proto'
 ignoreFiles:
   # Automatically Generated
   - "bigtable/cmd/cbt/cbtdoc.go"
