@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.2.0...deploy/v1.2.1) (2022-07-12)
+
+
+### Documentation
+
+* **deploy:** Cloud Deploy API Platform Logging documentation ([6ffce1d](https://github.com/googleapis/google-cloud-go/commit/6ffce1dbf567758d23ac39aaf63dc17ced5e4db9))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.1.0...deploy/v1.2.0) (2022-02-23)
 
 

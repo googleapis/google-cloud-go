@@ -214,18 +214,23 @@ func (AddRowDeletionPolicy) isTableAlteration()     {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
 
-type AddColumn struct{ Def ColumnDef }
-type DropColumn struct{ Name ID }
-type AddConstraint struct{ Constraint TableConstraint }
-type DropConstraint struct{ Name ID }
-type SetOnDelete struct{ Action OnDelete }
-type AlterColumn struct {
-	Name       ID
-	Alteration ColumnAlteration
-}
-type AddRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
-type ReplaceRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
-type DropRowDeletionPolicy struct{}
+type (
+	AddColumn      struct{ Def ColumnDef }
+	DropColumn     struct{ Name ID }
+	AddConstraint  struct{ Constraint TableConstraint }
+	DropConstraint struct{ Name ID }
+	SetOnDelete    struct{ Action OnDelete }
+	AlterColumn    struct {
+		Name       ID
+		Alteration ColumnAlteration
+	}
+)
+
+type (
+	AddRowDeletionPolicy     struct{ RowDeletionPolicy RowDeletionPolicy }
+	ReplaceRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
+	DropRowDeletionPolicy    struct{}
+)
 
 // ColumnAlteration is satisfied by SetColumnType and SetColumnOptions.
 type ColumnAlteration interface {
@@ -738,6 +743,23 @@ type WhenClause struct {
 	Result Expr
 }
 
+type If struct {
+	Expr       Expr
+	TrueResult Expr
+	ElseResult Expr
+}
+
+func (If) isBoolExpr() {} // possibly bool
+func (If) isExpr()     {}
+
+type IfNull struct {
+	Expr       Expr
+	NullResult Expr
+}
+
+func (IfNull) isBoolExpr() {} // possibly bool
+func (IfNull) isExpr()     {}
+
 type BoolLiteral bool
 
 const (
@@ -806,6 +828,12 @@ const Star = StarExpr(0)
 
 func (StarExpr) isExpr() {}
 
+type statements interface {
+	setFilename(string)
+	getComments() []*Comment
+	addComment(*Comment)
+}
+
 // DDL
 // https://cloud.google.com/spanner/docs/data-definition-language#ddl_syntax
 
@@ -825,6 +853,48 @@ func (d *DDL) clearOffset() {
 	for _, c := range d.Comments {
 		c.clearOffset()
 	}
+}
+
+func (d *DDL) setFilename(filename string) {
+	d.Filename = filename
+}
+
+func (d *DDL) addComment(comment *Comment) {
+	d.Comments = append(d.Comments, comment)
+}
+
+func (d *DDL) getComments() []*Comment {
+	return d.Comments
+}
+
+// DML
+// https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
+
+// DML represents a Data Manipulation Language (DML) file.
+type DML struct {
+	List []DMLStmt
+
+	Filename string // if known at parse time
+
+	Comments []*Comment // all comments, sorted by position
+}
+
+func (d *DML) clearOffset() {
+	for _, c := range d.Comments {
+		c.clearOffset()
+	}
+}
+
+func (d *DML) setFilename(filename string) {
+	d.Filename = filename
+}
+
+func (d *DML) addComment(comment *Comment) {
+	d.Comments = append(d.Comments, comment)
+}
+
+func (d *DML) getComments() []*Comment {
+	return d.Comments
 }
 
 // DDLStmt is satisfied by a type that can appear in a DDL.
@@ -881,38 +951,61 @@ func (pos Position) String() string {
 
 // LeadingComment returns the comment that immediately precedes a node,
 // or nil if there's no such comment.
-func (ddl *DDL) LeadingComment(n Node) *Comment {
-	// Get the comment whose End position is on the previous line.
-	lineEnd := n.Pos().Line - 1
-	ci := sort.Search(len(ddl.Comments), func(i int) bool {
-		return ddl.Comments[i].End.Line >= lineEnd
-	})
-	if ci >= len(ddl.Comments) || ddl.Comments[ci].End.Line != lineEnd {
-		return nil
-	}
-	if !ddl.Comments[ci].Isolated {
-		// This is an inline comment for a previous node.
-		return nil
-	}
-	return ddl.Comments[ci]
+func (d *DDL) LeadingComment(n Node) *Comment {
+	return getLeadingComment(d, n)
 }
 
 // InlineComment returns the comment on the same line as a node,
 // or nil if there's no inline comment.
 // The returned comment is guaranteed to be a single line.
-func (ddl *DDL) InlineComment(n Node) *Comment {
+func (d *DDL) InlineComment(n Node) *Comment {
+	return getInlineComment(d, n)
+}
+
+// LeadingComment returns the comment that immediately precedes a node,
+// or nil if there's no such comment.
+func (d *DML) LeadingComment(n Node) *Comment {
+	return getLeadingComment(d, n)
+}
+
+// InlineComment returns the comment on the same line as a node,
+// or nil if there's no inline comment.
+// The returned comment is guaranteed to be a single line.
+func (d *DML) InlineComment(n Node) *Comment {
+	return getInlineComment(d, n)
+}
+
+func getLeadingComment(stmts statements, n Node) *Comment {
+	// Get the comment whose End position is on the previous line.
+	lineEnd := n.Pos().Line - 1
+	comments := stmts.getComments()
+	ci := sort.Search(len(comments), func(i int) bool {
+		return comments[i].End.Line >= lineEnd
+	})
+	if ci >= len(comments) || comments[ci].End.Line != lineEnd {
+		return nil
+	}
+	if !comments[ci].Isolated {
+		// This is an inline comment for a previous node.
+		return nil
+	}
+	return comments[ci]
+}
+
+func getInlineComment(stmts statements, n Node) *Comment {
 	// TODO: Do we care about comments like this?
 	// 	string name = 1; /* foo
 	// 	bar */
 
 	pos := n.Pos()
-	ci := sort.Search(len(ddl.Comments), func(i int) bool {
-		return ddl.Comments[i].Start.Line >= pos.Line
+	comments := stmts.getComments()
+	ci := sort.Search(len(comments), func(i int) bool {
+		return comments[i].Start.Line >= pos.Line
 	})
-	if ci >= len(ddl.Comments) {
+	if ci >= len(comments) {
 		return nil
 	}
-	c := ddl.Comments[ci]
+	c := comments[ci]
 	if c.Start.Line != pos.Line {
 		return nil
 	}

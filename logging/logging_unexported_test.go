@@ -351,6 +351,7 @@ func TestMonitoredResource(t *testing.T) {
 }
 
 // Used by the tests in logging_test.
-func SetNow(f func() time.Time) {
-	now = f
+func SetNow(f func() time.Time) func() time.Time {
+	now, f = f, now
+	return f
 }
