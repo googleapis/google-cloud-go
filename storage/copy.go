@@ -208,23 +208,23 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	}
 
 	req := &composeObjectRequest{
-		dstBucket: c.dst.bucket,
+		dstBucket:     c.dst.bucket,
 		predefinedACL: c.PredefinedACL,
-		sendCRC32C: c.SendCRC32C,
+		sendCRC32C:    c.SendCRC32C,
 	}
 	req.dstObject = destinationObject{
-		name: c.dst.object,
-		bucket: c.dst.bucket,
-		conds: c.dst.conds,
-		attrs: &c.ObjectAttrs,
+		name:          c.dst.object,
+		bucket:        c.dst.bucket,
+		conds:         c.dst.conds,
+		attrs:         &c.ObjectAttrs,
 		encryptionKey: c.dst.encryptionKey,
 	}
-	for _, src := range(c.srcs) {
+	for _, src := range c.srcs {
 		s := sourceObject{
-			name: src.object,
+			name:   src.object,
 			bucket: src.bucket,
-			gen: src.gen,
-			conds: src.conds,
+			gen:    src.gen,
+			conds:  src.conds,
 		}
 		req.srcs = append(req.srcs, s)
 	}
