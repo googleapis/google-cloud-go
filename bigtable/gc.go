@@ -25,19 +25,19 @@ import (
 	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
-// Type of the GCPolicy
+// PolicyType represents the type of GCPolicy
 type PolicyType int
 
 const (
-	// Type for NoGCPolicy
+	// PolicyUnspecified represents type of NoGCPolicy
 	PolicyUnspecified PolicyType = iota
-	// Type for MaxAgeGCPolicy
+	// PolicyMaxAge represents type of MaxAgeGCPolicy
 	PolicyMaxAge
-	// Type for MaxVersionGCPolicy
+	// PolicyMaxVersion represents type of MaxVersionGCPolicy
 	PolicyMaxVersion
-	// Type for UnionGCPolicy
+	// PolicyUnion represents type of UnionGCPolicy
 	PolicyUnion
-	// Type for IntersectionGCPolicy
+	// PolicyIntersection represents type of IntersectionGCPolicy
 	PolicyIntersection
 )
 
@@ -121,7 +121,7 @@ func (up UnionGCPolicy) proto() *bttdpb.GcRule {
 // except for the most recent n.
 func MaxVersionsPolicy(n int) GCPolicy { return MaxVersionsGCPolicy(n) }
 
-// MaxVersionGCPolicy type alias
+// MaxVersionsGCPolicy type alias
 type MaxVersionsGCPolicy int
 
 func (mvp MaxVersionsGCPolicy) String() string {
@@ -152,7 +152,7 @@ func (ma MaxAgeGCPolicy) String() string {
 	return fmt.Sprintf("age() > %s", ma.GetDurationString())
 }
 
-// Get duration string of the MaxAgeGCPolicy
+// GetDurationString returns the duration string of the MaxAgeGCPolicy
 func (ma MaxAgeGCPolicy) GetDurationString() string {
 	d := time.Duration(ma)
 	for _, u := range units {
