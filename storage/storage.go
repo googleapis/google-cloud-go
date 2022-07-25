@@ -115,6 +115,10 @@ type Client struct {
 
 	// tc is the transport-agnostic client implemented with either gRPC or HTTP.
 	tc storageClient
+	// useGRPC flags whether the client uses gRPC. This is needed while the
+	// integration piece is only partially complete.
+	// TODO: remove before merging to main.
+	useGRPC bool
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -195,12 +199,18 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
 
+	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...))
+	if err != nil {
+		return nil, fmt.Errorf("storage: %v", err)
+	}
+
 	return &Client{
 		hc:       hc,
 		raw:      rawService,
 		scheme:   u.Scheme,
 		readHost: u.Host,
 		creds:    creds,
+		tc: tc,
 	}, nil
 }
 
@@ -215,7 +225,7 @@ func newGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		return nil, err
 	}
 
-	return &Client{tc: tc}, nil
+	return &Client{tc: tc, useGRPC: true}, nil
 }
 
 // Close closes the Client.

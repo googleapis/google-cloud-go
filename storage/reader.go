@@ -94,7 +94,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if o.c.tc != nil {
+	if o.c.useGRPC {
 		return o.newRangeReaderWithGRPC(ctx, offset, length)
 	}
 

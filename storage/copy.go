@@ -188,6 +188,9 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	if err := c.dst.validate(); err != nil {
 		return nil, err
 	}
+	if c.dst.gen != defaultGen {
+		return nil, fmt.Errorf("storage: generation cannot be specified on compose destination, got %v", c.dst.gen)
+	}
 	if len(c.srcs) == 0 {
 		return nil, errors.New("storage: at least one source object must be specified")
 	}
@@ -204,45 +207,39 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 		}
 	}
 
-	// TODO: transport agnostic interface starts here.
-	req := &raw.ComposeRequest{}
-	// Compose requires a non-empty Destination, so we always set it,
-	// even if the caller-provided ObjectAttrs is the zero value.
-	req.Destination = c.ObjectAttrs.toRawObject(c.dst.bucket)
-	if c.SendCRC32C {
-		req.Destination.Crc32c = encodeUint32(c.ObjectAttrs.CRC32C)
+	req := &composeObjectRequest{
+		dstBucket: c.dst.bucket,
+		predefinedACL: c.PredefinedACL,
+		sendCRC32C: c.SendCRC32C,
 	}
-	for _, src := range c.srcs {
-		srcObj := &raw.ComposeRequestSourceObjects{
-			Name: src.object,
+	req.dstObject = destinationObject{
+		name: c.dst.object,
+		bucket: c.dst.bucket,
+		conds: c.dst.conds,
+		attrs: &c.ObjectAttrs,
+		encryptionKey: c.dst.encryptionKey,
+	}
+	for _, src := range(c.srcs) {
+		s := sourceObject{
+			name: src.object,
+			bucket: src.bucket,
+			gen: src.gen,
+			conds: src.conds,
 		}
-		if err := applyConds("ComposeFrom source", src.gen, src.conds, composeSourceObj{srcObj}); err != nil {
-			return nil, err
-		}
-		req.SourceObjects = append(req.SourceObjects, srcObj)
+		req.srcs = append(req.srcs, s)
 	}
 
-	call := c.dst.c.raw.Objects.Compose(c.dst.bucket, c.dst.object, req).Context(ctx)
-	if err := applyConds("ComposeFrom destination", c.dst.gen, c.dst.conds, call); err != nil {
-		return nil, err
+	// TODO: factor this out to a function?
+	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
+	opts := []storageOption{idempotent(isIdempotent)}
+	if c.dst.retry != nil {
+		opts = append(opts, withRetryConfig(c.dst.retry))
 	}
 	if c.dst.userProject != "" {
-		call.UserProject(c.dst.userProject)
+		opts = append(opts, withUserProject(c.dst.userProject))
 	}
-	if c.PredefinedACL != "" {
-		call.DestinationPredefinedAcl(c.PredefinedACL)
-	}
-	if err := setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false); err != nil {
-		return nil, err
-	}
-	var obj *raw.Object
-	setClientHeader(call.Header())
 
-	retryCall := func() error { obj, err = call.Do(); return err }
-	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
+	// TODO: Need to add withClientOptions or withGAXOptions?
 
-	if err := run(ctx, retryCall, c.dst.retry, isIdempotent, setRetryHeaderHTTP(call)); err != nil {
-		return nil, err
-	}
-	return newObject(obj), nil
+	return c.dst.c.tc.ComposeObject(ctx, req, opts...)
 }

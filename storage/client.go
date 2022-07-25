@@ -281,7 +281,6 @@ type composeObjectRequest struct {
 	dstObject     destinationObject
 	srcs          []sourceObject
 	predefinedACL string
-	encryptionKey []byte
 	sendCRC32C    bool
 }
 
