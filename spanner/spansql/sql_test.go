@@ -671,6 +671,20 @@ func TestSQL(t *testing.T) {
 			`SELECT IF(1 < 2, TRUE, FALSE)`,
 			reparseQuery,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						IfNull{
+							Expr:       IntegerLiteral(10),
+							NullResult: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT IFNULL(10, 0)`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
