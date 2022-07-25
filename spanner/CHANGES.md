@@ -1,5 +1,13 @@
 # Changes
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.35.0...spanner/v1.36.0) (2022-07-23)
+
+
+### Features
+
+* **spanner/spansql:** add support for IFNULL expressions ([#6389](https://github.com/googleapis/google-cloud-go/issues/6389)) ([09e96ce](https://github.com/googleapis/google-cloud-go/commit/09e96ce1076df4b41d45c3676b7506b318da6b9c))
+* **spanner/spansql:** support for parsing a DML file ([#6349](https://github.com/googleapis/google-cloud-go/issues/6349)) ([267a9bb](https://github.com/googleapis/google-cloud-go/commit/267a9bbec55ee8fe885354efc8db8a61a17a8374))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.34.1...spanner/v1.35.0) (2022-07-19)
 
 
