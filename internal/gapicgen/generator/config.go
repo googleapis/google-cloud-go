@@ -1624,6 +1624,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/08/12
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/devtools/artifactregistry/v1",
+		Pkg:                   "artifactregistry",
+		ImportPath:            "cloud.google.com/go/artifactregistry/apiv1",
+		GRPCServiceConfigPath: "artifactregistry_grpc_service_config.json",
+		ApiServiceConfigPath:  "artifactregistry_v1.yaml",
+		// GA after 2022/08/22
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
