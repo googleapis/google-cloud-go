@@ -314,12 +314,13 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 
 	// testedAttrs are the bucket attrs directly compared in this test
 	type testedAttrs struct {
-		StorageClass      string
-		VersioningEnabled bool
-		LocationType      string
-		Labels            map[string]string
-		Location          string
-		Lifecycle         Lifecycle
+		StorageClass          string
+		VersioningEnabled     bool
+		LocationType          string
+		Labels                map[string]string
+		Location              string
+		Lifecycle             Lifecycle
+		CustomPlacementConfig *CustomPlacementConfig
 	}
 
 	for _, test := range []struct {
@@ -358,12 +359,18 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 		{
 			name: "dual-region",
 			attrs: &BucketAttrs{
-				Location: "US-EAST1+US-WEST1",
+				Location: "US",
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{"US-EAST1", "US-WEST1"},
+				},
 			},
 			wantAttrs: testedAttrs{
-				Location:     "US-EAST1+US-WEST1",
+				Location:     "US",
 				LocationType: "dual-region",
 				StorageClass: "STANDARD",
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{"US-EAST1", "US-WEST1"},
+				},
 			},
 		},
 	} {
@@ -406,6 +413,9 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 			}
 			if gotAttrs.Location != test.wantAttrs.Location {
 				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+			}
+			if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
+				t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
 			}
 
 			// Delete the bucket and check that the deletion was succesful
@@ -2352,7 +2362,7 @@ func TestIntegration_ACL(t *testing.T) {
 		for _, obj := range aclObjects {
 			c := randomContents()
 			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-				t.Errorf("Write for %v failed with %v", obj, err)
+				return fmt.Errorf("Write for %v failed with %v", obj, err)
 			}
 		}
 		acl, err = o.ACL().List(ctx)
@@ -2367,7 +2377,7 @@ func TestIntegration_ACL(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if err := o.ACL().Delete(ctx, entity); err != nil {
 		t.Errorf("object ACL: could not delete entity %s", entity)
@@ -4781,7 +4791,7 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.NewWriter(ctx)
+	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
 	w.ContentType = contentType
 	w.CacheControl = "public, max-age=60"
 	if contents != nil {
