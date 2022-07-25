@@ -19,6 +19,7 @@ branchProtectionRules:
     - 'cla/google'
   requiredApprovingReviewCount: 1
   requiresStrictStatusChecks: true
+  requiresLinearHistory: false
 permissionRules:
   - team: actools
     permission: admin
