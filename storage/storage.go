@@ -1208,8 +1208,11 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 	}
 
 	// For now, there are only globally unique buckets, and "_" is the alias
-	// project ID for such buckets.
-	b = bucketResourceName("_", b)
+	// project ID for such buckets. If the bucket is not provided, like in the
+	// destination ObjectAttrs of a Copy, do not attempt to format it.
+	if b != "" {
+		b = bucketResourceName(globalProjectAlias, b)
+	}
 
 	return &storagepb.Object{
 		Bucket:              b,
@@ -1834,6 +1837,33 @@ func applySourceConds(gen int64, conds *Conditions, call *raw.ObjectsRewriteCall
 		call.IfSourceMetagenerationMatch(conds.MetagenerationMatch)
 	case conds.MetagenerationNotMatch != 0:
 		call.IfSourceMetagenerationNotMatch(conds.MetagenerationNotMatch)
+	}
+	return nil
+}
+
+func applySourceCondsProto(gen int64, conds *Conditions, call *storagepb.RewriteObjectRequest) error {
+	if gen >= 0 {
+		call.SourceGeneration = gen
+	}
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate("CopyTo source"); err != nil {
+		return err
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		call.IfSourceGenerationMatch = proto.Int64(conds.GenerationMatch)
+	case conds.GenerationNotMatch != 0:
+		call.IfSourceGenerationNotMatch = proto.Int64(conds.GenerationNotMatch)
+	case conds.DoesNotExist:
+		call.IfSourceGenerationMatch = proto.Int64(0)
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		call.IfSourceMetagenerationMatch = proto.Int64(conds.MetagenerationMatch)
+	case conds.MetagenerationNotMatch != 0:
+		call.IfSourceMetagenerationNotMatch = proto.Int64(conds.MetagenerationNotMatch)
 	}
 	return nil
 }

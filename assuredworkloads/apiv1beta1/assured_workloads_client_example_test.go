@@ -22,6 +22,7 @@ import (
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
 	"google.golang.org/api/iterator"
 	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -93,6 +94,46 @@ func ExampleClient_UpdateWorkload() {
 	_ = resp
 }
 
+func ExampleClient_RestrictAllowedServices() {
+	ctx := context.Background()
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assuredworkloadspb.RestrictAllowedServicesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#RestrictAllowedServicesRequest.
+	}
+	resp, err := c.RestrictAllowedServices(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RestrictAllowedResources() {
+	ctx := context.Background()
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assuredworkloadspb.RestrictAllowedResourcesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#RestrictAllowedResourcesRequest.
+	}
+	resp, err := c.RestrictAllowedResources(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_DeleteWorkload() {
 	ctx := context.Background()
 	c, err := assuredworkloads.NewClient(ctx)
@@ -131,6 +172,26 @@ func ExampleClient_GetWorkload() {
 	_ = resp
 }
 
+func ExampleClient_AnalyzeWorkloadMove() {
+	ctx := context.Background()
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assuredworkloadspb.AnalyzeWorkloadMoveRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#AnalyzeWorkloadMoveRequest.
+	}
+	resp, err := c.AnalyzeWorkloadMove(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListWorkloads() {
 	ctx := context.Background()
 	c, err := assuredworkloads.NewClient(ctx)
@@ -144,6 +205,52 @@ func ExampleClient_ListWorkloads() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#ListWorkloadsRequest.
 	}
 	it := c.ListWorkloads(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetOperation() {
+	ctx := context.Background()
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListOperations() {
+	ctx := context.Background()
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

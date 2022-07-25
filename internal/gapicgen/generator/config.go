@@ -542,7 +542,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "database",
 		ImportPath:            "cloud.google.com/go/spanner/admin/database/apiv1",
 		GRPCServiceConfigPath: "spanner_admin_database_grpc_service_config.json",
-		ApiServiceConfigPath:  "spanner_admin_database.yaml",
+		ApiServiceConfigPath:  "spanner.yaml",
 		ReleaseLevel:          "ga",
 	},
 	{

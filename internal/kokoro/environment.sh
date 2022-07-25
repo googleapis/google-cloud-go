@@ -33,6 +33,7 @@ fi
 cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
 cd "env-tests-logging/"
+export ENV_TEST_PY_VERSION=3.7
 
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
