@@ -846,7 +846,7 @@ func (c *cloudMemcacheRESTClient) CreateInstance(ctx context.Context, req *memca
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &CreateInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -917,7 +917,7 @@ func (c *cloudMemcacheRESTClient) UpdateInstance(ctx context.Context, req *memca
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &UpdateInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -982,7 +982,7 @@ func (c *cloudMemcacheRESTClient) UpdateParameters(ctx context.Context, req *mem
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &UpdateParametersOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1039,7 +1039,7 @@ func (c *cloudMemcacheRESTClient) DeleteInstance(ctx context.Context, req *memca
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1103,7 +1103,7 @@ func (c *cloudMemcacheRESTClient) ApplyParameters(ctx context.Context, req *memc
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &ApplyParametersOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1127,7 +1127,7 @@ func (c *cloudMemcacheGRPCClient) ApplyParametersOperation(name string) *ApplyPa
 // ApplyParametersOperation returns a new ApplyParametersOperation from a given name.
 // The name must be that of a previously created ApplyParametersOperation, possibly from a different process.
 func (c *cloudMemcacheRESTClient) ApplyParametersOperation(name string) *ApplyParametersOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &ApplyParametersOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -1209,7 +1209,7 @@ func (c *cloudMemcacheGRPCClient) CreateInstanceOperation(name string) *CreateIn
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *cloudMemcacheRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -1291,7 +1291,7 @@ func (c *cloudMemcacheGRPCClient) DeleteInstanceOperation(name string) *DeleteIn
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *cloudMemcacheRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -1362,7 +1362,7 @@ func (c *cloudMemcacheGRPCClient) UpdateInstanceOperation(name string) *UpdateIn
 // UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *cloudMemcacheRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -1444,7 +1444,7 @@ func (c *cloudMemcacheGRPCClient) UpdateParametersOperation(name string) *Update
 // UpdateParametersOperation returns a new UpdateParametersOperation from a given name.
 // The name must be that of a previously created UpdateParametersOperation, possibly from a different process.
 func (c *cloudMemcacheRESTClient) UpdateParametersOperation(name string) *UpdateParametersOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateParametersOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,

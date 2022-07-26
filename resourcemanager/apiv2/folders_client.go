@@ -1089,7 +1089,7 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &CreateFolderOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1249,7 +1249,7 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &MoveFolderOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1598,7 +1598,7 @@ func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOper
 // CreateFolderOperation returns a new CreateFolderOperation from a given name.
 // The name must be that of a previously created CreateFolderOperation, possibly from a different process.
 func (c *foldersRESTClient) CreateFolderOperation(name string) *CreateFolderOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateFolderOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -1680,7 +1680,7 @@ func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperatio
 // MoveFolderOperation returns a new MoveFolderOperation from a given name.
 // The name must be that of a previously created MoveFolderOperation, possibly from a different process.
 func (c *foldersRESTClient) MoveFolderOperation(name string) *MoveFolderOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &MoveFolderOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,

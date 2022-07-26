@@ -1426,7 +1426,7 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &UpdateInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1490,7 +1490,7 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &ResetInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1553,7 +1553,7 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &StartInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1616,7 +1616,7 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &StopInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1679,7 +1679,7 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &DetachLunOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1893,7 +1893,7 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &UpdateVolumeOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1956,7 +1956,7 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &ResizeVolumeOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -2224,7 +2224,7 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &UpdateNetworkOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -2578,7 +2578,7 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
 	return &UpdateNfsShareOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -2745,7 +2745,7 @@ func (c *gRPCClient) DetachLunOperation(name string) *DetachLunOperation {
 // DetachLunOperation returns a new DetachLunOperation from a given name.
 // The name must be that of a previously created DetachLunOperation, possibly from a different process.
 func (c *restClient) DetachLunOperation(name string) *DetachLunOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &DetachLunOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -2827,7 +2827,7 @@ func (c *gRPCClient) ResetInstanceOperation(name string) *ResetInstanceOperation
 // ResetInstanceOperation returns a new ResetInstanceOperation from a given name.
 // The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
 func (c *restClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &ResetInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -2909,7 +2909,7 @@ func (c *gRPCClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
 // ResizeVolumeOperation returns a new ResizeVolumeOperation from a given name.
 // The name must be that of a previously created ResizeVolumeOperation, possibly from a different process.
 func (c *restClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &ResizeVolumeOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -2991,7 +2991,7 @@ func (c *gRPCClient) StartInstanceOperation(name string) *StartInstanceOperation
 // StartInstanceOperation returns a new StartInstanceOperation from a given name.
 // The name must be that of a previously created StartInstanceOperation, possibly from a different process.
 func (c *restClient) StartInstanceOperation(name string) *StartInstanceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &StartInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -3073,7 +3073,7 @@ func (c *gRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
 // StopInstanceOperation returns a new StopInstanceOperation from a given name.
 // The name must be that of a previously created StopInstanceOperation, possibly from a different process.
 func (c *restClient) StopInstanceOperation(name string) *StopInstanceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &StopInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -3155,7 +3155,7 @@ func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperati
 // UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *restClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -3237,7 +3237,7 @@ func (c *gRPCClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation
 // UpdateNetworkOperation returns a new UpdateNetworkOperation from a given name.
 // The name must be that of a previously created UpdateNetworkOperation, possibly from a different process.
 func (c *restClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateNetworkOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -3319,7 +3319,7 @@ func (c *gRPCClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperati
 // UpdateNfsShareOperation returns a new UpdateNfsShareOperation from a given name.
 // The name must be that of a previously created UpdateNfsShareOperation, possibly from a different process.
 func (c *restClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateNfsShareOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -3401,7 +3401,7 @@ func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 // UpdateVolumeOperation returns a new UpdateVolumeOperation from a given name.
 // The name must be that of a previously created UpdateVolumeOperation, possibly from a different process.
 func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateVolumeOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,

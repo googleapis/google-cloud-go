@@ -1100,7 +1100,7 @@ func (c *serviceManagerRESTClient) CreateService(ctx context.Context, req *servi
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &CreateServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1164,7 +1164,7 @@ func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servi
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1226,7 +1226,7 @@ func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *ser
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &UndeleteServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1517,7 +1517,7 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &SubmitConfigSourceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1737,7 +1737,7 @@ func (c *serviceManagerRESTClient) CreateServiceRollout(ctx context.Context, req
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &CreateServiceRolloutOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1828,7 +1828,7 @@ func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateSe
 // CreateServiceOperation returns a new CreateServiceOperation from a given name.
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *serviceManagerRESTClient) CreateServiceOperation(name string) *CreateServiceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -1910,7 +1910,7 @@ func (c *serviceManagerGRPCClient) CreateServiceRolloutOperation(name string) *C
 // CreateServiceRolloutOperation returns a new CreateServiceRolloutOperation from a given name.
 // The name must be that of a previously created CreateServiceRolloutOperation, possibly from a different process.
 func (c *serviceManagerRESTClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceRolloutOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -1992,7 +1992,7 @@ func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteSe
 // DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerRESTClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -2063,7 +2063,7 @@ func (c *serviceManagerGRPCClient) SubmitConfigSourceOperation(name string) *Sub
 // SubmitConfigSourceOperation returns a new SubmitConfigSourceOperation from a given name.
 // The name must be that of a previously created SubmitConfigSourceOperation, possibly from a different process.
 func (c *serviceManagerRESTClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &SubmitConfigSourceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
@@ -2145,7 +2145,7 @@ func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *Undele
 // UndeleteServiceOperation returns a new UndeleteServiceOperation from a given name.
 // The name must be that of a previously created UndeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerRESTClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeleteServiceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,

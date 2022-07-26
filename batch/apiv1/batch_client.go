@@ -803,7 +803,7 @@ func (c *restClient) DeleteJob(ctx context.Context, req *batchpb.DeleteJobReques
 		return nil, e
 	}
 
-	override := fmt.Sprintf("", resp.GetName())
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteJobOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
@@ -1060,7 +1060,7 @@ func (c *gRPCClient) DeleteJobOperation(name string) *DeleteJobOperation {
 // DeleteJobOperation returns a new DeleteJobOperation from a given name.
 // The name must be that of a previously created DeleteJobOperation, possibly from a different process.
 func (c *restClient) DeleteJobOperation(name string) *DeleteJobOperation {
-	override := fmt.Sprintf("", name)
+	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteJobOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
