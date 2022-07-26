@@ -25,5 +25,3 @@ require (
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
-
-replace google.golang.org/genproto => /Users/codyoss/oss/go-genproto
