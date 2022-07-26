@@ -20,7 +20,6 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/internal/trace"
-	raw "google.golang.org/api/storage/v1"
 )
 
 // CopierFrom creates a Copier that can copy src to dst.
@@ -135,50 +134,6 @@ func (c *Copier) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 			return res.resource, nil
 		}
 	}
-}
-
-func (c *Copier) callRewrite(ctx context.Context, rawObj *raw.Object) (*raw.RewriteResponse, error) {
-	call := c.dst.c.raw.Objects.Rewrite(c.src.bucket, c.src.object, c.dst.bucket, c.dst.object, rawObj)
-
-	call.Context(ctx).Projection("full")
-	if c.RewriteToken != "" {
-		call.RewriteToken(c.RewriteToken)
-	}
-	if c.DestinationKMSKeyName != "" {
-		call.DestinationKmsKeyName(c.DestinationKMSKeyName)
-	}
-	if c.PredefinedACL != "" {
-		call.DestinationPredefinedAcl(c.PredefinedACL)
-	}
-	if err := applyConds("Copy destination", c.dst.gen, c.dst.conds, call); err != nil {
-		return nil, err
-	}
-	if c.dst.userProject != "" {
-		call.UserProject(c.dst.userProject)
-	} else if c.src.userProject != "" {
-		call.UserProject(c.src.userProject)
-	}
-	if err := applySourceConds(c.src.gen, c.src.conds, call); err != nil {
-		return nil, err
-	}
-	if err := setEncryptionHeaders(call.Header(), c.dst.encryptionKey, false); err != nil {
-		return nil, err
-	}
-	if err := setEncryptionHeaders(call.Header(), c.src.encryptionKey, true); err != nil {
-		return nil, err
-	}
-	var res *raw.RewriteResponse
-	var err error
-	setClientHeader(call.Header())
-
-	retryCall := func() error { res, err = call.Do(); return err }
-	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
-
-	if err := run(ctx, retryCall, c.dst.retry, isIdempotent, setRetryHeaderHTTP(call)); err != nil {
-		return nil, err
-	}
-	c.RewriteToken = res.RewriteToken
-	return res, nil
 }
 
 // ComposerFrom creates a Composer that can compose srcs into dst.
