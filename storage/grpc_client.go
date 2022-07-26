@@ -168,6 +168,7 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 	it := &BucketIterator{
 		ctx:       ctx,
 		projectID: project,
+		retry:     s.retry,
 	}
 
 	var gitr *gapic.BucketIterator
