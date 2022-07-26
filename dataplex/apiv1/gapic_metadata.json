@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "ContentClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateContent": {
               "methods": [
                 "CreateContent"
@@ -20,14 +25,54 @@
                 "DeleteContent"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetContent": {
               "methods": [
                 "GetContent"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListContent": {
               "methods": [
                 "ListContent"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateContent": {
@@ -47,6 +92,11 @@
             "CancelJob": {
               "methods": [
                 "CancelJob"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
               ]
             },
             "CreateAsset": {
@@ -89,6 +139,11 @@
                 "DeleteLake"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteTask": {
               "methods": [
                 "DeleteTask"
@@ -117,6 +172,16 @@
             "GetLake": {
               "methods": [
                 "GetLake"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetTask": {
@@ -157,6 +222,16 @@
             "ListLakes": {
               "methods": [
                 "ListLakes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListSessions": {
@@ -213,6 +288,11 @@
         "grpc": {
           "libraryClient": "MetadataClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEntity": {
               "methods": [
                 "CreateEntity"
@@ -228,6 +308,11 @@
                 "DeleteEntity"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeletePartition": {
               "methods": [
                 "DeletePartition"
@@ -238,6 +323,16 @@
                 "GetEntity"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPartition": {
               "methods": [
                 "GetPartition"
@@ -246,6 +341,16 @@
             "ListEntities": {
               "methods": [
                 "ListEntities"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPartitions": {
