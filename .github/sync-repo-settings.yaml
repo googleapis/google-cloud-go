@@ -1,6 +1,6 @@
 rebaseMergeAllowed: true
 squashMergeAllowed: true
-mergeCommitAllowed: true
+mergeCommitAllowed: false
 branchProtectionRules:
 - pattern: main
   isAdminEnforced: true
@@ -19,7 +19,7 @@ branchProtectionRules:
     - 'cla/google'
   requiredApprovingReviewCount: 1
   requiresStrictStatusChecks: true
-  requiresLinearHistory: false
+  requiresLinearHistory: true
 permissionRules:
   - team: actools
     permission: admin
