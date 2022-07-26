@@ -86,21 +86,53 @@ func (c *Copier) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	if c.DestinationKMSKeyName != "" && c.dst.encryptionKey != nil {
 		return nil, errors.New("storage: cannot use DestinationKMSKeyName with a customer-supplied encryption key")
 	}
+	if c.dst.gen != defaultGen {
+		return nil, fmt.Errorf("storage: generation cannot be specified on copy destination, got %v", c.dst.gen)
+	}
 	// Convert destination attributes to raw form, omitting the bucket.
 	// If the bucket is included but name or content-type aren't, the service
 	// returns a 400 with "Required" as the only message. Omitting the bucket
 	// does not cause any problems.
-	rawObject := c.ObjectAttrs.toRawObject("")
+	req := &rewriteObjectRequest{
+		srcObject: sourceObject{
+			name:          c.src.object,
+			bucket:        c.src.bucket,
+			gen:           c.src.gen,
+			conds:         c.src.conds,
+			encryptionKey: c.src.encryptionKey,
+		},
+		dstObject: destinationObject{
+			name:          c.dst.object,
+			bucket:        c.dst.bucket,
+			conds:         c.dst.conds,
+			attrs:         &c.ObjectAttrs,
+			encryptionKey: c.dst.encryptionKey,
+			keyName:       c.DestinationKMSKeyName,
+		},
+		predefinedACL: c.PredefinedACL,
+		token:         c.RewriteToken,
+	}
+
+	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
+	var userProject string
+	if c.dst.userProject != "" {
+		userProject = c.dst.userProject
+	} else if c.src.userProject != "" {
+		userProject = c.src.userProject
+	}
+	opts := makeStorageOpts(isIdempotent, c.dst.retry, userProject)
+
 	for {
-		res, err := c.callRewrite(ctx, rawObject)
+		res, err := c.dst.c.tc.RewriteObject(ctx, req, opts...)
 		if err != nil {
 			return nil, err
 		}
+		c.RewriteToken = res.token
 		if c.ProgressFunc != nil {
-			c.ProgressFunc(uint64(res.TotalBytesRewritten), uint64(res.ObjectSize))
+			c.ProgressFunc(uint64(res.written), uint64(res.size))
 		}
-		if res.Done { // Finished successfully.
-			return newObject(res.Resource), nil
+		if res.done { // Finished successfully.
+			return res.resource, nil
 		}
 	}
 }

@@ -760,6 +760,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	r := &rewriteObjectResponse{
 		done:     res.Done,
 		written:  res.TotalBytesRewritten,
+		size:     res.ObjectSize,
 		token:    res.RewriteToken,
 		resource: newObject(res.Resource),
 	}
