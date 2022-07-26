@@ -78,6 +78,7 @@ var (
 	bigNumericParamType = &bq.QueryParameterType{Type: "BIGNUMERIC"}
 	geographyParamType  = &bq.QueryParameterType{Type: "GEOGRAPHY"}
 	intervalParamType   = &bq.QueryParameterType{Type: "INTERVAL"}
+	jsonParamType       = &bq.QueryParameterType{Type: "JSON"}
 )
 
 var (
@@ -171,6 +172,8 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		return stringParamType, nil
 	case typeOfNullGeography:
 		return geographyParamType, nil
+	case typeOfNullJSON:
+		return jsonParamType, nil
 	}
 	switch t.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint8, reflect.Uint16, reflect.Uint32:
@@ -243,7 +246,8 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		typeOfNullTimestamp,
 		typeOfNullDate,
 		typeOfNullTime,
-		typeOfNullDateTime:
+		typeOfNullDateTime,
+		typeOfNullJSON:
 		// Shared:  If the Null type isn't valid, we have no value to send.
 		// However, the backend requires us to send the QueryParameterValue with
 		// the fields empty.
@@ -261,6 +265,8 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 			res.Value = fmt.Sprint(v.FieldByName("StringVal").Interface())
 		case typeOfNullGeography:
 			res.Value = fmt.Sprint(v.FieldByName("GeographyVal").Interface())
+		case typeOfNullJSON:
+			res.Value = fmt.Sprint(v.FieldByName("JSONVal").Interface())
 		case typeOfNullFloat64:
 			res.Value = fmt.Sprint(v.FieldByName("Float64").Interface())
 		case typeOfNullBool:
@@ -388,6 +394,7 @@ var paramTypeToFieldType = map[string]FieldType{
 	bigNumericParamType.Type: BigNumericFieldType,
 	geographyParamType.Type:  GeographyFieldType,
 	intervalParamType.Type:   IntervalFieldType,
+	jsonParamType.Type:       JSONFieldType,
 }
 
 // Convert a parameter value from the service to a Go value. This is similar to, but
@@ -432,6 +439,8 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 				return NullTime{Valid: false}, nil
 			case "GEOGRAPHY":
 				return NullGeography{Valid: false}, nil
+			case "JSON":
+				return NullJSON{Valid: false}, nil
 			}
 
 		}
