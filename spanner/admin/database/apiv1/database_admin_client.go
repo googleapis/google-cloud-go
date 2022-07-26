@@ -61,6 +61,7 @@ type DatabaseAdminCallOptions struct {
 	RestoreDatabase        []gax.CallOption
 	ListDatabaseOperations []gax.CallOption
 	ListBackupOperations   []gax.CallOption
+	ListDatabaseRoles      []gax.CallOption
 }
 
 func defaultDatabaseAdminGRPCClientOptions() []option.ClientOption {
@@ -227,6 +228,18 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
+		ListDatabaseRoles: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -258,6 +271,7 @@ type internalDatabaseAdminClient interface {
 	RestoreDatabaseOperation(name string) *RestoreDatabaseOperation
 	ListDatabaseOperations(context.Context, *databasepb.ListDatabaseOperationsRequest, ...gax.CallOption) *OperationIterator
 	ListBackupOperations(context.Context, *databasepb.ListBackupOperationsRequest, ...gax.CallOption) *OperationIterator
+	ListDatabaseRoles(context.Context, *databasepb.ListDatabaseRolesRequest, ...gax.CallOption) *DatabaseRoleIterator
 }
 
 // DatabaseAdminClient is a client for interacting with Cloud Spanner Database Admin API.
@@ -524,6 +538,11 @@ func (c *DatabaseAdminClient) ListDatabaseOperations(ctx context.Context, req *d
 // from the most recently started operation.
 func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *databasepb.ListBackupOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListBackupOperations(ctx, req, opts...)
+}
+
+// ListDatabaseRoles lists Cloud Spanner database roles.
+func (c *DatabaseAdminClient) ListDatabaseRoles(ctx context.Context, req *databasepb.ListDatabaseRolesRequest, opts ...gax.CallOption) *DatabaseRoleIterator {
+	return c.internalClient.ListDatabaseRoles(ctx, req, opts...)
 }
 
 // databaseAdminGRPCClient is a client for interacting with Cloud Spanner Database Admin API over gRPC transport.
@@ -1122,6 +1141,51 @@ func (c *databaseAdminGRPCClient) ListBackupOperations(ctx context.Context, req 
 	return it
 }
 
+func (c *databaseAdminGRPCClient) ListDatabaseRoles(ctx context.Context, req *databasepb.ListDatabaseRolesRequest, opts ...gax.CallOption) *DatabaseRoleIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListDatabaseRoles[0:len((*c.CallOptions).ListDatabaseRoles):len((*c.CallOptions).ListDatabaseRoles)], opts...)
+	it := &DatabaseRoleIterator{}
+	req = proto.Clone(req).(*databasepb.ListDatabaseRolesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.DatabaseRole, string, error) {
+		resp := &databasepb.ListDatabaseRolesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.databaseAdminClient.ListDatabaseRoles(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatabaseRoles(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CopyBackupOperation manages a long-running operation from CopyBackup.
 type CopyBackupOperation struct {
 	lro *longrunning.Operation
@@ -1545,6 +1609,53 @@ func (it *DatabaseIterator) bufLen() int {
 }
 
 func (it *DatabaseIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DatabaseRoleIterator manages a stream of *databasepb.DatabaseRole.
+type DatabaseRoleIterator struct {
+	items    []*databasepb.DatabaseRole
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*databasepb.DatabaseRole, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DatabaseRoleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DatabaseRoleIterator) Next() (*databasepb.DatabaseRole, error) {
+	var item *databasepb.DatabaseRole
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DatabaseRoleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DatabaseRoleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
