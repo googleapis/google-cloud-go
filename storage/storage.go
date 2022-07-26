@@ -210,7 +210,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		scheme:   u.Scheme,
 		readHost: u.Host,
 		creds:    creds,
-		tc: tc,
+		tc:       tc,
 	}, nil
 }
 
