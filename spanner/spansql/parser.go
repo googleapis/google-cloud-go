@@ -20,6 +20,7 @@ Package spansql contains types and a parser for the Cloud Spanner SQL dialect.
 To parse, use one of the Parse functions (ParseDDL, ParseDDLStmt, ParseQuery, etc.).
 
 Sources:
+
 	https://cloud.google.com/spanner/docs/lexical
 	https://cloud.google.com/spanner/docs/query-syntax
 	https://cloud.google.com/spanner/docs/data-definition-language
@@ -67,37 +68,67 @@ func debugf(format string, args ...interface{}) {
 // The provided filename is used for error reporting and will
 // appear in the returned structure.
 func ParseDDL(filename, s string) (*DDL, error) {
+	ddl := &DDL{}
+	if err := parseStatements(ddl, filename, s); err != nil {
+		return nil, err
+	}
+
+	return ddl, nil
+}
+
+// ParseDML parses a DML file.
+//
+// The provided filename is used for error reporting and will
+// appear in the returned structure.
+func ParseDML(filename, s string) (*DML, error) {
+	dml := &DML{}
+	if err := parseStatements(dml, filename, s); err != nil {
+		return nil, err
+	}
+
+	return dml, nil
+}
+
+func parseStatements(stmts statements, filename string, s string) error {
 	p := newParser(filename, s)
 
-	ddl := &DDL{
-		Filename: filename,
-	}
+	stmts.setFilename(filename)
+
 	for {
 		p.skipSpace()
 		if p.done {
 			break
 		}
 
-		stmt, err := p.parseDDLStmt()
-		if err != nil {
-			return nil, err
+		switch v := stmts.(type) {
+		case *DDL:
+			stmt, err := p.parseDDLStmt()
+			if err != nil {
+				return err
+			}
+			v.List = append(v.List, stmt)
+		case *DML:
+			stmt, err := p.parseDMLStmt()
+			if err != nil {
+				return err
+			}
+			v.List = append(v.List, stmt)
 		}
-		ddl.List = append(ddl.List, stmt)
 
 		tok := p.next()
 		if tok.err == eof {
 			break
 		} else if tok.err != nil {
-			return nil, tok.err
+			return tok.err
 		}
 		if tok.value == ";" {
 			continue
 		} else {
-			return nil, p.errorf("unexpected token %q", tok.value)
+			return p.errorf("unexpected token %q", tok.value)
 		}
 	}
 	if p.Rem() != "" {
-		return nil, fmt.Errorf("unexpected trailing contents %q", p.Rem())
+		return fmt.Errorf("unexpected trailing contents %q", p.Rem())
 	}
 
 	// Handle comments.
@@ -136,10 +167,10 @@ func ParseDDL(filename, s string) (*DDL, error) {
 			}
 		}
 
-		ddl.Comments = append(ddl.Comments, c)
+		stmts.addComment(c)
 	}
 
-	return ddl, nil
+	return nil
 }
 
 // ParseDDLStmt parses a single DDL statement.
@@ -3010,6 +3041,9 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	case tok.caseEqual("IF"):
 		p.back()
 		return p.parseIfExpr()
+	case tok.caseEqual("IFNULL"):
+		p.back()
+		return p.parseIfNullExpr()
 	}
 
 	// Handle typed literals.
@@ -3150,6 +3184,30 @@ func (p *parser) parseIfExpr() (If, *parseError) {
 	}
 
 	return If{Expr: expr, TrueResult: trueResult, ElseResult: elseResult}, nil
+}
+
+func (p *parser) parseIfNullExpr() (IfNull, *parseError) {
+	if err := p.expect("IFNULL", "("); err != nil {
+		return IfNull{}, err
+	}
+
+	expr, err := p.parseExpr()
+	if err != nil {
+		return IfNull{}, err
+	}
+	if err := p.expect(","); err != nil {
+		return IfNull{}, err
+	}
+
+	nullResult, err := p.parseExpr()
+	if err != nil {
+		return IfNull{}, err
+	}
+	if err := p.expect(")"); err != nil {
+		return IfNull{}, err
+	}
+
+	return IfNull{Expr: expr, NullResult: nullResult}, nil
 }
 
 func (p *parser) parseArrayLit() (Array, *parseError) {
