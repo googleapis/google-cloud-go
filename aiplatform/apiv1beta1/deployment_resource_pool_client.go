@@ -97,13 +97,8 @@ type internalDeploymentResourcePoolClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	CreateDeploymentResourcePool(context.Context, *aiplatformpb.CreateDeploymentResourcePoolRequest, ...gax.CallOption) (*CreateDeploymentResourcePoolOperation, error)
 	CreateDeploymentResourcePoolOperation(name string) *CreateDeploymentResourcePoolOperation
-	GetDeploymentResourcePool(context.Context, *aiplatformpb.GetDeploymentResourcePoolRequest, ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error)
-	ListDeploymentResourcePools(context.Context, *aiplatformpb.ListDeploymentResourcePoolsRequest, ...gax.CallOption) *DeploymentResourcePoolIterator
-	DeleteDeploymentResourcePool(context.Context, *aiplatformpb.DeleteDeploymentResourcePoolRequest, ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error)
 	DeleteDeploymentResourcePoolOperation(name string) *DeleteDeploymentResourcePoolOperation
-	QueryDeployedModels(context.Context, *aiplatformpb.QueryDeployedModelsRequest, ...gax.CallOption) *DeployedModelIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -155,41 +150,16 @@ func (c *DeploymentResourcePoolClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateDeploymentResourcePool create a DeploymentResourcePool.
-func (c *DeploymentResourcePoolClient) CreateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.CreateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*CreateDeploymentResourcePoolOperation, error) {
-	return c.internalClient.CreateDeploymentResourcePool(ctx, req, opts...)
-}
-
 // CreateDeploymentResourcePoolOperation returns a new CreateDeploymentResourcePoolOperation from a given name.
 // The name must be that of a previously created CreateDeploymentResourcePoolOperation, possibly from a different process.
 func (c *DeploymentResourcePoolClient) CreateDeploymentResourcePoolOperation(name string) *CreateDeploymentResourcePoolOperation {
 	return c.internalClient.CreateDeploymentResourcePoolOperation(name)
 }
 
-// GetDeploymentResourcePool get a DeploymentResourcePool.
-func (c *DeploymentResourcePoolClient) GetDeploymentResourcePool(ctx context.Context, req *aiplatformpb.GetDeploymentResourcePoolRequest, opts ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error) {
-	return c.internalClient.GetDeploymentResourcePool(ctx, req, opts...)
-}
-
-// ListDeploymentResourcePools list DeploymentResourcePools in a location.
-func (c *DeploymentResourcePoolClient) ListDeploymentResourcePools(ctx context.Context, req *aiplatformpb.ListDeploymentResourcePoolsRequest, opts ...gax.CallOption) *DeploymentResourcePoolIterator {
-	return c.internalClient.ListDeploymentResourcePools(ctx, req, opts...)
-}
-
-// DeleteDeploymentResourcePool delete a DeploymentResourcePool.
-func (c *DeploymentResourcePoolClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
-	return c.internalClient.DeleteDeploymentResourcePool(ctx, req, opts...)
-}
-
 // DeleteDeploymentResourcePoolOperation returns a new DeleteDeploymentResourcePoolOperation from a given name.
 // The name must be that of a previously created DeleteDeploymentResourcePoolOperation, possibly from a different process.
 func (c *DeploymentResourcePoolClient) DeleteDeploymentResourcePoolOperation(name string) *DeleteDeploymentResourcePoolOperation {
 	return c.internalClient.DeleteDeploymentResourcePoolOperation(name)
-}
-
-// QueryDeployedModels list DeployedModels that have been deployed on this DeploymentResourcePool.
-func (c *DeploymentResourcePoolClient) QueryDeployedModels(ctx context.Context, req *aiplatformpb.QueryDeployedModelsRequest, opts ...gax.CallOption) *DeployedModelIterator {
-	return c.internalClient.QueryDeployedModels(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -266,9 +236,6 @@ type deploymentResourcePoolGRPCClient struct {
 	// Points back to the CallOptions field of the containing DeploymentResourcePoolClient
 	CallOptions **DeploymentResourcePoolCallOptions
 
-	// The gRPC API client.
-	deploymentResourcePoolClient aiplatformpb.DeploymentResourcePoolServiceClient
-
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
@@ -312,7 +279,6 @@ func NewDeploymentResourcePoolClient(ctx context.Context, opts ...option.ClientO
 	c := &deploymentResourcePoolGRPCClient{
 		connPool:                     connPool,
 		disableDeadlines:             disableDeadlines,
-		deploymentResourcePoolClient: aiplatformpb.NewDeploymentResourcePoolServiceClient(connPool),
 		CallOptions:                  &client.CallOptions,
 		operationsClient:             longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:              iampb.NewIAMPolicyClient(connPool),
@@ -356,151 +322,6 @@ func (c *deploymentResourcePoolGRPCClient) setGoogleClientInfo(keyval ...string)
 // the client is no longer required.
 func (c *deploymentResourcePoolGRPCClient) Close() error {
 	return c.connPool.Close()
-}
-
-func (c *deploymentResourcePoolGRPCClient) CreateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.CreateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*CreateDeploymentResourcePoolOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CreateDeploymentResourcePool[0:len((*c.CallOptions).CreateDeploymentResourcePool):len((*c.CallOptions).CreateDeploymentResourcePool)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.deploymentResourcePoolClient.CreateDeploymentResourcePool(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateDeploymentResourcePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *deploymentResourcePoolGRPCClient) GetDeploymentResourcePool(ctx context.Context, req *aiplatformpb.GetDeploymentResourcePoolRequest, opts ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetDeploymentResourcePool[0:len((*c.CallOptions).GetDeploymentResourcePool):len((*c.CallOptions).GetDeploymentResourcePool)], opts...)
-	var resp *aiplatformpb.DeploymentResourcePool
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.deploymentResourcePoolClient.GetDeploymentResourcePool(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *deploymentResourcePoolGRPCClient) ListDeploymentResourcePools(ctx context.Context, req *aiplatformpb.ListDeploymentResourcePoolsRequest, opts ...gax.CallOption) *DeploymentResourcePoolIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListDeploymentResourcePools[0:len((*c.CallOptions).ListDeploymentResourcePools):len((*c.CallOptions).ListDeploymentResourcePools)], opts...)
-	it := &DeploymentResourcePoolIterator{}
-	req = proto.Clone(req).(*aiplatformpb.ListDeploymentResourcePoolsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DeploymentResourcePool, string, error) {
-		resp := &aiplatformpb.ListDeploymentResourcePoolsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.deploymentResourcePoolClient.ListDeploymentResourcePools(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetDeploymentResourcePools(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteDeploymentResourcePool[0:len((*c.CallOptions).DeleteDeploymentResourcePool):len((*c.CallOptions).DeleteDeploymentResourcePool)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.deploymentResourcePoolClient.DeleteDeploymentResourcePool(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DeleteDeploymentResourcePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *deploymentResourcePoolGRPCClient) QueryDeployedModels(ctx context.Context, req *aiplatformpb.QueryDeployedModelsRequest, opts ...gax.CallOption) *DeployedModelIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool", url.QueryEscape(req.GetDeploymentResourcePool())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).QueryDeployedModels[0:len((*c.CallOptions).QueryDeployedModels):len((*c.CallOptions).QueryDeployedModels)], opts...)
-	it := &DeployedModelIterator{}
-	req = proto.Clone(req).(*aiplatformpb.QueryDeployedModelsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DeployedModel, string, error) {
-		resp := &aiplatformpb.QueryDeployedModelsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.deploymentResourcePoolClient.QueryDeployedModels(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetDeployedModels(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 func (c *deploymentResourcePoolGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -734,51 +555,6 @@ func (c *deploymentResourcePoolGRPCClient) CreateDeploymentResourcePoolOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDeploymentResourcePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error) {
-	var resp aiplatformpb.DeploymentResourcePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDeploymentResourcePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error) {
-	var resp aiplatformpb.DeploymentResourcePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDeploymentResourcePoolOperation) Metadata() (*aiplatformpb.CreateDeploymentResourcePoolOperationMetadata, error) {
-	var meta aiplatformpb.CreateDeploymentResourcePoolOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
 // Done reports whether the long-running operation has completed.
 func (op *CreateDeploymentResourcePoolOperation) Done() bool {
 	return op.lro.Done()
@@ -890,53 +666,6 @@ func (it *DeployedModelIterator) bufLen() int {
 }
 
 func (it *DeployedModelIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DeploymentResourcePoolIterator manages a stream of *aiplatformpb.DeploymentResourcePool.
-type DeploymentResourcePoolIterator struct {
-	items    []*aiplatformpb.DeploymentResourcePool
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DeploymentResourcePool, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeploymentResourcePoolIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeploymentResourcePoolIterator) Next() (*aiplatformpb.DeploymentResourcePool, error) {
-	var item *aiplatformpb.DeploymentResourcePool
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeploymentResourcePoolIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeploymentResourcePoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

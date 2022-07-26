@@ -21,7 +21,6 @@ import (
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -37,126 +36,6 @@ func ExampleNewDeploymentResourcePoolClient() {
 
 	// TODO: Use client.
 	_ = c
-}
-
-func ExampleDeploymentResourcePoolClient_CreateDeploymentResourcePool() {
-	ctx := context.Background()
-	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.CreateDeploymentResourcePoolRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateDeploymentResourcePoolRequest.
-	}
-	op, err := c.CreateDeploymentResourcePool(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleDeploymentResourcePoolClient_GetDeploymentResourcePool() {
-	ctx := context.Background()
-	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.GetDeploymentResourcePoolRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetDeploymentResourcePoolRequest.
-	}
-	resp, err := c.GetDeploymentResourcePool(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleDeploymentResourcePoolClient_ListDeploymentResourcePools() {
-	ctx := context.Background()
-	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListDeploymentResourcePoolsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListDeploymentResourcePoolsRequest.
-	}
-	it := c.ListDeploymentResourcePools(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleDeploymentResourcePoolClient_DeleteDeploymentResourcePool() {
-	ctx := context.Background()
-	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.DeleteDeploymentResourcePoolRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteDeploymentResourcePoolRequest.
-	}
-	op, err := c.DeleteDeploymentResourcePool(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleDeploymentResourcePoolClient_QueryDeployedModels() {
-	ctx := context.Background()
-	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.QueryDeployedModelsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#QueryDeployedModelsRequest.
-	}
-	it := c.QueryDeployedModels(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleDeploymentResourcePoolClient_GetLocation() {
