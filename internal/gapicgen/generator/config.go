@@ -106,7 +106,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/language/apiv1beta2",
 		GRPCServiceConfigPath: "language_grpc_service_config.json",
 		ApiServiceConfigPath:  "language_v1beta2.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -123,7 +122,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/memcache/apiv1beta2",
 		GRPCServiceConfigPath: "memcache_grpc_service_config.json",
 		ApiServiceConfigPath:  "memcache_v1beta2.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -132,7 +130,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/phishingprotection/apiv1beta1",
 		GRPCServiceConfigPath: "phishingprotection_grpc_service_config.json",
 		ApiServiceConfigPath:  "phishingprotection_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -157,7 +154,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/scheduler/apiv1beta1",
 		GRPCServiceConfigPath: "cloudscheduler_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudscheduler_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -174,7 +170,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/speech/apiv1p1beta1",
 		GRPCServiceConfigPath: "speech_grpc_service_config.json",
 		ApiServiceConfigPath:  "speech_v1p1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -183,7 +178,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/bigquery/connection/apiv1beta1",
 		GRPCServiceConfigPath: "bigqueryconnection_grpc_service_config.json",
 		ApiServiceConfigPath:  "bigqueryconnection_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -200,7 +194,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
 		GRPCServiceConfigPath: "analyticshub_grpc_service_config.json",
 		ApiServiceConfigPath:  "analyticshub_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -249,7 +242,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/bigquery/storage/apiv1beta1",
 		GRPCServiceConfigPath: "bigquerystorage_grpc_service_config.json",
 		ApiServiceConfigPath:  "bigquerystorage_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -258,7 +250,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/bigquery/storage/apiv1beta2",
 		GRPCServiceConfigPath: "bigquerystorage_grpc_service_config.json",
 		ApiServiceConfigPath:  "bigquerystorage_v1beta2.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -283,7 +274,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/recommender/apiv1beta1",
 		GRPCServiceConfigPath: "recommender_grpc_service_config.json",
 		ApiServiceConfigPath:  "recommender_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -300,7 +290,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/cloudtasks/apiv2beta2",
 		GRPCServiceConfigPath: "cloudtasks_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudtasks_v2beta2.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -309,7 +298,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/cloudtasks/apiv2beta3",
 		GRPCServiceConfigPath: "cloudtasks_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudtasks_v2beta3.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -342,7 +330,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/webrisk/apiv1beta1",
 		GRPCServiceConfigPath: "webrisk_grpc_service_config.json",
 		ApiServiceConfigPath:  "webrisk_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -359,7 +346,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/secretmanager/apiv1beta1",
 		GRPCServiceConfigPath: "secretmanager_grpc_service_config.json",
 		ApiServiceConfigPath:  "secretmanager_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -376,7 +362,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/osconfig/apiv1alpha",
 		GRPCServiceConfigPath: "osconfig_grpc_service_config.json",
 		ApiServiceConfigPath:  "osconfig_v1alpha.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
 	},
 	{
@@ -385,7 +370,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/osconfig/apiv1beta",
 		GRPCServiceConfigPath: "osconfig_grpc_service_config.json",
 		ApiServiceConfigPath:  "osconfig_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -402,7 +386,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
 		GRPCServiceConfigPath: "agentendpoint_grpc_service_config.json",
 		ApiServiceConfigPath:  "osconfig_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -451,7 +434,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/oslogin/apiv1beta",
 		GRPCServiceConfigPath: "oslogin_grpc_service_config.json",
 		ApiServiceConfigPath:  "oslogin_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -468,7 +450,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
 		GRPCServiceConfigPath: "recaptchaenterprise_grpc_service_config.json",
 		ApiServiceConfigPath:  "recaptchaenterprise_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -485,7 +466,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/redis/apiv1beta1",
 		GRPCServiceConfigPath: "redis_grpc_service_config.json",
 		ApiServiceConfigPath:  "redis_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -502,7 +482,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/errorreporting/apiv1beta1",
 		GRPCServiceConfigPath: "errorreporting_grpc_service_config.json",
 		ApiServiceConfigPath:  "clouderrorreporting_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -623,7 +602,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dialogflow/cx/apiv3beta1",
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v3beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -657,7 +635,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "longrunning_grpc_service_config.json",
 		ApiServiceConfigPath:  "longrunning.yaml",
 		ReleaseLevel:          "alpha",
-		Transports:            []string{"grpc", "rest"},
 	},
 	{
 		InputDirectoryPath:    "google/devtools/containeranalysis/v1beta1",
@@ -665,7 +642,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
 		GRPCServiceConfigPath: "containeranalysis_grpc_service_config.json",
 		ApiServiceConfigPath:  "containeranalysis_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -676,7 +652,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
 		GRPCServiceConfigPath: "../containeranalysis_grpc_service_config.json",
 		ApiServiceConfigPath:  "../containeranalysis_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -693,7 +668,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/videointelligence/apiv1beta2",
 		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
 		ApiServiceConfigPath:  "../videointelligence_v1beta2.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -702,7 +676,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/asset/apiv1p2beta1",
 		GRPCServiceConfigPath: "cloudasset_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudasset_v1p2beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -711,7 +684,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/asset/apiv1p5beta1",
 		GRPCServiceConfigPath: "cloudasset_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudasset_v1p5beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -728,7 +700,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/vision/apiv1p1beta1",
 		GRPCServiceConfigPath: "vision_grpc_service_config.json",
 		ApiServiceConfigPath:  "vision_v1p1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -753,7 +724,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/talent/apiv4beta1",
 		GRPCServiceConfigPath: "talent_grpc_service_config.json",
 		ApiServiceConfigPath:  "jobs_v4beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -786,7 +756,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/automl/apiv1beta1",
 		GRPCServiceConfigPath: "automl_grpc_service_config.json",
 		ApiServiceConfigPath:  "automl_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -811,7 +780,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/servicedirectory/apiv1beta1",
 		GRPCServiceConfigPath: "servicedirectory_grpc_service_config.json",
 		ApiServiceConfigPath:  "servicedirectory_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -908,7 +876,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/workflows/apiv1beta",
 		GRPCServiceConfigPath: "workflows_grpc_service_config.json",
 		ApiServiceConfigPath:  "workflows_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -925,7 +892,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/workflows/executions/apiv1beta",
 		GRPCServiceConfigPath: "executions_grpc_service_config.json",
 		ApiServiceConfigPath:  "workflowexecutions_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -950,7 +916,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
 		ApiServiceConfigPath:  "assuredworkloads_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1006,7 +971,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/binaryauthorization/apiv1beta1",
 		GRPCServiceConfigPath: "binaryauthorization_grpc_service_config.json",
 		ApiServiceConfigPath:  "binaryauthorization_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1047,7 +1011,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dataqna/apiv1alpha",
 		GRPCServiceConfigPath: "dataqna_grpc_service_config.json",
 		ApiServiceConfigPath:  "dataqna_v1alpha.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
 	},
 	{
@@ -1080,7 +1043,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/domains/apiv1beta1",
 		GRPCServiceConfigPath: "domains_grpc_service_config.json",
 		ApiServiceConfigPath:  "domains_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1121,7 +1083,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/gkehub/apiv1beta1",
 		GRPCServiceConfigPath: "membership_grpc_service_config.json",
 		ApiServiceConfigPath:  "gkehub_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1154,7 +1115,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/metastore/apiv1beta",
 		GRPCServiceConfigPath: "metastore_grpc_service_config.json",
 		ApiServiceConfigPath:  "metastore_v1beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1211,7 +1171,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/privatecatalog/apiv1beta1",
 		GRPCServiceConfigPath: "cloudprivatecatalog_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudprivatecatalog_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1236,7 +1195,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/lifesciences/apiv2beta",
 		GRPCServiceConfigPath: "lifesciences_grpc_service_config.json",
 		ApiServiceConfigPath:  "lifesciences_v2beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1269,7 +1227,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/datastream/apiv1alpha1",
 		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
 		ApiServiceConfigPath:  "datastream_v1alpha1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
 	},
 	{
@@ -1278,7 +1235,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dataflow/apiv1beta3",
 		GRPCServiceConfigPath: "dataflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dataflow_v1beta3.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1558,7 +1514,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/functions/apiv2beta",
 		GRPCServiceConfigPath: "functions_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudfunctions_v2beta.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
 	{
@@ -1567,7 +1522,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dataform/apiv1alpha2",
 		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
 		ApiServiceConfigPath:  "dataform_v1alpha2.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
 	},
 	{
@@ -1641,7 +1595,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
 		GRPCServiceConfigPath: "admin_grpc_service_config.json",
 		ApiServiceConfigPath:  "analyticsadmin_v1alpha.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
 	},
 	{
@@ -1650,7 +1603,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/area120/tables/apiv1alpha1",
 		GRPCServiceConfigPath: "tables_grpc_service_config.json",
 		ApiServiceConfigPath:  "area120tables_v1alpha1.yaml",
-		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
 	},
 	{
