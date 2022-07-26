@@ -39,7 +39,7 @@ func TestCreateBucketEmulated(t *testing.T) {
 				LogBucket: bucket,
 			},
 		}
-		got, err := client.CreateBucket(context.Background(), project, want)
+		got, err := client.CreateBucket(context.Background(), project, want.Name, want)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -62,7 +62,7 @@ func TestDeleteBucketEmulated(t *testing.T) {
 			Name: bucket,
 		}
 		// Create the bucket that will be deleted.
-		_, err := client.CreateBucket(context.Background(), project, b)
+		_, err := client.CreateBucket(context.Background(), project, b.Name, b)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -80,7 +80,7 @@ func TestGetBucketEmulated(t *testing.T) {
 			Name: bucket,
 		}
 		// Create the bucket that will be retrieved.
-		_, err := client.CreateBucket(context.Background(), project, want)
+		_, err := client.CreateBucket(context.Background(), project, want.Name, want)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -100,7 +100,7 @@ func TestUpdateBucketEmulated(t *testing.T) {
 			Name: bucket,
 		}
 		// Create the bucket that will be updated.
-		_, err := client.CreateBucket(context.Background(), project, bkt)
+		_, err := client.CreateBucket(context.Background(), project, bkt.Name, bkt)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -191,7 +191,7 @@ func TestGetServiceAccountEmulated(t *testing.T) {
 
 func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		battrs, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		battrs, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -222,7 +222,7 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 func TestDeleteObjectEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object that will be deleted.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -249,7 +249,7 @@ func TestDeleteObjectEmulated(t *testing.T) {
 func TestGetObjectEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -279,7 +279,7 @@ func TestGetObjectEmulated(t *testing.T) {
 func TestRewriteObjectEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -324,7 +324,7 @@ func TestRewriteObjectEmulated(t *testing.T) {
 func TestUpdateObjectEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -391,7 +391,7 @@ func TestUpdateObjectEmulated(t *testing.T) {
 func TestListObjectsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -449,7 +449,7 @@ func TestListObjectsEmulated(t *testing.T) {
 func TestListObjectsWithPrefixEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -515,7 +515,7 @@ func TestListBucketsEmulated(t *testing.T) {
 		}
 		// Create the buckets that will be listed.
 		for _, b := range want {
-			_, err := client.CreateBucket(context.Background(), project, b)
+			_, err := client.CreateBucket(context.Background(), project, b.Name, b)
 			if err != nil {
 				t.Fatalf("client.CreateBucket: %v", err)
 			}
@@ -556,7 +556,7 @@ func TestListBucketACLsEmulated(t *testing.T) {
 			PredefinedACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 
@@ -578,7 +578,7 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 			PredefinedACL: "authenticatedRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		var listAcls []ACLRule
@@ -614,7 +614,7 @@ func TestDeleteBucketACLEmulated(t *testing.T) {
 			PredefinedACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		// Assert bucket has two BucketACL entities, including project owner and predefinedACL.
@@ -648,7 +648,7 @@ func TestDefaultObjectACLCRUDEmulated(t *testing.T) {
 			PredefinedDefaultObjectACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		// Assert bucket has 2 DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
@@ -692,7 +692,7 @@ func TestObjectACLCRUDEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
-		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -746,7 +746,7 @@ func TestObjectACLCRUDEmulated(t *testing.T) {
 func TestOpenReaderEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -791,7 +791,7 @@ func TestOpenReaderEmulated(t *testing.T) {
 func TestOpenWriterEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -854,7 +854,7 @@ func TestListNotificationsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
-		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -882,7 +882,7 @@ func TestCreateNotificationEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
-		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -908,7 +908,7 @@ func TestDeleteNotificationEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
-		_, err := client.CreateBucket(ctx, project, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -982,7 +982,7 @@ func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
 			},
 		}
 		// Create the bucket that will be locked.
-		_, err := client.CreateBucket(context.Background(), project, b)
+		_, err := client.CreateBucket(context.Background(), project, b.Name, b)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -1006,7 +1006,7 @@ func TestComposeEmulated(t *testing.T) {
 		ctx := context.Background()
 
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {

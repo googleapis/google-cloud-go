@@ -82,27 +82,11 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	var bkt *raw.Bucket
-	if attrs != nil {
-		bkt = attrs.toRawBucket()
-	} else {
-		bkt = &raw.Bucket{}
+	o := makeStorageOpts(true, b.retry, b.userProject)
+	if _, err := b.c.tc.CreateBucket(ctx, projectID, b.name, attrs, o...); err != nil {
+		return err
 	}
-	bkt.Name = b.name
-	// If there is lifecycle information but no location, explicitly set
-	// the location. This is a GCS quirk/bug.
-	if bkt.Location == "" && bkt.Lifecycle != nil {
-		bkt.Location = "US"
-	}
-	req := b.c.raw.Buckets.Insert(projectID, bkt)
-	setClientHeader(req.Header())
-	if attrs != nil && attrs.PredefinedACL != "" {
-		req.PredefinedAcl(attrs.PredefinedACL)
-	}
-	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
-		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
-	}
-	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true, setRetryHeaderHTTP(req))
+	return nil
 }
 
 // Delete deletes the Bucket.
