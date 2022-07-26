@@ -2124,17 +2124,8 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 //
 // Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
 func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator {
-	it := &BucketIterator{
-		ctx:       ctx,
-		client:    c,
-		projectID: projectID,
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
-		it.fetch,
-		func() int { return len(it.buckets) },
-		func() interface{} { b := it.buckets; it.buckets = nil; return b })
-
-	return it
+	o := makeStorageOpts(true, c.retry, "")
+	return c.tc.ListBuckets(ctx, projectID, o...)
 }
 
 // A BucketIterator is an iterator over BucketAttrs.
