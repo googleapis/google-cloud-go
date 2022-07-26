@@ -162,6 +162,20 @@ func callSettings(defaults *settings, opts ...storageOption) *settings {
 	return &cs
 }
 
+// makeStorageOpts is a helper for generating a set of storageOption based on
+// idempotency, retryConfig, and userProject. All top-level client operations
+// will generally have to pass these options through the interface.
+func makeStorageOpts(isIdempotent bool, retry *retryConfig, userProject string) []storageOption{
+	opts := []storageOption{idempotent(isIdempotent)}
+	if retry != nil {
+		opts = append(opts, withRetryConfig(retry))
+	}
+	if userProject != "" {
+		opts = append(opts, withUserProject(userProject))
+	}
+	return opts
+}
+
 // storageOption is the transport-agnostic call option for the storageClient
 // interface.
 type storageOption interface {
