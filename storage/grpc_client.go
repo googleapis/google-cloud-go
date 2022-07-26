@@ -727,7 +727,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 
 	dstObjPb := req.dstObject.attrs.toProtoObject(req.dstBucket)
 	dstObjPb.Name = req.dstObject.name
-	if err := applyCondsProto("ComposeObject destination", -1, req.dstObject.conds, dstObjPb); err != nil {
+	if err := applyCondsProto("ComposeObject destination", defaultGen, req.dstObject.conds, dstObjPb); err != nil {
 		return nil, err
 	}
 	if req.sendCRC32C {
@@ -750,8 +750,8 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	if req.predefinedACL != "" {
 		rawReq.DestinationPredefinedAcl = req.predefinedACL
 	}
-	if req.encryptionKey != nil {
-		rawReq.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.encryptionKey)
+	if req.dstObject.encryptionKey != nil {
+		rawReq.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstObject.encryptionKey)
 	}
 
 	var obj *storagepb.Object
