@@ -542,7 +542,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "database",
 		ImportPath:            "cloud.google.com/go/spanner/admin/database/apiv1",
 		GRPCServiceConfigPath: "spanner_admin_database_grpc_service_config.json",
-		ApiServiceConfigPath:  "spanner_admin_database.yaml",
+		ApiServiceConfigPath:  "spanner.yaml",
 		ReleaseLevel:          "ga",
 	},
 	{
@@ -1622,6 +1622,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "beyondcorp-clientgateways_grpc_service_config.json",
 		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
 		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/devtools/artifactregistry/v1",
+		Pkg:                   "artifactregistry",
+		ImportPath:            "cloud.google.com/go/artifactregistry/apiv1",
+		GRPCServiceConfigPath: "artifactregistry_grpc_service_config.json",
+		ApiServiceConfigPath:  "artifactregistry_v1.yaml",
+		// GA after 2022/08/22
 		ReleaseLevel: "beta",
 	},
 
