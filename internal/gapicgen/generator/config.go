@@ -1099,7 +1099,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "recommendationengine_v1beta1.yaml",
 		ReleaseLevel:          "beta",
 		Transports:            []string{"grpc"},
-		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkehub/v1beta1",
