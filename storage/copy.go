@@ -229,7 +229,6 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 		req.srcs = append(req.srcs, s)
 	}
 
-	// TODO: factor this out to a function?
 	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
 	opts := []storageOption{idempotent(isIdempotent)}
 	if c.dst.retry != nil {
@@ -238,8 +237,6 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	if c.dst.userProject != "" {
 		opts = append(opts, withUserProject(c.dst.userProject))
 	}
-
-	// TODO: Need to add withClientOptions or withGAXOptions?
 
 	return c.dst.c.tc.ComposeObject(ctx, req, opts...)
 }
