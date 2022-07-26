@@ -36,6 +36,18 @@ func ExampleNewTagBindingsClient() {
 	_ = c
 }
 
+func ExampleNewTagBindingsRESTClient() {
+	ctx := context.Background()
+	c, err := resourcemanager.NewTagBindingsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTagBindingsClient_ListTagBindings() {
 	ctx := context.Background()
 	c, err := resourcemanager.NewTagBindingsClient(ctx)

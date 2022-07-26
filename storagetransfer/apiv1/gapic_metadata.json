@@ -76,6 +76,76 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateAgentPool": {
+              "methods": [
+                "CreateAgentPool"
+              ]
+            },
+            "CreateTransferJob": {
+              "methods": [
+                "CreateTransferJob"
+              ]
+            },
+            "DeleteAgentPool": {
+              "methods": [
+                "DeleteAgentPool"
+              ]
+            },
+            "GetAgentPool": {
+              "methods": [
+                "GetAgentPool"
+              ]
+            },
+            "GetGoogleServiceAccount": {
+              "methods": [
+                "GetGoogleServiceAccount"
+              ]
+            },
+            "GetTransferJob": {
+              "methods": [
+                "GetTransferJob"
+              ]
+            },
+            "ListAgentPools": {
+              "methods": [
+                "ListAgentPools"
+              ]
+            },
+            "ListTransferJobs": {
+              "methods": [
+                "ListTransferJobs"
+              ]
+            },
+            "PauseTransferOperation": {
+              "methods": [
+                "PauseTransferOperation"
+              ]
+            },
+            "ResumeTransferOperation": {
+              "methods": [
+                "ResumeTransferOperation"
+              ]
+            },
+            "RunTransferJob": {
+              "methods": [
+                "RunTransferJob"
+              ]
+            },
+            "UpdateAgentPool": {
+              "methods": [
+                "UpdateAgentPool"
+              ]
+            },
+            "UpdateTransferJob": {
+              "methods": [
+                "UpdateTransferJob"
+              ]
+            }
+          }
         }
       }
     }

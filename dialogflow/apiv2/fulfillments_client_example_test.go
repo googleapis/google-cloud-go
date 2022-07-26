@@ -38,6 +38,18 @@ func ExampleNewFulfillmentsClient() {
 	_ = c
 }
 
+func ExampleNewFulfillmentsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewFulfillmentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFulfillmentsClient_GetFulfillment() {
 	ctx := context.Background()
 	c, err := dialogflow.NewFulfillmentsClient(ctx)

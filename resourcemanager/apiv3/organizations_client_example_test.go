@@ -37,6 +37,18 @@ func ExampleNewOrganizationsClient() {
 	_ = c
 }
 
+func ExampleNewOrganizationsRESTClient() {
+	ctx := context.Background()
+	c, err := resourcemanager.NewOrganizationsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleOrganizationsClient_GetOrganization() {
 	ctx := context.Background()
 	c, err := resourcemanager.NewOrganizationsClient(ctx)

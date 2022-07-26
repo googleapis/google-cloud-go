@@ -36,6 +36,18 @@ func ExampleNewBackupForGKEClient() {
 	_ = c
 }
 
+func ExampleNewBackupForGKERESTClient() {
+	ctx := context.Background()
+	c, err := gkebackup.NewBackupForGKERESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleBackupForGKEClient_CreateBackupPlan() {
 	ctx := context.Background()
 	c, err := gkebackup.NewBackupForGKEClient(ctx)

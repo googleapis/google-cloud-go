@@ -38,6 +38,18 @@ func ExampleNewConversationModelsClient() {
 	_ = c
 }
 
+func ExampleNewConversationModelsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewConversationModelsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleConversationModelsClient_CreateConversationModel() {
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationModelsClient(ctx)

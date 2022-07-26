@@ -36,6 +36,18 @@ func ExampleNewCloudCatalogClient() {
 	_ = c
 }
 
+func ExampleNewCloudCatalogRESTClient() {
+	ctx := context.Background()
+	c, err := billing.NewCloudCatalogRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudCatalogClient_ListServices() {
 	ctx := context.Background()
 	c, err := billing.NewCloudCatalogClient(ctx)

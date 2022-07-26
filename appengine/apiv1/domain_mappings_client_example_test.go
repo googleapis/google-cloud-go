@@ -36,6 +36,18 @@ func ExampleNewDomainMappingsClient() {
 	_ = c
 }
 
+func ExampleNewDomainMappingsRESTClient() {
+	ctx := context.Background()
+	c, err := appengine.NewDomainMappingsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDomainMappingsClient_ListDomainMappings() {
 	ctx := context.Background()
 	c, err := appengine.NewDomainMappingsClient(ctx)

@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CloudShellClient",
+          "rpcs": {
+            "AddPublicKey": {
+              "methods": [
+                "AddPublicKey"
+              ]
+            },
+            "AuthorizeEnvironment": {
+              "methods": [
+                "AuthorizeEnvironment"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "RemovePublicKey": {
+              "methods": [
+                "RemovePublicKey"
+              ]
+            },
+            "StartEnvironment": {
+              "methods": [
+                "StartEnvironment"
+              ]
+            }
+          }
         }
       }
     }

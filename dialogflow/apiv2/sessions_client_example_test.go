@@ -39,6 +39,18 @@ func ExampleNewSessionsClient() {
 	_ = c
 }
 
+func ExampleNewSessionsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewSessionsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSessionsClient_DetectIntent() {
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionsClient(ctx)

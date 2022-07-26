@@ -15,7 +15,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f
 	google.golang.org/api v0.87.0
 	google.golang.org/genproto v0.0.0-20220714211235-042d03aeabc9
-	google.golang.org/grpc v1.47.0
+	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.0
 )
 
@@ -32,3 +32,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
+
+replace google.golang.org/genproto => /Users/codyoss/oss/go-genproto

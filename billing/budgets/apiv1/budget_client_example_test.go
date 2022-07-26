@@ -36,6 +36,18 @@ func ExampleNewBudgetClient() {
 	_ = c
 }
 
+func ExampleNewBudgetRESTClient() {
+	ctx := context.Background()
+	c, err := budgets.NewBudgetRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleBudgetClient_CreateBudget() {
 	ctx := context.Background()
 	c, err := budgets.NewBudgetClient(ctx)

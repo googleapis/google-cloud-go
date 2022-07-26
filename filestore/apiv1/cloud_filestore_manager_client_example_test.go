@@ -36,6 +36,18 @@ func ExampleNewCloudFilestoreManagerClient() {
 	_ = c
 }
 
+func ExampleNewCloudFilestoreManagerRESTClient() {
+	ctx := context.Background()
+	c, err := filestore.NewCloudFilestoreManagerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudFilestoreManagerClient_ListInstances() {
 	ctx := context.Background()
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)

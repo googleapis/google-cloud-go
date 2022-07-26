@@ -37,6 +37,18 @@ func ExampleNewTenantClient() {
 	_ = c
 }
 
+func ExampleNewTenantRESTClient() {
+	ctx := context.Background()
+	c, err := talent.NewTenantRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTenantClient_CreateTenant() {
 	ctx := context.Background()
 	c, err := talent.NewTenantClient(ctx)

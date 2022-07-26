@@ -35,6 +35,18 @@ func ExampleNewCloudShellClient() {
 	_ = c
 }
 
+func ExampleNewCloudShellRESTClient() {
+	ctx := context.Background()
+	c, err := shell.NewCloudShellRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudShellClient_GetEnvironment() {
 	ctx := context.Background()
 	c, err := shell.NewCloudShellClient(ctx)

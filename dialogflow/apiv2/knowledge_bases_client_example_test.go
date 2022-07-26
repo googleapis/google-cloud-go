@@ -38,6 +38,18 @@ func ExampleNewKnowledgeBasesClient() {
 	_ = c
 }
 
+func ExampleNewKnowledgeBasesRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewKnowledgeBasesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleKnowledgeBasesClient_ListKnowledgeBases() {
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)

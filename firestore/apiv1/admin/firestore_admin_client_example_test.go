@@ -37,6 +37,18 @@ func ExampleNewFirestoreAdminClient() {
 	_ = c
 }
 
+func ExampleNewFirestoreAdminRESTClient() {
+	ctx := context.Background()
+	c, err := apiv1.NewFirestoreAdminRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFirestoreAdminClient_CreateIndex() {
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)

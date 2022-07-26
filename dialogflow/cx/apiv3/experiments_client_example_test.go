@@ -38,6 +38,18 @@ func ExampleNewExperimentsClient() {
 	_ = c
 }
 
+func ExampleNewExperimentsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewExperimentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleExperimentsClient_ListExperiments() {
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)

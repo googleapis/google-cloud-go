@@ -37,6 +37,18 @@ func ExampleNewTagKeysClient() {
 	_ = c
 }
 
+func ExampleNewTagKeysRESTClient() {
+	ctx := context.Background()
+	c, err := resourcemanager.NewTagKeysRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTagKeysClient_ListTagKeys() {
 	ctx := context.Background()
 	c, err := resourcemanager.NewTagKeysClient(ctx)

@@ -46,6 +46,46 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CloudMemcacheClient",
+          "rpcs": {
+            "ApplyParameters": {
+              "methods": [
+                "ApplyParameters"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateParameters": {
+              "methods": [
+                "UpdateParameters"
+              ]
+            }
+          }
         }
       }
     }

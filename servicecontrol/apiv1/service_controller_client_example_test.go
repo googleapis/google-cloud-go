@@ -35,6 +35,18 @@ func ExampleNewServiceControllerClient() {
 	_ = c
 }
 
+func ExampleNewServiceControllerRESTClient() {
+	ctx := context.Background()
+	c, err := servicecontrol.NewServiceControllerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleServiceControllerClient_Check() {
 	ctx := context.Background()
 	c, err := servicecontrol.NewServiceControllerClient(ctx)

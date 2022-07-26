@@ -39,6 +39,18 @@ func ExampleNewFunctionClient() {
 	_ = c
 }
 
+func ExampleNewFunctionRESTClient() {
+	ctx := context.Background()
+	c, err := functions.NewFunctionRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFunctionClient_GetFunction() {
 	ctx := context.Background()
 	c, err := functions.NewFunctionClient(ctx)

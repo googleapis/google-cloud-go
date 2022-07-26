@@ -86,6 +86,86 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CheckValidCreds": {
+              "methods": [
+                "CheckValidCreds"
+              ]
+            },
+            "CreateTransferConfig": {
+              "methods": [
+                "CreateTransferConfig"
+              ]
+            },
+            "DeleteTransferConfig": {
+              "methods": [
+                "DeleteTransferConfig"
+              ]
+            },
+            "DeleteTransferRun": {
+              "methods": [
+                "DeleteTransferRun"
+              ]
+            },
+            "EnrollDataSources": {
+              "methods": [
+                "EnrollDataSources"
+              ]
+            },
+            "GetDataSource": {
+              "methods": [
+                "GetDataSource"
+              ]
+            },
+            "GetTransferConfig": {
+              "methods": [
+                "GetTransferConfig"
+              ]
+            },
+            "GetTransferRun": {
+              "methods": [
+                "GetTransferRun"
+              ]
+            },
+            "ListDataSources": {
+              "methods": [
+                "ListDataSources"
+              ]
+            },
+            "ListTransferConfigs": {
+              "methods": [
+                "ListTransferConfigs"
+              ]
+            },
+            "ListTransferLogs": {
+              "methods": [
+                "ListTransferLogs"
+              ]
+            },
+            "ListTransferRuns": {
+              "methods": [
+                "ListTransferRuns"
+              ]
+            },
+            "ScheduleTransferRuns": {
+              "methods": [
+                "ScheduleTransferRuns"
+              ]
+            },
+            "StartManualTransferRuns": {
+              "methods": [
+                "StartManualTransferRuns"
+              ]
+            },
+            "UpdateTransferConfig": {
+              "methods": [
+                "UpdateTransferConfig"
+              ]
+            }
+          }
         }
       }
     }

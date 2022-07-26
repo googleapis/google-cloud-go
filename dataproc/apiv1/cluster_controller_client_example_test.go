@@ -36,6 +36,18 @@ func ExampleNewClusterControllerClient() {
 	_ = c
 }
 
+func ExampleNewClusterControllerRESTClient() {
+	ctx := context.Background()
+	c, err := dataproc.NewClusterControllerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleClusterControllerClient_CreateCluster() {
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)

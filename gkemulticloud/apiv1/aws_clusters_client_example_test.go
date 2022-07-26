@@ -36,6 +36,18 @@ func ExampleNewAwsClustersClient() {
 	_ = c
 }
 
+func ExampleNewAwsClustersRESTClient() {
+	ctx := context.Background()
+	c, err := gkemulticloud.NewAwsClustersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAwsClustersClient_CreateAwsCluster() {
 	ctx := context.Background()
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)

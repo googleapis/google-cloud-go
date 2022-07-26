@@ -38,6 +38,18 @@ func ExampleNewPagesClient() {
 	_ = c
 }
 
+func ExampleNewPagesRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewPagesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExamplePagesClient_ListPages() {
 	ctx := context.Background()
 	c, err := cx.NewPagesClient(ctx)

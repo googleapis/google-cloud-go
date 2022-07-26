@@ -38,6 +38,18 @@ func ExampleNewAnswerRecordsClient() {
 	_ = c
 }
 
+func ExampleNewAnswerRecordsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewAnswerRecordsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAnswerRecordsClient_ListAnswerRecords() {
 	ctx := context.Background()
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)

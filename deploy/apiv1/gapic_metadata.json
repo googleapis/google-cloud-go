@@ -101,6 +101,101 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CloudDeployClient",
+          "rpcs": {
+            "ApproveRollout": {
+              "methods": [
+                "ApproveRollout"
+              ]
+            },
+            "CreateDeliveryPipeline": {
+              "methods": [
+                "CreateDeliveryPipeline"
+              ]
+            },
+            "CreateRelease": {
+              "methods": [
+                "CreateRelease"
+              ]
+            },
+            "CreateRollout": {
+              "methods": [
+                "CreateRollout"
+              ]
+            },
+            "CreateTarget": {
+              "methods": [
+                "CreateTarget"
+              ]
+            },
+            "DeleteDeliveryPipeline": {
+              "methods": [
+                "DeleteDeliveryPipeline"
+              ]
+            },
+            "DeleteTarget": {
+              "methods": [
+                "DeleteTarget"
+              ]
+            },
+            "GetConfig": {
+              "methods": [
+                "GetConfig"
+              ]
+            },
+            "GetDeliveryPipeline": {
+              "methods": [
+                "GetDeliveryPipeline"
+              ]
+            },
+            "GetRelease": {
+              "methods": [
+                "GetRelease"
+              ]
+            },
+            "GetRollout": {
+              "methods": [
+                "GetRollout"
+              ]
+            },
+            "GetTarget": {
+              "methods": [
+                "GetTarget"
+              ]
+            },
+            "ListDeliveryPipelines": {
+              "methods": [
+                "ListDeliveryPipelines"
+              ]
+            },
+            "ListReleases": {
+              "methods": [
+                "ListReleases"
+              ]
+            },
+            "ListRollouts": {
+              "methods": [
+                "ListRollouts"
+              ]
+            },
+            "ListTargets": {
+              "methods": [
+                "ListTargets"
+              ]
+            },
+            "UpdateDeliveryPipeline": {
+              "methods": [
+                "UpdateDeliveryPipeline"
+              ]
+            },
+            "UpdateTarget": {
+              "methods": [
+                "UpdateTarget"
+              ]
+            }
+          }
         }
       }
     }

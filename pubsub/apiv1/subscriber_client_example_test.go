@@ -38,6 +38,18 @@ func ExampleNewSubscriberClient() {
 	_ = c
 }
 
+func ExampleNewSubscriberRESTClient() {
+	ctx := context.Background()
+	c, err := pubsub.NewSubscriberRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSubscriberClient_CreateSubscription() {
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)

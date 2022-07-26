@@ -37,6 +37,18 @@ func ExampleNewPublisherClient() {
 	_ = c
 }
 
+func ExampleNewPublisherRESTClient() {
+	ctx := context.Background()
+	c, err := pubsub.NewPublisherRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExamplePublisherClient_CreateTopic() {
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)

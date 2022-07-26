@@ -38,6 +38,18 @@ func ExampleNewConversationDatasetsClient() {
 	_ = c
 }
 
+func ExampleNewConversationDatasetsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewConversationDatasetsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleConversationDatasetsClient_CreateConversationDataset() {
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)

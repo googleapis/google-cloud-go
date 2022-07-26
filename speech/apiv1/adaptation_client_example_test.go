@@ -36,6 +36,18 @@ func ExampleNewAdaptationClient() {
 	_ = c
 }
 
+func ExampleNewAdaptationRESTClient() {
+	ctx := context.Background()
+	c, err := speech.NewAdaptationRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAdaptationClient_CreatePhraseSet() {
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)

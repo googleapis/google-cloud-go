@@ -37,6 +37,18 @@ func ExampleNewInstanceAdminClient() {
 	_ = c
 }
 
+func ExampleNewInstanceAdminRESTClient() {
+	ctx := context.Background()
+	c, err := instance.NewInstanceAdminRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleInstanceAdminClient_ListInstanceConfigs() {
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)

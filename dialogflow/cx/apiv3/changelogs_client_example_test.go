@@ -38,6 +38,18 @@ func ExampleNewChangelogsClient() {
 	_ = c
 }
 
+func ExampleNewChangelogsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewChangelogsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleChangelogsClient_ListChangelogs() {
 	ctx := context.Background()
 	c, err := cx.NewChangelogsClient(ctx)

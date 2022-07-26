@@ -35,6 +35,18 @@ func ExampleNewValidationHelperClient() {
 	_ = c
 }
 
+func ExampleNewValidationHelperRESTClient() {
+	ctx := context.Background()
+	c, err := binaryauthorization.NewValidationHelperRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleValidationHelperClient_ValidateAttestationOccurrence() {
 	ctx := context.Background()
 	c, err := binaryauthorization.NewValidationHelperClient(ctx)

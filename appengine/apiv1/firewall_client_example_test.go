@@ -36,6 +36,18 @@ func ExampleNewFirewallClient() {
 	_ = c
 }
 
+func ExampleNewFirewallRESTClient() {
+	ctx := context.Background()
+	c, err := appengine.NewFirewallRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFirewallClient_ListIngressRules() {
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)

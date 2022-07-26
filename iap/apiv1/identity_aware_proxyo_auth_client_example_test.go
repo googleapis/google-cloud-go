@@ -36,6 +36,18 @@ func ExampleNewIdentityAwareProxyOAuthClient() {
 	_ = c
 }
 
+func ExampleNewIdentityAwareProxyOAuthRESTClient() {
+	ctx := context.Background()
+	c, err := iap.NewIdentityAwareProxyOAuthRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleIdentityAwareProxyOAuthClient_ListBrands() {
 	ctx := context.Background()
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)

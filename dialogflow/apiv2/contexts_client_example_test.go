@@ -38,6 +38,18 @@ func ExampleNewContextsClient() {
 	_ = c
 }
 
+func ExampleNewContextsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewContextsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleContextsClient_ListContexts() {
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)

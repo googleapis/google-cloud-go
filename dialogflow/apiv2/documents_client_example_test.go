@@ -38,6 +38,18 @@ func ExampleNewDocumentsClient() {
 	_ = c
 }
 
+func ExampleNewDocumentsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewDocumentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDocumentsClient_ListDocuments() {
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)

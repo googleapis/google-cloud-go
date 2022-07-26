@@ -38,6 +38,18 @@ func ExampleNewEntityTypesClient() {
 	_ = c
 }
 
+func ExampleNewEntityTypesRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewEntityTypesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleEntityTypesClient_ListEntityTypes() {
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)

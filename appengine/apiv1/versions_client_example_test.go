@@ -36,6 +36,18 @@ func ExampleNewVersionsClient() {
 	_ = c
 }
 
+func ExampleNewVersionsRESTClient() {
+	ctx := context.Background()
+	c, err := appengine.NewVersionsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleVersionsClient_ListVersions() {
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)

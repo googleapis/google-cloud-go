@@ -37,6 +37,18 @@ func ExampleNewProjectsClient() {
 	_ = c
 }
 
+func ExampleNewProjectsRESTClient() {
+	ctx := context.Background()
+	c, err := resourcemanager.NewProjectsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleProjectsClient_GetProject() {
 	ctx := context.Background()
 	c, err := resourcemanager.NewProjectsClient(ctx)

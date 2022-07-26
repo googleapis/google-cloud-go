@@ -36,6 +36,18 @@ func ExampleNewProductSearchClient() {
 	_ = c
 }
 
+func ExampleNewProductSearchRESTClient() {
+	ctx := context.Background()
+	c, err := vision.NewProductSearchRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleProductSearchClient_CreateProductSet() {
 	ctx := context.Background()
 	c, err := vision.NewProductSearchClient(ctx)

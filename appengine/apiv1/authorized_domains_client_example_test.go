@@ -36,6 +36,18 @@ func ExampleNewAuthorizedDomainsClient() {
 	_ = c
 }
 
+func ExampleNewAuthorizedDomainsRESTClient() {
+	ctx := context.Background()
+	c, err := appengine.NewAuthorizedDomainsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAuthorizedDomainsClient_ListAuthorizedDomains() {
 	ctx := context.Background()
 	c, err := appengine.NewAuthorizedDomainsClient(ctx)

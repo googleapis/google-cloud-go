@@ -35,6 +35,18 @@ func ExampleNewApplicationsClient() {
 	_ = c
 }
 
+func ExampleNewApplicationsRESTClient() {
+	ctx := context.Background()
+	c, err := appengine.NewApplicationsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleApplicationsClient_GetApplication() {
 	ctx := context.Background()
 	c, err := appengine.NewApplicationsClient(ctx)

@@ -35,6 +35,18 @@ func ExampleNewFleetRoutingClient() {
 	_ = c
 }
 
+func ExampleNewFleetRoutingRESTClient() {
+	ctx := context.Background()
+	c, err := optimization.NewFleetRoutingRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFleetRoutingClient_OptimizeTours() {
 	ctx := context.Background()
 	c, err := optimization.NewFleetRoutingClient(ctx)

@@ -35,6 +35,18 @@ func ExampleNewSqlTranslationClient() {
 	_ = c
 }
 
+func ExampleNewSqlTranslationRESTClient() {
+	ctx := context.Background()
+	c, err := migration.NewSqlTranslationRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSqlTranslationClient_TranslateQuery() {
 	ctx := context.Background()
 	c, err := migration.NewSqlTranslationClient(ctx)

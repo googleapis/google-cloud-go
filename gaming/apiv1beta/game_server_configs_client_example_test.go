@@ -36,6 +36,18 @@ func ExampleNewGameServerConfigsClient() {
 	_ = c
 }
 
+func ExampleNewGameServerConfigsRESTClient() {
+	ctx := context.Background()
+	c, err := gaming.NewGameServerConfigsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleGameServerConfigsClient_ListGameServerConfigs() {
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)

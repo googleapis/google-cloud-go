@@ -37,6 +37,18 @@ func ExampleNewCloudBillingClient() {
 	_ = c
 }
 
+func ExampleNewCloudBillingRESTClient() {
+	ctx := context.Background()
+	c, err := billing.NewCloudBillingRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudBillingClient_GetBillingAccount() {
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)

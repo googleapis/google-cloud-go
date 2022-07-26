@@ -38,6 +38,18 @@ func ExampleNewAgentsClient() {
 	_ = c
 }
 
+func ExampleNewAgentsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewAgentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAgentsClient_GetAgent() {
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)

@@ -36,6 +36,18 @@ func ExampleNewAutoscalingPolicyClient() {
 	_ = c
 }
 
+func ExampleNewAutoscalingPolicyRESTClient() {
+	ctx := context.Background()
+	c, err := dataproc.NewAutoscalingPolicyRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAutoscalingPolicyClient_CreateAutoscalingPolicy() {
 	ctx := context.Background()
 	c, err := dataproc.NewAutoscalingPolicyClient(ctx)

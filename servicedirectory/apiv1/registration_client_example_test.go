@@ -37,6 +37,18 @@ func ExampleNewRegistrationClient() {
 	_ = c
 }
 
+func ExampleNewRegistrationRESTClient() {
+	ctx := context.Background()
+	c, err := servicedirectory.NewRegistrationRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleRegistrationClient_CreateNamespace() {
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)

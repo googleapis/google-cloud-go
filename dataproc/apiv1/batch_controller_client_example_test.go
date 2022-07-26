@@ -36,6 +36,18 @@ func ExampleNewBatchControllerClient() {
 	_ = c
 }
 
+func ExampleNewBatchControllerRESTClient() {
+	ctx := context.Background()
+	c, err := dataproc.NewBatchControllerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleBatchControllerClient_CreateBatch() {
 	ctx := context.Background()
 	c, err := dataproc.NewBatchControllerClient(ctx)

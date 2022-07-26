@@ -37,6 +37,18 @@ func ExampleNewDatastoreAdminClient() {
 	_ = c
 }
 
+func ExampleNewDatastoreAdminRESTClient() {
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDatastoreAdminClient_ExportEntities() {
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)

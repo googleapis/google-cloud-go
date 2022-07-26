@@ -36,6 +36,18 @@ func ExampleNewTranslationClient() {
 	_ = c
 }
 
+func ExampleNewTranslationRESTClient() {
+	ctx := context.Background()
+	c, err := translate.NewTranslationRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTranslationClient_TranslateText() {
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)

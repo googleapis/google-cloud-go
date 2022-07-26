@@ -35,6 +35,18 @@ func ExampleNewQuotaControllerClient() {
 	_ = c
 }
 
+func ExampleNewQuotaControllerRESTClient() {
+	ctx := context.Background()
+	c, err := servicecontrol.NewQuotaControllerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleQuotaControllerClient_AllocateQuota() {
 	ctx := context.Background()
 	c, err := servicecontrol.NewQuotaControllerClient(ctx)

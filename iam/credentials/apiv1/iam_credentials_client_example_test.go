@@ -35,6 +35,18 @@ func ExampleNewIamCredentialsClient() {
 	_ = c
 }
 
+func ExampleNewIamCredentialsRESTClient() {
+	ctx := context.Background()
+	c, err := credentials.NewIamCredentialsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleIamCredentialsClient_GenerateAccessToken() {
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)

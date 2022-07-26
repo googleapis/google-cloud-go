@@ -35,6 +35,18 @@ func ExampleNewController2Client() {
 	_ = c
 }
 
+func ExampleNewController2RESTClient() {
+	ctx := context.Background()
+	c, err := debugger.NewController2RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleController2Client_RegisterDebuggee() {
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)

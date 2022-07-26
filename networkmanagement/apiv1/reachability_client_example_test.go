@@ -36,6 +36,18 @@ func ExampleNewReachabilityClient() {
 	_ = c
 }
 
+func ExampleNewReachabilityRESTClient() {
+	ctx := context.Background()
+	c, err := networkmanagement.NewReachabilityRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleReachabilityClient_ListConnectivityTests() {
 	ctx := context.Background()
 	c, err := networkmanagement.NewReachabilityClient(ctx)

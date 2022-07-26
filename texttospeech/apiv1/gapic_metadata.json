@@ -21,6 +21,21 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ListVoices": {
+              "methods": [
+                "ListVoices"
+              ]
+            },
+            "SynthesizeSpeech": {
+              "methods": [
+                "SynthesizeSpeech"
+              ]
+            }
+          }
         }
       }
     }

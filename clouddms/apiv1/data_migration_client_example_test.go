@@ -36,6 +36,18 @@ func ExampleNewDataMigrationClient() {
 	_ = c
 }
 
+func ExampleNewDataMigrationRESTClient() {
+	ctx := context.Background()
+	c, err := clouddms.NewDataMigrationRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDataMigrationClient_ListMigrationJobs() {
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)

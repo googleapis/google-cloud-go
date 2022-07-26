@@ -36,6 +36,18 @@ func ExampleNewRevisionsClient() {
 	_ = c
 }
 
+func ExampleNewRevisionsRESTClient() {
+	ctx := context.Background()
+	c, err := run.NewRevisionsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleRevisionsClient_GetRevision() {
 	ctx := context.Background()
 	c, err := run.NewRevisionsClient(ctx)

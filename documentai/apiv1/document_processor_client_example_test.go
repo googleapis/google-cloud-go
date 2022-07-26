@@ -35,6 +35,18 @@ func ExampleNewDocumentProcessorClient() {
 	_ = c
 }
 
+func ExampleNewDocumentProcessorRESTClient() {
+	ctx := context.Background()
+	c, err := documentai.NewDocumentProcessorRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDocumentProcessorClient_ProcessDocument() {
 	ctx := context.Background()
 	c, err := documentai.NewDocumentProcessorClient(ctx)

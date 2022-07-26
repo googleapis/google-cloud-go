@@ -37,6 +37,18 @@ func ExampleNewIdentityAwareProxyAdminClient() {
 	_ = c
 }
 
+func ExampleNewIdentityAwareProxyAdminRESTClient() {
+	ctx := context.Background()
+	c, err := iap.NewIdentityAwareProxyAdminRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleIdentityAwareProxyAdminClient_SetIamPolicy() {
 	ctx := context.Background()
 	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)

@@ -35,6 +35,18 @@ func ExampleNewIamCheckerClient() {
 	_ = c
 }
 
+func ExampleNewIamCheckerRESTClient() {
+	ctx := context.Background()
+	c, err := policytroubleshooter.NewIamCheckerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleIamCheckerClient_TroubleshootIamPolicy() {
 	ctx := context.Background()
 	c, err := policytroubleshooter.NewIamCheckerClient(ctx)

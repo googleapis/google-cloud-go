@@ -37,6 +37,18 @@ func ExampleNewCloudFunctionsClient() {
 	_ = c
 }
 
+func ExampleNewCloudFunctionsRESTClient() {
+	ctx := context.Background()
+	c, err := functions.NewCloudFunctionsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudFunctionsClient_ListFunctions() {
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)

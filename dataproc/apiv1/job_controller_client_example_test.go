@@ -36,6 +36,18 @@ func ExampleNewJobControllerClient() {
 	_ = c
 }
 
+func ExampleNewJobControllerRESTClient() {
+	ctx := context.Background()
+	c, err := dataproc.NewJobControllerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleJobControllerClient_SubmitJob() {
 	ctx := context.Background()
 	c, err := dataproc.NewJobControllerClient(ctx)

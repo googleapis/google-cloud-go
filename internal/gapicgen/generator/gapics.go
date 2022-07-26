@@ -304,9 +304,9 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if len(conf.Transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.Transports, "+")))
 	}
-	if len(conf.Transports) == 0{
+	if len(conf.Transports) == 0 {
 		// Default to gRPC and REST transports
-		args = append(args, "--go_gapic_opt","transport=grpc+rest")
+		args = append(args, "--go_gapic_opt", "transport=grpc+rest")
 	}
 	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.
 	if conf.Pkg == "compute" {

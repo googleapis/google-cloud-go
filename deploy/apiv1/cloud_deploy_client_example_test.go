@@ -36,6 +36,18 @@ func ExampleNewCloudDeployClient() {
 	_ = c
 }
 
+func ExampleNewCloudDeployRESTClient() {
+	ctx := context.Background()
+	c, err := deploy.NewCloudDeployRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudDeployClient_ListDeliveryPipelines() {
 	ctx := context.Background()
 	c, err := deploy.NewCloudDeployClient(ctx)

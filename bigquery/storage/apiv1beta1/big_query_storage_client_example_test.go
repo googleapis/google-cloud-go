@@ -35,18 +35,6 @@ func ExampleNewBigQueryStorageClient() {
 	_ = c
 }
 
-func ExampleNewBigQueryStorageRESTClient() {
-	ctx := context.Background()
-	c, err := storage.NewBigQueryStorageRESTClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	// TODO: Use client.
-	_ = c
-}
-
 func ExampleBigQueryStorageClient_CreateReadSession() {
 	ctx := context.Background()
 	c, err := storage.NewBigQueryStorageClient(ctx)

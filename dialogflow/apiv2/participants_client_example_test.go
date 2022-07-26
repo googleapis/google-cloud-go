@@ -38,6 +38,18 @@ func ExampleNewParticipantsClient() {
 	_ = c
 }
 
+func ExampleNewParticipantsRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleParticipantsClient_CreateParticipant() {
 	ctx := context.Background()
 	c, err := dialogflow.NewParticipantsClient(ctx)

@@ -37,6 +37,18 @@ func ExampleNewServicesClient() {
 	_ = c
 }
 
+func ExampleNewServicesRESTClient() {
+	ctx := context.Background()
+	c, err := run.NewServicesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleServicesClient_CreateService() {
 	ctx := context.Background()
 	c, err := run.NewServicesClient(ctx)

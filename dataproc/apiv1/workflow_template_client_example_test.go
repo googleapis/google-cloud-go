@@ -36,6 +36,18 @@ func ExampleNewWorkflowTemplateClient() {
 	_ = c
 }
 
+func ExampleNewWorkflowTemplateRESTClient() {
+	ctx := context.Background()
+	c, err := dataproc.NewWorkflowTemplateRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)

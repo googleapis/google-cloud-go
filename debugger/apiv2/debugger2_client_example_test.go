@@ -35,6 +35,18 @@ func ExampleNewDebugger2Client() {
 	_ = c
 }
 
+func ExampleNewDebugger2RESTClient() {
+	ctx := context.Background()
+	c, err := debugger.NewDebugger2RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDebugger2Client_SetBreakpoint() {
 	ctx := context.Background()
 	c, err := debugger.NewDebugger2Client(ctx)

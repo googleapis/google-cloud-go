@@ -36,6 +36,18 @@ func ExampleNewServiceManagerClient() {
 	_ = c
 }
 
+func ExampleNewServiceManagerRESTClient() {
+	ctx := context.Background()
+	c, err := servicemanagement.NewServiceManagerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleServiceManagerClient_ListServices() {
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)

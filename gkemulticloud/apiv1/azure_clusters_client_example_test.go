@@ -36,6 +36,18 @@ func ExampleNewAzureClustersClient() {
 	_ = c
 }
 
+func ExampleNewAzureClustersRESTClient() {
+	ctx := context.Background()
+	c, err := gkemulticloud.NewAzureClustersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAzureClustersClient_CreateAzureClient() {
 	ctx := context.Background()
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)

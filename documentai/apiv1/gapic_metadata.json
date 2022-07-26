@@ -26,6 +26,26 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "DocumentProcessorClient",
+          "rpcs": {
+            "BatchProcessDocuments": {
+              "methods": [
+                "BatchProcessDocuments"
+              ]
+            },
+            "ProcessDocument": {
+              "methods": [
+                "ProcessDocument"
+              ]
+            },
+            "ReviewDocument": {
+              "methods": [
+                "ReviewDocument"
+              ]
+            }
+          }
         }
       }
     }

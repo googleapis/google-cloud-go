@@ -41,6 +41,41 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ReceiveTaskNotification": {
+              "methods": [
+                "ReceiveTaskNotification"
+              ]
+            },
+            "RegisterAgent": {
+              "methods": [
+                "RegisterAgent"
+              ]
+            },
+            "ReportInventory": {
+              "methods": [
+                "ReportInventory"
+              ]
+            },
+            "ReportTaskComplete": {
+              "methods": [
+                "ReportTaskComplete"
+              ]
+            },
+            "ReportTaskProgress": {
+              "methods": [
+                "ReportTaskProgress"
+              ]
+            },
+            "StartNextTask": {
+              "methods": [
+                "StartNextTask"
+              ]
+            }
+          }
         }
       }
     }

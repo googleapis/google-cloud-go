@@ -26,12 +26,77 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "RevisionsClient",
+          "rpcs": {
+            "DeleteRevision": {
+              "methods": [
+                "DeleteRevision"
+              ]
+            },
+            "GetRevision": {
+              "methods": [
+                "GetRevision"
+              ]
+            },
+            "ListRevisions": {
+              "methods": [
+                "ListRevisions"
+              ]
+            }
+          }
         }
       }
     },
     "Services": {
       "clients": {
         "grpc": {
+          "libraryClient": "ServicesClient",
+          "rpcs": {
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "ServicesClient",
           "rpcs": {
             "CreateService": {

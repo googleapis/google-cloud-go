@@ -37,6 +37,18 @@ func ExampleNewTagValuesClient() {
 	_ = c
 }
 
+func ExampleNewTagValuesRESTClient() {
+	ctx := context.Background()
+	c, err := resourcemanager.NewTagValuesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleTagValuesClient_ListTagValues() {
 	ctx := context.Background()
 	c, err := resourcemanager.NewTagValuesClient(ctx)

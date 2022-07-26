@@ -37,6 +37,18 @@ func ExampleNewCloudChannelClient() {
 	_ = c
 }
 
+func ExampleNewCloudChannelRESTClient() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleCloudChannelClient_ListCustomers() {
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)

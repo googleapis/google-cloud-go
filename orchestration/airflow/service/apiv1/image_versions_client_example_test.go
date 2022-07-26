@@ -36,6 +36,18 @@ func ExampleNewImageVersionsClient() {
 	_ = c
 }
 
+func ExampleNewImageVersionsRESTClient() {
+	ctx := context.Background()
+	c, err := service.NewImageVersionsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleImageVersionsClient_ListImageVersions() {
 	ctx := context.Background()
 	c, err := service.NewImageVersionsClient(ctx)

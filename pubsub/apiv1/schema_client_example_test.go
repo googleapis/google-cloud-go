@@ -37,6 +37,18 @@ func ExampleNewSchemaClient() {
 	_ = c
 }
 
+func ExampleNewSchemaRESTClient() {
+	ctx := context.Background()
+	c, err := pubsub.NewSchemaRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSchemaClient_CreateSchema() {
 	ctx := context.Background()
 	c, err := pubsub.NewSchemaClient(ctx)

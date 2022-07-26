@@ -36,6 +36,18 @@ func ExampleNewAuthorizedCertificatesClient() {
 	_ = c
 }
 
+func ExampleNewAuthorizedCertificatesRESTClient() {
+	ctx := context.Background()
+	c, err := appengine.NewAuthorizedCertificatesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleAuthorizedCertificatesClient_ListAuthorizedCertificates() {
 	ctx := context.Background()
 	c, err := appengine.NewAuthorizedCertificatesClient(ctx)

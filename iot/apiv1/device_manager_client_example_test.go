@@ -37,6 +37,18 @@ func ExampleNewDeviceManagerClient() {
 	_ = c
 }
 
+func ExampleNewDeviceManagerRESTClient() {
+	ctx := context.Background()
+	c, err := iot.NewDeviceManagerRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDeviceManagerClient_CreateDeviceRegistry() {
 	ctx := context.Background()
 	c, err := iot.NewDeviceManagerClient(ctx)

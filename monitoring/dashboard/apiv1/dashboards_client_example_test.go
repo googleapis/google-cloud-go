@@ -36,6 +36,18 @@ func ExampleNewDashboardsClient() {
 	_ = c
 }
 
+func ExampleNewDashboardsRESTClient() {
+	ctx := context.Background()
+	c, err := dashboard.NewDashboardsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleDashboardsClient_CreateDashboard() {
 	ctx := context.Background()
 	c, err := dashboard.NewDashboardsClient(ctx)

@@ -36,6 +36,18 @@ func ExampleNewBinauthzManagementClient() {
 	_ = c
 }
 
+func ExampleNewBinauthzManagementRESTClient() {
+	ctx := context.Background()
+	c, err := binaryauthorization.NewBinauthzManagementRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleBinauthzManagementClient_GetPolicy() {
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)

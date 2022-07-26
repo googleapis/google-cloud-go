@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateWorkload": {
+              "methods": [
+                "CreateWorkload"
+              ]
+            },
+            "DeleteWorkload": {
+              "methods": [
+                "DeleteWorkload"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "UpdateWorkload": {
+              "methods": [
+                "UpdateWorkload"
+              ]
+            }
+          }
         }
       }
     }

@@ -35,6 +35,18 @@ func ExampleNewSystemPolicyClient() {
 	_ = c
 }
 
+func ExampleNewSystemPolicyRESTClient() {
+	ctx := context.Background()
+	c, err := binaryauthorization.NewSystemPolicyRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSystemPolicyClient_GetSystemPolicy() {
 	ctx := context.Background()
 	c, err := binaryauthorization.NewSystemPolicyClient(ctx)

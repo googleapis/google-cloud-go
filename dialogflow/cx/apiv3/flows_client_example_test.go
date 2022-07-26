@@ -38,6 +38,18 @@ func ExampleNewFlowsClient() {
 	_ = c
 }
 
+func ExampleNewFlowsRESTClient() {
+	ctx := context.Background()
+	c, err := cx.NewFlowsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFlowsClient_CreateFlow() {
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)

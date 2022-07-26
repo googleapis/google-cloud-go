@@ -36,6 +36,18 @@ func ExampleNewInstancesClient() {
 	_ = c
 }
 
+func ExampleNewInstancesRESTClient() {
+	ctx := context.Background()
+	c, err := appengine.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleInstancesClient_ListInstances() {
 	ctx := context.Background()
 	c, err := appengine.NewInstancesClient(ctx)

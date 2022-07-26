@@ -37,6 +37,18 @@ func ExampleNewFoldersClient() {
 	_ = c
 }
 
+func ExampleNewFoldersRESTClient() {
+	ctx := context.Background()
+	c, err := resourcemanager.NewFoldersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleFoldersClient_ListFolders() {
 	ctx := context.Background()
 	c, err := resourcemanager.NewFoldersClient(ctx)

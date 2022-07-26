@@ -38,6 +38,18 @@ func ExampleNewSessionEntityTypesClient() {
 	_ = c
 }
 
+func ExampleNewSessionEntityTypesRESTClient() {
+	ctx := context.Background()
+	c, err := dialogflow.NewSessionEntityTypesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleSessionEntityTypesClient_ListSessionEntityTypes() {
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionEntityTypesClient(ctx)

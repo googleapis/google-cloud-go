@@ -1657,7 +1657,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// The retry configuration is explicitly excluded in order to disable
 		// GAPIC-level retries and allow the veneer layer to handle retries.
 		ApiServiceConfigPath: "storage_v2.yaml",
-		Transports:            []string{"grpc"},
+		Transports:           []string{"grpc"},
 		ReleaseLevel:         "alpha",
 		StubsDir:             "stubs",
 	},

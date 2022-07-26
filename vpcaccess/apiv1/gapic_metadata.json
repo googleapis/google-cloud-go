@@ -31,6 +31,31 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateConnector": {
+              "methods": [
+                "CreateConnector"
+              ]
+            },
+            "DeleteConnector": {
+              "methods": [
+                "DeleteConnector"
+              ]
+            },
+            "GetConnector": {
+              "methods": [
+                "GetConnector"
+              ]
+            },
+            "ListConnectors": {
+              "methods": [
+                "ListConnectors"
+              ]
+            }
+          }
         }
       }
     }
