@@ -230,13 +230,6 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	}
 
 	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
-	opts := []storageOption{idempotent(isIdempotent)}
-	if c.dst.retry != nil {
-		opts = append(opts, withRetryConfig(c.dst.retry))
-	}
-	if c.dst.userProject != "" {
-		opts = append(opts, withUserProject(c.dst.userProject))
-	}
-
+	opts := makeStorageOpts(isIdempotent, c.dst.retry, c.dst.userProject)
 	return c.dst.c.tc.ComposeObject(ctx, req, opts...)
 }
