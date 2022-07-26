@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.8.0...securitycenter/v1.9.0) (2022-07-12)
+
+
+### Features
+
+* **securitycenter:** Added contacts field to findings attributes, specifying Essential Contacts defined at org, folder or project level within a GCP org feat: Added process signature fields to the indicator attribute that helps surface multiple types of signature defined IOCs ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.7.0...securitycenter/v1.8.0) (2022-06-01)
 
 

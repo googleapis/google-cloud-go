@@ -1,5 +1,18 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.11.0...dialogflow/v1.12.0) (2022-07-12)
+
+
+### Features
+
+* **dialogflow:** deprecated the filter field and add resource_definition docs: add more meaningful comments ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
+
+
+### Documentation
+
+* **dialogflow/cx:** clarify descriptions of the AdvancedSettings and WebhookRequest data types ([1732e43](https://github.com/googleapis/google-cloud-go/commit/1732e4334c84019d93775d861be5c0008e3f5245))
+* **dialogflow/cx:** improve comments for protos ([963efe2](https://github.com/googleapis/google-cloud-go/commit/963efe22cf67bc04fed09b5fa8f9cb20b9edf1a3))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.10.0...dialogflow/v1.11.0) (2022-06-29)
 
 

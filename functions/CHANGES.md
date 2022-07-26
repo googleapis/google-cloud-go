@@ -1,5 +1,14 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.4.0...functions/v1.5.0) (2022-07-12)
+
+
+### Features
+
+* **functions:** add apiv2beta REST client ([#6291](https://github.com/googleapis/google-cloud-go/issues/6291)) ([f53363a](https://github.com/googleapis/google-cloud-go/commit/f53363a8d52960721206932bd5d838df7db8418f))
+* **functions:** start generating apiv2 ([#6323](https://github.com/googleapis/google-cloud-go/issues/6323)) ([49f9549](https://github.com/googleapis/google-cloud-go/commit/49f95499f87a38e4917f8cc1f3ec435d6614d2c2))
+* **functions:** start generating apiv2beta ([#6280](https://github.com/googleapis/google-cloud-go/issues/6280)) ([86c8bff](https://github.com/googleapis/google-cloud-go/commit/86c8bff34ce27b8090f567c8714c1237cbd490d1))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.3.0...functions/v1.4.0) (2022-06-16)
 
 

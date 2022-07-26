@@ -80,6 +80,15 @@
     "release_level": "alpha",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/artifactregistry/apiv1": {
+    "distribution_name": "cloud.google.com/go/artifactregistry/apiv1",
+    "description": "Artifact Registry API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/artifactregistry/latest/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/artifactregistry/apiv1beta2": {
     "distribution_name": "cloud.google.com/go/artifactregistry/apiv1beta2",
     "description": "Artifact Registry API",
@@ -167,6 +176,51 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/batch/latest/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/appconnections/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/appconnections/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/appconnectors/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/appconnectors/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/appconnectors/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/appgateways/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/appgateways/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/appgateways/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/clientconnectorservices/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/beyondcorp/clientgateways/apiv1": {
+    "distribution_name": "cloud.google.com/go/beyondcorp/clientgateways/apiv1",
+    "description": "BeyondCorp API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/clientgateways/apiv1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
@@ -467,6 +521,15 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/dataform/apiv1alpha2": {
+    "distribution_name": "cloud.google.com/go/dataform/apiv1alpha2",
+    "description": "Dataform API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/dataform/latest/apiv1alpha2",
+    "release_level": "alpha",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/datafusion/apiv1": {
     "distribution_name": "cloud.google.com/go/datafusion/apiv1",
     "description": "Cloud Data Fusion API",
@@ -717,6 +780,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/apiv1",
     "release_level": "ga",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/functions/apiv2": {
+    "distribution_name": "cloud.google.com/go/functions/apiv2",
+    "description": "Cloud Functions API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/apiv2",
+    "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/functions/apiv2beta": {
@@ -1580,7 +1652,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/talent/latest/apiv4",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/talent/apiv4beta1": {
