@@ -1355,11 +1355,6 @@ func TestRetryer(t *testing.T) {
 					want: c.retry,
 				},
 				{
-					name: "client.Buckets()",
-					r:    c.Buckets(ctx, "pID").client.retry,
-					want: c.retry,
-				},
-				{
 					name: "bucket.Objects()",
 					r:    b.Objects(ctx, nil).bucket.retry,
 					want: b.retry,
