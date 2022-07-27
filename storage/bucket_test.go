@@ -610,16 +610,6 @@ func TestCallBuilders(t *testing.T) {
 		metagenFunc func(interface{})
 	}{
 		{
-			func(b *BucketHandle) (interface{}, error) { return b.newGetCall() },
-			rc.Buckets.Get("name").Projection("full"),
-			func(req interface{}) { req.(*raw.BucketsGetCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
-			func(b *BucketHandle) (interface{}, error) { return b.newDeleteCall() },
-			rc.Buckets.Delete("name"),
-			func(req interface{}) { req.(*raw.BucketsDeleteCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
 			func(b *BucketHandle) (interface{}, error) {
 				return b.newPatchCall(&BucketAttrsToUpdate{
 					VersioningEnabled: false,
@@ -659,12 +649,6 @@ func TestCallBuilders(t *testing.T) {
 
 	// Error.
 	bm = b.If(BucketConditions{MetagenerationMatch: 1, MetagenerationNotMatch: 2})
-	if _, err := bm.newGetCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
-	if _, err := bm.newDeleteCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
 	if _, err := bm.newPatchCall(&BucketAttrsToUpdate{}); err == nil {
 		t.Errorf("got nil, want error")
 	}

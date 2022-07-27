@@ -110,24 +110,8 @@ func (b *BucketHandle) Delete(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req, err := b.newDeleteCall()
-	if err != nil {
-		return err
-	}
-
-	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true, setRetryHeaderHTTP(req))
-}
-
-func (b *BucketHandle) newDeleteCall() (*raw.BucketsDeleteCall, error) {
-	req := b.c.raw.Buckets.Delete(b.name)
-	setClientHeader(req.Header())
-	if err := applyBucketConds("BucketHandle.Delete", b.conds, req); err != nil {
-		return nil, err
-	}
-	if b.userProject != "" {
-		req.UserProject(b.userProject)
-	}
-	return req, nil
+	o := makeStorageOpts(true, b.retry, b.userProject)
+	return b.c.tc.DeleteBucket(ctx, b.name, b.conds, o...)
 }
 
 // ACL returns an ACLHandle, which provides access to the bucket's access control list.
@@ -175,35 +159,8 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Attrs")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req, err := b.newGetCall()
-	if err != nil {
-		return nil, err
-	}
-	var resp *raw.Bucket
-	err = run(ctx, func() error {
-		resp, err = req.Context(ctx).Do()
-		return err
-	}, b.retry, true, setRetryHeaderHTTP(req))
-	var e *googleapi.Error
-	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return nil, ErrBucketNotExist
-	}
-	if err != nil {
-		return nil, err
-	}
-	return newBucket(resp)
-}
-
-func (b *BucketHandle) newGetCall() (*raw.BucketsGetCall, error) {
-	req := b.c.raw.Buckets.Get(b.name).Projection("full")
-	setClientHeader(req.Header())
-	if err := applyBucketConds("BucketHandle.Attrs", b.conds, req); err != nil {
-		return nil, err
-	}
-	if b.userProject != "" {
-		req.UserProject(b.userProject)
-	}
-	return req, nil
+	o := makeStorageOpts(true, b.retry, b.userProject)
+	return b.c.tc.GetBucket(ctx, b.name, b.conds, o...)
 }
 
 // Update updates a bucket's attributes.
