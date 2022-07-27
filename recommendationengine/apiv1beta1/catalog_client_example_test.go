@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ func ExampleCatalogClient_CreateCatalogItem() {
 
 	req := &recommendationenginepb.CreateCatalogItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#CreateCatalogItemRequest.
 	}
 	resp, err := c.CreateCatalogItem(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleCatalogClient_GetCatalogItem() {
 
 	req := &recommendationenginepb.GetCatalogItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#GetCatalogItemRequest.
 	}
 	resp, err := c.GetCatalogItem(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleCatalogClient_ListCatalogItems() {
 
 	req := &recommendationenginepb.ListCatalogItemsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#ListCatalogItemsRequest.
 	}
 	it := c.ListCatalogItems(ctx, req)
 	for {
@@ -109,6 +112,7 @@ func ExampleCatalogClient_UpdateCatalogItem() {
 
 	req := &recommendationenginepb.UpdateCatalogItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#UpdateCatalogItemRequest.
 	}
 	resp, err := c.UpdateCatalogItem(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleCatalogClient_DeleteCatalogItem() {
 
 	req := &recommendationenginepb.DeleteCatalogItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#DeleteCatalogItemRequest.
 	}
 	err = c.DeleteCatalogItem(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleCatalogClient_ImportCatalogItems() {
 
 	req := &recommendationenginepb.ImportCatalogItemsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#ImportCatalogItemsRequest.
 	}
 	op, err := c.ImportCatalogItems(ctx, req)
 	if err != nil {

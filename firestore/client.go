@@ -290,8 +290,20 @@ func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 }
 
 // Batch returns a WriteBatch.
+//
+// Deprecated: The WriteBatch API has been replaced with the transaction and
+// the bulk writer API. For atomic transaction operations, use `Transaction`.
+// For bulk read and write operations, use `BulkWriter`.
 func (c *Client) Batch() *WriteBatch {
 	return &WriteBatch{c: c}
+}
+
+// BulkWriter returns a BulkWriter instance.
+// The context passed to the BulkWriter remains stored through the lifecycle
+// of the object. This context allows callers to cancel BulkWriter operations.
+func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
+	bw := newBulkWriter(ctx, c, c.path())
+	return bw
 }
 
 // commit calls the Commit RPC outside of a transaction.
