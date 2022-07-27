@@ -811,6 +811,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	r := &rewriteObjectResponse{
 		done:     res.GetDone(),
 		written:  res.GetTotalBytesRewritten(),
+		size:     res.GetObjectSize(),
 		token:    res.GetRewriteToken(),
 		resource: newObjectFromProto(res.GetResource()),
 	}

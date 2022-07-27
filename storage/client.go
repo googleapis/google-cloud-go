@@ -326,5 +326,6 @@ type rewriteObjectResponse struct {
 	resource *ObjectAttrs
 	done     bool
 	written  int64
+	size     int64
 	token    string
 }
