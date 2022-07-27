@@ -76,11 +76,12 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	}
 }
 
-// GetRawResult returns the full content of the AppendRows response, and any encountered while
+// GetRawResult returns the full content of the AppendRowsResponse, and any error encountered while
 // processing the append.
 //
-// An error embedded in the raw response will be converted and returned as the error response,
-// so it is possible for this to return both a response and an error together.
+// The AppendRowResponse may contain an embedded error.  An embedded error in the response will be 
+// converted and returned as the error response, so this method may return both the
+// AppendRowsResponse and an error.
 //
 // This call blocks until the result is ready, or context is no longer valid.
 func (ar *AppendResult) GetRawResult(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
