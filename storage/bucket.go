@@ -2125,7 +2125,6 @@ type BucketIterator struct {
 	buckets   []*BucketAttrs
 	pageInfo  *iterator.PageInfo
 	nextFunc  func() error
-	retry     *retryConfig
 }
 
 // Next returns the next result. Its second return value is iterator.Done if

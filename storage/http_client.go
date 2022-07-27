@@ -198,7 +198,6 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 	it := &BucketIterator{
 		ctx:       ctx,
 		projectID: project,
-		retry:     s.retry,
 	}
 
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
