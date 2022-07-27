@@ -27,7 +27,6 @@ import (
 // IAM provides access to IAM access control for the bucket.
 func (b *BucketHandle) IAM() *iam.Handle {
 	return iam.InternalNewHandleClient(&iamClient{
-		raw:         b.c.raw,
 		userProject: b.userProject,
 		retry:       b.retry,
 		client:      b.c,
@@ -36,7 +35,6 @@ func (b *BucketHandle) IAM() *iam.Handle {
 
 // iamClient implements the iam.client interface.
 type iamClient struct {
-	raw         *raw.Service
 	userProject string
 	retry       *retryConfig
 	client      *Client
