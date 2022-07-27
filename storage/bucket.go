@@ -81,27 +81,11 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	var bkt *raw.Bucket
-	if attrs != nil {
-		bkt = attrs.toRawBucket()
-	} else {
-		bkt = &raw.Bucket{}
+	o := makeStorageOpts(true, b.retry, b.userProject)
+	if _, err := b.c.tc.CreateBucket(ctx, projectID, b.name, attrs, o...); err != nil {
+		return err
 	}
-	bkt.Name = b.name
-	// If there is lifecycle information but no location, explicitly set
-	// the location. This is a GCS quirk/bug.
-	if bkt.Location == "" && bkt.Lifecycle != nil {
-		bkt.Location = "US"
-	}
-	req := b.c.raw.Buckets.Insert(projectID, bkt)
-	setClientHeader(req.Header())
-	if attrs != nil && attrs.PredefinedACL != "" {
-		req.PredefinedAcl(attrs.PredefinedACL)
-	}
-	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
-		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
-	}
-	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true, setRetryHeaderHTTP(req))
+	return nil
 }
 
 // Delete deletes the Bucket.
@@ -1982,17 +1966,8 @@ func (it *ObjectIterator) Next() (*ObjectAttrs, error) {
 //
 // Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
 func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator {
-	it := &BucketIterator{
-		ctx:       ctx,
-		client:    c,
-		projectID: projectID,
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
-		it.fetch,
-		func() int { return len(it.buckets) },
-		func() interface{} { b := it.buckets; it.buckets = nil; return b })
-
-	return it
+	o := makeStorageOpts(true, c.retry, "")
+	return c.tc.ListBuckets(ctx, projectID, o...)
 }
 
 // A BucketIterator is an iterator over BucketAttrs.
@@ -2003,7 +1978,6 @@ type BucketIterator struct {
 	Prefix string
 
 	ctx       context.Context
-	client    *Client
 	projectID string
 	buckets   []*BucketAttrs
 	pageInfo  *iterator.PageInfo
@@ -2028,36 +2002,6 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 //
 // Note: This method is not safe for concurrent operations without explicit synchronization.
 func (it *BucketIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
-
-// TODO: When the transport-agnostic client interface is integrated into the Veneer,
-// this method should be removed, and the iterator should be initialized by the
-// transport-specific client implementations.
-func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, err error) {
-	req := it.client.raw.Buckets.List(it.projectID)
-	setClientHeader(req.Header())
-	req.Projection("full")
-	req.Prefix(it.Prefix)
-	req.PageToken(pageToken)
-	if pageSize > 0 {
-		req.MaxResults(int64(pageSize))
-	}
-	var resp *raw.Buckets
-	err = run(it.ctx, func() error {
-		resp, err = req.Context(it.ctx).Do()
-		return err
-	}, it.client.retry, true, setRetryHeaderHTTP(req))
-	if err != nil {
-		return "", err
-	}
-	for _, item := range resp.Items {
-		b, err := newBucket(item)
-		if err != nil {
-			return "", err
-		}
-		it.buckets = append(it.buckets, b)
-	}
-	return resp.NextPageToken, nil
-}
 
 // RPO (Recovery Point Objective) configures the turbo replication feature. See
 // https://cloud.google.com/storage/docs/managing-turbo-replication for more information.
