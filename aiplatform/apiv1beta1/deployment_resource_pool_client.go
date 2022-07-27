@@ -277,12 +277,12 @@ func NewDeploymentResourcePoolClient(ctx context.Context, opts ...option.ClientO
 	client := DeploymentResourcePoolClient{CallOptions: defaultDeploymentResourcePoolCallOptions()}
 
 	c := &deploymentResourcePoolGRPCClient{
-		connPool:                     connPool,
-		disableDeadlines:             disableDeadlines,
-		CallOptions:                  &client.CallOptions,
-		operationsClient:             longrunningpb.NewOperationsClient(connPool),
-		iamPolicyClient:              iampb.NewIAMPolicyClient(connPool),
-		locationsClient:              locationpb.NewLocationsClient(connPool),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
