@@ -446,6 +446,12 @@ func TestParseExpr(t *testing.T) {
 				NullResult: True,
 			},
 		},
+		{`NULLIF("a", "b")`,
+			NullIf{
+				Expr:        StringLiteral("a"),
+				ExprToMatch: StringLiteral("b"),
+			},
+		},
 
 		// String literal:
 		// Accept double quote and single quote.
