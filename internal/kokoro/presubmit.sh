@@ -70,8 +70,7 @@ runPresubmitTests() {
   # There are some types of build failures that go-junit-report does not
   # properly handle. We can be safe here and run go build as well to catch such
   # failures.
-  if [[ $PWD != *"/internal/generated/snippets"* ]]; then
-    # We don't want to build snippets as it takes a lot of processing and memory
+  if [[ $PWD != *"/internal/"* ]]; then
     go build ./...
   fi
   exit_code=$(($exit_code + $?))
