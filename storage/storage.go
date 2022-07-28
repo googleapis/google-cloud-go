@@ -917,27 +917,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
-	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
-	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
-		return nil, err
-	}
-	if o.userProject != "" {
-		call.UserProject(o.userProject)
-	}
-	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
-		return nil, err
-	}
-	var obj *raw.Object
-	setClientHeader(call.Header())
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true, setRetryHeaderHTTP(call))
-	var e *googleapi.Error
-	if errors.As(err, &e) && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
-	}
-	if err != nil {
-		return nil, err
-	}
-	return newObject(obj), nil
+	opts := makeStorageOpts(true, o.retry, o.userProject)
+	return o.c.tc.GetObject(ctx, o.bucket, o.object, o.gen, o.encryptionKey, o.conds, opts...)
 }
 
 // Update updates an object with the provided attributes. See
@@ -950,99 +931,9 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
-	var attrs ObjectAttrs
-	// Lists of fields to send, and set to null, in the JSON.
-	var forceSendFields, nullFields []string
-	if uattrs.ContentType != nil {
-		attrs.ContentType = optional.ToString(uattrs.ContentType)
-		// For ContentType, sending the empty string is a no-op.
-		// Instead we send a null.
-		if attrs.ContentType == "" {
-			nullFields = append(nullFields, "ContentType")
-		} else {
-			forceSendFields = append(forceSendFields, "ContentType")
-		}
-	}
-	if uattrs.ContentLanguage != nil {
-		attrs.ContentLanguage = optional.ToString(uattrs.ContentLanguage)
-		// For ContentLanguage it's an error to send the empty string.
-		// Instead we send a null.
-		if attrs.ContentLanguage == "" {
-			nullFields = append(nullFields, "ContentLanguage")
-		} else {
-			forceSendFields = append(forceSendFields, "ContentLanguage")
-		}
-	}
-	if uattrs.ContentEncoding != nil {
-		attrs.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
-		forceSendFields = append(forceSendFields, "ContentEncoding")
-	}
-	if uattrs.ContentDisposition != nil {
-		attrs.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
-		forceSendFields = append(forceSendFields, "ContentDisposition")
-	}
-	if uattrs.CacheControl != nil {
-		attrs.CacheControl = optional.ToString(uattrs.CacheControl)
-		forceSendFields = append(forceSendFields, "CacheControl")
-	}
-	if uattrs.EventBasedHold != nil {
-		attrs.EventBasedHold = optional.ToBool(uattrs.EventBasedHold)
-		forceSendFields = append(forceSendFields, "EventBasedHold")
-	}
-	if uattrs.TemporaryHold != nil {
-		attrs.TemporaryHold = optional.ToBool(uattrs.TemporaryHold)
-		forceSendFields = append(forceSendFields, "TemporaryHold")
-	}
-	if !uattrs.CustomTime.IsZero() {
-		attrs.CustomTime = uattrs.CustomTime
-		forceSendFields = append(forceSendFields, "CustomTime")
-	}
-	if uattrs.Metadata != nil {
-		attrs.Metadata = uattrs.Metadata
-		if len(attrs.Metadata) == 0 {
-			// Sending the empty map is a no-op. We send null instead.
-			nullFields = append(nullFields, "Metadata")
-		} else {
-			forceSendFields = append(forceSendFields, "Metadata")
-		}
-	}
-	if uattrs.ACL != nil {
-		attrs.ACL = uattrs.ACL
-		// It's an error to attempt to delete the ACL, so
-		// we don't append to nullFields here.
-		forceSendFields = append(forceSendFields, "Acl")
-	}
-	rawObj := attrs.toRawObject(o.bucket)
-	rawObj.ForceSendFields = forceSendFields
-	rawObj.NullFields = nullFields
-	call := o.c.raw.Objects.Patch(o.bucket, o.object, rawObj).Projection("full").Context(ctx)
-	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
-		return nil, err
-	}
-	if o.userProject != "" {
-		call.UserProject(o.userProject)
-	}
-	if uattrs.PredefinedACL != "" {
-		call.PredefinedAcl(uattrs.PredefinedACL)
-	}
-	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
-		return nil, err
-	}
-	var obj *raw.Object
-	setClientHeader(call.Header())
-	var isIdempotent bool
-	if o.conds != nil && o.conds.MetagenerationMatch != 0 {
-		isIdempotent = true
-	}
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent, setRetryHeaderHTTP(call))
-	var e *googleapi.Error
-	if errors.As(err, &e) && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
-	}
-	if err != nil {
-		return nil, err
-	}
-	return newObject(obj), nil
+	isIdempotent := o.conds != nil && o.conds.MetagenerationMatch != 0
+	opts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
+	return o.c.tc.UpdateObject(ctx, o.bucket, o.object, &uattrs, o.gen, o.encryptionKey, o.conds, opts...)
 }
 
 // BucketName returns the name of the bucket.
@@ -1089,27 +980,11 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if err := o.validate(); err != nil {
 		return err
 	}
-	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
-	if err := applyConds("Delete", o.gen, o.conds, call); err != nil {
-		return err
-	}
-	if o.userProject != "" {
-		call.UserProject(o.userProject)
-	}
-	// Encryption doesn't apply to Delete.
-	setClientHeader(call.Header())
-	var isIdempotent bool
 	// Delete is idempotent if GenerationMatch or Generation have been passed in.
 	// The default generation is negative to get the latest version of the object.
-	if (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0 {
-		isIdempotent = true
-	}
-	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent, setRetryHeaderHTTP(call))
-	var e *googleapi.Error
-	if errors.As(err, &e) && e.Code == http.StatusNotFound {
-		return ErrObjectNotExist
-	}
-	return err
+	isIdempotent := (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0
+	opts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
+	return o.c.tc.DeleteObject(ctx, o.bucket, o.object, o.gen, o.conds, opts...)
 }
 
 // ReadCompressed when true causes the read to happen without decompressing.
