@@ -44,7 +44,7 @@ type storageClient interface {
 	// Top-level methods.
 
 	GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error)
-	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
+	CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
 	ListBuckets(ctx context.Context, project string, opts ...storageOption) *BucketIterator
 	Close() error
 
@@ -326,5 +326,6 @@ type rewriteObjectResponse struct {
 	resource *ObjectAttrs
 	done     bool
 	written  int64
+	size     int64
 	token    string
 }
