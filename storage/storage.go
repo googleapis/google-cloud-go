@@ -2106,17 +2106,9 @@ func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequest
 
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
-	r := c.raw.Projects.ServiceAccount.Get(projectID)
-	var res *raw.ServiceAccount
-	var err error
-	err = run(ctx, func() error {
-		res, err = r.Context(ctx).Do()
-		return err
-	}, c.retry, true, setRetryHeaderHTTP(r))
-	if err != nil {
-		return "", err
-	}
-	return res.EmailAddress, nil
+	o := makeStorageOpts(true, c.retry, "")
+	return c.tc.GetServiceAccount(ctx, projectID, o...)
+
 }
 
 // bucketResourceName formats the given project ID and bucketResourceName ID
