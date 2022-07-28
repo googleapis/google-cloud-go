@@ -67,6 +67,11 @@ runPresubmitTests() {
     | go-junit-report -set-exit-code > sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
+  # There are some types of build failures that go-junit-report does not
+  # properly handle. We can be safe here and run go build as well to catch such
+  # failures.
+  go build ./...
+  exit_code=$(($exit_code + $?))
 }
 
 SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/main...$KOKORO_GIT_COMMIT_google_cloud_go \
