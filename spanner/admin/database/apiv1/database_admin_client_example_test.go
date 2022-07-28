@@ -439,3 +439,29 @@ func ExampleDatabaseAdminClient_ListBackupOperations() {
 		_ = resp
 	}
 }
+
+func ExampleDatabaseAdminClient_ListDatabaseRoles() {
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.ListDatabaseRolesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListDatabaseRolesRequest.
+	}
+	it := c.ListDatabaseRoles(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
