@@ -79,7 +79,7 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 // GetRawResult returns the full content of the AppendRowsResponse, and any error encountered while
 // processing the append.
 //
-// The AppendRowResponse may contain an embedded error.  An embedded error in the response will be 
+// The AppendRowResponse may contain an embedded error.  An embedded error in the response will be
 // converted and returned as the error response, so this method may return both the
 // AppendRowsResponse and an error.
 //
