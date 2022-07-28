@@ -153,9 +153,8 @@ func (a *ACLHandle) objectSet(ctx context.Context, entity ACLEntity, role ACLRol
 	opts := makeStorageOpts(false, a.retry, a.userProject)
 	if isBucketDefault {
 		return a.c.tc.UpdateDefaultObjectACL(ctx, a.bucket, entity, role, opts...)
-	} else {
-		return a.c.tc.UpdateObjectACL(ctx, a.bucket, a.object, entity, role, opts...)
 	}
+	return a.c.tc.UpdateObjectACL(ctx, a.bucket, a.object, entity, role, opts...)
 }
 
 func (a *ACLHandle) objectDelete(ctx context.Context, entity ACLEntity) error {
