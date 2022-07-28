@@ -56,7 +56,7 @@ set -eo pipefail
 set -x
 
 # cd to project dir on Kokoro instance
-cd github/google-cloud-go
+cd github/google-cloud-go-storage-refactor
 
 go version
 
