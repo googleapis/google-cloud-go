@@ -760,6 +760,14 @@ type IfNull struct {
 func (IfNull) isBoolExpr() {} // possibly bool
 func (IfNull) isExpr()     {}
 
+type NullIf struct {
+	Expr        Expr
+	ExprToMatch Expr
+}
+
+func (NullIf) isBoolExpr() {} // possibly bool
+func (NullIf) isExpr()     {}
+
 type BoolLiteral bool
 
 const (
