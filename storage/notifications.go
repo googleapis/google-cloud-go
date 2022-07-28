@@ -160,7 +160,7 @@ func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (re
 
 	opts := makeStorageOpts(false, b.retry, b.userProject)
 	ret, err = b.c.tc.CreateNotification(ctx, b.name, n, opts...)
-	return n, err
+	return ret, err
 }
 
 // Notifications returns all the Notifications configured for this bucket, as a map
