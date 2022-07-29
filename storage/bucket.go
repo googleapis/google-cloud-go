@@ -1265,10 +1265,6 @@ func (b *BucketHandle) UserProject(projectID string) *BucketHandle {
 // than a day, the retention policy is treated as a development configuration and locking
 // will have no effect. The BucketHandle must have a metageneration condition that
 // matches the bucket's metageneration. See BucketHandle.If.
-//
-// This feature is in private alpha release. It is not currently available to
-// most customers. It might be changed in backwards-incompatible ways and is not
-// subject to any SLA or deprecation policy.
 func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	o := makeStorageOpts(true, b.retry, b.userProject)
 	return b.c.tc.LockBucketRetentionPolicy(ctx, b.name, b.conds, o...)
