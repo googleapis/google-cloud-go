@@ -3144,6 +3144,9 @@ func TestIntegration_Notifications(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if n.ID == "" {
+		t.Fatal("expected created Notification to have non-empty ID")
+	}
 	nArg.ID = n.ID
 	if !testutil.Equal(n, nArg) {
 		t.Errorf("got %+v, want %+v", n, nArg)
