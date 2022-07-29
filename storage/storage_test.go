@@ -1354,11 +1354,6 @@ func TestRetryer(t *testing.T) {
 					r:    c.HMACKeyHandle("pID", "accessID").retry,
 					want: c.retry,
 				},
-				{
-					name: "bucket.Objects()",
-					r:    b.Objects(ctx, nil).bucket.retry,
-					want: b.retry,
-				},
 			}
 			for _, ac := range configHandleCases {
 				s.Run(ac.name, func(ss *testing.T) {
