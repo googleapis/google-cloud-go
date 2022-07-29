@@ -407,6 +407,9 @@ func (ms *ManagedStream) Close() error {
 //
 // Use the WithOffset() AppendOption to set an explicit offset for this append.  Setting an offset for
 // a default stream is unsupported.
+//
+// The size of a single request must be less than 10 MB in size.
+// Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
 	pw := newPendingWrite(data)
 	// apply AppendOption opts
