@@ -63,10 +63,10 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	case <-ctx.Done():
 		return NoStreamOffset, ctx.Err()
 	case <-ar.Ready():
-		raw, err := ar.GetRawResult(ctx)
+		full, err := ar.FullResponse(ctx)
 		offset := NoStreamOffset
-		if raw != nil {
-			if result := raw.GetAppendResult(); result != nil {
+		if full != nil {
+			if result := full.GetAppendResult(); result != nil {
 				if off := result.GetOffset(); off != nil {
 					offset = off.GetValue()
 				}
@@ -76,7 +76,7 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	}
 }
 
-// GetRawResult returns the full content of the AppendRowsResponse, and any error encountered while
+// FullResponse returns the full content of the AppendRowsResponse, and any error encountered while
 // processing the append.
 //
 // The AppendRowResponse may contain an embedded error.  An embedded error in the response will be
@@ -84,7 +84,7 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 // AppendRowsResponse and an error.
 //
 // This call blocks until the result is ready, or context is no longer valid.
-func (ar *AppendResult) GetRawResult(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
+func (ar *AppendResult) FullResponse(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()

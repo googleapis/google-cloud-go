@@ -143,13 +143,13 @@ func TestPendingWrite(t *testing.T) {
 		if gotErr != wantErr {
 			t.Errorf("GetResult: mismatch in errors, got %v want %v", gotErr, wantErr)
 		}
-		// Now, check GetRawResult.
-		gotResp, gotErr := pending.result.GetRawResult(ctx)
+		// Now, check FullResponse.
+		gotResp, gotErr := pending.result.FullResponse(ctx)
 		if gotErr != wantErr {
-			t.Errorf("RawResponse: mismatch in errors, got %v want %v", gotErr, wantErr)
+			t.Errorf("FullResponse: mismatch in errors, got %v want %v", gotErr, wantErr)
 		}
 		if diff := cmp.Diff(gotResp, testResp, protocmp.Transform()); diff != "" {
-			t.Errorf("RawResponse diff: %s", diff)
+			t.Errorf("FullResponse diff: %s", diff)
 		}
 	}
 }
