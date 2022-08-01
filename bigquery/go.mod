@@ -13,8 +13,8 @@ require (
 	go.opencensus.io v0.23.0
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f
-	google.golang.org/api v0.87.0
-	google.golang.org/genproto v0.0.0-20220714211235-042d03aeabc9
+	google.golang.org/api v0.90.0
+	google.golang.org/genproto v0.0.0-20220801145646-83ce21fca29f
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.0
 )
