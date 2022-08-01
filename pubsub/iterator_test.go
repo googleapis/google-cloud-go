@@ -51,16 +51,17 @@ func TestSplitRequestIDs(t *testing.T) {
 		ids        []string
 		splitIndex int
 	}{
-		{[]string{}, 0},
-		{ids, 2},
-		{ids[:2], 2},
+		{[]string{}, 0}, // empty slice, no split
+		{ids, 2},        // slice of size 5, split at index 2
+		{ids[:2], 2},    // slice of size 3, split at index 2
+		{ids[:1], 1},    // slice of size 1, split at index 1
 	} {
-		got1, got2 := splitRequestIDs(test.ids, 15)
+		got1, got2 := splitRequestIDs(test.ids, 2)
 		want1, want2 := test.ids[:test.splitIndex], test.ids[test.splitIndex:]
-		if !testutil.Equal(got1, want1) {
+		if !testutil.Equal(len(got1), len(want1)) {
 			t.Errorf("%v, 1: got %v, want %v", test, got1, want1)
 		}
-		if !testutil.Equal(got2, want2) {
+		if !testutil.Equal(len(got2), len(want2)) {
 			t.Errorf("%v, 2: got %v, want %v", test, got2, want2)
 		}
 	}
@@ -620,7 +621,7 @@ func TestPingStreamAckDeadline(t *testing.T) {
 	iter.eoMu.RUnlock()
 }
 
-func compareCompletedRetryLengths(t *testing.T, completed, retry []*AckResult, wantCompleted, wantRetry int) {
+func compareCompletedRetryLengths(t *testing.T, completed, retry []*ackResultWithID, wantCompleted, wantRetry int) {
 	if l := len(completed); l != wantCompleted {
 		t.Errorf("completed slice length got %d, want %d", l, wantCompleted)
 	}
@@ -632,9 +633,6 @@ func compareCompletedRetryLengths(t *testing.T, completed, retry []*AckResult, w
 func TestExactlyOnceProcessRequests(t *testing.T) {
 	ctx := context.Background()
 
-	transientInvalidAckError := errors.New(transientInvalidAckErrString)
-	permanentInvalidAckError := errors.New(permanentInvalidAckErrString)
-
 	t.Run("NoResults", func(t *testing.T) {
 		// If the ackResMap is nil, then the resulting slices should be empty.
 		// nil maps here behave the same as if they were empty maps.
@@ -644,7 +642,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("NoErrorsNilAckResult", func(t *testing.T) {
 		// No errors so request should be completed even without an AckResult.
-		ackReqMap := map[string]*AckResult{
+		ackReqMap := map[string]*ackResultWithID{
 			"ackID": nil,
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
@@ -654,8 +652,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 	t.Run("NoErrors", func(t *testing.T) {
 		// No errors so AckResult should be completed with success.
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		completed, retry := processResults(nil, ackReqMap, nil)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
@@ -672,11 +670,11 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("PermanentErrorInvalidAckID", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
-		errorsMap := map[string]error{
-			"ackID1": permanentInvalidAckError,
+		errorsMap := map[string]string{
+			"ackID1": permanentInvalidAckErrString,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
@@ -691,11 +689,11 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("TransientErrorRetry", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
-		errorsMap := map[string]error{
-			"ackID1": transientInvalidAckError,
+		errorsMap := map[string]string{
+			"ackID1": transientInvalidAckErrString,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 0, 1)
@@ -703,11 +701,11 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("UnknownError", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
-		errorsMap := map[string]error{
-			"ackID1": errors.New("unknown_error"),
+		errorsMap := map[string]string{
+			"ackID1": "unknown_error",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 1, 0)
@@ -723,8 +721,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("PermissionDenied", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		st := status.New(codes.PermissionDenied, "permission denied")
 		completed, retry := processResults(st, ackReqMap, nil)
@@ -740,8 +738,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("FailedPrecondition", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		st := status.New(codes.FailedPrecondition, "failed_precondition")
 		completed, retry := processResults(st, ackReqMap, nil)
@@ -757,8 +755,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 
 	t.Run("OtherErrorStatus", func(t *testing.T) {
 		r := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r, "ackID1"),
 		}
 		st := status.New(codes.OutOfRange, "out of range")
 		completed, retry := processResults(st, ackReqMap, nil)
@@ -776,14 +774,14 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		r1 := ipubsub.NewAckResult()
 		r2 := ipubsub.NewAckResult()
 		r3 := ipubsub.NewAckResult()
-		ackReqMap := map[string]*AckResult{
-			"ackID1": r1,
-			"ackID2": r2,
-			"ackID3": r3,
+		ackReqMap := map[string]*ackResultWithID{
+			"ackID1": newAckResultWithID(r1, "ackID1"),
+			"ackID2": newAckResultWithID(r2, "ackID2"),
+			"ackID3": newAckResultWithID(r3, "ackID3"),
 		}
-		errorsMap := map[string]error{
-			"ackID1": permanentInvalidAckError,
-			"ackID2": transientInvalidAckError,
+		errorsMap := map[string]string{
+			"ackID1": permanentInvalidAckErrString,
+			"ackID2": transientInvalidAckErrString,
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 2, 1)
@@ -817,8 +815,8 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 	t.Run("RetriableErrorStatusReturnsRequestForRetrying", func(t *testing.T) {
 		for c := range exactlyOnceDeliveryTemporaryRetryErrors {
 			r := ipubsub.NewAckResult()
-			ackReqMap := map[string]*AckResult{
-				"ackID1": r,
+			ackReqMap := map[string]*ackResultWithID{
+				"ackID1": newAckResultWithID(r, "ackID1"),
 			}
 			st := status.New(c, "")
 			completed, retry := processResults(st, ackReqMap, nil)

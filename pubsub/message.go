@@ -184,6 +184,6 @@ func (ah *psAckHandler) done(ack bool) {
 // newSuccessAckResult returns an AckResult that resolves to success immediately.
 func newSuccessAckResult() *AckResult {
 	ar := ipubsub.NewAckResult()
-	ipubsub.SetAckResult(ar, ipubsub.AckResponseSuccess, nil)
+	ipubsub.SetAckResult(ar, AcknowledgeStatusSuccess, nil)
 	return ar
 }
