@@ -24,7 +24,6 @@ import (
 	"unicode/utf8"
 )
 
-
 // A Writer writes a Cloud Storage object.
 type Writer struct {
 	// ObjectAttrs are optional attributes to set on the object. Any attributes
@@ -109,7 +108,6 @@ type Writer struct {
 	mu  sync.Mutex
 	err error
 }
-
 
 // Write appends to w. It implements the io.Writer interface.
 //
