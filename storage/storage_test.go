@@ -922,7 +922,7 @@ func TestCondition(t *testing.T) {
 
 	// Test an error, too:
 	err = obj.Generation(1234).NewWriter(ctx).Close()
-	if err == nil || !strings.Contains(err.Error(), "NewWriter: generation not supported") {
+	if err == nil || !strings.Contains(err.Error(), "storage: generation not supported") {
 		t.Errorf("want error about unsupported generation; got %v", err)
 	}
 }
