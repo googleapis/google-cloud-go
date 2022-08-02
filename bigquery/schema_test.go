@@ -325,7 +325,7 @@ func TestSchemaConversion(t *testing.T) {
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
 					{
-						Name:                   "default_foo",
+						Name:                   "foo",
 						Type:                   "STRING",
 						DefaultValueExpression: "I_LOVE_FOO",
 					},
