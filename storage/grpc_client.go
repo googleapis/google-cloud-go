@@ -45,6 +45,12 @@ const (
 	// This is only used for the gRPC client.
 	defaultConnPoolSize = 4
 
+	// maxPerMessageWriteSize is the maximum amount of content that can be sent
+	// per WriteObjectRequest message. A buffer reaching this amount will
+	// precipitate a flush of the buffer. It is only used by the gRPC Writer
+	// implementation.
+	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
+
 	// globalProjectAlias is the project ID alias used for global buckets.
 	//
 	// This is only used for the gRPC API.
@@ -1647,8 +1653,8 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 	spec := &storagepb.WriteObjectSpec{
 		Resource: attrs.toProtoObject(w.bucket),
 	}
-	// WriteObject doesn't support the generation condition, so use -1.
-	if err := applyCondsProto("WriteObject", -1, w.conds, spec); err != nil {
+	// WriteObject doesn't support the generation condition, so use default.
+	if err := applyCondsProto("WriteObject", defaultGen, w.conds, spec); err != nil {
 		return nil, err
 	}
 	return spec, nil

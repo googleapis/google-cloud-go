@@ -1018,7 +1018,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			return
 		}
 		var resp *raw.Object
-		err := applyConds("NewWriter", params.attrs.Generation, params.conds, call)
+		err := applyConds("NewWriter", defaultGen, params.conds, call)
 		if err == nil {
 			if s.userProject != "" {
 				call.UserProject(s.userProject)
