@@ -288,6 +288,7 @@ type newRangeReaderParams struct {
 	length        int64
 	object        string
 	offset        int64
+	readCompressed bool  // Use accept-encoding: gzip. Only works for HTTP currently.
 }
 
 type composeObjectRequest struct {

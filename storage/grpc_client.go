@@ -824,13 +824,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if params.conds != nil {
-		if err := params.conds.validate("grpcStorageClient.NewRangeReader"); err != nil {
-			return nil, err
-		}
-	}
-
 	s := callSettings(c.settings, opts...)
+
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
 
 	// A negative length means "read to the end of the object", but the
 	// read_limit field it corresponds to uses zero to mean the same thing. Thus
