@@ -774,14 +774,6 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 	s := callSettings(c.settings, opts...)
 
-	if params.offset < 0 && params.length >= 0 {
-		return nil, fmt.Errorf("storage: invalid offset %d < 0 requires negative length", params.offset)
-	}
-	if params.conds != nil {
-		if err := params.conds.validate("NewRangeReader"); err != nil {
-			return nil, err
-		}
-	}
 	u := &url.URL{
 		Scheme: c.scheme,
 		Host:   c.readHost,
@@ -799,10 +791,9 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	if s.userProject != "" {
 		req.Header.Set("X-Goog-User-Project", s.userProject)
 	}
-	// TODO(noahdietz): add option for readCompressed.
-	// if o.readCompressed {
-	// 	req.Header.Set("Accept-Encoding", "gzip")
-	// }
+	if params.readCompressed {
+		req.Header.Set("Accept-Encoding", "gzip")
+	}
 	if err := setEncryptionHeaders(req.Header, params.encryptionKey, false); err != nil {
 		return nil, err
 	}

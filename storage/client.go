@@ -281,13 +281,14 @@ type openWriterParams struct {
 }
 
 type newRangeReaderParams struct {
-	bucket        string
-	conds         *Conditions
-	encryptionKey []byte
-	gen           int64
-	length        int64
-	object        string
-	offset        int64
+	bucket         string
+	conds          *Conditions
+	encryptionKey  []byte
+	gen            int64
+	length         int64
+	object         string
+	offset         int64
+	readCompressed bool // Use accept-encoding: gzip. Only works for HTTP currently.
 }
 
 type composeObjectRequest struct {
