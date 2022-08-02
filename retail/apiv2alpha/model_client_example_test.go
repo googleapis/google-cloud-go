@@ -25,9 +25,9 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
-func ExampleNewServingConfigClient() {
+func ExampleNewModelClient() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,19 +37,24 @@ func ExampleNewServingConfigClient() {
 	_ = c
 }
 
-func ExampleServingConfigClient_CreateServingConfig() {
+func ExampleModelClient_CreateModel() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &retailpb.CreateServingConfigRequest{
+	req := &retailpb.CreateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CreateServingConfigRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CreateModelRequest.
 	}
-	resp, err := c.CreateServingConfig(ctx, req)
+	op, err := c.CreateModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -57,37 +62,19 @@ func ExampleServingConfigClient_CreateServingConfig() {
 	_ = resp
 }
 
-func ExampleServingConfigClient_DeleteServingConfig() {
+func ExampleModelClient_PauseModel() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &retailpb.DeleteServingConfigRequest{
+	req := &retailpb.PauseModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#DeleteServingConfigRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#PauseModelRequest.
 	}
-	err = c.DeleteServingConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleServingConfigClient_UpdateServingConfig() {
-	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &retailpb.UpdateServingConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#UpdateServingConfigRequest.
-	}
-	resp, err := c.UpdateServingConfig(ctx, req)
+	resp, err := c.PauseModel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -95,19 +82,19 @@ func ExampleServingConfigClient_UpdateServingConfig() {
 	_ = resp
 }
 
-func ExampleServingConfigClient_GetServingConfig() {
+func ExampleModelClient_ResumeModel() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &retailpb.GetServingConfigRequest{
+	req := &retailpb.ResumeModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#GetServingConfigRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ResumeModelRequest.
 	}
-	resp, err := c.GetServingConfig(ctx, req)
+	resp, err := c.ResumeModel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -115,19 +102,37 @@ func ExampleServingConfigClient_GetServingConfig() {
 	_ = resp
 }
 
-func ExampleServingConfigClient_ListServingConfigs() {
+func ExampleModelClient_DeleteModel() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &retailpb.ListServingConfigsRequest{
+	req := &retailpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ListServingConfigsRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#DeleteModelRequest.
 	}
-	it := c.ListServingConfigs(ctx, req)
+	err = c.DeleteModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleModelClient_ListModels() {
+	ctx := context.Background()
+	c, err := retail.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.ListModelsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ListModelsRequest.
+	}
+	it := c.ListModels(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -141,19 +146,19 @@ func ExampleServingConfigClient_ListServingConfigs() {
 	}
 }
 
-func ExampleServingConfigClient_AddControl() {
+func ExampleModelClient_UpdateModel() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &retailpb.AddControlRequest{
+	req := &retailpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#AddControlRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#UpdateModelRequest.
 	}
-	resp, err := c.AddControl(ctx, req)
+	resp, err := c.UpdateModel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -161,19 +166,24 @@ func ExampleServingConfigClient_AddControl() {
 	_ = resp
 }
 
-func ExampleServingConfigClient_RemoveControl() {
+func ExampleModelClient_TuneModel() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &retailpb.RemoveControlRequest{
+	req := &retailpb.TuneModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#RemoveControlRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#TuneModelRequest.
 	}
-	resp, err := c.RemoveControl(ctx, req)
+	op, err := c.TuneModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -181,9 +191,9 @@ func ExampleServingConfigClient_RemoveControl() {
 	_ = resp
 }
 
-func ExampleServingConfigClient_GetOperation() {
+func ExampleModelClient_GetOperation() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -201,9 +211,9 @@ func ExampleServingConfigClient_GetOperation() {
 	_ = resp
 }
 
-func ExampleServingConfigClient_ListOperations() {
+func ExampleModelClient_ListOperations() {
 	ctx := context.Background()
-	c, err := retail.NewServingConfigClient(ctx)
+	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
