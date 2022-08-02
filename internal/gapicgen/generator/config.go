@@ -1113,7 +1113,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "recommendationengine_grpc_service_config.json",
 		ApiServiceConfigPath:  "recommendationengine_v1beta1.yaml",
 		ReleaseLevel:          "beta",
-		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkehub/v1beta1",
@@ -1631,6 +1630,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "artifactregistry_grpc_service_config.json",
 		ApiServiceConfigPath:  "artifactregistry_v1.yaml",
 		// GA after 2022/08/22
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/apigeeregistry/v1",
+		Pkg:                   "apigeeregistry",
+		ImportPath:            "cloud.google.com/go/apigeeregistry/apiv1",
+		GRPCServiceConfigPath: "apigeeregistry_grpc_service_config.json",
+		ApiServiceConfigPath:  "apigeeregistry_v1.yaml",
+		// GA after 2022/09/02
 		ReleaseLevel: "beta",
 	},
 

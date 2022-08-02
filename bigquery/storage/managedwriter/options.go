@@ -45,7 +45,7 @@ func WithStreamName(name string) WriterOption {
 // WithDestinationTable specifies the destination table to which a created
 // stream will append rows.  Format of the table:
 //
-//   projects/{projectid}/datasets/{dataset}/tables/{table}
+//	projects/{projectid}/datasets/{dataset}/tables/{table}
 func WithDestinationTable(destTable string) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.destinationTable = destTable
