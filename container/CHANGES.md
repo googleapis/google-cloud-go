@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.3.0...container/v1.3.1) (2022-08-02)
+
+
+### Documentation
+
+* **container:** BinaryAuthorization.enabled field is marked as deprecated ([338d9c3](https://github.com/googleapis/google-cloud-go/commit/338d9c38b9c7f1b5e75493a2e3437c50785c561c))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.2.0...container/v1.3.0) (2022-07-12)
 
 
