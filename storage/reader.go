@@ -105,13 +105,13 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	opts := makeStorageOpts(true, o.retry, o.userProject)
 
 	params := &newRangeReaderParams{
-		bucket:        o.bucket,
-		object:        o.object,
-		gen:           o.gen,
-		offset:        offset,
-		length:        length,
-		encryptionKey: o.encryptionKey,
-		conds:         o.conds,
+		bucket:         o.bucket,
+		object:         o.object,
+		gen:            o.gen,
+		offset:         offset,
+		length:         length,
+		encryptionKey:  o.encryptionKey,
+		conds:          o.conds,
 		readCompressed: o.readCompressed,
 	}
 
