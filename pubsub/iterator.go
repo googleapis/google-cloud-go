@@ -59,8 +59,9 @@ var (
 
 // ackResultWithID stores an ackResult with its corresponding ackID
 type ackResultWithID struct {
-	r     *AckResult
-	ackID string
+	r          *AckResult
+	ackID      string
+	retryCount int
 }
 
 func newAckResultWithID(r *AckResult, ackID string) *ackResultWithID {
@@ -491,7 +492,10 @@ func (it *messageIterator) sendAck(m map[string]*ackResultWithID) {
 				resultsByAckID[ackID] = m[ackID]
 			}
 			// TODO(hongalex): retry the ackIDs with transient retriable errors.
-			_, _ = processResults(st, resultsByAckID, md)
+			_, toRetry := processResults(st, resultsByAckID, md)
+			go func() {
+				it.retryAcks(toRetry)
+			}()
 		}
 	}
 }
@@ -545,22 +549,57 @@ func (it *messageIterator) sendModAck(m map[string]*ackResultWithID, deadline ti
 	}
 }
 
-func (it *messageIterator) sendAckIDRPC(ackResultsByAckID map[string]*AckResult, maxSize int, call func([]string) error) bool {
-	ackIDs := make([]string, 0, len(ackResultsByAckID))
-	for k := range ackResultsByAckID {
-		ackIDs = append(ackIDs, k)
+func (it *messageIterator) retryAcks(m map[string]*ackResultWithID) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	bo := gax.Backoff{
+		Initial:    1 * time.Second,
+		Max:        64 * time.Second,
+		Multiplier: 2,
 	}
-	var toSend []string
-	for len(ackIDs) > 0 {
-		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
-		if err := call(toSend); err != nil {
-			// The underlying client handles retries, so any error is fatal to the
-			// iterator.
-			it.fail(err)
-			return false
+
+	for {
+		// If context is done, complete all remaining AckResult with DeadlineExceeded
+		if ctx.Err() != nil {
+			for _, res := range m {
+				ipubsub.SetAckResult(res.r, AcknowledgeStatusOther, ctx.Err())
+			}
+			return
+		}
+		ackIDs := make([]string, 0, len(m))
+		for k := range m {
+			ackIDs = append(ackIDs, k)
+		}
+		var toSend []string
+		for len(ackIDs) > 0 {
+			toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
+
+			cctx2, cancel2 := context.WithTimeout(ctx, 60*time.Second)
+			defer cancel2()
+			err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
+				Subscription: it.subName,
+				AckIds:       toSend,
+			})
+
+			var md map[string]string
+			var st *status.Status
+			apiErr, ok := apierror.FromError(err)
+			if ok {
+				md = apiErr.Metadata()
+				st = apiErr.GRPCStatus()
+			}
+			resultsByAckID := make(map[string]*ackResultWithID)
+			for _, ackID := range toSend {
+				resultsByAckID[ackID] = m[ackID]
+			}
+
+			_, toRetry := processResults(st, resultsByAckID, md)
+			if len(toRetry) != 0 {
+				time.Sleep(bo.Pause())
+			}
 		}
 	}
-	return true
 }
 
 // Send a message to the stream to keep it open. The stream will close if there's no
