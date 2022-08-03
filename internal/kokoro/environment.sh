@@ -36,7 +36,7 @@ cd "env-tests-logging/"
 export ENV_TEST_PY_VERSION=3.7
 echo "using python version: $ENV_TEST_PY_VERSION"
 
-# find the commit for git tag golang-envtest-pin
+# run tests from git tag golang-envtest-pin when available
 TAG_ID="golang-envtest-pin"
 git fetch --tags
 if [ $(git tag -l "$TAG_ID")  ]; then
