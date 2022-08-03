@@ -338,7 +338,7 @@ func (c *InstanceAdminClient) CreateInstanceOperation(name string) *CreateInstan
 // Instance, if successful.
 //
 // Authorization requires spanner.instances.update permission on
-// resource [name][google.spanner.admin.instance.v1.Instance.name (at http://google.spanner.admin.instance.v1.Instance.name)].
+// the resource [name][google.spanner.admin.instance.v1.Instance.name (at http://google.spanner.admin.instance.v1.Instance.name)].
 func (c *InstanceAdminClient) UpdateInstance(ctx context.Context, req *instancepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	return c.internalClient.UpdateInstance(ctx, req, opts...)
 }

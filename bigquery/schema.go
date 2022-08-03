@@ -244,6 +244,8 @@ const (
 	BigNumericFieldType FieldType = "BIGNUMERIC"
 	// IntervalFieldType is a representation of a duration or an amount of time.
 	IntervalFieldType FieldType = "INTERVAL"
+	// JSONFieldType is a representation of a json object.
+	JSONFieldType FieldType = "JSON"
 )
 
 var (
@@ -263,6 +265,7 @@ var (
 		GeographyFieldType:  true,
 		BigNumericFieldType: true,
 		IntervalFieldType:   true,
+		JSONFieldType:       true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{

@@ -74,19 +74,19 @@ The callback is invoked concurrently by multiple goroutines, maximizing
 throughput. To terminate a call to Receive, cancel its context.
 
 Once client code has processed the message, it must call Message.Ack or
-Message.Nack, otherwise the message will eventually be redelivered. Ack/Nack
+Message.Nack; otherwise the message will eventually be redelivered. Ack/Nack
 MUST be called within the Receive handler function, and not from a goroutine.
 Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
 not be respected, and messages can get orphaned when cancelling Receive.
 
 If the client cannot or doesn't want to process the message, it can call Message.Nack
 to speed redelivery. For more information and configuration options, see
-"Deadlines" below.
+"Ack Deadlines" below.
 
-Note: It is possible for Messages to be redelivered, even if Message.Ack has
+Note: It is possible for Messages to be redelivered even if Message.Ack has
 been called. Client code must be robust to multiple deliveries of messages.
 
-Note: This uses pubsub's streaming pull feature. This feature properties that
+Note: This uses pubsub's streaming pull feature. This feature has properties that
 may be surprising. Please take a look at https://cloud.google.com/pubsub/docs/pull#streamingpull
 for more details on how streaming pull behaves compared to the synchronous
 pull method.
@@ -95,7 +95,7 @@ pull method.
 Streams Management
 
 Streams used for streaming pull are managed by the gRPC connection pool setting.
-By default, the number of connections in the pool is max(4,GOMAXPROCS/NumCPU).
+By default, the number of connections in the pool is min(4,GOMAXPROCS).
 
 If you have 4 or more CPU cores, the default setting allows 400 streams which is still a good default for most cases.
 If you want to have more open streams (such as for low CPU core machines), you should pass in the grpc option as described below:
@@ -106,40 +106,44 @@ If you want to have more open streams (such as for low CPU core machines), you s
  client, err := pubsub.NewClient(ctx, projID, opts...)
 
 
-Deadlines
+Ack Deadlines
 
 The default pubsub deadlines are suitable for most use cases, but may be
 overridden. This section describes the tradeoffs that should be considered
 when overriding the defaults.
 
 Behind the scenes, each message returned by the Pub/Sub server has an
-associated lease, known as an "ACK deadline". Unless a message is
-acknowledged within the ACK deadline, or the client requests that
-the ACK deadline be extended, the message will become eligible for redelivery.
+associated lease, known as an "ack deadline". Unless a message is
+acknowledged within the ack deadline, or the client requests that
+the ack deadline be extended, the message will become eligible for redelivery.
 
 As a convenience, the pubsub client will automatically extend deadlines until
 either:
- * Message.Ack or Message.Nack is called, or
- * The "MaxExtension" period elapses from the time the message is fetched from the server.
+  - Message.Ack or Message.Nack is called, or
+  - The "MaxExtension" duration elapses from the time the message is fetched from
+    the server. This defaults to 60m.
 
-ACK deadlines are extended periodically by the client. The initial ACK
-deadline given to messages is 10s. The period between extensions, as well as the
-length of the extension, automatically adjust depending on the time it takes to ack
-messages, up to 10m. This has the effect that subscribers that process messages
-quickly have their message ack deadlines extended for a short amount, whereas
+Ack deadlines are extended periodically by the client. The initial ack
+deadline given to messages is based on the subscription's AckDeadline property,
+which defaults to 10s. The period between extensions, as well as the
+length of the extension, automatically adjusts based on the time it takes the
+subscriber application to ack messages (based on the 99th percentile of ack latency).
+By default, this extension period is capped at 10m, but this limit can be configured
+by the "MaxExtensionPeriod" setting. This has the effect that subscribers that process
+messages quickly have their message ack deadlines extended for a short amount, whereas
 subscribers that process message slowly have their message ack deadlines extended
 for a large amount. The net effect is fewer RPCs sent from the client library.
 
 For example, consider a subscriber that takes 3 minutes to process each message.
-Since the library has already recorded several 3 minute "time to ack"s in a
+Since the library has already recorded several 3-minute "ack latencies"s in a
 percentile distribution, future message extensions are sent with a value of 3
 minutes, every 3 minutes. Suppose the application crashes 5 seconds after the
 library sends such an extension: the Pub/Sub server would wait the remaining
 2m55s before re-sending the messages out to other subscribers.
 
-Please note that the client library does not use the subscription's AckDeadline
-by default. To enforce the subscription AckDeadline, set MaxExtension to the
-subscription's AckDeadline:
+Please note that by default, the client library does not use the subscription's
+AckDeadline for the MaxExtension value. To enforce the subscription's AckDeadline,
+set MaxExtension to the subscription's AckDeadline:
 
 	cfg, err := sub.Config(ctx)
 	if err != nil {

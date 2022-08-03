@@ -1,5 +1,32 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.12.0...dialogflow/v1.12.1) (2022-08-02)
+
+
+### Documentation
+
+* **dialogflow:** added an explicit note that DetectIntentRequest's text input is limited by 256 characters ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.11.0...dialogflow/v1.12.0) (2022-07-12)
+
+
+### Features
+
+* **dialogflow:** deprecated the filter field and add resource_definition docs: add more meaningful comments ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
+
+
+### Documentation
+
+* **dialogflow/cx:** clarify descriptions of the AdvancedSettings and WebhookRequest data types ([1732e43](https://github.com/googleapis/google-cloud-go/commit/1732e4334c84019d93775d861be5c0008e3f5245))
+* **dialogflow/cx:** improve comments for protos ([963efe2](https://github.com/googleapis/google-cloud-go/commit/963efe22cf67bc04fed09b5fa8f9cb20b9edf1a3))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.10.0...dialogflow/v1.11.0) (2022-06-29)
+
+
+### Features
+
+* **dialogflow:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.9.0...dialogflow/v1.10.0) (2022-06-16)
 
 

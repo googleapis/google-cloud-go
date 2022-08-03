@@ -1,5 +1,20 @@
 # Changes
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.8.0...analytics/v0.8.1) (2022-08-02)
+
+
+### Bug Fixes
+
+* **analytics/admin:** Add py_test targets ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.7.0...analytics/v0.8.0) (2022-06-29)
+
+
+### Features
+
+* **analytics/admin:** Enable REST transport for most of Java and Go clients ([f01bf32](https://github.com/googleapis/google-cloud-go/commit/f01bf32d7f4aa2c59db6bfdcc574ce2470bc61bb))
+* **analytics:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.6.1...analytics/v0.7.0) (2022-06-16)
 
 
