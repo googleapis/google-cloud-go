@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.36.0...bigquery/v1.37.0) (2022-08-04)
+
+
+### Features
+
+* **bigquery/connection:** Add service_account_id output field to CloudSQL properties ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **bigquery/storage/managedwriter:** refactor AppendResponse ([#6402](https://github.com/googleapis/google-cloud-go/issues/6402)) ([c07bca2](https://github.com/googleapis/google-cloud-go/commit/c07bca2d65ec9903ba0c592da11440cebe8b7d9e))
+* **bigquery:** support JSON as a data type ([#5986](https://github.com/googleapis/google-cloud-go/issues/5986)) ([835fe4f](https://github.com/googleapis/google-cloud-go/commit/835fe4fe59f4a3c64c5762a530228d5369618897))
+
+
+### Bug Fixes
+
+* **bigquery:** include user_email field when requesting job information ([#6256](https://github.com/googleapis/google-cloud-go/issues/6256)) ([da42b4e](https://github.com/googleapis/google-cloud-go/commit/da42b4e05faa067b5afa0a9a479d1db72296948e))
+
+
+### Documentation
+
+* **bigquery/storage:** clarify size limitations for AppendRowsRequest chore: add preferred_min_stream_count to CreateReadSessionRequest chore: add write_stream to AppendRowsResponse ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.35.0...bigquery/v1.36.0) (2022-07-18)
 
 
