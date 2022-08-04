@@ -34,6 +34,17 @@ cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
 cd "env-tests-logging/"
 export ENV_TEST_PY_VERSION=3.7
+echo "using python version: $ENV_TEST_PY_VERSION"
+
+# run tests from git tag golang-envtest-pin when available
+TAG_ID="golang-envtest-pin"
+git fetch --tags
+if [ $(git tag -l "$TAG_ID")  ]; then
+  git -c advice.detachedHead=false checkout $TAG_ID
+else
+  echo "WARNING: tag $TAG_ID not found in repo"
+fi
+echo "running env-tests-logging at commit: $(git rev-parse HEAD)"
 
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
