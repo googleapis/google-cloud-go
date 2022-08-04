@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -450,9 +449,15 @@ func testErrorBehaviors(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	if err == nil {
 		t.Errorf("expected error, got offset %d", off)
 	}
-	se := StorageErrorFromError(err)
-	if se == nil {
-		t.Errorf("expected StorageError from response, got nil")
+
+	apiErr, ok := apierror.FromError(err)
+	if !ok {
+		t.Errorf("expected apierror, got %T: %v", err, err)
+	}
+	se := &storagepb.StorageError{}
+	e := apiErr.Details().ExtractProtoMessage(se)
+	if e != nil {
+		t.Errorf("expected storage error, but extraction failed: %v", e)
 	}
 	wantCode := storagepb.StorageError_OFFSET_OUT_OF_RANGE
 	if se.GetCode() != wantCode {
@@ -480,9 +485,14 @@ func testErrorBehaviors(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	if err == nil {
 		t.Errorf("expected error, got offset %d", off)
 	}
-	se = StorageErrorFromError(err)
-	if se == nil {
-		t.Errorf("expected StorageError from response, got nil")
+	apiErr, ok = apierror.FromError(err)
+	if !ok {
+		t.Errorf("expected apierror, got %T: %v", err, err)
+	}
+	se = &storagepb.StorageError{}
+	e = apiErr.Details().ExtractProtoMessage(se)
+	if e != nil {
+		t.Errorf("expected storage error, but extraction failed: %v", e)
 	}
 	wantCode = storagepb.StorageError_OFFSET_ALREADY_EXISTS
 	if se.GetCode() != wantCode {
@@ -501,9 +511,14 @@ func testErrorBehaviors(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	if err == nil {
 		t.Errorf("expected error, got offset %d", off)
 	}
-	se = StorageErrorFromError(err)
-	if se == nil {
-		t.Errorf("expected StorageError from response, got nil")
+	apiErr, ok = apierror.FromError(err)
+	if !ok {
+		t.Errorf("expected apierror, got %T: %v", err, err)
+	}
+	se = &storagepb.StorageError{}
+	e = apiErr.Details().ExtractProtoMessage(se)
+	if e != nil {
+		t.Errorf("expected storage error, but extraction failed: %v", e)
 	}
 	wantCode = storagepb.StorageError_STREAM_FINALIZED
 	if se.GetCode() != wantCode {
@@ -626,17 +641,9 @@ func testLargeInsert(ctx context.Context, t *testing.T, mwClient *Client, bqClie
 		if !ok {
 			t.Errorf("GetResult error was not an instance of ApiError")
 		}
-		if status := apiErr.GRPCStatus(); status.Code() != codes.InvalidArgument {
+		status := apiErr.GRPCStatus()
+		if status.Code() != codes.InvalidArgument {
 			t.Errorf("expected InvalidArgument status, got %v", status)
-		}
-
-		details := apiErr.Details()
-		if details.DebugInfo == nil {
-			t.Errorf("expected DebugInfo to be populated, was nil")
-		}
-		wantSubstring := "Message size exceed the limitation of byte based flow control."
-		if detail := details.DebugInfo.GetDetail(); !strings.Contains(detail, wantSubstring) {
-			t.Errorf("detail missing desired substring: %s", detail)
 		}
 	}
 	// send a subsequent append as verification we can proceed.

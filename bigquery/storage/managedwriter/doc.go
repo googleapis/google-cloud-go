@@ -179,25 +179,24 @@ enhanced set of errors when communicating about the results of API interactions.
 Specifically, the apierror package (https://pkg.go.dev/github.com/googleapis/gax-go/v2/apierror)
 provides convenience methods for extracting structured information about errors.
 
+Additionally, the BigQuery Storage API will augment applicable errors with additional
+service-specific details in the form of a StorageError message.  Please note that despite the
+name, this protocol buffer message does not implement Go's error interface.  By leveraging
+ExtractProtoMessage, which is provided as part of the apierror packed, you can retrieve
+service-specific details.
+
 	// By way of example, let's assume the response from an append call returns an error.
 	_, err := result.GetResult(ctx)
 	if err != nil {
 		if apiErr, ok := apierror.FromError(err); ok {
 			// We now have an instance of APIError, which directly exposes more specific
-			// details about multiple failure conditions.
-			log.Printf("result had status %v", apiErr.GRPCStatus())
+			// details about multiple failure conditions include transport-level errors.
+			storageErr := &storagepb.StorageError{}
+			if e := apiErr.Details().ExtractProtoMessage(storageErr); e != nil {
+				// storageErr now contains service-specific information about the error.
+				log.Printf("Received service-specific error code %s", storageErr.GetCode().String())
+			}
 		}
-	}
-
-Additionally, the service defines a specific StorageError type that has service-specific details
-about errors.  Please note that StorageError does not implement Go's error interface. The
-StorageErrorFromError() function can be used to extract a StorageError from an error returned
-by the service.
-
-	// Once again, let's assume the response from an append call returns an error.
-	_, err := result.GetResult(ctx)
-	if se = StorageErrorFromError(err); se != nil {
-		log.Printf("storage error code was %s, message was %s, se.GetCode().String(), se.GetErrorMessage())
 	}
 */
 package managedwriter

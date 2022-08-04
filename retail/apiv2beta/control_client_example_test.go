@@ -22,6 +22,7 @@ import (
 	retail "cloud.google.com/go/retail/apiv2beta"
 	"google.golang.org/api/iterator"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2beta"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewControlClient() {
@@ -127,6 +128,52 @@ func ExampleControlClient_ListControls() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#ListControlsRequest.
 	}
 	it := c.ListControls(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleControlClient_GetOperation() {
+	ctx := context.Background()
+	c, err := retail.NewControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleControlClient_ListOperations() {
+	ctx := context.Background()
+	c, err := retail.NewControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

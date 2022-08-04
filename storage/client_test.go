@@ -276,6 +276,51 @@ func TestGetObjectEmulated(t *testing.T) {
 	})
 }
 
+func TestRewriteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		src := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(src.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		req := &rewriteObjectRequest{
+			dstObject: destinationObject{
+				bucket: bucket,
+				name:   fmt.Sprintf("copy-of-%s", src.Name),
+				attrs:  &ObjectAttrs{},
+			},
+			srcObject: sourceObject{
+				bucket: bucket,
+				name:   src.Name,
+				gen:    defaultGen,
+			},
+		}
+		got, err := client.RewriteObject(context.Background(), req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !got.done {
+			t.Fatal("didn't finish writing!")
+		}
+		if want := int64(len(randomBytesToWrite)); got.written != want {
+			t.Errorf("Bytes written: got %d, want %d", got.written, want)
+		}
+	})
+}
+
 func TestUpdateObjectEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
@@ -525,28 +570,6 @@ func TestListBucketACLsEmulated(t *testing.T) {
 	})
 }
 
-func TestListDefaultObjectACLsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
-		attrs := &BucketAttrs{
-			Name:                       bucket,
-			PredefinedDefaultObjectACL: "publicRead",
-		}
-		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
-		}
-
-		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
-		if err != nil {
-			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
-		}
-		if want, got := len(acls), 2; want != got {
-			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
-		}
-	})
-}
-
 func TestUpdateBucketACLEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
@@ -569,16 +592,9 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 		}
 		entity := AllUsers
 		role := RoleReader
-		want := &ACLRule{Entity: entity, Role: role}
-		got, err := client.UpdateBucketACL(ctx, bucket, entity, role)
+		err = client.UpdateBucketACL(ctx, bucket, entity, role)
 		if err != nil {
 			t.Fatalf("client.UpdateBucketACL: %v", err)
-		}
-		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
-		}
-		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 		// Assert bucket now has three BucketACL entities, including existing ACLs.
 		if listAcls, err = client.ListBucketACLs(ctx, bucket); err != nil {
@@ -624,7 +640,7 @@ func TestDeleteBucketACLEmulated(t *testing.T) {
 	})
 }
 
-func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
+func TestDefaultObjectACLCRUDEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
 		attrs := &BucketAttrs{
@@ -635,7 +651,7 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
-		// Assert bucket has two DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
+		// Assert bucket has 2 DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
 		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
 		if err != nil {
 			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
@@ -643,22 +659,36 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 		if got, want := len(acls), 2; got != want {
 			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
 		}
-		// Delete one DefaultObjectACL with AllUsers entity.
-		if err := client.DeleteDefaultObjectACL(ctx, bucket, AllUsers); err != nil {
-			t.Fatalf("client.DeleteDefaultObjectACL: %v", err)
+		entity := AllAuthenticatedUsers
+		role := RoleOwner
+		err = client.UpdateDefaultObjectACL(ctx, bucket, entity, role)
+		if err != nil {
+			t.Fatalf("UpdateDefaultObjectCL: %v", err)
 		}
-		// Assert bucket has one DefaultObjectACL entity.
+		// Assert there are now 3 DefaultObjectACL entities, including existing DefaultObjectACLs.
 		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
 		if err != nil {
 			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
 		}
-		if got, want := len(acls), 1; got != want {
+		if got, want := len(acls), 3; got != want {
+			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
+		}
+		// Delete 1 DefaultObjectACL with AllUsers entity.
+		if err := client.DeleteDefaultObjectACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteDefaultObjectACL: %v", err)
+		}
+		// Assert bucket has 2 DefaultObjectACL entities.
+		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
 			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
 		}
 	})
 }
 
-func TestListObjectACLsEmulated(t *testing.T) {
+func TestObjectACLCRUDEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
@@ -666,26 +696,49 @@ func TestListObjectACLsEmulated(t *testing.T) {
 			Name: bucket,
 		})
 		if err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
+			t.Fatalf("CreateBucket: %v", err)
 		}
-		want := ObjectAttrs{
+		o := ObjectAttrs{
 			Bucket: bucket,
 			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
 		}
-		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
 		if _, err := w.Write(randomBytesToWrite); err != nil {
 			t.Fatalf("failed to populate test object: %v", err)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		acls, err := client.ListObjectACLs(ctx, bucket, want.Name)
-		if err != nil {
-			t.Fatalf("client.ListObjectACLs: %v", err)
-		}
+		var listAcls []ACLRule
 		// Assert there are 4 ObjectACL entities, including object owner and project owners/editors/viewers.
-		if got, want := len(acls), 4; want != got {
-			t.Errorf("ListObjectACLs: got %v, want %v items", acls, want)
+		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+			t.Fatalf("ListObjectACLs: %v", err)
+		}
+		if got, want := len(listAcls), 4; got != want {
+			t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
+		}
+		entity := AllUsers
+		role := RoleReader
+		err = client.UpdateObjectACL(ctx, bucket, o.Name, entity, role)
+		if err != nil {
+			t.Fatalf("UpdateObjectCL: %v", err)
+		}
+		// Assert there are now 5 ObjectACL entities, including existing ACLs.
+		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+			t.Fatalf("ListObjectACLs: %v", err)
+		}
+		if got, want := len(listAcls), 5; got != want {
+			t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
+		}
+		if err = client.DeleteObjectACL(ctx, bucket, o.Name, AllUsers); err != nil {
+			t.Fatalf("client.DeleteObjectACL: %v", err)
+		}
+		// Assert there are now 4 ObjectACL entities after deletion.
+		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+			t.Fatalf("ListObjectACLs: %v", err)
+		}
+		if got, want := len(listAcls), 4; got != want {
+			t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
 		}
 	})
 }
@@ -978,11 +1031,11 @@ func TestComposeEmulated(t *testing.T) {
 		dstName := fmt.Sprintf("%d-object3", prefix)
 		req := composeObjectRequest{
 			dstBucket: bucket,
-			dstObject: composeDstObject{
+			dstObject: destinationObject{
 				name:  dstName,
 				attrs: &ObjectAttrs{StorageClass: "COLDLINE"},
 			},
-			srcs: []composeSrcObject{
+			srcs: []sourceObject{
 				{name: srcNames[0]},
 				{name: srcNames[1]},
 			},
