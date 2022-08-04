@@ -29,6 +29,7 @@ import (
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -442,7 +443,40 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 	})
 }
 
+func TestBigQuerySubscription(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	bqTable := "some-project:some-dataset.some-table"
+	bqConfig := BigQueryConfig{
+		Table: bqTable,
+	}
+
+	subConfig := SubscriptionConfig{
+		Topic:          topic,
+		BigQueryConfig: bqConfig,
+	}
+	bqSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := bqSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := bqConfig
+	want.State = BigQueryConfigActive
+	if diff := testutil.Diff(cfg.BigQueryConfig, want); diff != "" {
+		t.Fatalf("CreateBQSubscription mismatch: \n%s", diff)
+	}
+}
+
 func TestExactlyOnceDelivery_Success(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	client, srv := newFake(t)
 	defer client.Close()
@@ -482,12 +516,13 @@ func TestExactlyOnceDelivery_Success(t *testing.T) {
 }
 
 func TestExactlyOnceDelivery_ErrorPermissionDenied(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.PermissionDenied, "insufficient permission"))
 	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()))
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -527,34 +562,55 @@ func TestExactlyOnceDelivery_ErrorPermissionDenied(t *testing.T) {
 	}
 }
 
-func TestBigQuerySubscription(t *testing.T) {
+func TestExactlyOnceDelivery_DeadlineExceeded(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
-	client, srv := newFake(t)
+	// DeadlineExceeded
+	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.Internal, "internal error"))
+	client, err := NewClient(ctx, projName,
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer client.Close()
 	defer srv.Close()
 
 	topic := mustCreateTopic(t, client, "t")
-	bqTable := "some-project:some-dataset.some-table"
-	bqConfig := BigQueryConfig{
-		Table: bqTable,
-	}
-
 	subConfig := SubscriptionConfig{
-		Topic:          topic,
-		BigQueryConfig: bqConfig,
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
 	}
-	bqSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("create sub err: %v", err)
 	}
-	cfg, err := bqSub.Config(ctx)
+	// U
+	s.ReceiveSettings = ReceiveSettings{
+		NumGoroutines: 1,
+		// Set this to the total retry deadline.
+		MinExtensionPeriod: 10 * time.Minute,
+	}
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusOther {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusOther)
+		}
+		wantErr := context.DeadlineExceeded
+		if !errors.Is(err, wantErr) {
+			t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
+		}
+		cancel()
+	})
 	if err != nil {
-		t.Fatal(err)
-	}
-
-	want := bqConfig
-	want.State = BigQueryConfigActive
-	if diff := testutil.Diff(cfg.BigQueryConfig, want); diff != "" {
-		t.Fatalf("CreateBQSubscription mismatch: \n%s", diff)
+		t.Fatalf("s.Receive err: %v", err)
 	}
 }

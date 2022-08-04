@@ -545,18 +545,16 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 }
 
 func (it *messageIterator) retryAcks(m map[string]*AckResult) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	bo := newExactlyOnceBackoff()
 	for {
-		// If context is done, complete all remaining AckResult with DeadlineExceeded
 		if ctx.Err() != nil {
 			for _, r := range m {
 				ipubsub.SetAckResult(r, AcknowledgeStatusOther, ctx.Err())
 			}
 			return
 		}
-
 		// Don't need to split map since this is the retry function and
 		// there is already a max of 2500 ackIDs here.
 		ackIDs := make([]string, 0, len(m))
@@ -582,27 +580,21 @@ func (it *messageIterator) retryAcks(m map[string]*AckResult) {
 func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int32) {
 	bo := newExactlyOnceBackoff()
 	retryCount := 0
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
-
 	for {
 		// If context is done, complete all remaining Nacks with DeadlineExceeded
 		// ModAcks are not exposed to the user so these don't need to be modified.
 		if ctx.Err() != nil {
-			if deadlineSec == 0 {
-				for _, r := range m {
-					ipubsub.SetAckResult(r, AcknowledgeStatusOther, ctx.Err())
-				}
+			for _, r := range m {
+				ipubsub.SetAckResult(r, AcknowledgeStatusOther, ctx.Err())
 			}
 			return
 		}
-
 		// Only retry modack requests up to 3 times.
 		if deadlineSec != 0 && retryCount > 3 {
 			return
 		}
-
 		// Don't need to split map since this is the retry function and
 		// there is already a max of 2500 ackIDs here.
 		ackIDs := make([]string, 0, len(m))
