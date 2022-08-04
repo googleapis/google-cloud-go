@@ -20,11 +20,6 @@
                 "CalculateStats"
               ]
             },
-            "CancelOperation": {
-              "methods": [
-                "CancelOperation"
-              ]
-            },
             "CreateAnalysis": {
               "methods": [
                 "CreateAnalysis"
@@ -105,11 +100,6 @@
                 "GetIssueModel"
               ]
             },
-            "GetOperation": {
-              "methods": [
-                "GetOperation"
-              ]
-            },
             "GetPhraseMatcher": {
               "methods": [
                 "GetPhraseMatcher"
@@ -143,11 +133,6 @@
             "ListIssues": {
               "methods": [
                 "ListIssues"
-              ]
-            },
-            "ListOperations": {
-              "methods": [
-                "ListOperations"
               ]
             },
             "ListPhraseMatchers": {
