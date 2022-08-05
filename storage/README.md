@@ -1,4 +1,4 @@
-## Cloud Storage [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/storage.svg)](https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest)
+## Cloud Storage [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/storage.svg)](https://pkg.go.dev/cloud.google.com/go/storage)
 
 - [About Cloud Storage](https://cloud.google.com/storage/)
 - [API documentation](https://cloud.google.com/storage/docs)
