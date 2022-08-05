@@ -15,9 +15,11 @@
 package managedwriter
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 
+	"cloud.google.com/go/bigquery/internal"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
@@ -64,13 +66,24 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
-			desc:    "WithTracePrefix",
+			desc:    "WithTraceID",
 			options: []WriterOption{WithTraceID("foo")},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				ms.streamSettings.TraceID = "foo"
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s %s", internal.Version, "foo")
+				return ms
+			}(),
+		},
+		{
+			desc:    "WithoutTraceID",
+			options: []WriterOption{},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings: defaultStreamSettings(),
+				}
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s", internal.Version)
 				return ms
 			}(),
 		},
@@ -122,7 +135,7 @@ func TestWriterOptions(t *testing.T) {
 				}
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
-				ms.streamSettings.TraceID = "id"
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s %s", internal.Version, "id")
 				return ms
 			}(),
 		},
