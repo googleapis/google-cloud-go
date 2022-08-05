@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -55,20 +56,10 @@ var (
 	maxDurationPerLeaseExtension            = 10 * time.Minute
 	minDurationPerLeaseExtension            = 10 * time.Second
 	minDurationPerLeaseExtensionExactlyOnce = 1 * time.Minute
+
+	// The total amount of time to retry acks/modacks with exactly once delivery enabled subscriptions.
+	exactlyOnceDeliveryRetryDeadline = 600 * time.Second
 )
-
-// ackResultWithID stores an ackResult with its corresponding ackID
-type ackResultWithID struct {
-	r     *AckResult
-	ackID string
-}
-
-func newAckResultWithID(r *AckResult, ackID string) *ackResultWithID {
-	return &ackResultWithID{
-		r:     r,
-		ackID: ackID,
-	}
-}
 
 type messageIterator struct {
 	ctx        context.Context
@@ -545,7 +536,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 }
 
 func (it *messageIterator) retryAcks(m map[string]*AckResult) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), exactlyOnceDeliveryRetryDeadline)
 	defer cancel()
 	bo := newExactlyOnceBackoff()
 	for {
@@ -580,19 +571,26 @@ func (it *messageIterator) retryAcks(m map[string]*AckResult) {
 func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int32) {
 	bo := newExactlyOnceBackoff()
 	retryCount := 0
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), exactlyOnceDeliveryRetryDeadline)
 	defer cancel()
 	for {
 		// If context is done, complete all remaining Nacks with DeadlineExceeded
 		// ModAcks are not exposed to the user so these don't need to be modified.
 		if ctx.Err() != nil {
-			for _, r := range m {
-				ipubsub.SetAckResult(r, AcknowledgeStatusOther, ctx.Err())
+			if deadlineSec == 0 {
+				for _, r := range m {
+					ipubsub.SetAckResult(r, AcknowledgeStatusOther, ctx.Err())
+				}
 			}
 			return
 		}
 		// Only retry modack requests up to 3 times.
 		if deadlineSec != 0 && retryCount > 3 {
+			ackIDs := make([]string, 0, len(m))
+			for k := range m {
+				ackIDs = append(ackIDs, k)
+			}
+			log.Printf("automatic lease modack retry failed for following IDs: %v", ackIDs)
 			return
 		}
 		// Don't need to split map since this is the retry function and

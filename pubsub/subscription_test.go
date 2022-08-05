@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -475,7 +476,7 @@ func TestBigQuerySubscription(t *testing.T) {
 	}
 }
 
-func TestExactlyOnceDelivery_Success(t *testing.T) {
+func TestExactlyOnceDelivery_AckSuccess(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	client, srv := newFake(t)
@@ -515,7 +516,7 @@ func TestExactlyOnceDelivery_Success(t *testing.T) {
 	}
 }
 
-func TestExactlyOnceDelivery_ErrorPermissionDenied(t *testing.T) {
+func TestExactlyOnceDelivery_AckFailureErrorPermissionDenied(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.PermissionDenied, "insufficient permission"))
@@ -562,10 +563,9 @@ func TestExactlyOnceDelivery_ErrorPermissionDenied(t *testing.T) {
 	}
 }
 
-func TestExactlyOnceDelivery_DeadlineExceeded(t *testing.T) {
+func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
-	// DeadlineExceeded
 	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
@@ -586,18 +586,20 @@ func TestExactlyOnceDelivery_DeadlineExceeded(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create sub err: %v", err)
 	}
-	// U
-	s.ReceiveSettings = ReceiveSettings{
-		NumGoroutines: 1,
-		// Set this to the total retry deadline.
-		MinExtensionPeriod: 10 * time.Minute,
-	}
 	r := topic.Publish(ctx, &Message{
 		Data: []byte("exactly-once-message"),
 	})
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
+
+	s.ReceiveSettings = ReceiveSettings{
+		NumGoroutines: 1,
+		// This needs to be greater than total deadline otherwise the message will be redelivered.
+		MinExtensionPeriod: 2 * time.Minute,
+	}
+	// Override the default timeout here so this test doesn't take 10 minutes.
+	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
@@ -609,6 +611,106 @@ func TestExactlyOnceDelivery_DeadlineExceeded(t *testing.T) {
 			t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
 		}
 		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
+
+func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	s.ReceiveSettings = ReceiveSettings{
+		NumGoroutines: 1,
+	}
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.NackWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusSuccess)
+		}
+		if err != nil {
+			t.Errorf("AckResult error got %v", err)
+		}
+		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
+
+func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	srv := pstest.NewServer(pstest.WithErrorInjection("ModifyAckDeadline", codes.Internal, "internal error"))
+	client, err := NewClient(ctx, projName,
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	s.ReceiveSettings = ReceiveSettings{
+		NumGoroutines: 1,
+		// This needs to be greater than total deadline otherwise the message will be redelivered.
+		MinExtensionPeriod: 2 * time.Minute,
+		MaxExtensionPeriod: 2 * time.Minute,
+	}
+	// Override the default timeout here so this test doesn't take 10 minutes.
+	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	var once sync.Once
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		once.Do(func() {
+			ar := msg.NackWithResult()
+			s, err := ar.Get(ctx)
+			if s != AcknowledgeStatusOther {
+				t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusOther)
+			}
+			wantErr := context.DeadlineExceeded
+			if !errors.Is(err, wantErr) {
+				t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
+			}
+			cancel()
+		})
 	})
 	if err != nil {
 		t.Fatalf("s.Receive err: %v", err)
