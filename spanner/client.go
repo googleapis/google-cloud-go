@@ -25,8 +25,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	vkit "cloud.google.com/go/spanner/apiv1"
-	"cloud.google.com/go/spanner/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -34,6 +32,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
+	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
 )
 
 const (
@@ -81,6 +82,9 @@ type Client struct {
 	idleSessions *sessionPool
 	logger       *log.Logger
 	qo           QueryOptions
+	ro           ReadOptions
+	ao           []ApplyOption
+	txo          TransactionOptions
 	ct           *commonTags
 }
 
@@ -111,6 +115,15 @@ type ClientConfig struct {
 
 	// QueryOptions is the configuration for executing a sql query.
 	QueryOptions QueryOptions
+
+	// ReadOptions is the configuration for reading rows from a database
+	ReadOptions ReadOptions
+
+	// ApplyOptions is the configuration for applying
+	ApplyOptions []ApplyOption
+
+	// TransactionOptions is the configuration for a transaction.
+	TransactionOptions TransactionOptions
 
 	// CallOptions is the configuration for providing custom retry settings that
 	// override the default values.
@@ -206,6 +219,9 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		idleSessions: sp,
 		logger:       config.logger,
 		qo:           getQueryOptions(config.QueryOptions),
+		ro:           config.ReadOptions,
+		ao:           config.ApplyOptions,
+		txo:          config.TransactionOptions,
 		ct:           getCommonTags(sc),
 	}
 	return c, nil
@@ -268,6 +284,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.txReadOnly.replaceSessionFunc = func(ctx context.Context) error {
 		if t.sh == nil {
 			return spannerErrorf(codes.InvalidArgument, "missing session handle on transaction")
@@ -304,6 +321,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.ct = c.ct
 	return t
 }
@@ -373,6 +391,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.ct = c.ct
 	return t, nil
 }
@@ -401,6 +420,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.ct = c.ct
 	return t
 }
@@ -486,7 +506,8 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
-		t.txOpts = options
+		t.txReadOnly.ro = c.ro
+		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
@@ -550,6 +571,11 @@ func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
+
+	for _, opt := range c.ao {
+		opt(ao)
+	}
+
 	for _, opt := range opts {
 		opt(ao)
 	}
