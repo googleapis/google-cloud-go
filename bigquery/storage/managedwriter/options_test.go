@@ -72,7 +72,7 @@ func TestWriterOptions(t *testing.T) {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s %s", internal.Version, "foo")
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s foo", internal.Version)
 				return ms
 			}(),
 		},
@@ -127,7 +127,7 @@ func TestWriterOptions(t *testing.T) {
 			options: []WriterOption{
 				WithType(PendingStream),
 				WithMaxInflightBytes(5),
-				WithTraceID("id"),
+				WithTraceID("traceid"),
 			},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
@@ -135,7 +135,7 @@ func TestWriterOptions(t *testing.T) {
 				}
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
-				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s %s", internal.Version, "id")
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s traceid", internal.Version)
 				return ms
 			}(),
 		},
