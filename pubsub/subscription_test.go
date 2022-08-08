@@ -271,38 +271,59 @@ func TestUpdateSubscription(t *testing.T) {
 }
 
 func TestReceive(t *testing.T) {
-	testReceive(t, true)
-	testReceive(t, false)
+	testReceive(t, true, false)
+	testReceive(t, false, false)
+	testReceive(t, false, true)
 }
 
-func testReceive(t *testing.T, synchronous bool) {
-	ctx := context.Background()
-	client, srv := newFake(t)
-	defer client.Close()
-	defer srv.Close()
+func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
+	t.Run(fmt.Sprintf("synchronous:%t,exactlyOnceDelivery:%t", synchronous, exactlyOnceDelivery), func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
+		client, srv := newFake(t)
+		defer client.Close()
+		defer srv.Close()
 
-	topic := mustCreateTopic(t, client, "t")
-	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
-	if err != nil {
-		t.Fatal(err)
-	}
-	for i := 0; i < 256; i++ {
-		srv.Publish(topic.name, []byte{byte(i)}, nil)
-	}
-	sub.ReceiveSettings.Synchronous = synchronous
-	msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) { m.Ack() })
-	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
-		t.Fatalf("Pull: %v", err)
-	}
-	var seen [256]bool
-	for _, m := range msgs {
-		seen[m.Data[0]] = true
-	}
-	for i, saw := range seen {
-		if !saw {
-			t.Errorf("sync=%t: did not see message #%d", synchronous, i)
+		topic := mustCreateTopic(t, client, "t")
+		sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{
+			Topic:                     topic,
+			EnableExactlyOnceDelivery: exactlyOnceDelivery,
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
-	}
+		for i := 0; i < 256; i++ {
+			srv.Publish(topic.name, []byte{byte(i)}, nil)
+		}
+		sub.ReceiveSettings.Synchronous = synchronous
+		msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) {
+			if exactlyOnceDelivery {
+				ar := m.AckWithResult()
+				// Don't use the above ctx here since that will get cancelled.
+				ackStatus, err := ar.Get(context.Background())
+				if err != nil {
+					t.Fatalf("pullN err for message(%s): %v", m.ID, err)
+				}
+				if ackStatus != AcknowledgeStatusSuccess {
+					t.Fatalf("pullN got non-success AckStatus: %v", ackStatus)
+				}
+			} else {
+				m.Ack()
+			}
+		})
+		if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+			t.Fatalf("Pull: %v", err)
+		}
+		var seen [256]bool
+		for _, m := range msgs {
+			seen[m.Data[0]] = true
+		}
+		for i, saw := range seen {
+			if !saw {
+				t.Errorf("sync=%t, eod=%t: did not see message #%d", synchronous, exactlyOnceDelivery, i)
+			}
+		}
+	})
 }
 
 func (t1 *Topic) Equal(t2 *Topic) bool {
