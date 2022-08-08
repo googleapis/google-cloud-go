@@ -467,7 +467,6 @@ func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context
 		mu.Unlock()
 		f(ctx, m)
 		if nSeen >= n {
-			// time.Sleep(1 * time.Second)
 			cancel()
 		}
 	})
