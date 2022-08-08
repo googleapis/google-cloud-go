@@ -20,6 +20,11 @@
                 "ApproveDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "ArchiveAudience": {
+              "methods": [
+                "ArchiveAudience"
+              ]
+            },
             "ArchiveCustomDimension": {
               "methods": [
                 "ArchiveCustomDimension"
@@ -58,6 +63,11 @@
             "CancelDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "CancelDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateAudience": {
+              "methods": [
+                "CreateAudience"
               ]
             },
             "CreateConversionEvent": {
@@ -170,6 +180,16 @@
                 "GetAccount"
               ]
             },
+            "GetAttributionSettings": {
+              "methods": [
+                "GetAttributionSettings"
+              ]
+            },
+            "GetAudience": {
+              "methods": [
+                "GetAudience"
+              ]
+            },
             "GetConversionEvent": {
               "methods": [
                 "GetConversionEvent"
@@ -245,6 +265,11 @@
                 "ListAccounts"
               ]
             },
+            "ListAudiences": {
+              "methods": [
+                "ListAudiences"
+              ]
+            },
             "ListConversionEvents": {
               "methods": [
                 "ListConversionEvents"
@@ -305,6 +330,11 @@
                 "ProvisionAccountTicket"
               ]
             },
+            "RunAccessReport": {
+              "methods": [
+                "RunAccessReport"
+              ]
+            },
             "SearchChangeHistoryEvents": {
               "methods": [
                 "SearchChangeHistoryEvents"
@@ -313,6 +343,16 @@
             "UpdateAccount": {
               "methods": [
                 "UpdateAccount"
+              ]
+            },
+            "UpdateAttributionSettings": {
+              "methods": [
+                "UpdateAttributionSettings"
+              ]
+            },
+            "UpdateAudience": {
+              "methods": [
+                "UpdateAudience"
               ]
             },
             "UpdateCustomDimension": {
@@ -380,6 +420,11 @@
                 "ApproveDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "ArchiveAudience": {
+              "methods": [
+                "ArchiveAudience"
+              ]
+            },
             "ArchiveCustomDimension": {
               "methods": [
                 "ArchiveCustomDimension"
@@ -418,6 +463,11 @@
             "CancelDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "CancelDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateAudience": {
+              "methods": [
+                "CreateAudience"
               ]
             },
             "CreateConversionEvent": {
@@ -530,6 +580,16 @@
                 "GetAccount"
               ]
             },
+            "GetAttributionSettings": {
+              "methods": [
+                "GetAttributionSettings"
+              ]
+            },
+            "GetAudience": {
+              "methods": [
+                "GetAudience"
+              ]
+            },
             "GetConversionEvent": {
               "methods": [
                 "GetConversionEvent"
@@ -605,6 +665,11 @@
                 "ListAccounts"
               ]
             },
+            "ListAudiences": {
+              "methods": [
+                "ListAudiences"
+              ]
+            },
             "ListConversionEvents": {
               "methods": [
                 "ListConversionEvents"
@@ -665,6 +730,11 @@
                 "ProvisionAccountTicket"
               ]
             },
+            "RunAccessReport": {
+              "methods": [
+                "RunAccessReport"
+              ]
+            },
             "SearchChangeHistoryEvents": {
               "methods": [
                 "SearchChangeHistoryEvents"
@@ -673,6 +743,16 @@
             "UpdateAccount": {
               "methods": [
                 "UpdateAccount"
+              ]
+            },
+            "UpdateAttributionSettings": {
+              "methods": [
+                "UpdateAttributionSettings"
+              ]
+            },
+            "UpdateAudience": {
+              "methods": [
+                "UpdateAudience"
               ]
             },
             "UpdateCustomDimension": {
