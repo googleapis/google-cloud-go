@@ -15,20 +15,21 @@
 //go:build go1.15
 // +build go1.15
 
-/*Command godocfx generates DocFX YAML for Go code.
+/*
+Command godocfx generates DocFX YAML for Go code.
 
 Usage:
 
-    godocfx [flags] path
+	godocfx [flags] path
 
-    # New modules with the given prefix. Delete any previous output.
-    godocfx -rm -project my-project -new-modules cloud.google.com/go
-    # Process a single module @latest.
-    godocfx cloud.google.com/go
-    # Process and print, instead of save.
-    godocfx -print cloud.google.com/go/storage@latest
-    # Change output directory.
-    godocfx -out custom/output/dir cloud.google.com/go
+	# New modules with the given prefix. Delete any previous output.
+	godocfx -rm -project my-project -new-modules cloud.google.com/go
+	# Process a single module @latest.
+	godocfx cloud.google.com/go
+	# Process and print, instead of save.
+	godocfx -print cloud.google.com/go/storage@latest
+	# Change output directory.
+	godocfx -out custom/output/dir cloud.google.com/go
 
 See:
 * https://dotnet.github.io/docfx/spec/metadata_format_spec.html

@@ -27,7 +27,7 @@ connection pooling and similar aspects of this package.
 Note: you can't use both Cloud Firestore and Cloud Datastore in the same
 project.
 
-Creating a Client
+# Creating a Client
 
 To start working with this package, create a client with a project ID:
 
@@ -37,7 +37,7 @@ To start working with this package, create a client with a project ID:
 		// TODO: Handle error.
 	}
 
-CollectionRefs and DocumentRefs
+# CollectionRefs and DocumentRefs
 
 In Firestore, documents are sets of key-value pairs, and collections are groups of
 documents. A Firestore database consists of a hierarchy of alternating collections
@@ -53,7 +53,7 @@ entities. Creating a ref does not involve any network traffic.
 	// Or, in a single call:
 	ny = client.Doc("States/NewYork")
 
-Reading
+# Reading
 
 Use DocumentRef.Get to read a document. The result is a DocumentSnapshot.
 Call its Data method to obtain the entire document contents as a map.
@@ -97,8 +97,7 @@ Client.GetAll.
 		_ = ds // TODO: Use ds.
 	}
 
-
-Writing
+# Writing
 
 For writing individual documents, use the methods on DocumentReference.
 Create creates a new document.
@@ -133,7 +132,7 @@ Use DocumentRef.Delete to delete a document.
 
 	_, err = ny.Delete(ctx)
 
-Preconditions
+# Preconditions
 
 You can condition Deletes or Updates on when a document was last changed. Specify
 these preconditions as an option to a Delete or Update method. The check and the
@@ -162,7 +161,7 @@ atomically.
 		Delete(client.Doc("States/WestDakota")).
 		Commit(ctx)
 
-Queries
+# Queries
 
 You can use SQL to select documents from a collection. Begin with the collection, and
 build up a query using Select, Where and other methods of Query.
@@ -193,7 +192,7 @@ as a query.
 
 	iter = client.Collection("States").Documents(ctx)
 
-Collection Group Partition Queries
+# Collection Group Partition Queries
 
 You can partition the documents of a Collection Group allowing for smaller subqueries.
 
@@ -216,7 +215,7 @@ queries elsewhere; another process or machine for instance.
 		...
 	}
 
-Transactions
+# Transactions
 
 Use a transaction to execute reads and writes atomically. All reads must happen
 before any writes. Transaction creation, commit, rollback and retry are handled for
@@ -239,7 +238,7 @@ read and write methods of the Transaction passed to it.
 		// TODO: Handle error.
 	}
 
-Google Cloud Firestore Emulator
+# Google Cloud Firestore Emulator
 
 This package supports the Cloud Firestore emulator, which is useful for testing and
 development. Environment variables are used to indicate that Firestore traffic should be

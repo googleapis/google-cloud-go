@@ -117,7 +117,6 @@ const (
 // New takes ownership of the AST pkg and may edit or overwrite it.
 // To have the Examples fields populated, use NewFromFiles and include
 // the package's _test.go files.
-//
 func New(pkg *ast.Package, importPath string, mode Mode) *Package {
 	var r reader
 	r.readPackage(pkg, mode)
@@ -159,7 +158,6 @@ func New(pkg *ast.Package, importPath string, mode Mode) *Package {
 //
 // NewFromFiles takes ownership of the AST files and may edit them,
 // unless the PreserveAST Mode bit is on.
-//
 func NewFromFiles(fset *token.FileSet, files []*ast.File, importPath string, opts ...interface{}) (*Package, error) {
 	// Check for invalid API usage.
 	if fset == nil {
