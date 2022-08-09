@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.12.0...dialogflow/v1.12.1) (2022-08-02)
+
+
+### Documentation
+
+* **dialogflow:** added an explicit note that DetectIntentRequest's text input is limited by 256 characters ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.11.0...dialogflow/v1.12.0) (2022-07-12)
 
 

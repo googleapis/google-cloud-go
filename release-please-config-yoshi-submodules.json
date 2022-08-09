@@ -21,6 +21,9 @@
         "apigeeconnect": {
             "component": "apigeeconnect"
         },
+        "apigeeregistry": {
+            "component": "apigeeregistry"
+        },
         "appengine": {
             "component": "appengine"
         },

@@ -172,7 +172,10 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 
 	log.Println("Starting to parse")
 	optionalExtraFiles := []string{}
-	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter)
+	namer := &friendlyAPINamer{
+		metaURL: "https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json",
+	}
+	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter, namer)
 	if err != nil {
 		return fmt.Errorf("parse: %v", err)
 	}
