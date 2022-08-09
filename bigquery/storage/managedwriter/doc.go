@@ -179,11 +179,12 @@ enhanced set of errors when communicating about the results of API interactions.
 Specifically, the apierror package (https://pkg.go.dev/github.com/googleapis/gax-go/v2/apierror)
 provides convenience methods for extracting structured information about errors.
 
-Additionally, the BigQuery Storage API will augment applicable errors with additional
-service-specific details in the form of a StorageError message.  Please note that despite the
-name, this protocol buffer message does not implement Go's error interface.  By leveraging
-ExtractProtoMessage, which is provided as part of the apierror packed, you can retrieve
-service-specific details.
+The BigQuery Storage API service augments applicable errors with service-specific details in
+the form of a StorageError message. The StorageError message is accessed via the ExtractProtoMessage
+method in the apierror package. Note that the StorageError messsage does not implement Go's error
+interface.
+
+An example of accessing the structured error details:
 
 	// By way of example, let's assume the response from an append call returns an error.
 	_, err := result.GetResult(ctx)
