@@ -235,7 +235,7 @@ const (
 // the following range returns all events for user "Bob" that occurred in the
 // year 2015:
 //
-// 	spanner.KeyRange{
+//	spanner.KeyRange{
 //		Start: spanner.Key{"Bob", "2015-01-01"},
 //		End:   spanner.Key{"Bob", "2015-12-31"},
 //		Kind:  ClosedClosed,

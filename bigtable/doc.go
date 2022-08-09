@@ -22,8 +22,7 @@ See https://cloud.google.com/bigtable/docs/ for general product documentation.
 See https://godoc.org/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.
 
-
-Reading
+# Reading
 
 The principal way to read from a Bigtable is to use the ReadRows method on
 *Table. A RowRange specifies a contiguous portion of a table. A Filter may be
@@ -49,8 +48,7 @@ To read a single row, use the ReadRow helper method:
 	}
 	// TODO: use r.
 
-
-Writing
+# Writing
 
 This API exposes two distinct forms of writing to a Bigtable: a Mutation and a
 ReadModifyWrite. The former expresses idempotent operations. The latter
@@ -88,8 +86,7 @@ To increment an encoded value in one cell:
 	}
 	// TODO: use r.
 
-
-Retries
+# Retries
 
 If a read or write operation encounters a transient error it will be retried
 until a successful response, an unretryable error or the context deadline is

@@ -509,13 +509,13 @@ func v2SanitizeHeaders(hdrs []string) []string {
 // at https://cloud.google.com/storage/docs/authentication/canonical-requests#about-headers.
 //
 // V4 does a couple things differently from V2:
-// - Headers get sorted by key, instead of by key:value. We do this in
-//   signedURLV4.
-// - There's no canonical regexp: we simply split headers on :.
-// - We don't exclude canonical headers.
-// - We replace leading and trailing spaces in header values, like v2, but also
-//   all intermediate space duplicates get stripped. That is, there's only ever
-//   a single consecutive space.
+//   - Headers get sorted by key, instead of by key:value. We do this in
+//     signedURLV4.
+//   - There's no canonical regexp: we simply split headers on :.
+//   - We don't exclude canonical headers.
+//   - We replace leading and trailing spaces in header values, like v2, but also
+//     all intermediate space duplicates get stripped. That is, there's only ever
+//     a single consecutive space.
 func v4SanitizeHeaders(hdrs []string) []string {
 	headerMap := map[string][]string{}
 	for _, hdr := range hdrs {
@@ -1052,11 +1052,12 @@ func (o *ObjectHandle) ObjectName() string {
 //
 // For example, to change ContentType and delete ContentEncoding and
 // Metadata, use
-//    ObjectAttrsToUpdate{
-//        ContentType: "text/html",
-//        ContentEncoding: "",
-//        Metadata: map[string]string{},
-//    }
+//
+//	ObjectAttrsToUpdate{
+//	    ContentType: "text/html",
+//	    ContentEncoding: "",
+//	    Metadata: map[string]string{},
+//	}
 type ObjectAttrsToUpdate struct {
 	EventBasedHold     optional.Bool
 	TemporaryHold      optional.Bool

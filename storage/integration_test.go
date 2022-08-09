@@ -4077,8 +4077,8 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 // * Content-Type of "text/plain"
 // will be properly served back.
 // See:
-//  * https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
-//  * https://github.com/googleapis/google-cloud-go/issues/1800
+//   - https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
+//   - https://github.com/googleapis/google-cloud-go/issues/1800
 func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)

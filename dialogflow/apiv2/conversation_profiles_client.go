@@ -258,9 +258,9 @@ func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Conte
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: SetSuggestionFeatureConfigOperationMetadata
+//	metadata: SetSuggestionFeatureConfigOperationMetadata
 //
-//   response: ConversationProfile
+//	response: ConversationProfile
 //
 // If a long running operation to add or update suggestion feature
 // config for the same conversation profile, participant role and suggestion
@@ -283,9 +283,9 @@ func (c *ConversationProfilesClient) SetSuggestionFeatureConfigOperation(name st
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: ClearSuggestionFeatureConfigOperationMetadata
+//	metadata: ClearSuggestionFeatureConfigOperationMetadata
 //
-//   response: ConversationProfile
+//	response: ConversationProfile
 func (c *ConversationProfilesClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
 	return c.internalClient.ClearSuggestionFeatureConfig(ctx, req, opts...)
 }
