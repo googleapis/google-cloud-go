@@ -66,9 +66,13 @@ func (d Date) IsValid() bool {
 //
 // In is always consistent with time.Date, even when time.Date returns a time
 // on a different day. For example, if loc is America/Indiana/Vincennes, then both
-//     time.Date(1955, time.May, 1, 0, 0, 0, 0, loc)
+//
+//	time.Date(1955, time.May, 1, 0, 0, 0, 0, loc)
+//
 // and
-//     civil.Date{Year: 1955, Month: time.May, Day: 1}.In(loc)
+//
+//	civil.Date{Year: 1955, Month: time.May, Day: 1}.In(loc)
+//
 // return 23:00:00 on April 30, 1955.
 //
 // In panics if loc is nil.
@@ -242,7 +246,9 @@ func DateTimeOf(t time.Time) DateTime {
 // ParseDateTime accepts a variant of the RFC3339 date-time format that omits
 // the time offset but includes an optional fractional time, as described in
 // ParseTime. Informally, the accepted format is
-//     YYYY-MM-DDTHH:MM:SS[.FFFFFFFFF]
+//
+//	YYYY-MM-DDTHH:MM:SS[.FFFFFFFFF]
+//
 // where the 'T' may be a lower-case 't'.
 func ParseDateTime(s string) (DateTime, error) {
 	t, err := time.Parse("2006-01-02T15:04:05.999999999", s)
@@ -270,11 +276,15 @@ func (dt DateTime) IsValid() bool {
 // If the time is missing or ambigous at the location, In returns the same
 // result as time.Date. For example, if loc is America/Indiana/Vincennes, then
 // both
-//     time.Date(1955, time.May, 1, 0, 30, 0, 0, loc)
+//
+//	time.Date(1955, time.May, 1, 0, 30, 0, 0, loc)
+//
 // and
-//     civil.DateTime{
-//         civil.Date{Year: 1955, Month: time.May, Day: 1}},
-//         civil.Time{Minute: 30}}.In(loc)
+//
+//	civil.DateTime{
+//	    civil.Date{Year: 1955, Month: time.May, Day: 1}},
+//	    civil.Time{Minute: 30}}.In(loc)
+//
 // return 23:30:00 on April 30, 1955.
 //
 // In panics if loc is nil.

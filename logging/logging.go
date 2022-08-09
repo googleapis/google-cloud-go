@@ -134,10 +134,12 @@ type Client struct {
 
 // NewClient returns a new logging client associated with the provided parent.
 // A parent can take any of the following forms:
-//    projects/PROJECT_ID
-//    folders/FOLDER_ID
-//    billingAccounts/ACCOUNT_ID
-//    organizations/ORG_ID
+//
+//	projects/PROJECT_ID
+//	folders/FOLDER_ID
+//	billingAccounts/ACCOUNT_ID
+//	organizations/ORG_ID
+//
 // for backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
 //
@@ -804,10 +806,12 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 
 // ToLogEntry takes an Entry structure and converts it to the LogEntry proto.
 // A parent can take any of the following forms:
-//    projects/PROJECT_ID
-//    folders/FOLDER_ID
-//    billingAccounts/ACCOUNT_ID
-//    organizations/ORG_ID
+//
+//	projects/PROJECT_ID
+//	folders/FOLDER_ID
+//	billingAccounts/ACCOUNT_ID
+//	organizations/ORG_ID
+//
 // for backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
 //
