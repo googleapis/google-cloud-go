@@ -15,13 +15,7 @@
 package managedwriter
 
 import (
-	"context"
-	"fmt"
 	"testing"
-
-	"github.com/googleapis/gax-go/v2"
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	"google.golang.org/grpc"
 )
 
 func TestTableParentFromStreamName(t *testing.T) {
@@ -53,25 +47,4 @@ func TestTableParentFromStreamName(t *testing.T) {
 			t.Errorf("mismatch on %s: got %s want %s", tc.in, got, tc.want)
 		}
 	}
-}
-
-// Ensures we're propagating call options as expected.
-// Background: https://github.com/googleapis/google-cloud-go/issues/6487
-func TestOpenCallOptionPropagation(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-
-	ms := &ManagedStream{
-		ctx: ctx,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
-		},
-		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
-			if len(opts) == 0 {
-				t.Fatalf("no options were propagated")
-			}
-			return nil, fmt.Errorf("no real client")
-		}),
-	}
-	ms.openWithRetry()
 }
