@@ -20,6 +20,7 @@ import (
 	"runtime"
 	"strings"
 
+	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/internal/detect"
 	"github.com/googleapis/gax-go/v2"
@@ -59,6 +60,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, err
 	}
+	rawClient.SetGoogleClientInfo("gccl", internal.Version)
 
 	// Handle project autodetection.
 	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)

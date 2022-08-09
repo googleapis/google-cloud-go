@@ -508,8 +508,9 @@ var minAckDeadlineSecs int32
 // SetMinAckDeadline changes the minack deadline to n. Must be
 // greater than or equal to 1 second. Remember to reset this value
 // to the default after your test changes it. Example usage:
-// 		pstest.SetMinAckDeadlineSecs(1)
-// 		defer pstest.ResetMinAckDeadlineSecs()
+//
+//	pstest.SetMinAckDeadlineSecs(1)
+//	defer pstest.ResetMinAckDeadlineSecs()
 func SetMinAckDeadline(n time.Duration) {
 	if n < time.Second {
 		panic("SetMinAckDeadline expects a value greater than 1 second")

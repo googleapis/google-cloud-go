@@ -1374,11 +1374,11 @@ func TestSessionHealthCheck(t *testing.T) {
 }
 
 // TestStressSessionPool does stress test on session pool by the following concurrent operations:
-//	1) Test worker gets a session from the pool.
-//	2) Test worker turns a session back into the pool.
-//	3) Test worker destroys a session got from the pool.
-//	4) Healthcheck destroys a broken session (because a worker has already destroyed it).
-//	5) Test worker closes the session pool.
+//  1. Test worker gets a session from the pool.
+//  2. Test worker turns a session back into the pool.
+//  3. Test worker destroys a session got from the pool.
+//  4. Healthcheck destroys a broken session (because a worker has already destroyed it).
+//  5. Test worker closes the session pool.
 //
 // During the test, the session pool maintainer maintains the number of sessions,
 // and it is expected that all sessions that are taken from session pool remains valid.
@@ -1545,10 +1545,10 @@ func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int,
 // TestMaintainer checks the session pool maintainer maintains the number of
 // sessions in the following cases:
 //
-// 1. On initialization of session pool, replenish session pool to meet
-//    MinOpened or MaxIdle.
-// 2. On increased session usage, provision extra MaxIdle sessions.
-// 3. After the surge passes, scale down the session pool accordingly.
+//  1. On initialization of session pool, replenish session pool to meet
+//     MinOpened or MaxIdle.
+//  2. On increased session usage, provision extra MaxIdle sessions.
+//  3. After the surge passes, scale down the session pool accordingly.
 func TestMaintainer(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
