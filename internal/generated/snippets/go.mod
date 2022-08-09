@@ -119,9 +119,11 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.88.0
-	google.golang.org/genproto v0.0.0-20220725144611-272f38e5d71b
+	google.golang.org/api v0.91.0
+	google.golang.org/genproto v0.0.0-20220808131553-a91ffa7f803e
 )
+
+require cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -135,7 +137,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.48.0 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -379,3 +381,5 @@ replace cloud.google.com/go/batch => ../../../batch
 replace cloud.google.com/go/dataform => ../../../dataform
 
 replace cloud.google.com/go/beyondcorp => ../../../beyondcorp
+
+replace cloud.google.com/go/apigeeregistry => ../../../apigeeregistry

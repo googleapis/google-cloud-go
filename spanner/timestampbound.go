@@ -50,7 +50,7 @@ const (
 // can be specified when creating transactions, see the documentation of
 // spanner.Client for an example.
 //
-// Strong reads
+// # Strong reads
 //
 // Strong reads are guaranteed to see the effects of all transactions that have
 // committed before the start of the read. Furthermore, all rows yielded by a
@@ -64,7 +64,7 @@ const (
 //
 // Use StrongRead to create a bound of this type.
 //
-// Exact staleness
+// # Exact staleness
 //
 // An exact staleness timestamp bound executes reads at a user-specified
 // timestamp. Reads at a timestamp are guaranteed to see a consistent prefix of
@@ -85,7 +85,7 @@ const (
 //
 // Use ReadTimestamp and ExactStaleness to create a bound of this type.
 //
-// Bounded staleness
+// # Bounded staleness
 //
 // Bounded staleness modes allow Cloud Spanner to pick the read timestamp,
 // subject to a user-provided staleness bound. Cloud Spanner chooses the newest
@@ -113,7 +113,7 @@ const (
 //
 // Use MinReadTimestamp and MaxStaleness to create a bound of this type.
 //
-// Old read timestamps and garbage collection
+// # Old read timestamps and garbage collection
 //
 // Cloud Spanner continuously garbage collects deleted and overwritten data in
 // the background to reclaim storage space. This process is known as "version
