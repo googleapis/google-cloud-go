@@ -104,6 +104,51 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ArchiveAudience_sync",
+      "title": "analyticsadmin ArchiveAudience Sample",
+      "description": "ArchiveAudience archives an Audience on a property.",
+      "file": "AnalyticsAdminClient/ArchiveAudience/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ArchiveAudience",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ArchiveAudience",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ArchiveAudienceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ArchiveAudience",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveAudience",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ArchiveCustomDimension_sync",
       "title": "analyticsadmin ArchiveCustomDimension Sample",
       "description": "ArchiveCustomDimension archives a CustomDimension on a property.",
@@ -453,6 +498,52 @@
         "method": {
           "shortName": "CancelDisplayVideo360AdvertiserLinkProposal",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CancelDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateAudience_sync",
+      "title": "analyticsadmin CreateAudience Sample",
+      "description": "CreateAudience creates an Audience.",
+      "file": "AnalyticsAdminClient/CreateAudience/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAudience",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateAudience",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateAudienceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Audience",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateAudience",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAudience",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -1472,6 +1563,98 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetAttributionSettings_sync",
+      "title": "analyticsadmin GetAttributionSettings Sample",
+      "description": "GetAttributionSettings lookup for a AttributionSettings singleton.",
+      "file": "AnalyticsAdminClient/GetAttributionSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAttributionSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetAttributionSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetAttributionSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.AttributionSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetAttributionSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetAttributionSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetAudience_sync",
+      "title": "analyticsadmin GetAudience Sample",
+      "description": "GetAudience lookup for a single Audience.\nAudiences created before 2020 may not be supported.",
+      "file": "AnalyticsAdminClient/GetAudience/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAudience",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetAudience",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetAudienceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Audience",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetAudience",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetAudience",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetConversionEvent_sync",
       "title": "analyticsadmin GetConversionEvent Sample",
       "description": "GetConversionEvent retrieve a single conversion event.",
@@ -2162,6 +2345,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAudiences_sync",
+      "title": "analyticsadmin ListAudiences Sample",
+      "description": "ListAudiences lists Audiences on a property.\nAudiences created before 2020 may not be supported.",
+      "file": "AnalyticsAdminClient/ListAudiences/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAudiences",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListAudiences",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListAudiencesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AudienceIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListAudiences",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListAudiences",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListConversionEvents_sync",
       "title": "analyticsadmin ListConversionEvents Sample",
       "description": "ListConversionEvents returns a list of conversion events in the specified parent property.\n\nReturns an empty list if no conversion events are found.",
@@ -2714,6 +2943,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync",
+      "title": "analyticsadmin RunAccessReport Sample",
+      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. The property must be\nin Google Analytics 360. This method is only available to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don’t include\nproperty configuration changes like adding a stream or changing a\nproperty’s time zone. For configuration change history, see\nsearchChangeHistoryEvents (at https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
+      "file": "AnalyticsAdminClient/RunAccessReport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunAccessReport",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.RunAccessReport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.RunAccessReportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.RunAccessReportResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "RunAccessReport",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.RunAccessReport",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_SearchChangeHistoryEvents_sync",
       "title": "analyticsadmin SearchChangeHistoryEvents Sample",
       "description": "SearchChangeHistoryEvents searches through all changes to an account or its children given the\nspecified set of filters.",
@@ -2790,6 +3065,98 @@
         "method": {
           "shortName": "UpdateAccount",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccount",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateAttributionSettings_sync",
+      "title": "analyticsadmin UpdateAttributionSettings Sample",
+      "description": "UpdateAttributionSettings updates attribution settings on a property.",
+      "file": "AnalyticsAdminClient/UpdateAttributionSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAttributionSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateAttributionSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateAttributionSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.AttributionSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAttributionSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAttributionSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateAudience_sync",
+      "title": "analyticsadmin UpdateAudience Sample",
+      "description": "UpdateAudience updates an Audience on a property.",
+      "file": "AnalyticsAdminClient/UpdateAudience/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAudience",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateAudience",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateAudienceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Audience",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAudience",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
