@@ -90,6 +90,19 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 	return c.buildManagedStream(ctx, c.rawClient.AppendRows, false, opts...)
 }
 
+// createOpenF builds the opener function we need to access the AppendRows bidi stream.
+func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		arc, err := streamFunc(
+			// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
+			metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)), opts...)
+		if err != nil {
+			return nil, err
+		}
+		return arc, nil
+	}
+}
+
 func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -101,15 +114,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		callOptions: []gax.CallOption{
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
 		},
-		open: func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-			arc, err := streamFunc(
-				// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
-				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)), opts...)
-			if err != nil {
-				return nil, err
-			}
-			return arc, nil
-		},
+		open: createOpenF(ctx, streamFunc),
 	}
 
 	// apply writer options
