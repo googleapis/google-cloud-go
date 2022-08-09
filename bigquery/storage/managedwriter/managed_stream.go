@@ -21,6 +21,7 @@ import (
 	"io"
 	"sync"
 
+	"cloud.google.com/go/bigquery/internal"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
@@ -126,8 +127,16 @@ func defaultStreamSettings() *streamSettings {
 		streamType:          DefaultStream,
 		MaxInflightRequests: 1000,
 		MaxInflightBytes:    0,
-		TraceID:             "",
+		TraceID:             buildTraceID(""),
 	}
+}
+
+func buildTraceID(id string) string {
+	base := fmt.Sprintf("go-managedwriter:%s", internal.Version)
+	if id != "" {
+		return fmt.Sprintf("%s %s", base, id)
+	}
+	return base
 }
 
 // StreamName returns the corresponding write stream ID being managed by this writer.
