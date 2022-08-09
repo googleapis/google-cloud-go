@@ -6,9 +6,11 @@
 Package google_pubsub_loadtest is a generated protocol buffer package.
 
 It is generated from these files:
+
 	loadtest.proto
 
 It has these top-level messages:
+
 	StartRequest
 	StartResponse
 	PubsubOptions

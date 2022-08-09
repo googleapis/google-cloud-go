@@ -953,9 +953,9 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 //
 // The standard way to terminate a Receive is to cancel its context:
 //
-//   cctx, cancel := context.WithCancel(ctx)
-//   err := sub.Receive(cctx, callback)
-//   // Call cancel from callback, or another goroutine.
+//	cctx, cancel := context.WithCancel(ctx)
+//	err := sub.Receive(cctx, callback)
+//	// Call cancel from callback, or another goroutine.
 //
 // If the service returns a non-retryable error, Receive returns that error after
 // all of the outstanding calls to f have returned. If ctx is done, Receive
