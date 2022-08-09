@@ -216,7 +216,12 @@ func (d *Dataset) deleteInternal(ctx context.Context, deleteContents bool) (err 
 
 	call := d.c.bqs.Datasets.Delete(d.ProjectID, d.DatasetID).Context(ctx).DeleteContents(deleteContents)
 	setClientHeader(call.Header())
-	return call.Do()
+	return runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.datasets.delete")
+		err = call.Do()
+		trace.EndSpan(ctx, err)
+		return err
+	})
 }
 
 // Metadata fetches the metadata for the dataset.
@@ -228,7 +233,9 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 	setClientHeader(call.Header())
 	var ds *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.datasets.get")
 		ds, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	}); err != nil {
 		return nil, err
@@ -284,7 +291,9 @@ func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag s
 	}
 	var ds2 *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.datasets.patch")
 		ds2, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	}); err != nil {
 		return nil, err
