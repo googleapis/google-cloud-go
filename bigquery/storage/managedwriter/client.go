@@ -104,7 +104,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		open: func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			arc, err := streamFunc(
 				// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
-				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)))
+				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)), opts...)
 			if err != nil {
 				return nil, err
 			}
