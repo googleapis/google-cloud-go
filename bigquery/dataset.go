@@ -400,7 +400,9 @@ var listTables = func(it *TableIterator, pageSize int, pageToken string) (*bq.Ta
 	}
 	var res *bq.TableList
 	err := runWithRetry(it.ctx, func() (err error) {
+		ctx := trace.StartSpan(it.ctx, "bigquery.tables.list")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	return res, err
@@ -485,7 +487,9 @@ var listModels = func(it *ModelIterator, pageSize int, pageToken string) (*bq.Li
 	}
 	var res *bq.ListModelsResponse
 	err := runWithRetry(it.ctx, func() (err error) {
+		ctx := trace.StartSpan(it.ctx, "bigquery.models.list")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	return res, err
@@ -572,7 +576,9 @@ var listRoutines = func(it *RoutineIterator, pageSize int, pageToken string) (*b
 	}
 	var res *bq.ListRoutinesResponse
 	err := runWithRetry(it.ctx, func() (err error) {
+		ctx := trace.StartSpan(it.ctx, "bigquery.routines.list")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	return res, err
@@ -676,7 +682,9 @@ var listDatasets = func(it *DatasetIterator, pageSize int, pageToken string) (*b
 	}
 	var res *bq.DatasetList
 	err := runWithRetry(it.ctx, func() (err error) {
+		ctx := trace.StartSpan(it.ctx, "bigquery.datasets.list")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	return res, err
