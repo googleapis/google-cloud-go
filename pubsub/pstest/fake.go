@@ -480,6 +480,11 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
+	if ps.BigqueryConfig == nil {
+		ps.BigqueryConfig = &pb.BigQueryConfig{}
+	} else if ps.BigqueryConfig.Table != "" {
+		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	var deadLetterTopic *topic
 	if ps.DeadLetterPolicy != nil {
@@ -503,8 +508,9 @@ var minAckDeadlineSecs int32
 // SetMinAckDeadline changes the minack deadline to n. Must be
 // greater than or equal to 1 second. Remember to reset this value
 // to the default after your test changes it. Example usage:
-// 		pstest.SetMinAckDeadlineSecs(1)
-// 		defer pstest.ResetMinAckDeadlineSecs()
+//
+//	pstest.SetMinAckDeadlineSecs(1)
+//	defer pstest.ResetMinAckDeadlineSecs()
 func SetMinAckDeadline(n time.Duration) {
 	if n < time.Second {
 		panic("SetMinAckDeadline expects a value greater than 1 second")
@@ -578,6 +584,12 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		switch path {
 		case "push_config":
 			sub.proto.PushConfig = req.Subscription.PushConfig
+
+		case "bigquery_config":
+			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
+			if sub.proto.GetBigqueryConfig().GetTable() != "" {
+				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+			}
 
 		case "ack_deadline_seconds":
 			a := req.Subscription.AckDeadlineSeconds
@@ -791,6 +803,7 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 	if at == 0 {
 		at = 10 * time.Second
 	}
+	ps.State = pb.Subscription_ACTIVE
 	return &subscription{
 		topic:           t,
 		deadLetterTopic: deadLetterTopic,
@@ -997,7 +1010,7 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	var msgs []*pb.ReceivedMessage
-	for id, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
@@ -1019,6 +1032,32 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	return msgs
 }
 
+func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
+	if !enableMessageOrdering {
+		return msgs
+	}
+	result := make(map[string]*message)
+
+	type msg struct {
+		id string
+		m  *message
+	}
+	orderingKeyMap := make(map[string]msg)
+	for id, m := range msgs {
+		orderingKey := m.proto.Message.OrderingKey
+		if orderingKey == "" {
+			orderingKey = id
+		}
+		if val, ok := orderingKeyMap[orderingKey]; !ok || m.proto.Message.PublishTime.AsTime().Before(val.m.proto.Message.PublishTime.AsTime()) {
+			orderingKeyMap[orderingKey] = msg{m: m, id: id}
+		}
+	}
+	for _, val := range orderingKeyMap {
+		result[val.id] = val.m
+	}
+	return result
+}
+
 func (s *subscription) deliver() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1027,7 +1066,7 @@ func (s *subscription) deliver() {
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
-	for id, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}

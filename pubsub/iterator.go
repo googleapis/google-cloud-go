@@ -502,7 +502,6 @@ func (it *messageIterator) sendAck(m map[string]*ackResultWithID) {
 // considering 1% outliers.
 func (it *messageIterator) sendModAck(m map[string]*ackResultWithID, deadline time.Duration) {
 	deadlineSec := int32(deadline / time.Second)
-
 	ackIDs := make([]string, 0, len(m))
 	for k := range m {
 		ackIDs = append(ackIDs, k)

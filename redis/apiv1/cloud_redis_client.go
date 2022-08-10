@@ -82,7 +82,7 @@ func defaultCloudRedisCallOptions() *CloudRedisCallOptions {
 	}
 }
 
-// internalCloudRedisClient is an interface that defines the methods availaible from Google Cloud Memorystore for Redis API.
+// internalCloudRedisClient is an interface that defines the methods available from Google Cloud Memorystore for Redis API.
 type internalCloudRedisClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -111,26 +111,26 @@ type internalCloudRedisClient interface {
 // CloudRedisClient is a client for interacting with Google Cloud Memorystore for Redis API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Configures and manages Cloud Memorystore for Redis instances
+// # Configures and manages Cloud Memorystore for Redis instances
 //
-// Google Cloud Memorystore for Redis v1
+// # Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of Redis instances, named: /instances/*
+//	Each location has a collection of Redis instances, named: /instances/*
 //
-//   As such, Redis instances are resources of the form:
-//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//	As such, Redis instances are resources of the form:
+//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//   projects/redpepper-1290/locations/us-central1/instances/my-redis
+//	projects/redpepper-1290/locations/us-central1/instances/my-redis
 type CloudRedisClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudRedisClient
@@ -171,7 +171,7 @@ func (c *CloudRedisClient) Connection() *grpc.ClientConn {
 //
 // The location should have the following format:
 //
-//   projects/{project_id}/locations/{location_id}
+//	projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
@@ -338,26 +338,26 @@ type cloudRedisGRPCClient struct {
 // NewCloudRedisClient creates a new cloud redis client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Configures and manages Cloud Memorystore for Redis instances
+// # Configures and manages Cloud Memorystore for Redis instances
 //
-// Google Cloud Memorystore for Redis v1
+// # Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of Redis instances, named: /instances/*
+//	Each location has a collection of Redis instances, named: /instances/*
 //
-//   As such, Redis instances are resources of the form:
-//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//	As such, Redis instances are resources of the form:
+//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//   projects/redpepper-1290/locations/us-central1/instances/my-redis
+//	projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
 	clientOpts := defaultCloudRedisGRPCClientOptions()
 	if newCloudRedisClientHook != nil {

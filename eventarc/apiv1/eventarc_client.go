@@ -92,7 +92,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Eventarc API.
+// internalClient is an interface that defines the methods available from Eventarc API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

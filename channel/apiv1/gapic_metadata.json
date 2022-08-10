@@ -20,6 +20,11 @@
                 "CancelEntitlement"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "ChangeOffer": {
               "methods": [
                 "ChangeOffer"
@@ -80,6 +85,11 @@
                 "DeleteCustomerRepricingConfig"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetChannelPartnerLink": {
               "methods": [
                 "GetChannelPartnerLink"
@@ -103,6 +113,11 @@
             "GetEntitlement": {
               "methods": [
                 "GetEntitlement"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ImportCustomer": {
@@ -138,6 +153,11 @@
             "ListOffers": {
               "methods": [
                 "ListOffers"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListProducts": {

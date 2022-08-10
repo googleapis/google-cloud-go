@@ -50,7 +50,18 @@ type ExternalVpnGatewaysCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalExternalVpnGatewaysClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultExternalVpnGatewaysRESTCallOptions() *ExternalVpnGatewaysCallOptions {
+	return &ExternalVpnGatewaysCallOptions{
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		SetLabels:          []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalExternalVpnGatewaysClient is an interface that defines the methods available from Google Compute Engine API.
 type internalExternalVpnGatewaysClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -140,6 +151,9 @@ type externalVpnGatewaysRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ExternalVpnGatewaysClient
+	CallOptions **ExternalVpnGatewaysCallOptions
 }
 
 // NewExternalVpnGatewaysRESTClient creates a new external vpn gateways rest client.
@@ -152,9 +166,11 @@ func NewExternalVpnGatewaysRESTClient(ctx context.Context, opts ...option.Client
 		return nil, err
 	}
 
+	callOpts := defaultExternalVpnGatewaysRESTCallOptions()
 	c := &externalVpnGatewaysRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -168,7 +184,7 @@ func NewExternalVpnGatewaysRESTClient(ctx context.Context, opts ...option.Client
 	}
 	c.operationClient = opC
 
-	return &ExternalVpnGatewaysClient{internalClient: c, CallOptions: &ExternalVpnGatewaysCallOptions{}}, nil
+	return &ExternalVpnGatewaysClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultExternalVpnGatewaysRESTClientOptions() []option.ClientOption {
@@ -226,6 +242,7 @@ func (c *externalVpnGatewaysRESTClient) Delete(ctx context.Context, req *compute
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "external_vpn_gateway", url.QueryEscape(req.GetExternalVpnGateway())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -285,6 +302,7 @@ func (c *externalVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "external_vpn_gateway", url.QueryEscape(req.GetExternalVpnGateway())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.ExternalVpnGateway{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -351,6 +369,7 @@ func (c *externalVpnGatewaysRESTClient) Insert(ctx context.Context, req *compute
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -513,6 +532,7 @@ func (c *externalVpnGatewaysRESTClient) SetLabels(ctx context.Context, req *comp
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -579,6 +599,7 @@ func (c *externalVpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

@@ -10,29 +10,19 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
-            "CreateSnapshotSchedulePolicy": {
+            "DetachLun": {
               "methods": [
-                "CreateSnapshotSchedulePolicy"
-              ]
-            },
-            "CreateVolumeSnapshot": {
-              "methods": [
-                "CreateVolumeSnapshot"
-              ]
-            },
-            "DeleteSnapshotSchedulePolicy": {
-              "methods": [
-                "DeleteSnapshotSchedulePolicy"
-              ]
-            },
-            "DeleteVolumeSnapshot": {
-              "methods": [
-                "DeleteVolumeSnapshot"
+                "DetachLun"
               ]
             },
             "GetInstance": {
               "methods": [
                 "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
               ]
             },
             "GetLun": {
@@ -45,9 +35,9 @@
                 "GetNetwork"
               ]
             },
-            "GetSnapshotSchedulePolicy": {
+            "GetNfsShare": {
               "methods": [
-                "GetSnapshotSchedulePolicy"
+                "GetNfsShare"
               ]
             },
             "GetVolume": {
@@ -55,14 +45,14 @@
                 "GetVolume"
               ]
             },
-            "GetVolumeSnapshot": {
-              "methods": [
-                "GetVolumeSnapshot"
-              ]
-            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListLuns": {
@@ -70,19 +60,19 @@
                 "ListLuns"
               ]
             },
+            "ListNetworkUsage": {
+              "methods": [
+                "ListNetworkUsage"
+              ]
+            },
             "ListNetworks": {
               "methods": [
                 "ListNetworks"
               ]
             },
-            "ListSnapshotSchedulePolicies": {
+            "ListNfsShares": {
               "methods": [
-                "ListSnapshotSchedulePolicies"
-              ]
-            },
-            "ListVolumeSnapshots": {
-              "methods": [
-                "ListVolumeSnapshots"
+                "ListNfsShares"
               ]
             },
             "ListVolumes": {
@@ -95,14 +85,34 @@
                 "ResetInstance"
               ]
             },
-            "RestoreVolumeSnapshot": {
+            "ResizeVolume": {
               "methods": [
-                "RestoreVolumeSnapshot"
+                "ResizeVolume"
               ]
             },
-            "UpdateSnapshotSchedulePolicy": {
+            "StartInstance": {
               "methods": [
-                "UpdateSnapshotSchedulePolicy"
+                "StartInstance"
+              ]
+            },
+            "StopInstance": {
+              "methods": [
+                "StopInstance"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateNetwork": {
+              "methods": [
+                "UpdateNetwork"
+              ]
+            },
+            "UpdateNfsShare": {
+              "methods": [
+                "UpdateNfsShare"
               ]
             },
             "UpdateVolume": {

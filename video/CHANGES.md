@@ -1,5 +1,28 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.6.0...video/v1.7.0) (2022-06-29)
+
+
+### Features
+
+* **video/livestream:** add C++ library rules for the Live Stream API ([199b725](https://github.com/googleapis/google-cloud-go/commit/199b7250f474b1a6f53dcf0aac0c2966f4987b68))
+* **video/livestream:** release as GA ([5be6d33](https://github.com/googleapis/google-cloud-go/commit/5be6d33a57cc57ecfe5c34a0b1f6e3e0dd4b51fa))
+* **video/stitcher:** release as GA ([5be6d33](https://github.com/googleapis/google-cloud-go/commit/5be6d33a57cc57ecfe5c34a0b1f6e3e0dd4b51fa))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.5.0...video/v1.6.0) (2022-06-17)
+
+
+### Features
+
+* **video/transcoder:** add support for user labels for job and job template ([c84e111](https://github.com/googleapis/google-cloud-go/commit/c84e111db5d3f57f4e8fbb5dfff0219d052435a0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.4.0...video/v1.5.0) (2022-06-16)
+
+
+### Features
+
+* **video/stitcher:** add asset_id and stream_id fields to VodSession and LiveSession responses fix: remove COMPLETE_POD stitching option ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.3.0...video/v1.4.0) (2022-03-14)
 
 

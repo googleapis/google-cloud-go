@@ -68,7 +68,7 @@ func defaultFirewallCallOptions() *FirewallCallOptions {
 	}
 }
 
-// internalFirewallClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalFirewallClient is an interface that defines the methods available from App Engine Admin API.
 type internalFirewallClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -341,7 +341,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 	}
 }
 
-// internalCertificateAuthorityClient is an interface that defines the methods availaible from Certificate Authority API.
+// internalCertificateAuthorityClient is an interface that defines the methods available from Certificate Authority API.
 type internalCertificateAuthorityClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

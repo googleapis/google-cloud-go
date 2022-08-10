@@ -148,7 +148,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 	}
 }
 
-// internalInstanceAdminClient is an interface that defines the methods availaible from Cloud Spanner Instance Admin API.
+// internalInstanceAdminClient is an interface that defines the methods available from Cloud Spanner Instance Admin API.
 type internalInstanceAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -170,7 +170,7 @@ type internalInstanceAdminClient interface {
 // InstanceAdminClient is a client for interacting with Cloud Spanner Instance Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud Spanner Instance Admin API
+// # Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving
@@ -255,28 +255,28 @@ func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.G
 //
 // Immediately upon completion of this request:
 //
-//   The instance is readable via the API, with all requested attributes
-//   but no allocated resources. Its state is CREATING.
+//	The instance is readable via the API, with all requested attributes
+//	but no allocated resources. Its state is CREATING.
 //
 // Until completion of the returned operation:
 //
-//   Cancelling the operation renders the instance immediately unreadable
-//   via the API.
+//	Cancelling the operation renders the instance immediately unreadable
+//	via the API.
 //
-//   The instance can be deleted.
+//	The instance can be deleted.
 //
-//   All other attempts to modify the instance are rejected.
+//	All other attempts to modify the instance are rejected.
 //
 // Upon completion of the returned operation:
 //
-//   Billing for all successfully-allocated resources begins (some types
-//   may have lower than the requested levels).
+//	Billing for all successfully-allocated resources begins (some types
+//	may have lower than the requested levels).
 //
-//   Databases can be created in the instance.
+//	Databases can be created in the instance.
 //
-//   The instance’s allocated resource levels are readable via the API.
+//	The instance’s allocated resource levels are readable via the API.
 //
-//   The instance’s state becomes READY.
+//	The instance’s state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -303,31 +303,31 @@ func (c *InstanceAdminClient) CreateInstanceOperation(name string) *CreateInstan
 //
 // Immediately upon completion of this request:
 //
-//   For resource types for which a decrease in the instance’s allocation
-//   has been requested, billing is based on the newly-requested level.
+//	For resource types for which a decrease in the instance’s allocation
+//	has been requested, billing is based on the newly-requested level.
 //
 // Until completion of the returned operation:
 //
-//   Cancelling the operation sets its metadata’s
-//   cancel_time, and begins
-//   restoring resources to their pre-request values. The operation
-//   is guaranteed to succeed at undoing all resource changes,
-//   after which point it terminates with a CANCELLED status.
+//	Cancelling the operation sets its metadata’s
+//	cancel_time, and begins
+//	restoring resources to their pre-request values. The operation
+//	is guaranteed to succeed at undoing all resource changes,
+//	after which point it terminates with a CANCELLED status.
 //
-//   All other attempts to modify the instance are rejected.
+//	All other attempts to modify the instance are rejected.
 //
-//   Reading the instance via the API continues to give the pre-request
-//   resource levels.
+//	Reading the instance via the API continues to give the pre-request
+//	resource levels.
 //
 // Upon completion of the returned operation:
 //
-//   Billing begins for all successfully-allocated resources (some types
-//   may have lower than the requested levels).
+//	Billing begins for all successfully-allocated resources (some types
+//	may have lower than the requested levels).
 //
-//   All newly-reserved resources are available for serving the instance’s
-//   tables.
+//	All newly-reserved resources are available for serving the instance’s
+//	tables.
 //
-//   The instance’s new resource levels are readable via the API.
+//	The instance’s new resource levels are readable via the API.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -338,7 +338,7 @@ func (c *InstanceAdminClient) CreateInstanceOperation(name string) *CreateInstan
 // Instance, if successful.
 //
 // Authorization requires spanner.instances.update permission on
-// resource [name][google.spanner.admin.instance.v1.Instance.name (at http://google.spanner.admin.instance.v1.Instance.name)].
+// the resource [name][google.spanner.admin.instance.v1.Instance.name (at http://google.spanner.admin.instance.v1.Instance.name)].
 func (c *InstanceAdminClient) UpdateInstance(ctx context.Context, req *instancepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	return c.internalClient.UpdateInstance(ctx, req, opts...)
 }
@@ -353,13 +353,13 @@ func (c *InstanceAdminClient) UpdateInstanceOperation(name string) *UpdateInstan
 //
 // Immediately upon completion of the request:
 //
-//   Billing ceases for all of the instance’s reserved resources.
+//	Billing ceases for all of the instance’s reserved resources.
 //
 // Soon afterward:
 //
-//   The instance and all of its databases immediately and
-//   irrevocably disappear from the API. All data in the databases
-//   is permanently deleted.
+//	The instance and all of its databases immediately and
+//	irrevocably disappear from the API. All data in the databases
+//	is permanently deleted.
 func (c *InstanceAdminClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteInstance(ctx, req, opts...)
 }
@@ -420,7 +420,7 @@ type instanceAdminGRPCClient struct {
 // NewInstanceAdminClient creates a new instance admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud Spanner Instance Admin API
+// # Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving

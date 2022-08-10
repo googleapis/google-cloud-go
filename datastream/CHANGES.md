@@ -1,5 +1,19 @@
 # Changes
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.5.0...datastream/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **datastream:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+* **datastream:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+
+### Miscellaneous Chores
+
+* **datastream:** release 1.0.0 ([53f7cbd](https://github.com/googleapis/google-cloud-go/commit/53f7cbdd253e4ac224fa7d8ed3fa378e0dc8c97e))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.4.0...datastream/v0.5.0) (2022-05-24)
 
 

@@ -70,7 +70,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	}
 }
 
-// internalEnvironmentsClient is an interface that defines the methods availaible from Cloud Composer API.
+// internalEnvironmentsClient is an interface that defines the methods available from Cloud Composer API.
 type internalEnvironmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

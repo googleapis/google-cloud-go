@@ -36,12 +36,12 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -922,7 +922,7 @@ func TestCondition(t *testing.T) {
 
 	// Test an error, too:
 	err = obj.Generation(1234).NewWriter(ctx).Close()
-	if err == nil || !strings.Contains(err.Error(), "NewWriter: generation not supported") {
+	if err == nil || !strings.Contains(err.Error(), "storage: generation not supported") {
 		t.Errorf("want error about unsupported generation; got %v", err)
 	}
 }
@@ -1353,16 +1353,6 @@ func TestRetryer(t *testing.T) {
 					name: "client.HMACKeyHandle()",
 					r:    c.HMACKeyHandle("pID", "accessID").retry,
 					want: c.retry,
-				},
-				{
-					name: "client.Buckets()",
-					r:    c.Buckets(ctx, "pID").client.retry,
-					want: c.retry,
-				},
-				{
-					name: "bucket.Objects()",
-					r:    b.Objects(ctx, nil).bucket.retry,
-					want: b.retry,
 				},
 			}
 			for _, ac := range configHandleCases {

@@ -31,6 +31,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	baremetalsolutionpb "google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -41,26 +42,28 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListInstances                []gax.CallOption
-	GetInstance                  []gax.CallOption
-	ResetInstance                []gax.CallOption
-	ListVolumes                  []gax.CallOption
-	GetVolume                    []gax.CallOption
-	UpdateVolume                 []gax.CallOption
-	ListNetworks                 []gax.CallOption
-	GetNetwork                   []gax.CallOption
-	ListSnapshotSchedulePolicies []gax.CallOption
-	GetSnapshotSchedulePolicy    []gax.CallOption
-	CreateSnapshotSchedulePolicy []gax.CallOption
-	UpdateSnapshotSchedulePolicy []gax.CallOption
-	DeleteSnapshotSchedulePolicy []gax.CallOption
-	CreateVolumeSnapshot         []gax.CallOption
-	RestoreVolumeSnapshot        []gax.CallOption
-	DeleteVolumeSnapshot         []gax.CallOption
-	GetVolumeSnapshot            []gax.CallOption
-	ListVolumeSnapshots          []gax.CallOption
-	GetLun                       []gax.CallOption
-	ListLuns                     []gax.CallOption
+	ListInstances    []gax.CallOption
+	GetInstance      []gax.CallOption
+	UpdateInstance   []gax.CallOption
+	ResetInstance    []gax.CallOption
+	StartInstance    []gax.CallOption
+	StopInstance     []gax.CallOption
+	DetachLun        []gax.CallOption
+	ListVolumes      []gax.CallOption
+	GetVolume        []gax.CallOption
+	UpdateVolume     []gax.CallOption
+	ResizeVolume     []gax.CallOption
+	ListNetworks     []gax.CallOption
+	ListNetworkUsage []gax.CallOption
+	GetNetwork       []gax.CallOption
+	UpdateNetwork    []gax.CallOption
+	GetLun           []gax.CallOption
+	ListLuns         []gax.CallOption
+	GetNfsShare      []gax.CallOption
+	ListNfsShares    []gax.CallOption
+	UpdateNfsShare   []gax.CallOption
+	GetLocation      []gax.CallOption
+	ListLocations    []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -77,57 +80,67 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListInstances:                []gax.CallOption{},
-		GetInstance:                  []gax.CallOption{},
-		ResetInstance:                []gax.CallOption{},
-		ListVolumes:                  []gax.CallOption{},
-		GetVolume:                    []gax.CallOption{},
-		UpdateVolume:                 []gax.CallOption{},
-		ListNetworks:                 []gax.CallOption{},
-		GetNetwork:                   []gax.CallOption{},
-		ListSnapshotSchedulePolicies: []gax.CallOption{},
-		GetSnapshotSchedulePolicy:    []gax.CallOption{},
-		CreateSnapshotSchedulePolicy: []gax.CallOption{},
-		UpdateSnapshotSchedulePolicy: []gax.CallOption{},
-		DeleteSnapshotSchedulePolicy: []gax.CallOption{},
-		CreateVolumeSnapshot:         []gax.CallOption{},
-		RestoreVolumeSnapshot:        []gax.CallOption{},
-		DeleteVolumeSnapshot:         []gax.CallOption{},
-		GetVolumeSnapshot:            []gax.CallOption{},
-		ListVolumeSnapshots:          []gax.CallOption{},
-		GetLun:                       []gax.CallOption{},
-		ListLuns:                     []gax.CallOption{},
+		ListInstances:    []gax.CallOption{},
+		GetInstance:      []gax.CallOption{},
+		UpdateInstance:   []gax.CallOption{},
+		ResetInstance:    []gax.CallOption{},
+		StartInstance:    []gax.CallOption{},
+		StopInstance:     []gax.CallOption{},
+		DetachLun:        []gax.CallOption{},
+		ListVolumes:      []gax.CallOption{},
+		GetVolume:        []gax.CallOption{},
+		UpdateVolume:     []gax.CallOption{},
+		ResizeVolume:     []gax.CallOption{},
+		ListNetworks:     []gax.CallOption{},
+		ListNetworkUsage: []gax.CallOption{},
+		GetNetwork:       []gax.CallOption{},
+		UpdateNetwork:    []gax.CallOption{},
+		GetLun:           []gax.CallOption{},
+		ListLuns:         []gax.CallOption{},
+		GetNfsShare:      []gax.CallOption{},
+		ListNfsShares:    []gax.CallOption{},
+		UpdateNfsShare:   []gax.CallOption{},
+		GetLocation:      []gax.CallOption{},
+		ListLocations:    []gax.CallOption{},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Bare Metal Solution API.
+// internalClient is an interface that defines the methods available from Bare Metal Solution API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	ListInstances(context.Context, *baremetalsolutionpb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
 	GetInstance(context.Context, *baremetalsolutionpb.GetInstanceRequest, ...gax.CallOption) (*baremetalsolutionpb.Instance, error)
+	UpdateInstance(context.Context, *baremetalsolutionpb.UpdateInstanceRequest, ...gax.CallOption) (*UpdateInstanceOperation, error)
+	UpdateInstanceOperation(name string) *UpdateInstanceOperation
 	ResetInstance(context.Context, *baremetalsolutionpb.ResetInstanceRequest, ...gax.CallOption) (*ResetInstanceOperation, error)
 	ResetInstanceOperation(name string) *ResetInstanceOperation
+	StartInstance(context.Context, *baremetalsolutionpb.StartInstanceRequest, ...gax.CallOption) (*StartInstanceOperation, error)
+	StartInstanceOperation(name string) *StartInstanceOperation
+	StopInstance(context.Context, *baremetalsolutionpb.StopInstanceRequest, ...gax.CallOption) (*StopInstanceOperation, error)
+	StopInstanceOperation(name string) *StopInstanceOperation
+	DetachLun(context.Context, *baremetalsolutionpb.DetachLunRequest, ...gax.CallOption) (*DetachLunOperation, error)
+	DetachLunOperation(name string) *DetachLunOperation
 	ListVolumes(context.Context, *baremetalsolutionpb.ListVolumesRequest, ...gax.CallOption) *VolumeIterator
 	GetVolume(context.Context, *baremetalsolutionpb.GetVolumeRequest, ...gax.CallOption) (*baremetalsolutionpb.Volume, error)
 	UpdateVolume(context.Context, *baremetalsolutionpb.UpdateVolumeRequest, ...gax.CallOption) (*UpdateVolumeOperation, error)
 	UpdateVolumeOperation(name string) *UpdateVolumeOperation
+	ResizeVolume(context.Context, *baremetalsolutionpb.ResizeVolumeRequest, ...gax.CallOption) (*ResizeVolumeOperation, error)
+	ResizeVolumeOperation(name string) *ResizeVolumeOperation
 	ListNetworks(context.Context, *baremetalsolutionpb.ListNetworksRequest, ...gax.CallOption) *NetworkIterator
+	ListNetworkUsage(context.Context, *baremetalsolutionpb.ListNetworkUsageRequest, ...gax.CallOption) (*baremetalsolutionpb.ListNetworkUsageResponse, error)
 	GetNetwork(context.Context, *baremetalsolutionpb.GetNetworkRequest, ...gax.CallOption) (*baremetalsolutionpb.Network, error)
-	ListSnapshotSchedulePolicies(context.Context, *baremetalsolutionpb.ListSnapshotSchedulePoliciesRequest, ...gax.CallOption) *SnapshotSchedulePolicyIterator
-	GetSnapshotSchedulePolicy(context.Context, *baremetalsolutionpb.GetSnapshotSchedulePolicyRequest, ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error)
-	CreateSnapshotSchedulePolicy(context.Context, *baremetalsolutionpb.CreateSnapshotSchedulePolicyRequest, ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error)
-	UpdateSnapshotSchedulePolicy(context.Context, *baremetalsolutionpb.UpdateSnapshotSchedulePolicyRequest, ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error)
-	DeleteSnapshotSchedulePolicy(context.Context, *baremetalsolutionpb.DeleteSnapshotSchedulePolicyRequest, ...gax.CallOption) error
-	CreateVolumeSnapshot(context.Context, *baremetalsolutionpb.CreateVolumeSnapshotRequest, ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error)
-	RestoreVolumeSnapshot(context.Context, *baremetalsolutionpb.RestoreVolumeSnapshotRequest, ...gax.CallOption) (*RestoreVolumeSnapshotOperation, error)
-	RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation
-	DeleteVolumeSnapshot(context.Context, *baremetalsolutionpb.DeleteVolumeSnapshotRequest, ...gax.CallOption) error
-	GetVolumeSnapshot(context.Context, *baremetalsolutionpb.GetVolumeSnapshotRequest, ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error)
-	ListVolumeSnapshots(context.Context, *baremetalsolutionpb.ListVolumeSnapshotsRequest, ...gax.CallOption) *VolumeSnapshotIterator
+	UpdateNetwork(context.Context, *baremetalsolutionpb.UpdateNetworkRequest, ...gax.CallOption) (*UpdateNetworkOperation, error)
+	UpdateNetworkOperation(name string) *UpdateNetworkOperation
 	GetLun(context.Context, *baremetalsolutionpb.GetLunRequest, ...gax.CallOption) (*baremetalsolutionpb.Lun, error)
 	ListLuns(context.Context, *baremetalsolutionpb.ListLunsRequest, ...gax.CallOption) *LunIterator
+	GetNfsShare(context.Context, *baremetalsolutionpb.GetNfsShareRequest, ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error)
+	ListNfsShares(context.Context, *baremetalsolutionpb.ListNfsSharesRequest, ...gax.CallOption) *NfsShareIterator
+	UpdateNfsShare(context.Context, *baremetalsolutionpb.UpdateNfsShareRequest, ...gax.CallOption) (*UpdateNfsShareOperation, error)
+	UpdateNfsShareOperation(name string) *UpdateNfsShareOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
 
 // Client is a client for interacting with Bare Metal Solution API.
@@ -186,6 +199,17 @@ func (c *Client) GetInstance(ctx context.Context, req *baremetalsolutionpb.GetIn
 	return c.internalClient.GetInstance(ctx, req, opts...)
 }
 
+// UpdateInstance update details of a single server.
+func (c *Client) UpdateInstance(ctx context.Context, req *baremetalsolutionpb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
+	return c.internalClient.UpdateInstance(ctx, req, opts...)
+}
+
+// UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
+// The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
+func (c *Client) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
+	return c.internalClient.UpdateInstanceOperation(name)
+}
+
 // ResetInstance perform an ungraceful, hard reset on a server. Equivalent to shutting the
 // power off and then turning it back on.
 func (c *Client) ResetInstance(ctx context.Context, req *baremetalsolutionpb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
@@ -196,6 +220,39 @@ func (c *Client) ResetInstance(ctx context.Context, req *baremetalsolutionpb.Res
 // The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
 func (c *Client) ResetInstanceOperation(name string) *ResetInstanceOperation {
 	return c.internalClient.ResetInstanceOperation(name)
+}
+
+// StartInstance starts a server that was shutdown.
+func (c *Client) StartInstance(ctx context.Context, req *baremetalsolutionpb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
+	return c.internalClient.StartInstance(ctx, req, opts...)
+}
+
+// StartInstanceOperation returns a new StartInstanceOperation from a given name.
+// The name must be that of a previously created StartInstanceOperation, possibly from a different process.
+func (c *Client) StartInstanceOperation(name string) *StartInstanceOperation {
+	return c.internalClient.StartInstanceOperation(name)
+}
+
+// StopInstance stop a running server.
+func (c *Client) StopInstance(ctx context.Context, req *baremetalsolutionpb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
+	return c.internalClient.StopInstance(ctx, req, opts...)
+}
+
+// StopInstanceOperation returns a new StopInstanceOperation from a given name.
+// The name must be that of a previously created StopInstanceOperation, possibly from a different process.
+func (c *Client) StopInstanceOperation(name string) *StopInstanceOperation {
+	return c.internalClient.StopInstanceOperation(name)
+}
+
+// DetachLun detach LUN from Instance.
+func (c *Client) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachLunRequest, opts ...gax.CallOption) (*DetachLunOperation, error) {
+	return c.internalClient.DetachLun(ctx, req, opts...)
+}
+
+// DetachLunOperation returns a new DetachLunOperation from a given name.
+// The name must be that of a previously created DetachLunOperation, possibly from a different process.
+func (c *Client) DetachLunOperation(name string) *DetachLunOperation {
+	return c.internalClient.DetachLunOperation(name)
 }
 
 // ListVolumes list storage volumes in a given project and location.
@@ -219,9 +276,26 @@ func (c *Client) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	return c.internalClient.UpdateVolumeOperation(name)
 }
 
+// ResizeVolume emergency Volume resize.
+func (c *Client) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.ResizeVolumeRequest, opts ...gax.CallOption) (*ResizeVolumeOperation, error) {
+	return c.internalClient.ResizeVolume(ctx, req, opts...)
+}
+
+// ResizeVolumeOperation returns a new ResizeVolumeOperation from a given name.
+// The name must be that of a previously created ResizeVolumeOperation, possibly from a different process.
+func (c *Client) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
+	return c.internalClient.ResizeVolumeOperation(name)
+}
+
 // ListNetworks list network in a given project and location.
 func (c *Client) ListNetworks(ctx context.Context, req *baremetalsolutionpb.ListNetworksRequest, opts ...gax.CallOption) *NetworkIterator {
 	return c.internalClient.ListNetworks(ctx, req, opts...)
+}
+
+// ListNetworkUsage list all Networks (and used IPs for each Network) in the vendor account
+// associated with the specified project.
+func (c *Client) ListNetworkUsage(ctx context.Context, req *baremetalsolutionpb.ListNetworkUsageRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ListNetworkUsageResponse, error) {
+	return c.internalClient.ListNetworkUsage(ctx, req, opts...)
 }
 
 // GetNetwork get details of a single network.
@@ -229,60 +303,15 @@ func (c *Client) GetNetwork(ctx context.Context, req *baremetalsolutionpb.GetNet
 	return c.internalClient.GetNetwork(ctx, req, opts...)
 }
 
-// ListSnapshotSchedulePolicies list snapshot schedule policies in a given project and location.
-func (c *Client) ListSnapshotSchedulePolicies(ctx context.Context, req *baremetalsolutionpb.ListSnapshotSchedulePoliciesRequest, opts ...gax.CallOption) *SnapshotSchedulePolicyIterator {
-	return c.internalClient.ListSnapshotSchedulePolicies(ctx, req, opts...)
+// UpdateNetwork update details of a single network.
+func (c *Client) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb.UpdateNetworkRequest, opts ...gax.CallOption) (*UpdateNetworkOperation, error) {
+	return c.internalClient.UpdateNetwork(ctx, req, opts...)
 }
 
-// GetSnapshotSchedulePolicy get details of a single snapshot schedule policy.
-func (c *Client) GetSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.GetSnapshotSchedulePolicyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error) {
-	return c.internalClient.GetSnapshotSchedulePolicy(ctx, req, opts...)
-}
-
-// CreateSnapshotSchedulePolicy create a snapshot schedule policy in the specified project.
-func (c *Client) CreateSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.CreateSnapshotSchedulePolicyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error) {
-	return c.internalClient.CreateSnapshotSchedulePolicy(ctx, req, opts...)
-}
-
-// UpdateSnapshotSchedulePolicy update a snapshot schedule policy in the specified project.
-func (c *Client) UpdateSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.UpdateSnapshotSchedulePolicyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error) {
-	return c.internalClient.UpdateSnapshotSchedulePolicy(ctx, req, opts...)
-}
-
-// DeleteSnapshotSchedulePolicy delete a named snapshot schedule policy.
-func (c *Client) DeleteSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.DeleteSnapshotSchedulePolicyRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteSnapshotSchedulePolicy(ctx, req, opts...)
-}
-
-// CreateVolumeSnapshot create a storage volume snapshot in a containing volume.
-func (c *Client) CreateVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.CreateVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
-	return c.internalClient.CreateVolumeSnapshot(ctx, req, opts...)
-}
-
-// RestoreVolumeSnapshot restore a storage volume snapshot to its containing volume.
-func (c *Client) RestoreVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.RestoreVolumeSnapshotRequest, opts ...gax.CallOption) (*RestoreVolumeSnapshotOperation, error) {
-	return c.internalClient.RestoreVolumeSnapshot(ctx, req, opts...)
-}
-
-// RestoreVolumeSnapshotOperation returns a new RestoreVolumeSnapshotOperation from a given name.
-// The name must be that of a previously created RestoreVolumeSnapshotOperation, possibly from a different process.
-func (c *Client) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation {
-	return c.internalClient.RestoreVolumeSnapshotOperation(name)
-}
-
-// DeleteVolumeSnapshot deletes a storage volume snapshot for a given volume.
-func (c *Client) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.DeleteVolumeSnapshotRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteVolumeSnapshot(ctx, req, opts...)
-}
-
-// GetVolumeSnapshot get details of a single storage volume snapshot.
-func (c *Client) GetVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.GetVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
-	return c.internalClient.GetVolumeSnapshot(ctx, req, opts...)
-}
-
-// ListVolumeSnapshots list storage volume snapshots for given storage volume.
-func (c *Client) ListVolumeSnapshots(ctx context.Context, req *baremetalsolutionpb.ListVolumeSnapshotsRequest, opts ...gax.CallOption) *VolumeSnapshotIterator {
-	return c.internalClient.ListVolumeSnapshots(ctx, req, opts...)
+// UpdateNetworkOperation returns a new UpdateNetworkOperation from a given name.
+// The name must be that of a previously created UpdateNetworkOperation, possibly from a different process.
+func (c *Client) UpdateNetworkOperation(name string) *UpdateNetworkOperation {
+	return c.internalClient.UpdateNetworkOperation(name)
 }
 
 // GetLun get details of a single storage logical unit number(LUN).
@@ -293,6 +322,37 @@ func (c *Client) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequ
 // ListLuns list storage volume luns for given storage volume.
 func (c *Client) ListLuns(ctx context.Context, req *baremetalsolutionpb.ListLunsRequest, opts ...gax.CallOption) *LunIterator {
 	return c.internalClient.ListLuns(ctx, req, opts...)
+}
+
+// GetNfsShare get details of a single NFS share.
+func (c *Client) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.GetNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	return c.internalClient.GetNfsShare(ctx, req, opts...)
+}
+
+// ListNfsShares list NFS shares.
+func (c *Client) ListNfsShares(ctx context.Context, req *baremetalsolutionpb.ListNfsSharesRequest, opts ...gax.CallOption) *NfsShareIterator {
+	return c.internalClient.ListNfsShares(ctx, req, opts...)
+}
+
+// UpdateNfsShare update details of a single NFS share.
+func (c *Client) UpdateNfsShare(ctx context.Context, req *baremetalsolutionpb.UpdateNfsShareRequest, opts ...gax.CallOption) (*UpdateNfsShareOperation, error) {
+	return c.internalClient.UpdateNfsShare(ctx, req, opts...)
+}
+
+// UpdateNfsShareOperation returns a new UpdateNfsShareOperation from a given name.
+// The name must be that of a previously created UpdateNfsShareOperation, possibly from a different process.
+func (c *Client) UpdateNfsShareOperation(name string) *UpdateNfsShareOperation {
+	return c.internalClient.UpdateNfsShareOperation(name)
+}
+
+// GetLocation gets information about a location.
+func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Bare Metal Solution API over gRPC transport.
@@ -315,6 +375,8 @@ type gRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -357,6 +419,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           baremetalsolutionpb.NewBareMetalSolutionClient(connPool),
 		CallOptions:      &client.CallOptions,
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -465,6 +528,30 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 	return resp, nil
 }
 
+func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionpb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -485,6 +572,78 @@ func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 		return nil, err
 	}
 	return &ResetInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).StartInstance[0:len((*c.CallOptions).StartInstance):len((*c.CallOptions).StartInstance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.StartInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StartInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).StopInstance[0:len((*c.CallOptions).StopInstance):len((*c.CallOptions).StopInstance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.StopInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StopInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachLunRequest, opts ...gax.CallOption) (*DetachLunOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DetachLun[0:len((*c.CallOptions).DetachLun):len((*c.CallOptions).DetachLun)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DetachLun(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DetachLunOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -580,6 +739,30 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	}, nil
 }
 
+func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.ResizeVolumeRequest, opts ...gax.CallOption) (*ResizeVolumeOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume", url.QueryEscape(req.GetVolume())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ResizeVolume[0:len((*c.CallOptions).ResizeVolume):len((*c.CallOptions).ResizeVolume)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ResizeVolume(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ResizeVolumeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.ListNetworksRequest, opts ...gax.CallOption) *NetworkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -625,6 +808,28 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 	return it
 }
 
+func (c *gRPCClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutionpb.ListNetworkUsageRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ListNetworkUsageResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListNetworkUsage[0:len((*c.CallOptions).ListNetworkUsage):len((*c.CallOptions).ListNetworkUsage)], opts...)
+	var resp *baremetalsolutionpb.ListNetworkUsageResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListNetworkUsage(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.GetNetworkRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -647,264 +852,28 @@ func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 	return resp, nil
 }
 
-func (c *gRPCClient) ListSnapshotSchedulePolicies(ctx context.Context, req *baremetalsolutionpb.ListSnapshotSchedulePoliciesRequest, opts ...gax.CallOption) *SnapshotSchedulePolicyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListSnapshotSchedulePolicies[0:len((*c.CallOptions).ListSnapshotSchedulePolicies):len((*c.CallOptions).ListSnapshotSchedulePolicies)], opts...)
-	it := &SnapshotSchedulePolicyIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListSnapshotSchedulePoliciesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.SnapshotSchedulePolicy, string, error) {
-		resp := &baremetalsolutionpb.ListSnapshotSchedulePoliciesResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.client.ListSnapshotSchedulePolicies(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetSnapshotSchedulePolicies(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *gRPCClient) GetSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.GetSnapshotSchedulePolicyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error) {
+func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb.UpdateNetworkRequest, opts ...gax.CallOption) (*UpdateNetworkOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "network.name", url.QueryEscape(req.GetNetwork().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetSnapshotSchedulePolicy[0:len((*c.CallOptions).GetSnapshotSchedulePolicy):len((*c.CallOptions).GetSnapshotSchedulePolicy)], opts...)
-	var resp *baremetalsolutionpb.SnapshotSchedulePolicy
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetSnapshotSchedulePolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) CreateSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.CreateSnapshotSchedulePolicyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CreateSnapshotSchedulePolicy[0:len((*c.CallOptions).CreateSnapshotSchedulePolicy):len((*c.CallOptions).CreateSnapshotSchedulePolicy)], opts...)
-	var resp *baremetalsolutionpb.SnapshotSchedulePolicy
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.CreateSnapshotSchedulePolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) UpdateSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.UpdateSnapshotSchedulePolicyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SnapshotSchedulePolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "snapshot_schedule_policy.name", url.QueryEscape(req.GetSnapshotSchedulePolicy().GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateSnapshotSchedulePolicy[0:len((*c.CallOptions).UpdateSnapshotSchedulePolicy):len((*c.CallOptions).UpdateSnapshotSchedulePolicy)], opts...)
-	var resp *baremetalsolutionpb.SnapshotSchedulePolicy
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.UpdateSnapshotSchedulePolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) DeleteSnapshotSchedulePolicy(ctx context.Context, req *baremetalsolutionpb.DeleteSnapshotSchedulePolicyRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteSnapshotSchedulePolicy[0:len((*c.CallOptions).DeleteSnapshotSchedulePolicy):len((*c.CallOptions).DeleteSnapshotSchedulePolicy)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteSnapshotSchedulePolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *gRPCClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.CreateVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CreateVolumeSnapshot[0:len((*c.CallOptions).CreateVolumeSnapshot):len((*c.CallOptions).CreateVolumeSnapshot)], opts...)
-	var resp *baremetalsolutionpb.VolumeSnapshot
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.CreateVolumeSnapshot(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.RestoreVolumeSnapshotRequest, opts ...gax.CallOption) (*RestoreVolumeSnapshotOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume_snapshot", url.QueryEscape(req.GetVolumeSnapshot())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).RestoreVolumeSnapshot[0:len((*c.CallOptions).RestoreVolumeSnapshot):len((*c.CallOptions).RestoreVolumeSnapshot)], opts...)
+	opts = append((*c.CallOptions).UpdateNetwork[0:len((*c.CallOptions).UpdateNetwork):len((*c.CallOptions).UpdateNetwork)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.RestoreVolumeSnapshot(ctx, req, settings.GRPC...)
+		resp, err = c.client.UpdateNetwork(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return &RestoreVolumeSnapshotOperation{
+	return &UpdateNetworkOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
-}
-
-func (c *gRPCClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.DeleteVolumeSnapshotRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteVolumeSnapshot[0:len((*c.CallOptions).DeleteVolumeSnapshot):len((*c.CallOptions).DeleteVolumeSnapshot)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteVolumeSnapshot(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *gRPCClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.GetVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetVolumeSnapshot[0:len((*c.CallOptions).GetVolumeSnapshot):len((*c.CallOptions).GetVolumeSnapshot)], opts...)
-	var resp *baremetalsolutionpb.VolumeSnapshot
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetVolumeSnapshot(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolutionpb.ListVolumeSnapshotsRequest, opts ...gax.CallOption) *VolumeSnapshotIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListVolumeSnapshots[0:len((*c.CallOptions).ListVolumeSnapshots):len((*c.CallOptions).ListVolumeSnapshots)], opts...)
-	it := &VolumeSnapshotIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumeSnapshotsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.VolumeSnapshot, string, error) {
-		resp := &baremetalsolutionpb.ListVolumeSnapshotsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.client.ListVolumeSnapshots(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetVolumeSnapshots(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 func (c *gRPCClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Lun, error) {
@@ -972,6 +941,228 @@ func (c *gRPCClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.GetNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetNfsShare[0:len((*c.CallOptions).GetNfsShare):len((*c.CallOptions).GetNfsShare)], opts...)
+	var resp *baremetalsolutionpb.NfsShare
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetNfsShare(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb.ListNfsSharesRequest, opts ...gax.CallOption) *NfsShareIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListNfsShares[0:len((*c.CallOptions).ListNfsShares):len((*c.CallOptions).ListNfsShares)], opts...)
+	it := &NfsShareIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListNfsSharesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.NfsShare, string, error) {
+		resp := &baremetalsolutionpb.ListNfsSharesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListNfsShares(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetNfsShares(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionpb.UpdateNfsShareRequest, opts ...gax.CallOption) (*UpdateNfsShareOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "nfs_share.name", url.QueryEscape(req.GetNfsShare().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateNfsShare[0:len((*c.CallOptions).UpdateNfsShare):len((*c.CallOptions).UpdateNfsShare)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateNfsShare(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateNfsShareOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DetachLunOperation manages a long-running operation from DetachLun.
+type DetachLunOperation struct {
+	lro *longrunning.Operation
+}
+
+// DetachLunOperation returns a new DetachLunOperation from a given name.
+// The name must be that of a previously created DetachLunOperation, possibly from a different process.
+func (c *gRPCClient) DetachLunOperation(name string) *DetachLunOperation {
+	return &DetachLunOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DetachLunOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
+	var resp baremetalsolutionpb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DetachLunOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
+	var resp baremetalsolutionpb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DetachLunOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
+	var meta baremetalsolutionpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DetachLunOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DetachLunOperation) Name() string {
+	return op.lro.Name()
 }
 
 // ResetInstanceOperation manages a long-running operation from ResetInstance.
@@ -1043,15 +1234,15 @@ func (op *ResetInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
-// RestoreVolumeSnapshotOperation manages a long-running operation from RestoreVolumeSnapshot.
-type RestoreVolumeSnapshotOperation struct {
+// ResizeVolumeOperation manages a long-running operation from ResizeVolume.
+type ResizeVolumeOperation struct {
 	lro *longrunning.Operation
 }
 
-// RestoreVolumeSnapshotOperation returns a new RestoreVolumeSnapshotOperation from a given name.
-// The name must be that of a previously created RestoreVolumeSnapshotOperation, possibly from a different process.
-func (c *gRPCClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation {
-	return &RestoreVolumeSnapshotOperation{
+// ResizeVolumeOperation returns a new ResizeVolumeOperation from a given name.
+// The name must be that of a previously created ResizeVolumeOperation, possibly from a different process.
+func (c *gRPCClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
+	return &ResizeVolumeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
@@ -1059,8 +1250,8 @@ func (c *gRPCClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeS
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *RestoreVolumeSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
-	var resp baremetalsolutionpb.VolumeSnapshot
+func (op *ResizeVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
+	var resp baremetalsolutionpb.Volume
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
@@ -1076,8 +1267,8 @@ func (op *RestoreVolumeSnapshotOperation) Wait(ctx context.Context, opts ...gax.
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RestoreVolumeSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
-	var resp baremetalsolutionpb.VolumeSnapshot
+func (op *ResizeVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
+	var resp baremetalsolutionpb.Volume
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -1091,7 +1282,7 @@ func (op *RestoreVolumeSnapshotOperation) Poll(ctx context.Context, opts ...gax.
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *RestoreVolumeSnapshotOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
+func (op *ResizeVolumeOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
 	var meta baremetalsolutionpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
@@ -1102,13 +1293,358 @@ func (op *RestoreVolumeSnapshotOperation) Metadata() (*baremetalsolutionpb.Opera
 }
 
 // Done reports whether the long-running operation has completed.
-func (op *RestoreVolumeSnapshotOperation) Done() bool {
+func (op *ResizeVolumeOperation) Done() bool {
 	return op.lro.Done()
 }
 
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RestoreVolumeSnapshotOperation) Name() string {
+func (op *ResizeVolumeOperation) Name() string {
+	return op.lro.Name()
+}
+
+// StartInstanceOperation manages a long-running operation from StartInstance.
+type StartInstanceOperation struct {
+	lro *longrunning.Operation
+}
+
+// StartInstanceOperation returns a new StartInstanceOperation from a given name.
+// The name must be that of a previously created StartInstanceOperation, possibly from a different process.
+func (c *gRPCClient) StartInstanceOperation(name string) *StartInstanceOperation {
+	return &StartInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *StartInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StartInstanceResponse, error) {
+	var resp baremetalsolutionpb.StartInstanceResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *StartInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StartInstanceResponse, error) {
+	var resp baremetalsolutionpb.StartInstanceResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *StartInstanceOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
+	var meta baremetalsolutionpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *StartInstanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *StartInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// StopInstanceOperation manages a long-running operation from StopInstance.
+type StopInstanceOperation struct {
+	lro *longrunning.Operation
+}
+
+// StopInstanceOperation returns a new StopInstanceOperation from a given name.
+// The name must be that of a previously created StopInstanceOperation, possibly from a different process.
+func (c *gRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
+	return &StopInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *StopInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StopInstanceResponse, error) {
+	var resp baremetalsolutionpb.StopInstanceResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *StopInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StopInstanceResponse, error) {
+	var resp baremetalsolutionpb.StopInstanceResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *StopInstanceOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
+	var meta baremetalsolutionpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *StopInstanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *StopInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateInstanceOperation manages a long-running operation from UpdateInstance.
+type UpdateInstanceOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
+// The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
+func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
+	return &UpdateInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
+	var resp baremetalsolutionpb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
+	var resp baremetalsolutionpb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateInstanceOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
+	var meta baremetalsolutionpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateInstanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateNetworkOperation manages a long-running operation from UpdateNetwork.
+type UpdateNetworkOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateNetworkOperation returns a new UpdateNetworkOperation from a given name.
+// The name must be that of a previously created UpdateNetworkOperation, possibly from a different process.
+func (c *gRPCClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation {
+	return &UpdateNetworkOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateNetworkOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
+	var resp baremetalsolutionpb.Network
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateNetworkOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
+	var resp baremetalsolutionpb.Network
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateNetworkOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
+	var meta baremetalsolutionpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateNetworkOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateNetworkOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateNfsShareOperation manages a long-running operation from UpdateNfsShare.
+type UpdateNfsShareOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateNfsShareOperation returns a new UpdateNfsShareOperation from a given name.
+// The name must be that of a previously created UpdateNfsShareOperation, possibly from a different process.
+func (c *gRPCClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperation {
+	return &UpdateNfsShareOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateNfsShareOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	var resp baremetalsolutionpb.NfsShare
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateNfsShareOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	var resp baremetalsolutionpb.NfsShare
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateNfsShareOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
+	var meta baremetalsolutionpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateNfsShareOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateNfsShareOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1228,6 +1764,53 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // LunIterator manages a stream of *baremetalsolutionpb.Lun.
 type LunIterator struct {
 	items    []*baremetalsolutionpb.Lun
@@ -1322,9 +1905,9 @@ func (it *NetworkIterator) takeBuf() interface{} {
 	return b
 }
 
-// SnapshotSchedulePolicyIterator manages a stream of *baremetalsolutionpb.SnapshotSchedulePolicy.
-type SnapshotSchedulePolicyIterator struct {
-	items    []*baremetalsolutionpb.SnapshotSchedulePolicy
+// NfsShareIterator manages a stream of *baremetalsolutionpb.NfsShare.
+type NfsShareIterator struct {
+	items    []*baremetalsolutionpb.NfsShare
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -1339,18 +1922,18 @@ type SnapshotSchedulePolicyIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.SnapshotSchedulePolicy, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.NfsShare, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SnapshotSchedulePolicyIterator) PageInfo() *iterator.PageInfo {
+func (it *NfsShareIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SnapshotSchedulePolicyIterator) Next() (*baremetalsolutionpb.SnapshotSchedulePolicy, error) {
-	var item *baremetalsolutionpb.SnapshotSchedulePolicy
+func (it *NfsShareIterator) Next() (*baremetalsolutionpb.NfsShare, error) {
+	var item *baremetalsolutionpb.NfsShare
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -1359,11 +1942,11 @@ func (it *SnapshotSchedulePolicyIterator) Next() (*baremetalsolutionpb.SnapshotS
 	return item, nil
 }
 
-func (it *SnapshotSchedulePolicyIterator) bufLen() int {
+func (it *NfsShareIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *SnapshotSchedulePolicyIterator) takeBuf() interface{} {
+func (it *NfsShareIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
@@ -1411,53 +1994,6 @@ func (it *VolumeIterator) bufLen() int {
 }
 
 func (it *VolumeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// VolumeSnapshotIterator manages a stream of *baremetalsolutionpb.VolumeSnapshot.
-type VolumeSnapshotIterator struct {
-	items    []*baremetalsolutionpb.VolumeSnapshot
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.VolumeSnapshot, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VolumeSnapshotIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VolumeSnapshotIterator) Next() (*baremetalsolutionpb.VolumeSnapshot, error) {
-	var item *baremetalsolutionpb.VolumeSnapshot
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VolumeSnapshotIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VolumeSnapshotIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

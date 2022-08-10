@@ -184,7 +184,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Asset API.
+// internalClient is an interface that defines the methods available from Cloud Asset API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

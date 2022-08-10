@@ -32,7 +32,8 @@ func TestParseQuery(t *testing.T) {
 		want Query
 	}{
 		{`SELECT 17`, Query{Select: Select{List: []Expr{IntegerLiteral(17)}}}},
-		{`SELECT Alias AS aka From Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
+		{
+			`SELECT Alias AS aka From Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
@@ -62,7 +63,8 @@ func TestParseQuery(t *testing.T) {
 				Offset: IntegerLiteral(3),
 			},
 		},
-		{`SELECT COUNT(*) FROM Packages`,
+		{
+			`SELECT COUNT(*) FROM Packages`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -75,7 +77,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM Packages`,
+		{
+			`SELECT * FROM Packages`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -83,7 +86,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT date, timestamp as timestamp FROM Packages WHERE date = DATE '2014-09-27' AND timestamp = TIMESTAMP '2014-09-27 12:30:00'`,
+		{
+			`SELECT date, timestamp as timestamp FROM Packages WHERE date = DATE '2014-09-27' AND timestamp = TIMESTAMP '2014-09-27 12:30:00'`,
 			Query{
 				Select: Select{
 					List: []Expr{ID("date"), ID("timestamp")},
@@ -105,14 +109,16 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT UNIX_DATE(DATE "2008-12-25")`,
+		{
+			`SELECT UNIX_DATE(DATE "2008-12-25")`,
 			Query{
 				Select: Select{
 					List: []Expr{Func{Name: "UNIX_DATE", Args: []Expr{DateLiteral{Year: 2008, Month: 12, Day: 25}}}},
 				},
 			},
 		},
-		{`SELECT * FROM Foo WHERE STARTS_WITH(Bar, 'B')`,
+		{
+			`SELECT * FROM Foo WHERE STARTS_WITH(Bar, 'B')`,
 			Query{
 				Select: Select{
 					List:  []Expr{Star},
@@ -121,7 +127,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM Foo WHERE CAST(Bar AS STRING)='Bar'`,
+		{
+			`SELECT * FROM Foo WHERE CAST(Bar AS STRING)='Bar'`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -134,7 +141,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
+		{
+			`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -149,7 +157,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// https://github.com/googleapis/google-cloud-go/issues/1973
-		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l.user_id=@userID`,
+		{
+			`SELECT COUNT(*) AS count FROM Lists AS l WHERE l.user_id=@userID`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -166,7 +175,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// with single table hint
-		{`SELECT * FROM Packages@{FORCE_INDEX=PackagesIdx} WHERE package_idx=@packageIdx`,
+		{
+			`SELECT * FROM Packages@{FORCE_INDEX=PackagesIdx} WHERE package_idx=@packageIdx`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -180,7 +190,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// with multiple table hints
-		{`SELECT * FROM Packages@{ FORCE_INDEX=PackagesIdx, GROUPBY_SCAN_OPTIMIZATION=TRUE } WHERE package_idx=@packageIdx`,
+		{
+			`SELECT * FROM Packages@{ FORCE_INDEX=PackagesIdx, GROUPBY_SCAN_OPTIMIZATION=TRUE } WHERE package_idx=@packageIdx`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -193,7 +204,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
+		{
+			`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -210,7 +222,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM A INNER JOIN B USING (x)`,
+		{
+			`SELECT * FROM A INNER JOIN B USING (x)`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -223,7 +236,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT Roster . LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`,
+		{
+			`SELECT Roster . LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -244,7 +258,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// Joins with hints.
-		{`SELECT * FROM A HASH JOIN B USING (x)`,
+		{
+			`SELECT * FROM A HASH JOIN B USING (x)`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -258,7 +273,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM A JOIN @{ JOIN_METHOD=HASH_JOIN } B USING (x)`,
+		{
+			`SELECT * FROM A JOIN @{ JOIN_METHOD=HASH_JOIN } B USING (x)`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -272,7 +288,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM UNNEST ([1, 2, 3]) AS data`,
+		{
+			`SELECT * FROM UNNEST ([1, 2, 3]) AS data`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -296,6 +313,58 @@ func TestParseQuery(t *testing.T) {
 		}
 		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("ParseQuery(%q) incorrect.\n got %#v\nwant %#v", test.in, got, test.want)
+		}
+	}
+}
+
+func TestParseDMLStmt(t *testing.T) {
+	tests := []struct {
+		in   string
+		want DMLStmt
+	}{
+		{
+			"INSERT Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+		},
+		{
+			"INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+		},
+		{
+			"INSERT Singers (SingerId, FirstName, LastName) SELECT * FROM UNNEST ([1, 2, 3]) AS data",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromUnnest{
+						Expr: Array{
+							IntegerLiteral(1),
+							IntegerLiteral(2),
+							IntegerLiteral(3),
+						},
+						Alias: ID("data"),
+					}},
+				},
+			},
+		},
+	}
+	for _, test := range tests {
+		got, err := ParseDMLStmt(test.in)
+		if err != nil {
+			t.Errorf("ParseDMLStmt(%q): %v", test.in, err)
+			continue
+		}
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("ParseDMLStmt(%q) incorrect.\n got %#v\nwant %#v", test.in, got, test.want)
 		}
 	}
 }
@@ -344,7 +413,8 @@ func TestParseExpr(t *testing.T) {
 		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
 
 		// Conditional expressions
-		{`CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+		{
+			`CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
 			Case{
 				Expr: ID("X"),
 				WhenClauses: []WhenClause{
@@ -354,12 +424,32 @@ func TestParseExpr(t *testing.T) {
 				ElseResult: Null,
 			},
 		},
-		{`CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+		{
+			`CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
 			Case{
 				WhenClauses: []WhenClause{
 					{Cond: True, Result: StringLiteral("X")},
 					{Cond: False, Result: StringLiteral("Y")},
 				},
+			},
+		},
+		{`IF(A < B, TRUE, FALSE)`,
+			If{
+				Expr:       ComparisonOp{LHS: ID("A"), Op: Lt, RHS: ID("B")},
+				TrueResult: True,
+				ElseResult: False,
+			},
+		},
+		{`IFNULL(NULL, TRUE)`,
+			IfNull{
+				Expr:       Null,
+				NullResult: True,
+			},
+		},
+		{`NULLIF("a", "b")`,
+			NullIf{
+				Expr:        StringLiteral("a"),
+				ExprToMatch: StringLiteral("b"),
 			},
 		},
 
@@ -438,7 +528,8 @@ func TestParseExpr(t *testing.T) {
 		{`A OR (B AND C)`, LogicalOp{LHS: ID("A"), Op: Or, RHS: Paren{Expr: LogicalOp{LHS: ID("B"), Op: And, RHS: ID("C")}}}},
 
 		// This is the same as the WHERE clause from the test in ParseQuery.
-		{`Age < @ageLimit AND Alias IS NOT NULL`,
+		{
+			`Age < @ageLimit AND Alias IS NOT NULL`,
 			LogicalOp{
 				LHS: ComparisonOp{LHS: ID("Age"), Op: Lt, RHS: Param("ageLimit")},
 				Op:  And,
@@ -447,7 +538,8 @@ func TestParseExpr(t *testing.T) {
 		},
 
 		// This used to be broken because the lexer didn't reset the token type.
-		{`C < "whelp" AND D IS NOT NULL`,
+		{
+			`C < "whelp" AND D IS NOT NULL`,
 			LogicalOp{
 				LHS: ComparisonOp{LHS: ID("C"), Op: Lt, RHS: StringLiteral("whelp")},
 				Op:  And,
@@ -476,7 +568,6 @@ func TestParseExpr(t *testing.T) {
 }
 
 func TestParseDDL(t *testing.T) {
-	line := func(n int) Position { return Position{Line: n} }
 	tests := []struct {
 		in   string
 		want *DDL
@@ -852,18 +943,30 @@ func TestParseDDL(t *testing.T) {
 				Position: line(83),
 			},
 		}, Comments: []*Comment{
-			{Marker: "#", Start: line(2), End: line(2),
-				Text: []string{"This is a comment."}},
-			{Marker: "--", Start: line(3), End: line(3),
-				Text: []string{"This is another comment."}},
-			{Marker: "/*", Start: line(4), End: line(5),
-				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
-			{Marker: "--", Start: line(15), End: line(15),
-				Text: []string{"unnamed foreign key"}},
-			{Marker: "--", Start: line(17), End: line(17),
-				Text: []string{"not a constraint"}},
-			{Marker: "--", Isolated: true, Start: line(33), End: line(34),
-				Text: []string{"This table has some commentary", "that spans multiple lines."}},
+			{
+				Marker: "#", Start: line(2), End: line(2),
+				Text: []string{"This is a comment."},
+			},
+			{
+				Marker: "--", Start: line(3), End: line(3),
+				Text: []string{"This is another comment."},
+			},
+			{
+				Marker: "/*", Start: line(4), End: line(5),
+				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."},
+			},
+			{
+				Marker: "--", Start: line(15), End: line(15),
+				Text: []string{"unnamed foreign key"},
+			},
+			{
+				Marker: "--", Start: line(17), End: line(17),
+				Text: []string{"not a constraint"},
+			},
+			{
+				Marker: "--", Isolated: true, Start: line(33), End: line(34),
+				Text: []string{"This table has some commentary", "that spans multiple lines."},
+			},
 			// These comments shouldn't get combined:
 			{Marker: "--", Start: line(36), End: line(36), Text: []string{"dummy comment"}},
 			{Marker: "--", Start: line(37), End: line(37), Text: []string{"comment on ids"}},
@@ -900,88 +1003,104 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
-		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)`,
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&AlterDatabase{
-					Name: "dbname",
-					Alteration: SetDatabaseOptions{
-						Options: DatabaseOptions{
-							OptimizerVersion:       func(i int) *int { return &i }(2),
-							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
-							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+		{
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)`,
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&AlterDatabase{
+						Name: "dbname",
+						Alteration: SetDatabaseOptions{
+							Options: DatabaseOptions{
+								OptimizerVersion:       func(i int) *int { return &i }(2),
+								VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
+								EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+							},
 						},
+						Position: line(1),
 					},
-					Position: line(1),
 				},
 			},
-			}},
-		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&AlterDatabase{
-					Name: "dbname",
-					Alteration: SetDatabaseOptions{
-						Options: DatabaseOptions{
-							OptimizerVersion:       func(i int) *int { return &i }(2),
-							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
-							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+		},
+		{
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&AlterDatabase{
+						Name: "dbname",
+						Alteration: SetDatabaseOptions{
+							Options: DatabaseOptions{
+								OptimizerVersion:       func(i int) *int { return &i }(2),
+								VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
+								EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+							},
 						},
+						Position: line(1),
 					},
-					Position: line(1),
-				},
-				&CreateTable{Name: "users", Columns: []ColumnDef{
-					{Name: "UserId", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(1)},
-				},
-					PrimaryKey: []KeyPart{
-						{Column: "UserId"},
+					&CreateTable{
+						Name: "users", Columns: []ColumnDef{
+							{Name: "UserId", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "UserId"},
+						},
+						Position: line(1),
 					},
-					Position: line(1),
 				},
 			},
-			}},
-		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)`,
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&AlterDatabase{
-					Name: "dbname",
-					Alteration: SetDatabaseOptions{
-						Options: DatabaseOptions{
-							OptimizerVersion:       func(i int) *int { return &i }(0),
-							VersionRetentionPeriod: func(s string) *string { return &s }(""),
-							EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
+		},
+		{
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)`,
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&AlterDatabase{
+						Name: "dbname",
+						Alteration: SetDatabaseOptions{
+							Options: DatabaseOptions{
+								OptimizerVersion:       func(i int) *int { return &i }(0),
+								VersionRetentionPeriod: func(s string) *string { return &s }(""),
+								EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
+							},
 						},
+						Position: line(1),
 					},
-					Position: line(1),
 				},
 			},
-			}},
-		{"CREATE OR REPLACE VIEW `SingersView` SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&CreateView{
-					Name:      "SingersView",
-					OrReplace: true,
-					Query: Query{
-						Select: Select{
-							List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
-							From: []SelectFrom{SelectFromTable{
-								Table: "Singers",
-							}},
+		},
+		{
+			"CREATE OR REPLACE VIEW `SingersView` SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&CreateView{
+						Name:      "SingersView",
+						OrReplace: true,
+						Query: Query{
+							Select: Select{
+								List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+								From: []SelectFrom{SelectFromTable{
+									Table: "Singers",
+								}},
+							},
+							Order: []Order{
+								{Expr: ID("LastName")},
+								{Expr: ID("FirstName")},
+							},
 						},
-						Order: []Order{
-							{Expr: ID("LastName")},
-							{Expr: ID("FirstName")},
-						},
+						Position: line(1),
 					},
-					Position: line(1),
 				},
 			},
-			}},
-		{"DROP VIEW `SingersView`",
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&DropView{
-					Name:     "SingersView",
-					Position: line(1),
+		},
+		{
+			"DROP VIEW `SingersView`",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&DropView{
+						Name:     "SingersView",
+						Position: line(1),
+					},
 				},
 			},
-			}},
+		},
 		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_VALUE(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
 			&AlterTable{
 				Name: "products",
@@ -1054,6 +1173,107 @@ func TestParseDDL(t *testing.T) {
 		}
 	}
 }
+
+func TestParseDML(t *testing.T) {
+	tests := []struct {
+		in   string
+		want *DML
+	}{
+		{
+			`UPDATE FooBar SET Name = "foo"
+			WHERE ID = 0; # This is a comment.
+			Update FooBar SET Name = "foo" /* This is a
+									        * multiline comment. */
+				WHERE ID = 0;
+			INSERT FooBar (ID, Name) VALUES (0, 'foo');
+			DELETE FROM FooBar WHERE Name = "foo"; -- This is another comment.
+		-- This is an isolated comment.
+		`, &DML{Filename: "filename", List: []DMLStmt{
+				&Update{
+					Table: "FooBar",
+					Items: []UpdateItem{
+						{Column: "Name", Value: StringLiteral("foo")},
+					},
+					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
+				},
+				&Update{
+					Table: "FooBar",
+					Items: []UpdateItem{
+						{Column: "Name", Value: StringLiteral("foo")},
+					},
+					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
+				},
+				&Insert{
+					Table:   "FooBar",
+					Columns: []ID{"ID", "Name"},
+					Input:   Values{[]Expr{IntegerLiteral(0), StringLiteral("foo")}},
+				},
+				&Delete{
+					Table: "FooBar",
+					Where: ComparisonOp{Op: 4, LHS: ID("Name"), RHS: StringLiteral("foo"), RHS2: nil},
+				},
+			}, Comments: []*Comment{
+				{
+					Marker: "#", Start: line(2), End: line(2),
+					Text: []string{"This is a comment."},
+				},
+				{
+					Marker: "/*", Start: line(3), End: line(4),
+					Text:     []string{" This is a", "\t\t\t\t\t\t\t\t\t        * multiline comment."},
+					Isolated: false,
+				},
+				{
+					Marker: "--", Start: line(7), End: line(7),
+					Text:     []string{"This is another comment."},
+					Isolated: false,
+				},
+				{
+					Marker: "--", Start: line(8), End: line(8),
+					Text:     []string{"This is an isolated comment."},
+					Isolated: true,
+				},
+			}},
+		},
+		// No trailing comma:
+		{`Update FooBar SET Name = "foo" WHERE ID = 0`, &DML{
+			Filename: "filename", List: []DMLStmt{
+				&Update{
+					Table: "FooBar",
+					Items: []UpdateItem{
+						{Column: "Name", Value: StringLiteral("foo")},
+					},
+					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
+				},
+			},
+		}},
+	}
+	for _, test := range tests {
+		got, err := ParseDML("filename", test.in)
+		if err != nil {
+			t.Errorf("ParseDML(%q): %v", test.in, err)
+			continue
+		}
+		got.clearOffset()
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("ParseDML(%q) incorrect.\n got %v\nwant %v", test.in, got, test.want)
+
+			// Also log the specific elements that don't match to make it easier to debug
+			// especially the large DMLs.
+			for i := range got.List {
+				if !reflect.DeepEqual(got.List[i], test.want.List[i]) {
+					t.Errorf("\tstatement %d mismatch:\n\t got %v\n\twant %v", i, got.List[i], test.want.List[i])
+				}
+			}
+			for i := range got.Comments {
+				if !reflect.DeepEqual(got.Comments[i], test.want.Comments[i]) {
+					t.Errorf("\tcomment %d mismatch:\n\t got %v\n\twant %v", i, got.Comments[i], test.want.Comments[i])
+				}
+			}
+		}
+	}
+}
+
+func line(n int) Position { return Position{Line: n} }
 
 func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 	t.Helper()

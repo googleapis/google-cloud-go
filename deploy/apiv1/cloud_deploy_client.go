@@ -187,7 +187,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 	}
 }
 
-// internalCloudDeployClient is an interface that defines the methods availaible from Google Cloud Deploy API.
+// internalCloudDeployClient is an interface that defines the methods available from Google Cloud Deploy API.
 type internalCloudDeployClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

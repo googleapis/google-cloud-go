@@ -138,7 +138,7 @@ func defaultBinauthzManagementCallOptions() *BinauthzManagementCallOptions {
 	}
 }
 
-// internalBinauthzManagementClient is an interface that defines the methods availaible from Binary Authorization API.
+// internalBinauthzManagementClient is an interface that defines the methods available from Binary Authorization API.
 type internalBinauthzManagementClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -160,9 +160,9 @@ type internalBinauthzManagementClient interface {
 //
 // This API implements a REST model with the following objects:
 //
-//   Policy
+//	Policy
 //
-//   Attestor
+//	Attestor
 type BinauthzManagementClient struct {
 	// The internal transport-dependent client.
 	internalClient internalBinauthzManagementClient
@@ -273,9 +273,9 @@ type binauthzManagementGRPCClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//   Policy
+//	Policy
 //
-//   Attestor
+//	Attestor
 func NewBinauthzManagementClient(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementClient, error) {
 	clientOpts := defaultBinauthzManagementGRPCClientOptions()
 	if newBinauthzManagementClientHook != nil {

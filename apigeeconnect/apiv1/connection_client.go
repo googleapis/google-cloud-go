@@ -71,7 +71,7 @@ func defaultConnectionCallOptions() *ConnectionCallOptions {
 	}
 }
 
-// internalConnectionClient is an interface that defines the methods availaible from Apigee Connect API.
+// internalConnectionClient is an interface that defines the methods available from Apigee Connect API.
 type internalConnectionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
