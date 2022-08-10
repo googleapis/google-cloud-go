@@ -159,24 +159,24 @@ type internalCloudFilestoreManagerClient interface {
 // The file.googleapis.com service implements the Cloud Filestore API and
 // defines the following resource model for managing instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of instances and backups, named:
-//   /instances/* and /backups/* respectively.
+//	Each location has a collection of instances and backups, named:
+//	/instances/* and /backups/* respectively.
 //
-//   As such, Cloud Filestore instances are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/instances/{instance_id}
-//   and backups are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/backup/{backup_id}
+//	As such, Cloud Filestore instances are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
+//	and backups are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
 // Note that location_id must be a GCP zone for instances and but to a GCP
 // region for backups; for example:
 //
-//   projects/12345/locations/us-central1-c/instances/my-filestore
+//	projects/12345/locations/us-central1-c/instances/my-filestore
 //
-//   projects/12345/locations/us-central1/backups/my-backup
+//	projects/12345/locations/us-central1/backups/my-backup
 type CloudFilestoreManagerClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudFilestoreManagerClient
@@ -353,24 +353,24 @@ type cloudFilestoreManagerGRPCClient struct {
 // The file.googleapis.com service implements the Cloud Filestore API and
 // defines the following resource model for managing instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of instances and backups, named:
-//   /instances/* and /backups/* respectively.
+//	Each location has a collection of instances and backups, named:
+//	/instances/* and /backups/* respectively.
 //
-//   As such, Cloud Filestore instances are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/instances/{instance_id}
-//   and backups are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/backup/{backup_id}
+//	As such, Cloud Filestore instances are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
+//	and backups are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
 // Note that location_id must be a GCP zone for instances and but to a GCP
 // region for backups; for example:
 //
-//   projects/12345/locations/us-central1-c/instances/my-filestore
+//	projects/12345/locations/us-central1-c/instances/my-filestore
 //
-//   projects/12345/locations/us-central1/backups/my-backup
+//	projects/12345/locations/us-central1/backups/my-backup
 func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOption) (*CloudFilestoreManagerClient, error) {
 	clientOpts := defaultCloudFilestoreManagerGRPCClientOptions()
 	if newCloudFilestoreManagerClientHook != nil {
