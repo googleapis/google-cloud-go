@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.1.0...dataform/v0.2.0) (2022-08-02)
+
+
+### Features
+
+* **dataform:** Release API version v1beta1 (no changes to v1alpha2) ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+
 ## 0.1.0 (2022-07-12)
 
 

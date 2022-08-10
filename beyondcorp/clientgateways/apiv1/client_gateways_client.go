@@ -118,8 +118,8 @@ type internalClient interface {
 //
 // Data ModelThe ClientGatewaysService exposes the following resources:
 //
-//   Client Gateways, named as follows:
-//   projects/{project_id}/locations/{location_id}/clientGateways/{client_gateway_id}.
+//	Client Gateways, named as follows:
+//	projects/{project_id}/locations/{location_id}/clientGateways/{client_gateway_id}.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -282,8 +282,8 @@ type gRPCClient struct {
 //
 // Data ModelThe ClientGatewaysService exposes the following resources:
 //
-//   Client Gateways, named as follows:
-//   projects/{project_id}/locations/{location_id}/clientGateways/{client_gateway_id}.
+//	Client Gateways, named as follows:
+//	projects/{project_id}/locations/{location_id}/clientGateways/{client_gateway_id}.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {

@@ -19,7 +19,7 @@ set -e
 # Display commands being run
 set -x
 
-if [[ $(go version) != *"go1.18"* ]]; then
+if [[ $(go version) != *"go1.19"* ]]; then
   exit 0
 fi
 

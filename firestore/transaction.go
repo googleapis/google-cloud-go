@@ -195,7 +195,10 @@ func (t *Transaction) rollback() {
 }
 
 // Get gets the document in the context of the transaction. The transaction holds a
-// pessimistic lock on the returned document.
+// pessimistic lock on the returned document. If the document does not exist, Get
+// returns a NotFound error, which can be checked with
+//
+//	status.Code(err) == codes.NotFound
 func (t *Transaction) Get(dr *DocumentRef) (*DocumentSnapshot, error) {
 	docsnaps, err := t.GetAll([]*DocumentRef{dr})
 	if err != nil {
