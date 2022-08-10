@@ -868,7 +868,7 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 //
 // See (*Client).ReadWriteTransaction for an example.
 //
-// Semantics
+// # Semantics
 //
 // Cloud Spanner can commit the transaction if all read locks it acquired are
 // still valid at commit time, and it is able to acquire write locks for all
@@ -881,7 +881,7 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 // Spanner locks for any sort of mutual exclusion other than between Cloud
 // Spanner transactions themselves.
 //
-// Aborted transactions
+// # Aborted transactions
 //
 // Application code does not need to retry explicitly; RunInTransaction will
 // automatically retry a transaction if an attempt results in an abort. The lock
@@ -895,7 +895,7 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 // retries a transaction can attempt; instead, it is better to limit the total
 // amount of wall time spent retrying.
 //
-// Idle transactions
+// # Idle transactions
 //
 // A transaction is considered idle if it has no outstanding reads or SQL
 // queries and has not started a read or SQL query within the last 10
@@ -1379,9 +1379,9 @@ type writeOnlyTransaction struct {
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
 // unless one of the following happens:
 //
-//     1) Context times out.
-//     2) An unretryable error (e.g. database not found) occurs.
-//     3) There is a malformed Mutation object.
+//  1. Context times out.
+//  2. An unretryable error (e.g. database not found) occurs.
+//  3. There is a malformed Mutation object.
 func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Mutation) (time.Time, error) {
 	var (
 		ts time.Time

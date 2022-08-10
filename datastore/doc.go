@@ -18,8 +18,7 @@ Package datastore provides a client for Google Cloud Datastore.
 See https://godoc.org/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.
 
-
-Basic Operations
+# Basic Operations
 
 Entities are the unit of storage and are associated with a key. A key
 consists of an optional parent key, a string application ID, a string kind
@@ -95,8 +94,7 @@ NewUpsert and NewDelete and applies them. Datastore.Mutate uses
 non-transactional mode; if atomicity is required, use Transaction.Mutate
 instead.
 
-
-Properties
+# Properties
 
 An entity's contents can be represented by a variety of types. These are
 typically struct pointers, but can also be any type that implements the
@@ -164,8 +162,7 @@ Example code:
 		J int `datastore:",noindex" json:"j"`
 	}
 
-
-Slice Fields
+# Slice Fields
 
 A field of slice type corresponds to a Datastore array property, except for []byte, which corresponds
 to a Datastore blob.
@@ -177,14 +174,14 @@ the slice field remains unchanged.
 If a non-array value is loaded into a slice field, the result will be a slice with
 one element, containing the value.
 
-Loading Nulls
+# Loading Nulls
 
 Loading a Datastore Null into a basic type (int, float, etc.) results in a zero value.
 Loading a Null into a slice of basic type results in a slice of size 1 containing the zero value.
 Loading a Null into a pointer field results in nil.
 Loading a Null into a field of struct type is an error.
 
-Pointer Fields
+# Pointer Fields
 
 A struct field can be a pointer to a signed integer, floating-point number, string or
 bool. Putting a non-nil pointer will store its dereferenced value. Putting a nil
@@ -194,8 +191,7 @@ in which case no property will be stored.
 Loading a Null into a pointer field sets the pointer to nil. Loading any other value
 allocates new storage with the value, and sets the field to point to it.
 
-
-Key Field
+# Key Field
 
 If the struct contains a *datastore.Key field tagged with the name "__key__",
 its value will be ignored on Put. When reading the Entity back into the Go struct,
@@ -233,9 +229,7 @@ Example code:
 		// Prints {12 /Entity,stringID}
 	}
 
-
-
-Structured Properties
+# Structured Properties
 
 If the struct pointed to contains other structs, then the nested or embedded
 structs are themselves saved as Entity values. For example, given these definitions:
@@ -326,8 +320,7 @@ Note that the "flatten" option cannot be used for Entity value fields or
 PropertyLoadSaver implementers. The server will reject any dotted field names
 for an Entity value.
 
-
-The PropertyLoadSaver Interface
+# The PropertyLoadSaver Interface
 
 An entity's contents can also be represented by any type that implements the
 PropertyLoadSaver interface. This type may be a struct pointer, but it does
@@ -377,7 +370,7 @@ Example code:
 The *PropertyList type implements PropertyLoadSaver, and can therefore hold an
 arbitrary entity's contents.
 
-The KeyLoader Interface
+# The KeyLoader Interface
 
 If a type implements the PropertyLoadSaver interface, it may
 also want to implement the KeyLoader interface.
@@ -411,8 +404,7 @@ Example code:
 To load a Key into a struct which does not implement the PropertyLoadSaver
 interface, see the "Key Field" section above.
 
-
-Queries
+# Queries
 
 Queries retrieve entities based on their properties or key's ancestry. Running
 a query yields an iterator of results: either keys or (key, entity) pairs.
@@ -462,8 +454,7 @@ Example code:
 		}
 	}
 
-
-Transactions
+# Transactions
 
 Client.RunInTransaction runs a function in a transaction.
 
@@ -499,7 +490,7 @@ Example code:
 Pass the ReadOnly option to RunInTransaction if your transaction is used only for Get,
 GetMulti or queries. Read-only transactions are more efficient.
 
-Google Cloud Datastore Emulator
+# Google Cloud Datastore Emulator
 
 This package supports the Cloud Datastore emulator, which is useful for testing and
 development. Environment variables are used to indicate that datastore traffic should be

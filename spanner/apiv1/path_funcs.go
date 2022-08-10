@@ -17,7 +17,9 @@ package spanner
 // DatabasePath returns the path for the database resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/instances/%s/databases/%s", project, instance, database)
+//
+//	fmt.Sprintf("projects/%s/instances/%s/databases/%s", project, instance, database)
+//
 // instead.
 func DatabasePath(project, instance, database string) string {
 	return "" +
@@ -33,7 +35,9 @@ func DatabasePath(project, instance, database string) string {
 // SessionPath returns the path for the session resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/instances/%s/databases/%s/sessions/%s", project, instance, database, session)
+//
+//	fmt.Sprintf("projects/%s/instances/%s/databases/%s/sessions/%s", project, instance, database, session)
+//
 // instead.
 func SessionPath(project, instance, database, session string) string {
 	return "" +
