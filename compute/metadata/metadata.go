@@ -71,7 +71,7 @@ func newDefaultHTTPClient() *http.Client {
 				KeepAlive: 30 * time.Second,
 			}).Dial,
 		},
-		Timeout: 2 * time.Second,
+		Timeout: 5 * time.Second,
 	}
 }
 
