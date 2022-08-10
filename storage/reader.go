@@ -124,8 +124,8 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 // and different than its original storage form. This happens when the "Content-Encoding"
 // header is "gzip".
 // See:
-//  * https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
-//  * https://github.com/googleapis/google-cloud-go/issues/1800
+//   - https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
+//   - https://github.com/googleapis/google-cloud-go/issues/1800
 func decompressiveTranscoding(res *http.Response) bool {
 	// Decompressive Transcoding.
 	return res.Header.Get("Content-Encoding") == "gzip" ||

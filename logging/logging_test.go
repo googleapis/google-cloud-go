@@ -895,7 +895,8 @@ func waitFor(f func() bool) bool {
 
 // Interleave a lot of Log and Flush calls, to induce race conditions.
 // Run this test with:
-//   go test -run LogFlushRace -race -count 100
+//
+//	go test -run LogFlushRace -race -count 100
 func TestLogFlushRace(t *testing.T) {
 	initLogs() // Generate new testLogID
 	lg := client.Logger(testLogID,

@@ -54,7 +54,8 @@ type BucketHandle struct {
 // The supplied name must contain only lowercase letters, numbers, dashes,
 // underscores, and dots. The full specification for valid bucket names can be
 // found at:
-//   https://cloud.google.com/storage/docs/bucket-naming
+//
+//	https://cloud.google.com/storage/docs/bucket-naming
 func (c *Client) Bucket(name string) *BucketHandle {
 	retry := c.retry.clone()
 	return &BucketHandle{
@@ -117,7 +118,8 @@ func (b *BucketHandle) DefaultObjectACL() *ACLHandle {
 //
 // name must consist entirely of valid UTF-8-encoded runes. The full specification
 // for valid object names can be found at:
-//   https://cloud.google.com/storage/docs/naming-objects
+//
+//	https://cloud.google.com/storage/docs/naming-objects
 func (b *BucketHandle) Object(name string) *ObjectHandle {
 	retry := b.retry.clone()
 	return &ObjectHandle{
