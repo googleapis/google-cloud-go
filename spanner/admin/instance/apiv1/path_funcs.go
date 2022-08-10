@@ -17,7 +17,9 @@ package instance
 // InstanceAdminProjectPath returns the path for the project resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s", project)
+//
+//	fmt.Sprintf("projects/%s", project)
+//
 // instead.
 func InstanceAdminProjectPath(project string) string {
 	return "" +
@@ -29,7 +31,9 @@ func InstanceAdminProjectPath(project string) string {
 // InstanceAdminInstanceConfigPath returns the path for the instance config resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/instanceConfigs/%s", project, instanceConfig)
+//
+//	fmt.Sprintf("projects/%s/instanceConfigs/%s", project, instanceConfig)
+//
 // instead.
 func InstanceAdminInstanceConfigPath(project, instanceConfig string) string {
 	return "" +
@@ -43,7 +47,9 @@ func InstanceAdminInstanceConfigPath(project, instanceConfig string) string {
 // InstanceAdminInstancePath returns the path for the instance resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/instances/%s", project, instance)
+//
+//	fmt.Sprintf("projects/%s/instances/%s", project, instance)
+//
 // instead.
 func InstanceAdminInstancePath(project, instance string) string {
 	return "" +
