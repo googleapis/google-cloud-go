@@ -447,6 +447,8 @@ func (it *messageIterator) handleKeepAlives() {
 	it.checkDrained()
 }
 
+// sendAck is used to confirm acknowledgement of a message. If exactly once delivery is
+// enabled, we'll retry these messages for a short duration in a goroutine.
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	ackIDs := make([]string, 0, len(m))
 	for k := range m {
@@ -486,10 +488,12 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	}
 }
 
+// sendModAck is used to extend the lease of messages or nack them.
 // The receipt mod-ack amount is derived from a percentile distribution based
 // on the time it takes to process messages. The percentile chosen is the 99%th
 // percentile in order to capture the highest amount of time necessary without
-// considering 1% outliers.
+// considering 1% outliers. If the ModAck RPC fails and exactly once delivery is
+// enabled, we retry it in a separate goroutine for a short duration.
 func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration) {
 	deadlineSec := int32(deadline / time.Second)
 	ackIDs := make([]string, 0, len(m))
@@ -535,6 +539,8 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	}
 }
 
+// retryAcks retries the ack RPC with backoff. This must be called in a goroutine
+// in it.sendAck(), with a max of 2500 ackIDs.
 func (it *messageIterator) retryAcks(m map[string]*AckResult) {
 	ctx, cancel := context.WithTimeout(context.Background(), exactlyOnceDeliveryRetryDeadline)
 	defer cancel()
@@ -568,6 +574,10 @@ func (it *messageIterator) retryAcks(m map[string]*AckResult) {
 	}
 }
 
+// retryModAcks retries the modack RPC with backoff. This must be called in a goroutine
+// in it.sendModAck(), with a max of 2500 ackIDs. Modacks are retried up to 3 times
+// since after that, the message will have expired. Nacks are retried up until the default
+// deadline of 10 minutes.
 func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int32) {
 	bo := newExactlyOnceBackoff()
 	retryCount := 0
