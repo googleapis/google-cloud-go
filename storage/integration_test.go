@@ -2362,7 +2362,7 @@ func TestIntegration_ACL(t *testing.T) {
 		for _, obj := range aclObjects {
 			c := randomContents()
 			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-				t.Errorf("Write for %v failed with %v", obj, err)
+				return fmt.Errorf("Write for %v failed with %v", obj, err)
 			}
 		}
 		acl, err = o.ACL().List(ctx)
@@ -2377,7 +2377,7 @@ func TestIntegration_ACL(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if err := o.ACL().Delete(ctx, entity); err != nil {
 		t.Errorf("object ACL: could not delete entity %s", entity)
@@ -2732,26 +2732,6 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 	if w.Attrs().StorageClass != newStorageClass {
 		t.Fatalf("new object storage class: got %q, want %q",
 			w.Attrs().StorageClass, newStorageClass)
-	}
-}
-
-func TestIntegration_BucketInCopyAttrs(t *testing.T) {
-	// Confirm that if bucket is included in the object attributes of a rewrite
-	// call, but object name and content-type aren't, then we get an error. See
-	// the comment in Copier.Run.
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-
-	bkt := client.Bucket(bucketName)
-	obj := bkt.Object("bucketInCopyAttrs")
-	h.mustWrite(obj.NewWriter(ctx), []byte("foo"))
-	copier := obj.CopierFrom(obj)
-	rawObject := copier.ObjectAttrs.toRawObject(bucketName)
-	_, err := copier.callRewrite(ctx, rawObject)
-	if err == nil {
-		t.Errorf("got nil, want error")
 	}
 }
 
@@ -3163,6 +3143,9 @@ func TestIntegration_Notifications(t *testing.T) {
 	n, err := bkt.AddNotification(ctx, nArg)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if n.ID == "" {
+		t.Fatal("expected created Notification to have non-empty ID")
 	}
 	nArg.ID = n.ID
 	if !testutil.Equal(n, nArg) {
@@ -4077,8 +4060,8 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 // * Content-Type of "text/plain"
 // will be properly served back.
 // See:
-//  * https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
-//  * https://github.com/googleapis/google-cloud-go/issues/1800
+//   - https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
+//   - https://github.com/googleapis/google-cloud-go/issues/1800
 func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -4791,7 +4774,7 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.NewWriter(ctx)
+	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
 	w.ContentType = contentType
 	w.CacheControl = "public, max-age=60"
 	if contents != nil {

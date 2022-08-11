@@ -318,6 +318,9 @@ func TestIntegration_JobFrom(t *testing.T) {
 		if got.jobID != want.jobID {
 			t.Errorf("case %q jobID mismatch, got %s want %s", tc.description, got.jobID, want.jobID)
 		}
+		if got.Email() == "" {
+			t.Errorf("case %q expected email to be populated, was empty", tc.description)
+		}
 	}
 
 }

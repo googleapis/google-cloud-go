@@ -30,9 +30,19 @@
                 "GetDefaultBranch"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListCatalogs": {
               "methods": [
                 "ListCatalogs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "RemoveCatalogAttribute": {
@@ -79,9 +89,19 @@
                 "CompleteQuery"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportCompletionData": {
               "methods": [
                 "ImportCompletionData"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }
@@ -108,9 +128,19 @@
                 "GetControl"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListControls": {
               "methods": [
                 "ListControls"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "UpdateControl": {
@@ -122,11 +152,75 @@
         }
       }
     },
+    "ModelService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ModelClient",
+          "rpcs": {
+            "CreateModel": {
+              "methods": [
+                "CreateModel"
+              ]
+            },
+            "DeleteModel": {
+              "methods": [
+                "DeleteModel"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PauseModel": {
+              "methods": [
+                "PauseModel"
+              ]
+            },
+            "ResumeModel": {
+              "methods": [
+                "ResumeModel"
+              ]
+            },
+            "TuneModel": {
+              "methods": [
+                "TuneModel"
+              ]
+            },
+            "UpdateModel": {
+              "methods": [
+                "UpdateModel"
+              ]
+            }
+          }
+        }
+      }
+    },
     "PredictionService": {
       "clients": {
         "grpc": {
           "libraryClient": "PredictionClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Predict": {
               "methods": [
                 "Predict"
@@ -161,6 +255,11 @@
                 "DeleteProduct"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetProduct": {
               "methods": [
                 "GetProduct"
@@ -169,6 +268,11 @@
             "ImportProducts": {
               "methods": [
                 "ImportProducts"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListProducts": {
@@ -210,6 +314,16 @@
         "grpc": {
           "libraryClient": "SearchClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Search": {
               "methods": [
                 "Search"
@@ -239,9 +353,19 @@
                 "DeleteServingConfig"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetServingConfig": {
               "methods": [
                 "GetServingConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServingConfigs": {
@@ -273,9 +397,19 @@
                 "CollectUserEvent"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportUserEvents": {
               "methods": [
                 "ImportUserEvents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "PurgeUserEvents": {

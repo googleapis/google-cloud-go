@@ -44,14 +44,9 @@ export GIMME_GO_VERSION=1.18.4
 export GIMME_ENV_PREFIX=/tmp/gimme_envs
 install_go() {
   "$GIMME"
-  # If gimme was successful, an .env script that sets up proper environment
-  # variables will be created.
-  if [[ -f "${GIMME_ENV_PREFIX}/go${GIMME_GO_VERSION}.env" ]]
-  then
-    source "${GIMME_ENV_PREFIX}/go${GIMME_GO_VERSION}.env"
-  else
-    return 1
-  fi
+  # If gimme fails, this file will not exists, source will fail, and install_go
+  # will be retried.
+  source "${GIMME_ENV_PREFIX}/go${GIMME_GO_VERSION}.env"
 }
 retry install_go
 

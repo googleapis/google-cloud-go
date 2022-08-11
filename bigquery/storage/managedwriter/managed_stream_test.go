@@ -17,12 +17,15 @@ package managedwriter
 import (
 	"context"
 	"errors"
+	"fmt"
 	"runtime"
 	"testing"
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -419,4 +422,25 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 			}
 		}
 	}
+}
+
+// Ensures we're propagating call options as expected.
+// Background: https://github.com/googleapis/google-cloud-go/issues/6487
+func TestOpenCallOptionPropagation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	ms := &ManagedStream{
+		ctx: ctx,
+		callOptions: []gax.CallOption{
+			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+		},
+		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
+			if len(opts) == 0 {
+				t.Fatalf("no options were propagated")
+			}
+			return nil, fmt.Errorf("no real client")
+		}),
+	}
+	ms.openWithRetry()
 }

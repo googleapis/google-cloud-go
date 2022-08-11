@@ -363,6 +363,31 @@ func ExampleClient_DeleteDatacenterConnector() {
 	}
 }
 
+func ExampleClient_UpgradeAppliance() {
+	ctx := context.Background()
+	c, err := vmmigration.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmmigrationpb.UpgradeApplianceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vmmigration/v1#UpgradeApplianceRequest.
+	}
+	op, err := c.UpgradeAppliance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateMigratingVm() {
 	ctx := context.Background()
 	c, err := vmmigration.NewClient(ctx)

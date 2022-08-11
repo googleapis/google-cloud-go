@@ -922,7 +922,7 @@ func TestCondition(t *testing.T) {
 
 	// Test an error, too:
 	err = obj.Generation(1234).NewWriter(ctx).Close()
-	if err == nil || !strings.Contains(err.Error(), "NewWriter: generation not supported") {
+	if err == nil || !strings.Contains(err.Error(), "storage: generation not supported") {
 		t.Errorf("want error about unsupported generation; got %v", err)
 	}
 }
@@ -1353,16 +1353,6 @@ func TestRetryer(t *testing.T) {
 					name: "client.HMACKeyHandle()",
 					r:    c.HMACKeyHandle("pID", "accessID").retry,
 					want: c.retry,
-				},
-				{
-					name: "client.Buckets()",
-					r:    c.Buckets(ctx, "pID").client.retry,
-					want: c.retry,
-				},
-				{
-					name: "bucket.Objects()",
-					r:    b.Objects(ctx, nil).bucket.retry,
-					want: b.retry,
 				},
 			}
 			for _, ac := range configHandleCases {
