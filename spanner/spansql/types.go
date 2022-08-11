@@ -300,6 +300,12 @@ type DatabaseOptions struct {
 type Delete struct {
 	Table ID
 	Where BoolExpr
+	// Expressions in a THEN RETURN clause.
+	Return []Expr
+	// If the THEN RETURN list has explicit aliases ("AS alias"),
+	// ReturnAliases will be populated 1:1 with List;
+	// aliases that are present will be non-empty.
+	ReturnAliases []ID
 
 	// TODO: Alias
 }
@@ -313,6 +319,12 @@ type Insert struct {
 	Table   ID
 	Columns []ID
 	Input   ValuesOrSelect
+	// Expressions in a THEN RETURN clause.
+	Return []Expr
+	// If the THEN RETURN list has explicit aliases ("AS alias"),
+	// ReturnAliases will be populated 1:1 with List;
+	// aliases that are present will be non-empty.
+	ReturnAliases []ID
 }
 
 // Values represents one or more lists of expressions passed to an `INSERT` statement.
@@ -337,6 +349,12 @@ type Update struct {
 	Table ID
 	Items []UpdateItem
 	Where BoolExpr
+	// Expressions in a THEN RETURN clause.
+	Return []Expr
+	// If the THEN RETURN list has explicit aliases ("AS alias"),
+	// ReturnAliases will be populated 1:1 with List;
+	// aliases that are present will be non-empty.
+	ReturnAliases []ID
 
 	// TODO: Alias
 }

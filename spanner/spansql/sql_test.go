@@ -421,6 +421,20 @@ func TestSQL(t *testing.T) {
 			reparseDML,
 		},
 		{
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+				Return: []Expr{
+					ID("SingerId"),
+					ID("FirstName"),
+				},
+			},
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Marc", "Richards")` +
+				` THEN RETURN SingerId, FirstName`,
+			reparseDML,
+		},
+		{
 			&Delete{
 				Table: "Ta",
 				Where: ComparisonOp{
@@ -430,6 +444,19 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			"DELETE FROM Ta WHERE C > 2",
+			reparseDML,
+		},
+		{
+			&Delete{
+				Table: "Ta",
+				Where: ComparisonOp{
+					LHS: ID("C"),
+					Op:  Gt,
+					RHS: IntegerLiteral(2),
+				},
+				Return: []Expr{Star},
+			},
+			"DELETE FROM Ta WHERE C > 2 THEN RETURN *",
 			reparseDML,
 		},
 		{
@@ -445,6 +472,29 @@ func TestSQL(t *testing.T) {
 				Where: ID("Ca"),
 			},
 			`UPDATE Ta SET Cb = 4, Ce = "wow", Cf = Cg, Cg = NULL, Ch = DEFAULT WHERE Ca`,
+			reparseDML,
+		},
+		{
+			&Update{
+				Table: "Ta",
+				Items: []UpdateItem{
+					{Column: "Cb", Value: IntegerLiteral(4)},
+					{Column: "Ce", Value: StringLiteral("wow")},
+					{Column: "Cf", Value: ID("Cg")},
+					{Column: "Cg", Value: Null},
+					{Column: "Ch", Value: nil},
+				},
+				Where: ID("Ca"),
+				Return: []Expr{
+					ID("Cb"), ID("Ce"),
+				},
+				ReturnAliases: []ID{
+					ID("RenamedCb"),
+					ID(""),
+				},
+			},
+			`UPDATE Ta SET Cb = 4, Ce = "wow", Cf = Cg, Cg = NULL, Ch = DEFAULT WHERE Ca` +
+				` THEN RETURN Cb AS RenamedCb, Ce`,
 			reparseDML,
 		},
 		{

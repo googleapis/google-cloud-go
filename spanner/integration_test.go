@@ -2943,6 +2943,214 @@ func TestIntegration_DML(t *testing.T) {
 	}
 }
 
+func TestIntegration_DMLReturning(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	query := func(ctx context.Context, tx *ReadWriteTransaction, query string, expectedRows int) ([]*Row, int64) {
+		iter := tx.Query(ctx, Statement{
+			SQL: query,
+		})
+		defer iter.Stop()
+		var rows []*Row
+		for len(rows) < expectedRows {
+			row, err := iter.Next()
+			if err != nil {
+				t.Fatalf("wanted row, got error %v", err)
+			}
+			rows = append(rows, row)
+		}
+		if _, err := iter.Next(); err != iterator.Done {
+			if err == nil {
+				t.Fatalf("got more rows than expected, wanted %d rows", expectedRows)
+			} else {
+				t.Fatalf("wanted iterator.Done, got error %v", err)
+			}
+		}
+		return rows, iter.RowCount
+	}
+
+	queries := []string{
+		`INSERT INTO Accounts (AccountId, Balance) VALUES (1, 10) THEN RETURN Nickname, Balance`,
+		`INSERT INTO Accounts (AccountId, Balance) VALUES (2, 20) THEN RETURN Balance + 1 AS BalancePlusOne`,
+		`UPDATE Accounts SET Balance = Balance + 100 WHERE TRUE THEN RETURN AccountId, Balance`,
+		`DELETE FROM Accounts WHERE AccountId = 1 THEN RETURN *`,
+	}
+
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		queries = []string{
+			`INSERT INTO Accounts (AccountId, Balance) VALUES (1, 10) RETURNING Nickname, Balance`,
+			`INSERT INTO Accounts (AccountId, Balance) VALUES (2, 20) RETURNING Balance + 1 AS BalancePlusOne`,
+			`UPDATE Accounts SET Balance = Balance + 100 WHERE TRUE RETURNING AccountId, Balance`,
+			`DELETE FROM Accounts WHERE AccountId = 1 RETURNING *`,
+		}
+	}
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// Insert first account, returning Nickname and Balance.
+		rows, _ := query(ctx, tx, queries[0], 1)
+		var nick *string
+		var bal int64
+		if err := rows[0].Columns(&nick, &bal); err != nil {
+			return err
+		}
+		if want := (*string)(nil); want != nick {
+			t.Errorf("got %v, want %v", nick, want)
+		}
+		if want := int64(10); want != bal {
+			t.Errorf("got %d, want %d", bal, want)
+		}
+
+		// Insert second account, returning Balance+1
+		rows, _ = query(ctx, tx, queries[1], 1)
+		var balancePlusOne int64
+		if err := rows[0].Columns(&balancePlusOne); err != nil {
+			return err
+		}
+		if want := int64(21); want != balancePlusOne {
+			t.Errorf("got %q, want %q", balancePlusOne, want)
+		}
+
+		// Update both accounts, returning AccountId and Balance for each.
+		rows, _ = query(ctx, tx, queries[2], 2)
+		balances := make(map[int64]int64)
+		for _, row := range rows {
+			var acctID int64
+			var bal int64
+			if err := row.Columns(&acctID, &bal); err != nil {
+				return err
+			}
+			balances[acctID] = bal
+		}
+		if want := map[int64]int64{1: 110, 2: 120}; !testEqual(want, balances) {
+			t.Errorf("got %#v, want %#v", balances, want)
+		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Delete an account, returning all columns
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		rows, modifiedRowCount := query(ctx, tx, queries[3], 1)
+
+		if want := int64(1); modifiedRowCount != want {
+			t.Fatalf("got %v, want %v", modifiedRowCount, want)
+		}
+
+		var acctID int64
+		var nick *string
+		var bal int64
+		if err := rows[0].Columns(&acctID, &nick, &bal); err != nil {
+			t.Fatal(err)
+		}
+
+		if want := int64(1); want != acctID {
+			t.Fatalf("got %v, want %v", acctID, want)
+		}
+		if want := (*string)(nil); want != nick {
+			t.Fatalf("got %v, want %v", nick, want)
+		}
+		if want := int64(110); want != bal {
+			t.Fatalf("got %v, want %v", bal, want)
+		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestIntegration_DMLReturning_ViaUpdate(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	query := `INSERT INTO Accounts (AccountId, Balance) VALUES (1, 10) THEN RETURN Nickname, Balance`
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		query = `INSERT INTO Accounts (AccountId, Balance) VALUES (1, 10) RETURNING Nickname, Balance`
+	}
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// DML statements with returning clauses, executed via Update should
+		// behave as-if the returning clause were not given.
+		rowCount, err := tx.Update(ctx, NewStatement(query))
+		if err != nil {
+			return err
+		}
+
+		if want := int64(1); want != rowCount {
+			t.Errorf("got %v, want %v", rowCount, want)
+		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestIntegration_DMLReturning_ViaBatchUpdate(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	queries := []string{
+		`INSERT INTO Accounts (AccountId, Balance) VALUES (1, 10) THEN RETURN Nickname, Balance`,
+		`INSERT INTO Accounts (AccountId, Balance) VALUES (2, 20) THEN RETURN Balance + 1 AS BalancePlusOne`,
+		`SELECT Balance FROM Accounts WHERE AccountId = 2`,
+	}
+
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		queries = []string{
+			`INSERT INTO Accounts (AccountId, Balance) VALUES (1, 10) RETURNING Nickname, Balance`,
+			`INSERT INTO Accounts (AccountId, Balance) VALUES (2, 20) RETURNING Balance + 1 AS BalancePlusOne`,
+			`SELECT Balance FROM Accounts WHERE AccountId = 2`,
+		}
+	}
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// BatchUpdate should effectively ignore the returning clauses.
+		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(queries[0]), NewStatement(queries[1])})
+		if err != nil {
+			return err
+		}
+
+		if want := []int64{1, 1}; !testEqual(want, rowCounts) {
+			t.Errorf("got %v, want %v", rowCounts, want)
+		}
+
+		iter := tx.Query(ctx, NewStatement(queries[2]))
+		row, err := iter.Next()
+		if err != nil {
+			return err
+		}
+		var balance int64
+		if err := row.Columns(&balance); err != nil {
+			return err
+		}
+		if want := int64(20); balance != want {
+			t.Errorf("got %v, want %v", balance, want)
+		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestIntegration_StructParametersBind(t *testing.T) {
 	t.Parallel()
 	skipUnsupportedPGTest(t)

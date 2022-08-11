@@ -241,7 +241,9 @@ func (do DatabaseOptions) SQL() string {
 }
 
 func (d *Delete) SQL() string {
-	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
+	return "DELETE FROM " + d.Table.SQL() +
+		" WHERE " + d.Where.SQL() +
+		thenReturnSQL(d.Return, d.ReturnAliases)
 }
 
 func (u *Update) SQL() string {
@@ -258,6 +260,7 @@ func (u *Update) SQL() string {
 		}
 	}
 	str += " WHERE " + u.Where.SQL()
+	str += thenReturnSQL(u.Return, u.ReturnAliases)
 	return str
 }
 
@@ -271,6 +274,7 @@ func (i *Insert) SQL() string {
 	}
 	str += ") "
 	str += i.Input.SQL()
+	str += thenReturnSQL(i.Return, i.ReturnAliases)
 	return str
 }
 
@@ -291,6 +295,16 @@ func (v Values) SQL() string {
 		str += ")"
 	}
 	return str
+}
+
+func thenReturnSQL(list []Expr, aliases []ID) string {
+	if len(list) == 0 {
+		return ""
+	}
+	var sb strings.Builder
+	sb.WriteString(" THEN RETURN ")
+	addSelectList(&sb, list, aliases)
+	return sb.String()
 }
 
 func (cd ColumnDef) SQL() string {
@@ -411,19 +425,7 @@ func (sel Select) addSQL(sb *strings.Builder) {
 	if sel.Distinct {
 		sb.WriteString("DISTINCT ")
 	}
-	for i, e := range sel.List {
-		if i > 0 {
-			sb.WriteString(", ")
-		}
-		e.addSQL(sb)
-		if len(sel.ListAliases) > 0 {
-			alias := sel.ListAliases[i]
-			if alias != "" {
-				sb.WriteString(" AS ")
-				sb.WriteString(alias.SQL())
-			}
-		}
-	}
+	addSelectList(sb, sel.List, sel.ListAliases)
 	if len(sel.From) > 0 {
 		sb.WriteString(" FROM ")
 		for i, f := range sel.From {
@@ -440,6 +442,22 @@ func (sel Select) addSQL(sb *strings.Builder) {
 	if len(sel.GroupBy) > 0 {
 		sb.WriteString(" GROUP BY ")
 		addExprList(sb, sel.GroupBy, ", ")
+	}
+}
+
+func addSelectList(sb *strings.Builder, list []Expr, aliases []ID) {
+	for i, e := range list {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		e.addSQL(sb)
+		if len(aliases) > 0 {
+			alias := aliases[i]
+			if alias != "" {
+				sb.WriteString(" AS ")
+				sb.WriteString(alias.SQL())
+			}
+		}
 	}
 }
 
