@@ -170,5 +170,34 @@ have been finalized, meaning they'll no longer allow further data writes.
 	// Using the client, we can commit data from multple streams to the same
 	// table atomically.
 	resp, err := client.BatchCommitWriteStreams(ctx, req)
+
+# Error Handling
+
+Like other Google Cloud services, this API relies on common components that can provide an
+enhanced set of errors when communicating about the results of API interactions.
+
+Specifically, the apierror package (https://pkg.go.dev/github.com/googleapis/gax-go/v2/apierror)
+provides convenience methods for extracting structured information about errors.
+
+The BigQuery Storage API service augments applicable errors with service-specific details in
+the form of a StorageError message. The StorageError message is accessed via the ExtractProtoMessage
+method in the apierror package. Note that the StorageError messsage does not implement Go's error
+interface.
+
+An example of accessing the structured error details:
+
+	// By way of example, let's assume the response from an append call returns an error.
+	_, err := result.GetResult(ctx)
+	if err != nil {
+		if apiErr, ok := apierror.FromError(err); ok {
+			// We now have an instance of APIError, which directly exposes more specific
+			// details about multiple failure conditions include transport-level errors.
+			storageErr := &storagepb.StorageError{}
+			if e := apiErr.Details().ExtractProtoMessage(storageErr); e != nil {
+				// storageErr now contains service-specific information about the error.
+				log.Printf("Received service-specific error code %s", storageErr.GetCode().String())
+			}
+		}
+	}
 */
 package managedwriter
