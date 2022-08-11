@@ -714,9 +714,10 @@ type ReceiveSettings struct {
 	// Deprecated.
 	// Previously, users might use Synchronous mode since StreamingPull had a limitation
 	// where MaxOutstandingMessages was not always respected with large batches of
-	// small messsages. With server side flow control, this is no longer an issue
+	// small messages. With server side flow control, this is no longer an issue
 	// and we recommend switching to the default StreamingPull mode by setting
 	// Synchronous to false.
+	// Synchronous mode does not work with exactly once delivery.
 	Synchronous bool
 }
 
