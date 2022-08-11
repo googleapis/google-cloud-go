@@ -309,7 +309,6 @@ func TestOCStats_GFE_Latency(t *testing.T) {
 		}
 		if err != nil {
 			t.Fatal(err.Error())
-			break
 		}
 	}
 
