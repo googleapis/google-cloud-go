@@ -122,3 +122,11 @@ func contains(v codes.Code, t map[codes.Code]struct{}) bool {
 	_, ok := t[v]
 	return ok
 }
+
+func newExactlyOnceBackoff() gax.Backoff {
+	return gax.Backoff{
+		Initial:    1 * time.Second,
+		Max:        64 * time.Second,
+		Multiplier: 2,
+	}
+}
