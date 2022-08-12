@@ -129,13 +129,14 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 								MaxServeNodes: 2,
 							},
 							AutoscalingTargets: &btapb.AutoscalingTargets{
-								CpuUtilizationPercent: 10,
+								CpuUtilizationPercent:        10,
+								StorageUtilizationGibPerNode: 3000,
 							},
 						},
 					},
 				},
 			},
-			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 		},
 	}
 
@@ -186,13 +187,14 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 								MaxServeNodes: 2,
 							},
 							AutoscalingTargets: &btapb.AutoscalingTargets{
-								CpuUtilizationPercent: 10,
+								CpuUtilizationPercent:        10,
+								StorageUtilizationGibPerNode: 3000,
 							},
 						},
 					},
 				},
 			},
-			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 		},
 	}
 
@@ -221,9 +223,10 @@ func TestInstanceAdmin_SetAutoscaling(t *testing.T) {
 	c := setupClient(t, mock)
 
 	err := c.SetAutoscaling(context.Background(), "myinst", "mycluster", AutoscalingConfig{
-		MinNodes:         1,
-		MaxNodes:         2,
-		CPUTargetPercent: 10,
+		MinNodes:                  1,
+		MaxNodes:                  2,
+		CPUTargetPercent:          10,
+		StorageUtilizationPerNode: 3000,
 	})
 	if err != nil {
 		t.Fatalf("SetAutoscaling failed: %v", err)
@@ -255,6 +258,11 @@ func TestInstanceAdmin_SetAutoscaling(t *testing.T) {
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 }
 
@@ -288,7 +296,7 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 		ClusterId:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
-		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 	})
 	if err != nil {
 		t.Fatalf("CreateInstance failed: %v", err)
@@ -346,7 +354,7 @@ func TestInstanceAdmin_CreateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
 				StorageType:       SSD,
-				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
 	})
@@ -382,7 +390,7 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 		ClusterID:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
-		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 	})
 	if err != nil {
 		t.Fatalf("CreateCluster failed: %v", err)
@@ -404,6 +412,11 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 
 	err = c.CreateCluster(context.Background(), &ClusterConfig{
@@ -459,7 +472,7 @@ func TestInstanceAdmin_UpdateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 			{
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
-				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
 	})
@@ -483,6 +496,11 @@ func TestInstanceAdmin_UpdateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 
 	err = c.UpdateInstanceWithClusters(context.Background(), &InstanceWithClustersConfig{
@@ -522,7 +540,8 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 							MaxServeNodes: 2,
 						},
 						AutoscalingTargets: &btapb.AutoscalingTargets{
-							CpuUtilizationPercent: 10,
+							CpuUtilizationPercent:        10,
+							StorageUtilizationGibPerNode: 3000,
 						},
 					},
 				},
@@ -538,7 +557,7 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 			{
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
-				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
 	})
@@ -562,6 +581,11 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 
 	_, err = UpdateInstanceAndSyncClusters(context.Background(), c, &InstanceWithClustersConfig{

@@ -22,6 +22,7 @@ import (
 	asset "cloud.google.com/go/asset/apiv1"
 	"google.golang.org/api/iterator"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -322,6 +323,26 @@ func ExampleClient_AnalyzeMove() {
 	_ = resp
 }
 
+func ExampleClient_QueryAssets() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.QueryAssetsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#QueryAssetsRequest.
+	}
+	resp, err := c.QueryAssets(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateSavedQuery() {
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
@@ -439,6 +460,26 @@ func ExampleClient_BatchGetEffectiveIamPolicies() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#BatchGetEffectiveIamPoliciesRequest.
 	}
 	resp, err := c.BatchGetEffectiveIamPolicies(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetOperation() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

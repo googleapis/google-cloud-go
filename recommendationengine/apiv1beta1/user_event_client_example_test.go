@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ func ExampleUserEventClient_WriteUserEvent() {
 
 	req := &recommendationenginepb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#WriteUserEventRequest.
 	}
 	resp, err := c.WriteUserEvent(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleUserEventClient_CollectUserEvent() {
 
 	req := &recommendationenginepb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#CollectUserEventRequest.
 	}
 	resp, err := c.CollectUserEvent(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleUserEventClient_ListUserEvents() {
 
 	req := &recommendationenginepb.ListUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#ListUserEventsRequest.
 	}
 	it := c.ListUserEvents(ctx, req)
 	for {
@@ -109,6 +112,7 @@ func ExampleUserEventClient_PurgeUserEvents() {
 
 	req := &recommendationenginepb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#PurgeUserEventsRequest.
 	}
 	op, err := c.PurgeUserEvents(ctx, req)
 	if err != nil {
@@ -133,6 +137,7 @@ func ExampleUserEventClient_ImportUserEvents() {
 
 	req := &recommendationenginepb.ImportUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#ImportUserEventsRequest.
 	}
 	op, err := c.ImportUserEvents(ctx, req)
 	if err != nil {

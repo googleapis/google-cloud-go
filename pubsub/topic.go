@@ -512,11 +512,12 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // A PublishResult holds the result from a call to Publish.
 //
 // Call Get to obtain the result of the Publish call. Example:
-//   // Get blocks until Publish completes or ctx is done.
-//   id, err := r.Get(ctx)
-//   if err != nil {
-//       // TODO: Handle error.
-//   }
+//
+//	// Get blocks until Publish completes or ctx is done.
+//	id, err := r.Get(ctx)
+//	if err != nil {
+//	    // TODO: Handle error.
+//	}
 type PublishResult = ipubsub.PublishResult
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and

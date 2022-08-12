@@ -190,4 +190,71 @@ var (
 			Type: bigquery.IntegerFieldType,
 		},
 	}
+
+	ValidationRepeatedSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name:     "double_repeated",
+			Type:     bigquery.FloatFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "float_repeated",
+			Type:     bigquery.FloatFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "int32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "int64_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "uint32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sint32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sint64_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "fixed32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sfixed32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sfixed64_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "bool_repeated",
+			Type:     bigquery.BooleanFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "enum_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+	}
 )

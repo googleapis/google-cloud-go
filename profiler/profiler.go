@@ -16,11 +16,11 @@
 //
 // Usage example:
 //
-//   import "cloud.google.com/go/profiler"
-//   ...
-//   if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
-//       // TODO: Handle error.
-//   }
+//	import "cloud.google.com/go/profiler"
+//	...
+//	if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
+//	    // TODO: Handle error.
+//	}
 //
 // Calling Start will start a goroutine to collect profiles and upload to
 // the profiler server, at the rhythm specified by the server.

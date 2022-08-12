@@ -122,8 +122,8 @@ type Field struct {
 //
 // A common idiom is to merge the check for nil return with
 // the check that the value has the expected dynamic type, as in:
-//	v, ok := e.Val(AttrSibling).(int64);
 //
+//	v, ok := e.Val(AttrSibling).(int64);
 func (e *Entry) Val(a Attr) interface{} {
 	for _, f := range e.Field {
 		if f.Attr == a {
@@ -280,7 +280,7 @@ func (b *buf) entry(atab abbrevTable, ubase Offset) *Entry {
 	return e
 }
 
-// A Reader allows reading Entry structures from a DWARF ``info'' section.
+// A Reader allows reading Entry structures from a DWARF “info” section.
 // The Entry structures are arranged in a tree.  The Reader's Next function
 // return successive entries from a pre-order traversal of the tree.
 // If an entry has children, its Children field will be true, and the children
@@ -295,7 +295,7 @@ type Reader struct {
 }
 
 // Reader returns a new Reader for Data.
-// The reader is positioned at byte offset 0 in the DWARF ``info'' section.
+// The reader is positioned at byte offset 0 in the DWARF “info” section.
 func (d *Data) Reader() *Reader {
 	r := &Reader{d: d}
 	r.Seek(0)
