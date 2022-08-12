@@ -693,7 +693,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			"ackID1": r,
 		}
 		errorsMap := map[string]string{
-			"ackID1": transientInvalidAckErrString,
+			"ackID1": transientErrStringPrefix + "_FAILURE",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 0, 1)
@@ -781,7 +781,7 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 		}
 		errorsMap := map[string]string{
 			"ackID1": permanentInvalidAckErrString,
-			"ackID2": transientInvalidAckErrString,
+			"ackID2": transientErrStringPrefix + "_FAILURE",
 		}
 		completed, retry := processResults(nil, ackReqMap, errorsMap)
 		compareCompletedRetryLengths(t, completed, retry, 2, 1)
