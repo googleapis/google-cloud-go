@@ -151,7 +151,7 @@
     {
       "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_CreateTask_sync",
       "title": "cloudtasks CreateTask Sample",
-      "description": "CreateTask creates a task and adds it to a queue.\n\nTasks cannot be updated after creation; there is no UpdateTask command.\n\n  For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget], the maximum task size is\n  100KB.\n\n  For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum task size is 1MB.",
+      "description": "CreateTask creates a task and adds it to a queue.\n\nTasks cannot be updated after creation; there is no UpdateTask command.\n\n\tFor [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget], the maximum task size is\n\t100KB.\n\n\tFor [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum task size is 1MB.",
       "file": "Client/CreateTask/main.go",
       "language": "GO",
       "clientMethod": {
@@ -287,7 +287,7 @@
     {
       "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_GetIamPolicy_sync",
       "title": "cloudtasks GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a Queue.\nReturns an empty policy if the resource exists and does not have a policy\nset.\n\nAuthorization requires the following\nGoogle IAM (at https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n  cloudtasks.queues.getIamPolicy",
+      "description": "GetIamPolicy gets the access control policy for a Queue.\nReturns an empty policy if the resource exists and does not have a policy\nset.\n\nAuthorization requires the following\nGoogle IAM (at https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n\tcloudtasks.queues.getIamPolicy",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -793,7 +793,7 @@
     {
       "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_SetIamPolicy_sync",
       "title": "cloudtasks SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy for a Queue. Replaces any existing\npolicy.\n\nNote: The Cloud Console does not check queue-level IAM permissions yet.\nProject-level permissions are required to use the Cloud Console.\n\nAuthorization requires the following\nGoogle IAM (at https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n  cloudtasks.queues.setIamPolicy",
+      "description": "SetIamPolicy sets the access control policy for a Queue. Replaces any existing\npolicy.\n\nNote: The Cloud Console does not check queue-level IAM permissions yet.\nProject-level permissions are required to use the Cloud Console.\n\nAuthorization requires the following\nGoogle IAM (at https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n\tcloudtasks.queues.setIamPolicy",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
