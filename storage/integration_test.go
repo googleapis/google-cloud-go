@@ -605,7 +605,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 
 	// We retry on nil to account for propagation delay in metadata update
 	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || shouldRetry(err)
+		return err == nil || ShouldRetry(err)
 	}
 
 	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
@@ -685,7 +685,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	// Confirm BucketAccessControl returns error.
 	// We retry on nil to account for propagation delay in metadata update.
 	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || shouldRetry(err)
+		return err == nil || ShouldRetry(err)
 	}
 
 	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
@@ -782,7 +782,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 	// Now, making object public or making bucket public should succeed. Run with
 	// retry because ACL settings may take time to propagate.
 	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || shouldRetry(err)
+		return err == nil || ShouldRetry(err)
 	}
 
 	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
