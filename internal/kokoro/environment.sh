@@ -29,6 +29,11 @@ if [[ -z "${PROJECT_ROOT:-}"  ]]; then
     PROJECT_ROOT="github/google-cloud-go"
 fi
 
+# add kokoro labels
+export PRODUCT_AREA_LABEL=observability
+export PRODUCT_LABEL=logging
+export LANGUAGE_LABEL=go
+
 # Add the test module as a submodule to the repo.
 cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
