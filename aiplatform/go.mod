@@ -5,10 +5,10 @@ go 1.17
 require (
 	cloud.google.com/go v0.102.1
 	github.com/googleapis/gax-go/v2 v2.4.0
-	google.golang.org/api v0.90.0
-	google.golang.org/genproto v0.0.0-20220801145646-83ce21fca29f
+	google.golang.org/api v0.92.0
+	google.golang.org/genproto v0.0.0-20220812140447-cec7f5303424
 	google.golang.org/grpc v1.48.0
-	google.golang.org/protobuf v1.28.0
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
