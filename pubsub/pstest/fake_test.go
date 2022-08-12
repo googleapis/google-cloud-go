@@ -1456,7 +1456,6 @@ func TestTopicRetentionAdmin(t *testing.T) {
 	}
 }
 
-<<<<<<< HEAD
 func TestStreaming_SubscriptionProperties(t *testing.T) {
 	ctx := context.Background()
 	pc, sc, s, cleanup := newFake(ctx, t)

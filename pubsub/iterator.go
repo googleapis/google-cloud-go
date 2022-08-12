@@ -261,6 +261,9 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	maxExt := time.Now().Add(it.po.maxExtension)
 	ackIDs := map[string]*AckResult{}
 	it.mu.Lock()
+	it.eoMu.RLock()
+	enableExactlyOnceDelivery := it.enableExactlyOnceDelivery
+	it.eoMu.RUnlock()
 	for _, m := range msgs {
 		ackID := msgAckID(m)
 		addRecv(m.ID, ackID, now)
@@ -276,15 +279,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		}
 		// If exactly once is enabled, keep track of all pending AckResults
 		// so we can cleanly close them all at shutdown.
-		it.eoMu.Lock()
-		if it.enableExactlyOnceDelivery {
+		if enableExactlyOnceDelivery {
 			ackh, ok := ipubsub.MessageAckHandler(m).(*psAckHandler)
 			if !ok {
 				it.fail(errors.New("failed to assert type as psAckHandler"))
 			}
 			it.pendingAckResults[ackID] = ackh.ackResult
 		}
-		it.eoMu.Unlock()
 	}
 	deadline := it.ackDeadline()
 	it.mu.Unlock()
@@ -454,6 +455,10 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	for k := range m {
 		ackIDs = append(ackIDs, k)
 	}
+	it.eoMu.RLock()
+	exactlyOnceDelivery := it.enableExactlyOnceDelivery
+	it.eoMu.RUnlock()
+
 	var toSend []string
 	for len(ackIDs) > 0 {
 		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
@@ -468,9 +473,6 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			Subscription: it.subName,
 			AckIds:       toSend,
 		})
-		it.eoMu.RLock()
-		exactlyOnceDelivery := it.enableExactlyOnceDelivery
-		it.eoMu.RUnlock()
 		if exactlyOnceDelivery {
 			resultsByAckID := make(map[string]*AckResult)
 			for _, ackID := range toSend {
@@ -500,6 +502,9 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	for k := range m {
 		ackIDs = append(ackIDs, k)
 	}
+	it.eoMu.RLock()
+	exactlyOnceDelivery := it.enableExactlyOnceDelivery
+	it.eoMu.RUnlock()
 	var toSend []string
 	for len(ackIDs) > 0 {
 		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
@@ -518,9 +523,6 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			AckDeadlineSeconds: deadlineSec,
 			AckIds:             toSend,
 		})
-		it.eoMu.RLock()
-		exactlyOnceDelivery := it.enableExactlyOnceDelivery
-		it.eoMu.RUnlock()
 		if exactlyOnceDelivery {
 			resultsByAckID := make(map[string]*AckResult)
 			for _, ackID := range toSend {
@@ -726,7 +728,6 @@ func maxDuration(x, y time.Duration) time.Duration {
 
 const (
 	transientErrStringPrefix     = "TRANSIENT_"
-	transientInvalidAckErrString = transientErrStringPrefix + "FAILURE_INVALID_ACK_ID"
 	permanentInvalidAckErrString = "PERMANENT_FAILURE_INVALID_ACK_ID"
 )
 

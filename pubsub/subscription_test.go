@@ -467,6 +467,7 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 
 func TestBigQuerySubscription(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	client, srv := newFake(t)
 	defer client.Close()
 	defer srv.Close()
