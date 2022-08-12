@@ -227,3 +227,11 @@ func (s *mockServer) Listen(stream pb.Firestore_ListenServer) error {
 	}
 	return nil
 }
+
+func (s *mockServer) BatchWrite(_ context.Context, req *pb.BatchWriteRequest) (*pb.BatchWriteResponse, error) {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.BatchWriteResponse), nil
+}

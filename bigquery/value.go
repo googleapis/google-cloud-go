@@ -178,6 +178,14 @@ func setGeography(v reflect.Value, x interface{}) error {
 	return nil
 }
 
+func setJSON(v reflect.Value, x interface{}) error {
+	if x == nil {
+		return errNoNulls
+	}
+	v.SetString(x.(string))
+	return nil
+}
+
 func setBytes(v reflect.Value, x interface{}) error {
 	if x == nil {
 		v.SetBytes(nil)
@@ -305,6 +313,18 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return func(v reflect.Value, x interface{}) error {
 				return setNull(v, x, func() interface{} {
 					return NullGeography{GeographyVal: x.(string), Valid: true}
+				})
+			}
+		}
+
+	case JSONFieldType:
+		if ftype.Kind() == reflect.String {
+			return setJSON
+		}
+		if ftype == typeOfNullJSON {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullJSON{JSONVal: x.(string), Valid: true}
 				})
 			}
 		}
@@ -959,6 +979,8 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		}
 		return Value(r), nil
 	case GeographyFieldType:
+		return val, nil
+	case JSONFieldType:
 		return val, nil
 	case IntervalFieldType:
 		i, err := ParseInterval(val)

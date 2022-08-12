@@ -288,6 +288,7 @@ items:
   - cloud.google.com/go/storage.Writer.Write
   - cloud.google.com/go/storage.SignedURL
   alt_link: https://pkg.go.dev/cloud.google.com/go/storage
+  friendlyApiName: Storage API
 - uid: cloud.google.com/go/storage.DeleteAction,SetStorageClassAction,AbortIncompleteMPUAction
   name: DeleteAction, SetStorageClassAction, AbortIncompleteMPUAction
   id: DeleteAction,SetStorageClassAction,AbortIncompleteMPUAction

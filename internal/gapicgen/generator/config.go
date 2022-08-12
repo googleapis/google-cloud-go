@@ -542,7 +542,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "database",
 		ImportPath:            "cloud.google.com/go/spanner/admin/database/apiv1",
 		GRPCServiceConfigPath: "spanner_admin_database_grpc_service_config.json",
-		ApiServiceConfigPath:  "spanner_admin_database.yaml",
+		ApiServiceConfigPath:  "spanner.yaml",
 		ReleaseLevel:          "ga",
 	},
 	{
@@ -949,7 +949,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
-		ApiServiceConfigPath:  "assuredworkloads.yaml",
+		ApiServiceConfigPath:  "assuredworkloads_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
@@ -1113,7 +1113,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "recommendationengine_grpc_service_config.json",
 		ApiServiceConfigPath:  "recommendationengine_v1beta1.yaml",
 		ReleaseLevel:          "beta",
-		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkehub/v1beta1",
@@ -1569,6 +1568,78 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "dataform_v1alpha2.yaml",
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "alpha",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/functions/v2",
+		Pkg:                   "functions",
+		ImportPath:            "cloud.google.com/go/functions/apiv2",
+		GRPCServiceConfigPath: "functions_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudfunctions_v2.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/appconnections/v1",
+		Pkg:                   "appconnections",
+		ImportPath:            "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-appconnections_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/appconnectors/v1",
+		Pkg:                   "appconnectors",
+		ImportPath:            "cloud.google.com/go/beyondcorp/appconnectors/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-appconnectors_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/appgateways/v1",
+		Pkg:                   "appgateways",
+		ImportPath:            "cloud.google.com/go/beyondcorp/appgateways/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-appgateways_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/clientconnectorservices/v1",
+		Pkg:                   "clientconnectorservices",
+		ImportPath:            "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-clientconnectorservices_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/beyondcorp/clientgateways/v1",
+		Pkg:                   "clientgateways",
+		ImportPath:            "cloud.google.com/go/beyondcorp/clientgateways/apiv1",
+		GRPCServiceConfigPath: "beyondcorp-clientgateways_grpc_service_config.json",
+		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
+		// GA after 2022/08/12
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/devtools/artifactregistry/v1",
+		Pkg:                   "artifactregistry",
+		ImportPath:            "cloud.google.com/go/artifactregistry/apiv1",
+		GRPCServiceConfigPath: "artifactregistry_grpc_service_config.json",
+		ApiServiceConfigPath:  "artifactregistry_v1.yaml",
+		// GA after 2022/08/22
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/apigeeregistry/v1",
+		Pkg:                   "apigeeregistry",
+		ImportPath:            "cloud.google.com/go/apigeeregistry/apiv1",
+		GRPCServiceConfigPath: "apigeeregistry_grpc_service_config.json",
+		ApiServiceConfigPath:  "apigeeregistry_v1.yaml",
+		// GA after 2022/09/02
+		ReleaseLevel: "beta",
 	},
 
 	// Non-Cloud APIs

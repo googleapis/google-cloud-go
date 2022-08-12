@@ -922,7 +922,7 @@ func TestCondition(t *testing.T) {
 
 	// Test an error, too:
 	err = obj.Generation(1234).NewWriter(ctx).Close()
-	if err == nil || !strings.Contains(err.Error(), "NewWriter: generation not supported") {
+	if err == nil || !strings.Contains(err.Error(), "storage: generation not supported") {
 		t.Errorf("want error about unsupported generation; got %v", err)
 	}
 }
@@ -1139,10 +1139,10 @@ func TestRetryer(t *testing.T) {
 			name: "object retryer configures retry",
 			objectOptions: []RetryOption{
 				WithPolicy(RetryAlways),
-				WithErrorFunc(shouldRetry),
+				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				shouldRetry: shouldRetry,
+				shouldRetry: ShouldRetry,
 				policy:      RetryAlways,
 			},
 		},
@@ -1155,7 +1155,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				}),
 				WithPolicy(RetryAlways),
-				WithErrorFunc(shouldRetry),
+				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1163,7 +1163,7 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: shouldRetry,
+				shouldRetry: ShouldRetry,
 				policy:      RetryAlways,
 			},
 		},
@@ -1176,7 +1176,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				}),
 				WithPolicy(RetryAlways),
-				WithErrorFunc(shouldRetry),
+				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1184,7 +1184,7 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: shouldRetry,
+				shouldRetry: ShouldRetry,
 				policy:      RetryAlways,
 			},
 		},
@@ -1195,11 +1195,11 @@ func TestRetryer(t *testing.T) {
 			},
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
-				WithErrorFunc(shouldRetry),
+				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				shouldRetry: shouldRetry,
+				shouldRetry: ShouldRetry,
 			},
 		},
 		{
@@ -1209,11 +1209,11 @@ func TestRetryer(t *testing.T) {
 			},
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
-				WithErrorFunc(shouldRetry),
+				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				shouldRetry: shouldRetry,
+				shouldRetry: ShouldRetry,
 			},
 		},
 		{
@@ -1231,11 +1231,11 @@ func TestRetryer(t *testing.T) {
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
 				}),
-				WithErrorFunc(shouldRetry),
+				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				policy:      RetryAlways,
-				shouldRetry: shouldRetry,
+				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
@@ -1268,7 +1268,7 @@ func TestRetryer(t *testing.T) {
 			name: "object retryer does not override bucket retryer if option is not set",
 			bucketOptions: []RetryOption{
 				WithPolicy(RetryNever),
-				WithErrorFunc(shouldRetry),
+				WithErrorFunc(ShouldRetry),
 			},
 			objectOptions: []RetryOption{
 				WithBackoff(gax.Backoff{
@@ -1278,7 +1278,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
-				shouldRetry: shouldRetry,
+				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Second,
@@ -1353,16 +1353,6 @@ func TestRetryer(t *testing.T) {
 					name: "client.HMACKeyHandle()",
 					r:    c.HMACKeyHandle("pID", "accessID").retry,
 					want: c.retry,
-				},
-				{
-					name: "client.Buckets()",
-					r:    c.Buckets(ctx, "pID").client.retry,
-					want: c.retry,
-				},
-				{
-					name: "bucket.Objects()",
-					r:    b.Objects(ctx, nil).bucket.retry,
-					want: b.retry,
 				},
 			}
 			for _, ac := range configHandleCases {

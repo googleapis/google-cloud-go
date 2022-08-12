@@ -310,16 +310,16 @@ type internalClient interface {
 //
 // The resources managed by this API are:
 //
-//   Repositories, which group packages and their data.
+//	Repositories, which group packages and their data.
 //
-//   Packages, which group versions and their tags.
+//	Packages, which group versions and their tags.
 //
-//   Versions, which are specific forms of a package.
+//	Versions, which are specific forms of a package.
 //
-//   Tags, which represent alternative names for versions.
+//	Tags, which represent alternative names for versions.
 //
-//   Files, which contain content and are optionally associated with a Package
-//   or Version.
+//	Files, which contain content and are optionally associated with a Package
+//	or Version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -562,16 +562,16 @@ type gRPCClient struct {
 //
 // The resources managed by this API are:
 //
-//   Repositories, which group packages and their data.
+//	Repositories, which group packages and their data.
 //
-//   Packages, which group versions and their tags.
+//	Packages, which group versions and their tags.
 //
-//   Versions, which are specific forms of a package.
+//	Versions, which are specific forms of a package.
 //
-//   Tags, which represent alternative names for versions.
+//	Tags, which represent alternative names for versions.
 //
-//   Files, which contain content and are optionally associated with a Package
-//   or Version.
+//	Files, which contain content and are optionally associated with a Package
+//	or Version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {

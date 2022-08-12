@@ -384,6 +384,35 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				},
 			},
 		},
+		{
+			description: "repeated w/packed",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "name", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
+					{Name: "some_lengths", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REPEATED},
+					{Name: "nicknames", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REPEATED},
+				}},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("name"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+					{
+						Name:   proto.String("some_lengths"),
+						Number: proto.Int32(2),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+						Options: &descriptorpb.FieldOptions{
+							Packed: proto.Bool(true),
+						},
+					},
+					{Name: proto.String("nicknames"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		// Proto2
@@ -1078,6 +1107,136 @@ func TestNormalizeDescriptor(t *testing.T) {
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
 								TypeName: proto.String("testdata_ExtEnum_E.ExtEnum"),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "ValidationP3PackedRepeated",
+			in:          (&testdata.ValidationP3PackedRepeated{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_ValidationP3PackedRepeated"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("id"),
+						JsonName: proto.String("id"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("double_repeated"),
+						JsonName: proto.String("doubleRepeated"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_DOUBLE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("float_repeated"),
+						JsonName: proto.String("floatRepeated"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_FLOAT.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("int32_repeated"),
+						JsonName: proto.String("int32Repeated"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("int64_repeated"),
+						JsonName: proto.String("int64Repeated"),
+						Number:   proto.Int32(5),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("uint32_repeated"),
+						JsonName: proto.String("uint32Repeated"),
+						Number:   proto.Int32(6),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_UINT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("sint32_repeated"),
+						JsonName: proto.String("sint32Repeated"),
+						Number:   proto.Int32(7),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_SINT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("sint64_repeated"),
+						JsonName: proto.String("sint64Repeated"),
+						Number:   proto.Int32(8),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_SINT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("fixed32_repeated"),
+						JsonName: proto.String("fixed32Repeated"),
+						Number:   proto.Int32(9),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_FIXED32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("sfixed32_repeated"),
+						JsonName: proto.String("sfixed32Repeated"),
+						Number:   proto.Int32(10),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_SFIXED32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("sfixed64_repeated"),
+						JsonName: proto.String("sfixed64Repeated"),
+						Number:   proto.Int32(11),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_SFIXED64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+
+					{
+						Name:     proto.String("bool_repeated"),
+						JsonName: proto.String("boolRepeated"),
+						Number:   proto.Int32(12),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_BOOL.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("enum_repeated"),
+						JsonName: proto.String("enumRepeated"),
+						Number:   proto.Int32(13),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
+						TypeName: proto.String("testdata_Proto3ExampleEnum_E.Proto3ExampleEnum"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("testdata_Proto3ExampleEnum_E"),
+						EnumType: []*descriptorpb.EnumDescriptorProto{
+							{
+								Name: proto.String("Proto3ExampleEnum"),
+								Value: []*descriptorpb.EnumValueDescriptorProto{
+									{
+										Name:   proto.String("P3_UNDEFINED"),
+										Number: proto.Int32(0),
+									},
+									{
+										Name:   proto.String("P3_THING"),
+										Number: proto.Int32(1),
+									},
+									{
+										Name:   proto.String("P3_OTHER_THING"),
+										Number: proto.Int32(2),
+									},
+									{
+										Name:   proto.String("P3_THIRD_THING"),
+										Number: proto.Int32(3),
+									},
+								},
 							},
 						},
 					},

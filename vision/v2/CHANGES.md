@@ -1,5 +1,12 @@
 # Changes
 
+## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.0.0...vision/v2.1.0) (2022-08-09)
+
+
+### Features
+
+* **vision/v2:** Add TextDetectionParams.advanced_ocr_options ([076c35b](https://github.com/googleapis/google-cloud-go/commit/076c35b18f80fa14cb3941b294feb829a5c92103))
+
 ## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/vision/v1.2.0...vision/v2.0.0) (2022-05-24)
 
 

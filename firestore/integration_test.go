@@ -1720,3 +1720,56 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
 	}
 }
+
+func TestIntegration_BulkWriter(t *testing.T) {
+	doc := iColl.NewDoc()
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+
+	f := integrationTestMap
+	j, err := bw.Create(doc, f)
+
+	if err != nil {
+		t.Errorf("bulkwriter: error creating write to database: %v\n", err)
+	}
+
+	bw.Flush()              // This blocks
+	res, err := j.Results() // so does this
+
+	if err != nil {
+		t.Errorf("bulkwriter: error getting write results: %v\n", err)
+	}
+
+	if res == nil {
+		t.Error("bulkwriter: write attempt returned nil results")
+	}
+
+	numNewWrites := 21 // 20 is the threshold at which the bundler should start sending requests
+	var jobs []*BulkWriterJob
+
+	// Test a slew of writes sent at the BulkWriter
+	for i := 0; i < numNewWrites; i++ {
+		d := iColl.NewDoc()
+		jb, err := bw.Create(d, f)
+
+		if err != nil {
+			t.Errorf("bulkwriter: error creating write to database: %v\n", err)
+		}
+
+		jobs = append(jobs, jb)
+	}
+
+	bw.End() // This calls Flush() in the background.
+
+	for _, j := range jobs {
+		res, err = j.Results()
+		if err != nil {
+			t.Errorf("bulkwriter: error getting write results: %v\n", err)
+		}
+
+		if res == nil {
+			t.Error("bulkwriter: write attempt returned nil results")
+		}
+	}
+}

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.3.0...artifactregistry/v1.4.0) (2022-07-26)
+
+
+### Features
+
+* **artifactregistry:** start generating apiv1 ([#6403](https://github.com/googleapis/google-cloud-go/issues/6403)) ([045b544](https://github.com/googleapis/google-cloud-go/commit/045b544619f6199acefe454b015bc6b30d595bf3))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.2.0...artifactregistry/v1.3.0) (2022-02-23)
 
 

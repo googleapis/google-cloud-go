@@ -24,7 +24,7 @@
 // concepts found in the table entries, read the [Cloud Monitoring
 // documentation](https://cloud.google.com/monitoring/docs).
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.

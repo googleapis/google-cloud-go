@@ -1,5 +1,18 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.15.0...bigtable/v1.16.0) (2022-07-27)
+
+
+### Features
+
+* **bigtable:** add PolicyType for GCPolicy and expose public methods for different types of GC policies ([#6314](https://github.com/googleapis/google-cloud-go/issues/6314)) ([2971037](https://github.com/googleapis/google-cloud-go/commit/2971037040dd5c2cf712e33ef49cfdfc238c02cc))
+* **bigtable:** adds autoscaling target storage per node ([#6317](https://github.com/googleapis/google-cloud-go/issues/6317)) ([5eab4c3](https://github.com/googleapis/google-cloud-go/commit/5eab4c336075ae5aae78794d73bd0d8d1342813c))
+
+
+### Bug Fixes
+
+* **bigtable:** make code buildable ([#6436](https://github.com/googleapis/google-cloud-go/issues/6436)) ([6bd5ce8](https://github.com/googleapis/google-cloud-go/commit/6bd5ce85ba52fff676bdef2a2bb7fc8ed001e766)), refs [#6419](https://github.com/googleapis/google-cloud-go/issues/6419)
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/bigtable-v1.14.0...bigtable/v1.15.0) (2022-07-07)
 
 
