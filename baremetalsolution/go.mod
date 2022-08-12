@@ -8,7 +8,7 @@ require (
 	google.golang.org/api v0.85.0
 	google.golang.org/genproto v0.0.0-20220621134657-43db42f103f7
 	google.golang.org/grpc v1.48.0
-	google.golang.org/protobuf v1.28.0
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
