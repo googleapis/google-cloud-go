@@ -29,7 +29,7 @@ if [[ -z "${PROJECT_ROOT:-}"  ]]; then
     PROJECT_ROOT="github/google-cloud-go"
 fi
 
-# add kokoro labels
+# add kokoro labels for testgrid filtering
 export PRODUCT_AREA_LABEL=observability
 export PRODUCT_LABEL=logging
 export LANGUAGE_LABEL=go
