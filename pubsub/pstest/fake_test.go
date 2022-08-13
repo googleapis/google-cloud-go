@@ -1171,7 +1171,10 @@ func mustStartStreamingPull(ctx context.Context, t *testing.T, sc pb.SubscriberC
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := spc.Send(&pb.StreamingPullRequest{Subscription: sub.Name}); err != nil {
+	if err := spc.Send(&pb.StreamingPullRequest{
+		Subscription:             sub.Name,
+		StreamAckDeadlineSeconds: sub.GetAckDeadlineSeconds(),
+	}); err != nil {
 		t.Fatal(err)
 	}
 	return spc
