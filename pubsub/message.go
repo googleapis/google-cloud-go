@@ -100,11 +100,12 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 // AckResult holds the result from a call to Ack or Nack.
 //
 // Call Get to obtain the result of the Ack/NackWithResult call. Example:
-//   // Get blocks until Ack/NackWithResult completes or ctx is done.
-//   ackStatus, err := r.Get(ctx)
-//   if err != nil {
-//       // TODO: Handle error.
-//   }
+//
+//	// Get blocks until Ack/NackWithResult completes or ctx is done.
+//	ackStatus, err := r.Get(ctx)
+//	if err != nil {
+//	    // TODO: Handle error.
+//	}
 type AckResult = ipubsub.AckResult
 
 // AcknowledgeStatus represents the status of an Ack or Nack request.
