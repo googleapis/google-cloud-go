@@ -78,7 +78,7 @@ func (ah *pslAckHandler) OnNack() {
 // OnAckWithResult is required implementation for the ack handler
 // for Cloud Pub/Sub's exactly once delivery feature. This will
 // ack the message and return nil.
-func (ah *pslAckHandler) OnAckWithResult() *ipubsub.AckResult {
+func (ah *pslAckHandler) OnAckWithResult() *pubsub.AckResult {
 	ah.OnAck()
 	return nil
 }
@@ -86,7 +86,7 @@ func (ah *pslAckHandler) OnAckWithResult() *ipubsub.AckResult {
 // OnNackWithResult is required implementation for the ack handler
 // for Cloud Pub/Sub's exactly once delivery feature. This will
 // nack the message and return nil.
-func (ah *pslAckHandler) OnNackWithResult() *ipubsub.AckResult {
+func (ah *pslAckHandler) OnNackWithResult() *pubsub.AckResult {
 	ah.OnNack()
 	return nil
 }
