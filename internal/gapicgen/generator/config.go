@@ -1647,6 +1647,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/09/02
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/api/apikeys/v2",
+		Pkg:                   "apikeys",
+		ImportPath:            "cloud.google.com/go/apikeys/apiv2",
+		GRPCServiceConfigPath: "apikeys_grpc_service_config.json",
+		ApiServiceConfigPath:  "apikeys_v2.yaml",
+		// GA after 2022/09/17
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
