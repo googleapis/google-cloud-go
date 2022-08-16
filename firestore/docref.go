@@ -65,7 +65,9 @@ func (d *DocumentRef) Collection(id string) *CollectionRef {
 
 // Get retrieves the document. If the document does not exist, Get return a NotFound error, which
 // can be checked with
-//    status.Code(err) == codes.NotFound
+//
+//	status.Code(err) == codes.NotFound
+//
 // In that case, Get returns a non-nil DocumentSnapshot whose Exists method return false and whose
 // ReadTime is the time of the failed read operation.
 func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) {
@@ -490,9 +492,9 @@ type transform struct {
 //
 // The supported values are:
 //
-//    int, int8, int16, int32, int64
-//    uint8, uint16, uint32
-//    float32, float64
+//	int, int8, int16, int32, int64
+//	uint8, uint16, uint32
+//	float32, float64
 //
 // If the field does not yet exist, the transformation will set the field to
 // the given value.
@@ -519,9 +521,9 @@ func Increment(n interface{}) transform {
 //
 // The supported values are:
 //
-//    int, int8, int16, int32, int64
-//    uint8, uint16, uint32
-//    float32, float64
+//	int, int8, int16, int32, int64
+//	uint8, uint16, uint32
+//	float32, float64
 //
 // If the field is not an integer or double, or if the field does not yet
 // exist,  the transformation will set the field to the given value. If a
@@ -549,9 +551,9 @@ func FieldTransformMaximum(n interface{}) transform {
 //
 // The supported values are:
 //
-//    int, int8, int16, int32, int64
-//    uint8, uint16, uint32
-//    float32, float64
+//	int, int8, int16, int32, int64
+//	uint8, uint16, uint32
+//	float32, float64
 //
 // If the field is not an integer or double, or if the field does not yet
 // exist,  the transformation will set the field to the given value. If a

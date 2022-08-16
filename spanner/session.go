@@ -1568,11 +1568,11 @@ func (hc *healthChecker) worker(i int) {
 // maintainer maintains the number of sessions in the pool based on the session
 // pool configuration and the current and historical number of sessions checked
 // out of the pool. The maintainer will:
-// 1. Ensure that the session pool contains at least MinOpened sessions.
-// 2. If the current number of sessions in the pool exceeds the greatest number
-//    of checked out sessions (=sessions in use) during the last 10 minutes,
-//    and the delta is larger than MaxIdleSessions, the maintainer will reduce
-//    the number of sessions to maxSessionsInUseDuringWindow+MaxIdleSessions.
+//  1. Ensure that the session pool contains at least MinOpened sessions.
+//  2. If the current number of sessions in the pool exceeds the greatest number
+//     of checked out sessions (=sessions in use) during the last 10 minutes,
+//     and the delta is larger than MaxIdleSessions, the maintainer will reduce
+//     the number of sessions to maxSessionsInUseDuringWindow+MaxIdleSessions.
 func (hc *healthChecker) maintainer() {
 	// Wait until the pool is ready.
 	<-hc.ready
