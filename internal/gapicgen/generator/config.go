@@ -56,6 +56,12 @@ type MicrogenConfig struct {
 	// ImportPath plus the specified suffix separated by a "/", and using the
 	// same Pkg value.
 	StubsDir string
+
+	// NumericEnumsEnabled indicates, for REST GAPICs, if requests should be
+	// generated to send the $alt=json;enum-encoding=int system parameter with
+	// every API call. This should only be enabled for services that are
+	// up-to-date enough to support such a system parameter.
+	NumericEnumsEnabled bool
 }
 
 var MicrogenGapicConfigs = []*MicrogenConfig{
