@@ -576,9 +576,12 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 		}
 		return filterRow(f.Condition.FalseFilter, r)
 	case *btpb.RowFilter_RowKeyRegexFilter:
+		if len(f.RowKeyRegexFilter) == 0 {
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'row_key_regex_filter' : argument must not be empty")
+		}
 		rx, err := newRegexp(f.RowKeyRegexFilter)
 		if err != nil {
-			return false, status.Errorf(codes.InvalidArgument, "Error in field 'rowkey_regex_filter' : %v", err)
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'row_key_regex_filter' : %v", err)
 		}
 		if !rx.MatchString(r.key) {
 			return false, nil
