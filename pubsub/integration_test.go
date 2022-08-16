@@ -1278,7 +1278,6 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
-		t.Fatal(err)
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 }

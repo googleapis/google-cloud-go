@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.8.1",
+    "version": "0.9.0",
     "language": "GO",
     "apis": [
       {
@@ -470,7 +470,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CancelDisplayVideo360AdvertiserLinkProposal_sync",
       "title": "analyticsadmin CancelDisplayVideo360AdvertiserLinkProposal Sample",
-      "description": "CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.\nCancelling can mean either: \n\n  Declining a proposal initiated from Display & Video 360\n\n  Withdrawing a proposal initiated from Google Analytics\n  After being cancelled, a proposal will eventually be deleted automatically.",
+      "description": "CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.\nCancelling can mean either: \n\n\tDeclining a proposal initiated from Display & Video 360\n\n\tWithdrawing a proposal initiated from Google Analytics\n\tAfter being cancelled, a proposal will eventually be deleted automatically.",
       "file": "AnalyticsAdminClient/CancelDisplayVideo360AdvertiserLinkProposal/main.go",
       "language": "GO",
       "clientMethod": {

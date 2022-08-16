@@ -43,6 +43,7 @@ var newFeaturestoreOnlineServingClientHook clientHook
 type FeaturestoreOnlineServingCallOptions struct {
 	ReadFeatureValues          []gax.CallOption
 	StreamingReadFeatureValues []gax.CallOption
+	WriteFeatureValues         []gax.CallOption
 	GetLocation                []gax.CallOption
 	ListLocations              []gax.CallOption
 	GetIamPolicy               []gax.CallOption
@@ -71,6 +72,7 @@ func defaultFeaturestoreOnlineServingCallOptions() *FeaturestoreOnlineServingCal
 	return &FeaturestoreOnlineServingCallOptions{
 		ReadFeatureValues:          []gax.CallOption{},
 		StreamingReadFeatureValues: []gax.CallOption{},
+		WriteFeatureValues:         []gax.CallOption{},
 		GetLocation:                []gax.CallOption{},
 		ListLocations:              []gax.CallOption{},
 		GetIamPolicy:               []gax.CallOption{},
@@ -91,6 +93,7 @@ type internalFeaturestoreOnlineServingClient interface {
 	Connection() *grpc.ClientConn
 	ReadFeatureValues(context.Context, *aiplatformpb.ReadFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.ReadFeatureValuesResponse, error)
 	StreamingReadFeatureValues(context.Context, *aiplatformpb.StreamingReadFeatureValuesRequest, ...gax.CallOption) (aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient, error)
+	WriteFeatureValues(context.Context, *aiplatformpb.WriteFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.WriteFeatureValuesResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -149,6 +152,15 @@ func (c *FeaturestoreOnlineServingClient) ReadFeatureValues(ctx context.Context,
 // up across multiple responses.
 func (c *FeaturestoreOnlineServingClient) StreamingReadFeatureValues(ctx context.Context, req *aiplatformpb.StreamingReadFeatureValuesRequest, opts ...gax.CallOption) (aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient, error) {
 	return c.internalClient.StreamingReadFeatureValues(ctx, req, opts...)
+}
+
+// WriteFeatureValues writes Feature values of one or more entities of an EntityType.
+//
+// The Feature values are merged into existing entities if any. The Feature
+// values to be written must have timestamp within the online storage
+// retention.
+func (c *FeaturestoreOnlineServingClient) WriteFeatureValues(ctx context.Context, req *aiplatformpb.WriteFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.WriteFeatureValuesResponse, error) {
+	return c.internalClient.WriteFeatureValues(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -331,6 +343,23 @@ func (c *featurestoreOnlineServingGRPCClient) StreamingReadFeatureValues(ctx con
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.featurestoreOnlineServingClient.StreamingReadFeatureValues(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featurestoreOnlineServingGRPCClient) WriteFeatureValues(ctx context.Context, req *aiplatformpb.WriteFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.WriteFeatureValuesResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).WriteFeatureValues[0:len((*c.CallOptions).WriteFeatureValues):len((*c.CallOptions).WriteFeatureValues)], opts...)
+	var resp *aiplatformpb.WriteFeatureValuesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featurestoreOnlineServingClient.WriteFeatureValues(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

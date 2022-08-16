@@ -150,7 +150,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Agents_ExportAgent_sync",
       "title": "dialogflow ExportAgent Sample",
-      "description": "ExportAgent exports the specified agent to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: ExportAgentResponse",
+      "description": "ExportAgent exports the specified agent to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: ExportAgentResponse",
       "file": "AgentsClient/ExportAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -518,7 +518,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Agents_RestoreAgent_sync",
       "title": "dialogflow RestoreAgent Sample",
-      "description": "RestoreAgent restores the specified agent from a binary file.\n\nReplaces the current agent with a new one. Note that all existing resources\nin agent (e.g. intents, entity types, flows) will be removed.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "RestoreAgent restores the specified agent from a binary file.\n\nReplaces the current agent with a new one. Note that all existing resources\nin agent (e.g. intents, entity types, flows) will be removed.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "AgentsClient/RestoreAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1801,7 +1801,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_CreateEnvironment_sync",
       "title": "dialogflow CreateEnvironment Sample",
-      "description": "CreateEnvironment creates an Environment in the specified Agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: Environment",
+      "description": "CreateEnvironment creates an Environment in the specified Agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
       "file": "EnvironmentsClient/CreateEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1892,7 +1892,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_DeployFlow_sync",
       "title": "dialogflow DeployFlow Sample",
-      "description": "DeployFlow deploys a flow to the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: DeployFlowMetadata\n\n  response: DeployFlowResponse",
+      "description": "DeployFlow deploys a flow to the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: DeployFlowMetadata\n\n\tresponse: DeployFlowResponse",
       "file": "EnvironmentsClient/DeployFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2306,7 +2306,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_RunContinuousTest_sync",
       "title": "dialogflow RunContinuousTest Sample",
-      "description": "RunContinuousTest kicks off a continuous test under the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: RunContinuousTestMetadata\n\n  response: RunContinuousTestResponse",
+      "description": "RunContinuousTest kicks off a continuous test under the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: RunContinuousTestMetadata\n\n\tresponse: RunContinuousTestResponse",
       "file": "EnvironmentsClient/RunContinuousTest/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2352,7 +2352,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_UpdateEnvironment_sync",
       "title": "dialogflow UpdateEnvironment Sample",
-      "description": "UpdateEnvironment updates the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: Environment",
+      "description": "UpdateEnvironment updates the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
       "file": "EnvironmentsClient/UpdateEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3084,7 +3084,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_ExportFlow_sync",
       "title": "dialogflow ExportFlow Sample",
-      "description": "ExportFlow exports the specified flow to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: ExportFlowResponse\n\nNote that resources (e.g. intents, entities, webhooks) that the flow\nreferences will also be exported.",
+      "description": "ExportFlow exports the specified flow to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: ExportFlowResponse\n\nNote that resources (e.g. intents, entities, webhooks) that the flow\nreferences will also be exported.",
       "file": "FlowsClient/ExportFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3314,7 +3314,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_ImportFlow_sync",
       "title": "dialogflow ImportFlow Sample",
-      "description": "ImportFlow imports the specified flow to the specified agent from a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: ImportFlowResponse\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "ImportFlow imports the specified flow to the specified agent from a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: ImportFlowResponse\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "FlowsClient/ImportFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3498,7 +3498,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_TrainFlow_sync",
       "title": "dialogflow TrainFlow Sample",
-      "description": "TrainFlow trains the specified flow. Note that only the flow in ‘draft’ environment\nis trained.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "TrainFlow trains the specified flow. Note that only the flow in ‘draft’ environment\nis trained.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "FlowsClient/TrainFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5921,7 +5921,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_BatchRunTestCases_sync",
       "title": "dialogflow BatchRunTestCases Sample",
-      "description": "BatchRunTestCases kicks off a batch run of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: BatchRunTestCasesMetadata\n\n  response: BatchRunTestCasesResponse",
+      "description": "BatchRunTestCases kicks off a batch run of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: BatchRunTestCasesMetadata\n\n\tresponse: BatchRunTestCasesResponse",
       "file": "TestCasesClient/BatchRunTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6104,7 +6104,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_ExportTestCases_sync",
       "title": "dialogflow ExportTestCases Sample",
-      "description": "ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local\nfile. Filter can be applied to export a subset of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: ExportTestCasesMetadata\n\n  response: ExportTestCasesResponse",
+      "description": "ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local\nfile. Filter can be applied to export a subset of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: ExportTestCasesMetadata\n\n\tresponse: ExportTestCasesResponse",
       "file": "TestCasesClient/ExportTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6334,7 +6334,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_ImportTestCases_sync",
       "title": "dialogflow ImportTestCases Sample",
-      "description": "ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It\nalways creates new test cases and won’t overwrite any existing ones. The\nprovided ID in the imported test case is neglected.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: ImportTestCasesMetadata\n\n  response: ImportTestCasesResponse",
+      "description": "ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It\nalways creates new test cases and won’t overwrite any existing ones. The\nprovided ID in the imported test case is neglected.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: ImportTestCasesMetadata\n\n\tresponse: ImportTestCasesResponse",
       "file": "TestCasesClient/ImportTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6564,7 +6564,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_RunTestCase_sync",
       "title": "dialogflow RunTestCase Sample",
-      "description": "RunTestCase kicks off a test case run.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: RunTestCaseMetadata\n\n  response: RunTestCaseResponse",
+      "description": "RunTestCase kicks off a test case run.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: RunTestCaseMetadata\n\n\tresponse: RunTestCaseResponse",
       "file": "TestCasesClient/RunTestCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7205,7 +7205,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_CreateVersion_sync",
       "title": "dialogflow CreateVersion Sample",
-      "description": "CreateVersion creates a Version in the specified Flow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: CreateVersionOperationMetadata\n\n  response: Version",
+      "description": "CreateVersion creates a Version in the specified Flow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: CreateVersionOperationMetadata\n\n\tresponse: Version",
       "file": "VersionsClient/CreateVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7572,7 +7572,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_LoadVersion_sync",
       "title": "dialogflow LoadVersion Sample",
-      "description": "LoadVersion loads resources in the specified version to the draft flow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
+      "description": "LoadVersion loads resources in the specified version to the draft flow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
       "file": "VersionsClient/LoadVersion/main.go",
       "language": "GO",
       "clientMethod": {
