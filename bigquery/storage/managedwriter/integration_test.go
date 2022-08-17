@@ -139,6 +139,10 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testCommittedStream(ctx, t, mwClient, bqClient, dataset)
 		})
+		t.Run("ErrorBehaviors", func(t *testing.T) {
+			t.Parallel()
+			testErrorBehaviors(ctx, t, mwClient, bqClient, dataset)
+		})
 		t.Run("BufferedStream", func(t *testing.T) {
 			t.Parallel()
 			testBufferedStream(ctx, t, mwClient, bqClient, dataset)
@@ -404,6 +408,124 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 		withExactRowCount(int64(len(testSimpleData))))
 }
 
+// testErrorBehaviors intentionally issues problematic requests to verify error behaviors.
+func testErrorBehaviors(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.SimpleMessageProto2{}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	// setup a new stream.
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(CommittedStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	data := make([][]byte, len(testSimpleData))
+	for k, mesg := range testSimpleData {
+		b, err := proto.Marshal(mesg)
+		if err != nil {
+			t.Errorf("failed to marshal message %d: %v", k, err)
+		}
+		data[k] = b
+	}
+
+	// Send an append at an invalid offset.
+	result, err := ms.AppendRows(ctx, data, WithOffset(99))
+	if err != nil {
+		t.Errorf("failed to send append: %v", err)
+	}
+	//
+	off, err := result.GetResult(ctx)
+	if err == nil {
+		t.Errorf("expected error, got offset %d", off)
+	}
+
+	apiErr, ok := apierror.FromError(err)
+	if !ok {
+		t.Errorf("expected apierror, got %T: %v", err, err)
+	}
+	se := &storagepb.StorageError{}
+	e := apiErr.Details().ExtractProtoMessage(se)
+	if e != nil {
+		t.Errorf("expected storage error, but extraction failed: %v", e)
+	}
+	wantCode := storagepb.StorageError_OFFSET_OUT_OF_RANGE
+	if se.GetCode() != wantCode {
+		t.Errorf("wanted %s, got %s", wantCode.String(), se.GetCode().String())
+	}
+	// Send "real" append to advance the offset.
+	result, err = ms.AppendRows(ctx, data, WithOffset(0))
+	if err != nil {
+		t.Errorf("failed to send append: %v", err)
+	}
+	off, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("expected offset, got error %v", err)
+	}
+	wantOffset := int64(0)
+	if off != wantOffset {
+		t.Errorf("offset mismatch, got %d want %d", off, wantOffset)
+	}
+	// Now, send at the start offset again.
+	result, err = ms.AppendRows(ctx, data, WithOffset(0))
+	if err != nil {
+		t.Errorf("failed to send append: %v", err)
+	}
+	off, err = result.GetResult(ctx)
+	if err == nil {
+		t.Errorf("expected error, got offset %d", off)
+	}
+	apiErr, ok = apierror.FromError(err)
+	if !ok {
+		t.Errorf("expected apierror, got %T: %v", err, err)
+	}
+	se = &storagepb.StorageError{}
+	e = apiErr.Details().ExtractProtoMessage(se)
+	if e != nil {
+		t.Errorf("expected storage error, but extraction failed: %v", e)
+	}
+	wantCode = storagepb.StorageError_OFFSET_ALREADY_EXISTS
+	if se.GetCode() != wantCode {
+		t.Errorf("wanted %s, got %s", wantCode.String(), se.GetCode().String())
+	}
+	// Finalize the stream.
+	if _, err := ms.Finalize(ctx); err != nil {
+		t.Errorf("Finalize had error: %v", err)
+	}
+	// Send another append, which is disallowed for finalized streams.
+	result, err = ms.AppendRows(ctx, data)
+	if err != nil {
+		t.Errorf("failed to send append: %v", err)
+	}
+	off, err = result.GetResult(ctx)
+	if err == nil {
+		t.Errorf("expected error, got offset %d", off)
+	}
+	apiErr, ok = apierror.FromError(err)
+	if !ok {
+		t.Errorf("expected apierror, got %T: %v", err, err)
+	}
+	se = &storagepb.StorageError{}
+	e = apiErr.Details().ExtractProtoMessage(se)
+	if e != nil {
+		t.Errorf("expected storage error, but extraction failed: %v", e)
+	}
+	wantCode = storagepb.StorageError_STREAM_FINALIZED
+	if se.GetCode() != wantCode {
+		t.Errorf("wanted %s, got %s", wantCode.String(), se.GetCode().String())
+	}
+}
+
 func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
@@ -587,8 +709,9 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 		if err != nil {
 			t.Errorf("view %q RetrieveData: %v", tv.Name, err)
 		}
-		if len(metricData) > 1 {
-			t.Errorf("%q: only expected 1 row, got %d", tv.Name, len(metricData))
+		if mlen := len(metricData); mlen != 1 {
+			t.Errorf("%q: expected 1 row of metrics, got %d", tv.Name, mlen)
+			continue
 		}
 		if len(metricData[0].Tags) != 1 {
 			t.Errorf("%q: only expected 1 tag, got %d", tv.Name, len(metricData[0].Tags))

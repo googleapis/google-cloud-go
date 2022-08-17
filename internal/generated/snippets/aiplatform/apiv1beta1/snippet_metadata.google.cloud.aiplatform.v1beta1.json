@@ -3226,7 +3226,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_FeaturestoreService_ImportFeatureValues_sync",
       "title": "aiplatform ImportFeatureValues Sample",
-      "description": "ImportFeatureValues imports Feature values into the Featurestore from a source storage.\n\nThe progress of the import is tracked by the returned operation. The\nimported features are guaranteed to be visible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf an import operation fails, the Feature values returned from\nreads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same import request again and wait till\nthe new operation returned is marked as successfully done.\n\nThere are also scenarios where the caller can cause inconsistency.\n\n  Source data for import contains multiple distinct Feature values for\n  the same entity ID and timestamp.\n\n  Source is modified during an import. This includes adding, updating, or\n  removing source data and/or metadata. Examples of updating metadata\n  include but are not limited to changing storage location, storage class,\n  or retention policy.\n\n  Online serving cluster is under-provisioned.",
+      "description": "ImportFeatureValues imports Feature values into the Featurestore from a source storage.\n\nThe progress of the import is tracked by the returned operation. The\nimported features are guaranteed to be visible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf an import operation fails, the Feature values returned from\nreads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same import request again and wait till\nthe new operation returned is marked as successfully done.\n\nThere are also scenarios where the caller can cause inconsistency.\n\n\tSource data for import contains multiple distinct Feature values for\n\tthe same entity ID and timestamp.\n\n\tSource is modified during an import. This includes adding, updating, or\n\tremoving source data and/or metadata. Examples of updating metadata\n\tinclude but are not limited to changing storage location, storage class,\n\tor retention policy.\n\n\tOnline serving cluster is under-provisioned.",
       "file": "FeaturestoreClient/ImportFeatureValues/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4355,6 +4355,52 @@
         "method": {
           "shortName": "WaitOperation",
           "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingService.WaitOperation",
+          "service": {
+            "shortName": "FeaturestoreOnlineServingService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeaturestoreOnlineServingService_WriteFeatureValues_sync",
+      "title": "aiplatform WriteFeatureValues Sample",
+      "description": "WriteFeatureValues writes Feature values of one or more entities of an EntityType.\n\nThe Feature values are merged into existing entities if any. The Feature\nvalues to be written must have timestamp within the online storage\nretention.",
+      "file": "FeaturestoreOnlineServingClient/WriteFeatureValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WriteFeatureValues",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingClient.WriteFeatureValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.WriteFeatureValuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.WriteFeatureValuesResponse",
+        "client": {
+          "shortName": "FeaturestoreOnlineServingClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingClient"
+        },
+        "method": {
+          "shortName": "WriteFeatureValues",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingService.WriteFeatureValues",
           "service": {
             "shortName": "FeaturestoreOnlineServingService",
             "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingService"
@@ -12583,7 +12629,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_RawPredict_sync",
       "title": "aiplatform RawPredict Sample",
-      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n  X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this\n  prediction.\n\n  X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel\n  that served this prediction.",
+      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n\tX-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this\n\tprediction.\n\n\tX-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel\n\tthat served this prediction.",
       "file": "PredictionClient/RawPredict/main.go",
       "language": "GO",
       "clientMethod": {
