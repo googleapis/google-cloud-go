@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.3.0...documentai/v1.4.0) (2022-02-23)
 
 
