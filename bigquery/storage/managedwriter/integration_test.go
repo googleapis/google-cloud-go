@@ -710,7 +710,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("view %q RetrieveData: %v", tv.Name, err)
 		}
 		if len(metricData) != 1 {
-			t.Errorf("%q: only expected 1 row, got %d", tv.Name, len(metricData))
+			t.Errorf("%q: expected 1 row of metrics, got %d", tv.Name, len(metricData))
 			continue
 		}
 		if len(metricData[0].Tags) != 1 {
