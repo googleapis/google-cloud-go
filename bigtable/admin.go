@@ -216,13 +216,14 @@ type TableConf struct {
 	TableID   string
 	SplitKeys []string
 	// Families is a map from family name to GCPolicy
-	Families map[string]GCPolicy
+	Families           map[string]GCPolicy
+	DeletionProtection bool
 }
 
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
-func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table})
+func (ac *AdminClient) CreateTable(ctx context.Context, table string, deletionProtection bool) error {
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: deletionProtection})
 }
 
 // CreatePresplitTable creates a new table in the instance.
@@ -230,8 +231,8 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // Given two split keys, "s1" and "s2", three tablets will be created,
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
-func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys})
+func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string, deletionProtection bool) error {
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: deletionProtection})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
@@ -248,6 +249,7 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 			tbl.ColumnFamilies[fam] = &btapb.ColumnFamily{GcRule: policy.proto()}
 		}
 	}
+	tbl.DeletionProtection = conf.DeletionProtection
 	prefix := ac.instancePrefix()
 	req := &btapb.CreateTableRequest{
 		Parent:        prefix,
@@ -304,8 +306,9 @@ func (ac *AdminClient) DeleteColumnFamily(ctx context.Context, table, family str
 // TableInfo represents information about a table.
 type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
-	Families    []string
-	FamilyInfos []FamilyInfo
+	Families           []string
+	FamilyInfos        []FamilyInfo
+	DeletionProtection bool
 }
 
 // FamilyInfo represents information about a column family.
@@ -354,6 +357,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
 	}
+	ti.DeletionProtection = res.DeletionProtection
 	return ti, nil
 }
 
