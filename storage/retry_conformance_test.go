@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -43,6 +44,8 @@ var (
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
 	randomBytesToWrite  = []byte("abcdef")
+	size9MB             = 9437184  // 9 MiB
+	size17MB            = 17825792 // 17 MiB
 )
 
 type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions bool) error
@@ -203,6 +206,16 @@ var methods = map[string][]retryFunc{
 			return err
 		},
 	},
+	"storage.objects.download": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			_, err = io.Copy(ioutil.Discard, r)
+			return err
+		},
+	},
 	"storage.objects.list": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			it := c.Bucket(fs.bucket.Name).Objects(ctx, nil)
@@ -306,6 +319,29 @@ var methods = map[string][]retryFunc{
 			return nil
 		},
 	},
+	"storage.resumable.upload": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			// Resumable uploads occur automatically when the file is larger than 16 MiB.
+			w := obj.NewWriter(ctx)
+			randomBytes, err := generateRandomBytes(size17MB)
+			if err != nil {
+				return fmt.Errorf("generate random bytes: %v", err)
+			}
+			if _, err := w.Write(randomBytes); err != nil {
+				return fmt.Errorf("writing object: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("closing object: %v", err)
+			}
+			return nil
+		},
+	},
 	"storage.objects.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
@@ -403,13 +439,21 @@ func TestRetryConformance(t *testing.T) {
 
 	for _, testFile := range testFiles {
 		for _, retryTest := range testFile.RetryTests {
+			// TODELETE: Skip previous scenarios for dev purposes.
+			if retryTest.Id <= 6 {
+				continue
+			}
 			for _, instructions := range retryTest.Cases {
 				for _, method := range retryTest.Methods {
-					if len(methods[method.Name]) == 0 {
-						t.Logf("No tests for operation %v", method.Name)
+					methodName := method.Name
+					if method.Group != "" {
+						methodName = method.Group
 					}
-					for i, fn := range methods[method.Name] {
-						testName := fmt.Sprintf("%v-%v-%v-%v", retryTest.Id, instructions.Instructions, method.Name, i)
+					if len(methods[methodName]) == 0 {
+						t.Logf("No tests for operation %v", methodName)
+					}
+					for i, fn := range methods[methodName] {
+						testName := fmt.Sprintf("%v-%v-%v-%v", retryTest.Id, instructions.Instructions, methodName, i)
 						t.Run(testName, func(t *testing.T) {
 
 							// Create the retry subtest
@@ -480,7 +524,11 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 			// Assumes bucket has been populated first.
 			obj := c.Bucket(et.resources.bucket.Name).Object(objectIDs.New())
 			w := obj.NewWriter(ctx)
-			if _, err := w.Write(randomBytesToWrite); err != nil {
+			randomBytes, err := generateRandomBytes(size9MB)
+			if err != nil {
+				et.Fatalf("generate random bytes: %v", err)
+			}
+			if _, err := w.Write(randomBytes); err != nil {
 				et.Fatalf("writing object: %v", err)
 			}
 			if err := w.Close(); err != nil {
@@ -510,6 +558,16 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 			et.resources.hmacKey = key
 		}
 	}
+}
+
+// Generates size random bytes.
+func generateRandomBytes(n int) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 // Creates a retry test resource in the emulator

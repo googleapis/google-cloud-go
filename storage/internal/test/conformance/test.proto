@@ -177,6 +177,7 @@ enum Resource {
 message Method {
   string name = 1;  // e.g. storage.objects.get
   repeated Resource resources = 2;
+  string group = 3; // e.g. storage.resumable.upload
 }
 
 // Schema for a retry test, corresponding to a single scenario from the design
