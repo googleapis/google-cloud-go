@@ -25,9 +25,9 @@ import (
 	raw "google.golang.org/api/storage/v1"
 )
 
-// TODO: re-enable tests after breaking change is released and AgeInDays is a int64*
+// TODO(#6539): re-enable tests after breaking change is released and AgeInDays is a int64*
 func TestBucketAttrsToRawBucket(t *testing.T) {
-	t.Skip()
+	t.Skip("TestBucketAttrsToRawBucket skipped: https://github.com/googleapis/google-cloud-go/issues/6539")
 	t.Parallel()
 	attrs := &BucketAttrs{
 		Name: "name",
@@ -350,9 +350,9 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	}
 }
 
-// TODO: re-enable tests after breaking change is released and AgeInDays is a int64*
+// TODO(#6539): re-enable tests after breaking change is released and AgeInDays is a int64*
 func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
-	t.Skip()
+	t.Skip("TestBucketAttrsToUpdateToRawBucket skipped: https://github.com/googleapis/google-cloud-go/issues/6539")
 	t.Parallel()
 	au := &BucketAttrsToUpdate{
 		VersioningEnabled:        false,
@@ -581,8 +581,9 @@ func TestAgeConditionBackwardCompat(t *testing.T) {
 
 }
 
+// TODO(#6539): re-enable tests after breaking change is released and AgeInDays is a int64*
 func TestNewBucket(t *testing.T) {
-	t.Skip()
+	t.Skip("TestNewBucket skipped: https://github.com/googleapis/google-cloud-go/issues/6539")
 	labels := map[string]string{"a": "b"}
 	matchClasses := []string{"STANDARD"}
 	aTime := time.Date(2017, 1, 2, 0, 0, 0, 0, time.UTC)
