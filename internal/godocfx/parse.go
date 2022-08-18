@@ -25,16 +25,19 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"go/format"
 	"go/printer"
 	"go/token"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 
 	goldmarkcodeblock "cloud.google.com/go/internal/godocfx/goldmark-codeblock"
 	"cloud.google.com/go/internal/godocfx/pkgload"
@@ -84,18 +87,19 @@ type example struct {
 
 // item represents a DocFX item.
 type item struct {
-	UID      string    `yaml:"uid"`
-	Name     string    `yaml:"name,omitempty"`
-	ID       string    `yaml:"id,omitempty"`
-	Summary  string    `yaml:"summary,omitempty"`
-	Parent   string    `yaml:"parent,omitempty"`
-	Type     string    `yaml:"type,omitempty"`
-	Langs    []string  `yaml:"langs,omitempty"`
-	Syntax   syntax    `yaml:"syntax,omitempty"`
-	Examples []example `yaml:"codeexamples,omitempty"`
-	Children []child   `yaml:"children,omitempty"`
-	AltLink  string    `yaml:"alt_link,omitempty"`
-	Status   string    `yaml:"status,omitempty"`
+	UID             string    `yaml:"uid"`
+	Name            string    `yaml:"name,omitempty"`
+	ID              string    `yaml:"id,omitempty"`
+	Summary         string    `yaml:"summary,omitempty"`
+	Parent          string    `yaml:"parent,omitempty"`
+	Type            string    `yaml:"type,omitempty"`
+	Langs           []string  `yaml:"langs,omitempty"`
+	Syntax          syntax    `yaml:"syntax,omitempty"`
+	Examples        []example `yaml:"codeexamples,omitempty"`
+	Children        []child   `yaml:"children,omitempty"`
+	AltLink         string    `yaml:"alt_link,omitempty"`
+	Status          string    `yaml:"status,omitempty"`
+	FriendlyAPIName string    `yaml:"friendlyApiName,omitempty"`
 }
 
 func (p *page) addItem(i *item) {
@@ -125,7 +129,7 @@ type result struct {
 // workingDir is the directory to use to run go commands.
 //
 // optionalExtraFiles is a list of paths relative to the module root to include.
-func parse(glob string, workingDir string, optionalExtraFiles []string, filter []string) (*result, error) {
+func parse(glob string, workingDir string, optionalExtraFiles []string, filter []string, namer *friendlyAPINamer) (*result, error) {
 	pages := map[string]*page{}
 
 	pkgInfos, err := pkgload.Load(glob, workingDir, filter)
@@ -162,16 +166,21 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 	for _, pi := range pkgInfos {
 		link := newLinker(pi)
 		topLevelDecls := pkgsite.TopLevelDecls(pi.Doc)
+		friendly, err := namer.friendlyAPIName(pi.Doc.ImportPath)
+		if err != nil {
+			return nil, err
+		}
 		pkgItem := &item{
-			UID:      pi.Doc.ImportPath,
-			Name:     pi.Doc.ImportPath,
-			ID:       pi.Doc.Name,
-			Summary:  toHTML(pi.Doc.Doc),
-			Langs:    onlyGo,
-			Type:     "package",
-			Examples: processExamples(pi.Doc.Examples, pi.Fset),
-			AltLink:  "https://pkg.go.dev/" + pi.Doc.ImportPath,
-			Status:   pi.Status,
+			UID:             pi.Doc.ImportPath,
+			Name:            pi.Doc.ImportPath,
+			ID:              pi.Doc.Name,
+			Summary:         toHTML(pi.Doc.Doc),
+			Langs:           onlyGo,
+			Type:            "package",
+			Examples:        processExamples(pi.Doc.Examples, pi.Fset),
+			AltLink:         "https://pkg.go.dev/" + pi.Doc.ImportPath,
+			Status:          pi.Status,
+			FriendlyAPIName: friendly,
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
 		pages[pi.Doc.ImportPath] = pkgPage
@@ -639,4 +648,69 @@ func hasPrefix(s string, prefixes []string) bool {
 		}
 	}
 	return false
+}
+
+// repoMetadata is the JSON format of the .repo-metadata-full.json file.
+// See https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json.
+type repoMetadata map[string]repoMetadataItem
+
+type repoMetadataItem struct {
+	Description string `json:"description"`
+}
+
+type friendlyAPINamer struct {
+	// metaURL is the URL to .repo-metadata-full.json, which contains metadata
+	// about packages in this repo. See
+	// https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json.
+	metaURL string
+
+	// metadata caches the repo metadata results.
+	metadata repoMetadata
+	// getOnce ensures we only fetch the metadata JSON once.
+	getOnce sync.Once
+}
+
+// vNumberRE is a heuristic for API versions.
+var vNumberRE = regexp.MustCompile(`apiv[0-9][^/]*`)
+
+// friendlyAPIName returns the friendlyAPIName for the given import path.
+// We rely on the .repo-metadata-full.json file to get the description of the
+// API for the given import path. We use the importPath to parse out the
+// API version, since that isn't included in the metadata.
+//
+// If no API description is found, friendlyAPIName returns "".
+// If no API version is found, friendlyAPIName only returns the description.
+//
+// See https://github.com/googleapis/google-cloud-go/issues/5949.
+func (d *friendlyAPINamer) friendlyAPIName(importPath string) (string, error) {
+	var err error
+	d.getOnce.Do(func() {
+		resp, getErr := http.Get(d.metaURL)
+		if err != nil {
+			err = fmt.Errorf("error getting repo metadata: %v", getErr)
+			return
+		}
+		defer resp.Body.Close()
+		if decodeErr := json.NewDecoder(resp.Body).Decode(&d.metadata); err != nil {
+			err = fmt.Errorf("failed to decode repo metadata: %v", decodeErr)
+			return
+		}
+	})
+	if err != nil {
+		return "", err
+	}
+	if d.metadata == nil {
+		return "", fmt.Errorf("no metadata found: earlier error fetching?")
+	}
+	pkg, ok := d.metadata[importPath]
+	if !ok {
+		return "", nil
+	}
+
+	if apiV := vNumberRE.FindString(importPath); apiV != "" {
+		version := strings.TrimPrefix(apiV, "api")
+		return fmt.Sprintf("%s %s", pkg.Description, version), nil
+	}
+
+	return pkg.Description, nil
 }

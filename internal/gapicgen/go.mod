@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/gapicgen
 
-go 1.18
+go 1.19
 
 require (
 	cloud.google.com/go v0.102.1
@@ -10,8 +10,8 @@ require (
 	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
 	golang.org/x/sys v0.0.0-20220624220833-87e55d714810
-	google.golang.org/genproto v0.0.0-20220802133213-ce4fa296bf78
-	google.golang.org/protobuf v1.28.0
+	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959
+	google.golang.org/protobuf v1.28.1
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
 )

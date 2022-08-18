@@ -257,7 +257,7 @@ func (g *GenprotoGenerator) getAllPackages() (map[string][]string, error) {
 }
 
 // moveAndCleanupGeneratedSrc moves all generated src to their correct locations
-// in the repository, because protoc puts it in a folder called `generated/``.
+// in the repository, because protoc puts it in a folder called `generated/“.
 func (g *GenprotoGenerator) moveAndCleanupGeneratedSrc() error {
 	log.Println("moving generated code")
 	// The period at the end is analogous to * (copy everything in this dir).

@@ -34,11 +34,17 @@ import (
 // one of the runes ".˜*/[]". Most methods accept a simpler form of field path
 // as a string in which the individual fields are separated by dots.
 // For example,
-//   []string{"a", "b"}
+//
+//	[]string{"a", "b"}
+//
 // is equivalent to the string form
-//   "a.b"
+//
+//	"a.b"
+//
 // but
-//   []string{"*"}
+//
+//	[]string{"*"}
+//
 // has no equivalent string form.
 type FieldPath []string
 

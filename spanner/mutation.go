@@ -69,7 +69,7 @@ const (
 // To apply a series of mutations as part of an atomic read-modify-write
 // operation, use ReadWriteTransaction.
 //
-// Updating a row
+// # Updating a row
 //
 // Changing the values of columns in an existing row is very similar to
 // inserting a new row:
@@ -79,7 +79,7 @@ const (
 //		[]interface{}{UserID, profile})
 //	_, err := client.Apply(ctx, []*spanner.Mutation{m})
 //
-// Deleting a row
+// # Deleting a row
 //
 // To delete a row, use spanner.Delete:
 //
@@ -93,7 +93,7 @@ const (
 // if cascading deletes are specified in those tables' schemas. Delete does
 // nothing if the named row does not exist (does not yield an error).
 //
-// Deleting a field
+// # Deleting a field
 //
 // To delete/clear a field within a row, use spanner.Update with the value nil:
 //
@@ -105,22 +105,22 @@ const (
 // The valid Go types and their corresponding Cloud Spanner types that can be
 // used in the Insert/Update/InsertOrUpdate functions are:
 //
-//     string, *string, NullString - STRING
-//     []string, []*string, []NullString - STRING ARRAY
-//     []byte - BYTES
-//     [][]byte - BYTES ARRAY
-//     int, int64, *int64, NullInt64 - INT64
-//     []int, []int64, []*int64, []NullInt64 - INT64 ARRAY
-//     bool, *bool, NullBool - BOOL
-//     []bool, []*bool, []NullBool - BOOL ARRAY
-//     float64, *float64, NullFloat64 - FLOAT64
-//     []float64, []*float64, []NullFloat64 - FLOAT64 ARRAY
-//     time.Time, *time.Time, NullTime - TIMESTAMP
-//     []time.Time, []*time.Time, []NullTime - TIMESTAMP ARRAY
-//     Date, *Date, NullDate - DATE
-//     []Date, []*Date, []NullDate - DATE ARRAY
-//     big.Rat, *big.Rat, NullNumeric - NUMERIC
-//     []big.Rat, []*big.Rat, []NullNumeric - NUMERIC ARRAY
+//	string, *string, NullString - STRING
+//	[]string, []*string, []NullString - STRING ARRAY
+//	[]byte - BYTES
+//	[][]byte - BYTES ARRAY
+//	int, int64, *int64, NullInt64 - INT64
+//	[]int, []int64, []*int64, []NullInt64 - INT64 ARRAY
+//	bool, *bool, NullBool - BOOL
+//	[]bool, []*bool, []NullBool - BOOL ARRAY
+//	float64, *float64, NullFloat64 - FLOAT64
+//	[]float64, []*float64, []NullFloat64 - FLOAT64 ARRAY
+//	time.Time, *time.Time, NullTime - TIMESTAMP
+//	[]time.Time, []*time.Time, []NullTime - TIMESTAMP ARRAY
+//	Date, *Date, NullDate - DATE
+//	[]Date, []*Date, []NullDate - DATE ARRAY
+//	big.Rat, *big.Rat, NullNumeric - NUMERIC
+//	[]big.Rat, []*big.Rat, []NullNumeric - NUMERIC ARRAY
 //
 // To compare two Mutations for testing purposes, use reflect.DeepEqual.
 type Mutation struct {
