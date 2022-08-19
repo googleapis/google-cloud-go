@@ -119,7 +119,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.92.0
+	google.golang.org/api v0.93.0
 	google.golang.org/genproto v0.0.0-20220817144833-d7fd3f11b9b1
 )
 
