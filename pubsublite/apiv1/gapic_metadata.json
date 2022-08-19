@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "AdminClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateReservation": {
               "methods": [
                 "CreateReservation"
@@ -25,6 +30,11 @@
                 "CreateTopic"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteReservation": {
               "methods": [
                 "DeleteReservation"
@@ -38,6 +48,11 @@
             "DeleteTopic": {
               "methods": [
                 "DeleteTopic"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetReservation": {
@@ -58,6 +73,11 @@
             "GetTopicPartitions": {
               "methods": [
                 "GetTopicPartitions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListReservationTopics": {
@@ -114,9 +134,29 @@
         "grpc": {
           "libraryClient": "CursorClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CommitCursor": {
               "methods": [
                 "CommitCursor"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPartitionCursors": {
@@ -142,6 +182,26 @@
               "methods": [
                 "AssignPartitions"
               ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
             }
           }
         }
@@ -152,6 +212,26 @@
         "grpc": {
           "libraryClient": "PublisherClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Publish": {
               "methods": [
                 "Publish"
@@ -166,6 +246,26 @@
         "grpc": {
           "libraryClient": "SubscriberClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Subscribe": {
               "methods": [
                 "Subscribe"
@@ -180,6 +280,11 @@
         "grpc": {
           "libraryClient": "TopicStatsClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "ComputeHeadCursor": {
               "methods": [
                 "ComputeHeadCursor"
@@ -193,6 +298,21 @@
             "ComputeTimeCursor": {
               "methods": [
                 "ComputeTimeCursor"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }

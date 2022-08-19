@@ -120,10 +120,13 @@ require (
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.93.0
-	google.golang.org/genproto v0.0.0-20220817144833-d7fd3f11b9b1
+	google.golang.org/genproto v0.0.0-20220819153447-c7cd466b0e09
 )
 
-require cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
+require (
+	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
+)
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -383,3 +386,5 @@ replace cloud.google.com/go/dataform => ../../../dataform
 replace cloud.google.com/go/beyondcorp => ../../../beyondcorp
 
 replace cloud.google.com/go/apigeeregistry => ../../../apigeeregistry
+
+replace cloud.google.com/go/apikeys => ../../../apikeys
