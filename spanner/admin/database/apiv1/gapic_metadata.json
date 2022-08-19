@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "DatabaseAdminClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CopyBackup": {
               "methods": [
                 "CopyBackup"
@@ -28,6 +33,11 @@
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DropDatabase": {
@@ -55,6 +65,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListBackupOperations": {
               "methods": [
                 "ListBackupOperations"
@@ -78,6 +93,11 @@
             "ListDatabases": {
               "methods": [
                 "ListDatabases"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "RestoreDatabase": {

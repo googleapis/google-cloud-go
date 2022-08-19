@@ -22,12 +22,10 @@ import (
 
 // A methodSet describes a set of methods. Entries where Decl == nil are conflict
 // entries (more than one method with the same name at the same embedding level).
-//
 type methodSet map[string]*Func
 
 // recvString returns a string representation of recv of the
 // form "T", "*T", or "BADRECV" (if not a proper receiver type).
-//
 func recvString(recv ast.Expr) string {
 	switch t := recv.(type) {
 	case *ast.Ident:
@@ -42,7 +40,6 @@ func recvString(recv ast.Expr) string {
 // If there are multiple f's with the same name, set keeps the first
 // one with documentation; conflicts are ignored. The boolean
 // specifies whether to leave the AST untouched.
-//
 func (mset methodSet) set(f *ast.FuncDecl, preserveAST bool) {
 	name := f.Name.Name
 	if g := mset[name]; g != nil && g.Doc != "" {
@@ -78,7 +75,6 @@ func (mset methodSet) set(f *ast.FuncDecl, preserveAST bool) {
 // add adds method m to the method set; m is ignored if the method set
 // already contains a method with the same name at the same or a higher
 // level than m.
-//
 func (mset methodSet) add(m *Func) {
 	old := mset[m.Name]
 	if old == nil || m.Level < old.Level {
@@ -99,7 +95,6 @@ func (mset methodSet) add(m *Func) {
 
 // baseTypeName returns the name of the base type of x (or "")
 // and whether the type is imported or not.
-//
 func baseTypeName(x ast.Expr) (name string, imported bool) {
 	switch t := x.(type) {
 	case *ast.Ident:
@@ -124,7 +119,6 @@ type embeddedSet map[*namedType]bool
 // A namedType represents a named unqualified (package local, or possibly
 // predeclared) type. The namedType for a type name is always found via
 // reader.lookupType.
-//
 type namedType struct {
 	doc  string       // doc comment for type
 	name string       // type name
@@ -149,7 +143,6 @@ type namedType struct {
 // in the respective AST nodes so that they are not printed
 // twice (once when printing the documentation and once when
 // printing the corresponding AST node).
-//
 type reader struct {
 	mode Mode
 
@@ -179,7 +172,6 @@ func (r *reader) isVisible(name string) bool {
 // If the base type has not been encountered yet, a new
 // type with the given name but no associated declaration
 // is added to the type map.
-//
 func (r *reader) lookupType(name string) *namedType {
 	if name == "" || name == "_" {
 		return nil // no type docs for anonymous types
@@ -202,7 +194,6 @@ func (r *reader) lookupType(name string) *namedType {
 // anonymous field in the parent type. If the field is imported
 // (qualified name) or the parent is nil, the field is ignored.
 // The function returns the field name.
-//
 func (r *reader) recordAnonymousField(parent *namedType, fieldType ast.Expr) (fname string) {
 	fname, imp := baseTypeName(fieldType)
 	if parent == nil || imp {
@@ -243,7 +234,6 @@ func specNames(specs []ast.Spec) []string {
 }
 
 // readValue processes a const or var declaration.
-//
 func (r *reader) readValue(decl *ast.GenDecl) {
 	// determine if decl should be associated with a type
 	// Heuristic: For each typed entry, determine the type name, if any.
@@ -317,7 +307,6 @@ func (r *reader) readValue(decl *ast.GenDecl) {
 }
 
 // fields returns a struct's fields or an interface's methods.
-//
 func fields(typ ast.Expr) (list []*ast.Field, isStruct bool) {
 	var fields *ast.FieldList
 	switch t := typ.(type) {
@@ -334,7 +323,6 @@ func fields(typ ast.Expr) (list []*ast.Field, isStruct bool) {
 }
 
 // readType processes a type declaration.
-//
 func (r *reader) readType(decl *ast.GenDecl, spec *ast.TypeSpec) {
 	typ := r.lookupType(spec.Name.Name)
 	if typ == nil {
@@ -370,13 +358,11 @@ func (r *reader) readType(decl *ast.GenDecl, spec *ast.TypeSpec) {
 }
 
 // isPredeclared reports whether n denotes a predeclared type.
-//
 func (r *reader) isPredeclared(n string) bool {
 	return predeclaredTypes[n] && r.types[n] == nil
 }
 
 // readFunc processes a func or method declaration.
-//
 func (r *reader) readFunc(fun *ast.FuncDecl) {
 	// strip function body if requested.
 	if r.mode&PreserveAST == 0 {
@@ -449,7 +435,6 @@ var (
 )
 
 // readNote collects a single note from a sequence of comments.
-//
 func (r *reader) readNote(list []*ast.Comment) {
 	text := (&ast.CommentGroup{List: list}).Text()
 	if m := noteMarkerRx.FindStringSubmatchIndex(text); m != nil {
@@ -475,7 +460,6 @@ func (r *reader) readNote(list []*ast.Comment) {
 // and is followed by the note body (e.g., "// BUG(gri): fix this").
 // The note ends at the end of the comment group or at the start of
 // another note in the same comment group, whichever comes first.
-//
 func (r *reader) readNotes(comments []*ast.CommentGroup) {
 	for _, group := range comments {
 		i := -1 // comment index of most recent note start, valid if >= 0
@@ -495,7 +479,6 @@ func (r *reader) readNotes(comments []*ast.CommentGroup) {
 }
 
 // readFile adds the AST for a source file to the reader.
-//
 func (r *reader) readFile(src *ast.File) {
 	// add package documentation
 	if src.Doc != nil {
@@ -645,7 +628,6 @@ func customizeRecv(f *Func, recvTypeName string, embeddedIsPtr bool, level int) 
 }
 
 // collectEmbeddedMethods collects the embedded methods of typ in mset.
-//
 func (r *reader) collectEmbeddedMethods(mset methodSet, typ *namedType, recvTypeName string, embeddedIsPtr bool, level int, visited embeddedSet) {
 	visited[typ] = true
 	for embedded, isPtr := range typ.embedded {
@@ -669,7 +651,6 @@ func (r *reader) collectEmbeddedMethods(mset methodSet, typ *namedType, recvType
 }
 
 // computeMethodSets determines the actual method sets for each type encountered.
-//
 func (r *reader) computeMethodSets() {
 	for _, t := range r.types {
 		// collect embedded methods for t
@@ -694,7 +675,6 @@ func (r *reader) computeMethodSets() {
 // types that have no declaration. Instead, these functions and methods
 // are shown at the package level. It also removes types with missing
 // declarations or which are not visible.
-//
 func (r *reader) cleanupTypes() {
 	for _, t := range r.types {
 		visible := r.isVisible(t.name)
@@ -761,7 +741,6 @@ func sortedKeys(m map[string]int) []string {
 }
 
 // sortingName returns the name to use when sorting d into place.
-//
 func sortingName(d *ast.GenDecl) string {
 	if len(d.Specs) == 1 {
 		if s, ok := d.Specs[0].(*ast.ValueSpec); ok {
@@ -854,7 +833,6 @@ func sortedFuncs(m methodSet, allMethods bool) []*Func {
 
 // noteBodies returns a list of note body strings given a list of notes.
 // This is only used to populate the deprecated Package.Bugs field.
-//
 func noteBodies(notes []*Note) []string {
 	var list []string
 	for _, n := range notes {

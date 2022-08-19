@@ -17,62 +17,63 @@
 // Package mediatranslation is an auto-generated package for the
 // Media Translation API.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
-// Example usage
+// # Example usage
 //
 // To get started with this package, create a client.
-//  ctx := context.Background()
-//  c, err := mediatranslation.NewSpeechTranslationClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//
+//	ctx := context.Background()
+//	c, err := mediatranslation.NewSpeechTranslationClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// Using the Client
+// # Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//  ctx := context.Background()
-//  c, err := mediatranslation.NewSpeechTranslationClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
-//  stream, err := c.StreamingTranslateSpeech(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  go func() {
-//  	reqs := []*mediatranslationpb.StreamingTranslateSpeechRequest{
-//  		// TODO: Create requests.
-//  	}
-//  	for _, req := range reqs {
-//  		if err := stream.Send(req); err != nil {
-//  			// TODO: Handle error.
-//  		}
-//  	}
-//  	stream.CloseSend()
-//  }()
-//  for {
-//  	resp, err := stream.Recv()
-//  	if err == io.EOF {
-//  		break
-//  	}
-//  	if err != nil {
-//  		// TODO: handle error.
-//  	}
-//  	// TODO: Use resp.
-//  	_ = resp
-//  }
+//	ctx := context.Background()
+//	c, err := mediatranslation.NewSpeechTranslationClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
+//	stream, err := c.StreamingTranslateSpeech(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	go func() {
+//		reqs := []*mediatranslationpb.StreamingTranslateSpeechRequest{
+//			// TODO: Create requests.
+//		}
+//		for _, req := range reqs {
+//			if err := stream.Send(req); err != nil {
+//				// TODO: Handle error.
+//			}
+//		}
+//		stream.CloseSend()
+//	}()
+//	for {
+//		resp, err := stream.Recv()
+//		if err == io.EOF {
+//			break
+//		}
+//		if err != nil {
+//			// TODO: handle error.
+//		}
+//		// TODO: Use resp.
+//		_ = resp
+//	}
 //
-// Use of Context
+// # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewSpeechTranslationClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
