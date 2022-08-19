@@ -69,7 +69,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
-			panic(err)
+			t.Fatalf("pullN err: %v", err)
 		}
 		// ack evens, nack odds
 		if id%2 == 0 {
@@ -189,7 +189,7 @@ func TestStreamingPullRetry(t *testing.T) {
 	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
-			panic(err)
+			t.Fatalf("pullN err: %v", err)
 		}
 		// ack evens, nack odds
 		if id%2 == 0 {
