@@ -609,7 +609,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApi_sync",
       "title": "apigeeregistry CreateApi Sample",
-      "description": "CreateApi createApi creates a specified API.",
+      "description": "CreateApi creates a specified API.",
       "file": "RegistryClient/CreateApi/main.go",
       "language": "GO",
       "clientMethod": {
@@ -655,7 +655,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiDeployment_sync",
       "title": "apigeeregistry CreateApiDeployment Sample",
-      "description": "CreateApiDeployment createApiDeployment creates a specified deployment.",
+      "description": "CreateApiDeployment creates a specified deployment.",
       "file": "RegistryClient/CreateApiDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -701,7 +701,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiSpec_sync",
       "title": "apigeeregistry CreateApiSpec Sample",
-      "description": "CreateApiSpec createApiSpec creates a specified spec.",
+      "description": "CreateApiSpec creates a specified spec.",
       "file": "RegistryClient/CreateApiSpec/main.go",
       "language": "GO",
       "clientMethod": {
@@ -747,7 +747,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiVersion_sync",
       "title": "apigeeregistry CreateApiVersion Sample",
-      "description": "CreateApiVersion createApiVersion creates a specified version.",
+      "description": "CreateApiVersion creates a specified version.",
       "file": "RegistryClient/CreateApiVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -793,7 +793,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateArtifact_sync",
       "title": "apigeeregistry CreateArtifact Sample",
-      "description": "CreateArtifact createArtifact creates a specified artifact.",
+      "description": "CreateArtifact creates a specified artifact.",
       "file": "RegistryClient/CreateArtifact/main.go",
       "language": "GO",
       "clientMethod": {
@@ -839,7 +839,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApi_sync",
       "title": "apigeeregistry DeleteApi Sample",
-      "description": "DeleteApi deleteApi removes a specified API and all of the resources that it\nowns.",
+      "description": "DeleteApi removes a specified API and all of the resources that it\nowns.",
       "file": "RegistryClient/DeleteApi/main.go",
       "language": "GO",
       "clientMethod": {
@@ -884,7 +884,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiDeployment_sync",
       "title": "apigeeregistry DeleteApiDeployment Sample",
-      "description": "DeleteApiDeployment deleteApiDeployment removes a specified deployment, all revisions, and all\nchild resources (e.g. artifacts).",
+      "description": "DeleteApiDeployment removes a specified deployment, all revisions, and all\nchild resources (e.g., artifacts).",
       "file": "RegistryClient/DeleteApiDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -929,7 +929,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiDeploymentRevision_sync",
       "title": "apigeeregistry DeleteApiDeploymentRevision Sample",
-      "description": "DeleteApiDeploymentRevision deleteApiDeploymentRevision deletes a revision of a deployment.",
+      "description": "DeleteApiDeploymentRevision deletes a revision of a deployment.",
       "file": "RegistryClient/DeleteApiDeploymentRevision/main.go",
       "language": "GO",
       "clientMethod": {
@@ -975,7 +975,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiSpec_sync",
       "title": "apigeeregistry DeleteApiSpec Sample",
-      "description": "DeleteApiSpec deleteApiSpec removes a specified spec, all revisions, and all child\nresources (e.g. artifacts).",
+      "description": "DeleteApiSpec removes a specified spec, all revisions, and all child\nresources (e.g., artifacts).",
       "file": "RegistryClient/DeleteApiSpec/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1020,7 +1020,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiSpecRevision_sync",
       "title": "apigeeregistry DeleteApiSpecRevision Sample",
-      "description": "DeleteApiSpecRevision deleteApiSpecRevision deletes a revision of a spec.",
+      "description": "DeleteApiSpecRevision deletes a revision of a spec.",
       "file": "RegistryClient/DeleteApiSpecRevision/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1066,7 +1066,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiVersion_sync",
       "title": "apigeeregistry DeleteApiVersion Sample",
-      "description": "DeleteApiVersion deleteApiVersion removes a specified version and all of the resources that\nit owns.",
+      "description": "DeleteApiVersion removes a specified version and all of the resources that\nit owns.",
       "file": "RegistryClient/DeleteApiVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1111,7 +1111,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteArtifact_sync",
       "title": "apigeeregistry DeleteArtifact Sample",
-      "description": "DeleteArtifact deleteArtifact removes a specified artifact.",
+      "description": "DeleteArtifact removes a specified artifact.",
       "file": "RegistryClient/DeleteArtifact/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1201,7 +1201,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApi_sync",
       "title": "apigeeregistry GetApi Sample",
-      "description": "GetApi getApi returns a specified API.",
+      "description": "GetApi returns a specified API.",
       "file": "RegistryClient/GetApi/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1247,7 +1247,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiDeployment_sync",
       "title": "apigeeregistry GetApiDeployment Sample",
-      "description": "GetApiDeployment getApiDeployment returns a specified deployment.",
+      "description": "GetApiDeployment returns a specified deployment.",
       "file": "RegistryClient/GetApiDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1293,7 +1293,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiSpec_sync",
       "title": "apigeeregistry GetApiSpec Sample",
-      "description": "GetApiSpec getApiSpec returns a specified spec.",
+      "description": "GetApiSpec returns a specified spec.",
       "file": "RegistryClient/GetApiSpec/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1339,7 +1339,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiSpecContents_sync",
       "title": "apigeeregistry GetApiSpecContents Sample",
-      "description": "GetApiSpecContents getApiSpecContents returns the contents of a specified spec.\nIf specs are stored with GZip compression, the default behavior\nis to return the spec uncompressed (the mime_type response field\nindicates the exact format returned).",
+      "description": "GetApiSpecContents returns the contents of a specified spec.\nIf specs are stored with GZip compression, the default behavior\nis to return the spec uncompressed (the mime_type response field\nindicates the exact format returned).",
       "file": "RegistryClient/GetApiSpecContents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1385,7 +1385,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiVersion_sync",
       "title": "apigeeregistry GetApiVersion Sample",
-      "description": "GetApiVersion getApiVersion returns a specified version.",
+      "description": "GetApiVersion returns a specified version.",
       "file": "RegistryClient/GetApiVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1431,7 +1431,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_GetArtifact_sync",
       "title": "apigeeregistry GetArtifact Sample",
-      "description": "GetArtifact getArtifact returns a specified artifact.",
+      "description": "GetArtifact returns a specified artifact.",
       "file": "RegistryClient/GetArtifact/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1477,7 +1477,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_GetArtifactContents_sync",
       "title": "apigeeregistry GetArtifactContents Sample",
-      "description": "GetArtifactContents getArtifactContents returns the contents of a specified artifact.\nIf artifacts are stored with GZip compression, the default behavior\nis to return the artifact uncompressed (the mime_type response field\nindicates the exact format returned).",
+      "description": "GetArtifactContents returns the contents of a specified artifact.\nIf artifacts are stored with GZip compression, the default behavior\nis to return the artifact uncompressed (the mime_type response field\nindicates the exact format returned).",
       "file": "RegistryClient/GetArtifactContents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1661,7 +1661,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiDeploymentRevisions_sync",
       "title": "apigeeregistry ListApiDeploymentRevisions Sample",
-      "description": "ListApiDeploymentRevisions listApiDeploymentRevisions lists all revisions of a deployment.\nRevisions are returned in descending order of revision creation time.",
+      "description": "ListApiDeploymentRevisions lists all revisions of a deployment.\nRevisions are returned in descending order of revision creation time.",
       "file": "RegistryClient/ListApiDeploymentRevisions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1707,7 +1707,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiDeployments_sync",
       "title": "apigeeregistry ListApiDeployments Sample",
-      "description": "ListApiDeployments listApiDeployments returns matching deployments.",
+      "description": "ListApiDeployments returns matching deployments.",
       "file": "RegistryClient/ListApiDeployments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1753,7 +1753,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiSpecRevisions_sync",
       "title": "apigeeregistry ListApiSpecRevisions Sample",
-      "description": "ListApiSpecRevisions listApiSpecRevisions lists all revisions of a spec.\nRevisions are returned in descending order of revision creation time.",
+      "description": "ListApiSpecRevisions lists all revisions of a spec.\nRevisions are returned in descending order of revision creation time.",
       "file": "RegistryClient/ListApiSpecRevisions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1799,7 +1799,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiSpecs_sync",
       "title": "apigeeregistry ListApiSpecs Sample",
-      "description": "ListApiSpecs listApiSpecs returns matching specs.",
+      "description": "ListApiSpecs returns matching specs.",
       "file": "RegistryClient/ListApiSpecs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1845,7 +1845,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiVersions_sync",
       "title": "apigeeregistry ListApiVersions Sample",
-      "description": "ListApiVersions listApiVersions returns matching versions.",
+      "description": "ListApiVersions returns matching versions.",
       "file": "RegistryClient/ListApiVersions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1891,7 +1891,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApis_sync",
       "title": "apigeeregistry ListApis Sample",
-      "description": "ListApis listApis returns matching APIs.",
+      "description": "ListApis returns matching APIs.",
       "file": "RegistryClient/ListApis/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1937,7 +1937,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ListArtifacts_sync",
       "title": "apigeeregistry ListArtifacts Sample",
-      "description": "ListArtifacts listArtifacts returns matching artifacts.",
+      "description": "ListArtifacts returns matching artifacts.",
       "file": "RegistryClient/ListArtifacts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2075,7 +2075,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_ReplaceArtifact_sync",
       "title": "apigeeregistry ReplaceArtifact Sample",
-      "description": "ReplaceArtifact replaceArtifact can be used to replace a specified artifact.",
+      "description": "ReplaceArtifact used to replace a specified artifact.",
       "file": "RegistryClient/ReplaceArtifact/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2121,7 +2121,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_RollbackApiDeployment_sync",
       "title": "apigeeregistry RollbackApiDeployment Sample",
-      "description": "RollbackApiDeployment rollbackApiDeployment sets the current revision to a specified prior\nrevision. Note that this creates a new revision with a new revision ID.",
+      "description": "RollbackApiDeployment sets the current revision to a specified prior\nrevision. Note that this creates a new revision with a new revision ID.",
       "file": "RegistryClient/RollbackApiDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2167,7 +2167,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_RollbackApiSpec_sync",
       "title": "apigeeregistry RollbackApiSpec Sample",
-      "description": "RollbackApiSpec rollbackApiSpec sets the current revision to a specified prior revision.\nNote that this creates a new revision with a new revision ID.",
+      "description": "RollbackApiSpec sets the current revision to a specified prior revision.\nNote that this creates a new revision with a new revision ID.",
       "file": "RegistryClient/RollbackApiSpec/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2259,7 +2259,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_TagApiDeploymentRevision_sync",
       "title": "apigeeregistry TagApiDeploymentRevision Sample",
-      "description": "TagApiDeploymentRevision tagApiDeploymentRevision adds a tag to a specified revision of a\ndeployment.",
+      "description": "TagApiDeploymentRevision adds a tag to a specified revision of a\ndeployment.",
       "file": "RegistryClient/TagApiDeploymentRevision/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2305,7 +2305,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_TagApiSpecRevision_sync",
       "title": "apigeeregistry TagApiSpecRevision Sample",
-      "description": "TagApiSpecRevision tagApiSpecRevision adds a tag to a specified revision of a spec.",
+      "description": "TagApiSpecRevision adds a tag to a specified revision of a spec.",
       "file": "RegistryClient/TagApiSpecRevision/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2397,7 +2397,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApi_sync",
       "title": "apigeeregistry UpdateApi Sample",
-      "description": "UpdateApi updateApi can be used to modify a specified API.",
+      "description": "UpdateApi used to modify a specified API.",
       "file": "RegistryClient/UpdateApi/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2443,7 +2443,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiDeployment_sync",
       "title": "apigeeregistry UpdateApiDeployment Sample",
-      "description": "UpdateApiDeployment updateApiDeployment can be used to modify a specified deployment.",
+      "description": "UpdateApiDeployment used to modify a specified deployment.",
       "file": "RegistryClient/UpdateApiDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2489,7 +2489,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiSpec_sync",
       "title": "apigeeregistry UpdateApiSpec Sample",
-      "description": "UpdateApiSpec updateApiSpec can be used to modify a specified spec.",
+      "description": "UpdateApiSpec used to modify a specified spec.",
       "file": "RegistryClient/UpdateApiSpec/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2535,7 +2535,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiVersion_sync",
       "title": "apigeeregistry UpdateApiVersion Sample",
-      "description": "UpdateApiVersion updateApiVersion can be used to modify a specified version.",
+      "description": "UpdateApiVersion used to modify a specified version.",
       "file": "RegistryClient/UpdateApiVersion/main.go",
       "language": "GO",
       "clientMethod": {
