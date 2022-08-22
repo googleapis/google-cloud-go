@@ -75,6 +75,26 @@ func (ah *pslAckHandler) OnNack() {
 	ah.subInstance = nil
 }
 
+// OnAckWithResult is required implementation for the ack handler
+// for Cloud Pub/Sub's exactly once delivery feature. This will
+// ack the message and return an AckResult that always resolves to success.
+func (ah *pslAckHandler) OnAckWithResult() *ipubsub.AckResult {
+	ah.OnAck()
+	ar := ipubsub.NewAckResult()
+	ipubsub.SetAckResult(ar, ipubsub.AcknowledgeStatusSuccess, nil)
+	return ar
+}
+
+// OnNackWithResult is required implementation for the ack handler
+// for Cloud Pub/Sub's exactly once delivery feature. This will
+// nack the message and return an AckResult that always resolves to success.
+func (ah *pslAckHandler) OnNackWithResult() *ipubsub.AckResult {
+	ah.OnNack()
+	ar := ipubsub.NewAckResult()
+	ipubsub.SetAckResult(ar, ipubsub.AcknowledgeStatusSuccess, nil)
+	return ar
+}
+
 // wireSubscriberFactory is a factory for creating wire subscribers, which can
 // be overridden with a mock in unit tests.
 type wireSubscriberFactory interface {

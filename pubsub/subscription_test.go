@@ -16,7 +16,9 @@ package pubsub
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -28,6 +30,7 @@ import (
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -190,7 +193,8 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
-		State: SubscriptionStateActive,
+		EnableExactlyOnceDelivery: false,
+		State:                     SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
 	if !testutil.Equal(cfg, want, opt) {
@@ -209,6 +213,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		EnableExactlyOnceDelivery: true,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -227,7 +232,8 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
-		State: SubscriptionStateActive,
+		EnableExactlyOnceDelivery: true,
+		State:                     SubscriptionStateActive,
 	}
 	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
@@ -265,38 +271,59 @@ func TestUpdateSubscription(t *testing.T) {
 }
 
 func TestReceive(t *testing.T) {
-	testReceive(t, true)
-	testReceive(t, false)
+	testReceive(t, true, false)
+	testReceive(t, false, false)
+	testReceive(t, false, true)
 }
 
-func testReceive(t *testing.T, synchronous bool) {
-	ctx := context.Background()
-	client, srv := newFake(t)
-	defer client.Close()
-	defer srv.Close()
+func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
+	t.Run(fmt.Sprintf("synchronous:%t,exactlyOnceDelivery:%t", synchronous, exactlyOnceDelivery), func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
+		client, srv := newFake(t)
+		defer client.Close()
+		defer srv.Close()
 
-	topic := mustCreateTopic(t, client, "t")
-	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{Topic: topic})
-	if err != nil {
-		t.Fatal(err)
-	}
-	for i := 0; i < 256; i++ {
-		srv.Publish(topic.name, []byte{byte(i)}, nil)
-	}
-	sub.ReceiveSettings.Synchronous = synchronous
-	msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) { m.Ack() })
-	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
-		t.Fatalf("Pull: %v", err)
-	}
-	var seen [256]bool
-	for _, m := range msgs {
-		seen[m.Data[0]] = true
-	}
-	for i, saw := range seen {
-		if !saw {
-			t.Errorf("sync=%t: did not see message #%d", synchronous, i)
+		topic := mustCreateTopic(t, client, "t")
+		sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{
+			Topic:                     topic,
+			EnableExactlyOnceDelivery: exactlyOnceDelivery,
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
-	}
+		for i := 0; i < 256; i++ {
+			srv.Publish(topic.name, []byte{byte(i)}, nil)
+		}
+		sub.ReceiveSettings.Synchronous = synchronous
+		msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) {
+			if exactlyOnceDelivery {
+				ar := m.AckWithResult()
+				// Don't use the above ctx here since that will get cancelled.
+				ackStatus, err := ar.Get(context.Background())
+				if err != nil {
+					t.Fatalf("pullN err for message(%s): %v", m.ID, err)
+				}
+				if ackStatus != AcknowledgeStatusSuccess {
+					t.Fatalf("pullN got non-success AckStatus: %v", ackStatus)
+				}
+			} else {
+				m.Ack()
+			}
+		})
+		if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+			t.Fatalf("Pull: %v", err)
+		}
+		var seen [256]bool
+		for _, m := range msgs {
+			seen[m.Data[0]] = true
+		}
+		for i, saw := range seen {
+			if !saw {
+				t.Errorf("sync=%t, eod=%t: did not see message #%d", synchronous, exactlyOnceDelivery, i)
+			}
+		}
+	})
 }
 
 func (t1 *Topic) Equal(t2 *Topic) bool {
@@ -313,7 +340,7 @@ func (t1 *Topic) Equal(t2 *Topic) bool {
 func newFake(t *testing.T) (*Client, *pstest.Server) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
-	client, err := NewClient(ctx, "P",
+	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithInsecure()))
@@ -439,7 +466,8 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 }
 
 func TestBigQuerySubscription(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	client, srv := newFake(t)
 	defer client.Close()
 	defer srv.Close()
@@ -467,5 +495,246 @@ func TestBigQuerySubscription(t *testing.T) {
 	want.State = BigQueryConfigActive
 	if diff := testutil.Diff(cfg.BigQueryConfig, want); diff != "" {
 		t.Fatalf("CreateBQSubscription mismatch: \n%s", diff)
+	}
+}
+
+func TestExactlyOnceDelivery_AckSuccess(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	s.ReceiveSettings.NumGoroutines = 1
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusSuccess)
+		}
+		if err != nil {
+			t.Errorf("AckResult error got %v", err)
+		}
+		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
+
+func TestExactlyOnceDelivery_AckFailureErrorPermissionDenied(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.PermissionDenied, "insufficient permission"))
+	client, err := NewClient(ctx, projName,
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	s.ReceiveSettings.NumGoroutines = 1
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusPermissionDenied {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusPermissionDenied)
+		}
+		wantErr := status.Errorf(codes.PermissionDenied, "insufficient permission")
+		if !errors.Is(err, wantErr) {
+			t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
+		}
+		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
+
+func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.Internal, "internal error"))
+	client, err := NewClient(ctx, projName,
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	s.ReceiveSettings = ReceiveSettings{
+		NumGoroutines: 1,
+		// This needs to be greater than total deadline otherwise the message will be redelivered.
+		MinExtensionPeriod: 2 * time.Minute,
+	}
+	// Override the default timeout here so this test doesn't take 10 minutes.
+	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusOther {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusOther)
+		}
+		wantErr := context.DeadlineExceeded
+		if !errors.Is(err, wantErr) {
+			t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
+		}
+		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
+
+func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	s.ReceiveSettings = ReceiveSettings{
+		NumGoroutines: 1,
+	}
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.NackWithResult()
+		s, err := ar.Get(ctx)
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusSuccess)
+		}
+		if err != nil {
+			t.Errorf("AckResult error got %v", err)
+		}
+		cancel()
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
+
+func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	srv := pstest.NewServer(pstest.WithErrorInjection("ModifyAckDeadline", codes.Internal, "internal error"))
+	client, err := NewClient(ctx, projName,
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: true,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	s.ReceiveSettings = ReceiveSettings{
+		NumGoroutines: 1,
+		// This needs to be greater than total deadline otherwise the message will be redelivered.
+		MinExtensionPeriod: 2 * time.Minute,
+		MaxExtensionPeriod: 2 * time.Minute,
+	}
+	// Override the default timeout here so this test doesn't take 10 minutes.
+	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	var once sync.Once
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		once.Do(func() {
+			ar := msg.NackWithResult()
+			s, err := ar.Get(ctx)
+			if s != AcknowledgeStatusOther {
+				t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusOther)
+			}
+			wantErr := context.DeadlineExceeded
+			if !errors.Is(err, wantErr) {
+				t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
+			}
+			cancel()
+		})
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
 	}
 }
