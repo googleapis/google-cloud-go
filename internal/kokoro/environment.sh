@@ -64,12 +64,6 @@ gcloud config set compute/zone us-central1-b
 # Authenticate docker
 gcloud auth configure-docker -q
 
-# Nox tests require Python 3.7, instead of 3.8
-pyenv global 3.7.10
-python3 -m pip uninstall --yes --quiet nox-automation
-python3 -m pip install --upgrade --quiet nox
-python3 -m nox --version
-
 # create a unique id for this run
 UUID=$(python  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
 export ENVCTL_ID=ci-$UUID
