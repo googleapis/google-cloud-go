@@ -40,7 +40,7 @@ var (
 			AllowQuotedNewlines:            true,
 			Encoding:                       UTF_8,
 			NullMarker:                     "marker",
-			PreserveAsciiControlCharacters: true,
+			PreserveASCIIControlCharacters: true,
 		},
 	}
 )

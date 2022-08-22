@@ -233,7 +233,7 @@ type CSVOptions struct {
 
 	// Preserves the embedded ASCII control characters (the first 32 characters in the ASCII-table,
 	// from '\\x00' to '\\x1F') when loading from CSV. Only applicable to CSV, ignored for other formats.
-	PreserveAsciiControlCharacters bool
+	PreserveASCIIControlCharacters bool
 }
 
 func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
@@ -245,7 +245,7 @@ func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration)
 		Quote:                          o.quote(),
 		SkipLeadingRows:                o.SkipLeadingRows,
 		NullMarker:                     o.NullMarker,
-		PreserveAsciiControlCharacters: o.PreserveAsciiControlCharacters,
+		PreserveAsciiControlCharacters: o.PreserveASCIIControlCharacters,
 	}
 }
 
@@ -278,7 +278,7 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 		FieldDelimiter:                 q.FieldDelimiter,
 		SkipLeadingRows:                q.SkipLeadingRows,
 		NullMarker:                     q.NullMarker,
-		PreserveAsciiControlCharacters: q.PreserveAsciiControlCharacters,
+		PreserveASCIIControlCharacters: q.PreserveAsciiControlCharacters,
 	}
 	o.setQuote(q.Quote)
 	return o

@@ -93,7 +93,7 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 	conf.IgnoreUnknownValues = fc.IgnoreUnknownValues
 	conf.MaxBadRecords = fc.MaxBadRecords
 	conf.NullMarker = fc.NullMarker
-	conf.PreserveAsciiControlCharacters = fc.PreserveAsciiControlCharacters
+	conf.PreserveAsciiControlCharacters = fc.PreserveASCIIControlCharacters
 	if fc.Schema != nil {
 		conf.Schema = fc.Schema.toBQ()
 	}
@@ -121,7 +121,7 @@ func bqPopulateFileConfig(conf *bq.JobConfigurationLoad, fc *FileConfig) {
 	fc.Encoding = Encoding(conf.Encoding)
 	fc.FieldDelimiter = conf.FieldDelimiter
 	fc.CSVOptions.NullMarker = conf.NullMarker
-	fc.CSVOptions.PreserveAsciiControlCharacters = conf.PreserveAsciiControlCharacters
+	fc.CSVOptions.PreserveASCIIControlCharacters = conf.PreserveAsciiControlCharacters
 	fc.CSVOptions.setQuote(conf.Quote)
 }
 
