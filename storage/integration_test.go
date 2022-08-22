@@ -314,12 +314,13 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 
 	// testedAttrs are the bucket attrs directly compared in this test
 	type testedAttrs struct {
-		StorageClass      string
-		VersioningEnabled bool
-		LocationType      string
-		Labels            map[string]string
-		Location          string
-		Lifecycle         Lifecycle
+		StorageClass          string
+		VersioningEnabled     bool
+		LocationType          string
+		Labels                map[string]string
+		Location              string
+		Lifecycle             Lifecycle
+		CustomPlacementConfig *CustomPlacementConfig
 	}
 
 	for _, test := range []struct {
@@ -358,12 +359,18 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 		{
 			name: "dual-region",
 			attrs: &BucketAttrs{
-				Location: "US-EAST1+US-WEST1",
+				Location: "US",
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{"US-EAST1", "US-WEST1"},
+				},
 			},
 			wantAttrs: testedAttrs{
-				Location:     "US-EAST1+US-WEST1",
+				Location:     "US",
 				LocationType: "dual-region",
 				StorageClass: "STANDARD",
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{"US-EAST1", "US-WEST1"},
+				},
 			},
 		},
 	} {
@@ -406,6 +413,9 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 			}
 			if gotAttrs.Location != test.wantAttrs.Location {
 				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+			}
+			if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
+				t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
 			}
 
 			// Delete the bucket and check that the deletion was succesful
@@ -2352,7 +2362,7 @@ func TestIntegration_ACL(t *testing.T) {
 		for _, obj := range aclObjects {
 			c := randomContents()
 			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-				t.Errorf("Write for %v failed with %v", obj, err)
+				return fmt.Errorf("Write for %v failed with %v", obj, err)
 			}
 		}
 		acl, err = o.ACL().List(ctx)
@@ -2367,7 +2377,7 @@ func TestIntegration_ACL(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if err := o.ACL().Delete(ctx, entity); err != nil {
 		t.Errorf("object ACL: could not delete entity %s", entity)
@@ -2722,26 +2732,6 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 	if w.Attrs().StorageClass != newStorageClass {
 		t.Fatalf("new object storage class: got %q, want %q",
 			w.Attrs().StorageClass, newStorageClass)
-	}
-}
-
-func TestIntegration_BucketInCopyAttrs(t *testing.T) {
-	// Confirm that if bucket is included in the object attributes of a rewrite
-	// call, but object name and content-type aren't, then we get an error. See
-	// the comment in Copier.Run.
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-
-	bkt := client.Bucket(bucketName)
-	obj := bkt.Object("bucketInCopyAttrs")
-	h.mustWrite(obj.NewWriter(ctx), []byte("foo"))
-	copier := obj.CopierFrom(obj)
-	rawObject := copier.ObjectAttrs.toRawObject(bucketName)
-	_, err := copier.callRewrite(ctx, rawObject)
-	if err == nil {
-		t.Errorf("got nil, want error")
 	}
 }
 
@@ -3153,6 +3143,9 @@ func TestIntegration_Notifications(t *testing.T) {
 	n, err := bkt.AddNotification(ctx, nArg)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if n.ID == "" {
+		t.Fatal("expected created Notification to have non-empty ID")
 	}
 	nArg.ID = n.ID
 	if !testutil.Equal(n, nArg) {
@@ -4067,8 +4060,8 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 // * Content-Type of "text/plain"
 // will be properly served back.
 // See:
-//  * https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
-//  * https://github.com/googleapis/google-cloud-go/issues/1800
+//   - https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
+//   - https://github.com/googleapis/google-cloud-go/issues/1800
 func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -4588,74 +4581,83 @@ func verifySignedURL(url string, headers map[string][]string, expectedFileBody [
 // verifies that it was uploaded correctly
 func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte, statusCodeOnSuccess int) error {
 	ctx := context.Background()
-	formBuf := new(bytes.Buffer)
-	mw := multipart.NewWriter(formBuf)
-	for fieldName, value := range pv4.Fields {
-		if err := mw.WriteField(fieldName, value); err != nil {
-			return fmt.Errorf("Failed to write form field: %q: %v", fieldName, err)
-		}
-	}
+	var res *http.Response
 
-	// Now let's perform the upload
-	mf, err := mw.CreateFormFile("file", "myfile.txt")
-	if err != nil {
-		return err
-	}
-	if _, err := mf.Write(bytesToWrite); err != nil {
-		return err
-	}
-	if err := mw.Close(); err != nil {
-		return err
-	}
+	// Request is sent using a vanilla net/http client, so there are no built-in
+	// retries. We must wrap with a retry to prevent flakes.
+	return retry(ctx,
+		func() error {
+			formBuf := new(bytes.Buffer)
+			mw := multipart.NewWriter(formBuf)
+			for fieldName, value := range pv4.Fields {
+				if err := mw.WriteField(fieldName, value); err != nil {
+					return fmt.Errorf("Failed to write form field: %q: %v", fieldName, err)
+				}
+			}
 
-	// Compose the HTTP request
-	req, err := http.NewRequest("POST", pv4.URL, formBuf)
-	if err != nil {
-		return fmt.Errorf("Failed to compose HTTP request: %v", err)
-	}
+			// Now let's perform the upload
+			mf, err := mw.CreateFormFile("file", "myfile.txt")
+			if err != nil {
+				return err
+			}
+			if _, err := mf.Write(bytesToWrite); err != nil {
+				return err
+			}
+			if err := mw.Close(); err != nil {
+				return err
+			}
 
-	// Ensure the Content-Type is derived from the writer
-	req.Header.Set("Content-Type", mw.FormDataContentType())
+			// Compose the HTTP request
+			req, err := http.NewRequest("POST", pv4.URL, formBuf)
+			if err != nil {
+				return fmt.Errorf("Failed to compose HTTP request: %v", err)
+			}
 
-	// Send request
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
+			// Ensure the Content-Type is derived from the writer
+			req.Header.Set("Content-Type", mw.FormDataContentType())
 
-	// Check response
-	if g, w := res.StatusCode, statusCodeOnSuccess; g != w {
-		blob, _ := httputil.DumpResponse(res, true)
-		return fmt.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
-	}
-	io.Copy(ioutil.Discard, res.Body)
+			// Send request
+			res, err = http.DefaultClient.Do(req)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		func() error {
+			// Check response
+			if g, w := res.StatusCode, statusCodeOnSuccess; g != w {
+				blob, _ := httputil.DumpResponse(res, true)
+				return fmt.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+			}
+			io.Copy(ioutil.Discard, res.Body)
 
-	// Verify that the file was properly uploaded
-	// by reading back its attributes and content
-	attrs, err := obj.Attrs(ctx)
-	if err != nil {
-		return fmt.Errorf("Failed to retrieve attributes: %v", err)
-	}
-	if g, w := attrs.Size, int64(len(bytesToWrite)); g != w {
-		return fmt.Errorf("ContentLength mismatch: got %d want %d", g, w)
-	}
-	if g, w := attrs.MD5, md5.Sum(bytesToWrite); !bytes.Equal(g, w[:]) {
-		return fmt.Errorf("MD5Checksum mismatch\nGot:  %x\nWant: %x", g, w)
-	}
+			// Verify that the file was properly uploaded
+			// by reading back its attributes and content
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Failed to retrieve attributes: %v", err)
+			}
+			if g, w := attrs.Size, int64(len(bytesToWrite)); g != w {
+				return fmt.Errorf("ContentLength mismatch: got %d want %d", g, w)
+			}
+			if g, w := attrs.MD5, md5.Sum(bytesToWrite); !bytes.Equal(g, w[:]) {
+				return fmt.Errorf("MD5Checksum mismatch\nGot:  %x\nWant: %x", g, w)
+			}
 
-	// Compare the uploaded body with the expected
-	rd, err := obj.NewReader(ctx)
-	if err != nil {
-		return fmt.Errorf("Failed to create a reader: %v", err)
-	}
-	gotBody, err := ioutil.ReadAll(rd)
-	if err != nil {
-		return fmt.Errorf("Failed to read the body: %v", err)
-	}
-	if diff := testutil.Diff(string(gotBody), string(bytesToWrite)); diff != "" {
-		return fmt.Errorf("Body mismatch: got - want +\n%s", diff)
-	}
-	return nil
+			// Compare the uploaded body with the expected
+			rd, err := obj.NewReader(ctx)
+			if err != nil {
+				return fmt.Errorf("Failed to create a reader: %v", err)
+			}
+			gotBody, err := ioutil.ReadAll(rd)
+			if err != nil {
+				return fmt.Errorf("Failed to read the body: %v", err)
+			}
+			if diff := testutil.Diff(string(gotBody), string(bytesToWrite)); diff != "" {
+				return fmt.Errorf("Body mismatch: got - want +\n%s", diff)
+			}
+			return nil
+		})
 }
 
 func newTestClientWithExplicitCredentials(ctx context.Context, t *testing.T) *Client {
@@ -4772,7 +4774,7 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.NewWriter(ctx)
+	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
 	w.ContentType = contentType
 	w.CacheControl = "public, max-age=60"
 	if contents != nil {

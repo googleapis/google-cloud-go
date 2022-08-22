@@ -35,6 +35,18 @@ func ExampleNewRecaptchaEnterpriseServiceV1Beta1Client() {
 	_ = c
 }
 
+func ExampleNewRecaptchaEnterpriseServiceV1Beta1RESTClient() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleRecaptchaEnterpriseServiceV1Beta1Client_CreateAssessment() {
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)

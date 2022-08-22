@@ -70,7 +70,7 @@ func defaultDomainMappingsCallOptions() *DomainMappingsCallOptions {
 	}
 }
 
-// internalDomainMappingsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalDomainMappingsClient is an interface that defines the methods available from App Engine Admin API.
 type internalDomainMappingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

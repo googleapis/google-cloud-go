@@ -38,9 +38,9 @@ var (
 
 // ProjectID tries to detect the project ID from the environment if the sentinel
 // value, "*detect-project-id*", is sent. It looks in the following order:
-//   1. GOOGLE_CLOUD_PROJECT envvar
-//   2. ADC creds.ProjectID
-//   3. A static value if the environment is emulated.
+//  1. GOOGLE_CLOUD_PROJECT envvar
+//  2. ADC creds.ProjectID
+//  3. A static value if the environment is emulated.
 func ProjectID(ctx context.Context, projectID string, emulatorEnvVar string, opts ...option.ClientOption) (string, error) {
 	if projectID != projectIDSentinel {
 		return projectID, nil

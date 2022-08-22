@@ -1,5 +1,20 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.3.0...asset/v1.4.0) (2022-08-18)
+
+
+### Features
+
+* **asset:** Add client library support for AssetService v1 BatchGetEffectiveIamPolicies API Committer: haochunzhang@ ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+* **asset:** Release of query system Committer: lvv@ ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.2.0...asset/v1.3.0) (2022-06-29)
+
+
+### Features
+
+* **asset:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.1.0...asset/v1.2.0) (2022-02-23)
 
 

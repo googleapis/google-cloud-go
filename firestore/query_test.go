@@ -450,7 +450,6 @@ func TestQueryToProto(t *testing.T) {
 		got, err := test.in.toProto()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
-			continue
 		}
 		test.want.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
 		if !testEqual(got, test.want) {
@@ -468,13 +467,11 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 		proto, err := test.in.Serialize()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
-			continue
 		}
 		fmt.Printf("proto: %v\n", proto)
 		got, err := Query{c: c}.Deserialize(proto)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
-			continue
 		}
 
 		want := test.in

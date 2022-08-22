@@ -190,6 +190,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		State: SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
 	if !testutil.Equal(cfg, want, opt) {
@@ -226,6 +227,7 @@ func TestUpdateSubscription(t *testing.T) {
 				Audience:            "client-12345",
 			},
 		},
+		State: SubscriptionStateActive,
 	}
 	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
@@ -434,4 +436,36 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 	orderSub.Receive(ctx, func(ctx context.Context, msg *Message) {
 		msg.Ack()
 	})
+}
+
+func TestBigQuerySubscription(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	bqTable := "some-project:some-dataset.some-table"
+	bqConfig := BigQueryConfig{
+		Table: bqTable,
+	}
+
+	subConfig := SubscriptionConfig{
+		Topic:          topic,
+		BigQueryConfig: bqConfig,
+	}
+	bqSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := bqSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := bqConfig
+	want.State = BigQueryConfigActive
+	if diff := testutil.Diff(cfg.BigQueryConfig, want); diff != "" {
+		t.Fatalf("CreateBQSubscription mismatch: \n%s", diff)
+	}
 }

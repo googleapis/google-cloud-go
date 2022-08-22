@@ -318,12 +318,14 @@ func (s *session) getNextCheck() time.Time {
 // recycle turns the session back to its home session pool.
 func (s *session) recycle() {
 	s.setTransactionID(nil)
-	if !s.pool.recycle(s) {
+	s.pool.mu.Lock()
+	defer s.pool.mu.Unlock()
+	if !s.pool.recycleLocked(s) {
 		// s is rejected by its home session pool because it expired and the
 		// session pool currently has enough open sessions.
 		s.destroy(false)
 	}
-	s.pool.decNumInUse(context.Background())
+	s.pool.decNumInUseLocked(context.Background())
 }
 
 // destroy removes the session from its home session pool, healthcheck queue
@@ -1079,6 +1081,10 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 func (p *sessionPool) recycle(s *session) bool {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	return p.recycleLocked(s)
+}
+
+func (p *sessionPool) recycleLocked(s *session) bool {
 	if !s.isValid() || !p.valid {
 		// Reject the session if session is invalid or pool itself is invalid.
 		return false
@@ -1153,12 +1159,6 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 		p.maxNumInUse = p.numInUse
 		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxNumInUse))
 	}
-}
-
-func (p *sessionPool) decNumInUse(ctx context.Context) {
-	p.mu.Lock()
-	p.decNumInUseLocked(ctx)
-	p.mu.Unlock()
 }
 
 func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
@@ -1568,11 +1568,11 @@ func (hc *healthChecker) worker(i int) {
 // maintainer maintains the number of sessions in the pool based on the session
 // pool configuration and the current and historical number of sessions checked
 // out of the pool. The maintainer will:
-// 1. Ensure that the session pool contains at least MinOpened sessions.
-// 2. If the current number of sessions in the pool exceeds the greatest number
-//    of checked out sessions (=sessions in use) during the last 10 minutes,
-//    and the delta is larger than MaxIdleSessions, the maintainer will reduce
-//    the number of sessions to maxSessionsInUseDuringWindow+MaxIdleSessions.
+//  1. Ensure that the session pool contains at least MinOpened sessions.
+//  2. If the current number of sessions in the pool exceeds the greatest number
+//     of checked out sessions (=sessions in use) during the last 10 minutes,
+//     and the delta is larger than MaxIdleSessions, the maintainer will reduce
+//     the number of sessions to maxSessionsInUseDuringWindow+MaxIdleSessions.
 func (hc *healthChecker) maintainer() {
 	// Wait until the pool is ready.
 	<-hc.ready

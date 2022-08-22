@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newCatalogClientHook clientHook
@@ -56,7 +56,7 @@ func defaultCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("recommendationengine.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -139,7 +139,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 	}
 }
 
-// internalCatalogClient is an interface that defines the methods availaible from Recommendations AI.
+// internalCatalogClient is an interface that defines the methods available from Recommendations AI.
 type internalCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -320,7 +320,7 @@ func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -337,6 +337,7 @@ func (c *catalogGRPCClient) CreateCatalogItem(ctx context.Context, req *recommen
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCatalogItem[0:len((*c.CallOptions).CreateCatalogItem):len((*c.CallOptions).CreateCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
@@ -358,6 +359,7 @@ func (c *catalogGRPCClient) GetCatalogItem(ctx context.Context, req *recommendat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCatalogItem[0:len((*c.CallOptions).GetCatalogItem):len((*c.CallOptions).GetCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
@@ -374,16 +376,19 @@ func (c *catalogGRPCClient) GetCatalogItem(ctx context.Context, req *recommendat
 
 func (c *catalogGRPCClient) ListCatalogItems(ctx context.Context, req *recommendationenginepb.ListCatalogItemsRequest, opts ...gax.CallOption) *CatalogItemIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCatalogItems[0:len((*c.CallOptions).ListCatalogItems):len((*c.CallOptions).ListCatalogItems)], opts...)
 	it := &CatalogItemIterator{}
 	req = proto.Clone(req).(*recommendationenginepb.ListCatalogItemsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.CatalogItem, string, error) {
-		var resp *recommendationenginepb.ListCatalogItemsResponse
-		req.PageToken = pageToken
+		resp := &recommendationenginepb.ListCatalogItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -406,9 +411,11 @@ func (c *catalogGRPCClient) ListCatalogItems(ctx context.Context, req *recommend
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -419,6 +426,7 @@ func (c *catalogGRPCClient) UpdateCatalogItem(ctx context.Context, req *recommen
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCatalogItem[0:len((*c.CallOptions).UpdateCatalogItem):len((*c.CallOptions).UpdateCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
@@ -440,6 +448,7 @@ func (c *catalogGRPCClient) DeleteCatalogItem(ctx context.Context, req *recommen
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCatalogItem[0:len((*c.CallOptions).DeleteCatalogItem):len((*c.CallOptions).DeleteCatalogItem)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -457,6 +466,7 @@ func (c *catalogGRPCClient) ImportCatalogItems(ctx context.Context, req *recomme
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportCatalogItems[0:len((*c.CallOptions).ImportCatalogItems):len((*c.CallOptions).ImportCatalogItems)], opts...)
 	var resp *longrunningpb.Operation

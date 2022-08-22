@@ -59,7 +59,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 	}
 }
 
-// internalPublisherClient is an interface that defines the methods availaible from Eventarc Publishing API.
+// internalPublisherClient is an interface that defines the methods available from Eventarc Publishing API.
 type internalPublisherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

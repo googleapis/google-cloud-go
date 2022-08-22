@@ -59,6 +59,26 @@ func ExampleFeaturestoreOnlineServingClient_ReadFeatureValues() {
 	_ = resp
 }
 
+func ExampleFeaturestoreOnlineServingClient_WriteFeatureValues() {
+	ctx := context.Background()
+	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.WriteFeatureValuesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#WriteFeatureValuesRequest.
+	}
+	resp, err := c.WriteFeatureValues(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleFeaturestoreOnlineServingClient_GetLocation() {
 	ctx := context.Background()
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)

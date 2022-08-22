@@ -78,7 +78,7 @@ func defaultIdentityAwareProxyAdminCallOptions() *IdentityAwareProxyAdminCallOpt
 	}
 }
 
-// internalIdentityAwareProxyAdminClient is an interface that defines the methods availaible from Cloud Identity-Aware Proxy API.
+// internalIdentityAwareProxyAdminClient is an interface that defines the methods available from Cloud Identity-Aware Proxy API.
 type internalIdentityAwareProxyAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

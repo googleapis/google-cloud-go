@@ -90,6 +90,11 @@
                 "ListOperations"
               ]
             },
+            "ListSavedQueries": {
+              "methods": [
+                "ListSavedQueries"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -1106,6 +1111,11 @@
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportModelEvaluationSlices": {
+              "methods": [
+                "BatchImportModelEvaluationSlices"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"

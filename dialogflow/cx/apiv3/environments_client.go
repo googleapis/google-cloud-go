@@ -181,7 +181,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	}
 }
 
-// internalEnvironmentsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalEnvironmentsClient is an interface that defines the methods available from Dialogflow API.
 type internalEnvironmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -261,10 +261,10 @@ func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEn
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: Environment
+//	response: Environment
 func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
 	return c.internalClient.CreateEnvironment(ctx, req, opts...)
 }
@@ -281,10 +281,10 @@ func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvi
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: Environment
+//	response: Environment
 func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
 	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
 }
@@ -311,9 +311,9 @@ func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: RunContinuousTestMetadata
+//	metadata: RunContinuousTestMetadata
 //
-//   response: RunContinuousTestResponse
+//	response: RunContinuousTestResponse
 func (c *EnvironmentsClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
 	return c.internalClient.RunContinuousTest(ctx, req, opts...)
 }
@@ -335,9 +335,9 @@ func (c *EnvironmentsClient) ListContinuousTestResults(ctx context.Context, req 
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: DeployFlowMetadata
+//	metadata: DeployFlowMetadata
 //
-//   response: DeployFlowResponse
+//	response: DeployFlowResponse
 func (c *EnvironmentsClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
 	return c.internalClient.DeployFlow(ctx, req, opts...)
 }
@@ -747,7 +747,9 @@ func (c *environmentsGRPCClient) DeployFlow(ctx context.Context, req *cxpb.Deplo
 }
 
 func (c *environmentsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -762,7 +764,9 @@ func (c *environmentsGRPCClient) GetLocation(ctx context.Context, req *locationp
 }
 
 func (c *environmentsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -805,7 +809,9 @@ func (c *environmentsGRPCClient) ListLocations(ctx context.Context, req *locatio
 }
 
 func (c *environmentsGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -816,7 +822,9 @@ func (c *environmentsGRPCClient) CancelOperation(ctx context.Context, req *longr
 }
 
 func (c *environmentsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,7 +839,9 @@ func (c *environmentsGRPCClient) GetOperation(ctx context.Context, req *longrunn
 }
 
 func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

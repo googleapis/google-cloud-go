@@ -104,7 +104,7 @@ func defaultCompanyCallOptions() *CompanyCallOptions {
 	}
 }
 
-// internalCompanyClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+// internalCompanyClient is an interface that defines the methods available from Cloud Talent Solution API.
 type internalCompanyClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -395,7 +395,9 @@ func (c *companyGRPCClient) ListCompanies(ctx context.Context, req *talentpb.Lis
 }
 
 func (c *companyGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

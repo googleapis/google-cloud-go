@@ -157,6 +157,7 @@ func (tx *transaction) Rollback() {
 row represents a list of data elements.
 
 The mapping between Spanner types and Go types internal to this package are:
+
 	BOOL		bool
 	INT64		int64
 	FLOAT64		float64

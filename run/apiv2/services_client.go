@@ -100,7 +100,7 @@ func defaultServicesCallOptions() *ServicesCallOptions {
 	}
 }
 
-// internalServicesClient is an interface that defines the methods availaible from Cloud Run Admin API.
+// internalServicesClient is an interface that defines the methods available from Cloud Run Admin API.
 type internalServicesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

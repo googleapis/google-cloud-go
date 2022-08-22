@@ -625,6 +625,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 				ServiceAccountEmail: serviceAccountEmail,
 			},
 		},
+		State: SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
 	if diff := testutil.Diff(got, want, opt); diff != "" {
@@ -658,6 +659,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetentionDuration:   2 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    25 * time.Hour,
+		State:               SubscriptionStateActive,
 	}
 
 	if !testutil.Equal(got, want, opt) {
@@ -1276,7 +1278,6 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
-		t.Fatal(err)
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 }

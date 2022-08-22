@@ -68,7 +68,7 @@ func defaultBatchControllerCallOptions() *BatchControllerCallOptions {
 	}
 }
 
-// internalBatchControllerClient is an interface that defines the methods availaible from Cloud Dataproc API.
+// internalBatchControllerClient is an interface that defines the methods available from Cloud Dataproc API.
 type internalBatchControllerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -157,6 +157,7 @@ func (rrdp ReplaceRowDeletionPolicy) SQL() string {
 func (drdp DropRowDeletionPolicy) SQL() string {
 	return "DROP ROW DELETION POLICY"
 }
+
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
@@ -261,7 +262,7 @@ func (u *Update) SQL() string {
 }
 
 func (i *Insert) SQL() string {
-	str := "INSERT " + i.Table.SQL() + " INTO ("
+	str := "INSERT INTO " + i.Table.SQL() + " ("
 	for i, column := range i.Columns {
 		if i > 0 {
 			str += ", "
@@ -730,6 +731,35 @@ func (c Case) addSQL(sb *strings.Builder) {
 		fmt.Fprintf(sb, "ELSE %s ", c.ElseResult.SQL())
 	}
 	sb.WriteString("END")
+}
+
+func (i If) SQL() string { return buildSQL(i) }
+func (i If) addSQL(sb *strings.Builder) {
+	sb.WriteString("IF(")
+	i.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	i.TrueResult.addSQL(sb)
+	sb.WriteString(", ")
+	i.ElseResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (in IfNull) SQL() string { return buildSQL(in) }
+func (in IfNull) addSQL(sb *strings.Builder) {
+	sb.WriteString("IFNULL(")
+	in.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	in.NullResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (ni NullIf) SQL() string { return buildSQL(ni) }
+func (ni NullIf) addSQL(sb *strings.Builder) {
+	sb.WriteString("NULLIF(")
+	ni.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	ni.ExprToMatch.addSQL(sb)
+	sb.WriteString(")")
 }
 
 func (b BoolLiteral) SQL() string { return buildSQL(b) }

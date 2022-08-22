@@ -1,5 +1,12 @@
 # Changes
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.3.0...networksecurity/v0.3.1) (2022-07-26)
+
+
+### Documentation
+
+* **networksecurity:** update the comments of various networksecurity resources fix!: fix annotation of parent in Create*Request ([1ffeb95](https://github.com/googleapis/google-cloud-go/commit/1ffeb9557bf1f18cc131aff40ec7e0e15a9f4ead))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.2.0...networksecurity/v0.3.0) (2022-02-23)
 
 
