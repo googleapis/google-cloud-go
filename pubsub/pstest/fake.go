@@ -631,6 +631,9 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 
 		case "enable_exactly_once_delivery":
 			sub.proto.EnableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			for _, st := range sub.streams {
+				st.enableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			}
 
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
@@ -930,6 +933,7 @@ func (s *GServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
 	}
 	// Create a new stream to handle the pull.
 	st := sub.newStream(sps, s.streamTimeout)
+	st.ackTimeout = time.Duration(req.StreamAckDeadlineSeconds) * time.Second
 	err = st.pull(&s.wg)
 	sub.deleteStream(st)
 	return err
@@ -1141,12 +1145,14 @@ func (s *subscription) maintainMessages(now time.Time) {
 
 func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration) *stream {
 	st := &stream{
-		sub:        s,
-		done:       make(chan struct{}),
-		msgc:       make(chan *pb.ReceivedMessage),
-		gstream:    gs,
-		ackTimeout: s.ackTimeout,
-		timeout:    timeout,
+		sub:                       s,
+		done:                      make(chan struct{}),
+		msgc:                      make(chan *pb.ReceivedMessage),
+		gstream:                   gs,
+		ackTimeout:                s.ackTimeout,
+		timeout:                   timeout,
+		enableExactlyOnceDelivery: s.proto.EnableExactlyOnceDelivery,
+		enableOrdering:            s.proto.EnableMessageOrdering,
 	}
 	s.mu.Lock()
 	s.streams = append(s.streams, st)
@@ -1223,12 +1229,14 @@ func (m *message) makeAvailable() {
 }
 
 type stream struct {
-	sub        *subscription
-	done       chan struct{} // closed when the stream is finished
-	msgc       chan *pb.ReceivedMessage
-	gstream    pb.Subscriber_StreamingPullServer
-	ackTimeout time.Duration
-	timeout    time.Duration
+	sub                       *subscription
+	done                      chan struct{} // closed when the stream is finished
+	msgc                      chan *pb.ReceivedMessage
+	gstream                   pb.Subscriber_StreamingPullServer
+	ackTimeout                time.Duration
+	timeout                   time.Duration
+	enableExactlyOnceDelivery bool
+	enableOrdering            bool
 }
 
 // pull manages the StreamingPull interaction for the life of the stream.
@@ -1266,7 +1274,13 @@ func (st *stream) sendLoop() error {
 		case <-st.done:
 			return nil
 		case rm := <-st.msgc:
-			res := &pb.StreamingPullResponse{ReceivedMessages: []*pb.ReceivedMessage{rm}}
+			res := &pb.StreamingPullResponse{
+				ReceivedMessages: []*pb.ReceivedMessage{rm},
+				SubscriptionProperties: &pb.StreamingPullResponse_SubscriptionProperties{
+					ExactlyOnceDeliveryEnabled: st.enableExactlyOnceDelivery,
+					MessageOrderingEnabled:     st.enableOrdering,
+				},
+			}
 			if err := st.gstream.Send(res); err != nil {
 				return err
 			}
