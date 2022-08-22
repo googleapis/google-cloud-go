@@ -19,10 +19,6 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
-python3 -m pip install --upgrade pip
-# Workaround for six 1.15 incompatibility issue.
-python3 -m pip install --use-feature=2020-resolver "gcp-docuploader<2019.0.0"
-
 cd github/google-cloud-go/internal/godocfx
 go install
 cd -
