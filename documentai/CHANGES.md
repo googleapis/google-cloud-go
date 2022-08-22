@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.4.0...documentai/v1.5.0) (2022-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **documentai:** Changed the name field for ProcessRequest and BatchProcessorRequest to accept * so the name field can accept Processor and ProcessorVersion.
+
+### Features
+
+* **documentai:** Added field_mask to ProcessRequest object in document_processor_service.proto feat: Added parent_ids to Revision object in document.proto feat: Added integer_values, float_values and non_present to Entity object in document.proto feat: Added corrected_key_text, correct_value_text to FormField object in document.proto feat: Added OperationMetadata resource feat!: Added Processor Management and Processor Version support to v1 library ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+
+
+### Documentation
+
+* **documentai:** fix minor docstring formatting ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+
+
+### Miscellaneous Chores
+
+* **documentai:** release v1.5.0 ([#6522](https://github.com/googleapis/google-cloud-go/issues/6522)) ([4169a66](https://github.com/googleapis/google-cloud-go/commit/4169a66d15e99a14d3a59fd5d0e9a8f4509f0643))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.3.0...documentai/v1.4.0) (2022-02-23)
 
 
