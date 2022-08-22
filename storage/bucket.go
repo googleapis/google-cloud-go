@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/compute/metadata"
@@ -263,17 +264,27 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 
 	if b.c.creds != nil && len(b.c.creds.JSON) > 0 {
 		var sa struct {
-			ClientEmail string `json:"client_email"`
-		}
-		err := json.Unmarshal(b.c.creds.JSON, &sa)
-		if err == nil && sa.ClientEmail != "" {
-			return sa.ClientEmail, nil
-		} else if err != nil {
-			returnErr = err
-		} else {
-			returnErr = errors.New("storage: empty client email in credentials")
+			ClientEmail        string `json:"client_email"`
+			SAImpersonationURL string `json:"service_account_impersonation_url"`
+			CredType           string `json:"type"`
 		}
 
+		err := json.Unmarshal(b.c.creds.JSON, &sa)
+		if err != nil {
+			returnErr = err
+		} else if sa.CredType == "impersonated_service_account" {
+			start, end := strings.LastIndex(sa.SAImpersonationURL, "/"), strings.LastIndex(sa.SAImpersonationURL, ":")
+
+			if end <= start {
+				returnErr = errors.New("error parsing impersonated service account")
+			} else {
+				return sa.SAImpersonationURL[start+1 : end], nil
+			}
+		} else if sa.ClientEmail != "" {
+			return sa.ClientEmail, nil
+		} else {
+			returnErr = errors.New("no client email in credentials. Please set GoogleAccessID.")
+		}
 	}
 
 	// Don't error out if we can't unmarshal, fallback to GCE check.
