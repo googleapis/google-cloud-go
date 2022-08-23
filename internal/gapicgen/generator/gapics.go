@@ -304,6 +304,9 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if len(conf.Transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.Transports, "+")))
 	}
+	if conf.NumericEnumsEnabled {
+		args = append(args, "--go_gapic_opt", "rest-numeric-enums")
+	}
 	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.
 	if conf.Pkg == "compute" {
 		args = append(args, "--go_gapic_opt", "diregapic")

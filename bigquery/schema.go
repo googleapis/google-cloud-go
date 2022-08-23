@@ -121,17 +121,38 @@ type FieldSchema struct {
 	//
 	// See the Precision field for additional guidance about valid values.
 	Scale int64
+
+	// DefaultValueExpression is used to specify the default value of a field
+	// using a SQL expression.  It can only be set for top level fields (columns).
+	//
+	// You can use struct or array expression to specify default value for the
+	// entire struct or array. The valid SQL expressions are:
+	//
+	// - Literals for all data types, including STRUCT and ARRAY.
+	// - The following functions:
+	//   - CURRENT_TIMESTAMP
+	//   - CURRENT_TIME
+	//   - CURRENT_DATE
+	//   - CURRENT_DATETIME
+	//   - GENERATE_UUID
+	//   - RAND
+	//   - SESSION_USER
+	//   - ST_GEOGPOINT
+	//   - Struct or array composed with the above allowed functions, for example:
+	//       [CURRENT_DATE(), DATE '2020-01-01']"
+	DefaultValueExpression string
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	tfs := &bq.TableFieldSchema{
-		Description: fs.Description,
-		Name:        fs.Name,
-		Type:        string(fs.Type),
-		PolicyTags:  fs.PolicyTags.toBQ(),
-		MaxLength:   fs.MaxLength,
-		Precision:   fs.Precision,
-		Scale:       fs.Scale,
+		Description:            fs.Description,
+		Name:                   fs.Name,
+		Type:                   string(fs.Type),
+		PolicyTags:             fs.PolicyTags.toBQ(),
+		MaxLength:              fs.MaxLength,
+		Precision:              fs.Precision,
+		Scale:                  fs.Scale,
+		DefaultValueExpression: fs.DefaultValueExpression,
 	}
 
 	if fs.Repeated {
@@ -181,15 +202,16 @@ func (s Schema) toBQ() *bq.TableSchema {
 
 func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 	fs := &FieldSchema{
-		Description: tfs.Description,
-		Name:        tfs.Name,
-		Repeated:    tfs.Mode == "REPEATED",
-		Required:    tfs.Mode == "REQUIRED",
-		Type:        FieldType(tfs.Type),
-		PolicyTags:  bqToPolicyTagList(tfs.PolicyTags),
-		MaxLength:   tfs.MaxLength,
-		Precision:   tfs.Precision,
-		Scale:       tfs.Scale,
+		Description:            tfs.Description,
+		Name:                   tfs.Name,
+		Repeated:               tfs.Mode == "REPEATED",
+		Required:               tfs.Mode == "REQUIRED",
+		Type:                   FieldType(tfs.Type),
+		PolicyTags:             bqToPolicyTagList(tfs.PolicyTags),
+		MaxLength:              tfs.MaxLength,
+		Precision:              tfs.Precision,
+		Scale:                  tfs.Scale,
+		DefaultValueExpression: tfs.DefaultValueExpression,
 	}
 
 	for _, f := range tfs.Fields {
