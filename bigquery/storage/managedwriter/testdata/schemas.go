@@ -268,7 +268,7 @@ var (
 			Type: bigquery.StringFieldType,
 		},
 		{
-			Name: "😎🔥",
+			Name: "特別コラム",
 			Type: bigquery.StringFieldType,
 		},
 	}

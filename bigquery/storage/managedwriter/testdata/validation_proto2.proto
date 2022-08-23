@@ -129,6 +129,6 @@ message ValidationP2PackedRepeated {
 // proto field name to a custom BigQuery column name.
 message ValidationP2ColumnAnnotations {
     optional string first = 1;
-    optional string second = 2 [(google.cloud.bigquery.storage.v1.column_name) = "😎🔥"];
+    optional string second = 2 [(google.cloud.bigquery.storage.v1.column_name) = "特別コラム"];
     optional string third = 3 [(google.cloud.bigquery.storage.v1.column_name) = "second"];
 }

@@ -400,7 +400,7 @@ func TestValidation_Values(t *testing.T) {
 				withExactRowCount(1),
 				withStringValueCount("first", "first_val", 1),
 				withStringValueCount("second", "third_val", 1),
-				withStringValueCount("😎🔥", "second_val", 1),
+				withStringValueCount("特別コラム", "second_val", 1),
 			},
 		},
 	}
