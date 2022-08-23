@@ -225,6 +225,7 @@ func (am *aliasGenerator) writeHeader(w io.Writer) error {
 
 // Package %s aliases all exported identifiers in package
 // %q.
+//
 // Deprecated: Please use types in: %s
 package %s
 

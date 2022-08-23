@@ -16,6 +16,7 @@
 
 // Package fake aliases all exported identifiers in package
 // "cloud.google.com/go/internal/aliasgen/testdata/fakepb".
+//
 // Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 package fake
 
