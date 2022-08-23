@@ -65,7 +65,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewDatabaseAdminClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
