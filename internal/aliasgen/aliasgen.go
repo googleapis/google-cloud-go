@@ -122,33 +122,35 @@ func processFunction(f *types.Func) (*function, error) {
 	if !ok {
 		return nil, fmt.Errorf("unexpected type %+v", f.Type())
 	}
-	for i := 0; i < sig.Params().Len(); i++ {
-		ti := &typeInfo{}
-		v := sig.Params().At(i)
-		ti.name = v.Name()
-		obj, isPtr, err := getTypeNameForFn(v.Type(), false)
-		if err != nil {
-			return nil, err
-		}
-		ti.typeName = obj.Name()
-		ti.pkg = obj.Pkg().Name()
-		ti.isPtr = isPtr
-		fn.params = append(fn.params, ti)
+	params, err := processTuple(sig.Params())
+	if err != nil {
+		return nil, err
 	}
-	for i := 0; i < sig.Results().Len(); i++ {
-		ti := &typeInfo{}
-		v := sig.Results().At(i)
-		ti.name = v.Name()
-		obj, isPtr, err := getTypeNameForFn(v.Type(), false)
-		if err != nil {
-			return nil, err
-		}
-		ti.typeName = obj.Name()
-		ti.pkg = obj.Pkg().Name()
-		ti.isPtr = isPtr
-		fn.returns = append(fn.returns, ti)
+	fn.params = append(fn.params, params...)
+	returns, err := processTuple(sig.Results())
+	if err != nil {
+		return nil, err
 	}
+	fn.returns = append(fn.returns, returns...)
 	return fn, nil
+}
+
+func processTuple(t *types.Tuple) ([]*typeInfo, error) {
+	var tis []*typeInfo
+	for i := 0; i < t.Len(); i++ {
+		ti := &typeInfo{}
+		v := t.At(i)
+		ti.name = v.Name()
+		obj, isPtr, err := getTypeNameForFn(v.Type(), false)
+		if err != nil {
+			return nil, err
+		}
+		ti.typeName = obj.Name()
+		ti.pkg = obj.Pkg().Name()
+		ti.isPtr = isPtr
+		tis = append(tis, ti)
+	}
+	return tis, nil
 }
 
 // getTypeNameForFn recursively extracts information for function parameter and

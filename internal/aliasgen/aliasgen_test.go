@@ -25,6 +25,7 @@ import (
 	"testing"
 
 	// needed for package loading/parsing to work properly
+	"github.com/google/go-cmp/cmp"
 	_ "google.golang.org/grpc"
 )
 
@@ -65,6 +66,10 @@ func TestGolden(t *testing.T) {
 	}
 	gotBytes = gotBytes[bytes.IndexRune(gotBytes, '\n')+1:]
 	wantBytes = wantBytes[bytes.IndexRune(wantBytes, '\n')+1:]
+	if diff := cmp.Diff(wantBytes, gotBytes); diff != "" {
+		t.Errorf("bytes mismatch (-want +got):\n%s", diff)
+	}
+
 	if ok := bytes.Equal(gotBytes, wantBytes); !ok {
 		t.Fatalf("got %s, want %s", gotBytes, wantBytes)
 	}

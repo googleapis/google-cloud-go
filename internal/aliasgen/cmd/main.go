@@ -26,10 +26,6 @@ var (
 	destDir = flag.String("destination", "", "the destination directory where the aliases will be generated")
 )
 
-const (
-	softLineBreak = 77
-)
-
 func main() {
 	flag.Parse()
 	if *srcDir == "" || *destDir == "" {
