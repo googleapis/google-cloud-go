@@ -44,8 +44,8 @@ var (
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
 	randomBytesToWrite  = []byte("abcdef")
-	size9MB             = 9437184  // 9 MiB
-	size17MB            = 17825792 // 17 MiB
+	randomBytes9MB      = generateRandomBytes(size9MB)
+	size9MB             = 9437184 // 9 MiB
 )
 
 type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions bool) error
@@ -202,7 +202,10 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			_, err = io.Copy(ioutil.Discard, r)
+			wr, err := io.Copy(ioutil.Discard, r)
+			if got, want := wr, size9MB; got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
 			return err
 		},
 	},
@@ -212,8 +215,18 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			_, err = io.Copy(ioutil.Discard, r)
-			return err
+			defer r.Close()
+			body, err := ioutil.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := len(body), size9MB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := body, randomBytes9MB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
 		},
 	},
 	"storage.objects.list": {
@@ -497,11 +510,7 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 			// Assumes bucket has been populated first.
 			obj := c.Bucket(et.resources.bucket.Name).Object(objectIDs.New())
 			w := obj.NewWriter(ctx)
-			randomBytes, err := generateRandomBytes(size9MB)
-			if err != nil {
-				et.Fatalf("generate random bytes: %v", err)
-			}
-			if _, err := w.Write(randomBytes); err != nil {
+			if _, err := w.Write(randomBytes9MB); err != nil {
 				et.Fatalf("writing object: %v", err)
 			}
 			if err := w.Close(); err != nil {
@@ -534,13 +543,10 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 }
 
 // Generates size random bytes.
-func generateRandomBytes(n int) ([]byte, error) {
+func generateRandomBytes(n int) []byte {
 	b := make([]byte, n)
-	_, err := rand.Read(b)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
+	_, _ = rand.Read(b)
+	return b
 }
 
 // Creates a retry test resource in the emulator
