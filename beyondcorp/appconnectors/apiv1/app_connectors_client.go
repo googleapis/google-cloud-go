@@ -126,8 +126,8 @@ type internalClient interface {
 //
 // Data ModelThe AppConnectorsService exposes the following resource:
 //
-//   AppConnectors, named as follows:
-//   projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
+//	AppConnectors, named as follows:
+//	projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
 //
 // The AppConnectorsService provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnectors.
@@ -315,8 +315,8 @@ type gRPCClient struct {
 //
 // Data ModelThe AppConnectorsService exposes the following resource:
 //
-//   AppConnectors, named as follows:
-//   projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
+//	AppConnectors, named as follows:
+//	projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
 //
 // The AppConnectorsService provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnectors.

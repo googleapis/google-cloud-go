@@ -683,7 +683,6 @@ func TestIntegration_SingleUse(t *testing.T) {
 				}
 				if !found {
 					t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
-					break
 				}
 			}
 			rts, err = su.Timestamp()
@@ -2541,11 +2540,9 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		row2, err2 := iter2.Next()
 		if err1 != err2 {
 			t.Fatalf("execution failed for different reasons: %v, %v", err1, err2)
-			continue
 		}
 		if !testEqual(row1, row2) {
 			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-			continue
 		}
 		if row1 == nil {
 			continue
@@ -2553,7 +2550,6 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		var a, b string
 		if err = row1.Columns(&a, &b); err != nil {
 			t.Fatalf("failed to parse row %v", err)
-			continue
 		}
 		if a == str1 && b == str2 {
 			gotResult = true
@@ -2631,7 +2627,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 		}
 		if !testEqual(row1, row2) {
 			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-			continue
 		}
 		if row1 == nil {
 			continue
@@ -2639,7 +2634,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 		var a, b string
 		if err = row1.Columns(&a, &b); err != nil {
 			t.Fatalf("failed to parse row %v", err)
-			continue
 		}
 		if a == str1 && b == str2 {
 			gotResult = true

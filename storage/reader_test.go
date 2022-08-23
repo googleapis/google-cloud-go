@@ -134,6 +134,10 @@ func (h http2Error) Error() string {
 	return string(h)
 }
 
+// TestRangeReaderRetry tests Reader resumption logic. It ensures that offset
+// and seen bytes are handled correctly so that data is not corrupted.
+// This tests only works for the HTTP Reader.
+// TODO: Design a similar test for gRPC.
 func TestRangeReaderRetry(t *testing.T) {
 	internalErr := http2Error("blah blah INTERNAL_ERROR")
 	goawayErr := http2Error("http2: server sent GOAWAY and closed the connection; LastStreamID=15, ErrCode=NO_ERROR, debug=\"load_shed\"")
@@ -240,11 +244,13 @@ func TestRangeReaderRetry(t *testing.T) {
 			t.Errorf("#%d: %v", i, err)
 			continue
 		}
-		r.body = &test.bodies[0]
 		b := 0
-		r.reopen = func(int64) (*http.Response, error) {
-			b++
-			return &http.Response{Body: &test.bodies[b]}, nil
+		r.reader = &httpReader{
+			body: &test.bodies[0],
+			reopen: func(int64) (*http.Response, error) {
+				b++
+				return &http.Response{Body: &test.bodies[b]}, nil
+			},
 		}
 		buf := make([]byte, len(readData)/2)
 		var gotb []byte

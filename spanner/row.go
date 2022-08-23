@@ -283,16 +283,16 @@ func errToStructArgType(p interface{}) error {
 // The rules for mapping a row's columns into a struct's exported fields
 // are:
 //
-//   1. If a field has a `spanner: "column_name"` tag, then decode column
-//      'column_name' into the field. A special case is the `spanner: "-"`
-//      tag, which instructs ToStruct to ignore the field during decoding.
+//  1. If a field has a `spanner: "column_name"` tag, then decode column
+//     'column_name' into the field. A special case is the `spanner: "-"`
+//     tag, which instructs ToStruct to ignore the field during decoding.
 //
-//   2. Otherwise, if the name of a field matches the name of a column (ignoring case),
-//      decode the column into the field.
+//  2. Otherwise, if the name of a field matches the name of a column (ignoring case),
+//     decode the column into the field.
 //
-//   3. The number of columns in the row must match the number of exported fields in the struct.
-//      There must be exactly one match for each column in the row. The method will return an error
-//      if a column in the row cannot be assigned to a field in the struct.
+//  3. The number of columns in the row must match the number of exported fields in the struct.
+//     There must be exactly one match for each column in the row. The method will return an error
+//     if a column in the row cannot be assigned to a field in the struct.
 //
 // The fields of the destination struct can be of any type that is acceptable
 // to spanner.Row.Column.
@@ -325,16 +325,16 @@ func (r *Row) ToStruct(p interface{}) error {
 // The rules for mapping a row's columns into a struct's exported fields
 // are:
 //
-//   1. If a field has a `spanner: "column_name"` tag, then decode column
-//      'column_name' into the field. A special case is the `spanner: "-"`
-//      tag, which instructs ToStruct to ignore the field during decoding.
+//  1. If a field has a `spanner: "column_name"` tag, then decode column
+//     'column_name' into the field. A special case is the `spanner: "-"`
+//     tag, which instructs ToStruct to ignore the field during decoding.
 //
-//   2. Otherwise, if the name of a field matches the name of a column (ignoring case),
-//      decode the column into the field.
+//  2. Otherwise, if the name of a field matches the name of a column (ignoring case),
+//     decode the column into the field.
 //
-//   3. The number of columns in the row and exported fields in the struct do not need to match.
-//      Any field in the struct that cannot not be assigned a value from the row is assigned its default value.
-//      Any column in the row that does not have a corresponding field in the struct is ignored.
+//  3. The number of columns in the row and exported fields in the struct do not need to match.
+//     Any field in the struct that cannot not be assigned a value from the row is assigned its default value.
+//     Any column in the row that does not have a corresponding field in the struct is ignored.
 //
 // The fields of the destination struct can be of any type that is acceptable
 // to spanner.Row.Column.

@@ -21,6 +21,7 @@ import (
 	"io"
 	"sync"
 
+	"cloud.google.com/go/bigquery/internal"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
@@ -126,8 +127,16 @@ func defaultStreamSettings() *streamSettings {
 		streamType:          DefaultStream,
 		MaxInflightRequests: 1000,
 		MaxInflightBytes:    0,
-		TraceID:             "",
+		TraceID:             buildTraceID(""),
 	}
+}
+
+func buildTraceID(id string) string {
+	base := fmt.Sprintf("go-managedwriter:%s", internal.Version)
+	if id != "" {
+		return fmt.Sprintf("%s %s", base, id)
+	}
+	return base
 }
 
 // StreamName returns the corresponding write stream ID being managed by this writer.
@@ -355,7 +364,7 @@ func (ms *ManagedStream) appendWithRetry(requestCtx context.Context, pw *pending
 			// We've got a non-retriable error, so propagate that up. and mark the write done.
 			ms.mu.Lock()
 			ms.err = appendErr
-			pw.markDone(NoStreamOffset, appendErr, ms.fc)
+			pw.markDone(nil, appendErr, ms.fc)
 			ms.mu.Unlock()
 			return appendErr
 		}
@@ -407,6 +416,9 @@ func (ms *ManagedStream) Close() error {
 //
 // Use the WithOffset() AppendOption to set an explicit offset for this append.  Setting an offset for
 // a default stream is unsupported.
+//
+// The size of a single request must be less than 10 MB in size.
+// Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
 	pw := newPendingWrite(data)
 	// apply AppendOption opts
@@ -416,7 +428,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 	// check flow control
 	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
 		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
-		pw.markDone(NoStreamOffset, err, nil)
+		pw.markDone(nil, err, nil)
 		return nil, err
 	}
 	// Call the underlying append.  The stream has it's own retained context and will surface expiry on
@@ -463,7 +475,7 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 				if !ok {
 					return
 				}
-				pw.markDone(NoStreamOffset, ctx.Err(), fc)
+				pw.markDone(nil, ctx.Err(), fc)
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -474,15 +486,10 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
-				nextWrite.markDone(NoStreamOffset, err, fc)
+				nextWrite.markDone(nil, err, fc)
 				continue
 			}
 			recordStat(ctx, AppendResponses, 1)
-
-			// Retain the updated schema if present, for eventual presentation to the user.
-			if resp.GetUpdatedSchema() != nil {
-				nextWrite.result.updatedSchema = resp.GetUpdatedSchema()
-			}
 
 			if status := resp.GetError(); status != nil {
 				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
@@ -490,16 +497,8 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 					tagCtx = ctx
 				}
 				recordStat(tagCtx, AppendResponseErrors, 1)
-				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
-				continue
 			}
-			success := resp.GetAppendResult()
-			off := success.GetOffset()
-			if off != nil {
-				nextWrite.markDone(off.GetValue(), nil, fc)
-			} else {
-				nextWrite.markDone(NoStreamOffset, nil, fc)
-			}
+			nextWrite.markDone(resp, nil, fc)
 		}
 	}
 }
