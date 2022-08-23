@@ -90,14 +90,24 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 		if err != nil {
 			t.Fatal(err)
 		}
-		wantAckh, _ := msgAckHandler(want)
+		wantAckh, _ := msgAckHandler(want, false)
 		wantAckh.calledDone = true
 		got := gotMap[wantAckh.ackID]
 		if got == nil {
 			t.Errorf("%d: no message for ackID %q", i, wantAckh.ackID)
 			continue
 		}
-		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}, psAckHandler{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
+		opts := []cmp.Option{
+			cmp.AllowUnexported(Message{}, psAckHandler{}),
+			cmpopts.IgnoreTypes(
+				time.Time{},
+				func(string, bool,
+					*AckResult, time.Time) {
+				},
+				AckResult{},
+			),
+		}
+		if !testutil.Equal(got, want, opts...) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}

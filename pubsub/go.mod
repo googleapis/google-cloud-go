@@ -3,7 +3,7 @@ module cloud.google.com/go/pubsub
 go 1.17
 
 require (
-	cloud.google.com/go v0.102.1
+	cloud.google.com/go v0.102.1-0.20220708235547-f3d2cc2c987e
 	cloud.google.com/go/iam v0.3.0
 	cloud.google.com/go/kms v1.4.0
 	github.com/golang/protobuf v1.5.2
