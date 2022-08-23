@@ -10,6 +10,21 @@
         "grpc": {
           "libraryClient": "CatalogClient",
           "rpcs": {
+            "AddCatalogAttribute": {
+              "methods": [
+                "AddCatalogAttribute"
+              ]
+            },
+            "GetAttributesConfig": {
+              "methods": [
+                "GetAttributesConfig"
+              ]
+            },
+            "GetCompletionConfig": {
+              "methods": [
+                "GetCompletionConfig"
+              ]
+            },
             "GetDefaultBranch": {
               "methods": [
                 "GetDefaultBranch"
@@ -30,14 +45,34 @@
                 "ListOperations"
               ]
             },
+            "RemoveCatalogAttribute": {
+              "methods": [
+                "RemoveCatalogAttribute"
+              ]
+            },
+            "ReplaceCatalogAttribute": {
+              "methods": [
+                "ReplaceCatalogAttribute"
+              ]
+            },
             "SetDefaultBranch": {
               "methods": [
                 "SetDefaultBranch"
               ]
             },
+            "UpdateAttributesConfig": {
+              "methods": [
+                "UpdateAttributesConfig"
+              ]
+            },
             "UpdateCatalog": {
               "methods": [
                 "UpdateCatalog"
+              ]
+            },
+            "UpdateCompletionConfig": {
+              "methods": [
+                "UpdateCompletionConfig"
               ]
             }
           }
@@ -67,6 +102,50 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ControlService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ControlClient",
+          "rpcs": {
+            "CreateControl": {
+              "methods": [
+                "CreateControl"
+              ]
+            },
+            "DeleteControl": {
+              "methods": [
+                "DeleteControl"
+              ]
+            },
+            "GetControl": {
+              "methods": [
+                "GetControl"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListControls": {
+              "methods": [
+                "ListControls"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateControl": {
+              "methods": [
+                "UpdateControl"
               ]
             }
           }
@@ -189,6 +268,60 @@
             "Search": {
               "methods": [
                 "Search"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ServingConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ServingConfigClient",
+          "rpcs": {
+            "AddControl": {
+              "methods": [
+                "AddControl"
+              ]
+            },
+            "CreateServingConfig": {
+              "methods": [
+                "CreateServingConfig"
+              ]
+            },
+            "DeleteServingConfig": {
+              "methods": [
+                "DeleteServingConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServingConfig": {
+              "methods": [
+                "GetServingConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServingConfigs": {
+              "methods": [
+                "ListServingConfigs"
+              ]
+            },
+            "RemoveControl": {
+              "methods": [
+                "RemoveControl"
+              ]
+            },
+            "UpdateServingConfig": {
+              "methods": [
+                "UpdateServingConfig"
               ]
             }
           }
