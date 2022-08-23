@@ -319,29 +319,6 @@ var methods = map[string][]retryFunc{
 			return nil
 		},
 	},
-	"storage.resumable.upload": {
-		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
-
-			if preconditions {
-				obj = obj.If(Conditions{DoesNotExist: true})
-			}
-
-			// Resumable uploads occur automatically when the file is larger than 16 MiB.
-			w := obj.NewWriter(ctx)
-			randomBytes, err := generateRandomBytes(size17MB)
-			if err != nil {
-				return fmt.Errorf("generate random bytes: %v", err)
-			}
-			if _, err := w.Write(randomBytes); err != nil {
-				return fmt.Errorf("writing object: %v", err)
-			}
-			if err := w.Close(); err != nil {
-				return fmt.Errorf("closing object: %v", err)
-			}
-			return nil
-		},
-	},
 	"storage.objects.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
@@ -439,10 +416,6 @@ func TestRetryConformance(t *testing.T) {
 
 	for _, testFile := range testFiles {
 		for _, retryTest := range testFile.RetryTests {
-			// TODELETE: Skip previous scenarios for dev purposes.
-			if retryTest.Id <= 6 {
-				continue
-			}
 			for _, instructions := range retryTest.Cases {
 				for _, method := range retryTest.Methods {
 					methodName := method.Name
