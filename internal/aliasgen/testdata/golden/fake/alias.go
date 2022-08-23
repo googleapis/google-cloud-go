@@ -16,7 +16,7 @@
 
 // Package fake aliases all exported identifiers in package
 // "cloud.google.com/go/internal/aliasgen/testdata/fakepb".
-// Deprecated: please use "cloud.google.com/go/internal/aliasgen/testdata/fakepb" instead.
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 package fake
 
 import (
@@ -36,30 +36,48 @@ var (
 )
 
 // CreateFooRequest is a struct.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type CreateFooRequest = src.CreateFooRequest
 
 // CreateFooResponse is a struct.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type CreateFooResponse = src.CreateFooResponse
 
 // Foo is a struct.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type Foo = src.Foo
 
 // FooServiceClient is an interface.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type FooServiceClient = src.FooServiceClient
 
 // FooServiceServer is an interface.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type FooServiceServer = src.FooServiceServer
 
 // FooVersion_State is an int type.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type FooVersion_State = src.FooVersion_State
 
 // ListFoosRequest is a struct.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type ListFoosRequest = src.ListFoosRequest
 
 // ListFoosResponse is a struct.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type ListFoosResponse = src.ListFoosResponse
 
 // UnimplementedFooServiceServer is a struct.
+//
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type UnimplementedFooServiceServer = src.UnimplementedFooServiceServer
 
 func NewFooServiceClient(cc grpc.ClientConnInterface) fakepb.FooServiceClient {

@@ -225,7 +225,7 @@ func (am *aliasGenerator) writeHeader(w io.Writer) error {
 
 // Package %s aliases all exported identifiers in package
 // %q.
-// Deprecated: please use %q instead.
+// Deprecated: Please use types in: %s
 package %s
 
 import (
@@ -279,7 +279,7 @@ func (am *aliasGenerator) writeVars(w io.Writer) error {
 func (am *aliasGenerator) writeTypeNames(w io.Writer) error {
 	for _, v := range am.typeNames {
 		if v.doc != "" {
-			if _, err := fmt.Fprint(w, formatComment(v.doc)); err != nil {
+			if _, err := fmt.Fprint(w, formatComment(v.doc, am.importPath)); err != nil {
 				return err
 			}
 		}
@@ -394,9 +394,9 @@ func (ti *typeInfo) FullType(pkg string) string {
 	return sb.String()
 }
 
-func formatComment(s string) string {
+func formatComment(doc, pkg string) string {
 	var sb strings.Builder
-	ss := strings.Fields(s)
+	ss := strings.Fields(doc)
 	var ssi int
 	var lineLen int
 	for i, str := range ss {
@@ -415,5 +415,6 @@ func formatComment(s string) string {
 	if ssi != len(ss) {
 		sb.WriteString(fmt.Sprintf("// %s\n", strings.Join(ss[ssi:], " ")))
 	}
+	sb.WriteString(fmt.Sprintf("//\n// Deprecated: Please use types in: %s\n", pkg))
 	return sb.String()
 }
