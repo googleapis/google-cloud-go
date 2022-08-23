@@ -1171,7 +1171,10 @@ func mustStartStreamingPull(ctx context.Context, t *testing.T, sc pb.SubscriberC
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := spc.Send(&pb.StreamingPullRequest{Subscription: sub.Name}); err != nil {
+	if err := spc.Send(&pb.StreamingPullRequest{
+		Subscription:             sub.Name,
+		StreamAckDeadlineSeconds: sub.GetAckDeadlineSeconds(),
+	}); err != nil {
 		t.Fatal(err)
 	}
 	return spc
@@ -1453,6 +1456,49 @@ func TestTopicRetentionAdmin(t *testing.T) {
 	want = top2.MessageRetentionDuration
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("sub.TopicMessageRetentionDuration mismatch: %s", diff)
+	}
+}
+
+func TestStreaming_SubscriptionProperties(t *testing.T) {
+	ctx := context.Background()
+	pc, sc, s, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pc, &pb.Topic{
+		Name: "projects/P/topics/T",
+	})
+
+	sub := mustCreateSubscription(ctx, t, sc, &pb.Subscription{
+		AckDeadlineSeconds:        10,
+		Name:                      "projects/P/subscriptions/S",
+		Topic:                     top.Name,
+		EnableMessageOrdering:     true,
+		EnableExactlyOnceDelivery: true,
+	})
+
+	spc := mustStartStreamingPull(ctx, t, sc, sub)
+
+	s.Publish("projects/P/topics/T", []byte("hello"), nil)
+
+	res, err := spc.Recv()
+	if err != nil {
+		t.Fatalf("spc.Recv() got err: %v", err)
+	}
+	sp := res.GetSubscriptionProperties()
+	if !sp.GetExactlyOnceDeliveryEnabled() {
+		t.Fatalf("expected exactly once delivery to be enabled in StreamingPullResponse")
+	}
+	if !sp.GetMessageOrderingEnabled() {
+		t.Fatalf("expected message ordering to be enabled in StreamingPullResponse")
+	}
+
+	// Close the stream.
+	if err := spc.CloseSend(); err != nil {
+		t.Fatal(err)
+	}
+	res, err = spc.Recv()
+	if err != io.EOF {
+		t.Fatalf("Recv returned <%v> instead of EOF; res = %v", err, res)
 	}
 }
 

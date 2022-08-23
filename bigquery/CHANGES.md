@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.37.0...bigquery/v1.38.0) (2022-08-12)
+
+
+### Features
+
+* **bigquery/migration:** Add MySQL dialect to bigquerymigration v2 client library ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+* **bigquery/storage/managedwriter:** improve error communication ([#6360](https://github.com/googleapis/google-cloud-go/issues/6360)) ([b30d89d](https://github.com/googleapis/google-cloud-go/commit/b30d89d5bd4a8ce553a328abb4b78f8fc51b43f0))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** propagate calloptions to append ([#6488](https://github.com/googleapis/google-cloud-go/issues/6488)) ([c65f9da](https://github.com/googleapis/google-cloud-go/commit/c65f9dab8118295e49a7b863f59cb64ace4c2d5b))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.36.0...bigquery/v1.37.0) (2022-08-04)
 
 
