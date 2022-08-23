@@ -1,5 +1,17 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.24.0...pubsub/v1.25.0) (2022-08-23)
+
+
+### Features
+
+* **pubsub:** support exactly once delivery ([#6506](https://github.com/googleapis/google-cloud-go/issues/6506)) ([74da335](https://github.com/googleapis/google-cloud-go/commit/74da335fea6cd70b27808507f2e58ae53f5f4910))
+
+
+### Documentation
+
+* **pubsub:** typo ([#6453](https://github.com/googleapis/google-cloud-go/issues/6453)) ([34d839e](https://github.com/googleapis/google-cloud-go/commit/34d839ec546633a0fb7f73448337ac8d8c796acd))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.23.1...pubsub/v1.24.0) (2022-07-18)
 
 
