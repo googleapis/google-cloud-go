@@ -1429,19 +1429,6 @@ func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
 	return out
 }
 
-// Used to handle breaking change in Autogen Storage client OLM Age field
-// from int64 to *int64 gracefully in the manual client
-// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
-func setAgeCondition(age int64, ageField interface{}) {
-	c := reflect.ValueOf(ageField).Elem()
-	switch c.Kind() {
-	case reflect.Int64:
-		c.SetInt(age)
-	case reflect.Ptr:
-		c.Set(reflect.ValueOf(&age))
-	}
-}
-
 func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 	var rl raw.BucketLifecycle
 	if len(l.Rules) == 0 {
@@ -1462,12 +1449,15 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 				NumNewerVersions:        r.Condition.NumNewerVersions,
 			},
 		}
-		if r.Condition.AllObjects {
-			rr.Condition.Age = 0
-			rr.Condition.ForceSendFields = []string{"Age"}
+
+		if r.Condition.AgeInDays > 0 {
+			rr.Condition.Age = googleapi.Int64(r.Condition.AgeInDays)
 		}
 
-		setAgeCondition(r.Condition.AgeInDays, &rr.Condition.Age)
+		if r.Condition.AllObjects {
+			rr.Condition.Age = googleapi.Int64(0)
+			rr.Condition.ForceSendFields = []string{"Age"}
+		}
 
 		switch r.Condition.Liveness {
 		case LiveAndArchived:
@@ -1544,21 +1534,6 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 	return &rl
 }
 
-// Used to handle breaking change in Autogen Storage client OLM Age field
-// from int64 to *int64 gracefully in the manual client
-// TODO(#6240): Method should be removed once breaking change is made and introduced to this client
-func getAgeCondition(ageField interface{}) int64 {
-	v := reflect.ValueOf(ageField)
-	if v.Kind() == reflect.Int64 {
-		return v.Interface().(int64)
-	} else if v.Kind() == reflect.Ptr {
-		if val, ok := v.Interface().(*int64); ok {
-			return *val
-		}
-	}
-	return 0
-}
-
 func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 	var l Lifecycle
 	if rl == nil {
@@ -1579,10 +1554,11 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 				NumNewerVersions:        rr.Condition.NumNewerVersions,
 			},
 		}
-		r.Condition.AgeInDays = getAgeCondition(rr.Condition.Age)
-
-		if rr.Condition.Age == 0 {
-			r.Condition.AllObjects = true
+		if rr.Condition.Age != nil {
+			r.Condition.AgeInDays = *rr.Condition.Age
+			if rr.Condition.Age == googleapi.Int64(0) {
+				r.Condition.AllObjects = true
+			}
 		}
 
 		if rr.Condition.IsLive == nil {

@@ -25,7 +25,6 @@ import (
 	raw "google.golang.org/api/storage/v1"
 )
 
-// TODO(#6539): re-enable tests after breaking change is released and AgeInDays is a int64*
 func TestBucketAttrsToRawBucket(t *testing.T) {
 	t.Skip("TestBucketAttrsToRawBucket skipped: https://github.com/googleapis/google-cloud-go/issues/6539")
 	t.Parallel()
@@ -170,7 +169,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					//Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: []string{"STANDARD"},
@@ -206,7 +205,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						//Age:              10,
+						Age:              googleapi.Int64(10),
 						MatchesPrefix:    []string{"testPrefix"},
 						MatchesSuffix:    []string{"testSuffix"},
 						NumNewerVersions: 3,
@@ -217,6 +216,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:    googleapi.Int64(0),
 						IsLive: googleapi.Bool(false),
 					},
 				},
@@ -225,7 +225,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: AbortIncompleteMPUAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						//Age: 20,
+						Age: googleapi.Int64(20),
 					},
 				},
 				{
@@ -233,7 +233,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age:             0,
+						Age:             googleapi.Int64(0),
 						ForceSendFields: []string{"Age"},
 					},
 				},
@@ -366,9 +366,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	}
 }
 
-// TODO(#6539): re-enable tests after breaking change is released and AgeInDays is a int64*
 func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
-	t.Skip("TestBucketAttrsToUpdateToRawBucket skipped: https://github.com/googleapis/google-cloud-go/issues/6539")
 	t.Parallel()
 	au := &BucketAttrsToUpdate{
 		VersioningEnabled:        false,
@@ -424,12 +422,12 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{
 				{
-					Action: &raw.BucketLifecycleRuleAction{Type: "Delete"},
-					//Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(30)},
 				},
 				{
-					Action: &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
-					//Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
+					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(13)},
 				},
 			},
 		},
@@ -580,26 +578,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 }
 
-func TestAgeConditionBackwardCompat(t *testing.T) {
-	var ti int64
-	var want int64 = 100
-	setAgeCondition(want, &ti)
-	if getAgeCondition(ti) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
-	}
-
-	var tp *int64
-	want = 10
-	setAgeCondition(want, &tp)
-	if getAgeCondition(tp) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
-	}
-
-}
-
-// TODO(#6539): re-enable tests after breaking change is released and AgeInDays is a int64*
 func TestNewBucket(t *testing.T) {
-	t.Skip("TestNewBucket skipped: https://github.com/googleapis/google-cloud-go/issues/6539")
 	labels := map[string]string{"a": "b"}
 	matchClasses := []string{"STANDARD"}
 	aTime := time.Date(2017, 1, 2, 0, 0, 0, 0, time.UTC)
@@ -621,7 +600,7 @@ func TestNewBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					// Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: matchClasses,
