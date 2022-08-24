@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.api.apikeys.v2",
+  "libraryPackage": "cloud.google.com/go/apikeys/apiv2",
+  "services": {
+    "ApiKeys": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateKey": {
+              "methods": [
+                "CreateKey"
+              ]
+            },
+            "DeleteKey": {
+              "methods": [
+                "DeleteKey"
+              ]
+            },
+            "GetKey": {
+              "methods": [
+                "GetKey"
+              ]
+            },
+            "GetKeyString": {
+              "methods": [
+                "GetKeyString"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListKeys": {
+              "methods": [
+                "ListKeys"
+              ]
+            },
+            "LookupKey": {
+              "methods": [
+                "LookupKey"
+              ]
+            },
+            "UndeleteKey": {
+              "methods": [
+                "UndeleteKey"
+              ]
+            },
+            "UpdateKey": {
+              "methods": [
+                "UpdateKey"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.38.0...bigquery/v1.39.0) (2022-08-23)
+
+
+### Features
+
+* **bigquery/storage:** allow users to set Apache Avro output format options through avro_serialization_options param in TableReadOptions message Through AvroSerializationOptions, users can set enable_display_name_attribute, which populates displayName for every avro field with the original column name Improved documentation for selected_fields, added example for clarity. ([41ab4ec](https://github.com/googleapis/google-cloud-go/commit/41ab4ec00552931b12f61a9fcb27b36a7c0b5d77))
+* **bigquery:** add PreserveAsciiControlCharacters support for CSV ([#6448](https://github.com/googleapis/google-cloud-go/issues/6448)) ([b7bac2f](https://github.com/googleapis/google-cloud-go/commit/b7bac2fbf63c2a681da6fdbf5af217bf8de1455f))
+* **bigquery:** add preview support for default values ([#6464](https://github.com/googleapis/google-cloud-go/issues/6464)) ([edc3be5](https://github.com/googleapis/google-cloud-go/commit/edc3be586f9e8b65c34318773f5c55e1a4ccb07b))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.37.0...bigquery/v1.38.0) (2022-08-12)
+
+
+### Features
+
+* **bigquery/migration:** Add MySQL dialect to bigquerymigration v2 client library ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+* **bigquery/storage/managedwriter:** improve error communication ([#6360](https://github.com/googleapis/google-cloud-go/issues/6360)) ([b30d89d](https://github.com/googleapis/google-cloud-go/commit/b30d89d5bd4a8ce553a328abb4b78f8fc51b43f0))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** propagate calloptions to append ([#6488](https://github.com/googleapis/google-cloud-go/issues/6488)) ([c65f9da](https://github.com/googleapis/google-cloud-go/commit/c65f9dab8118295e49a7b863f59cb64ace4c2d5b))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.36.0...bigquery/v1.37.0) (2022-08-04)
 
 
