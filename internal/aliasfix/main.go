@@ -42,6 +42,9 @@ var (
 func main() {
 	flag.Parse()
 	path := flag.Arg(0)
+	if path == "" {
+		log.Fatalf("expected one argument -- path to the directory needing updates")
+	}
 	if err := processPath(path); err != nil {
 		log.Fatal(err)
 	}
@@ -70,6 +73,8 @@ func processPath(path string) error {
 	return nil
 }
 
+// processFile checks to see if the given file needs any imports rewritten and
+// does so if needed. Note an io.Writer is injected here for testability.
 func processFile(name string, w io.Writer) error {
 	if w == nil {
 		file, err := os.Open(name)
