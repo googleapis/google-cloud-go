@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build go1.18
+// +build go1.18
+
 package main
 
 import (
@@ -20,6 +23,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 var updateGoldens bool
@@ -89,12 +94,12 @@ func TestGolden(t *testing.T) {
 			}
 			if !tc.modified {
 				if len(w.Bytes()) != 0 {
-					t.Fatalf("source modified: \n%s", w.Bytes())
+					t.Fatalf("source modified:\n%s", w.Bytes())
 				}
 				return
 			}
-			if !bytes.Equal(w.Bytes(), want) {
-				t.Fatalf("got \n%s, want \n%s", w.Bytes(), want)
+			if diff := cmp.Diff(want, w.Bytes()); diff != "" {
+				t.Errorf("bytes mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
