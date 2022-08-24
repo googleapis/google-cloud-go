@@ -26,7 +26,6 @@ import (
 )
 
 func TestBucketAttrsToRawBucket(t *testing.T) {
-	t.Skip("TestBucketAttrsToRawBucket skipped: https://github.com/googleapis/google-cloud-go/issues/6539")
 	t.Parallel()
 	attrs := &BucketAttrs{
 		Name: "name",
@@ -216,7 +215,6 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age:    googleapi.Int64(0),
 						IsLive: googleapi.Bool(false),
 					},
 				},
