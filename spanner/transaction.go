@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	vkit "cloud.google.com/go/spanner/apiv1"
 	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -32,6 +31,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	vkit "cloud.google.com/go/spanner/apiv1"
 )
 
 // transactionID stores a transaction ID which uniquely identifies a transaction
@@ -76,6 +77,9 @@ type txReadOnly struct {
 	// qo provides options for executing a sql query.
 	qo QueryOptions
 
+	// ro provides options for reading rows from a database.
+	ro ReadOptions
+
 	// txOpts provides options for a transaction.
 	txOpts TransactionOptions
 
@@ -97,12 +101,21 @@ type TransactionOptions struct {
 	CommitPriority sppb.RequestOptions_Priority
 }
 
-func (to *TransactionOptions) requestPriority() sppb.RequestOptions_Priority {
-	return to.CommitPriority
-}
-
-func (to *TransactionOptions) requestTag() string {
-	return ""
+// merge combines two TransactionOptions that the input parameter will have higher
+// order of precedence.
+func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
+	merged := TransactionOptions{
+		CommitOptions:  to.CommitOptions.merge(opts.CommitOptions),
+		TransactionTag: to.TransactionTag,
+		CommitPriority: to.CommitPriority,
+	}
+	if opts.TransactionTag != "" {
+		merged.TransactionTag = opts.TransactionTag
+	}
+	if opts.CommitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.CommitPriority = opts.CommitPriority
+	}
+	return merged
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -139,6 +152,30 @@ type ReadOptions struct {
 	RequestTag string
 }
 
+// merge combines two ReadOptions that the input parameter will have higher
+// order of precedence.
+func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
+	merged := ReadOptions{
+		Index:      ro.Index,
+		Limit:      ro.Limit,
+		Priority:   ro.Priority,
+		RequestTag: ro.RequestTag,
+	}
+	if opts.Index != "" {
+		merged.Index = opts.Index
+	}
+	if opts.Limit > 0 {
+		merged.Limit = opts.Limit
+	}
+	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.Priority = opts.Priority
+	}
+	if opts.RequestTag != "" {
+		merged.RequestTag = opts.RequestTag
+	}
+	return merged
+}
+
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
 // database. Pass a ReadOptions to modify the read operation.
 func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opts *ReadOptions) (ri *RowIterator) {
@@ -162,10 +199,10 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
-	index := ""
-	limit := 0
-	prio := sppb.RequestOptions_PRIORITY_UNSPECIFIED
-	requestTag := ""
+	index := t.ro.Index
+	limit := t.ro.Limit
+	prio := t.ro.Priority
+	requestTag := t.ro.RequestTag
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -1106,9 +1143,17 @@ type CommitResponse struct {
 	CommitStats *sppb.CommitResponse_CommitStats
 }
 
-// CommitOptions provides options for commiting a transaction in a database.
+// CommitOptions provides options for committing a transaction in a database.
 type CommitOptions struct {
 	ReturnCommitStats bool
+}
+
+// merge combines two CommitOptions that the input parameter will have higher
+// order of precedence.
+func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
+	return CommitOptions{
+		ReturnCommitStats: co.ReturnCommitStats || opts.ReturnCommitStats,
+	}
 }
 
 // commit tries to commit a readwrite transaction to Cloud Spanner. It also
@@ -1275,7 +1320,8 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txOpts = options
+	t.txReadOnly.ro = c.ro
+	t.txOpts = c.txo.merge(options)
 	t.ct = c.ct
 
 	if err = t.begin(ctx); err != nil {
