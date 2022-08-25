@@ -220,7 +220,7 @@ func TestStreamingPullRetry(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		wantAckh, _ := msgAckHandler(want)
+		wantAckh, _ := msgAckHandler(want, false)
 		wantAckh.calledDone = true
 		got := gotMap[wantAckh.ackID]
 		if got == nil {
