@@ -327,27 +327,11 @@ func (am *aliasGenerator) writeFuncs(w io.Writer) error {
 		}
 
 		// build return info
-		for i, r := range f.returns {
-			if i == 0 {
-				if _, err := fmt.Fprintf(w, " "); err != nil {
-					return err
-				}
-				if len(f.returns) > 1 {
-					if _, err := fmt.Fprintf(w, "("); err != nil {
-						return err
-					}
-				}
-			} else {
-				if _, err := fmt.Fprintf(w, ", "); err != nil {
-					return err
-				}
-			}
-			if _, err := fmt.Fprint(w, r.FullType(am.pkg)); err != nil {
-				return err
-			}
-		}
 		if len(f.returns) > 1 {
-			if _, err := fmt.Fprintf(w, ")"); err != nil {
+			return fmt.Errorf("expected max of 1 return value for %q, found: %d", f.name, len(f.returns))
+		}
+		if len(f.returns) == 1 {
+			if _, err := fmt.Fprintf(w, " %s", f.returns[0].FullType(am.pkg)); err != nil {
 				return err
 			}
 		}
