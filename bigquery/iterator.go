@@ -114,6 +114,12 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 //	DATE        civil.Date
 //	TIME        civil.Time
 //	DATETIME    civil.DateTime
+//	NUMERIC     *big.Rat
+//	BIGNUMERIC  *big.Rat
+//
+// The big.Rat type supports numbers of arbitrary size and precision.
+// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#numeric-type
+// for more on NUMERIC.
 //
 // A repeated field corresponds to a slice or array of the element type. A STRUCT
 // type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
