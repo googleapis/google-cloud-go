@@ -1,0 +1,12 @@
+# aliasgen
+
+This program analyzes a source directory and creates aliases for all of its
+public members in the specified destination directory.
+
+## Usage
+
+```bash
+go run cloud.google.com/go/internal/aliasgen/cmd \
+-source="/Users/codyoss/oss/go-genproto/googleapis/cloud/secretmanager/v1" \
+-destination="."
+```
