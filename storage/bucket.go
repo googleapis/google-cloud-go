@@ -1556,7 +1556,7 @@ func toLifecycle(rl *raw.BucketLifecycle) Lifecycle {
 		}
 		if rr.Condition.Age != nil {
 			r.Condition.AgeInDays = *rr.Condition.Age
-			if rr.Condition.Age == googleapi.Int64(0) {
+			if *rr.Condition.Age == 0 {
 				r.Condition.AllObjects = true
 			}
 		}
