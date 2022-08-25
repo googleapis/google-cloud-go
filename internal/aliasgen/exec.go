@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+package aliasgen
 
-// Version is the current tagged release of the library.
-const Version = "1.25.1"
+import (
+	"log"
+	"os/exec"
+)
+
+var isTest bool
+
+func goImports(dir string) error {
+	log.Println("Running `goimports`")
+	cmd := exec.Command("goimports", "-w", ".")
+	cmd.Dir = dir
+	return cmd.Run()
+}
+
+func goModTidy(dir string) error {
+	if isTest {
+		return nil
+	}
+	log.Println("Running `go mod tidy`")
+	cmd := exec.Command("go", "mod", "tidy")
+	cmd.Dir = dir
+	return cmd.Run()
+}

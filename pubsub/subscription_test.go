@@ -667,7 +667,7 @@ func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
 	}
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		ar := msg.NackWithResult()
-		s, err := ar.Get(ctx)
+		s, err := ar.Get(context.Background())
 		if s != AcknowledgeStatusSuccess {
 			t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusSuccess)
 		}
