@@ -17,8 +17,14 @@ package aliasfix
 type MigrationStatus int
 
 const (
+	// StatusNotMigrated means no progress has been made to migrate the package.
 	StatusNotMigrated MigrationStatus = iota
+	// StatusInProgress means new types have been generated but there are not
+	// yet aliases to these types nor have packages been re-written in terms of
+	// these new types.
 	StatusInProgress
+	// StatusMigrated mean new types are being directly referenced in the GAPIC
+	// layer and genproto aliases are in place.
 	StatusMigrated
 )
 
@@ -26,7 +32,7 @@ type Pkg struct {
 	// ImportPath in the new import path for types.
 	ImportPath string
 	// Status is current migration status of the associated ImportPath's types.
-	Status     MigrationStatus
+	Status MigrationStatus
 }
 
 var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
