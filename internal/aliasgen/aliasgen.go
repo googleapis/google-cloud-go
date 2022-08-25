@@ -247,6 +247,9 @@ func (am *aliasGenerator) writeConsts(w io.Writer) error {
 	if len(am.consts) == 0 {
 		return nil
 	}
+	if _, err := fmt.Fprintf(w, "// Deprecated: Please use consts in: %s\n", am.importPath); err != nil {
+		return err
+	}
 	if _, err := fmt.Fprintf(w, "const (\n"); err != nil {
 		return err
 	}
@@ -264,6 +267,9 @@ func (am *aliasGenerator) writeConsts(w io.Writer) error {
 func (am *aliasGenerator) writeVars(w io.Writer) error {
 	if len(am.vars) == 0 {
 		return nil
+	}
+	if _, err := fmt.Fprintf(w, "// Deprecated: Please use vars in: %s\n", am.importPath); err != nil {
+		return err
 	}
 	if _, err := fmt.Fprintf(w, "var (\n"); err != nil {
 		return err
@@ -298,6 +304,9 @@ func (am *aliasGenerator) writeTypeNames(w io.Writer) error {
 
 func (am *aliasGenerator) writeFuncs(w io.Writer) error {
 	for _, f := range am.funcs {
+		if _, err := fmt.Fprintf(w, "// Deprecated: Please use funcs in: %s\n", am.importPath); err != nil {
+			return err
+		}
 		if _, err := fmt.Fprintf(w, "func %s(", f.name); err != nil {
 			return err
 		}

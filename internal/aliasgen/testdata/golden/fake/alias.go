@@ -25,12 +25,14 @@ import (
 	grpc "google.golang.org/grpc"
 )
 
+// Deprecated: Please use consts in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 const (
 	FooVersion_ENABLED     = src.FooVersion_ENABLED
 	Foo_STATE_UNSPECIFIED  = src.Foo_STATE_UNSPECIFIED
 	SecretVersion_DISABLED = src.SecretVersion_DISABLED
 )
 
+// Deprecated: Please use vars in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 var (
 	FooVersion_State_name  = src.FooVersion_State_name
 	FooVersion_State_value = src.FooVersion_State_value
@@ -81,9 +83,12 @@ type ListFoosResponse = src.ListFoosResponse
 // Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 type UnimplementedFooServiceServer = src.UnimplementedFooServiceServer
 
+// Deprecated: Please use funcs in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 func NewFooServiceClient(cc grpc.ClientConnInterface) fakepb.FooServiceClient {
 	return src.NewFooServiceClient(cc)
 }
+
+// Deprecated: Please use funcs in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
 func RegisterFooServiceServer(s *grpc.Server, srv fakepb.FooServiceServer) {
 	src.RegisterFooServiceServer(s, srv)
 }
