@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -27,6 +28,7 @@ import (
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 )
 
@@ -48,6 +50,53 @@ func TestIntegration_TableCreate(t *testing.T) {
 	}
 	if !hasStatusCode(err, http.StatusBadRequest) {
 		t.Fatalf("want a 400 error, got %v", err)
+	}
+}
+
+func TestIntegration_TableCreateIfNotExists(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table("t_not_exists")
+
+	_, err := table.Metadata(ctx)
+	if err == nil {
+		t.Fatalf("should fail to get non existent table metadata")
+	}
+	if !errors.Is(err, ErrTableNotFound) {
+		t.Fatalf("metadata err: got: %q, want %q", err, ErrTableNotFound)
+	}
+	// Make sure we still get the googleapi error to avoid breaking changes
+	var e *googleapi.Error
+	if !errors.As(err, &e) {
+		t.Fatalf("googleapi err: not an googleapi.Error instance")
+	}
+
+	schema := Schema{
+		{Name: "i", Type: IntegerFieldType},
+	}
+	tmd := &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration.Add(5 * time.Minute),
+	}
+	err = table.CreateIfNotExists(ctx, tmd)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gmd, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := gmd.Name, tmd.Name; got != want {
+		t.Errorf("name: got %q, want %q", got, want)
+	}
+
+	// We can call again with no errors
+	err = table.CreateIfNotExists(ctx, tmd)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

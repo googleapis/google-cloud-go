@@ -18,11 +18,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // A Table is a reference to a BigQuery table.
@@ -529,7 +531,32 @@ var (
 	// ErrUnknownIdentifierFormat is indicative of requesting an identifier in a format that is
 	// not supported.
 	ErrUnknownIdentifierFormat = errors.New("unknown identifier format")
+
+	// ErrTableNotFound is returned when trying to fetch a table metadata and it doesn't exists.
+	ErrTableNotFound = errors.New("table not found")
 )
+
+type tableNotFoundErr struct {
+	reason error
+}
+
+func (e tableNotFoundErr) Unwrap() error {
+	return e.reason
+}
+
+func (e tableNotFoundErr) Is(err error) bool {
+	if err == e.reason {
+		return true
+	}
+	if err == ErrTableNotFound {
+		return true
+	}
+	return false
+}
+
+func (e tableNotFoundErr) Error() string {
+	return fmt.Sprintf("%s: %v", ErrTableNotFound.Error(), e.reason)
+}
 
 // Identifier returns the ID of the table in the requested format.
 func (t *Table) Identifier(f IdentifierFormat) (string, error) {
@@ -584,6 +611,19 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 		_, err = req.Do()
 		return err
 	})
+}
+
+// CreateIfNotExists creates a table in the BigQuery service only if the given
+// table doesn't exists. See Table.Create method for more guidance.
+func (t *Table) CreateIfNotExists(ctx context.Context, tm *TableMetadata) (err error) {
+	_, err = t.Metadata(ctx)
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, ErrTableNotFound) {
+		return t.Create(ctx, tm)
+	}
+	return fmt.Errorf("bigquery: couldn't retrieve table metadata: %w", err)
 }
 
 func (tm *TableMetadata) toBQ() (*bq.Table, error) {
@@ -719,6 +759,11 @@ func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *
 		res, err = tgc.call.Do()
 		return err
 	}); err != nil {
+		if e, ok := err.(*googleapi.Error); ok {
+			if e.Code == http.StatusNotFound {
+				return nil, &tableNotFoundErr{reason: err}
+			}
+		}
 		return nil, err
 	}
 	return bqToTableMetadata(res, t.c)
