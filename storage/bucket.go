@@ -1450,13 +1450,14 @@ func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 			},
 		}
 
-		if r.Condition.AgeInDays > 0 {
-			rr.Condition.Age = googleapi.Int64(r.Condition.AgeInDays)
-		}
-
+		// AllObjects takes precedent when both AllObjects and AgeInDays are set
+		// Rationale: If you've opted into using AllObjects, it makes sense that you
+		// understand the implications of how this option works with AgeInDays.
 		if r.Condition.AllObjects {
 			rr.Condition.Age = googleapi.Int64(0)
 			rr.Condition.ForceSendFields = []string{"Age"}
+		} else if r.Condition.AgeInDays > 0 {
+			rr.Condition.Age = googleapi.Int64(r.Condition.AgeInDays)
 		}
 
 		switch r.Condition.Liveness {
