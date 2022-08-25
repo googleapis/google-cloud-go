@@ -610,7 +610,7 @@ const (
 //
 // All configured conditions must be met for the associated action to be taken.
 type LifecycleCondition struct {
-	// AllObject is used to select all objects in a bucket by
+	// AllObjects is used to select all objects in a bucket by
 	// setting AgeInDays to 0.
 	AllObjects bool
 
