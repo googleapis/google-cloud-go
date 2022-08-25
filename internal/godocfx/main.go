@@ -286,7 +286,7 @@ language: "go"
 	// Alternatively, we could plumb this through command line flags.
 	switch module.Path {
 	case "google.golang.org/appengine":
-		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go111/reference\"\n")
+		fmt.Fprintf(w, "stem: \"/appengine/docs/legacy/standard/go111/reference\"\n")
 	case "google.golang.org/appengine/v2":
 		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference/services/bundled\"\n")
 	}
