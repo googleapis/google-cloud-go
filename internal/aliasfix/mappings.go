@@ -14,6 +14,8 @@
 
 package aliasfix
 
+// MigrationStatus represents how far along the alias migration is for a given
+// package.
 type MigrationStatus int
 
 const (
@@ -28,6 +30,8 @@ const (
 	StatusMigrated
 )
 
+// Pkg store information related to the google-cloud-go package and whether it
+// has been migrated.
 type Pkg struct {
 	// ImportPath in the new import path for types.
 	ImportPath string
@@ -35,6 +39,8 @@ type Pkg struct {
 	Status MigrationStatus
 }
 
+// GenprotoPkgMigration maps genproto to google-cloud-go packages and tracks
+// their migration status.
 var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	"google.golang.org/genproto/googleapis/analytics/admin/v1alpha": {
 		ImportPath: "cloud.google.com/go/analytics/admin/apiv1alpha/adminpb",
