@@ -22,19 +22,22 @@ of sub-packages.
 All clients in sub-packages are configurable via client options. These options are
 described here: https://godoc.org/google.golang.org/api/option.
 
-## Endpoint
+## Endpoint Override
 
-Endpoint configuration is used to specify the API endpoint to which requests are
-sent. It is primarily used for services that support or require regional endpoints.
-For example, the Vertex AI service recommends that you set the location with the
-features you want that is closest to your physical location or the physical location
-of your users. There is no global endpoint for Vertex AI. See
+Endpoint configuration is used to specify the URL to which requests are
+sent. It is used for services that support or require regional endpoints, as well
+as for other use cases such as [testing against fake
+servers](https://github.com/googleapis/google-cloud-go/blob/main/testing.md#testing-grpc-services-using-fakes).
+
+For example, the Vertex AI service recommends that you configure the endpoint to the
+location with the features you want that is closest to your physical location or the
+location of your users. There is no global endpoint for Vertex AI. See
 [Vertex AI - Locations](https://cloud.google.com/vertex-ai/docs/general/locations)
 for more details. The following example demonstrates configuring a Vertex AI client
 with a regional endpoint:
 
 	ctx := context.Background()
-	endpoint := "us-central1-aiplatform.googleapis.com"
+	endpoint := "us-central1-aiplatform.googleapis.com:443"
 	client, err := aiplatform.NewDatasetClient(ctx, option.WithEndpoint(endpoint))
 
 # Authentication and Authorization
