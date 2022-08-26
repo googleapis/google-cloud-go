@@ -4124,6 +4124,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	client.SetRetry(WithPolicy(RetryAlways))
 
 	projectID := testutil.ProjID()
 
