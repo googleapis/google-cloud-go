@@ -849,7 +849,7 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 					start > 0 && params.length != 0 &&
 					res.StatusCode != http.StatusPartialContent
 
-			if partialContentNotSatisfied && res.StatusCode != http.StatusOK {
+			if partialContentNotSatisfied {
 				res.Body.Close()
 				return errors.New("storage: partial request not satisfied")
 			}
