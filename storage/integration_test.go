@@ -647,21 +647,15 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	var acls []ACLRule
-	err = retry(ctx, func() error {
-		acls, err = o.ACL().List(ctx)
-		if err != nil {
-			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-		return nil
-	}, func() error {
-		if !containsACL(acls, aclEntity, RoleReader) {
-			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-		}
-		return nil
-	})
+	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+	acls, err := o.Retryer(WithPolicy(RetryAlways)).ACL().List(ctxWithTimeout)
+	cancelCtx()
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("ACL.List: object ACL list failed: %v", err)
+	}
+
+	if !containsACL(acls, aclEntity, RoleReader) {
+		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
 	}
 }
 
@@ -733,21 +727,15 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	var acls []ACLRule
-	err = retry(ctx, func() error {
-		acls, err = o.ACL().List(ctx)
-		if err != nil {
-			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-		return nil
-	}, func() error {
-		if !containsACL(acls, aclEntity, RoleReader) {
-			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-		}
-		return nil
-	})
+	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+	acls, err := o.Retryer(WithPolicy(RetryAlways)).ACL().List(ctxWithTimeout)
+	cancelCtx()
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("ACL.List: object ACL list failed: %v", err)
+	}
+
+	if !containsACL(acls, aclEntity, RoleReader) {
+		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
 	}
 }
 
