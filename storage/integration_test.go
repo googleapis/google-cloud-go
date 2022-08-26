@@ -309,6 +309,13 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				MatchesSuffix:    []string{"testSuffix"},
 				NumNewerVersions: 3,
 			},
+		}, {
+			Action: LifecycleAction{
+				Type: DeleteAction,
+			},
+			Condition: LifecycleCondition{
+				AllObjects: true,
+			},
 		}},
 	}
 
@@ -441,6 +448,10 @@ func TestIntegration_BucketLifecycle(t *testing.T) {
 			{
 				Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
 				Condition: LifecycleCondition{AgeInDays: 30},
+			},
+			{
+				Action:    LifecycleAction{Type: DeleteAction},
+				Condition: LifecycleCondition{AllObjects: true},
 			},
 		},
 	}

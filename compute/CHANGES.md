@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.8.0...compute/v1.9.0) (2022-08-18)
+
+
+### Features
+
+* **compute/metadata:** add http timeout to metadata client ([#6499](https://github.com/googleapis/google-cloud-go/issues/6499)) ([37d49f7](https://github.com/googleapis/google-cloud-go/commit/37d49f7a6a004baf55d880f6aa9e42e2e2d1e27e)), refs [#6498](https://github.com/googleapis/google-cloud-go/issues/6498)
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.7.0...compute/v1.8.0) (2022-08-09)
 
 

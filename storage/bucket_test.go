@@ -117,6 +117,13 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				Condition: LifecycleCondition{
 					AgeInDays: 20,
 				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
 			}},
 		},
 	}
@@ -161,7 +168,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: []string{"STANDARD"},
@@ -197,7 +204,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age:              10,
+						Age:              googleapi.Int64(10),
 						MatchesPrefix:    []string{"testPrefix"},
 						MatchesSuffix:    []string{"testSuffix"},
 						NumNewerVersions: 3,
@@ -210,14 +217,25 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
 					},
-				}, {
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: AbortIncompleteMPUAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age: 20,
+						Age: googleapi.Int64(20),
 					},
-				}},
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:             googleapi.Int64(0),
+						ForceSendFields: []string{"Age"},
+					},
+				},
+			},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -403,11 +421,11 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			Rule: []*raw.BucketLifecycleRule{
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(30)},
 				},
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(13)},
 				},
 			},
 		},
@@ -558,23 +576,6 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 }
 
-func TestAgeConditionBackwardCompat(t *testing.T) {
-	var ti int64
-	var want int64 = 100
-	setAgeCondition(want, &ti)
-	if getAgeCondition(ti) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
-	}
-
-	var tp *int64
-	want = 10
-	setAgeCondition(want, &tp)
-	if getAgeCondition(tp) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
-	}
-
-}
-
 func TestNewBucket(t *testing.T) {
 	labels := map[string]string{"a": "b"}
 	matchClasses := []string{"STANDARD"}
@@ -597,7 +598,7 @@ func TestNewBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: matchClasses,
