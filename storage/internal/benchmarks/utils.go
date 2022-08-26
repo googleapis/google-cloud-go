@@ -36,8 +36,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-const bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
-const objectPrefix = "benchmark-obj-"
+const (
+	kib          = 1024
+	bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
+	objectPrefix = "benchmark-obj-"
+)
 
 func randomBool() bool {
 	return rand.Intn(2) == 0
@@ -187,4 +190,36 @@ func forceGarbageCollection(run bool) {
 		runtime.GC()
 		// debug.FreeOSMemory()
 	}
+}
+
+func (b benchmarkOptions) String() string {
+	var sb strings.Builder
+	tab := byte('\t')
+
+	stringifiedOpts := []string{
+		fmt.Sprintf("api: %s", b.api),
+		fmt.Sprintf("region: %s", b.region),
+		fmt.Sprintf("timeout: %s", b.timeout),
+		fmt.Sprintf("min number of samples: %d", b.minSamples),
+		fmt.Sprintf("max number of samples: %d", b.maxSamples),
+		fmt.Sprintf("min obj size: %d kib", b.minObjectSize/kib),
+		fmt.Sprintf("max obj size: %d kib", b.maxObjectSize/kib),
+		fmt.Sprintf("min write size: %d bytes (min app buffer for uploads)", b.minWriteSize),
+		fmt.Sprintf("max write size: %d bytes (max app buffer for uploads)", b.maxWriteSize),
+		fmt.Sprintf("min read size: %d bytes (min app buffer for downloads)", b.minReadSize),
+		fmt.Sprintf("max read size: %d bytes (max app buffer for downloads)", b.maxReadSize),
+		fmt.Sprintf("min chunk size: %d kib (min library buffer for uploads)", b.minChunkSize),
+		fmt.Sprintf("max chunk size: %d kib (max library buffer for uploads)", b.maxChunkSize),
+		fmt.Sprintf("connection pool size: %d (GRPC)", b.connPoolSize),
+		fmt.Sprintf("force garbage collection: %t", b.forceGC),
+		fmt.Sprintf("num workers: %d (max number of concurrent benchmark runs at a time)", b.numWorkers),
+	}
+
+	for _, s := range stringifiedOpts {
+		sb.WriteByte('\n')
+		sb.WriteByte(tab)
+		sb.WriteString(s)
+	}
+
+	return sb.String()
 }

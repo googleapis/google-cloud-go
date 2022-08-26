@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -24,7 +25,6 @@ import (
 	"os"
 	"runtime"
 	"strconv"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -32,15 +32,15 @@ import (
 	"google.golang.org/api/option"
 )
 
-const codeVersion = 3.1 // to keep track of which version of the code a benchmark ran on
+const codeVersion = 3.2 // to keep track of which version of the code a benchmark ran on
 
 var opts = &benchmarkOptions{}
 var projectID, credentialsFile, outputFile string
 
 var results chan benchmarkResult
-var workers chan struct{}
 
 type benchmarkOptions struct {
+	// all sizes are in bytes
 	api           benchmarkAPI
 	region        string
 	timeout       time.Duration
@@ -73,8 +73,8 @@ func parseFlags() {
 	flag.IntVar(&opts.maxReadSize, "max_r_size", 4000, "maximum read size in bytes")
 	flag.IntVar(&opts.readQuantum, "q_read", 1, "read quantum for app buffer size")
 	flag.IntVar(&opts.writeQuantum, "q_write", 1, "write quantum for app buffer size")
-	minChunkSize := flag.Int64("min_cs", 16*1024, "min chunksize in kib")
-	maxChunkSize := flag.Int64("max_cs", 16*1024, "max chunksize in kib")
+	minChunkSize := flag.Int64("min_cs", 16*kib, "min chunksize in kib")
+	maxChunkSize := flag.Int64("max_cs", 16*kib, "max chunksize in kib")
 	flag.IntVar(&opts.minSamples, "min_samples", 10, "minimum number of objects to upload")
 	flag.IntVar(&opts.maxSamples, "max_samples", 10000, "maximum number of objects to upload")
 	flag.StringVar(&outputFile, "o", "res.csv", "file to output results to")
@@ -87,10 +87,10 @@ func parseFlags() {
 
 	flag.Parse()
 
-	opts.minObjectSize = (*minSize) * 1024
-	opts.maxObjectSize = (*maxSize) * 1024
-	opts.minChunkSize = *minChunkSize * 1024
-	opts.maxChunkSize = *maxChunkSize * 1024
+	opts.minObjectSize = (*minSize) * kib
+	opts.maxObjectSize = (*maxSize) * kib
+	opts.minChunkSize = *minChunkSize * kib
+	opts.maxChunkSize = *maxChunkSize * kib
 
 	if len(projectID) < 1 {
 		fmt.Println("Must set a project ID. Use flag -p to specify it.")
@@ -99,19 +99,18 @@ func parseFlags() {
 }
 
 func main() {
-	start := time.Now()
-	fmt.Printf("Benchmarking started: %s\n", start)
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
 
+	start := time.Now()
+	fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))
+	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
+	defer cancel()
+
+	// Create bucket
 	bucketName := randomName(bucketPrefix)
 	cleanUp := createBenchmarkBucket(bucketName, opts)
 	defer cleanUp()
-
-	fmt.Printf("Results file: %s\n", outputFile)
-	fmt.Printf("Benchmarking bucket: %s\n", bucketName)
-	fmt.Printf("Benchmarking options: %+v\n", opts)
-	fmt.Printf("Code version: %0.2f\n", codeVersion)
 
 	// Create output file
 	file, err := os.Create(outputFile)
@@ -120,33 +119,34 @@ func main() {
 	}
 	defer file.Close()
 
-	recordResultGroup, _ := errgroup.WithContext(context.Background())
+	// Print benchmarking options
+	fmt.Printf("Code version: %0.2f\n", codeVersion)
+	fmt.Printf("Results file: %s\n", outputFile)
+	fmt.Printf("Bucket:  %s\n", bucketName)
+	fmt.Printf("Benchmarking options: %+v\n", opts)
+
+	recordResultGroup, _ := errgroup.WithContext(ctx)
 	startRecordingResults(file, recordResultGroup)
 
-	var benchmarkRunGroup sync.WaitGroup
-	workers = make(chan struct{}, opts.numWorkers)
+	benchGroup, _ := errgroup.WithContext(ctx)
+	benchGroup.SetLimit(opts.numWorkers)
 
+	// Run benchmarks
 	for i := 0; i < opts.maxSamples && (i < opts.minSamples || time.Since(start) < opts.timeout); i++ {
-		benchmarkRunGroup.Add(1)
-
-		go func() {
-			defer benchmarkRunGroup.Done()
-			workers <- struct{}{}        // use up a worker; if this blocks, numWorkers are already active
-			defer func() { <-workers }() // free up a worker
-
-			if err := benchmarkRun(context.Background(), opts, bucketName); err != nil {
+		benchGroup.Go(func() error {
+			if err := benchmarkRun(ctx, opts, bucketName); err != nil {
+				// We don't want to stop benchmarking on a single run's error, so just log
 				log.Printf("run failed: %v", err)
 			}
-		}()
+			return nil
+		})
 	}
-	benchmarkRunGroup.Wait()
+
+	benchGroup.Wait()
 	close(results)
+	recordResultGroup.Wait()
 
-	if err := recordResultGroup.Wait(); err != nil {
-		fmt.Printf("recordResultGroup error: %v", err)
-	}
-
-	fmt.Printf("\nTotal time running: %s\n", time.Since(start).String())
+	fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
 }
 
 type benchmarkResult struct {
@@ -181,13 +181,13 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	// Select client
 	client, readAPI, writeAPI, err := initializeClient(ctx, opts.api, appWriteBufferSize, appReadBufferSize, opts.connPoolSize)
 	if err != nil {
-		return fmt.Errorf("NewClient: %v", err)
+		return fmt.Errorf("NewClient: %w", err)
 	}
 
 	// Create contents
 	objectName, err := generateRandomFile(objectSize)
 	if err != nil {
-		return fmt.Errorf("generateRandomFile: %v", err)
+		return fmt.Errorf("generateRandomFile: %w", err)
 	}
 
 	o := client.Bucket(bucketName).Object(objectName)
@@ -199,12 +199,12 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 		httpClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
 		clientMu.Unlock()
 		if err != nil {
-			return fmt.Errorf("NewClient: %v", err)
+			return fmt.Errorf("NewClient: %w", err)
 		}
 		defer httpClient.Close()
 		httpObjHandle = httpClient.Bucket(o.BucketName()).Object(o.ObjectName())
 	}
-	defer httpObjHandle.Delete(ctx)
+	defer httpObjHandle.Delete(context.Background())
 
 	// Upload
 
@@ -246,14 +246,14 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	os.Remove(objectName)
 	// Do not attempt to read from a failed upload
 	if err != nil {
-		return fmt.Errorf("failed upload: %v", err)
+		return fmt.Errorf("failed upload: %w", err)
 	}
 
 	// Wait for the object to be available.
 	timedCtx, cancelTimedCtx := context.WithTimeout(ctx, time.Second*3)
 	defer cancelTimedCtx()
 	if _, err := httpObjHandle.Retryer(storage.WithPolicy(storage.RetryAlways)).Attrs(timedCtx); err != nil {
-		return fmt.Errorf("object.Attrs: %v", err)
+		return fmt.Errorf("object.Attrs: %w", err)
 	}
 
 	// Read.
@@ -288,6 +288,9 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 		}
 		// do not return error, continue to attempt to read
 		if err != nil {
+			if errors.Is(err, context.DeadlineExceeded) {
+				return err
+			}
 			log.Printf("read error: %v", err)
 		}
 	}
@@ -347,8 +350,8 @@ func (br benchmarkResult) csv() []string {
 	}
 }
 
-func startRecordingResults(f *os.File, g *errgroup.Group) *csv.Writer {
-	// buffer channel so we don't block while printing results
+func startRecordingResults(f *os.File, g *errgroup.Group) {
+	// buffer channel so we don't block on printing results
 	results = make(chan benchmarkResult, 100)
 
 	// write header
@@ -366,12 +369,10 @@ func startRecordingResults(f *os.File, g *errgroup.Group) *csv.Writer {
 
 			err := w.Write(result.csv())
 			if err != nil {
-				return fmt.Errorf("error writing to csv file: %v", err)
+				log.Fatalf("error writing to csv file: %v", err)
 			}
 			w.Flush()
 		}
 		return nil
 	})
-
-	return w
 }

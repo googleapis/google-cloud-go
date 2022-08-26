@@ -2,10 +2,9 @@
 **This is not an officially supported Google product**
 
 ## Run example:
-This runs 1000 iterations on 0 to 2Gib files in the background, sending program output (errors and such) to `output.log`:
+This runs 1000 iterations on 512kib to 2Gib files in the background, sending output to `out.log`:
 
-`go run main -t 72h -max_size 2097152 -max_samples 1000 -o results/2GibFiles1k.csv -c &> output.log &`
-
+`go run ./ -p {PROJECT_ID} -t 72h -max_samples 1000 -o {RESULTS_FILE_NAME}.csv &> out.log &`
 
 
 ## CLI parameters
@@ -20,9 +19,9 @@ This runs 1000 iterations on 0 to 2Gib files in the background, sending program 
 | -gc_f | whether to force garbage collection <br> before every write or read benchmark |  `true` or `false` (present/not present) | `false` |
 | -min_cs | minimum ChunkSize in kib | any positive integer | `16384` |
 | -max_cs | maximum ChunkSize in kib | any positive integer | `16384` |
-| -min_size | minimum object size in kib | any positive integer | `0` |
-| -max_size | maximum object size in kib | any positive integer | `16` |
-| -t | timeout (maximum time running benchmarks) | any [time.Duration](https://pkg.go.dev/time#Duration) | `1h` |
+| -min_size | minimum object size in kib | any positive integer | `512` |
+| -max_size | maximum object size in kib | any positive integer | `2097152` (2 GiB) |
+| -t | timeout (maximum time running benchmarks) <br> the program may run for longer while it finishes running processes | any [time.Duration](https://pkg.go.dev/time#Duration) | `1h` |
 | -min_samples | minimum number of objects to upload | any positive integer | `10` |
 | -max_samples | maximum number of objects to upload | any positive integer | `10 000` |
 | -o | file to output results to | any file path | `res.csv` |

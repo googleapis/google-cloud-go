@@ -37,7 +37,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 
 	f, err := os.Create(dopts.o.ObjectName())
 	if err != nil {
-		rerr = fmt.Errorf("os.Create: %v", err)
+		rerr = fmt.Errorf("os.Create: %w", err)
 		return
 	}
 	defer func() {
@@ -55,7 +55,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 
 	objectReader, err := dopts.o.NewReader(ctx)
 	if err != nil {
-		rerr = fmt.Errorf("Object(%q).NewReader: %v", dopts.o.ObjectName(), err)
+		rerr = fmt.Errorf("Object(%q).NewReader: %w", dopts.o.ObjectName(), err)
 		return
 	}
 	defer func() {
@@ -67,7 +67,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 
 	written, err := io.Copy(f, objectReader)
 	if err != nil {
-		rerr = fmt.Errorf("io.Copy: %v", err)
+		rerr = fmt.Errorf("io.Copy: %w", err)
 		return
 	}
 
