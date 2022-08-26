@@ -69,8 +69,8 @@ runPresubmitTests() {
   exit_code=$(($exit_code + $?))
   # There are some types of build failures that go-junit-report does not
   # properly handle. We can be safe here and run go build as well to catch such
-  # failures.
-  if [[ $PWD != *"/internal/"* ]]; then
+  # failures. Exclude go1.15 due to the go1.16 build constraint in third_party.
+  if [[ $PWD != *"/internal/"* && $(go version) != *"go1.15"* ]]; then
     go build ./...
   fi
   exit_code=$(($exit_code + $?))
