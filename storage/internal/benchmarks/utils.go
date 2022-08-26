@@ -194,30 +194,24 @@ func forceGarbageCollection(run bool) {
 
 func (b benchmarkOptions) String() string {
 	var sb strings.Builder
-	tab := byte('\t')
 
 	stringifiedOpts := []string{
-		fmt.Sprintf("api: %s", b.api),
-		fmt.Sprintf("region: %s", b.region),
-		fmt.Sprintf("timeout: %s", b.timeout),
-		fmt.Sprintf("min number of samples: %d", b.minSamples),
-		fmt.Sprintf("max number of samples: %d", b.maxSamples),
-		fmt.Sprintf("min obj size: %d kib", b.minObjectSize/kib),
-		fmt.Sprintf("max obj size: %d kib", b.maxObjectSize/kib),
-		fmt.Sprintf("min write size: %d bytes (min app buffer for uploads)", b.minWriteSize),
-		fmt.Sprintf("max write size: %d bytes (max app buffer for uploads)", b.maxWriteSize),
-		fmt.Sprintf("min read size: %d bytes (min app buffer for downloads)", b.minReadSize),
-		fmt.Sprintf("max read size: %d bytes (max app buffer for downloads)", b.maxReadSize),
-		fmt.Sprintf("min chunk size: %d kib (min library buffer for uploads)", b.minChunkSize),
-		fmt.Sprintf("max chunk size: %d kib (max library buffer for uploads)", b.maxChunkSize),
-		fmt.Sprintf("connection pool size: %d (GRPC)", b.connPoolSize),
-		fmt.Sprintf("force garbage collection: %t", b.forceGC),
-		fmt.Sprintf("num workers: %d (max number of concurrent benchmark runs at a time)", b.numWorkers),
+		fmt.Sprintf("api:\t\t\t%s", b.api),
+		fmt.Sprintf("region:\t\t\t%s", b.region),
+		fmt.Sprintf("timeout:\t\t%s", b.timeout),
+		fmt.Sprintf("number of samples:\tbetween %d - %d", b.minSamples, b.maxSamples),
+		fmt.Sprintf("object size:\t\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
+		fmt.Sprintf("write size:\t\t%d - %d bytes (app buffer for uploads)", b.minWriteSize, b.maxWriteSize),
+		fmt.Sprintf("read size:\t\t%d - %d bytes (app buffer for downloads)", b.minReadSize, b.maxReadSize),
+		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize, b.maxChunkSize),
+		fmt.Sprintf("connection pool size:\t%d (GRPC)", b.connPoolSize),
+		fmt.Sprintf("num workers:\t\t%d (max number of concurrent benchmark runs at a time)", b.numWorkers),
+		fmt.Sprintf("force garbage collection:%t", b.forceGC),
 	}
 
 	for _, s := range stringifiedOpts {
 		sb.WriteByte('\n')
-		sb.WriteByte(tab)
+		sb.WriteByte('\t')
 		sb.WriteString(s)
 	}
 
