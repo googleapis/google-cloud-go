@@ -1574,7 +1574,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		InputDirectoryPath:    "google/cloud/batch/v1",
 		Pkg:                   "batch",
 		ImportPath:            "cloud.google.com/go/batch/apiv1",
-		GRPCServiceConfigPath: "batch_grpc_service_config.json",
+		GRPCServiceConfigPath: "batch_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "batch_v1.yaml",
 		// GA after 2022/08/10
 		ReleaseLevel: "beta",
