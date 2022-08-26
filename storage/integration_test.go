@@ -603,7 +603,9 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	// Confirm BucketAccessControl returns error, since we cannot get legacy ACL
 	// for a bucket that has uniform bucket-level access.
 
-	// We retry on nil to account for propagation delay in metadata update
+	// Metadata updates may be delayed up to 10s. Since we expect an error from
+	// this call, we retry on a nil error until we get the non-retryable error
+	// that we are expecting.
 	idempotentOrNilRetry := func(err error) bool {
 		return err == nil || ShouldRetry(err)
 	}
@@ -634,15 +636,21 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	acls, err := o.Retryer(WithPolicy(RetryAlways)).ACL().List(ctxWithTimeout)
-	cancelCtx()
+	var acls []ACLRule
+	err = retry(ctx, func() error {
+		acls, err = o.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
+		return nil
+	}, func() error {
+		if !containsACL(acls, aclEntity, RoleReader) {
+			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("ACL.List: object ACL list failed: %v", err)
-	}
-
-	if !containsACL(acls, aclEntity, RoleReader) {
-		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		t.Fatal(err)
 	}
 }
 
@@ -714,17 +722,21 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	// Retry errors to account for propagation delay in metadata update.
-	retry := WithErrorFunc(func(err error) bool { return err != nil })
-	acls, err := o.Retryer(retry).ACL().List(ctxWithTimeout)
-	cancelCtx()
+	var acls []ACLRule
+	err = retry(ctx, func() error {
+		acls, err = o.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
+		return nil
+	}, func() error {
+		if !containsACL(acls, aclEntity, RoleReader) {
+			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("ACL.List: object ACL list failed: %v", err)
-	}
-
-	if !containsACL(acls, aclEntity, RoleReader) {
-		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		t.Fatal(err)
 	}
 }
 
