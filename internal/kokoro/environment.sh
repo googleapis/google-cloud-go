@@ -34,6 +34,9 @@ export PRODUCT_AREA_LABEL=observability
 export PRODUCT_LABEL=logging
 export LANGUAGE_LABEL=go
 
+# enure nox is installed
+python3 -m pip install nox
+
 # Add the test module as a submodule to the repo.
 cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
