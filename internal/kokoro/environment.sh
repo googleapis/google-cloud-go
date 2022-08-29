@@ -34,9 +34,6 @@ export PRODUCT_AREA_LABEL=observability
 export PRODUCT_LABEL=logging
 export LANGUAGE_LABEL=go
 
-# enure nox is installed
-python3 -m pip install nox
-
 # Add the test module as a submodule to the repo.
 cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
@@ -89,6 +86,12 @@ if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
   mkdir -p ~/.local/bin
   mv ./kubectl ~/.local/bin
   export PATH=$PATH:~/.local/bin/
+fi
+
+# If Functions, use python3.8, since that's what's in go116 container
+if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
+  export ENV_TEST_PY_VERSION=3.8
+  python3 -m pip install nox
 fi
 
 # Run the environment test for the specified GCP service
