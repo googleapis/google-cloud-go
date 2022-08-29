@@ -322,6 +322,8 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 		stubPkg := filepath.Join(conf.ImportPath, stubsDir)
 		for _, f := range protoFiles {
 			f = strings.TrimPrefix(f, g.googleapisDir+"/")
+			// Storage is a special case because it is generating a hidden beta
+			// proto surface.
 			if conf.ImportPath == "cloud.google.com/go/storage/internal/apiv2" {
 				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
 				args = append(args,

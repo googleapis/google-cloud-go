@@ -139,6 +139,8 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 				log.Println("running protoc on", pk)
 				return g.protoc(fn, grpc)
 			})
+		} else {
+			log.Panicf("skipping, %q has been migrated", pkg)
 		}
 	}
 	if err := grp.Wait(); err != nil {
