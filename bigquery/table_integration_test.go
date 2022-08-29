@@ -78,7 +78,54 @@ func TestIntegration_TableCreateWithConstraints(t *testing.T) {
 	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
+}
 
+func TestIntegration_TableCreateWithDefaultValues(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table("defaultvalues")
+	schema := Schema{
+		{Name: "str_col", Type: StringFieldType, DefaultValueExpression: "'FOO'"},
+		{Name: "timestamp_col", Type: TimestampFieldType, DefaultValueExpression: "CURRENT_TIMESTAMP()"},
+	}
+	err := table.Create(ctx, &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration.Add(5 * time.Minute),
+	})
+	if err != nil {
+		t.Fatalf("table create error: %v", err)
+	}
+
+	meta, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata: %v", err)
+	}
+
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+
+	// SQL creation
+	id, _ := table.Identifier(StandardSQLID)
+	sql := fmt.Sprintf(`
+	    CREATE OR REPLACE TABLE %s (
+			str_col STRING DEFAULT 'FOO',
+			timestamp_col TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+		)`, id)
+	_, _, err = runQuerySQL(ctx, sql)
+	if err != nil {
+		t.Fatal(err)
+	}
+	meta, err = table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata after sql: %v", err)
+	}
+
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("sql create: got=-, want=+:\n%s", diff)
+	}
 }
 
 func TestIntegration_TableCreateView(t *testing.T) {

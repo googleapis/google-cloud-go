@@ -361,6 +361,11 @@
               "methods": [
                 "WaitOperation"
               ]
+            },
+            "WriteFeatureValues": {
+              "methods": [
+                "WriteFeatureValues"
+              ]
             }
           }
         }
@@ -684,6 +689,11 @@
                 "ListOperations"
               ]
             },
+            "RemoveDatapoints": {
+              "methods": [
+                "RemoveDatapoints"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -697,6 +707,11 @@
             "UpdateIndex": {
               "methods": [
                 "UpdateIndex"
+              ]
+            },
+            "UpsertDatapoints": {
+              "methods": [
+                "UpsertDatapoints"
               ]
             },
             "WaitOperation": {

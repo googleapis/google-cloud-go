@@ -24,6 +24,9 @@
         "apigeeregistry": {
             "component": "apigeeregistry"
         },
+        "apikeys": {
+            "component": "apikeys"
+        },
         "appengine": {
             "component": "appengine"
         },
