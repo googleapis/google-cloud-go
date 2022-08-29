@@ -9,6 +9,6 @@ Make sure you dependencies for the cloud client library you depend on and
 go-genproto are up to date.
 
 ```bash
-go run cloud.google.com/go/aliasfix .
+go run cloud.google.com/go/aliasfix/cmd .
 go mod tidy
 ```
