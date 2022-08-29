@@ -1,19 +1,21 @@
 module cloud.google.com/go/internal/gapicgen
 
-go 1.17
+go 1.19
 
 require (
-	cloud.google.com/go v0.100.2
-	cloud.google.com/go/internal/godocfx v0.0.0-20220124075323-fc08c49fc013
+	cloud.google.com/go v0.102.1
+	cloud.google.com/go/internal/aliasfix v0.0.0
+	cloud.google.com/go/internal/godocfx v0.0.0-20220625055333-3f8d1627b9c2
 	github.com/google/go-github/v35 v35.3.0
-	github.com/shurcooL/githubv4 v0.0.0-20220115235240-a14260e6f8a2
-	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9
-	google.golang.org/genproto v0.0.0-20211221195035-429b39de9b1c
-	google.golang.org/protobuf v1.27.1
+	github.com/shurcooL/githubv4 v0.0.0-20220520033151-0b4e3294ff00
+	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
+	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f
+	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959
+	google.golang.org/protobuf v1.28.1
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
+
 )
 
 require (
@@ -26,14 +28,14 @@ require (
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
 	github.com/src-d/gcfg v1.4.0 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
-	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
-	golang.org/x/tools v0.1.8 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
+	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
+	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
+	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
+
+replace cloud.google.com/go/internal/aliasfix => ../aliasfix

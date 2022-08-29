@@ -149,7 +149,7 @@ func defaultWorkflowTemplateCallOptions() *WorkflowTemplateCallOptions {
 	}
 }
 
-// internalWorkflowTemplateClient is an interface that defines the methods availaible from Cloud Dataproc API.
+// internalWorkflowTemplateClient is an interface that defines the methods available from Cloud Dataproc API.
 type internalWorkflowTemplateClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

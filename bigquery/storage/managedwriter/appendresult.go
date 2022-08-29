@@ -18,7 +18,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/googleapis/gax-go/v2/apierror"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
@@ -34,14 +36,11 @@ type AppendResult struct {
 
 	ready chan struct{}
 
-	// if the encapsulating append failed, this will retain a reference to the error.
+	// if the append failed without a response, this will retain a reference to the error.
 	err error
 
-	// the stream offset
-	offset int64
-
-	// retains the updated schema from backend response.  Used for schema change notification.
-	updatedSchema *storagepb.TableSchema
+	// retains the original response.
+	response *storagepb.AppendRowsResponse
 }
 
 func newAppendResult(data [][]byte) *AppendResult {
@@ -55,25 +54,95 @@ func newAppendResult(data [][]byte) *AppendResult {
 // which may be a successful append or an error.
 func (ar *AppendResult) Ready() <-chan struct{} { return ar.ready }
 
-// GetResult returns the optional offset of this row, or the associated
-// error.  It blocks until the result is ready.
+// GetResult returns the optional offset of this row, as well as any error encountered while
+// processing the append.
+//
+// This call blocks until the result is ready, or context is no longer valid.
 func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	select {
 	case <-ctx.Done():
-		return 0, ctx.Err()
+		return NoStreamOffset, ctx.Err()
 	case <-ar.Ready():
-		return ar.offset, ar.err
+		full, err := ar.FullResponse(ctx)
+		offset := NoStreamOffset
+		if full != nil {
+			if result := full.GetAppendResult(); result != nil {
+				if off := result.GetOffset(); off != nil {
+					offset = off.GetValue()
+				}
+			}
+		}
+		return offset, err
+	}
+}
+
+// FullResponse returns the full content of the AppendRowsResponse, and any error encountered while
+// processing the append.
+//
+// The AppendRowResponse may contain an embedded error.  An embedded error in the response will be
+// converted and returned as the error response, so this method may return both the
+// AppendRowsResponse and an error.
+//
+// This call blocks until the result is ready, or context is no longer valid.
+func (ar *AppendResult) FullResponse(ctx context.Context) (*storagepb.AppendRowsResponse, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-ar.Ready():
+		var err error
+		if ar.err != nil {
+			err = ar.err
+		} else {
+			if ar.response != nil {
+				if status := ar.response.GetError(); status != nil {
+					statusErr := grpcstatus.ErrorProto(status)
+					// Provide an APIError if possible.
+					if apiErr, ok := apierror.FromError(statusErr); ok {
+						err = apiErr
+					} else {
+						err = statusErr
+					}
+				}
+			}
+		}
+		if ar.response != nil {
+			return proto.Clone(ar.response).(*storagepb.AppendRowsResponse), err
+		}
+		return nil, err
+	}
+}
+
+func (ar *AppendResult) offset(ctx context.Context) int64 {
+	select {
+	case <-ctx.Done():
+		return NoStreamOffset
+	case <-ar.Ready():
+		if ar.response != nil {
+			if result := ar.response.GetAppendResult(); result != nil {
+				if off := result.GetOffset(); off != nil {
+					return off.GetValue()
+				}
+			}
+		}
+		return NoStreamOffset
 	}
 }
 
 // UpdatedSchema returns the updated schema for a table if supplied by the backend as part
-// of the append response.  It blocks until the result is ready.
+// of the append response.
+//
+// This call blocks until the result is ready, or context is no longer valid.
 func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
 	select {
 	case <-ctx.Done():
 		return nil, fmt.Errorf("context done")
 	case <-ar.Ready():
-		return ar.updatedSchema, nil
+		if ar.response != nil {
+			if schema := ar.response.GetUpdatedSchema(); schema != nil {
+				return proto.Clone(schema).(*storagepb.TableSchema), nil
+			}
+		}
+		return nil, nil
 	}
 }
 
@@ -116,9 +185,12 @@ func newPendingWrite(appends [][]byte) *pendingWrite {
 
 // markDone propagates finalization of an append request to the associated
 // AppendResult.
-func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowController) {
+func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error, fc *flowController) {
+	if resp != nil {
+		pw.result.response = resp
+	}
 	pw.result.err = err
-	pw.result.offset = startOffset
+
 	close(pw.result.ready)
 	// Clear the reference to the request.
 	pw.request = nil

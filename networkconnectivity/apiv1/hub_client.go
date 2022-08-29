@@ -121,7 +121,7 @@ func defaultHubCallOptions() *HubCallOptions {
 	}
 }
 
-// internalHubClient is an interface that defines the methods availaible from Network Connectivity API.
+// internalHubClient is an interface that defines the methods available from Network Connectivity API.
 type internalHubClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

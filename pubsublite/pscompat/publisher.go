@@ -26,18 +26,22 @@ import (
 )
 
 var (
-	// ErrOverflow is set for a PublishResult when publish buffers overflow.
-	// Use errors.Is for comparing errors.
+	// ErrOverflow is set for a PublishResult when publish buffers overflow. This
+	// can occur when backends are unavailable or the actual publish throughput
+	// of clients exceeds the allocated publish throughput for the Pub/Sub Lite
+	// topic. Use errors.Is for comparing errors.
 	ErrOverflow = wire.ErrOverflow
 
 	// ErrOversizedMessage is set for a PublishResult when a published message
-	// exceeds MaxPublishRequestBytes. Use errors.Is for comparing errors.
+	// exceeds MaxPublishRequestBytes. Publishing this message will never succeed.
+	// Use errors.Is for comparing errors.
 	ErrOversizedMessage = wire.ErrOversizedMessage
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
 	// published because the publisher client has stopped or is in the process of
-	// stopping. PublisherClient.Error() returns the error that caused the
-	// publisher client to terminate (if any). Use errors.Is for comparing errors.
+	// stopping. It may be stopping due to a fatal error. PublisherClient.Error()
+	// returns the error that caused the publisher client to terminate (if any).
+	// Use errors.Is for comparing errors.
 	ErrPublisherStopped = wire.ErrServiceStopped
 
 	// ErrBackendUnavailable indicates that the backend service has been
@@ -99,9 +103,10 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 // Publish returns a non-nil PublishResult which will be ready when the
 // message has been sent (or has failed to be sent) to the server. Retryable
 // errors are automatically handled. If a PublishResult returns an error, this
-// indicates that the publisher client encountered a fatal error and has
-// permanently terminated. After the fatal error has been resolved, a new
-// publisher client instance must be created to republish failed messages.
+// indicates that the publisher client encountered a fatal error and can no
+// longer be used. Fatal errors should be manually inspected and the cause
+// resolved. A new publisher client instance must be created to republish failed
+// messages.
 //
 // Once Stop() has been called or the publisher client has failed permanently
 // due to an error, future calls to Publish will immediately return a

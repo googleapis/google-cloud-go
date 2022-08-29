@@ -80,7 +80,7 @@ func defaultCloudShellCallOptions() *CloudShellCallOptions {
 	}
 }
 
-// internalCloudShellClient is an interface that defines the methods availaible from Cloud Shell API.
+// internalCloudShellClient is an interface that defines the methods available from Cloud Shell API.
 type internalCloudShellClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

@@ -96,7 +96,7 @@ var newService = func(ctx context.Context, tokenSource oauth2.TokenSource) (serv
 	if err != nil {
 		return nil, err
 	}
-	s, err := cd.New(httpClient)
+	s, err := cd.NewService(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, err
 	}

@@ -293,7 +293,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 	}
 }
 
-// internalRegistrationClient is an interface that defines the methods availaible from Service Directory API.
+// internalRegistrationClient is an interface that defines the methods available from Service Directory API.
 type internalRegistrationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -324,18 +324,18 @@ type internalRegistrationClient interface {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 type RegistrationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegistrationClient
@@ -484,18 +484,18 @@ type registrationGRPCClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := defaultRegistrationGRPCClientOptions()
 	if newRegistrationClientHook != nil {

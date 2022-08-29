@@ -19,10 +19,6 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
-python3 -m pip install --upgrade pip
-# Workaround for six 1.15 incompatibility issue.
-python3 -m pip install --use-feature=2020-resolver "gcp-docuploader<2019.0.0"
-
 cd github/google-cloud-go/internal/godocfx
 go install
 cd -
@@ -38,7 +34,7 @@ if [[ -n "$FORCE_GENERATE_ALL" ]]; then
 elif [[ -n "$MODULE" ]]; then
   godocfx "$MODULE"
 else
-  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go
+  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine
 fi
 
 for f in $(find obj/api -name docs.metadata); do

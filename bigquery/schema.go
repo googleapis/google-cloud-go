@@ -45,6 +45,22 @@ func (s Schema) Relax() Schema {
 	return out
 }
 
+// ToJSONFields exposes the schema as a JSON array of
+// TableFieldSchema objects: https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#TableFieldSchema
+//
+// Generally this isn't needed for direct usage of this library, but is
+// provided for use cases where you're interacting with other tools
+// that consume the underlying API representation directly such as the
+// BQ CLI tool.
+func (s Schema) ToJSONFields() ([]byte, error) {
+	var rawSchema []*bq.TableFieldSchema
+	for _, f := range s {
+		rawSchema = append(rawSchema, f.toBQ())
+	}
+	// Use json.MarshalIndent to make the output more human-readable.
+	return json.MarshalIndent(rawSchema, "", " ")
+}
+
 // FieldSchema describes a single field.
 type FieldSchema struct {
 	// The field name.
@@ -105,17 +121,38 @@ type FieldSchema struct {
 	//
 	// See the Precision field for additional guidance about valid values.
 	Scale int64
+
+	// DefaultValueExpression is used to specify the default value of a field
+	// using a SQL expression.  It can only be set for top level fields (columns).
+	//
+	// You can use struct or array expression to specify default value for the
+	// entire struct or array. The valid SQL expressions are:
+	//
+	// - Literals for all data types, including STRUCT and ARRAY.
+	// - The following functions:
+	//   - CURRENT_TIMESTAMP
+	//   - CURRENT_TIME
+	//   - CURRENT_DATE
+	//   - CURRENT_DATETIME
+	//   - GENERATE_UUID
+	//   - RAND
+	//   - SESSION_USER
+	//   - ST_GEOGPOINT
+	//   - Struct or array composed with the above allowed functions, for example:
+	//       [CURRENT_DATE(), DATE '2020-01-01']"
+	DefaultValueExpression string
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	tfs := &bq.TableFieldSchema{
-		Description: fs.Description,
-		Name:        fs.Name,
-		Type:        string(fs.Type),
-		PolicyTags:  fs.PolicyTags.toBQ(),
-		MaxLength:   fs.MaxLength,
-		Precision:   fs.Precision,
-		Scale:       fs.Scale,
+		Description:            fs.Description,
+		Name:                   fs.Name,
+		Type:                   string(fs.Type),
+		PolicyTags:             fs.PolicyTags.toBQ(),
+		MaxLength:              fs.MaxLength,
+		Precision:              fs.Precision,
+		Scale:                  fs.Scale,
+		DefaultValueExpression: fs.DefaultValueExpression,
 	}
 
 	if fs.Repeated {
@@ -165,15 +202,16 @@ func (s Schema) toBQ() *bq.TableSchema {
 
 func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 	fs := &FieldSchema{
-		Description: tfs.Description,
-		Name:        tfs.Name,
-		Repeated:    tfs.Mode == "REPEATED",
-		Required:    tfs.Mode == "REQUIRED",
-		Type:        FieldType(tfs.Type),
-		PolicyTags:  bqToPolicyTagList(tfs.PolicyTags),
-		MaxLength:   tfs.MaxLength,
-		Precision:   tfs.Precision,
-		Scale:       tfs.Scale,
+		Description:            tfs.Description,
+		Name:                   tfs.Name,
+		Repeated:               tfs.Mode == "REPEATED",
+		Required:               tfs.Mode == "REQUIRED",
+		Type:                   FieldType(tfs.Type),
+		PolicyTags:             bqToPolicyTagList(tfs.PolicyTags),
+		MaxLength:              tfs.MaxLength,
+		Precision:              tfs.Precision,
+		Scale:                  tfs.Scale,
+		DefaultValueExpression: tfs.DefaultValueExpression,
 	}
 
 	for _, f := range tfs.Fields {
@@ -226,6 +264,10 @@ const (
 	// BigNumericFieldType is a numeric field type that supports values of larger precision
 	// and scale than the NumericFieldType.
 	BigNumericFieldType FieldType = "BIGNUMERIC"
+	// IntervalFieldType is a representation of a duration or an amount of time.
+	IntervalFieldType FieldType = "INTERVAL"
+	// JSONFieldType is a representation of a json object.
+	JSONFieldType FieldType = "JSON"
 )
 
 var (
@@ -244,6 +286,8 @@ var (
 		NumericFieldType:    true,
 		GeographyFieldType:  true,
 		BigNumericFieldType: true,
+		IntervalFieldType:   true,
+		JSONFieldType:       true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{
@@ -265,16 +309,16 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // (This is the same mapping as that used for RowIterator.Next.) Fields inferred
 // from these types are marked required (non-nullable).
 //
-//   STRING      string
-//   BOOL        bool
-//   INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
-//   FLOAT       float32, float64
-//   BYTES       []byte
-//   TIMESTAMP   time.Time
-//   DATE        civil.Date
-//   TIME        civil.Time
-//   DATETIME    civil.DateTime
-//   NUMERIC     *big.Rat
+//	STRING      string
+//	BOOL        bool
+//	INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
+//	FLOAT       float32, float64
+//	BYTES       []byte
+//	TIMESTAMP   time.Time
+//	DATE        civil.Date
+//	TIME        civil.Time
+//	DATETIME    civil.DateTime
+//	NUMERIC     *big.Rat
 //
 // The big.Rat type supports numbers of arbitrary size and precision. Values
 // will be rounded to 9 digits after the decimal point before being transmitted
@@ -289,15 +333,15 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //
 // Nullable fields are inferred from the NullXXX types, declared in this package:
 //
-//   STRING      NullString
-//   BOOL        NullBool
-//   INTEGER     NullInt64
-//   FLOAT       NullFloat64
-//   TIMESTAMP   NullTimestamp
-//   DATE        NullDate
-//   TIME        NullTime
-//   DATETIME    NullDateTime
-//   GEOGRAPHY   NullGeography
+//	STRING      NullString
+//	BOOL        NullBool
+//	INTEGER     NullInt64
+//	FLOAT       NullFloat64
+//	TIMESTAMP   NullTimestamp
+//	DATE        NullDate
+//	TIME        NullTime
+//	DATETIME    NullDateTime
+//	GEOGRAPHY   NullGeography
 //
 // For a nullable BYTES field, use the type []byte and tag the field "nullable" (see below).
 // For a nullable NUMERIC field, use the type *big.Rat and tag the field "nullable".
@@ -315,15 +359,20 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //
 // Struct fields may be tagged in a way similar to the encoding/json package.
 // A tag of the form
-//     bigquery:"name"
+//
+//	bigquery:"name"
+//
 // uses "name" instead of the struct field name as the BigQuery field name.
 // A tag of the form
-//     bigquery:"-"
+//
+//	bigquery:"-"
+//
 // omits the field from the inferred schema.
 // The "nullable" option marks the field as nullable (not required). It is only
 // needed for []byte, *big.Rat and pointer-to-struct fields, and cannot appear on other
 // fields. In this example, the Go name of the field is retained:
-//     bigquery:",nullable"
+//
+//	bigquery:",nullable"
 func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
@@ -539,16 +588,6 @@ func hasRecursiveType(t reflect.Type, seen *typeList) (bool, error) {
 	return false, nil
 }
 
-// bigQuerySchemaJSONField is an individual field in a JSON BigQuery table schema definition
-// (as generated by https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema).
-type bigQueryJSONField struct {
-	Description string              `json:"description"`
-	Fields      []bigQueryJSONField `json:"fields"`
-	Mode        string              `json:"mode"`
-	Name        string              `json:"name"`
-	Type        string              `json:"type"`
-}
-
 // validateKnownType ensures a type is known (or alias of a known type).
 func validateKnownType(in FieldType) (FieldType, error) {
 	if _, ok := fieldTypes[in]; !ok {
@@ -556,57 +595,42 @@ func validateKnownType(in FieldType) (FieldType, error) {
 		if resolved, ok := fieldAliases[in]; ok {
 			return resolved, nil
 		}
-		return "", fmt.Errorf("unknown field type (%v)", in)
+		return "", fmt.Errorf("unknown field type (%s)", in)
 	}
 	return in, nil
 }
 
-// convertSchemaFromJSON generates a Schema:
-func convertSchemaFromJSON(fs []bigQueryJSONField) (Schema, error) {
-	convertedSchema := Schema{}
-	for _, f := range fs {
-		convertedFieldSchema := &FieldSchema{
-			Description: f.Description,
-			Name:        f.Name,
-			Required:    f.Mode == "REQUIRED",
-			Repeated:    f.Mode == "REPEATED",
-		}
-		if len(f.Fields) > 0 {
-			convertedNestedFieldSchema, err := convertSchemaFromJSON(f.Fields)
-			if err != nil {
-				return nil, err
-			}
-			convertedFieldSchema.Schema = convertedNestedFieldSchema
-		}
-
-		// Check that the field-type (string) maps to a known FieldType:
-		validType, err := validateKnownType(FieldType(f.Type))
-		if err != nil {
-			return nil, err
-		}
-		convertedFieldSchema.Type = validType
-		convertedSchema = append(convertedSchema, convertedFieldSchema)
-	}
-	return convertedSchema, nil
-}
-
-// SchemaFromJSON takes a JSON BigQuery table schema definition
-// (as generated by https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema)
-// and returns a fully-populated Schema.
+// SchemaFromJSON takes a native JSON BigQuery table schema definition and converts it to
+// a populated Schema.  The native API definition is used by tools such as the BQ CLI and
+// https://github.com/GoogleCloudPlatform/protoc-gen-bq-schema.
+//
+// The expected format is a JSON array of TableFieldSchema objects from the underlying API:
+// https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#TableFieldSchema
 func SchemaFromJSON(schemaJSON []byte) (Schema, error) {
-
-	var bigQuerySchema []bigQueryJSONField
 
 	// Make sure we actually have some content:
 	if len(schemaJSON) == 0 {
 		return nil, errEmptyJSONSchema
 	}
 
-	if err := json.Unmarshal(schemaJSON, &bigQuerySchema); err != nil {
+	var rawSchema []*bq.TableFieldSchema
+
+	if err := json.Unmarshal(schemaJSON, &rawSchema); err != nil {
 		return nil, err
 	}
 
-	return convertSchemaFromJSON(bigQuerySchema)
+	convertedSchema := Schema{}
+	for _, f := range rawSchema {
+		convField := bqToFieldSchema(f)
+		// Normalize the types.
+		validType, err := validateKnownType(convField.Type)
+		if err != nil {
+			return nil, err
+		}
+		convField.Type = validType
+		convertedSchema = append(convertedSchema, convField)
+	}
+	return convertedSchema, nil
 }
 
 type noStructError struct {

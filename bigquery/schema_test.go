@@ -15,6 +15,7 @@
 package bigquery
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"reflect"
@@ -24,6 +25,7 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -315,6 +317,34 @@ func TestSchemaConversion(t *testing.T) {
 					MaxLength: 1,
 					Precision: 2,
 					Scale:     3,
+				},
+			},
+		},
+		{
+			// default values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:                   "foo",
+						Type:                   "STRING",
+						DefaultValueExpression: "I_LOVE_FOO",
+					},
+					{
+						Name:                   "bar",
+						Type:                   "TIMESTAMP",
+						DefaultValueExpression: "CURRENT_TIMESTAMP()",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:                   "foo",
+					Type:                   StringFieldType,
+					DefaultValueExpression: "I_LOVE_FOO",
+				},
+				{
+					Name:                   "bar",
+					Type:                   TimestampFieldType,
+					DefaultValueExpression: "CURRENT_TIMESTAMP()",
 				},
 			},
 		},
@@ -1082,7 +1112,8 @@ func TestSchemaFromJSON(t *testing.T) {
 	{"name":"aliased_boolean","type":"BOOL","mode":"NULLABLE","description":"Aliased nullable boolean"},
 	{"name":"aliased_float","type":"FLOAT64","mode":"REQUIRED","description":"Aliased required float"},
 	{"name":"aliased_record","type":"STRUCT","mode":"NULLABLE","description":"Aliased nullable record"},
-	{"name":"aliased_bignumeric","type":"BIGDECIMAL","mode":"NULLABLE","description":"Aliased nullable bignumeric"}
+	{"name":"aliased_bignumeric","type":"BIGDECIMAL","mode":"NULLABLE","description":"Aliased nullable bignumeric"},
+	{"name":"flat_interval","type":"INTERVAL","mode":"NULLABLE","description":"Flat nullable interval"}
 ]`),
 			expectedSchema: Schema{
 				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false, nil),
@@ -1102,6 +1133,7 @@ func TestSchemaFromJSON(t *testing.T) {
 				fieldSchema("Aliased required float", "aliased_float", "FLOAT", false, true, nil),
 				fieldSchema("Aliased nullable record", "aliased_record", "RECORD", false, false, nil),
 				fieldSchema("Aliased nullable bignumeric", "aliased_bignumeric", "BIGNUMERIC", false, false, nil),
+				fieldSchema("Flat nullable interval", "flat_interval", "INTERVAL", false, false, nil),
 			},
 		},
 		{
@@ -1167,6 +1199,33 @@ func TestSchemaFromJSON(t *testing.T) {
 				},
 			},
 		},
+		{
+			description: "Table with advanced parameters",
+			bqSchemaJSON: []byte(`
+[
+	{"name":"strfield","type":"STRING","mode":"NULLABLE","description":"foo","maxLength":"100"},
+	{"name":"numfield","type":"BIGNUMERIC","description":"bar","mode":"REPEATED","precision":"10","scale":"5","policyTags":{"names":["baz"]}}
+]`),
+			expectedSchema: Schema{
+				&FieldSchema{
+					Name:        "strfield",
+					Description: "foo",
+					MaxLength:   100,
+					Type:        "STRING",
+				},
+				&FieldSchema{
+					Name:        "numfield",
+					Description: "bar",
+					Repeated:    true,
+					Type:        "BIGNUMERIC",
+					Precision:   10,
+					Scale:       5,
+					PolicyTags: &PolicyTagList{
+						Names: []string{"baz"},
+					},
+				},
+			},
+		},
 	}
 	for _, tc := range testCasesExpectingSuccess {
 		convertedSchema, err := SchemaFromJSON(tc.bqSchemaJSON)
@@ -1174,8 +1233,8 @@ func TestSchemaFromJSON(t *testing.T) {
 			t.Errorf("encountered an error when converting JSON table schema (%s): %v", tc.description, err)
 			continue
 		}
-		if !testutil.Equal(convertedSchema, tc.expectedSchema) {
-			t.Errorf("generated JSON table schema (%s) differs from the expected schema", tc.description)
+		if diff := testutil.Diff(convertedSchema, tc.expectedSchema); diff != "" {
+			t.Errorf("%s: %s", tc.description, diff)
 		}
 	}
 
@@ -1201,6 +1260,69 @@ func TestSchemaFromJSON(t *testing.T) {
 		if err == nil {
 			t.Errorf("converting this schema should have returned an error (%s): %v", tc.description, err)
 			continue
+		}
+	}
+}
+
+func TestSchemaToJSONFields(t *testing.T) {
+
+	// cmp option for comparing byte arrays without caring about whitespace.
+	// courtesy of https://github.com/google/go-cmp/issues/224
+	normalizeJSON := cmp.FilterValues(func(x, y []byte) bool {
+		return json.Valid(x) && json.Valid(y)
+	}, cmp.Transformer("ParseJSON", func(in []byte) (out interface{}) {
+		if err := json.Unmarshal(in, &out); err != nil {
+			panic(err)
+		}
+		return out
+	}))
+
+	testCases := []struct {
+		description  string
+		inSchema     Schema
+		expectedJSON []byte
+	}{
+		{
+			description: "basic schema",
+			inSchema: Schema{
+				fieldSchema("foo", "strfield", "STRING", false, false, nil),
+				fieldSchema("bar", "intfield", "INTEGER", false, true, nil),
+				fieldSchema("baz", "bool_arr", "INTEGER", true, false, []string{"tag1"}),
+			},
+			expectedJSON: []byte(`[
+ {
+  "description": "foo",
+  "name": "strfield",
+  "type": "STRING"
+ },
+ {
+  "description": "bar",
+  "mode": "REQUIRED",
+  "name": "intfield",
+  "type": "INTEGER"
+ },
+ {
+  "description": "baz",
+  "mode": "REPEATED",
+  "name": "bool_arr",
+  "policyTags": {
+    "names": [
+	  "tag1"
+	]
+   },
+  "type": "INTEGER"
+ }
+]`),
+		},
+	}
+	for _, tc := range testCases {
+		got, err := tc.inSchema.ToJSONFields()
+		if err != nil {
+			t.Errorf("%s: %v", tc.description, err)
+		}
+
+		if diff := cmp.Diff(got, tc.expectedJSON, normalizeJSON); diff != "" {
+			t.Errorf("%s: %s", tc.description, diff)
 		}
 	}
 }

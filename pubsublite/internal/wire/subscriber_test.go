@@ -14,6 +14,7 @@
 package wire
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"sort"
@@ -587,6 +588,36 @@ func TestSubscribeStreamHandleResetError(t *testing.T) {
 	if gotErr := sub.FinalError(); gotErr != nil {
 		t.Errorf("Final err: (%v), want: <nil>", gotErr)
 	}
+}
+
+func TestSubscribeStreamReceiveLargeMessage(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	const msgSize = 10 * 1024 * 1024 // 10 MiB
+	msg := &pb.SequencedMessage{
+		Cursor:    &pb.Cursor{Offset: 1},
+		SizeBytes: msgSize,
+		Message:   &pb.PubSubMessage{Data: bytes.Repeat([]byte{'0'}, msgSize)},
+	}
+
+	settings := testSubscriberSettings()
+	settings.MaxOutstandingBytes = msgSize
+	expectedFlowControlReq := flowControlSubReq(flowControlTokens{
+		Bytes:    int64(settings.MaxOutstandingBytes),
+		Messages: int64(settings.MaxOutstandingMessages),
+	})
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	stream.Push(expectedFlowControlReq, msgSubResp(msg), nil)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSubscribeStream(t, subscription, settings)
+	sub.Receiver.ValidateMsg(msg)
+	sub.StopVerifyNoError()
 }
 
 type testSinglePartitionSubscriber singlePartitionSubscriber

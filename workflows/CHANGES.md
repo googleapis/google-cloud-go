@@ -1,5 +1,20 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.4.0...workflows/v1.5.0) (2022-06-29)
+
+
+### Features
+
+* **workflows:** release as GA ([5be6d33](https://github.com/googleapis/google-cloud-go/commit/5be6d33a57cc57ecfe5c34a0b1f6e3e0dd4b51fa))
+* **workflows:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.3.0...workflows/v1.4.0) (2022-05-09)
+
+
+### Features
+
+* **workflows:** start generating apiv1 ([#6008](https://github.com/googleapis/google-cloud-go/issues/6008)) ([41540c4](https://github.com/googleapis/google-cloud-go/commit/41540c47fdf433b00a9ded3fa2a23f1b933ed1be)), refs [#5962](https://github.com/googleapis/google-cloud-go/issues/5962)
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.2.0...workflows/v1.3.0) (2022-02-23)
 
 

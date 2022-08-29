@@ -205,7 +205,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 	}
 }
 
-// internalOsConfigZonalClient is an interface that defines the methods availaible from OS Config API.
+// internalOsConfigZonalClient is an interface that defines the methods available from OS Config API.
 type internalOsConfigZonalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -230,7 +230,7 @@ type internalOsConfigZonalClient interface {
 // OsConfigZonalClient is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -412,7 +412,7 @@ type osConfigZonalGRPCClient struct {
 // NewOsConfigZonalClient creates a new os config zonal service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.

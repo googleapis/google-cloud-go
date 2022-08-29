@@ -30,13 +30,13 @@ func TestParseVersion(t *testing.T) {
 		{
 			desc:        "valid 3 components",
 			input:       "1.2.2",
-			wantVersion: version{Major: "1", Minor: "2"},
+			wantVersion: version{Major: 1, Minor: 2},
 			wantOk:      true,
 		},
 		{
 			desc:        "valid 2 components",
 			input:       "2.3",
-			wantVersion: version{Major: "2", Minor: "3"},
+			wantVersion: version{Major: 2, Minor: 3},
 			wantOk:      true,
 		},
 		{
@@ -44,9 +44,10 @@ func TestParseVersion(t *testing.T) {
 			wantOk: false,
 		},
 		{
-			desc:   "minor version invalid",
-			input:  "1.a.2",
-			wantOk: false,
+			desc:        "minor version invalid",
+			input:       "1.a.2",
+			wantVersion: version{Major: 1},
+			wantOk:      false,
 		},
 		{
 			desc:   "major version invalid",

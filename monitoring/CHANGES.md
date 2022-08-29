@@ -1,5 +1,19 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.5.0...monitoring/v1.6.0) (2022-08-09)
+
+
+### Features
+
+* **monitoring/apiv3:** Added support for evaluating missing data in AlertPolicy ([83d8e8d](https://github.com/googleapis/google-cloud-go/commit/83d8e8dde9d8601db20096fb869b50c7abf1ba7e))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.4.0...monitoring/v1.5.0) (2022-04-14)
+
+
+### Features
+
+* **monitoring/dashboard:** Sync public protos with latests public api state. This adds support for collapsible groups, filters, labels, drilldowns, logs panels and tables ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.3.0...monitoring/v1.4.0) (2022-02-23)
 
 

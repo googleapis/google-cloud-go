@@ -1,5 +1,19 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.4.0...secretmanager/v1.5.0) (2022-06-29)
+
+
+### Features
+
+* **secretmanager:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.3.0...secretmanager/v1.4.0) (2022-04-06)
+
+
+### Features
+
+* **secretmanager:** Added support for accessing secret versions by alias Clients can now associate custom strings with specified secret versions for later access. ([6ffce1d](https://github.com/googleapis/google-cloud-go/commit/6ffce1dbf567758d23ac39aaf63dc17ced5e4db9))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.2.0...secretmanager/v1.3.0) (2022-02-23)
 
 

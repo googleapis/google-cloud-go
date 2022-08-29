@@ -36,6 +36,18 @@ func ExampleNewOperationsClient() {
 	_ = c
 }
 
+func ExampleNewOperationsRESTClient() {
+	ctx := context.Background()
+	c, err := longrunning.NewOperationsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleOperationsClient_ListOperations() {
 	ctx := context.Background()
 	c, err := longrunning.NewOperationsClient(ctx)

@@ -30,14 +30,29 @@
                 "BatchGetAssetsHistory"
               ]
             },
+            "BatchGetEffectiveIamPolicies": {
+              "methods": [
+                "BatchGetEffectiveIamPolicies"
+              ]
+            },
             "CreateFeed": {
               "methods": [
                 "CreateFeed"
               ]
             },
+            "CreateSavedQuery": {
+              "methods": [
+                "CreateSavedQuery"
+              ]
+            },
             "DeleteFeed": {
               "methods": [
                 "DeleteFeed"
+              ]
+            },
+            "DeleteSavedQuery": {
+              "methods": [
+                "DeleteSavedQuery"
               ]
             },
             "ExportAssets": {
@@ -50,6 +65,16 @@
                 "GetFeed"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSavedQuery": {
+              "methods": [
+                "GetSavedQuery"
+              ]
+            },
             "ListAssets": {
               "methods": [
                 "ListAssets"
@@ -58,6 +83,16 @@
             "ListFeeds": {
               "methods": [
                 "ListFeeds"
+              ]
+            },
+            "ListSavedQueries": {
+              "methods": [
+                "ListSavedQueries"
+              ]
+            },
+            "QueryAssets": {
+              "methods": [
+                "QueryAssets"
               ]
             },
             "SearchAllIamPolicies": {
@@ -73,6 +108,11 @@
             "UpdateFeed": {
               "methods": [
                 "UpdateFeed"
+              ]
+            },
+            "UpdateSavedQuery": {
+              "methods": [
+                "UpdateSavedQuery"
               ]
             }
           }

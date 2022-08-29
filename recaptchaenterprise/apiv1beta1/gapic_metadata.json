@@ -19,30 +19,20 @@
               "methods": [
                 "CreateAssessment"
               ]
-            },
-            "CreateKey": {
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RecaptchaEnterpriseServiceV1Beta1Client",
+          "rpcs": {
+            "AnnotateAssessment": {
               "methods": [
-                "CreateKey"
+                "AnnotateAssessment"
               ]
             },
-            "DeleteKey": {
+            "CreateAssessment": {
               "methods": [
-                "DeleteKey"
-              ]
-            },
-            "GetKey": {
-              "methods": [
-                "GetKey"
-              ]
-            },
-            "ListKeys": {
-              "methods": [
-                "ListKeys"
-              ]
-            },
-            "UpdateKey": {
-              "methods": [
-                "UpdateKey"
+                "CreateAssessment"
               ]
             }
           }

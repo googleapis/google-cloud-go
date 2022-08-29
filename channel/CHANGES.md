@@ -1,5 +1,20 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.6.0...channel/v1.7.0) (2022-06-29)
+
+
+### Features
+
+* **channel:** google.longrunning.Operations for Cloud Channel apis ([350e276](https://github.com/googleapis/google-cloud-go/commit/350e276a5b17483e7347a82f2e195f6619782bec))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.5.0...channel/v1.6.0) (2022-04-26)
+
+
+### Features
+
+* **channel:** Add API definitions for Cloud Channel Repricing APIs ([2fe50f7](https://github.com/googleapis/google-cloud-go/commit/2fe50f79275d295ba71a14a247bd85de7d540897))
+* **channel:** Add new enum value, new filter in ListCustomersRequest of Cloud Channel API ([7b1173d](https://github.com/googleapis/google-cloud-go/commit/7b1173d1ffed195c515b907b20dd1f86a9eef13a))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.4.1...channel/v1.5.0) (2022-02-23)
 
 

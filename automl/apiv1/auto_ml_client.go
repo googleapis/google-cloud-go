@@ -196,7 +196,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud AutoML API.
+// internalClient is an interface that defines the methods available from Cloud AutoML API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -328,11 +328,11 @@ func (c *Client) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 //
 // For Tables:
 //
-//   A
-//   schema_inference_version
-//   parameter must be explicitly set.
-//   Returns an empty response in the
-//   response field when it completes.
+//	A
+//	schema_inference_version
+//	parameter must be explicitly set.
+//	Returns an empty response in the
+//	response field when it completes.
 func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	return c.internalClient.ImportData(ctx, req, opts...)
 }

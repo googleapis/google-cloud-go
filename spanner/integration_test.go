@@ -683,7 +683,6 @@ func TestIntegration_SingleUse(t *testing.T) {
 				}
 				if !found {
 					t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
-					break
 				}
 			}
 			rts, err = su.Timestamp()
@@ -2541,11 +2540,9 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		row2, err2 := iter2.Next()
 		if err1 != err2 {
 			t.Fatalf("execution failed for different reasons: %v, %v", err1, err2)
-			continue
 		}
 		if !testEqual(row1, row2) {
 			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-			continue
 		}
 		if row1 == nil {
 			continue
@@ -2553,7 +2550,6 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		var a, b string
 		if err = row1.Columns(&a, &b); err != nil {
 			t.Fatalf("failed to parse row %v", err)
-			continue
 		}
 		if a == str1 && b == str2 {
 			gotResult = true
@@ -2631,7 +2627,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 		}
 		if !testEqual(row1, row2) {
 			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-			continue
 		}
 		if row1 == nil {
 			continue
@@ -2639,7 +2634,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 		var a, b string
 		if err = row1.Columns(&a, &b); err != nil {
 			t.Fatalf("failed to parse row %v", err)
-			continue
 		}
 		if a == str1 && b == str2 {
 			gotResult = true
@@ -3482,6 +3476,7 @@ func readPGSingerTable(iter *RowIterator) ([][]interface{}, error) {
 }
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/6200")
 	skipEmulatorTest(t)
 	skipUnsupportedPGTest(t)
 	t.Parallel()
@@ -3490,8 +3485,16 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 	// Backups can be slow, so use 1 hour timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Hour)
 	defer cancel()
-	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][backupDDLStatements])
+	client, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][backupDDLStatements])
 	defer cleanup()
+
+	// Set up 1 singer to have backup size greater than zero
+	singers := []*Mutation{
+		Insert("Singers", []string{"SingerId", "FirstName", "LastName"}, []interface{}{int64(1), "test", "test"}),
+	}
+	if _, err := client.Apply(ctx, singers, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
 
 	backupID := backupIDSpace.New()
 	backupName := fmt.Sprintf("projects/%s/instances/%s/backups/%s", testProjectID, testInstanceID, backupID)
@@ -4017,6 +4020,12 @@ func skipUnsupportedPGTest(t *testing.T) {
 func onlyRunForPGTest(t *testing.T) {
 	if testDialect != adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping tests supported only in Postgres dialect.")
+	}
+}
+
+func skipForPGTest(t *testing.T) {
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		t.Skip("Skipping tests non needed for Postgres dialect.")
 	}
 }
 

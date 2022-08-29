@@ -10,9 +10,24 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CreateAgentPool": {
+              "methods": [
+                "CreateAgentPool"
+              ]
+            },
             "CreateTransferJob": {
               "methods": [
                 "CreateTransferJob"
+              ]
+            },
+            "DeleteAgentPool": {
+              "methods": [
+                "DeleteAgentPool"
+              ]
+            },
+            "GetAgentPool": {
+              "methods": [
+                "GetAgentPool"
               ]
             },
             "GetGoogleServiceAccount": {
@@ -23,6 +38,11 @@
             "GetTransferJob": {
               "methods": [
                 "GetTransferJob"
+              ]
+            },
+            "ListAgentPools": {
+              "methods": [
+                "ListAgentPools"
               ]
             },
             "ListTransferJobs": {
@@ -43,6 +63,11 @@
             "RunTransferJob": {
               "methods": [
                 "RunTransferJob"
+              ]
+            },
+            "UpdateAgentPool": {
+              "methods": [
+                "UpdateAgentPool"
               ]
             },
             "UpdateTransferJob": {

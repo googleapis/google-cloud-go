@@ -209,7 +209,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	if rm.ReturnTableType != nil {
 		tt, err := rm.ReturnTableType.toBQ()
 		if err != nil {
-			return nil, fmt.Errorf("couldn't convert return table type: %v", err)
+			return nil, fmt.Errorf("couldn't convert return table type: %w", err)
 		}
 		r.ReturnTableType = tt
 	}

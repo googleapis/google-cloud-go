@@ -105,15 +105,21 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // Each BigQuery column type corresponds to one or more Go types; a matching struct
 // field must be of the correct type. The correspondences are:
 //
-//   STRING      string
-//   BOOL        bool
-//   INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
-//   FLOAT       float32, float64
-//   BYTES       []byte
-//   TIMESTAMP   time.Time
-//   DATE        civil.Date
-//   TIME        civil.Time
-//   DATETIME    civil.DateTime
+//	STRING      string
+//	BOOL        bool
+//	INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
+//	FLOAT       float32, float64
+//	BYTES       []byte
+//	TIMESTAMP   time.Time
+//	DATE        civil.Date
+//	TIME        civil.Time
+//	DATETIME    civil.DateTime
+//	NUMERIC     *big.Rat
+//	BIGNUMERIC  *big.Rat
+//
+// The big.Rat type supports numbers of arbitrary size and precision.
+// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#numeric-type
+// for more on NUMERIC.
 //
 // A repeated field corresponds to a slice or array of the element type. A STRUCT
 // type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
@@ -184,12 +190,12 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 // fast execution query path which can return status, rows, and schema all at
 // once.  Our cache data expectations are as follows:
 //
-// * We can only cache data from the start of a source.
-// * We need to cache schema, rows, and next page token to effective service
-//   a request from cache.
-// * cache references are destroyed as soon as they're interrogated.  We don't
-//   want to retain the data unnecessarily, and we expect that the backend
-//   can always provide them if needed.
+//   - We can only cache data from the start of a source.
+//   - We need to cache schema, rows, and next page token to effective service
+//     a request from cache.
+//   - cache references are destroyed as soon as they're interrogated.  We don't
+//     want to retain the data unnecessarily, and we expect that the backend
+//     can always provide them if needed.
 type rowSource struct {
 	j *Job
 	t *Table

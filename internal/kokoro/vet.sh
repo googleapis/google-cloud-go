@@ -19,7 +19,7 @@ set -e
 # Display commands being run
 set -x
 
-if [[ $(go version) != *"go1.17"* ]]; then
+if [[ $(go version) != *"go1.19"* ]]; then
   exit 0
 fi
 
@@ -79,27 +79,13 @@ golint ./... 2>&1 | (
 ) |
   tee /dev/stderr | (! read)
 
-staticcheck -go 1.11 ./... 2>&1 | (
-  grep -v S1007 |
-    grep -v SA1019 |
-    grep -v firestore/internal/doc-snippets.go |
-    grep -v functions/metadata/metadata_test.go |
-    grep -v spanner/value.go |
+staticcheck -go 1.15 ./... 2>&1 | (
+  grep -v SA1019 |
     grep -v go-cloud-debug-agent |
-    grep -v pubsub/integration_test.go |
-    grep -v internal/fields/fold.go |
-    grep -v internal/generated/snippets |
-    grep -v httpreplay/internal/proxy/debug.go |
-    grep -v bigtable/internal/cbtconfig/cbtconfig.go |
-    grep -v bigtable/cmd/cbt/cbt.go |
-    grep -v asset/v1beta1/doc.go |
-    grep -v asset/v1beta1/mock_test.go |
-    grep -v spanner/value_test.go |
-    grep -v bigtable/reader.go |
     grep -v internal/btree/btree.go |
-    grep -v container/apiv1/mock_test.go |
-    grep -v third_party/pkgsite/synopsis.go |
-    grep -v third_party/go/doc
+    grep -v httpreplay/internal/proxy/debug.go |
+    grep -v third_party/go/doc |
+    grep -v third_party/pkgsite/synopsis.go
 ) |
   tee /dev/stderr | (! read)
 

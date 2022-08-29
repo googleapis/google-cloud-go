@@ -151,7 +151,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 	}
 }
 
-// internalDataprocMetastoreClient is an interface that defines the methods availaible from Dataproc Metastore API.
+// internalDataprocMetastoreClient is an interface that defines the methods available from Dataproc Metastore API.
 type internalDataprocMetastoreClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -186,23 +186,23 @@ type internalDataprocMetastoreClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Configures and manages metastore services.
-// Metastore services are fully managed, highly available, auto-scaled,
-// auto-healing, OSS-native deployments of technical metadata management
+// Metastore services are fully managed, highly available, autoscaled,
+// autohealing, OSS-native deployments of technical metadata management
 // software. Each metastore service exposes a network endpoint through which
 // metadata queries are served. Metadata queries can originate from a variety
 // of sources, including Apache Hive, Apache Presto, and Apache Spark.
 //
 // The Dataproc Metastore API defines the following resource model:
 //
-//   The service works with a collection of Google Cloud projects, named:
-//   /projects/*
+//	The service works with a collection of Google Cloud projects, named:
+//	/projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
-//   (a location must refer to a Google Cloud region)
+//	Each project has a collection of available locations, named: /locations/*
+//	(a location must refer to a Google Cloud region)
 //
-//   Each location has a collection of services, named: /services/*
+//	Each location has a collection of services, named: /services/*
 //
-//   Dataproc Metastore services are resources with names of the form:
+//	Dataproc Metastore services are resources with names of the form:
 //
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 type DataprocMetastoreClient struct {
@@ -348,7 +348,7 @@ func (c *DataprocMetastoreClient) GetBackup(ctx context.Context, req *metastorep
 	return c.internalClient.GetBackup(ctx, req, opts...)
 }
 
-// CreateBackup creates a new Backup in a given project and location.
+// CreateBackup creates a new backup in a given project and location.
 func (c *DataprocMetastoreClient) CreateBackup(ctx context.Context, req *metastorepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
 	return c.internalClient.CreateBackup(ctx, req, opts...)
 }
@@ -399,23 +399,23 @@ type dataprocMetastoreGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Configures and manages metastore services.
-// Metastore services are fully managed, highly available, auto-scaled,
-// auto-healing, OSS-native deployments of technical metadata management
+// Metastore services are fully managed, highly available, autoscaled,
+// autohealing, OSS-native deployments of technical metadata management
 // software. Each metastore service exposes a network endpoint through which
 // metadata queries are served. Metadata queries can originate from a variety
 // of sources, including Apache Hive, Apache Presto, and Apache Spark.
 //
 // The Dataproc Metastore API defines the following resource model:
 //
-//   The service works with a collection of Google Cloud projects, named:
-//   /projects/*
+//	The service works with a collection of Google Cloud projects, named:
+//	/projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
-//   (a location must refer to a Google Cloud region)
+//	Each project has a collection of available locations, named: /locations/*
+//	(a location must refer to a Google Cloud region)
 //
-//   Each location has a collection of services, named: /services/*
+//	Each location has a collection of services, named: /services/*
 //
-//   Dataproc Metastore services are resources with names of the form:
+//	Dataproc Metastore services are resources with names of the form:
 //
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreClient, error) {

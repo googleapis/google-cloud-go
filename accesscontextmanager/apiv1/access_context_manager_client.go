@@ -106,7 +106,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Access Context Manager API.
+// internalClient is an interface that defines the methods available from Access Context Manager API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
