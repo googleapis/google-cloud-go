@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.17
 
 require (
-	cloud.google.com/go v0.103.1-0.20220811221032-e9a4655716d7
+	cloud.google.com/go v0.104.0
 	cloud.google.com/go/accessapproval v1.3.0
 	cloud.google.com/go/accesscontextmanager v1.2.0
 	cloud.google.com/go/aiplatform v1.17.0
