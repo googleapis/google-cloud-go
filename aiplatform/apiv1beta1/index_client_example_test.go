@@ -158,6 +158,46 @@ func ExampleIndexClient_DeleteIndex() {
 	}
 }
 
+func ExampleIndexClient_UpsertDatapoints() {
+	ctx := context.Background()
+	c, err := aiplatform.NewIndexClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.UpsertDatapointsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpsertDatapointsRequest.
+	}
+	resp, err := c.UpsertDatapoints(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIndexClient_RemoveDatapoints() {
+	ctx := context.Background()
+	c, err := aiplatform.NewIndexClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.RemoveDatapointsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#RemoveDatapointsRequest.
+	}
+	resp, err := c.RemoveDatapoints(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleIndexClient_GetLocation() {
 	ctx := context.Background()
 	c, err := aiplatform.NewIndexClient(ctx)

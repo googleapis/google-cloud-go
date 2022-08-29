@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.17
 
 require (
-	cloud.google.com/go v0.103.0
+	cloud.google.com/go v0.104.0
 	cloud.google.com/go/accessapproval v1.3.0
 	cloud.google.com/go/accesscontextmanager v1.2.0
 	cloud.google.com/go/aiplatform v1.17.0
@@ -83,7 +83,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.4.0
 	cloud.google.com/go/policytroubleshooter v1.2.0
 	cloud.google.com/go/privatecatalog v0.4.0
-	cloud.google.com/go/pubsub v1.24.0
+	cloud.google.com/go/pubsub v1.24.1-0.20220812182604-346d154f8951
 	cloud.google.com/go/pubsublite v1.3.2
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/recommendationengine v0.3.0
@@ -119,8 +119,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.2.0
 	cloud.google.com/go/workflows v1.5.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.93.0
-	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc
+	google.golang.org/api v0.94.0
+	google.golang.org/genproto v0.0.0-20220829144015-23454907ede3
 )
 
 require (
@@ -135,7 +135,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.5.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
-	golang.org/x/oauth2 v0.0.0-20220808172628-8227340efae7 // indirect
+	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
