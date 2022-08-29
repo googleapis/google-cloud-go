@@ -15,18 +15,16 @@
 //go:build go1.18
 // +build go1.18
 
-package main
+package aliasfix
 
 import (
 	"bytes"
-	"flag"
 	"go/ast"
 	"go/format"
 	"go/parser"
 	"go/token"
 	"io"
 	"io/fs"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -39,18 +37,9 @@ var (
 	fset = token.NewFileSet()
 )
 
-func main() {
-	flag.Parse()
-	path := flag.Arg(0)
-	if path == "" {
-		log.Fatalf("expected one argument -- path to the directory needing updates")
-	}
-	if err := processPath(path); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func processPath(path string) error {
+// ProcessPath rewrites imports from go-genproto in terms of google-cloud-go
+// types.
+func ProcessPath(path string) error {
 	dir, err := os.Stat(path)
 	if err != nil {
 		return err
@@ -94,9 +83,9 @@ func processFile(name string, w io.Writer) error {
 		if err != nil {
 			return err
 		}
-		if pkg, ok := m[importPath]; ok && pkg.migrated {
+		if pkg, ok := GenprotoPkgMigration[importPath]; ok && pkg.Status == StatusMigrated {
 			oldNamespace := importPath[strings.LastIndex(importPath, "/")+1:]
-			newNamespace := pkg.importPath[strings.LastIndex(pkg.importPath, "/")+1:]
+			newNamespace := pkg.ImportPath[strings.LastIndex(pkg.ImportPath, "/")+1:]
 			if imp.Name == nil && oldNamespace != newNamespace {
 				// use old namespace for fewer diffs
 				imp.Name = ast.NewIdent(oldNamespace)
@@ -105,7 +94,7 @@ func processFile(name string, w io.Writer) error {
 				imp.Name = nil
 			}
 			imp.EndPos = imp.End()
-			imp.Path.Value = strconv.Quote(pkg.importPath)
+			imp.Path.Value = strconv.Quote(pkg.ImportPath)
 			modified = true
 		}
 	}

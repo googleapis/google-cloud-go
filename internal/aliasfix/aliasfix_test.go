@@ -15,7 +15,7 @@
 //go:build go1.18
 // +build go1.18
 
-package main
+package aliasfix
 
 import (
 	"bytes"
@@ -39,44 +39,44 @@ func TestGolden(t *testing.T) {
 	tests := []struct {
 		name     string
 		fileName string
-		modified bool
+		status   MigrationStatus
 	}{
 		{
 			name:     "replace single import",
 			fileName: "input1",
-			modified: true,
+			status:   StatusMigrated,
 		},
 		{
 			name:     "replace multi-import",
 			fileName: "input2",
-			modified: true,
+			status:   StatusMigrated,
 		},
 		{
 			name:     "no replaces",
 			fileName: "input3",
-			modified: false,
+			status:   StatusInProgress,
 		},
 		{
 			name:     "replace single, renamed matching new namespace",
 			fileName: "input4",
-			modified: true,
+			status:   StatusMigrated,
 		},
 		{
 			name:     "replace multi-import, renamed non-matching",
 			fileName: "input5",
-			modified: true,
+			status:   StatusMigrated,
 		},
 		{
 			name:     "not-migrated",
 			fileName: "input6",
-			modified: false,
+			status:   StatusNotMigrated,
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			m["example.com/old/foo"] = pkg{
-				importPath: "example.com/new/foopb",
-				migrated:   tc.modified,
+			GenprotoPkgMigration["example.com/old/foo"] = Pkg{
+				ImportPath: "example.com/new/foopb",
+				Status:     tc.status,
 			}
 			var w bytes.Buffer
 			if updateGoldens {
@@ -92,7 +92,7 @@ func TestGolden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ReadFile: %v", err)
 			}
-			if !tc.modified {
+			if tc.status != StatusMigrated {
 				if len(w.Bytes()) != 0 {
 					t.Fatalf("source modified:\n%s", w.Bytes())
 				}
