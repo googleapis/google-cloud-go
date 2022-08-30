@@ -1120,9 +1120,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 			defer wg.Wait()
 			defer cancel2()
 			for {
-				opts := getSubSpanAttributes(s.topicName, &Message{}, semconv.MessagingOperationReceive)
-				ctx2, rs := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.topicName), opts...)
-
 				var maxToPull int32 // maximum number of messages to pull
 				if po.synchronous {
 					if po.maxPrefetch < 0 {
@@ -1157,12 +1154,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				if err == io.EOF {
 					return nil
 				}
-				if err != nil {
-					rs.RecordError(err)
-					rs.SetStatus(otelcodes.Error, err.Error())
-					return err
-				}
-				rs.End()
 				// If context is done and messages have been pulled,
 				// nack them.
 				select {
@@ -1176,11 +1167,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 
 				for i, msg := range msgs {
 					opts := getSubSpanAttributes(s.topicName, msg, semconv.MessagingOperationProcess)
-					if msg.Attributes != nil && msg.Attributes["gogclient_traceparent"] != "" {
-						lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(msg))
-						link := trace.LinkFromContext(lctx)
-						opts = append(opts, trace.WithLinks(link))
-					}
 					_, ps := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
 					ps.AddEvent("waiting for subscriber flow control")
 					var fcTimer time.Time
@@ -1222,9 +1208,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// constructor level?
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						defer wg.Done()
-						rs.AddEvent("started handling provided callback")
+						ps.AddEvent("started handling provided callback")
 						f(ctx2, msg.(*Message))
-						rs.AddEvent("finished handling provided callback")
+						ps.AddEvent("finished handling provided callback")
 					}); err != nil {
 						wg.Done()
 						ps.RecordError(err)
