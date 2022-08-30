@@ -74,7 +74,9 @@ runPresubmitTests() {
     go-junit-report -set-exit-code >sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
-  go build ./...
+  if [[ $PWD != *"/internal/"* ]]; then
+    go build ./...
+  fi
   exit_code=$(($exit_code + $?))
 }
 
