@@ -49,6 +49,13 @@ exit_code=0
 # Run tests in the current directory and tee output to log file,
 # to be pushed to GCS as artifact.
 runPresubmitTests() {
+  if [[ $PWD != *"/internal/"* ]] ||
+    [[ $PWD != *"/third_party/"* ]] &&
+    [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
+    # internal tools only expected to work with latest go version
+    return
+  fi
+
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
     go test -race -v -timeout 15m -short ./... 2>&1 |
       tee sponge_log.log
@@ -67,12 +74,7 @@ runPresubmitTests() {
     go-junit-report -set-exit-code >sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
-  # There are some types of build failures that go-junit-report does not
-  # properly handle. We can be safe here and run go build as well to catch such
-  # failures.
-  if [[ $PWD != *"/internal/"* ]]; then
-    go build ./...
-  fi
+  go build ./...
   exit_code=$(($exit_code + $?))
 }
 
