@@ -22,6 +22,7 @@ import (
 	"cloud.google.com/go/bigtable"
 
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
 
 var (
@@ -38,6 +39,32 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 
 func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClientRequest) (*pb.RemoveClientResponse, error) {
 	return nil, fmt.Errorf("not implemented")
+}
+
+func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
+
+	tName := req.TableName
+	t := s.btClient.Open(tName)
+
+	r, err := t.ReadRow(ctx, req.RowKey)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if r != nil {
+		return nil, fmt.Errorf("no error or row returned from ReadRow()")
+	}
+
+	// TODO(telpirion): translate Go client types to BT proto types
+	res := &pb.RowResult{
+		Row: &btpb.Row{
+			Key: []byte(r.Key()),
+		},
+		Status: nil,
+	}
+
+	return res, nil
 }
 
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
