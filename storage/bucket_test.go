@@ -15,12 +15,14 @@
 package storage
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -778,6 +780,92 @@ func TestBucketRetryer(t *testing.T) {
 				}),
 			); diff != "" {
 				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+func TestDetectDefaultGoogleAccessID(t *testing.T) {
+	testCases := []struct {
+		name           string
+		serviceAccount string
+		creds          func(string) string
+		expectSuccess  bool
+	}{
+		{
+			name:           "impersonated creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"delegates": [],
+					"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s:generateAccessToken",
+					"source_credentials": {
+					  "client_id": "id",
+					  "client_secret": "secret",
+					  "refresh_token": "token",
+					  "type": "authorized_user"
+					},
+					"type": "impersonated_service_account"
+				  }`, sa)
+			},
+			expectSuccess: true,
+		},
+		{
+			name:           "gcloud ADC creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprint(`{
+					"client_id": "my-id.apps.googleusercontent.com",
+					"client_secret": "secret",
+					"quota_project_id": "",
+					"refresh_token": "token",
+					"type": "authorized_user"
+				}`)
+			},
+			expectSuccess: false,
+		},
+		{
+			name:           "ADC private key",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "service_account",
+					"project_id": "my-project",
+					"private_key_id": "my1",
+					"private_key": "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+					"client_email": "%s",
+					"client_id": "01",
+					"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+					"token_uri": "https://oauth2.googleapis.com/token",
+					"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+					"client_x509_cert_url": "cert"
+				}`, sa)
+			},
+			expectSuccess: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			bucket := BucketHandle{
+				c: &Client{
+					creds: &google.Credentials{
+						JSON: []byte(tc.creds(tc.serviceAccount)),
+					},
+				},
+				name: "my-bucket",
+			}
+
+			id, err := bucket.detectDefaultGoogleAccessID()
+			if tc.expectSuccess {
+				if err != nil {
+					t.Fatal(err)
+				}
+				if id != tc.serviceAccount {
+					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
+				}
+			} else if err == nil {
+				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
 			}
 		})
 	}
