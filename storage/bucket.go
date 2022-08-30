@@ -160,22 +160,38 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 }
 
 // SignedURL returns a URL for the specified object. Signed URLs allow anyone
-// access to a restricted resource for a limited time without needing a
-// Google account or signing in. For more information about signed URLs, see
-// https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+// access to a restricted resource for a limited time without needing a Google
+// account or signing in.
+// For more information about signed URLs, see "[Overview of access control]."
 //
-// This method only requires the Method and Expires fields in the specified
-// SignedURLOptions opts to be non-nil. If not provided, it attempts to fill the
-// GoogleAccessID and PrivateKey from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
-// If you are authenticating with a custom HTTP client, Service Account based
-// auto-detection will be hindered.
+// This method requires the Method and Expires fields in the specified
+// SignedURLOptions to be non-nil.
 //
-// If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
-// This requires the IAM Service Account Credentials API to be enabled
-// (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
-// and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-// If you do not want these fields set for you, you may pass them in through opts or use
-// SignedURL(bucket, name string, opts *SignedURLOptions) instead.
+// If the GoogleAccessID and PrivateKey fields are not provided, they will be
+// automatically detected when:
+//		- you are authenticated to the Storage Client with a service account's
+// 		downloaded private key, either directly in code or by setting the
+//		GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
+// 		- your application is running on Google Compute Engine (GCE), or
+// 		- you are logged into [gcloud using application default credentials]
+//		with [impersonation enabled].
+// In some cases, you may not need to set PrivateKey but must set GoogleAccessID.
+// GoogleAccessID should be set to a service account that will be used to attempt
+// to sign the URL. This is true of cases where credentials are provided but not
+// attached to a service account, such as when:
+// 		- you are authenticated to the Storage Client with a token source,
+// 		- you are using a custom HTTP client, or
+// 		- you are logged into [gcloud using application default credentials]
+//		without [impersonation enabled].
+// To sign the URL with only the GoogleAccessID set you require:
+// 		- the [IAM Service Account Credentials API enabled], and
+// 		- iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+
+// [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+// [Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
+// [gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
+// [impersonation enabled]: https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account
+// [IAM Service Account Credentials API enabled]: https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return SignedURL(b.name, object, opts)
@@ -213,18 +229,34 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 // GenerateSignedPostPolicyV4 generates a PostPolicyV4 value from bucket, object and opts.
 // The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
 //
-// This method only requires the Expires field in the specified PostPolicyV4Options
-// to be non-nil. If not provided, it attempts to fill the GoogleAccessID and PrivateKey
-// from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
-// If you are authenticating with a custom HTTP client, Service Account based
-// auto-detection will be hindered.
+// This method requires the Expires field in the specified PostPolicyV4Options
+// to be non-nil.
 //
-// If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
-// This requires the IAM Service Account Credentials API to be enabled
-// (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
-// and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-// If you do not want these fields set for you, you may pass them in through opts or use
-// GenerateSignedPostPolicyV4(bucket, name string, opts *PostPolicyV4Options) instead.
+// If the GoogleAccessID and PrivateKey fields are not provided, they will be
+// automatically detected when:
+//		- you are authenticated to the Storage Client with a service account's
+// 		downloaded private key, either directly in code or by setting the
+//		GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
+// 		- your application is running on Google Compute Engine (GCE), or
+// 		- you are logged into [gcloud using application default credentials]
+//		with [impersonation enabled].
+// In some cases, you may not need to set PrivateKey but must set GoogleAccessID.
+// GoogleAccessID should be set to a service account that will be used to attempt
+// to sign the PostPolicyV4. This is true of cases where credentials are provided
+// but not attached to a service account, such as when:
+// 		- you are authenticated to the Storage Client with a token source,
+// 		- you are using a custom HTTP client, or
+// 		- you are logged into [gcloud using application default credentials]
+//		without [impersonation enabled].
+// To generate the PostPolicyV4 with only the GoogleAccessID set you require:
+// 		- the [IAM Service Account Credentials API enabled], and
+// 		- iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+
+// [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+// [Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
+// [gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
+// [impersonation enabled]: https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account
+// [IAM Service Account Credentials API enabled]: https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return GenerateSignedPostPolicyV4(b.name, object, opts)
