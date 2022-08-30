@@ -18,11 +18,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"net"
 
 	"cloud.google.com/go/bigtable"
 
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -31,6 +34,7 @@ var (
 
 type goTestProxyServer struct {
 	btClient *bigtable.Client
+	pb.UnimplementedCloudBigtableV2TestProxyServer
 }
 
 func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClientRequest) (*pb.CreateClientResponse, error) {
@@ -71,7 +75,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowResult, error) {
+func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
 	return nil, fmt.Errorf("not implemented")
 }
 
@@ -91,6 +95,18 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 	return nil, fmt.Errorf("not implemented")
 }
 
+func (s *goTestProxyServer) mustEmbedUnimplementedCloudBigtableV2TestProxyServer() {}
+
 func main() {
-	fmt.Println("Hello world!")
+	flag.Parse()
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+	pb.RegisterCloudBigtableV2TestProxyServer(s, &goTestProxyServer{})
+	log.Printf("server listening at %v", lis.Addr())
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }
