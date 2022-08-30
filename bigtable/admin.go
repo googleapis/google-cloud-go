@@ -222,8 +222,8 @@ type TableConf struct {
 
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
-func (ac *AdminClient) CreateTable(ctx context.Context, table string, deletionProtection bool) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: deletionProtection})
+func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: false})
 }
 
 // CreatePresplitTable creates a new table in the instance.
@@ -231,8 +231,8 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string, deletionPr
 // Given two split keys, "s1" and "s2", three tablets will be created,
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
-func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string, deletionProtection bool) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: deletionProtection})
+func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: false})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.

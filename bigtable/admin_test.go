@@ -25,6 +25,53 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
+type mockTableAdminClock struct {
+	btapb.BigtableTableAdminClient
+
+	createTableReq  *btapb.CreateTableRequest
+	getTableReq     *btapb.GetTableRequest
+	createTableResp *btapb.Table
+	getTableResp    *btapb.Table
+}
+
+func (c *mockTableAdminClock) CreateTable(
+	ctx context.Context, in *btapb.CreateTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.createTableReq = in
+	return c.createTableResp, nil
+}
+
+func (c *mockTableAdminClock) GetTable(
+	ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.getTableReq = in
+	return c.getTableResp, nil
+}
+
+func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminClient {
+	ctx := context.Background()
+	c, err := NewAdminClient(ctx, "my-cool-project", "my-cool-instance")
+	if err != nil {
+		t.Fatalf("NewAdminClient failed: %v", err)
+	}
+	c.tClient = ac
+	return c
+}
+
+func TestTableAdmin_CreateTable(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateTable(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("CreateTable failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if createTableReq.TableId != "My-table" {
+		t.Fatalf("CreateTableRequest does not match: %v", err)
+	}
+}
+
 type mockAdminClock struct {
 	btapb.BigtableInstanceAdminClient
 
