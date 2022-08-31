@@ -128,6 +128,7 @@ type QueryParameter struct {
 	// string.
 	Value interface{}
 
+	// Param Type hint that user can inform explicitly to enforce a more specific type
 	pt *bq.QueryParameterType
 }
 
@@ -174,7 +175,6 @@ func paramTypeWithHint(t reflect.Type, typeHint *bq.QueryParameterType) (*bq.Que
 }
 
 func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
-
 	if t == nil {
 		return nil, errors.New("bigquery: nil parameter")
 	}

@@ -29,13 +29,15 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-var scalarTests = []struct {
+type scalarTest struct {
 	val      interface{}            // input value sent as query param
 	wantNil  bool                   // whether the value returned in a query field should be nil.
 	wantVal  string                 // the string form of the scalar value in QueryParameterValue.
 	wantType *bq.QueryParameterType // paramType's desired output
 	wantStat interface{}            // val when roundtripped and represented as part of job statistics.
-}{
+}
+
+var scalarTests = []scalarTest{
 	{int64(0), false, "0", int64ParamType, int64(0)},
 	{NullInt64{Int64: 3, Valid: true}, false, "3", int64ParamType, int64(3)},
 	{NullInt64{Valid: false}, true, "", int64ParamType, NullInt64{Valid: false}},
@@ -116,12 +118,15 @@ var scalarTests = []struct {
 		dateTimeParamType,
 		NullDateTime{Valid: false}},
 	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
-	{big.NewRat(12345, 10e10), false, "0.00000012345000000000000000000000000000", bigNumericParamType, big.NewRat(12345, 10e10)},
 	{&IntervalValue{Years: 1, Months: 2, Days: 3}, false, "1-2 3 0:0:0", intervalParamType, &IntervalValue{Years: 1, Months: 2, Days: 3}},
 	{NullGeography{GeographyVal: "POINT(-122.335503 47.625536)", Valid: true}, false, "POINT(-122.335503 47.625536)", geographyParamType, "POINT(-122.335503 47.625536)"},
 	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
 	{NullJSON{Valid: true, JSONVal: "{\"alpha\":\"beta\"}"}, false, "{\"alpha\":\"beta\"}", jsonParamType, "{\"alpha\":\"beta\"}"},
 	{NullJSON{Valid: false}, true, "", jsonParamType, NullJSON{Valid: false}},
+}
+
+var explicitScalarTests = []scalarTest{
+	{big.NewRat(12345, 10e10), false, "0.00000012345000000000000000000000000000", bigNumericParamType, big.NewRat(12345, 10e10)},
 }
 
 type (
@@ -185,7 +190,8 @@ func TestParamValueScalar(t *testing.T) {
 		NullFields: []string{"Value"},
 	}
 
-	for _, test := range scalarTests {
+	allScalarTests := append(scalarTests, explicitScalarTests...)
+	for _, test := range allScalarTests {
 		got, err := paramValue(reflect.ValueOf(test.val), test.wantType)
 		if err != nil {
 			t.Errorf("%v: got err %v", test.val, err)
@@ -293,7 +299,7 @@ func TestParamTypeErrors(t *testing.T) {
 func TestConvertParamValue(t *testing.T) {
 	// Scalars.
 	for _, test := range scalarTests {
-		pval, err := paramValue(reflect.ValueOf(test.val), test.wantType)
+		pval, err := paramValue(reflect.ValueOf(test.val), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -309,6 +315,19 @@ func TestConvertParamValue(t *testing.T) {
 			t.Errorf("%#v: wanted stat as %#v, got %#v", test.val, test.wantStat, got)
 		}
 
+	}
+	for _, test := range explicitScalarTests {
+		pval, err := paramValue(reflect.ValueOf(test.val), test.wantType)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := convertParamValue(pval, test.wantType)
+		if err != nil {
+			t.Fatalf("convertParamValue(%+v, %+v): %v", pval, test.wantType, err)
+		}
+		if !testutil.Equal(got, test.wantStat) {
+			t.Errorf("%#v: wanted stat as %#v, got %#v", test.val, test.wantStat, got)
+		}
 	}
 	// Arrays.
 	for _, test := range []struct {
