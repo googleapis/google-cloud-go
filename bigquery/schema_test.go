@@ -1326,3 +1326,36 @@ func TestSchemaToJSONFields(t *testing.T) {
 		}
 	}
 }
+
+func TestUnicodeSchemaConversion(t *testing.T) {
+
+	tableMeta := &TableMetadata{
+		Schema: Schema{
+			{
+				Name: "first",
+				Type: StringFieldType,
+			},
+			{
+				Name: "second",
+				Type: StringFieldType,
+			},
+			{
+				Name: "\u7279\u5225\u30b3\u30e9\u30e0",
+				Type: StringFieldType,
+			},
+			{
+				Name: "特別コラム",
+				Type: IntegerFieldType,
+			},
+		},
+	}
+	bqTable, err := tableMeta.toBQ()
+	if err != nil {
+		t.Fatalf("toBQ(): %v", err)
+	}
+	b, err := bqTable.MarshalJSON()
+	if err != nil {
+		t.Fatalf("MarshalJSON: %v", err)
+	}
+	t.Logf("JSON: %s", string(b))
+}

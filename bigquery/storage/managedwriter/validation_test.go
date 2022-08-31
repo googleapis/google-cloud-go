@@ -22,6 +22,8 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/bigquery/storage/managedwriter/adapt"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
+	"github.com/googleapis/gax-go/v2/apierror"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -427,6 +429,12 @@ func TestValidation_Values(t *testing.T) {
 			continue
 		}
 
+		if meta, err := testTable.Metadata(ctx); err == nil {
+			for n, field := range meta.Schema {
+				t.Logf("(%s) field %d: %s", tc.description, n, field.Name)
+			}
+		}
+
 		// normalize the proto schema based on the provided message.
 		descriptor, err := adapt.NormalizeDescriptor(tc.inputRow.ProtoReflect().Descriptor())
 		if err != nil {
@@ -458,6 +466,17 @@ func TestValidation_Values(t *testing.T) {
 		}
 		if _, err = result.GetResult(ctx); err != nil {
 			t.Errorf("%s append response error: %v", tc.description, err)
+			if apiErr, ok := apierror.FromError(err); ok {
+				t.Errorf("dbg: %+v", apiErr.Details().DebugInfo)
+				// We now have an instance of APIError, which directly exposes more specific
+				// details about multiple failure conditions include transport-level errors.
+				storageErr := &storagepb.StorageError{}
+				if e := apiErr.Details().ExtractProtoMessage(storageErr); e == nil {
+					// storageErr now contains service-specific information about the error.
+					t.Errorf("Received service-specific error code %s", storageErr.GetCode().String())
+					t.Errorf("Msg: %s", storageErr.GetErrorMessage())
+				}
+			}
 			continue
 		}
 		// Validate table.
