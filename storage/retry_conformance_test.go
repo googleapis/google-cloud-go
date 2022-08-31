@@ -250,7 +250,6 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	// Conditionally idempotent operations
-	// (all conditionally idempotent operations currently fail)
 	"storage.buckets.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}

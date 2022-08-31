@@ -611,32 +611,26 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 		t.Fatal("got a zero time value, want a populated value")
 	}
 
-	// Confirm BucketAccessControl returns error.
-	err = retry(ctx, func() error {
-		_, err = bkt.ACL().List(ctx)
-		return nil
-	}, func() error {
-		if err == nil {
-			return fmt.Errorf("ACL.List: expected bucket ACL list to fail")
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
+	// Confirm BucketAccessControl returns error, since we cannot get legacy ACL
+	// for a bucket that has uniform bucket-level access.
+
+	// Metadata updates may be delayed up to 10s. Since we expect an error from
+	// this call, we retry on a nil error until we get the non-retryable error
+	// that we are expecting.
+	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
+	_, err = b.ACL().List(ctxWithTimeout)
+	cancelCtx()
+	if err == nil {
+		t.Errorf("ACL.List: expected bucket ACL list to fail")
 	}
 
-	// Confirm ObjectAccessControl returns error.
-	err = retry(ctx, func() error {
-		_, err = o.ACL().List(ctx)
-		return nil
-	}, func() error {
-		if err == nil {
-			return fmt.Errorf("ACL.List: expected object ACL list to fail")
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
+	// Confirm ObjectAccessControl returns error, for same reason as above.
+	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
+	cancelCtx()
+	if err == nil {
+		t.Errorf("ACL.List: expected object ACL list to fail")
 	}
 
 	// Disable BucketPolicyOnly.
@@ -647,22 +641,28 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	var acls []ACLRule
-	err = retry(ctx, func() error {
-		acls, err = o.ACL().List(ctx)
-		if err != nil {
-			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-		return nil
-	}, func() error {
-		if !containsACL(acls, aclEntity, RoleReader) {
-			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-		}
-		return nil
-	})
+
+	// Metadata updates may be delayed up to 10s. Before that, we can get a 400
+	// indicating that uniform bucket-level access is still enabled.
+	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+	acls, err := retryObj.ACL().List(ctxWithTimeout)
+	cancelCtx()
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("ACL.List: object ACL list failed: %v", err)
 	}
+
+	if !containsACL(acls, aclEntity, RoleReader) {
+		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+	}
+}
+
+func retryOnNilAndTransientErrs(err error) bool {
+	return err == nil || ShouldRetry(err)
+}
+func retryOnTransient400and403(err error) bool {
+	var e *googleapi.Error
+	return ShouldRetry(err) || errors.As(err, &e) && (e.Code == 400 || e.Code == 403)
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
@@ -702,31 +702,21 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 
 	// Confirm BucketAccessControl returns error.
-	err = retry(ctx, func() error {
-		_, err = bkt.ACL().List(ctx)
-		return nil
-	}, func() error {
-		if err == nil {
-			return fmt.Errorf("ACL.List: expected bucket ACL list to fail")
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
+	// We retry on nil to account for propagation delay in metadata update.
+	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
+	_, err = b.ACL().List(ctxWithTimeout)
+	cancelCtx()
+	if err == nil {
+		t.Errorf("ACL.List: expected bucket ACL list to fail")
 	}
 
 	// Confirm ObjectAccessControl returns error.
-	err = retry(ctx, func() error {
-		_, err = o.ACL().List(ctx)
-		return nil
-	}, func() error {
-		if err == nil {
-			return fmt.Errorf("ACL.List: expected object ACL list to fail")
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
+	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
+	cancelCtx()
+	if err == nil {
+		t.Errorf("ACL.List: expected object ACL list to fail")
 	}
 
 	// Disable UniformBucketLevelAccess.
@@ -737,21 +727,17 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	var acls []ACLRule
-	err = retry(ctx, func() error {
-		acls, err = o.ACL().List(ctx)
-		if err != nil {
-			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-		return nil
-	}, func() error {
-		if !containsACL(acls, aclEntity, RoleReader) {
-			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-		}
-		return nil
-	})
+	// We retry on 400 to account for propagation delay in metadata update.
+	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+	acls, err := retryObj.ACL().List(ctxWithTimeout)
+	cancelCtx()
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("ACL.List: object ACL list failed: %v", err)
+	}
+
+	if !containsACL(acls, aclEntity, RoleReader) {
+		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
 	}
 }
 
@@ -808,14 +794,19 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 
 	// Now, making object public or making bucket public should succeed. Run with
 	// retry because ACL settings may take time to propagate.
-	if err := retry(ctx,
-		func() error {
-			a = o.ACL()
-			return a.Set(ctx, AllUsers, RoleReader)
-		},
-		nil); err != nil {
+	idempotentOrNilRetry := func(err error) bool {
+		return err == nil || ShouldRetry(err)
+	}
+
+	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+
+	a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
+	a.Set(ctxWithTimeout, AllUsers, RoleReader)
+	cancelCtx()
+	if err != nil {
 		t.Errorf("ACL.Set: making object public failed: %v", err)
 	}
+
 	policy, err = bkt.IAM().V3().Policy(ctx)
 	if err != nil {
 		t.Fatalf("fetching bucket IAM policy: %v", err)
@@ -880,17 +871,12 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 	obj := bkt.Object(objName)
 	contents := []byte("Hello, world this is a range request")
 
-	if err := retry(ctx, func() error {
-		w := obj.NewWriter(ctx)
-		if _, err := w.Write(contents); err != nil {
-			return fmt.Errorf("Failed to write contents: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			return fmt.Errorf("Failed to close writer: %v", err)
-		}
-		return nil
-	}, nil); err != nil {
-		t.Fatal(err)
+	w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+	if _, err := w.Write(contents); err != nil {
+		t.Errorf("Failed to write contents: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Errorf("Failed to close writer: %v", err)
 	}
 
 	last5s := []struct {
@@ -1473,7 +1459,7 @@ func TestIntegration_Objects(t *testing.T) {
 	testTime = time.Now().UTC()
 	newBucketName := uidSpace.New()
 	h := testHelper{t}
-	bkt := client.Bucket(newBucketName)
+	bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
 
 	h.mustCreate(bkt, testutil.ProjID(), nil)
 	defer func() {
@@ -2369,18 +2355,18 @@ func TestIntegration_ACL(t *testing.T) {
 	aclObjects := []string{"acl1", "acl2"}
 	name := aclObjects[0]
 	o := bkt.Object(name)
+
+	for _, obj := range aclObjects {
+		c := randomContents()
+		if err := writeObject(ctx, bkt.Object(obj).If(Conditions{DoesNotExist: true}), "", c); err != nil {
+			t.Errorf("Write for %v failed with %v", obj, err)
+		}
+	}
+
+	// Retry to account for propagation delay in metadata update.
 	err = retry(ctx, func() error {
-		for _, obj := range aclObjects {
-			c := randomContents()
-			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-				return fmt.Errorf("Write for %v failed with %v", obj, err)
-			}
-		}
 		acl, err = o.ACL().List(ctx)
-		if err != nil {
-			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
-		}
-		return nil
+		return err
 	}, func() error {
 		if !hasRule(acl, rule) {
 			return fmt.Errorf("hasRule: object ACL missing %+v", rule)
@@ -2388,8 +2374,9 @@ func TestIntegration_ACL(t *testing.T) {
 		return nil
 	})
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
+
 	if err := o.ACL().Delete(ctx, entity); err != nil {
 		t.Errorf("object ACL: could not delete entity %s", entity)
 	}
@@ -2405,13 +2392,15 @@ func TestIntegration_ACL(t *testing.T) {
 	if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}
+
 	var bACL []ACLRule
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	// Retry to account for propagation delay in metadata update.
 	err = retry(ctx, func() error {
-		bACL, err = bkt.ACL().List(ctx)
-		if err != nil {
-			return fmt.Errorf("ACL.List: error while getting the ACL of the bucket: %v", err)
-		}
-		return nil
+		bACL, err = bkt.ACL().List(ctxWithTimeout)
+		return err
 	}, func() error {
 		if !hasRule(bACL, rule2) {
 			return fmt.Errorf("hasRule: bucket ACL missing %+v", rule2)
@@ -2421,10 +2410,10 @@ func TestIntegration_ACL(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if err := bkt.ACL().Delete(ctx, entity2); err != nil {
 		t.Errorf("Error while deleting bucket ACL rule: %v", err)
 	}
-
 }
 
 func TestIntegration_ValidObjectNames(t *testing.T) {
@@ -3713,24 +3702,27 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 	bkt := client.Bucket(uidSpace.New())
 	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 25 * time.Hour}})
 
-	oh := bkt.Object("some-object")
-	if err := writeObject(ctx, oh, "text/plain", []byte("hello world")); err != nil {
+	o := bkt.Object("some-object")
+	if err := writeObject(ctx, o, "text/plain", []byte("hello world")); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := oh.Delete(ctx); err == nil {
+	if err := o.Delete(ctx); err == nil {
 		t.Fatal("expected to err deleting an object in a bucket with retention period, but got nil")
 	}
 
 	// Remove the retention period
 	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}}, h.mustBucketAttrs(bkt).MetaGeneration)
-	// Deleting with retry, as bucket metadata changes
+
+	// Delete with retry, as bucket metadata changes
 	// can take some time to propagate.
-	err := retry(ctx, func() error {
-		return oh.Delete(ctx)
-	}, nil)
-	if err != nil {
-		h.t.Fatalf("%s: object delete: %v", loc(), err)
+	retry := func(err error) bool { return err != nil }
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	o = o.Retryer(WithErrorFunc(retry), WithPolicy(RetryAlways))
+	if err := o.Delete(ctx); err != nil {
+		t.Fatalf("object delete: %v", err)
 	}
 	h.mustDeleteBucket(bkt)
 }
@@ -4087,26 +4079,19 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 	obj := bkt.Object("decompressive-transcoding")
 	original := bytes.Repeat([]byte("a"), 4<<10)
 
-	// Wrap the file upload in a retry.
-	// TODO: Investigate removing retry after resolving
-	// https://github.com/googleapis/google-api-go-client/issues/392.
-	err := retry(ctx, func() error {
-		// Firstly upload the gzip compressed file.
-		w := obj.NewWriter(ctx)
-		// Compress and upload the content.
-		gzw := gzip.NewWriter(w)
-		if _, err := gzw.Write(original); err != nil {
-			return fmt.Errorf("Failed to compress content: %v", err)
-		}
-		if err := gzw.Close(); err != nil {
-			return fmt.Errorf("Failed to compress content: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			return fmt.Errorf("Failed to finish uploading the file: %v", err)
-		}
-		return nil
-	},
-		nil)
+	// Firstly upload the gzip compressed file.
+	w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+	// Compress and upload the content.
+	gzw := gzip.NewWriter(w)
+	if _, err := gzw.Write(original); err != nil {
+		t.Fatalf("Failed to compress content: %v", err)
+	}
+	if err := gzw.Close(); err != nil {
+		t.Errorf("Failed to compress content: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Errorf("Failed to finish uploading the file: %v", err)
+	}
 
 	defer h.mustDeleteObject(obj)
 
@@ -4160,6 +4145,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	client.SetRetry(WithPolicy(RetryAlways))
 
 	projectID := testutil.ProjID()
 
