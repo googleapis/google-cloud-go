@@ -645,7 +645,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	// Metadata updates may be delayed up to 10s. Before that, we can get a 400
 	// indicating that uniform bucket-level access is still enabled.
 	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	retryObj := o.Retryer(WithErrorFunc(retryOn400AndTransientErrs))
+	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
 	acls, err := retryObj.ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err != nil {
@@ -660,9 +660,9 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 func retryOnNilAndTransientErrs(err error) bool {
 	return err == nil || ShouldRetry(err)
 }
-func retryOn400AndTransientErrs(err error) bool {
+func retryOnTransient400and403(err error) bool {
 	var e *googleapi.Error
-	return ShouldRetry(err) || errors.As(err, &e) && e.Code == 400
+	return ShouldRetry(err) || errors.As(err, &e) && (e.Code == 400 || e.Code == 403)
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
@@ -729,7 +729,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	// Check that the object ACLs are the same.
 	// We retry on 400 to account for propagation delay in metadata update.
 	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	retryObj := o.Retryer(WithErrorFunc(retryOn400AndTransientErrs))
+	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
 	acls, err := retryObj.ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err != nil {
