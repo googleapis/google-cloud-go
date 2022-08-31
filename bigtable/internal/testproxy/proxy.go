@@ -31,10 +31,12 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	oauth "google.golang.org/grpc/credentials/oauth"
 )
 
 var (
-	port = flag.Int("port", 9999, "The server port")
+	port     = flag.Int("port", 9999, "The server port")
+	logLabel = "cbt-go-proxy"
 )
 
 // rowToRowProto converts a Bigtable Go client Row struct into a
@@ -53,6 +55,7 @@ func rowToRowProto(btRow bigtable.Row) (*btpb.Row, error) {
 		}
 
 		for _, col := range ris {
+			// Format of column name is `family:columnQualifier`
 			colQualifier := strings.Split(col.Column, ":")[1]
 			pbCol := &btpb.Column{
 				Qualifier: []byte(colQualifier),
@@ -73,6 +76,36 @@ func rowToRowProto(btRow bigtable.Row) (*btpb.Row, error) {
 	return pbRow, nil
 }
 
+// credentialsBundle implements credentials.Bundle interface
+type credentialsBundle struct {
+	channel credentials.TransportCredentials
+	call    credentials.PerRPCCredentials
+}
+
+// TransportCredentials gets the channel credentials as TransportCredentials
+func (c credentialsBundle) TransportCredentials() credentials.TransportCredentials {
+	return c.channel
+}
+
+// PerRPCCredentials gets the call credentials ars PerRPCCredentials
+func (c credentialsBundle) PerRPCCredentials() credentials.PerRPCCredentials {
+	return c.call
+}
+
+// NewWithMode is not used. Always returns nil
+func (c credentialsBundle) NewWithMode(mode string) (credentials.Bundle, error) {
+	return nil, nil
+}
+
+// getCredentialsOptions extracts the authentication details--SSL name override,
+// call credentials, channel credentials--from a CreateClientRequest object.
+//
+// There are three base cases to address:
+//  1. CreateClientRequest specifies no unique credentials; so ADC will be used.
+//     This method returns an empty slice.
+//  2. CreateClientRequest specifies both call and channel credentials. In
+//     this case, we need to create a combined credential.
+//  3. CreateClientRequest specifies only a channel credential.
 func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, error) {
 	opts := make([]option.ClientOption, 0)
 
@@ -87,23 +120,39 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, 
 		opts = append(opts, option.WithGRPCDialOption(d))
 	}
 
+	// If you have call credentials, then you must have channel credentials too
+	if req.CallCredential != nil && req.ChannelCredential == nil {
+		return nil, fmt.Errorf("%s: must supply channel credentials with call credentials", logLabel)
+	}
+
 	if req.CallCredential != nil {
 		cc := req.CallCredential
 		sa := cc.GetJsonServiceAccount()
-		creds, err := credentials.NewClientTLSFromFile(sa, req.OverrideSslTargetName)
+		clc, err := oauth.NewJWTAccessFromKey([]byte(sa))
 		if err != nil {
 			return nil, err
 		}
 
-		d := grpc.WithTransportCredentials(creds)
+		chc, err := getChannelCredentials(req.ChannelCredential, req.OverrideSslTargetName)
+		if err != nil {
+			return nil, err
+		}
+
+		b := credentialsBundle{
+			channel: chc,
+			call:    clc,
+		}
+
+		d := grpc.WithCredentialsBundle(b)
 		opts = append(opts, option.WithGRPCDialOption(d))
 	}
 
 	if req.ChannelCredential != nil {
 		chc := req.ChannelCredential
-		ssl := chc.GetSsl()
-		pem := ssl.GetPemRootCerts()
-		creds := credentials.NewClientTLSFromCert(pem, req.OverrideSslTargetName)
+		creds, err := getChannelCredentials(chc, req.OverrideSslTargetName)
+		if err != nil {
+			return nil, err
+		}
 		d := grpc.WithTransportCredentials(creds)
 		opts = append(opts, option.WithGRPCDialOption(d))
 	}
@@ -111,8 +160,18 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, 
 	return opts, nil
 }
 
+func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName string) (credentials.TransportCredentials, error) {
+	pem := credsProto.GetSsl().GetPemRootCerts()
+	creds, err := credentials.NewClientTLSFromFile(pem, sslTargetName)
+	if err != nil {
+		return nil, err
+	}
+	return creds, nil
+}
+
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
+
 	btClient            *bigtable.Client
 	clientID            string
 	appProfileID        string
@@ -124,7 +183,7 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		req.DataTarget == "" ||
 		req.ProjectId == "" ||
 		req.InstanceId == "" {
-		return nil, fmt.Errorf("cbt-go-proxy: must provide ClientId, DataTarget, ProjectId, and InstanceId")
+		return nil, fmt.Errorf("%s must provide ClientId, DataTarget, ProjectId, and InstanceId", logLabel)
 	}
 
 	opts := make([]option.ClientOption, 0)
@@ -167,7 +226,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	}
 
 	if r == nil {
-		return nil, fmt.Errorf("no error or row returned from ReadRow()")
+		return nil, fmt.Errorf("%s: no error or row returned from ReadRow()", logLabel)
 	}
 
 	pbRow, err := rowToRowProto(r)
