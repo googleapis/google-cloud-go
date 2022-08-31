@@ -14,6 +14,12 @@
 
 package generator
 
+import (
+	"strings"
+
+	"cloud.google.com/go/internal/aliasfix"
+)
+
 // MicrogenConfig represents a single microgen target.
 type MicrogenConfig struct {
 	// InputDirectoryPath is the path to the input (.proto, etc) files, relative
@@ -51,11 +57,50 @@ type MicrogenConfig struct {
 	// values are 'grpc' and 'rest'
 	Transports []string
 
-	// StubsDir indicates that the protobuf/gRPC stubs should be generated
+	// stubsDir indicates that the protobuf/gRPC stubs should be generated
 	// in the GAPIC module by replacing the go_package option with the value of
 	// ImportPath plus the specified suffix separated by a "/", and using the
 	// same Pkg value.
-	StubsDir string
+	stubsDir string
+
+	// NumericEnumsEnabled indicates, for REST GAPICs, if requests should be
+	// generated to send the $alt=json;enum-encoding=int system parameter with
+	// every API call. This should only be enabled for services that are
+	// up-to-date enough to support such a system parameter.
+	NumericEnumsEnabled bool
+}
+
+// genprotoImportPath returns the genproto import path for a given config.
+func (m *MicrogenConfig) genprotoImportPath() string {
+	return "google.golang.org/genproto/googleapis/" + strings.TrimPrefix(m.InputDirectoryPath, "google/")
+}
+
+// getStubsDir gets the stubs dir specified in config or returns the
+// directory path if the config is either in progress or completed a migration.
+func (m *MicrogenConfig) getStubsDir() string {
+	if m.stubsDir != "" {
+		return m.stubsDir
+	}
+	if pkg, ok := aliasfix.GenprotoPkgMigration[m.genprotoImportPath()]; ok && pkg.Status != aliasfix.StatusNotMigrated {
+		ss := strings.Split(pkg.ImportPath, "/")
+		return ss[len(ss)-1]
+	}
+	return ""
+}
+
+// isMigrated is a convenience wrapper for calling the function of the same
+// name.
+func (m *MicrogenConfig) isMigrated() bool {
+	return isMigrated(m.genprotoImportPath())
+}
+
+// isMigrated returns true if the specified genproto import path has been
+// migrated.
+func isMigrated(importPath string) bool {
+	if pkg, ok := aliasfix.GenprotoPkgMigration[importPath]; ok && pkg.Status == aliasfix.StatusMigrated {
+		return true
+	}
+	return false
 }
 
 var MicrogenGapicConfigs = []*MicrogenConfig{
@@ -1529,7 +1574,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		InputDirectoryPath:    "google/cloud/batch/v1",
 		Pkg:                   "batch",
 		ImportPath:            "cloud.google.com/go/batch/apiv1",
-		GRPCServiceConfigPath: "batch_grpc_service_config.json",
+		GRPCServiceConfigPath: "batch_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "batch_v1.yaml",
 		// GA after 2022/08/10
 		ReleaseLevel: "beta",
@@ -1641,6 +1686,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/09/02
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/api/apikeys/v2",
+		Pkg:                   "apikeys",
+		ImportPath:            "cloud.google.com/go/apikeys/apiv2",
+		GRPCServiceConfigPath: "apikeys_grpc_service_config.json",
+		ApiServiceConfigPath:  "apikeys_v2.yaml",
+		// GA after 2022/09/17
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
@@ -1677,6 +1731,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GAPIC-level retries and allow the veneer layer to handle retries.
 		ApiServiceConfigPath: "storage_v2.yaml",
 		ReleaseLevel:         "alpha",
-		StubsDir:             "stubs",
+		stubsDir:             "stubs",
 	},
 }

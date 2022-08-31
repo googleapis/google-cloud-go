@@ -306,7 +306,7 @@ func TestShouldRetry(t *testing.T) {
 		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
-			got := shouldRetry(test.inputErr)
+			got := ShouldRetry(test.inputErr)
 
 			if got != test.shouldRetry {
 				s.Errorf("got %v, want %v", got, test.shouldRetry)

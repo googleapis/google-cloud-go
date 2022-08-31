@@ -12,6 +12,51 @@
   },
   "snippets": [
     {
+      "regionTag": "datastream_v1_generated_Datastream_CancelOperation_sync",
+      "title": "datastream CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.datastream.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.datastream.v1.Datastream.CancelOperation",
+          "service": {
+            "shortName": "Datastream",
+            "fullName": "google.cloud.datastream.v1.Datastream"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datastream_v1_generated_Datastream_CreateConnectionProfile_sync",
       "title": "datastream CreateConnectionProfile Sample",
       "description": "CreateConnectionProfile use this method to create a connection profile in a project and location.",
@@ -237,6 +282,51 @@
         {
           "start": 18,
           "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastream_v1_generated_Datastream_DeleteOperation_sync",
+      "title": "datastream DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.datastream.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.datastream.v1.Datastream.DeleteOperation",
+          "service": {
+            "shortName": "Datastream",
+            "fullName": "google.cloud.datastream.v1.Datastream"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
           "type": "FULL"
         }
       ]
@@ -564,6 +654,52 @@
       ]
     },
     {
+      "regionTag": "datastream_v1_generated_Datastream_GetOperation_sync",
+      "title": "datastream GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.datastream.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.datastream.v1.Datastream.GetOperation",
+          "service": {
+            "shortName": "Datastream",
+            "fullName": "google.cloud.datastream.v1.Datastream"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datastream_v1_generated_Datastream_GetPrivateConnection_sync",
       "title": "datastream GetPrivateConnection Sample",
       "description": "GetPrivateConnection use this method to get details about a private connectivity configuration.",
@@ -824,6 +960,52 @@
         "method": {
           "shortName": "ListLocations",
           "fullName": "google.cloud.datastream.v1.Datastream.ListLocations",
+          "service": {
+            "shortName": "Datastream",
+            "fullName": "google.cloud.datastream.v1.Datastream"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastream_v1_generated_Datastream_ListOperations_sync",
+      "title": "datastream ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.datastream.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.datastream.v1.Datastream.ListOperations",
           "service": {
             "shortName": "Datastream",
             "fullName": "google.cloud.datastream.v1.Datastream"

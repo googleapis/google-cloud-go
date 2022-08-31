@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.2...contactcenterinsights/v1.2.3) (2022-08-23)
+
+
+### Documentation
+
+* **contactcenterinsights:** Updating comments chore: added LRO to API list ([7b01462](https://github.com/googleapis/google-cloud-go/commit/7b014626f07dd2974d6f72f926c2df1d25fa1f4a))
+
 ## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.1...contactcenterinsights/v1.2.2) (2022-08-02)
 
 

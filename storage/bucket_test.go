@@ -15,9 +15,6 @@
 package storage
 
 import (
-	"context"
-	"net/http"
-	"reflect"
 	"testing"
 	"time"
 
@@ -120,6 +117,13 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				Condition: LifecycleCondition{
 					AgeInDays: 20,
 				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
 			}},
 		},
 	}
@@ -164,7 +168,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: []string{"STANDARD"},
@@ -200,7 +204,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age:              10,
+						Age:              googleapi.Int64(10),
 						MatchesPrefix:    []string{"testPrefix"},
 						MatchesSuffix:    []string{"testSuffix"},
 						NumNewerVersions: 3,
@@ -213,14 +217,25 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
 					},
-				}, {
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: AbortIncompleteMPUAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age: 20,
+						Age: googleapi.Int64(20),
 					},
-				}},
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:             googleapi.Int64(0),
+						ForceSendFields: []string{"Age"},
+					},
+				},
+			},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -406,11 +421,11 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			Rule: []*raw.BucketLifecycleRule{
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(30)},
 				},
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(13)},
 				},
 			},
 		},
@@ -561,115 +576,6 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 }
 
-func TestAgeConditionBackwardCompat(t *testing.T) {
-	var ti int64
-	var want int64 = 100
-	setAgeCondition(want, &ti)
-	if getAgeCondition(ti) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
-	}
-
-	var tp *int64
-	want = 10
-	setAgeCondition(want, &tp)
-	if getAgeCondition(tp) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
-	}
-
-}
-
-func TestCallBuilders(t *testing.T) {
-	rc, err := raw.NewService(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	c := &Client{raw: rc}
-	const metagen = 17
-
-	b := c.Bucket("name")
-	bm := b.If(BucketConditions{MetagenerationMatch: metagen}).UserProject("p")
-
-	equal := func(x, y interface{}) bool {
-		return testutil.Equal(x, y,
-			cmp.AllowUnexported(
-				raw.BucketsGetCall{},
-				raw.BucketsDeleteCall{},
-				raw.BucketsPatchCall{},
-			),
-			cmp.FilterPath(func(p cmp.Path) bool {
-				return p[len(p)-1].Type() == reflect.TypeOf(&raw.Service{})
-			}, cmp.Ignore()),
-		)
-	}
-
-	for i, test := range []struct {
-		callFunc func(*BucketHandle) (interface{}, error)
-		want     interface {
-			Header() http.Header
-		}
-		metagenFunc func(interface{})
-	}{
-		{
-			func(b *BucketHandle) (interface{}, error) { return b.newGetCall() },
-			rc.Buckets.Get("name").Projection("full"),
-			func(req interface{}) { req.(*raw.BucketsGetCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
-			func(b *BucketHandle) (interface{}, error) { return b.newDeleteCall() },
-			rc.Buckets.Delete("name"),
-			func(req interface{}) { req.(*raw.BucketsDeleteCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
-			func(b *BucketHandle) (interface{}, error) {
-				return b.newPatchCall(&BucketAttrsToUpdate{
-					VersioningEnabled: false,
-					RequesterPays:     false,
-				})
-			},
-			rc.Buckets.Patch("name", &raw.Bucket{
-				Versioning: &raw.BucketVersioning{
-					Enabled:         false,
-					ForceSendFields: []string{"Enabled"},
-				},
-				Billing: &raw.BucketBilling{
-					RequesterPays:   false,
-					ForceSendFields: []string{"RequesterPays"},
-				},
-			}).Projection("full"),
-			func(req interface{}) { req.(*raw.BucketsPatchCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-	} {
-		got, err := test.callFunc(b)
-		if err != nil {
-			t.Fatal(err)
-		}
-		setClientHeader(test.want.Header())
-		if !equal(got, test.want) {
-			t.Errorf("#%d: got %#v, want %#v", i, got, test.want)
-		}
-		got, err = test.callFunc(bm)
-		if err != nil {
-			t.Fatal(err)
-		}
-		test.metagenFunc(test.want)
-		if !equal(got, test.want) {
-			t.Errorf("#%d:\ngot  %#v\nwant %#v", i, got, test.want)
-		}
-	}
-
-	// Error.
-	bm = b.If(BucketConditions{MetagenerationMatch: 1, MetagenerationNotMatch: 2})
-	if _, err := bm.newGetCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
-	if _, err := bm.newDeleteCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
-	if _, err := bm.newPatchCall(&BucketAttrsToUpdate{}); err == nil {
-		t.Errorf("got nil, want error")
-	}
-}
-
 func TestNewBucket(t *testing.T) {
 	labels := map[string]string{"a": "b"}
 	matchClasses := []string{"STANDARD"}
@@ -692,7 +598,7 @@ func TestNewBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: matchClasses,
