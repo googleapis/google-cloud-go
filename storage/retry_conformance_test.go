@@ -203,7 +203,7 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 			wr, err := io.Copy(ioutil.Discard, r)
-			if got, want := wr, size9MB; got != int64(want) {
+			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return err
@@ -211,7 +211,13 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.objects.download": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			// Before running the test method, populate a large test object of 9 MiB.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			}
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
 			if err != nil {
 				return err
 			}
@@ -509,7 +515,7 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 			// Assumes bucket has been populated first.
 			obj := c.Bucket(et.resources.bucket.Name).Object(objectIDs.New())
 			w := obj.NewWriter(ctx)
-			if _, err := w.Write(randomBytes9MB); err != nil {
+			if _, err := w.Write(randomBytesToWrite); err != nil {
 				et.Fatalf("writing object: %v", err)
 			}
 			if err := w.Close(); err != nil {
@@ -546,6 +552,25 @@ func generateRandomBytes(n int) []byte {
 	b := make([]byte, n)
 	_, _ = rand.Read(b)
 	return b
+}
+
+// Upload test object with given bytes.
+func uploadTestObject(bucketName, objName string, n []byte) error {
+	// Create non-wrapped client to create test object.
+	ctx := context.Background()
+	c, err := NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("storage.NewClient: %v", err)
+	}
+	obj := c.Bucket(bucketName).Object(objName)
+	w := obj.NewWriter(ctx)
+	if _, err := w.Write(n); err != nil {
+		return fmt.Errorf("writing test object: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("closing object: %v", err)
+	}
+	return nil
 }
 
 // Creates a retry test resource in the emulator
