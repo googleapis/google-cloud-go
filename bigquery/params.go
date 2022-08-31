@@ -127,14 +127,35 @@ type QueryParameter struct {
 	// above.  Null strings will report in query statistics as a valid empty
 	// string.
 	Value interface{}
+
+	pt *bq.QueryParameterType
+}
+
+// NewScalarQueryParameter allows to create a scalar QueryParameter with a explicit parameter type.
+func NewScalarQueryParameter(name string, paramType FieldType, value interface{}) QueryParameter {
+	return QueryParameter{
+		Name:  name,
+		Value: value,
+		pt:    &bq.QueryParameterType{Type: string(paramType)},
+	}
+}
+
+// NewArrayQueryParameter allows to create an array of QueryParameter with a explicit parameter type.
+func NewArrayQueryParameter(name string, paramType FieldType, value interface{}) QueryParameter {
+	pt := &bq.QueryParameterType{Type: string(paramType)}
+	return QueryParameter{
+		Name:  name,
+		Value: value,
+		pt:    &bq.QueryParameterType{Type: "ARRAY", ArrayType: pt},
+	}
 }
 
 func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
-	pv, err := paramValue(reflect.ValueOf(p.Value))
+	pv, err := paramValue(reflect.ValueOf(p.Value), p.pt)
 	if err != nil {
 		return nil, err
 	}
-	pt, err := paramType(reflect.TypeOf(p.Value))
+	pt, err := paramTypeWithHint(reflect.TypeOf(p.Value), p.pt)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +166,15 @@ func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	}, nil
 }
 
+func paramTypeWithHint(t reflect.Type, typeHint *bq.QueryParameterType) (*bq.QueryParameterType, error) {
+	if typeHint != nil {
+		return typeHint, nil
+	}
+	return paramType(t)
+}
+
 func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
+
 	if t == nil {
 		return nil, errors.New("bigquery: nil parameter")
 	}
@@ -229,7 +258,7 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 	return nil, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter type", t)
 }
 
-func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
+func paramValue(v reflect.Value, typeHint *bq.QueryParameterType) (*bq.QueryParameterValue, error) {
 	res := &bq.QueryParameterValue{}
 	if !v.IsValid() {
 		return res, errors.New("bigquery: nil parameter")
@@ -306,10 +335,11 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		return res, nil
 
 	case typeOfRat:
-		// big.Rat types don't communicate scale or precision, so we cannot
-		// disambiguate between NUMERIC and BIGNUMERIC.  For now, we'll continue
-		// to honor previous behavior and send as Numeric type.
-		res.Value = NumericString(v.Interface().(*big.Rat))
+		if typeHint != nil && typeHint.Type == string(BigNumericFieldType) {
+			res.Value = BigNumericString(v.Interface().(*big.Rat))
+		} else {
+			res.Value = NumericString(v.Interface().(*big.Rat))
+		}
 		return res, nil
 	case typeOfIntervalValue:
 		res.Value = IntervalString(v.Interface().(*IntervalValue))
@@ -326,7 +356,7 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 	case reflect.Array:
 		var vals []*bq.QueryParameterValue
 		for i := 0; i < v.Len(); i++ {
-			val, err := paramValue(v.Index(i))
+			val, err := paramValue(v.Index(i), nil)
 			if err != nil {
 				return nil, err
 			}
@@ -354,7 +384,7 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		res.StructValues = map[string]bq.QueryParameterValue{}
 		for _, f := range fields {
 			fv := v.FieldByIndex(f.Index)
-			fp, err := paramValue(fv)
+			fp, err := paramValue(fv, nil)
 			if err != nil {
 				return nil, err
 			}

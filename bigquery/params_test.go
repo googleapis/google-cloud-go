@@ -116,6 +116,7 @@ var scalarTests = []struct {
 		dateTimeParamType,
 		NullDateTime{Valid: false}},
 	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
+	{big.NewRat(12345, 10e10), false, "0.00000012345000000000000000000000000000", bigNumericParamType, big.NewRat(12345, 10e10)},
 	{&IntervalValue{Years: 1, Months: 2, Days: 3}, false, "1-2 3 0:0:0", intervalParamType, &IntervalValue{Years: 1, Months: 2, Days: 3}},
 	{NullGeography{GeographyVal: "POINT(-122.335503 47.625536)", Valid: true}, false, "POINT(-122.335503 47.625536)", geographyParamType, "POINT(-122.335503 47.625536)"},
 	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
@@ -185,7 +186,7 @@ func TestParamValueScalar(t *testing.T) {
 	}
 
 	for _, test := range scalarTests {
-		got, err := paramValue(reflect.ValueOf(test.val))
+		got, err := paramValue(reflect.ValueOf(test.val), test.wantType)
 		if err != nil {
 			t.Errorf("%v: got err %v", test.val, err)
 		}
@@ -217,7 +218,7 @@ func TestParamValueArray(t *testing.T) {
 		{[]int{1, 2}, qpv},
 		{[2]int{1, 2}, qpv},
 	} {
-		got, err := paramValue(reflect.ValueOf(test.val))
+		got, err := paramValue(reflect.ValueOf(test.val), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -228,7 +229,7 @@ func TestParamValueArray(t *testing.T) {
 }
 
 func TestParamValueStruct(t *testing.T) {
-	got, err := paramValue(reflect.ValueOf(s1))
+	got, err := paramValue(reflect.ValueOf(s1), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -241,7 +242,7 @@ func TestParamValueErrors(t *testing.T) {
 	// paramValue lets a few invalid types through, but paramType catches them.
 	// Since we never call one without the other that's fine.
 	for _, val := range []interface{}{nil, new([]int)} {
-		_, err := paramValue(reflect.ValueOf(val))
+		_, err := paramValue(reflect.ValueOf(val), nil)
 		if err == nil {
 			t.Errorf("%v (%T): got nil, want error", val, val)
 		}
@@ -292,7 +293,7 @@ func TestParamTypeErrors(t *testing.T) {
 func TestConvertParamValue(t *testing.T) {
 	// Scalars.
 	for _, test := range scalarTests {
-		pval, err := paramValue(reflect.ValueOf(test.val))
+		pval, err := paramValue(reflect.ValueOf(test.val), test.wantType)
 		if err != nil {
 			t.Fatal(err)
 		}

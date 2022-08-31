@@ -1807,6 +1807,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
+	bigRat := big.NewRat(12345, 10e10)
 
 	type ss struct {
 		String string
@@ -1827,73 +1828,73 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}{
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", 1}},
+			[]QueryParameter{{Name: "val", Value: 1}},
 			[]Value{int64(1)},
 			int64(1),
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", 1.3}},
+			[]QueryParameter{{Name: "val", Value: 1.3}},
 			[]Value{1.3},
 			1.3,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", rat}},
+			[]QueryParameter{{Name: "val", Value: rat}},
 			[]Value{rat},
 			rat,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", true}},
+			[]QueryParameter{{Name: "val", Value: true}},
 			[]Value{true},
 			true,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", "ABC"}},
+			[]QueryParameter{{Name: "val", Value: "ABC"}},
 			[]Value{"ABC"},
 			"ABC",
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", []byte("foo")}},
+			[]QueryParameter{{Name: "val", Value: []byte("foo")}},
 			[]Value{[]byte("foo")},
 			[]byte("foo"),
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", ts}},
+			[]QueryParameter{{Name: "val", Value: ts}},
 			[]Value{ts},
 			ts,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", []time.Time{ts, ts}}},
+			[]QueryParameter{{Name: "val", Value: []time.Time{ts, ts}}},
 			[]Value{[]Value{ts, ts}},
 			[]interface{}{ts, ts},
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", dtm}},
+			[]QueryParameter{{Name: "val", Value: dtm}},
 			[]Value{civil.DateTime{Date: d, Time: rtm}},
 			civil.DateTime{Date: d, Time: rtm},
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", d}},
+			[]QueryParameter{{Name: "val", Value: d}},
 			[]Value{d},
 			d,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", tm}},
+			[]QueryParameter{{Name: "val", Value: tm}},
 			[]Value{rtm},
 			rtm,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
+			[]QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
 			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
 			map[string]interface{}{
 				"Timestamp":   ts,
@@ -1907,7 +1908,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		},
 		{
 			"SELECT @val.Timestamp, @val.SubStruct.String",
-			[]QueryParameter{{"val", s{Timestamp: ts, SubStruct: ss{"a"}}}},
+			[]QueryParameter{{Name: "val", Value: s{Timestamp: ts, SubStruct: ss{"a"}}}},
 			[]Value{ts, "a"},
 			map[string]interface{}{
 				"Timestamp":      ts,
@@ -1915,6 +1916,18 @@ func TestIntegration_QueryParameters(t *testing.T) {
 				"StringArray":    nil,
 				"SubStructArray": nil,
 			},
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{NewScalarQueryParameter("val", "BIGNUMERIC", bigRat)},
+			[]Value{bigRat},
+			bigRat,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{NewArrayQueryParameter("val", "STRING", []string{"a", "b"})},
+			[]Value{[]Value{"a", "b"}},
+			[]interface{}{"a", "b"},
 		},
 	}
 	for _, c := range testCases {
