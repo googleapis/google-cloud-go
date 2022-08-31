@@ -843,9 +843,14 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 	if it.ParentJobID != "" {
 		req.ParentJobId(it.ParentJobID)
 	}
-	sCtx := trace.StartSpan(it.ctx, "bigquery.jobs.list")
-	res, err := req.Do()
-	trace.EndSpan(sCtx, err)
+	var res *bq.JobList
+	err := runWithRetry(it.ctx, func() (err error) {
+		sCtx := trace.StartSpan(it.ctx, "bigquery.jobs.list")
+		res, err = req.Do()
+		trace.EndSpan(sCtx, err)
+		return err
+	})
+
 	if err != nil {
 		return "", err
 	}
