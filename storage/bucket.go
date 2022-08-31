@@ -169,24 +169,26 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 //
 // If the GoogleAccessID and PrivateKey fields are not provided, they will be
 // automatically detected when:
-//		- you are authenticated to the Storage Client with a service account's
-// 		downloaded private key, either directly in code or by setting the
-//		GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
-// 		- your application is running on Google Compute Engine (GCE), or
-// 		- you are logged into [gcloud using application default credentials]
-//		with [impersonation enabled].
+//   - you are authenticated to the Storage Client with a service account's
+//     downloaded private key, either directly in code or by setting the
+//     GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
+//   - your application is running on Google Compute Engine (GCE), or
+//   - you are logged into [gcloud using application default credentials]
+//     with [impersonation enabled].
+//
 // In some cases, you may not need to set PrivateKey but must set GoogleAccessID.
 // GoogleAccessID should be set to a service account that will be used to attempt
 // to sign the URL. This is true of cases where credentials are provided but not
 // attached to a service account, such as when:
-// 		- you are authenticated to the Storage Client with a token source,
-// 		- you are using a custom HTTP client, or
-// 		- you are logged into [gcloud using application default credentials]
-//		without [impersonation enabled].
+//   - you are authenticated to the Storage Client with a token source,
+//   - you are using a custom HTTP client, or
+//   - you are logged into [gcloud using application default credentials]
+//     without [impersonation enabled].
+//
 // To sign the URL with only the GoogleAccessID set you require:
-// 		- the [IAM Service Account Credentials API enabled], and
-// 		- iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-
+//   - the [IAM Service Account Credentials API enabled], and
+//   - iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+//
 // [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
 // [Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
 // [gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
@@ -234,25 +236,26 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 //
 // If the GoogleAccessID and PrivateKey fields are not provided, they will be
 // automatically detected when:
-//		- you are authenticated to the Storage Client with a service account's
-// 		downloaded private key, either directly in code or by setting the
-//		GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
-// 		- your application is running on Google Compute Engine (GCE), or
-// 		- you are logged into [gcloud using application default credentials]
-//		with [impersonation enabled].
+//   - you are authenticated to the Storage Client with a service account's
+//     downloaded private key, either directly in code or by setting the
+//     GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
+//   - your application is running on Google Compute Engine (GCE), or
+//   - you are logged into [gcloud using application default credentials]
+//     with [impersonation enabled].
+//
 // In some cases, you may not need to set PrivateKey but must set GoogleAccessID.
 // GoogleAccessID should be set to a service account that will be used to attempt
 // to sign the PostPolicyV4. This is true of cases where credentials are provided
 // but not attached to a service account, such as when:
-// 		- you are authenticated to the Storage Client with a token source,
-// 		- you are using a custom HTTP client, or
-// 		- you are logged into [gcloud using application default credentials]
-//		without [impersonation enabled].
+//   - you are authenticated to the Storage Client with a token source,
+//   - you are using a custom HTTP client, or
+//   - you are logged into [gcloud using application default credentials]
+//     without [impersonation enabled].
+//
 // To generate the PostPolicyV4 with only the GoogleAccessID set you require:
-// 		- the [IAM Service Account Credentials API enabled], and
-// 		- iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-
-// [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+//   - the [IAM Service Account Credentials API enabled], and
+//   - iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+//
 // [Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
 // [gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
 // [impersonation enabled]: https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account
