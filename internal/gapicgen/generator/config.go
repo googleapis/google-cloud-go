@@ -243,7 +243,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		InputDirectoryPath:    "google/cloud/bigquery/dataexchange/v1beta1",
 		Pkg:                   "dataexchange",
 		ImportPath:            "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
-		GRPCServiceConfigPath: "analyticshub_grpc_service_config.json",
+		GRPCServiceConfigPath: "analyticshub_v1beta1_grpc_service_config.json",
 		ApiServiceConfigPath:  "analyticshub_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
