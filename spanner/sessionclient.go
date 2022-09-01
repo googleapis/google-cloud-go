@@ -325,13 +325,14 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client.SetGoogleClientInfo("gccl", internal.Version)
+	clientInfo := []string{"gccl", internal.Version}
 	if sc.userAgent != "" {
 		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
 		if len(agentWithVersion) == 2 {
-			client.SetGoogleClientInfo(agentWithVersion[0], agentWithVersion[1])
+			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
 		}
 	}
+	client.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		client.CallOptions = mergeCallOptions(client.CallOptions, sc.callOptions)
 	}

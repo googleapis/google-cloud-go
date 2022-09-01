@@ -136,6 +136,10 @@ type ClientConfig struct {
 
 	// UserAgent is the prefix to the user agent header. This is used to supply information
 	// such as application name or partner tool.
+	//
+	// Internal Use Only: This field is for internal tracking purpose only,
+	// setting the value for this config is not required.
+	//
 	// Recommended format: ``application-or-tool-ID/major.minor.version``.
 	UserAgent string
 
