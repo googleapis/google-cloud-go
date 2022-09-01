@@ -41,5 +41,5 @@ RUN echo -e '#!/bin/bash\n\
     ' >> /run.sh
 RUN chmod a+x /run.sh
 
-WORKDIR /gapicgen
+WORKDIR /google-cloud-go
 CMD ["bash", "-c", "/run.sh"]
