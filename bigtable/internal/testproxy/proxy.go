@@ -102,10 +102,10 @@ func (c credentialsBundle) NewWithMode(mode string) (credentials.Bundle, error) 
 //
 // There are three base cases to address:
 //  1. CreateClientRequest specifies no unique credentials; so ADC will be used.
-//     This method returns an empty slice.
-//  2. CreateClientRequest specifies both call and channel credentials. In
-//     this case, we need to create a combined credential.
-//  3. CreateClientRequest specifies only a channel credential.
+//     This method returns an empty slice..
+//  2. CreateClientRequest specifies only a channel credential.
+//  3. CreateClientRequest specifies both call and channel credentials. In
+//     this case, we need to create a combined credential
 func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, error) {
 	opts := make([]option.ClientOption, 0)
 
@@ -115,14 +115,14 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, 
 		return opts, nil
 	}
 
-	if req.OverrideSslTargetName != "" {
-		d := grpc.WithAuthority(req.OverrideSslTargetName)
-		opts = append(opts, option.WithGRPCDialOption(d))
-	}
-
 	// If you have call credentials, then you must have channel credentials too
 	if req.CallCredential != nil && req.ChannelCredential == nil {
 		return nil, fmt.Errorf("%s: must supply channel credentials with call credentials", logLabel)
+	}
+
+	if req.OverrideSslTargetName != "" {
+		d := grpc.WithAuthority(req.OverrideSslTargetName)
+		opts = append(opts, option.WithGRPCDialOption(d))
 	}
 
 	if req.CallCredential != nil {
@@ -201,7 +201,7 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	}
 
 	s.btClient = c
-	s.clientID = req.ClientId
+	s.clientID = req.ClientId // Might need to be stored in a map
 	s.appProfileID = req.AppProfileId
 	s.perOperationTimeout = req.PerOperationTimeout
 
