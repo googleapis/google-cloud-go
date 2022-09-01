@@ -718,9 +718,9 @@ func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *
 	setClientHeader(tgc.call.Header())
 	var res *bq.Table
 	if err := runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.tables.get")
+		sCtx := trace.StartSpan(ctx, "bigquery.tables.get")
 		res, err = tgc.call.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
 		return nil, err
