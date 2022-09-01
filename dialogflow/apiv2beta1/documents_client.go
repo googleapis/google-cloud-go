@@ -30,38 +30,34 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
-var newEntityTypesClientHook clientHook
+var newDocumentsClientHook clientHook
 
-// EntityTypesCallOptions contains the retry settings for each method of EntityTypesClient.
-type EntityTypesCallOptions struct {
-	ListEntityTypes        []gax.CallOption
-	GetEntityType          []gax.CallOption
-	CreateEntityType       []gax.CallOption
-	UpdateEntityType       []gax.CallOption
-	DeleteEntityType       []gax.CallOption
-	BatchUpdateEntityTypes []gax.CallOption
-	BatchDeleteEntityTypes []gax.CallOption
-	BatchCreateEntities    []gax.CallOption
-	BatchUpdateEntities    []gax.CallOption
-	BatchDeleteEntities    []gax.CallOption
-	GetLocation            []gax.CallOption
-	ListLocations          []gax.CallOption
-	CancelOperation        []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
+// DocumentsCallOptions contains the retry settings for each method of DocumentsClient.
+type DocumentsCallOptions struct {
+	ListDocuments   []gax.CallOption
+	GetDocument     []gax.CallOption
+	CreateDocument  []gax.CallOption
+	ImportDocuments []gax.CallOption
+	DeleteDocument  []gax.CallOption
+	UpdateDocument  []gax.CallOption
+	ReloadDocument  []gax.CallOption
+	GetLocation     []gax.CallOption
+	ListLocations   []gax.CallOption
+	CancelOperation []gax.CallOption
+	GetOperation    []gax.CallOption
+	ListOperations  []gax.CallOption
 }
 
-func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
+func defaultDocumentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
@@ -73,9 +69,9 @@ func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
-	return &EntityTypesCallOptions{
-		ListEntityTypes: []gax.CallOption{
+func defaultDocumentsCallOptions() *DocumentsCallOptions {
+	return &DocumentsCallOptions{
+		ListDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,7 +82,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		GetEntityType: []gax.CallOption{
+		GetDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,7 +93,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		CreateEntityType: []gax.CallOption{
+		CreateDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,7 +104,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		UpdateEntityType: []gax.CallOption{
+		ImportDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -119,7 +115,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		DeleteEntityType: []gax.CallOption{
+		DeleteDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,7 +126,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		BatchUpdateEntityTypes: []gax.CallOption{
+		UpdateDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -141,40 +137,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		BatchDeleteEntityTypes: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchCreateEntities: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchUpdateEntities: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchDeleteEntities: []gax.CallOption{
+		ReloadDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -193,26 +156,23 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 	}
 }
 
-// internalEntityTypesClient is an interface that defines the methods available from Dialogflow API.
-type internalEntityTypesClient interface {
+// internalDocumentsClient is an interface that defines the methods available from Dialogflow API.
+type internalDocumentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	ListEntityTypes(context.Context, *dialogflowpb.ListEntityTypesRequest, ...gax.CallOption) *EntityTypeIterator
-	GetEntityType(context.Context, *dialogflowpb.GetEntityTypeRequest, ...gax.CallOption) (*dialogflowpb.EntityType, error)
-	CreateEntityType(context.Context, *dialogflowpb.CreateEntityTypeRequest, ...gax.CallOption) (*dialogflowpb.EntityType, error)
-	UpdateEntityType(context.Context, *dialogflowpb.UpdateEntityTypeRequest, ...gax.CallOption) (*dialogflowpb.EntityType, error)
-	DeleteEntityType(context.Context, *dialogflowpb.DeleteEntityTypeRequest, ...gax.CallOption) error
-	BatchUpdateEntityTypes(context.Context, *dialogflowpb.BatchUpdateEntityTypesRequest, ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error)
-	BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation
-	BatchDeleteEntityTypes(context.Context, *dialogflowpb.BatchDeleteEntityTypesRequest, ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error)
-	BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation
-	BatchCreateEntities(context.Context, *dialogflowpb.BatchCreateEntitiesRequest, ...gax.CallOption) (*BatchCreateEntitiesOperation, error)
-	BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation
-	BatchUpdateEntities(context.Context, *dialogflowpb.BatchUpdateEntitiesRequest, ...gax.CallOption) (*BatchUpdateEntitiesOperation, error)
-	BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation
-	BatchDeleteEntities(context.Context, *dialogflowpb.BatchDeleteEntitiesRequest, ...gax.CallOption) (*BatchDeleteEntitiesOperation, error)
-	BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation
+	ListDocuments(context.Context, *dialogflowpb.ListDocumentsRequest, ...gax.CallOption) *DocumentIterator
+	GetDocument(context.Context, *dialogflowpb.GetDocumentRequest, ...gax.CallOption) (*dialogflowpb.Document, error)
+	CreateDocument(context.Context, *dialogflowpb.CreateDocumentRequest, ...gax.CallOption) (*CreateDocumentOperation, error)
+	CreateDocumentOperation(name string) *CreateDocumentOperation
+	ImportDocuments(context.Context, *dialogflowpb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
+	ImportDocumentsOperation(name string) *ImportDocumentsOperation
+	DeleteDocument(context.Context, *dialogflowpb.DeleteDocumentRequest, ...gax.CallOption) (*DeleteDocumentOperation, error)
+	DeleteDocumentOperation(name string) *DeleteDocumentOperation
+	UpdateDocument(context.Context, *dialogflowpb.UpdateDocumentRequest, ...gax.CallOption) (*UpdateDocumentOperation, error)
+	UpdateDocumentOperation(name string) *UpdateDocumentOperation
+	ReloadDocument(context.Context, *dialogflowpb.ReloadDocumentRequest, ...gax.CallOption) (*ReloadDocumentOperation, error)
+	ReloadDocumentOperation(name string) *ReloadDocumentOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -220,16 +180,16 @@ type internalEntityTypesClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// EntityTypesClient is a client for interacting with Dialogflow API.
+// DocumentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing EntityTypes.
-type EntityTypesClient struct {
+// Service for managing knowledge Documents.
+type DocumentsClient struct {
 	// The internal transport-dependent client.
-	internalClient internalEntityTypesClient
+	internalClient internalDocumentsClient
 
 	// The call options for this service.
-	CallOptions *EntityTypesCallOptions
+	CallOptions *DocumentsCallOptions
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
@@ -241,227 +201,196 @@ type EntityTypesClient struct {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *EntityTypesClient) Close() error {
+func (c *DocumentsClient) Close() error {
 	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *EntityTypesClient) setGoogleClientInfo(keyval ...string) {
+func (c *DocumentsClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *EntityTypesClient) Connection() *grpc.ClientConn {
+func (c *DocumentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListEntityTypes returns the list of all entity types in the specified agent.
-func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflowpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
-	return c.internalClient.ListEntityTypes(ctx, req, opts...)
-}
-
-// GetEntityType retrieves the specified entity type.
-func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb.GetEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
-	return c.internalClient.GetEntityType(ctx, req, opts...)
-}
-
-// CreateEntityType creates an entity type in the specified agent.
+// ListDocuments returns the list of all documents of the knowledge base.
 //
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
-	return c.internalClient.CreateEntityType(ctx, req, opts...)
+// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
+// only use projects.knowledgeBases.documents.
+func (c *DocumentsClient) ListDocuments(ctx context.Context, req *dialogflowpb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
+	return c.internalClient.ListDocuments(ctx, req, opts...)
 }
 
-// UpdateEntityType updates the specified entity type.
+// GetDocument retrieves the specified document.
 //
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
-	return c.internalClient.UpdateEntityType(ctx, req, opts...)
+// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
+// only use projects.knowledgeBases.documents.
+func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.GetDocumentRequest, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	return c.internalClient.GetDocument(ctx, req, opts...)
 }
 
-// DeleteEntityType deletes the specified entity type.
-//
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteEntityType(ctx, req, opts...)
-}
-
-// BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.
+// CreateDocument creates a new document.
 //
 // This method is a long-running
-// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: KnowledgeOperationMetadata
 //
-//	response: BatchUpdateEntityTypesResponse
+//	response: Document
 //
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
-	return c.internalClient.BatchUpdateEntityTypes(ctx, req, opts...)
+// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
+// only use projects.knowledgeBases.documents.
+func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
+	return c.internalClient.CreateDocument(ctx, req, opts...)
 }
 
-// BatchUpdateEntityTypesOperation returns a new BatchUpdateEntityTypesOperation from a given name.
-// The name must be that of a previously created BatchUpdateEntityTypesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation {
-	return c.internalClient.BatchUpdateEntityTypesOperation(name)
+// CreateDocumentOperation returns a new CreateDocumentOperation from a given name.
+// The name must be that of a previously created CreateDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
+	return c.internalClient.CreateDocumentOperation(name)
 }
 
-// BatchDeleteEntityTypes deletes entity types in the specified agent.
+// ImportDocuments create documents by importing data from external sources.
+// Dialogflow supports up to 350 documents in each request. If you try to
+// import more, Dialogflow will return an error.
 //
 // This method is a long-running
-// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: KnowledgeOperationMetadata
+//
+//	response: ImportDocumentsResponse
+func (c *DocumentsClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
+	return c.internalClient.ImportDocuments(ctx, req, opts...)
+}
+
+// ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
+// The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
+func (c *DocumentsClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
+	return c.internalClient.ImportDocumentsOperation(name)
+}
+
+// DeleteDocument deletes the specified document.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//	metadata: KnowledgeOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
-	return c.internalClient.BatchDeleteEntityTypes(ctx, req, opts...)
+// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
+// only use projects.knowledgeBases.documents.
+func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
+	return c.internalClient.DeleteDocument(ctx, req, opts...)
 }
 
-// BatchDeleteEntityTypesOperation returns a new BatchDeleteEntityTypesOperation from a given name.
-// The name must be that of a previously created BatchDeleteEntityTypesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation {
-	return c.internalClient.BatchDeleteEntityTypesOperation(name)
+// DeleteDocumentOperation returns a new DeleteDocumentOperation from a given name.
+// The name must be that of a previously created DeleteDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOperation {
+	return c.internalClient.DeleteDocumentOperation(name)
 }
 
-// BatchCreateEntities creates multiple new entities in the specified entity type.
+// UpdateDocument updates the specified document.
 //
 // This method is a long-running
-// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: KnowledgeOperationMetadata
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: Document
 //
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
-	return c.internalClient.BatchCreateEntities(ctx, req, opts...)
+// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
+// only use projects.knowledgeBases.documents.
+func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
+	return c.internalClient.UpdateDocument(ctx, req, opts...)
 }
 
-// BatchCreateEntitiesOperation returns a new BatchCreateEntitiesOperation from a given name.
-// The name must be that of a previously created BatchCreateEntitiesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation {
-	return c.internalClient.BatchCreateEntitiesOperation(name)
+// UpdateDocumentOperation returns a new UpdateDocumentOperation from a given name.
+// The name must be that of a previously created UpdateDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
+	return c.internalClient.UpdateDocumentOperation(name)
 }
 
-// BatchUpdateEntities updates or creates multiple entities in the specified entity type. This
-// method does not affect entities in the entity type that aren’t explicitly
-// specified in the request.
+// ReloadDocument reloads the specified document from its specified source, content_uri or
+// content. The previously loaded content of the document will be deleted.
+// Note: Even when the content of the document has not changed, there still
+// may be side effects because of internal implementation changes.
+// Note: If the document source is Google Cloud Storage URI, its metadata will
+// be replaced with the custom metadata from Google Cloud Storage if the
+// import_gcs_custom_metadata field is set to true in the request.
 //
 // This method is a long-running
-// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: KnowledgeOperationMetadata
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: Document
 //
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
-	return c.internalClient.BatchUpdateEntities(ctx, req, opts...)
+// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
+// only use projects.knowledgeBases.documents.
+func (c *DocumentsClient) ReloadDocument(ctx context.Context, req *dialogflowpb.ReloadDocumentRequest, opts ...gax.CallOption) (*ReloadDocumentOperation, error) {
+	return c.internalClient.ReloadDocument(ctx, req, opts...)
 }
 
-// BatchUpdateEntitiesOperation returns a new BatchUpdateEntitiesOperation from a given name.
-// The name must be that of a previously created BatchUpdateEntitiesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation {
-	return c.internalClient.BatchUpdateEntitiesOperation(name)
-}
-
-// BatchDeleteEntities deletes entities in the specified entity type.
-//
-// This method is a long-running
-// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
-// The returned Operation type has the following method-specific fields:
-//
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-//
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-//
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
-func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
-	return c.internalClient.BatchDeleteEntities(ctx, req, opts...)
-}
-
-// BatchDeleteEntitiesOperation returns a new BatchDeleteEntitiesOperation from a given name.
-// The name must be that of a previously created BatchDeleteEntitiesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation {
-	return c.internalClient.BatchDeleteEntitiesOperation(name)
+// ReloadDocumentOperation returns a new ReloadDocumentOperation from a given name.
+// The name must be that of a previously created ReloadDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) ReloadDocumentOperation(name string) *ReloadDocumentOperation {
+	return c.internalClient.ReloadDocumentOperation(name)
 }
 
 // GetLocation gets information about a location.
-func (c *EntityTypesClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *DocumentsClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
-func (c *EntityTypesClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *DocumentsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
-func (c *EntityTypesClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *DocumentsClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *EntityTypesClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *DocumentsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *EntityTypesClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *DocumentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// entityTypesGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
+// documentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type entityTypesGRPCClient struct {
+type documentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
-	// Points back to the CallOptions field of the containing EntityTypesClient
-	CallOptions **EntityTypesCallOptions
+	// Points back to the CallOptions field of the containing DocumentsClient
+	CallOptions **DocumentsCallOptions
 
 	// The gRPC API client.
-	entityTypesClient dialogflowpb.EntityTypesClient
+	documentsClient dialogflowpb.DocumentsClient
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
@@ -476,14 +405,14 @@ type entityTypesGRPCClient struct {
 	xGoogMetadata metadata.MD
 }
 
-// NewEntityTypesClient creates a new entity types client based on gRPC.
+// NewDocumentsClient creates a new documents client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing EntityTypes.
-func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
-	clientOpts := defaultEntityTypesGRPCClientOptions()
-	if newEntityTypesClientHook != nil {
-		hookOpts, err := newEntityTypesClientHook(ctx, clientHookParams{})
+// Service for managing knowledge Documents.
+func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*DocumentsClient, error) {
+	clientOpts := defaultDocumentsGRPCClientOptions()
+	if newDocumentsClientHook != nil {
+		hookOpts, err := newDocumentsClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -499,15 +428,15 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 	if err != nil {
 		return nil, err
 	}
-	client := EntityTypesClient{CallOptions: defaultEntityTypesCallOptions()}
+	client := DocumentsClient{CallOptions: defaultDocumentsCallOptions()}
 
-	c := &entityTypesGRPCClient{
-		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
-		entityTypesClient: dialogflowpb.NewEntityTypesClient(connPool),
-		CallOptions:       &client.CallOptions,
-		operationsClient:  longrunningpb.NewOperationsClient(connPool),
-		locationsClient:   locationpb.NewLocationsClient(connPool),
+	c := &documentsGRPCClient{
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		documentsClient:  dialogflowpb.NewDocumentsClient(connPool),
+		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -530,14 +459,14 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *entityTypesGRPCClient) Connection() *grpc.ClientConn {
+func (c *documentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *entityTypesGRPCClient) setGoogleClientInfo(keyval ...string) {
+func (c *documentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -545,19 +474,19 @@ func (c *entityTypesGRPCClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *entityTypesGRPCClient) Close() error {
+func (c *documentsGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialogflowpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
+func (c *documentsGRPCClient) ListDocuments(ctx context.Context, req *dialogflowpb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListEntityTypes[0:len((*c.CallOptions).ListEntityTypes):len((*c.CallOptions).ListEntityTypes)], opts...)
-	it := &EntityTypeIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListEntityTypesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EntityType, string, error) {
-		resp := &dialogflowpb.ListEntityTypesResponse{}
+	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
+	it := &DocumentIterator{}
+	req = proto.Clone(req).(*dialogflowpb.ListDocumentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Document, string, error) {
+		resp := &dialogflowpb.ListDocumentsResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -568,7 +497,7 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialog
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.entityTypesClient.ListEntityTypes(ctx, req, settings.GRPC...)
+			resp, err = c.documentsClient.ListDocuments(ctx, req, settings.GRPC...)
 			return err
 		}, opts...)
 		if err != nil {
@@ -576,7 +505,7 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialog
 		}
 
 		it.Response = resp
-		return resp.GetEntityTypes(), resp.GetNextPageToken(), nil
+		return resp.GetDocuments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -594,7 +523,7 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialog
 	return it
 }
 
-func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogflowpb.GetEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+func (c *documentsGRPCClient) GetDocument(ctx context.Context, req *dialogflowpb.GetDocumentRequest, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -603,11 +532,11 @@ func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogfl
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetEntityType[0:len((*c.CallOptions).GetEntityType):len((*c.CallOptions).GetEntityType)], opts...)
-	var resp *dialogflowpb.EntityType
+	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
+	var resp *dialogflowpb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.GetEntityType(ctx, req, settings.GRPC...)
+		resp, err = c.documentsClient.GetDocument(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -616,7 +545,7 @@ func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogfl
 	return resp, nil
 }
 
-func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+func (c *documentsGRPCClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -625,42 +554,46 @@ func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *dialo
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CreateEntityType[0:len((*c.CallOptions).CreateEntityType):len((*c.CallOptions).CreateEntityType)], opts...)
-	var resp *dialogflowpb.EntityType
+	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.CreateEntityType(ctx, req, settings.GRPC...)
+		resp, err = c.documentsClient.CreateDocument(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &CreateDocumentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
-func (c *entityTypesGRPCClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+func (c *documentsGRPCClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateEntityType[0:len((*c.CallOptions).UpdateEntityType):len((*c.CallOptions).UpdateEntityType)], opts...)
-	var resp *dialogflowpb.EntityType
+	opts = append((*c.CallOptions).ImportDocuments[0:len((*c.CallOptions).ImportDocuments):len((*c.CallOptions).ImportDocuments)], opts...)
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.UpdateEntityType(ctx, req, settings.GRPC...)
+		resp, err = c.documentsClient.ImportDocuments(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &ImportDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
-func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
+func (c *documentsGRPCClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -669,136 +602,70 @@ func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *dialo
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteEntityType[0:len((*c.CallOptions).DeleteEntityType):len((*c.CallOptions).DeleteEntityType)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.entityTypesClient.DeleteEntityType(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *entityTypesGRPCClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).BatchUpdateEntityTypes[0:len((*c.CallOptions).BatchUpdateEntityTypes):len((*c.CallOptions).BatchUpdateEntityTypes)], opts...)
+	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchUpdateEntityTypes(ctx, req, settings.GRPC...)
+		resp, err = c.documentsClient.DeleteDocument(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return &BatchUpdateEntityTypesOperation{
+	return &DeleteDocumentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-func (c *entityTypesGRPCClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
+func (c *documentsGRPCClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).BatchDeleteEntityTypes[0:len((*c.CallOptions).BatchDeleteEntityTypes):len((*c.CallOptions).BatchDeleteEntityTypes)], opts...)
+	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchDeleteEntityTypes(ctx, req, settings.GRPC...)
+		resp, err = c.documentsClient.UpdateDocument(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return &BatchDeleteEntityTypesOperation{
+	return &UpdateDocumentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-func (c *entityTypesGRPCClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
+func (c *documentsGRPCClient) ReloadDocument(ctx context.Context, req *dialogflowpb.ReloadDocumentRequest, opts ...gax.CallOption) (*ReloadDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).BatchCreateEntities[0:len((*c.CallOptions).BatchCreateEntities):len((*c.CallOptions).BatchCreateEntities)], opts...)
+	opts = append((*c.CallOptions).ReloadDocument[0:len((*c.CallOptions).ReloadDocument):len((*c.CallOptions).ReloadDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.entityTypesClient.BatchCreateEntities(ctx, req, settings.GRPC...)
+		resp, err = c.documentsClient.ReloadDocument(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return &BatchCreateEntitiesOperation{
+	return &ReloadDocumentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-func (c *entityTypesGRPCClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).BatchUpdateEntities[0:len((*c.CallOptions).BatchUpdateEntities):len((*c.CallOptions).BatchUpdateEntities)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.entityTypesClient.BatchUpdateEntities(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &BatchUpdateEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *entityTypesGRPCClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).BatchDeleteEntities[0:len((*c.CallOptions).BatchDeleteEntities):len((*c.CallOptions).BatchDeleteEntities)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.entityTypesClient.BatchDeleteEntities(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &BatchDeleteEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *entityTypesGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *documentsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -815,7 +682,7 @@ func (c *entityTypesGRPCClient) GetLocation(ctx context.Context, req *locationpb
 	return resp, nil
 }
 
-func (c *entityTypesGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *documentsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -860,7 +727,7 @@ func (c *entityTypesGRPCClient) ListLocations(ctx context.Context, req *location
 	return it
 }
 
-func (c *entityTypesGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *documentsGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -873,7 +740,7 @@ func (c *entityTypesGRPCClient) CancelOperation(ctx context.Context, req *longru
 	return err
 }
 
-func (c *entityTypesGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *documentsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -890,7 +757,7 @@ func (c *entityTypesGRPCClient) GetOperation(ctx context.Context, req *longrunni
 	return resp, nil
 }
 
-func (c *entityTypesGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *documentsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -935,15 +802,15 @@ func (c *entityTypesGRPCClient) ListOperations(ctx context.Context, req *longrun
 	return it
 }
 
-// BatchCreateEntitiesOperation manages a long-running operation from BatchCreateEntities.
-type BatchCreateEntitiesOperation struct {
+// CreateDocumentOperation manages a long-running operation from CreateDocument.
+type CreateDocumentOperation struct {
 	lro *longrunning.Operation
 }
 
-// BatchCreateEntitiesOperation returns a new BatchCreateEntitiesOperation from a given name.
-// The name must be that of a previously created BatchCreateEntitiesOperation, possibly from a different process.
-func (c *entityTypesGRPCClient) BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation {
-	return &BatchCreateEntitiesOperation{
+// CreateDocumentOperation returns a new CreateDocumentOperation from a given name.
+// The name must be that of a previously created CreateDocumentOperation, possibly from a different process.
+func (c *documentsGRPCClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
+	return &CreateDocumentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
@@ -951,240 +818,8 @@ func (c *entityTypesGRPCClient) BatchCreateEntitiesOperation(name string) *Batch
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *BatchCreateEntitiesOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchCreateEntitiesOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchCreateEntitiesOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchCreateEntitiesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchCreateEntitiesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BatchDeleteEntitiesOperation manages a long-running operation from BatchDeleteEntities.
-type BatchDeleteEntitiesOperation struct {
-	lro *longrunning.Operation
-}
-
-// BatchDeleteEntitiesOperation returns a new BatchDeleteEntitiesOperation from a given name.
-// The name must be that of a previously created BatchDeleteEntitiesOperation, possibly from a different process.
-func (c *entityTypesGRPCClient) BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation {
-	return &BatchDeleteEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchDeleteEntitiesOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchDeleteEntitiesOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchDeleteEntitiesOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchDeleteEntitiesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchDeleteEntitiesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BatchDeleteEntityTypesOperation manages a long-running operation from BatchDeleteEntityTypes.
-type BatchDeleteEntityTypesOperation struct {
-	lro *longrunning.Operation
-}
-
-// BatchDeleteEntityTypesOperation returns a new BatchDeleteEntityTypesOperation from a given name.
-// The name must be that of a previously created BatchDeleteEntityTypesOperation, possibly from a different process.
-func (c *entityTypesGRPCClient) BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation {
-	return &BatchDeleteEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchDeleteEntityTypesOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchDeleteEntityTypesOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchDeleteEntityTypesOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchDeleteEntityTypesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchDeleteEntityTypesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BatchUpdateEntitiesOperation manages a long-running operation from BatchUpdateEntities.
-type BatchUpdateEntitiesOperation struct {
-	lro *longrunning.Operation
-}
-
-// BatchUpdateEntitiesOperation returns a new BatchUpdateEntitiesOperation from a given name.
-// The name must be that of a previously created BatchUpdateEntitiesOperation, possibly from a different process.
-func (c *entityTypesGRPCClient) BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation {
-	return &BatchUpdateEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchUpdateEntitiesOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchUpdateEntitiesOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchUpdateEntitiesOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchUpdateEntitiesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchUpdateEntitiesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BatchUpdateEntityTypesOperation manages a long-running operation from BatchUpdateEntityTypes.
-type BatchUpdateEntityTypesOperation struct {
-	lro *longrunning.Operation
-}
-
-// BatchUpdateEntityTypesOperation returns a new BatchUpdateEntityTypesOperation from a given name.
-// The name must be that of a previously created BatchUpdateEntityTypesOperation, possibly from a different process.
-func (c *entityTypesGRPCClient) BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation {
-	return &BatchUpdateEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchUpdateEntityTypesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.BatchUpdateEntityTypesResponse, error) {
-	var resp dialogflowpb.BatchUpdateEntityTypesResponse
+func (op *CreateDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	var resp dialogflowpb.Document
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
@@ -1200,8 +835,8 @@ func (op *BatchUpdateEntityTypesOperation) Wait(ctx context.Context, opts ...gax
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchUpdateEntityTypesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.BatchUpdateEntityTypesResponse, error) {
-	var resp dialogflowpb.BatchUpdateEntityTypesResponse
+func (op *CreateDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	var resp dialogflowpb.Document
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -1215,8 +850,8 @@ func (op *BatchUpdateEntityTypesOperation) Poll(ctx context.Context, opts ...gax
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchUpdateEntityTypesOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
+func (op *CreateDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
+	var meta dialogflowpb.KnowledgeOperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1226,19 +861,284 @@ func (op *BatchUpdateEntityTypesOperation) Metadata() (*structpb.Struct, error) 
 }
 
 // Done reports whether the long-running operation has completed.
-func (op *BatchUpdateEntityTypesOperation) Done() bool {
+func (op *CreateDocumentOperation) Done() bool {
 	return op.lro.Done()
 }
 
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchUpdateEntityTypesOperation) Name() string {
+func (op *CreateDocumentOperation) Name() string {
 	return op.lro.Name()
 }
 
-// EntityTypeIterator manages a stream of *dialogflowpb.EntityType.
-type EntityTypeIterator struct {
-	items    []*dialogflowpb.EntityType
+// DeleteDocumentOperation manages a long-running operation from DeleteDocument.
+type DeleteDocumentOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteDocumentOperation returns a new DeleteDocumentOperation from a given name.
+// The name must be that of a previously created DeleteDocumentOperation, possibly from a different process.
+func (c *documentsGRPCClient) DeleteDocumentOperation(name string) *DeleteDocumentOperation {
+	return &DeleteDocumentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
+	var meta dialogflowpb.KnowledgeOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteDocumentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteDocumentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ImportDocumentsOperation manages a long-running operation from ImportDocuments.
+type ImportDocumentsOperation struct {
+	lro *longrunning.Operation
+}
+
+// ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
+// The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
+func (c *documentsGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
+	return &ImportDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ImportDocumentsResponse, error) {
+	var resp dialogflowpb.ImportDocumentsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ImportDocumentsResponse, error) {
+	var resp dialogflowpb.ImportDocumentsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportDocumentsOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
+	var meta dialogflowpb.KnowledgeOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportDocumentsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportDocumentsOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ReloadDocumentOperation manages a long-running operation from ReloadDocument.
+type ReloadDocumentOperation struct {
+	lro *longrunning.Operation
+}
+
+// ReloadDocumentOperation returns a new ReloadDocumentOperation from a given name.
+// The name must be that of a previously created ReloadDocumentOperation, possibly from a different process.
+func (c *documentsGRPCClient) ReloadDocumentOperation(name string) *ReloadDocumentOperation {
+	return &ReloadDocumentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ReloadDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	var resp dialogflowpb.Document
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ReloadDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	var resp dialogflowpb.Document
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ReloadDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
+	var meta dialogflowpb.KnowledgeOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ReloadDocumentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ReloadDocumentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateDocumentOperation manages a long-running operation from UpdateDocument.
+type UpdateDocumentOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateDocumentOperation returns a new UpdateDocumentOperation from a given name.
+// The name must be that of a previously created UpdateDocumentOperation, possibly from a different process.
+func (c *documentsGRPCClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
+	return &UpdateDocumentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	var resp dialogflowpb.Document
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	var resp dialogflowpb.Document
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
+	var meta dialogflowpb.KnowledgeOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateDocumentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateDocumentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DocumentIterator manages a stream of *dialogflowpb.Document.
+type DocumentIterator struct {
+	items    []*dialogflowpb.Document
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -1253,18 +1153,18 @@ type EntityTypeIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.EntityType, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Document, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntityTypeIterator) PageInfo() *iterator.PageInfo {
+func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntityTypeIterator) Next() (*dialogflowpb.EntityType, error) {
-	var item *dialogflowpb.EntityType
+func (it *DocumentIterator) Next() (*dialogflowpb.Document, error) {
+	var item *dialogflowpb.Document
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -1273,11 +1173,11 @@ func (it *EntityTypeIterator) Next() (*dialogflowpb.EntityType, error) {
 	return item, nil
 }
 
-func (it *EntityTypeIterator) bufLen() int {
+func (it *DocumentIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *EntityTypeIterator) takeBuf() interface{} {
+func (it *DocumentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
