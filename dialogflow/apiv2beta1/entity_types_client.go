@@ -30,7 +30,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -374,6 +374,10 @@ func (c *EntityTypesClient) BatchCreateEntitiesOperation(name string) *BatchCrea
 // method does not affect entities in the entity type that aren’t explicitly
 // specified in the request.
 //
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+//
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
@@ -383,10 +387,6 @@ func (c *EntityTypesClient) BatchCreateEntitiesOperation(name string) *BatchCrea
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-//
-// Note: You should always train an agent prior to sending it queries. See the
-// training
-// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
 	return c.internalClient.BatchUpdateEntities(ctx, req, opts...)
 }
