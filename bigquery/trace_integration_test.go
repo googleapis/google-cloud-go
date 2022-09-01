@@ -91,6 +91,8 @@ func TestIntegration_Tracing(t *testing.T) {
 		traceCtx, span := trace.StartSpan(ctx, "testspan", trace.WithSampler(trace.AlwaysSample()))
 		tc.callF(traceCtx)
 		span.End()
+		trace.UnregisterExporter(exporter)
+
 		if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
 			t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
 		}
