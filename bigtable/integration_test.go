@@ -1747,7 +1747,7 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 	}
 
 	// Create an instance admin client
-	timeout := 5 * time.Minute
+	timeout := 7 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -1763,9 +1763,12 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Zone:         instanceToCreateZone,
 	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
+
+	testutil.Retry(t, 3, 5*time.Second, func(R *testutil.R) {
+		if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+	})
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	// Check the created test instances
