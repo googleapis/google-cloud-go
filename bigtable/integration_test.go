@@ -1462,7 +1462,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		t.Skip("emulator doesn't support instance creation")
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 7 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
@@ -1482,9 +1482,13 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
+
+	// CreateInstance can be flaky; retry 3 times before marking as failing.
+	testutil.Retry(t, 3, 5*time.Second, func(r *testutil.R) {
+		if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+	})
 
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
