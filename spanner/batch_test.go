@@ -22,8 +22,9 @@ import (
 	"testing"
 	"time"
 
-	. "cloud.google.com/go/spanner/internal/testutil"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+
+	. "cloud.google.com/go/spanner/internal/testutil"
 )
 
 func TestPartitionRoundTrip(t *testing.T) {
@@ -114,6 +115,77 @@ func TestPartitionQuery_QueryOptions(t *testing.T) {
 				}
 				if got, want := p.qreq.QueryOptions.OptimizerStatisticsPackage, tt.want.Options.OptimizerStatisticsPackage; got != want {
 					t.Fatalf("Incorrect optimizer statistics package: got %v, want %v", got, want)
+				}
+			}
+		})
+	}
+}
+
+func TestPartitionQuery_ReadOptions(t *testing.T) {
+	testcases := []ReadOptionsTestCase{
+		{
+			name:   "Client level",
+			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			// Index and Limit are always ignored
+			want: &ReadOptions{Index: "", Limit: 0, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+		},
+		{
+			name:   "Read level",
+			client: &ReadOptions{},
+			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			// Index and Limit are always ignored
+			want: &ReadOptions{Index: "", Limit: 0, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+		},
+		{
+			name:   "Read level has precedence than client level",
+			client: &ReadOptions{Index: "clientIndex", Limit: 10, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "clientRequestTag"},
+			read:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+			// Index and Limit are always ignored
+			want: &ReadOptions{Index: "", Limit: 0, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			var (
+				err error
+				txn *BatchReadOnlyTransaction
+				ps  []*Partition
+			)
+
+			if txn, err = client.BatchReadOnlyTransaction(ctx, StrongRead()); err != nil {
+				t.Fatal(err)
+			}
+			defer txn.Cleanup(ctx)
+
+			if tt.read == nil {
+				ps, err = txn.PartitionRead(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{0, 3})
+			} else {
+				ps, err = txn.PartitionReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{0, 3}, *tt.read)
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for _, p := range ps {
+				req := p.rreq
+				if got, want := req.Index, tt.want.Index; got != want {
+					t.Fatalf("Incorrect index: got %v, want %v", got, want)
+				}
+				if got, want := req.Limit, int64(tt.want.Limit); got != want {
+					t.Fatalf("Incorrect limit: got %v, want %v", got, want)
+				}
+
+				ro := req.RequestOptions
+				if got, want := ro.Priority, tt.want.Priority; got != want {
+					t.Fatalf("Incorrect priority: got %v, want %v", got, want)
+				}
+				if got, want := ro.RequestTag, tt.want.RequestTag; got != want {
+					t.Fatalf("Incorrect request tag: got %v, want %v", got, want)
 				}
 			}
 		})

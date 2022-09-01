@@ -311,7 +311,7 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if conf.Pkg == "compute" {
 		args = append(args, "--go_gapic_opt", "diregapic")
 	}
-	if conf.StubsDir != "" {
+	if stubsDir := conf.getStubsDir(); stubsDir != "" {
 		// Enable protobuf/gRPC generation in the google-cloud-go directory.
 		args = append(args, "--go_out=plugins=grpc:"+g.googleCloudDir)
 
@@ -319,11 +319,24 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 		// override the go_package option. Applied to both the protobuf/gRPC
 		// generated code, and to notify the GAPIC generator of the new
 		// import path used to reference those stubs.
-		stubPkg := filepath.Join(conf.ImportPath, conf.StubsDir)
+		stubPkg := filepath.Join(conf.ImportPath, stubsDir)
 		for _, f := range protoFiles {
 			f = strings.TrimPrefix(f, g.googleapisDir+"/")
-			rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
-			args = append(args, "--go_opt="+rerouteGoPkg, "--go_gapic_opt="+rerouteGoPkg)
+			// Storage is a special case because it is generating a hidden beta
+			// proto surface.
+			if conf.ImportPath == "cloud.google.com/go/storage/internal/apiv2" {
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
+				args = append(args,
+					"--go_opt="+rerouteGoPkg,
+					"--go_gapic_opt="+rerouteGoPkg,
+				)
+			} else {
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg+"pb")
+				args = append(args, "--go_opt="+rerouteGoPkg)
+				if conf.isMigrated() {
+					args = append(args, "--go_gapic_opt="+rerouteGoPkg)
+				}
+			}
 		}
 	}
 

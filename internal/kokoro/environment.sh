@@ -33,7 +33,7 @@ fi
 cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
 cd "env-tests-logging/"
-export ENV_TEST_PY_VERSION=3.7
+export ENV_TEST_PY_VERSION=3.9
 echo "using python version: $ENV_TEST_PY_VERSION"
 
 # run tests from git tag golang-envtest-pin when available
@@ -65,7 +65,7 @@ gcloud config set compute/zone us-central1-b
 gcloud auth configure-docker -q
 
 # create a unique id for this run
-UUID=$(python  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
+UUID=$(python3  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
 export ENVCTL_ID=ci-$UUID
 echo $ENVCTL_ID
 
@@ -85,7 +85,7 @@ fi
 
 # Run the environment test for the specified GCP service
 set +e
-python3.7 -m nox --session "tests(language='go', platform='$ENVIRONMENT')"
+python3 -m nox --session "tests(language='go', platform='$ENVIRONMENT')"
 TEST_STATUS_CODE=$?
 
 # destroy resources
