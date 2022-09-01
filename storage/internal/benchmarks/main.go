@@ -59,6 +59,7 @@ type benchmarkOptions struct {
 	forceGC       bool
 	numWorkers    int
 	connPoolSize  int
+	useDefaults   bool
 }
 
 func parseFlags() {
@@ -81,6 +82,7 @@ func parseFlags() {
 	flag.BoolVar(&opts.forceGC, "gc_f", false, "force garbage collection at the beginning of each upload")
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.IntVar(&opts.connPoolSize, "conn_pool", 4, "GRPC connection pool size")
+	flag.BoolVar(&opts.useDefaults, "defaults", false, "use default client configuration")
 
 	flag.StringVar(&projectID, "p", projectID, "projectID")
 	flag.StringVar(&credentialsFile, "creds", credentialsFile, "path to credentials file")
@@ -232,7 +234,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 		chunkSize:     int(writeChunkSize),
 		crc32Enabled:  doCRC32C,
 		md5Enabled:    doMD5,
-		API:           readAPI,
+		API:           writeAPI,
 		elapsedTime:   timeTaken,
 		completed:     err == nil,
 		isRead:        false,
@@ -274,7 +276,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 			appBufferSize: int(appReadBufferSize),
 			crc32Enabled:  true,  // internally verified for us
 			md5Enabled:    false, // we only need one integrity validation
-			API:           writeAPI,
+			API:           readAPI,
 			elapsedTime:   timeTaken,
 			completed:     err == nil,
 			isRead:        true,

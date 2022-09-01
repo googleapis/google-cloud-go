@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"google.golang.org/api/option"
 )
 
 type uploadOpts struct {
@@ -65,15 +64,6 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	}
 
 	if uopts.crc32c || uopts.md5 {
-		// TODO: remove use of separate client once grpc is fully implemented
-		clientMu.Lock()
-		httpClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
-		clientMu.Unlock()
-		if err != nil {
-			return elapsedTime, fmt.Errorf("NewClient: %w", err)
-		}
-		o := httpClient.Bucket(uopts.o.BucketName()).Object(uopts.o.ObjectName())
-
 		attrs, aerr := o.Attrs(ctx)
 		if aerr != nil {
 			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %w", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
@@ -118,4 +108,42 @@ func verifyHash(md5Hash hash.Hash, crc32cHash hash.Hash32, expectedMD5Hash []byt
 		}
 	}
 	return nil
+}
+
+func uploadBenchmarkDefaults(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
+	start := time.Now()
+	defer func() {
+		elapsedTime = time.Since(start)
+	}()
+
+	o := uopts.o.If(storage.Conditions{DoesNotExist: true})
+	objectWriter := o.NewWriter(ctx)
+
+	f, err := os.Open(uopts.fileName)
+	if err != nil {
+		return elapsedTime, fmt.Errorf("os.Open: %w", err)
+	}
+	defer f.Close()
+
+	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.md5, uopts.crc32c)
+
+	if _, err = io.Copy(mw, f); err != nil {
+		return elapsedTime, fmt.Errorf("io.Copy: %w", err)
+	}
+
+	err = objectWriter.Close()
+	if err != nil {
+		return elapsedTime, fmt.Errorf("writer.Close: %w", err)
+	}
+
+	if uopts.crc32c || uopts.md5 {
+		attrs, aerr := o.Attrs(ctx)
+		if aerr != nil {
+			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %w", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
+		}
+
+		rerr = verifyHash(md5Hash, crc32cHash, attrs.MD5, attrs.CRC32C)
+	}
+
+	return
 }
