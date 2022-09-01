@@ -50,7 +50,6 @@ func (te *testExporter) hasSpans(names []string) []string {
 }
 
 func TestIntegration_Tracing(t *testing.T) {
-	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -97,5 +96,4 @@ func TestIntegration_Tracing(t *testing.T) {
 			t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
 		}
 	}
-
 }
