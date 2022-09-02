@@ -78,7 +78,7 @@ func pgNumericType() *sppb.Type {
 }
 
 func jsonType() *sppb.Type {
-	return &sppb.Type{Code: sppb.TypeCode_JSON}
+	return &sppb.Type{Code: sppb.TypeCode_JSON, TypeAnnotation: sppb.TypeAnnotationCode_PG_JSONB}
 }
 
 func bytesProto(b []byte) *proto3.Value {
