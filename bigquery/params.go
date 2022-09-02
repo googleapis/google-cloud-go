@@ -171,6 +171,7 @@ type ScalarQueryParameter struct {
 	Type string
 }
 
+// ArrayQueryParameter represents an explicit array parameter with a given type.
 type ArrayQueryParameter struct {
 	// Name is used for named parameter mode.
 	// It must match the name in the query case-insensitively.
@@ -192,6 +193,7 @@ type ArrayQueryParameter struct {
 	Type ParameterType
 }
 
+// StructQueryParameter represents an explicit complex type parameter with a given schema.
 type StructQueryParameter struct {
 	// Name is used for named parameter mode.
 	// It must match the name in the query case-insensitively.
