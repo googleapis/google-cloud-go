@@ -689,6 +689,11 @@
                 "ListOperations"
               ]
             },
+            "RemoveDatapoints": {
+              "methods": [
+                "RemoveDatapoints"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -702,6 +707,11 @@
             "UpdateIndex": {
               "methods": [
                 "UpdateIndex"
+              ]
+            },
+            "UpsertDatapoints": {
+              "methods": [
+                "UpsertDatapoints"
               ]
             },
             "WaitOperation": {
