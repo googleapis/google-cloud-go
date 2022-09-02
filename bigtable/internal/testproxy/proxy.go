@@ -41,6 +41,21 @@ var (
 	logLabel = "cbt-go-proxy"
 )
 
+// testClient contains a bigtable.Client object and cancel functions
+type testClient struct {
+	c                   *bigtable.Client     // c stores the Bigtable client under test
+	cancels             []context.CancelFunc // cancels stores a cancel() for each call to this client
+	appProfileID        string               // appProfileID is currently unused
+	perOperationTimeout *duration.Duration   // perOperationTimeout sets a custom timeout for methods calls on this client
+}
+
+// cancelAll calls all of the context.CancelFuncs stored in this testClient.
+func (tc *testClient) cancelAll() {
+	for _, c := range tc.cancels {
+		c()
+	}
+}
+
 // rowToRowProto converts a Bigtable Go client Row struct into a
 // Bigtable protobuf Row struct. It iterates over all of the column families
 // (keys) and ReadItem slices (values) in the client Row struct
@@ -176,11 +191,7 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
-
-	btClient            *bigtable.Client
-	clientID            string
-	appProfileID        string
-	perOperationTimeout *duration.Duration
+	clientIDs map[string]testClient // clientIDs has all of the bigtable.Client objects under test
 }
 
 func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClientRequest) (*pb.CreateClientResponse, error) {
@@ -202,16 +213,33 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	}
 	opts = append(opts, credOpts...)
 
-	c, err := bigtable.NewClient(ctx, req.ProjectId, req.InstanceId, opts...)
+	localCtx, cancel := context.WithCancel(context.Background())
+
+	c, err := bigtable.NewClient(localCtx, req.ProjectId, req.InstanceId, opts...)
 	if err != nil {
+		cancel()
 		return nil, stat.Error(codes.Internal,
 			fmt.Sprintf("%s: failed to create client: %v", logLabel, err))
 	}
 
-	s.btClient = c
-	s.clientID = req.ClientId // Might need to be stored in a map
-	s.appProfileID = req.AppProfileId
-	s.perOperationTimeout = req.PerOperationTimeout
+	if _, exists := s.clientIDs[req.ClientId]; exists {
+		cancel()
+		return nil, stat.Error(codes.AlreadyExists,
+			fmt.Sprintf("%s: ClientID already exists %v", logLabel, err))
+	}
+
+	if s.clientIDs == nil {
+		s.clientIDs = make(map[string]testClient)
+	}
+
+	s.clientIDs[req.ClientId] = testClient{
+		c: c,
+		cancels: []context.CancelFunc{
+			cancel,
+		},
+		appProfileID:        req.AppProfileId,
+		perOperationTimeout: req.PerOperationTimeout,
+	}
 
 	res := &pb.CreateClientResponse{}
 
@@ -219,13 +247,37 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 }
 
 func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClientRequest) (*pb.RemoveClientResponse, error) {
-	return nil, fmt.Errorf("not implemented")
+	clientId := req.ClientId
+	doCancelAll := req.CancelAll
+
+	if _, exists := s.clientIDs[clientId]; !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	btc := s.clientIDs[clientId]
+
+	if doCancelAll {
+		for _, c := range btc.cancels {
+			c()
+		}
+	}
+
+	resp := &pb.RemoveClientResponse{}
+	return resp, nil
 }
 
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
 
+	if _, exists := s.clientIDs[req.ClientId]; !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	btc := s.clientIDs[req.ClientId]
+
 	tName := req.TableName
-	t := s.btClient.Open(tName)
+	t := btc.c.Open(tName)
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 
