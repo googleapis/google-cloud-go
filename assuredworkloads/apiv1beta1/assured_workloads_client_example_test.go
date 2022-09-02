@@ -94,26 +94,6 @@ func ExampleClient_UpdateWorkload() {
 	_ = resp
 }
 
-func ExampleClient_RestrictAllowedServices() {
-	ctx := context.Background()
-	c, err := assuredworkloads.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &assuredworkloadspb.RestrictAllowedServicesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#RestrictAllowedServicesRequest.
-	}
-	resp, err := c.RestrictAllowedServices(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_RestrictAllowedResources() {
 	ctx := context.Background()
 	c, err := assuredworkloads.NewClient(ctx)
