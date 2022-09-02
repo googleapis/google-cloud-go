@@ -1928,6 +1928,7 @@ const (
 	spannerTypeNullNumeric
 	spannerTypeNullJSON
 	spannerTypePGNumeric
+	spannerTypePGJSONB
 	spannerTypeArrayOfNonNullString
 	spannerTypeArrayOfByteArray
 	spannerTypeArrayOfNonNullInt64
@@ -1945,6 +1946,8 @@ const (
 	spannerTypeArrayOfNullTime
 	spannerTypeArrayOfNullDate
 	spannerTypeArrayOfPGNumeric
+	//spannerTypeArrayOfPGJSONB
+
 )
 
 // supportsNull returns true for the Go types that can hold a null value from
@@ -1977,6 +1980,7 @@ var typeOfNullDate = reflect.TypeOf(NullDate{})
 var typeOfNullNumeric = reflect.TypeOf(NullNumeric{})
 var typeOfNullJSON = reflect.TypeOf(NullJSON{})
 var typeOfPGNumeric = reflect.TypeOf(PGNumeric{})
+var spannerTypeArrayOfPGJSONB = reflect.TypeOf(PGJSONB{})
 
 // getDecodableSpannerType returns the corresponding decodableSpannerType of
 // the given pointer.
