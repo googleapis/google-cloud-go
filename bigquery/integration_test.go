@@ -1919,15 +1919,78 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{NewScalarQueryParameter("val", "BIGNUMERIC", bigRat)},
+			[]QueryParameter{
+				ScalarQueryParameter{
+					Name:  "val",
+					Type:  "BIGNUMERIC",
+					Value: BigNumericString(bigRat),
+				}.QueryParameter(),
+			},
 			[]Value{bigRat},
 			bigRat,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{NewArrayQueryParameter("val", "STRING", []string{"a", "b"})},
+			[]QueryParameter{
+				ArrayQueryParameter{
+					Name:  "val",
+					Value: []string{"a", "b"},
+					Type: ScalarQueryParameter{
+						Type: "STRING",
+					},
+				}.QueryParameter(),
+			},
 			[]Value{[]Value{"a", "b"}},
 			[]interface{}{"a", "b"},
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				StructQueryParameter{
+					Name: "val",
+					Value: map[string]ParameterValue{
+						"Timestamp": ScalarQueryParameter{
+							Value: ts,
+						},
+						"BigNumericArray": ArrayQueryParameter{
+							Value: []string{
+								BigNumericString(bigRat),
+								BigNumericString(rat),
+							},
+						},
+						"SubStruct": StructQueryParameter{
+							Value: map[string]ParameterValue{
+								"String": ScalarQueryParameter{
+									Value: "c",
+								},
+							},
+						},
+					},
+					Schema: map[string]ParameterType{
+						"Timestamp": ScalarQueryParameter{
+							Type: "TIMESTAMP",
+						},
+						"BigNumericArray": ArrayQueryParameter{
+							Type: ScalarQueryParameter{
+								Type: "BIGNUMERIC",
+							},
+						},
+						"SubStruct": StructQueryParameter{
+							Schema: map[string]ParameterType{
+								"String": ScalarQueryParameter{
+									Type: "STRING",
+								},
+							},
+						},
+					},
+				}.QueryParameter(),
+			},
+			[]Value{[]Value{ts, []Value{bigRat, rat}, []Value{"c"}}},
+			map[string]interface{}{
+				"Timestamp":       ts,
+				"BigNumericArray": []interface{}{bigRat, rat},
+				"SubStruct":       map[string]interface{}{"String": "c"},
+			},
 		},
 	}
 	for _, c := range testCases {

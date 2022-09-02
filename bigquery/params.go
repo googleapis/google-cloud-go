@@ -128,35 +128,176 @@ type QueryParameter struct {
 	// string.
 	Value interface{}
 
-	// Param Type hint that user can inform explicitly to enforce a more specific type
-	pt *bq.QueryParameterType
+	explicitParameter Parameter
 }
 
-// NewScalarQueryParameter allows to create a scalar QueryParameter with a explicit parameter type.
-func NewScalarQueryParameter(name string, paramType FieldType, value interface{}) QueryParameter {
+// ParameterType represents an explicit typed parameter to a query.
+// When using those interfaces, the priority is to avoid type inference.
+type ParameterType interface {
+	parameterType() *bq.QueryParameterType
+}
+
+// ParameterValue represents an explicit parameter value to a query
+// When using those interfaces, the priority is to avoid type inference.
+type ParameterValue interface {
+	parameterValue() *bq.QueryParameterValue
+}
+
+// Parameter implements ParameterType and ParameterValue.
+type Parameter interface {
+	ParameterType
+	ParameterValue
+}
+
+// ScalarQueryParameter represents an explicit scalar parameter with a given type.
+type ScalarQueryParameter struct {
+	// Name is used for named parameter mode.
+	// It must match the name in the query case-insensitively.
+	Name string
+
+	// Value is the value of the parameter.
+	//
+	// Same rules applies from QueryParameter.Value field.
+	// But as for explicit parameters we try to avoid type inference,
+	// we recommend setting the value as string using our formatter functions when applicable.
+	//   CivilTimeString
+	//   CivilDateTimeString
+	//   IntervalString
+	//   NumericString
+	//   BigNumericString
+	Value interface{}
+
+	// The parameter data type.
+	Type string
+}
+
+type ArrayQueryParameter struct {
+	// Name is used for named parameter mode.
+	// It must match the name in the query case-insensitively.
+	Name string
+
+	// Value is the value of the parameter.
+	//
+	// Same rules applies from QueryParameter.Value field.
+	// But as for explicit parameters we try to avoid type inference,
+	// we recommend setting the value as string using our formatter functions when applicable.
+	//   CivilTimeString
+	//   CivilDateTimeString
+	//   IntervalString
+	//   NumericString
+	//   BigNumericString
+	Value interface{}
+
+	// Type must conform to the ParameterType interface. You can have an array of scalar values or complex types.
+	Type ParameterType
+}
+
+type StructQueryParameter struct {
+	// Name is used for named parameter mode.
+	// It must match the name in the query case-insensitively.
+	Name string
+
+	// Schema complex struct value passed as a map of field names and ParameterTypes.
+	Schema map[string]ParameterType
+
+	// Value complex struct value passed as a map of field names and ParameterValues.
+	Value map[string]ParameterValue
+}
+
+// QueryParameter converts an explicit ScalarQueryParameter to a common QueryParameter
+func (p ScalarQueryParameter) QueryParameter() QueryParameter {
 	return QueryParameter{
-		Name:  name,
-		Value: value,
-		pt:    &bq.QueryParameterType{Type: string(paramType)},
+		Name:              p.Name,
+		Value:             p.Value,
+		explicitParameter: p,
 	}
 }
 
-// NewArrayQueryParameter allows to create an array of QueryParameter with a explicit parameter type.
-func NewArrayQueryParameter(name string, paramType FieldType, value interface{}) QueryParameter {
-	pt := &bq.QueryParameterType{Type: string(paramType)}
-	return QueryParameter{
-		Name:  name,
-		Value: value,
-		pt:    &bq.QueryParameterType{Type: "ARRAY", ArrayType: pt},
+// ParameterType
+func (p ScalarQueryParameter) parameterType() *bq.QueryParameterType {
+	return &bq.QueryParameterType{Type: string(p.Type)}
+}
+
+func (p ScalarQueryParameter) parameterValue() *bq.QueryParameterValue {
+	pv, err := paramValue(reflect.ValueOf(p.Value))
+	if err != nil {
+		return &bq.QueryParameterValue{}
 	}
+	return pv
+}
+
+// QueryParameter converts an explicit ArrayQueryParameter to a common QueryParameter
+func (p ArrayQueryParameter) QueryParameter() QueryParameter {
+	return QueryParameter{
+		Name:              p.Name,
+		Value:             p.Value,
+		explicitParameter: p,
+	}
+}
+
+func (p ArrayQueryParameter) parameterType() *bq.QueryParameterType {
+	return &bq.QueryParameterType{Type: "ARRAY", ArrayType: p.Type.parameterType()}
+}
+
+func (p ArrayQueryParameter) parameterValue() *bq.QueryParameterValue {
+	pv, err := paramValue(reflect.ValueOf(p.Value))
+	if err != nil {
+		return &bq.QueryParameterValue{}
+	}
+	return pv
+}
+
+// QueryParameter converts an explicit StructQueryParameter to a common QueryParameter
+func (p StructQueryParameter) QueryParameter() QueryParameter {
+	return QueryParameter{
+		Name:              p.Name,
+		Value:             p.Value,
+		explicitParameter: p,
+	}
+}
+
+func (p StructQueryParameter) parameterType() *bq.QueryParameterType {
+	var fts []*bq.QueryParameterTypeStructTypes
+	for field, param := range p.Schema {
+		fts = append(fts, &bq.QueryParameterTypeStructTypes{
+			Name: field,
+			Type: param.parameterType(),
+		})
+	}
+	return &bq.QueryParameterType{Type: "STRUCT", StructTypes: fts}
+}
+
+func (p StructQueryParameter) parameterValue() *bq.QueryParameterValue {
+	pv := &bq.QueryParameterValue{}
+	pv.StructValues = map[string]bq.QueryParameterValue{}
+	for field, param := range p.Value {
+		v := param.parameterValue()
+		pv.StructValues[field] = *v
+	}
+	return pv
 }
 
 func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
-	pv, err := paramValue(reflect.ValueOf(p.Value), p.pt)
+	if p.explicitParameter != nil {
+		return &bq.QueryParameter{
+			Name:           p.Name,
+			ParameterType:  p.explicitParameter.parameterType(),
+			ParameterValue: p.explicitParameter.parameterValue(),
+		}, nil
+	}
+	if param, ok := p.Value.(Parameter); ok {
+		return &bq.QueryParameter{
+			Name:           p.Name,
+			ParameterType:  param.parameterType(),
+			ParameterValue: param.parameterValue(),
+		}, nil
+	}
+	v := reflect.ValueOf(p.Value)
+	pv, err := paramValue(v)
 	if err != nil {
 		return nil, err
 	}
-	pt, err := paramTypeWithHint(reflect.TypeOf(p.Value), p.pt)
+	pt, err := paramType(reflect.TypeOf(p.Value), v)
 	if err != nil {
 		return nil, err
 	}
@@ -167,16 +308,12 @@ func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	}, nil
 }
 
-func paramTypeWithHint(t reflect.Type, typeHint *bq.QueryParameterType) (*bq.QueryParameterType, error) {
-	if typeHint != nil {
-		return typeHint, nil
-	}
-	return paramType(t)
-}
-
-func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
+func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) {
 	if t == nil {
 		return nil, errors.New("bigquery: nil parameter")
+	}
+	if param, ok := v.Interface().(ParameterType); ok {
+		return param.parameterType(), nil
 	}
 	switch t {
 	case typeOfDate, typeOfNullDate:
@@ -224,7 +361,7 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		fallthrough
 
 	case reflect.Array:
-		et, err := paramType(t.Elem())
+		et, err := paramType(t.Elem(), v)
 		if err != nil {
 			return nil, err
 		}
@@ -244,7 +381,7 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 			return nil, err
 		}
 		for _, f := range fields {
-			pt, err := paramType(f.Type)
+			pt, err := paramType(f.Type, v)
 			if err != nil {
 				return nil, err
 			}
@@ -258,10 +395,13 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 	return nil, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter type", t)
 }
 
-func paramValue(v reflect.Value, typeHint *bq.QueryParameterType) (*bq.QueryParameterValue, error) {
+func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 	res := &bq.QueryParameterValue{}
 	if !v.IsValid() {
 		return res, errors.New("bigquery: nil parameter")
+	}
+	if param, ok := v.Interface().(ParameterValue); ok {
+		return param.parameterValue(), nil
 	}
 	t := v.Type()
 	switch t {
@@ -335,11 +475,7 @@ func paramValue(v reflect.Value, typeHint *bq.QueryParameterType) (*bq.QueryPara
 		return res, nil
 
 	case typeOfRat:
-		if typeHint != nil && typeHint.Type == string(BigNumericFieldType) {
-			res.Value = BigNumericString(v.Interface().(*big.Rat))
-		} else {
-			res.Value = NumericString(v.Interface().(*big.Rat))
-		}
+		res.Value = NumericString(v.Interface().(*big.Rat))
 		return res, nil
 	case typeOfIntervalValue:
 		res.Value = IntervalString(v.Interface().(*IntervalValue))
@@ -356,7 +492,7 @@ func paramValue(v reflect.Value, typeHint *bq.QueryParameterType) (*bq.QueryPara
 	case reflect.Array:
 		var vals []*bq.QueryParameterValue
 		for i := 0; i < v.Len(); i++ {
-			val, err := paramValue(v.Index(i), nil)
+			val, err := paramValue(v.Index(i))
 			if err != nil {
 				return nil, err
 			}
@@ -384,7 +520,7 @@ func paramValue(v reflect.Value, typeHint *bq.QueryParameterType) (*bq.QueryPara
 		res.StructValues = map[string]bq.QueryParameterValue{}
 		for _, f := range fields {
 			fv := v.FieldByIndex(f.Index)
-			fp, err := paramValue(fv, nil)
+			fp, err := paramValue(fv)
 			if err != nil {
 				return nil, err
 			}

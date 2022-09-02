@@ -118,15 +118,15 @@ var scalarTests = []scalarTest{
 		dateTimeParamType,
 		NullDateTime{Valid: false}},
 	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
+	{ScalarQueryParameter{
+		Type:  "BIGNUMERIC",
+		Value: BigNumericString(big.NewRat(12345, 10e10)),
+	}, false, "0.00000012345000000000000000000000000000", bigNumericParamType, big.NewRat(12345, 10e10)},
 	{&IntervalValue{Years: 1, Months: 2, Days: 3}, false, "1-2 3 0:0:0", intervalParamType, &IntervalValue{Years: 1, Months: 2, Days: 3}},
 	{NullGeography{GeographyVal: "POINT(-122.335503 47.625536)", Valid: true}, false, "POINT(-122.335503 47.625536)", geographyParamType, "POINT(-122.335503 47.625536)"},
 	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
 	{NullJSON{Valid: true, JSONVal: "{\"alpha\":\"beta\"}"}, false, "{\"alpha\":\"beta\"}", jsonParamType, "{\"alpha\":\"beta\"}"},
 	{NullJSON{Valid: false}, true, "", jsonParamType, NullJSON{Valid: false}},
-}
-
-var explicitScalarTests = []scalarTest{
-	{big.NewRat(12345, 10e10), false, "0.00000012345000000000000000000000000000", bigNumericParamType, big.NewRat(12345, 10e10)},
 }
 
 type (
@@ -185,14 +185,12 @@ func sval(s string) bq.QueryParameterValue {
 }
 
 func TestParamValueScalar(t *testing.T) {
-
 	nilValue := &bq.QueryParameterValue{
 		NullFields: []string{"Value"},
 	}
 
-	allScalarTests := append(scalarTests, explicitScalarTests...)
-	for _, test := range allScalarTests {
-		got, err := paramValue(reflect.ValueOf(test.val), test.wantType)
+	for _, test := range scalarTests {
+		got, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
 			t.Errorf("%v: got err %v", test.val, err)
 		}
@@ -224,7 +222,7 @@ func TestParamValueArray(t *testing.T) {
 		{[]int{1, 2}, qpv},
 		{[2]int{1, 2}, qpv},
 	} {
-		got, err := paramValue(reflect.ValueOf(test.val), nil)
+		got, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -235,7 +233,7 @@ func TestParamValueArray(t *testing.T) {
 }
 
 func TestParamValueStruct(t *testing.T) {
-	got, err := paramValue(reflect.ValueOf(s1), nil)
+	got, err := paramValue(reflect.ValueOf(s1))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -248,7 +246,7 @@ func TestParamValueErrors(t *testing.T) {
 	// paramValue lets a few invalid types through, but paramType catches them.
 	// Since we never call one without the other that's fine.
 	for _, val := range []interface{}{nil, new([]int)} {
-		_, err := paramValue(reflect.ValueOf(val), nil)
+		_, err := paramValue(reflect.ValueOf(val))
 		if err == nil {
 			t.Errorf("%v (%T): got nil, want error", val, val)
 		}
@@ -257,7 +255,7 @@ func TestParamValueErrors(t *testing.T) {
 
 func TestParamType(t *testing.T) {
 	for _, test := range scalarTests {
-		got, err := paramType(reflect.TypeOf(test.val))
+		got, err := paramType(reflect.TypeOf(test.val), reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -275,7 +273,7 @@ func TestParamType(t *testing.T) {
 		{[3]bool{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: boolParamType}},
 		{S1{}, s1ParamType},
 	} {
-		got, err := paramType(reflect.TypeOf(test.val))
+		got, err := paramType(reflect.TypeOf(test.val), reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -289,7 +287,7 @@ func TestParamTypeErrors(t *testing.T) {
 	for _, val := range []interface{}{
 		nil, uint(0), new([]int), make(chan int),
 	} {
-		_, err := paramType(reflect.TypeOf(val))
+		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
 		if err == nil {
 			t.Errorf("%v (%T): got nil, want error", val, val)
 		}
@@ -299,31 +297,17 @@ func TestParamTypeErrors(t *testing.T) {
 func TestConvertParamValue(t *testing.T) {
 	// Scalars.
 	for _, test := range scalarTests {
-		pval, err := paramValue(reflect.ValueOf(test.val), nil)
+		pval, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
-		ptype, err := paramType(reflect.TypeOf(test.val))
+		ptype, err := paramType(reflect.TypeOf(test.val), reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
 		got, err := convertParamValue(pval, ptype)
 		if err != nil {
 			t.Fatalf("convertParamValue(%+v, %+v): %v", pval, ptype, err)
-		}
-		if !testutil.Equal(got, test.wantStat) {
-			t.Errorf("%#v: wanted stat as %#v, got %#v", test.val, test.wantStat, got)
-		}
-
-	}
-	for _, test := range explicitScalarTests {
-		pval, err := paramValue(reflect.ValueOf(test.val), test.wantType)
-		if err != nil {
-			t.Fatal(err)
-		}
-		got, err := convertParamValue(pval, test.wantType)
-		if err != nil {
-			t.Fatalf("convertParamValue(%+v, %+v): %v", pval, test.wantType, err)
 		}
 		if !testutil.Equal(got, test.wantStat) {
 			t.Errorf("%#v: wanted stat as %#v, got %#v", test.val, test.wantStat, got)
