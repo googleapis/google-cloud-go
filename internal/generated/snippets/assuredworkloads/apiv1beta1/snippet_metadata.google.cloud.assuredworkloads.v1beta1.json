@@ -14,7 +14,7 @@
     {
       "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_AnalyzeWorkloadMove_sync",
       "title": "assuredworkloads AnalyzeWorkloadMove Sample",
-      "description": "AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured\nWorkload",
+      "description": "AnalyzeWorkloadMove a request to analyze a hypothetical move of a source project or\nproject-based workload to a target (destination) folder-based workload.",
       "file": "Client/AnalyzeWorkloadMove/main.go",
       "language": "GO",
       "clientMethod": {
@@ -363,52 +363,6 @@
         "method": {
           "shortName": "RestrictAllowedResources",
           "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.RestrictAllowedResources",
-          "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 47,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_RestrictAllowedServices_sync",
-      "title": "assuredworkloads RestrictAllowedServices Sample",
-      "description": "RestrictAllowedServices restrict the list of services allowed in the Workload environment.\nThe current list of allowed services can be found at\nhttps: //cloud.google.com/assured-workloads/docs/supported-products (at https: //cloud.google.com/assured-workloads/docs/supported-products)\nIn addition to assuredworkloads.workload.update permission, the user should\nalso have orgpolicy.policy.set permission on the folder resource\nto use this functionality.",
-      "file": "Client/RestrictAllowedServices/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "RestrictAllowedServices",
-        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.RestrictAllowedServices",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "assuredworkloadspb.RestrictAllowedServicesRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "assuredworkloadspb.RestrictAllowedServicesResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
-        },
-        "method": {
-          "shortName": "RestrictAllowedServices",
-          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.RestrictAllowedServices",
           "service": {
             "shortName": "AssuredWorkloadsService",
             "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
