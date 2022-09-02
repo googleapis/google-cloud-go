@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"errors"
+	"io"
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
@@ -46,4 +47,20 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	default:
 		return r.bo.Pause(), false
 	}
+}
+
+// shouldReconnect is akin to a retry predicate, in that it evaluates whether we should force
+// our bidi stream to close/reopen based on the responses error.  Errors here signal that no
+// further appends will succeed.
+func shouldReconnect(err error) bool {
+	var knownErrors = []error{
+		io.EOF,
+		status.Error(codes.Unavailable, "the connection is draining"), // errStreamDrain in gRPC transport
+	}
+	for _, ke := range knownErrors {
+		if errors.Is(err, ke) {
+			return true
+		}
+	}
+	return false
 }
