@@ -140,7 +140,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 				return g.protoc(fn, grpc)
 			})
 		} else {
-			log.Panicf("skipping, %q has been migrated", pkg)
+			log.Printf("skipping, %q has been migrated", pkg)
 		}
 	}
 	if err := grp.Wait(); err != nil {
