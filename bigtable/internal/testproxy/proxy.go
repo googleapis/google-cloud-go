@@ -30,8 +30,10 @@ import (
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	oauth "google.golang.org/grpc/credentials/oauth"
+	stat "google.golang.org/grpc/status"
 )
 
 var (
@@ -102,10 +104,12 @@ func (c credentialsBundle) NewWithMode(mode string) (credentials.Bundle, error) 
 //
 // There are three base cases to address:
 //  1. CreateClientRequest specifies no unique credentials; so ADC will be used.
-//     This method returns an empty slice..
+//     This method returns an empty slice.
 //  2. CreateClientRequest specifies only a channel credential.
 //  3. CreateClientRequest specifies both call and channel credentials. In
-//     this case, we need to create a combined credential
+//     this case, we need to create a combined credential (Bundle).
+//
+// Discussed [here](https://github.com/grpc/grpc-go/tree/master/examples/features/authentication).
 func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, error) {
 	opts := make([]option.ClientOption, 0)
 
@@ -125,37 +129,38 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, 
 		opts = append(opts, option.WithGRPCDialOption(d))
 	}
 
-	if req.CallCredential != nil {
-		cc := req.CallCredential
-		sa := cc.GetJsonServiceAccount()
-		clc, err := oauth.NewJWTAccessFromKey([]byte(sa))
-		if err != nil {
-			return nil, err
-		}
-
-		chc, err := getChannelCredentials(req.ChannelCredential, req.OverrideSslTargetName)
-		if err != nil {
-			return nil, err
-		}
-
-		b := credentialsBundle{
-			channel: chc,
-			call:    clc,
-		}
-
-		d := grpc.WithCredentialsBundle(b)
-		opts = append(opts, option.WithGRPCDialOption(d))
+	// Case 1: No additional credentials provided
+	chc := req.ChannelCredential
+	if chc == nil {
+		return opts, nil
+	}
+	channelCreds, err := getChannelCredentials(chc, req.OverrideSslTargetName)
+	if err != nil {
+		return nil, err
 	}
 
-	if req.ChannelCredential != nil {
-		chc := req.ChannelCredential
-		creds, err := getChannelCredentials(chc, req.OverrideSslTargetName)
-		if err != nil {
-			return nil, err
-		}
-		d := grpc.WithTransportCredentials(creds)
+	// Case 2: Only channel credentials provided
+	cc := req.CallCredential
+	if cc == nil {
+		d := grpc.WithTransportCredentials(channelCreds)
 		opts = append(opts, option.WithGRPCDialOption(d))
+		return opts, nil
 	}
+
+	// Case 3: Both channel & call credentials provided
+	sa := cc.GetJsonServiceAccount()
+	clc, err := oauth.NewJWTAccessFromKey([]byte(sa))
+	if err != nil {
+		return nil, err
+	}
+
+	b := credentialsBundle{
+		channel: channelCreds,
+		call:    clc,
+	}
+
+	d := grpc.WithCredentialsBundle(b)
+	opts = append(opts, option.WithGRPCDialOption(d))
 
 	return opts, nil
 }
@@ -183,7 +188,8 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		req.DataTarget == "" ||
 		req.ProjectId == "" ||
 		req.InstanceId == "" {
-		return nil, fmt.Errorf("%s must provide ClientId, DataTarget, ProjectId, and InstanceId", logLabel)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s must provide ClientId, DataTarget, ProjectId, and InstanceId", logLabel))
 	}
 
 	opts := make([]option.ClientOption, 0)
@@ -191,13 +197,15 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 
 	credOpts, err := getCredentialsOptions(req)
 	if err != nil {
-		return nil, err
+		return nil, stat.Error(codes.Unauthenticated,
+			fmt.Sprintf("%s: failed to set credentials: %v", logLabel, err))
 	}
 	opts = append(opts, credOpts...)
 
 	c, err := bigtable.NewClient(ctx, req.ProjectId, req.InstanceId, opts...)
 	if err != nil {
-		return nil, err
+		return nil, stat.Error(codes.Internal,
+			fmt.Sprintf("%s: failed to create client: %v", logLabel, err))
 	}
 
 	s.btClient = c
@@ -268,15 +276,24 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 
 func (s *goTestProxyServer) mustEmbedUnimplementedCloudBigtableV2TestProxyServer() {}
 
+func newProxyServer(lis net.Listener) *grpc.Server {
+	s := grpc.NewServer()
+	pb.RegisterCloudBigtableV2TestProxyServer(s, &goTestProxyServer{})
+	log.Printf("server listening at %v", lis.Addr())
+	return s
+}
+
 func main() {
 	flag.Parse()
+
+	log.Println(*port)
+
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := grpc.NewServer()
-	pb.RegisterCloudBigtableV2TestProxyServer(s, &goTestProxyServer{})
-	log.Printf("server listening at %v", lis.Addr())
+
+	s := newProxyServer(lis)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
