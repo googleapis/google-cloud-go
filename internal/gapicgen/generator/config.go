@@ -1695,6 +1695,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/09/17
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/dialogflow/v2beta1",
+		Pkg:                   "dialogflow",
+		ImportPath:            "cloud.google.com/go/dialogflow/apiv2beta1",
+		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
+		ApiServiceConfigPath:  "dialogflow_v2beta1.yaml",
+		// GA after 2022/10/01
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
