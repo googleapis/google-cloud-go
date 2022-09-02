@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/googleapis/gax-go/v2 v2.4.0
 	google.golang.org/api v0.94.0
-	google.golang.org/genproto v0.0.0-20220829175752-36a9c930ecbf
+	google.golang.org/genproto v0.0.0-20220902135211-223410557253
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
 )
