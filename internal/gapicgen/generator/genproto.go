@@ -133,10 +133,15 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		grpc := !noGRPC[pkg]
 		pk := pkg
 		fn := fileNames
-		grp.Go(func() error {
-			log.Println("running protoc on", pk)
-			return g.protoc(fn, grpc)
-		})
+
+		if !isMigrated(pkg) {
+			grp.Go(func() error {
+				log.Println("running protoc on", pk)
+				return g.protoc(fn, grpc)
+			})
+		} else {
+			log.Printf("skipping, %q has been migrated", pkg)
+		}
 	}
 	if err := grp.Wait(); err != nil {
 		return err

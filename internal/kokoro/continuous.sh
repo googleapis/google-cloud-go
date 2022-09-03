@@ -79,8 +79,14 @@ try3 go mod download
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
-  go test -race -v -timeout 45m "${1:-./...}" 2>&1 \
-    | tee sponge_log.log
+  if [[ $PWD != *"/internal/"* ]] ||
+    [[ $PWD != *"/third_party/"* ]] &&
+    [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
+    # internal tools only expected to work with latest go version
+    return
+  fi
+  go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
+    tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
   cat sponge_log.log \

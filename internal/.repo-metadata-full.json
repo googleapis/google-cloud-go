@@ -71,6 +71,15 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/apikeys/apiv2": {
+    "distribution_name": "cloud.google.com/go/apikeys/apiv2",
+    "description": "API Keys API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apikeys/latest/apiv2",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/appengine/apiv1": {
     "distribution_name": "cloud.google.com/go/appengine/apiv1",
     "description": "App Engine Admin API",
@@ -647,6 +656,15 @@
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/dialogflow/apiv2beta1": {
+    "distribution_name": "cloud.google.com/go/dialogflow/apiv2beta1",
+    "description": "Dialogflow API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/dialogflow/latest/apiv2beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/dialogflow/cx/apiv3": {
     "distribution_name": "cloud.google.com/go/dialogflow/cx/apiv3",
     "description": "Dialogflow API",
@@ -889,6 +907,15 @@
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest",
     "release_level": "ga",
     "library_type": "CORE"
+  },
+  "cloud.google.com/go/iam/apiv2": {
+    "distribution_name": "cloud.google.com/go/iam/apiv2",
+    "description": "Identity and Access Management (IAM) API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest/apiv2",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/iam/credentials/apiv1": {
     "distribution_name": "cloud.google.com/go/iam/credentials/apiv1",
