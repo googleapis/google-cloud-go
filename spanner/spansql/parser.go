@@ -3038,6 +3038,9 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	case tok.caseEqual("CASE"):
 		p.back()
 		return p.parseCaseExpr()
+	case tok.caseEqual("COALESCE"):
+		p.back()
+		return p.parseCoalesceExpr()
 	case tok.caseEqual("IF"):
 		p.back()
 		return p.parseIfExpr()
@@ -3155,6 +3158,17 @@ func (p *parser) parseWhenClause() (WhenClause, *parseError) {
 		return WhenClause{}, err
 	}
 	return WhenClause{Cond: cond, Result: result}, nil
+}
+
+func (p *parser) parseCoalesceExpr() (Coalesce, *parseError) {
+	if err := p.expect("COALESCE"); err != nil {
+		return Coalesce{}, err
+	}
+	exprList, err := p.parseParenExprList()
+	if err != nil {
+		return Coalesce{}, err
+	}
+	return Coalesce{ExprList: exprList}, nil
 }
 
 func (p *parser) parseIfExpr() (If, *parseError) {
