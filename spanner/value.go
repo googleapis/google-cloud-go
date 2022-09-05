@@ -884,6 +884,56 @@ type NullRow struct {
 	Valid bool // Valid is true if Row is not NULL.
 }
 
+// PGJsonB represents a Cloud Spanner PGJsonB that may be NULL.
+type PGJsonB struct {
+	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
+	Valid   bool    // Valid is true if PGJsonB is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for PGJsonB.
+func (n PGJsonB) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for PGJsonB.
+func (n PGJsonB) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	b, err := json.Marshal(n.Value)
+	if err != nil {
+		return fmt.Sprintf("error: %v", err)
+	}
+	return fmt.Sprintf("%v", string(b))
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for PGJsonB.
+func (n PGJsonB) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return json.Marshal(n.Value)
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for PGJsonB.
+func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Valid = false
+		return nil
+	}
+	var v interface{}
+	err := json.Unmarshal(payload, &v)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %w", string(payload), err)
+	}
+	n.Value = v
+	n.Valid = true
+	return nil
+}
+
 // GenericColumnValue represents the generic encoded value and type of the
 // column.  See google.spanner.v1.ResultSet proto for details.  This can be
 // useful for proxying query results when the result types are not known in
@@ -1638,6 +1688,59 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return err
 		}
 		*p = y
+	case *PGJsonB:
+  		if p == nil {
+  			return errNilDst(p)
+  		}
+  		if code == sppb.TypeCode_ARRAY {
+  			if acode != sppb.TypeCode_PG || atypeAnnotation != sppb.TypeAnnotationCode_PG_JSONB{
+  				return errTypeMismatch(code, acode, ptr)
+  			}
+  			x, err := getListValue(v)
+  			if err != nil {
+  				return err
+  			}
+  			y, err := decodeNullJSONArrayToJsonB(x)
+  			if err != nil {
+  				return err
+  			}
+  			*p = *y
+  		} else {
+  			if code != sppb.TypeCode_JSON {
+  				return errTypeMismatch(code, acode, ptr)
+  			}
+  			if isNull {
+  				*p = NullJSON{}
+  				break
+  			}
+  			x := v.GetStringValue()
+  			var y interface{}
+  			err := json.Unmarshal([]byte(x), &y)
+  			if err != nil {
+  				return err
+  			}
+  			*p = NullJSON{y, true}
+  		}
+  case *[]PGJsonB:
+    if p == nil {
+      return errNilDst(p)
+    }
+    if acode != sppb.TypeCode_JSON {
+      return errTypeMismatch(code, acode, ptr)
+    }
+    if isNull {
+      *p = nil
+      break
+    }
+    x, err := getListValue(v)
+    if err != nil {
+      return err
+    }
+    y, err := decodeNullJSONArray(x)
+    if err != nil {
+      return err
+    }
+    *p = y
 	case *time.Time:
 		var nt NullTime
 		if isNull {
