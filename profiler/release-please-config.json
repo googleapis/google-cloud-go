@@ -7,5 +7,6 @@
         "profiler": {
             "component": "profiler"
         }
-    }
+    },
+    "plugins": ["sentence-case"]
 }
