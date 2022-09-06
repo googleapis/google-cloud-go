@@ -2042,12 +2042,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		q.Parameters = c.parameters
 		job, err := q.Run(ctx)
 		if err != nil {
-			bqOut, _ := q.toBQ()
-			for _, qp := range bqOut.Query.QueryParameters {
-				out, _ := qp.MarshalJSON()
-				log.Printf("query param: `%s` - %s", qp.Name, out)
-			}
-			t.Fatalf("%v job with error: %v", bqOut.Query.QueryParameters, err)
+			t.Fatal(err)
 		}
 		if job.LastStatus() == nil {
 			t.Error("no LastStatus")
