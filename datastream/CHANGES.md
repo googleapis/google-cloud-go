@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.0.0...datastream/v1.1.0) (2022-09-06)
+
+
+### Features
+
+* **datastream:** added support for BigQuery destination and PostgreSQL source types ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.5.0...datastream/v1.0.0) (2022-06-29)
 
 
