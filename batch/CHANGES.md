@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.1.0...batch/v0.2.0) (2022-09-06)
+
+
+### Features
+
+* **batch:** environment variables, disk interfaces ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+
 ## 0.1.0 (2022-06-16)
 
 
