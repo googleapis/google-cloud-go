@@ -7,5 +7,6 @@
         "firestore": {
             "component": "firestore"
         }
-    }
+    },
+    "plugins": ["sentence-case"]
 }

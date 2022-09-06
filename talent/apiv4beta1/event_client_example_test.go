@@ -21,11 +21,24 @@ import (
 
 	talent "cloud.google.com/go/talent/apiv4beta1"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewEventClient() {
 	ctx := context.Background()
 	c, err := talent.NewEventClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewEventRESTClient() {
+	ctx := context.Background()
+	c, err := talent.NewEventRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -48,6 +61,26 @@ func ExampleEventClient_CreateClientEvent() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateClientEventRequest.
 	}
 	resp, err := c.CreateClientEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEventClient_GetOperation() {
+	ctx := context.Background()
+	c, err := talent.NewEventClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

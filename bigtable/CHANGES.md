@@ -1,5 +1,47 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.15.0...bigtable/v1.16.0) (2022-07-27)
+
+
+### Features
+
+* **bigtable:** add PolicyType for GCPolicy and expose public methods for different types of GC policies ([#6314](https://github.com/googleapis/google-cloud-go/issues/6314)) ([2971037](https://github.com/googleapis/google-cloud-go/commit/2971037040dd5c2cf712e33ef49cfdfc238c02cc))
+* **bigtable:** adds autoscaling target storage per node ([#6317](https://github.com/googleapis/google-cloud-go/issues/6317)) ([5eab4c3](https://github.com/googleapis/google-cloud-go/commit/5eab4c336075ae5aae78794d73bd0d8d1342813c))
+
+
+### Bug Fixes
+
+* **bigtable:** make code buildable ([#6436](https://github.com/googleapis/google-cloud-go/issues/6436)) ([6bd5ce8](https://github.com/googleapis/google-cloud-go/commit/6bd5ce85ba52fff676bdef2a2bb7fc8ed001e766)), refs [#6419](https://github.com/googleapis/google-cloud-go/issues/6419)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/bigtable-v1.14.0...bigtable/v1.15.0) (2022-07-07)
+
+
+### Features
+
+* **bigtable:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **bigtable:** add GC policy to FamilyInfo. ([#6234](https://github.com/googleapis/google-cloud-go/issues/6234)) ([eb0540d](https://github.com/googleapis/google-cloud-go/commit/eb0540d6f6bbc28074195730178991718c9c0d83))
+* **bigtable:** loadtest support app profile ([#5882](https://github.com/googleapis/google-cloud-go/issues/5882)) ([ec00e5a](https://github.com/googleapis/google-cloud-go/commit/ec00e5a3f0ab0e59bbdb6915ffb53a9dca5f168e))
+* **bigtable:** support PingAndWarm in emulator ([#5803](https://github.com/googleapis/google-cloud-go/issues/5803)) ([9b943d5](https://github.com/googleapis/google-cloud-go/commit/9b943d59fe7e86a037d239663dc64901e9b88a62))
+
+
+### Bug Fixes
+
+* **bigtable:** use internal.Version that is auto-updated for UA ([#5679](https://github.com/googleapis/google-cloud-go/issues/5679)) ([bd2c600](https://github.com/googleapis/google-cloud-go/commit/bd2c600145b1fd12c3ef4f314e4d72543e575206)), refs [#3330](https://github.com/googleapis/google-cloud-go/issues/3330)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.13.0...bigtable/v1.14.0) (2022-05-26)
+
+
+### Features
+
+* **bigtable:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **bigtable:** loadtest support app profile ([#5882](https://github.com/googleapis/google-cloud-go/issues/5882)) ([ec00e5a](https://github.com/googleapis/google-cloud-go/commit/ec00e5a3f0ab0e59bbdb6915ffb53a9dca5f168e))
+* **bigtable:** support PingAndWarm in emulator ([#5803](https://github.com/googleapis/google-cloud-go/issues/5803)) ([9b943d5](https://github.com/googleapis/google-cloud-go/commit/9b943d59fe7e86a037d239663dc64901e9b88a62))
+
+
+### Bug Fixes
+
+* **bigtable:** use internal.Version that is auto-updated for UA ([#5679](https://github.com/googleapis/google-cloud-go/issues/5679)) ([bd2c600](https://github.com/googleapis/google-cloud-go/commit/bd2c600145b1fd12c3ef4f314e4d72543e575206)), refs [#3330](https://github.com/googleapis/google-cloud-go/issues/3330)
+
 ## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.12.0...bigtable/v1.13.0) (2022-01-24)
 
 

@@ -169,7 +169,7 @@ func standardSQLStructFieldsToBQ(fields []*StandardSQLField) ([]*bq.StandardSqlF
 	for _, v := range fields {
 		bqf, err := v.toBQ()
 		if err != nil {
-			return nil, fmt.Errorf("error converting struct fields: %v", err)
+			return nil, fmt.Errorf("error converting struct fields: %w", err)
 		}
 		bqFields = append(bqFields, bqf)
 	}

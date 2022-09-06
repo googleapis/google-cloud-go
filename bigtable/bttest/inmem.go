@@ -19,6 +19,7 @@ Package bttest contains test helpers for working with the bigtable package.
 
 To use a Server, create it, and then connect to it with no security:
 (The project/instance values are ignored.)
+
 	srv, err := bttest.NewServer("localhost:0")
 	...
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
@@ -910,6 +911,10 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 		return nil, err
 	}
 	return res, nil
+}
+
+func (s *server) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error) {
+	return &btpb.PingAndWarmResponse{}, nil
 }
 
 // applyMutations applies a sequence of mutations to a row.

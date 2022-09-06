@@ -92,7 +92,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Essential Contacts API.
+// internalClient is an interface that defines the methods available from Essential Contacts API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

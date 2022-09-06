@@ -1,5 +1,19 @@
 # Changes
 
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.5.0...dataflow/v0.5.1) (2022-07-12)
+
+
+### Documentation
+
+* **dataflow:** corrected the Dataflow job name regex ([1732e43](https://github.com/googleapis/google-cloud-go/commit/1732e4334c84019d93775d861be5c0008e3f5245))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.4.0...dataflow/v0.5.0) (2022-06-29)
+
+
+### Features
+
+* **dataflow:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.3.0...dataflow/v0.4.0) (2022-03-28)
 
 

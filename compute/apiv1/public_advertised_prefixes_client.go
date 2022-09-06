@@ -49,7 +49,17 @@ type PublicAdvertisedPrefixesCallOptions struct {
 	Patch  []gax.CallOption
 }
 
-// internalPublicAdvertisedPrefixesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultPublicAdvertisedPrefixesRESTCallOptions() *PublicAdvertisedPrefixesCallOptions {
+	return &PublicAdvertisedPrefixesCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Patch:  []gax.CallOption{},
+	}
+}
+
+// internalPublicAdvertisedPrefixesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalPublicAdvertisedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,6 +143,9 @@ type publicAdvertisedPrefixesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing PublicAdvertisedPrefixesClient
+	CallOptions **PublicAdvertisedPrefixesCallOptions
 }
 
 // NewPublicAdvertisedPrefixesRESTClient creates a new public advertised prefixes rest client.
@@ -145,9 +158,11 @@ func NewPublicAdvertisedPrefixesRESTClient(ctx context.Context, opts ...option.C
 		return nil, err
 	}
 
+	callOpts := defaultPublicAdvertisedPrefixesRESTCallOptions()
 	c := &publicAdvertisedPrefixesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -161,7 +176,7 @@ func NewPublicAdvertisedPrefixesRESTClient(ctx context.Context, opts ...option.C
 	}
 	c.operationClient = opC
 
-	return &PublicAdvertisedPrefixesClient{internalClient: c, CallOptions: &PublicAdvertisedPrefixesCallOptions{}}, nil
+	return &PublicAdvertisedPrefixesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultPublicAdvertisedPrefixesRESTClientOptions() []option.ClientOption {
@@ -202,7 +217,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified PublicAdvertisedPrefix
 func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
 	params := url.Values{}
@@ -213,10 +231,16 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -260,14 +284,23 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 
 // Get returns the specified PublicAdvertisedPrefix resource.
 func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *computepb.GetPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.PublicAdvertisedPrefix, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.PublicAdvertisedPrefix{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -311,7 +344,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes", req.GetProject())
 
 	params := url.Values{}
@@ -322,10 +358,16 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -382,7 +424,10 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes", req.GetProject())
 
 		params := url.Values{}
@@ -407,6 +452,9 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -466,7 +514,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
 	params := url.Values{}
@@ -477,10 +528,16 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err

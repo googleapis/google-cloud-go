@@ -206,7 +206,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from BigQuery Reservation API.
+// internalClient is an interface that defines the methods available from BigQuery Reservation API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -384,12 +384,12 @@ func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationp
 //
 // Example:
 //
-//   The organization organizationA contains two projects, project1
-//   and project2.
+//	The organization organizationA contains two projects, project1
+//	and project2.
 //
-//   Assignments for all three entities (organizationA, project1, and
-//   project2) could all be created and mapped to the same or different
-//   reservations.
+//	Assignments for all three entities (organizationA, project1, and
+//	project2) could all be created and mapped to the same or different
+//	reservations.
 //
 // Returns google.rpc.Code.PERMISSION_DENIED if user does not have
 // ‘bigquery.admin’ permissions on the project using the reservation
@@ -407,14 +407,14 @@ func (c *Client) CreateAssignment(ctx context.Context, req *reservationpb.Create
 //
 // Example:
 //
-//   Organization organizationA contains two projects, project1 and
-//   project2.
+//	Organization organizationA contains two projects, project1 and
+//	project2.
 //
-//   Reservation res1 exists and was created previously.
+//	Reservation res1 exists and was created previously.
 //
-//   CreateAssignment was used previously to define the following
-//   associations between entities and reservations: <organizationA, res1>
-//   and <project1, res1>
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
 //
 // In this example, ListAssignments will just return the above two assignments
 // for reservation res1, and no expansion/merge will happen.
@@ -432,14 +432,14 @@ func (c *Client) ListAssignments(ctx context.Context, req *reservationpb.ListAss
 //
 // Example:
 //
-//   Organization organizationA contains two projects, project1 and
-//   project2.
+//	Organization organizationA contains two projects, project1 and
+//	project2.
 //
-//   Reservation res1 exists and was created previously.
+//	Reservation res1 exists and was created previously.
 //
-//   CreateAssignment was used previously to define the following
-//   associations between entities and reservations: <organizationA, res1>
-//   and <project1, res1>
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
 //
 // In this example, deletion of the <organizationA, res1> assignment won’t
 // affect the other assignment <project1, res1>. After said deletion,

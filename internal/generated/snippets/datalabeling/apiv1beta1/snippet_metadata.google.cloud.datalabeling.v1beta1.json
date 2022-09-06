@@ -1,0 +1,1572 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/datalabeling/apiv1beta1",
+    "version": "0.3.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.datalabeling.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_CreateAnnotationSpecSet_sync",
+      "title": "datalabeling CreateAnnotationSpecSet Sample",
+      "description": "CreateAnnotationSpecSet creates an annotation spec set by providing a set of labels.",
+      "file": "Client/CreateAnnotationSpecSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAnnotationSpecSet",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.CreateAnnotationSpecSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.CreateAnnotationSpecSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.AnnotationSpecSet",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateAnnotationSpecSet",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.CreateAnnotationSpecSet",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_CreateDataset_sync",
+      "title": "datalabeling CreateDataset Sample",
+      "description": "CreateDataset creates dataset. If success return a Dataset resource.",
+      "file": "Client/CreateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataset",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.CreateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.CreateDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.Dataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateDataset",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.CreateDataset",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_CreateEvaluationJob_sync",
+      "title": "datalabeling CreateEvaluationJob Sample",
+      "description": "CreateEvaluationJob creates an evaluation job.",
+      "file": "Client/CreateEvaluationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEvaluationJob",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.CreateEvaluationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.CreateEvaluationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.EvaluationJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateEvaluationJob",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.CreateEvaluationJob",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_CreateInstruction_sync",
+      "title": "datalabeling CreateInstruction Sample",
+      "description": "CreateInstruction creates an instruction for how data should be labeled.",
+      "file": "Client/CreateInstruction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstruction",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.CreateInstruction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.CreateInstructionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstructionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateInstruction",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.CreateInstruction",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_DeleteAnnotatedDataset_sync",
+      "title": "datalabeling DeleteAnnotatedDataset Sample",
+      "description": "DeleteAnnotatedDataset deletes an annotated dataset by resource name.",
+      "file": "Client/DeleteAnnotatedDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAnnotatedDataset",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.DeleteAnnotatedDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.DeleteAnnotatedDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAnnotatedDataset",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.DeleteAnnotatedDataset",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_DeleteAnnotationSpecSet_sync",
+      "title": "datalabeling DeleteAnnotationSpecSet Sample",
+      "description": "DeleteAnnotationSpecSet deletes an annotation spec set by resource name.",
+      "file": "Client/DeleteAnnotationSpecSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAnnotationSpecSet",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.DeleteAnnotationSpecSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.DeleteAnnotationSpecSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAnnotationSpecSet",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.DeleteAnnotationSpecSet",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_DeleteDataset_sync",
+      "title": "datalabeling DeleteDataset Sample",
+      "description": "DeleteDataset deletes a dataset by resource name.",
+      "file": "Client/DeleteDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataset",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.DeleteDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.DeleteDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDataset",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.DeleteDataset",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_DeleteEvaluationJob_sync",
+      "title": "datalabeling DeleteEvaluationJob Sample",
+      "description": "DeleteEvaluationJob stops and deletes an evaluation job.",
+      "file": "Client/DeleteEvaluationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEvaluationJob",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.DeleteEvaluationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.DeleteEvaluationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteEvaluationJob",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.DeleteEvaluationJob",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_DeleteInstruction_sync",
+      "title": "datalabeling DeleteInstruction Sample",
+      "description": "DeleteInstruction deletes an instruction object by resource name.",
+      "file": "Client/DeleteInstruction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstruction",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.DeleteInstruction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.DeleteInstructionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteInstruction",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.DeleteInstruction",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ExportData_sync",
+      "title": "datalabeling ExportData Sample",
+      "description": "ExportData exports data and annotations from dataset.",
+      "file": "Client/ExportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportData",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ExportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ExportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ExportData",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ExportData",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetAnnotatedDataset_sync",
+      "title": "datalabeling GetAnnotatedDataset Sample",
+      "description": "GetAnnotatedDataset gets an annotated dataset by resource name.",
+      "file": "Client/GetAnnotatedDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAnnotatedDataset",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetAnnotatedDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetAnnotatedDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.AnnotatedDataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetAnnotatedDataset",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetAnnotatedDataset",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetAnnotationSpecSet_sync",
+      "title": "datalabeling GetAnnotationSpecSet Sample",
+      "description": "GetAnnotationSpecSet gets an annotation spec set by resource name.",
+      "file": "Client/GetAnnotationSpecSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAnnotationSpecSet",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetAnnotationSpecSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetAnnotationSpecSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.AnnotationSpecSet",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetAnnotationSpecSet",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetAnnotationSpecSet",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetDataItem_sync",
+      "title": "datalabeling GetDataItem Sample",
+      "description": "GetDataItem gets a data item in a dataset by resource name. This API can be\ncalled after data are imported into dataset.",
+      "file": "Client/GetDataItem/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataItem",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetDataItem",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetDataItemRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.DataItem",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetDataItem",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetDataItem",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetDataset_sync",
+      "title": "datalabeling GetDataset Sample",
+      "description": "GetDataset gets dataset by resource name.",
+      "file": "Client/GetDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataset",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.Dataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetDataset",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetDataset",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetEvaluation_sync",
+      "title": "datalabeling GetEvaluation Sample",
+      "description": "GetEvaluation gets an evaluation by resource name (to search, use\nprojects.evaluations.search).",
+      "file": "Client/GetEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEvaluation",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.Evaluation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetEvaluation",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetEvaluation",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetEvaluationJob_sync",
+      "title": "datalabeling GetEvaluationJob Sample",
+      "description": "GetEvaluationJob gets an evaluation job by resource name.",
+      "file": "Client/GetEvaluationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEvaluationJob",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetEvaluationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetEvaluationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.EvaluationJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetEvaluationJob",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetEvaluationJob",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetExample_sync",
+      "title": "datalabeling GetExample Sample",
+      "description": "GetExample gets an example by resource name, including both data and annotation.",
+      "file": "Client/GetExample/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExample",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetExample",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetExampleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.Example",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetExample",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetExample",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetInstruction_sync",
+      "title": "datalabeling GetInstruction Sample",
+      "description": "GetInstruction gets an instruction by resource name.",
+      "file": "Client/GetInstruction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstruction",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.GetInstruction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.GetInstructionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.Instruction",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetInstruction",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.GetInstruction",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ImportData_sync",
+      "title": "datalabeling ImportData Sample",
+      "description": "ImportData imports data into dataset based on source locations defined in request.\nIt can be called multiple times for the same dataset. Each dataset can\nonly have one long running operation running on it. For example, no\nlabeling task (also long running operation) can be started while\nimporting is still ongoing. Vice versa.",
+      "file": "Client/ImportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportData",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ImportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ImportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ImportData",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ImportData",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_LabelImage_sync",
+      "title": "datalabeling LabelImage Sample",
+      "description": "LabelImage starts a labeling task for image. The type of image labeling task is\nconfigured by feature in the request.",
+      "file": "Client/LabelImage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LabelImage",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.LabelImage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.LabelImageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LabelImageOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "LabelImage",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.LabelImage",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_LabelText_sync",
+      "title": "datalabeling LabelText Sample",
+      "description": "LabelText starts a labeling task for text. The type of text labeling task is\nconfigured by feature in the request.",
+      "file": "Client/LabelText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LabelText",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.LabelText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.LabelTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LabelTextOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "LabelText",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.LabelText",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_LabelVideo_sync",
+      "title": "datalabeling LabelVideo Sample",
+      "description": "LabelVideo starts a labeling task for video. The type of video labeling task is\nconfigured by feature in the request.",
+      "file": "Client/LabelVideo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LabelVideo",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.LabelVideo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.LabelVideoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LabelVideoOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "LabelVideo",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.LabelVideo",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ListAnnotatedDatasets_sync",
+      "title": "datalabeling ListAnnotatedDatasets Sample",
+      "description": "ListAnnotatedDatasets lists annotated datasets for a dataset. Pagination is supported.",
+      "file": "Client/ListAnnotatedDatasets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAnnotatedDatasets",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ListAnnotatedDatasets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ListAnnotatedDatasetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnnotatedDatasetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListAnnotatedDatasets",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ListAnnotatedDatasets",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ListAnnotationSpecSets_sync",
+      "title": "datalabeling ListAnnotationSpecSets Sample",
+      "description": "ListAnnotationSpecSets lists annotation spec sets for a project. Pagination is supported.",
+      "file": "Client/ListAnnotationSpecSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAnnotationSpecSets",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ListAnnotationSpecSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ListAnnotationSpecSetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnnotationSpecSetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListAnnotationSpecSets",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ListAnnotationSpecSets",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ListDataItems_sync",
+      "title": "datalabeling ListDataItems Sample",
+      "description": "ListDataItems lists data items in a dataset. This API can be called after data\nare imported into dataset. Pagination is supported.",
+      "file": "Client/ListDataItems/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataItems",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ListDataItems",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ListDataItemsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataItemIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListDataItems",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ListDataItems",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ListDatasets_sync",
+      "title": "datalabeling ListDatasets Sample",
+      "description": "ListDatasets lists datasets under a project. Pagination is supported.",
+      "file": "Client/ListDatasets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatasets",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ListDatasets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ListDatasetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatasetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListDatasets",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ListDatasets",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ListEvaluationJobs_sync",
+      "title": "datalabeling ListEvaluationJobs Sample",
+      "description": "ListEvaluationJobs lists all evaluation jobs within a project with possible filters.\nPagination is supported.",
+      "file": "Client/ListEvaluationJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEvaluationJobs",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ListEvaluationJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ListEvaluationJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EvaluationJobIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListEvaluationJobs",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ListEvaluationJobs",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ListExamples_sync",
+      "title": "datalabeling ListExamples Sample",
+      "description": "ListExamples lists examples in an annotated dataset. Pagination is supported.",
+      "file": "Client/ListExamples/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExamples",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ListExamples",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ListExamplesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExampleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListExamples",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ListExamples",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ListInstructions_sync",
+      "title": "datalabeling ListInstructions Sample",
+      "description": "ListInstructions lists instructions for a project. Pagination is supported.",
+      "file": "Client/ListInstructions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstructions",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ListInstructions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ListInstructionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstructionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListInstructions",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ListInstructions",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_PauseEvaluationJob_sync",
+      "title": "datalabeling PauseEvaluationJob Sample",
+      "description": "PauseEvaluationJob pauses an evaluation job. Pausing an evaluation job that is already in a\nPAUSED state is a no-op.",
+      "file": "Client/PauseEvaluationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PauseEvaluationJob",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.PauseEvaluationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.PauseEvaluationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "PauseEvaluationJob",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.PauseEvaluationJob",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ResumeEvaluationJob_sync",
+      "title": "datalabeling ResumeEvaluationJob Sample",
+      "description": "ResumeEvaluationJob resumes a paused evaluation job. A deleted evaluation job can’t be resumed.\nResuming a running or scheduled evaluation job is a no-op.",
+      "file": "Client/ResumeEvaluationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeEvaluationJob",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.ResumeEvaluationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.ResumeEvaluationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ResumeEvaluationJob",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.ResumeEvaluationJob",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_SearchEvaluations_sync",
+      "title": "datalabeling SearchEvaluations Sample",
+      "description": "SearchEvaluations searches evaluations within a project.",
+      "file": "Client/SearchEvaluations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchEvaluations",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.SearchEvaluations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.SearchEvaluationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EvaluationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchEvaluations",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.SearchEvaluations",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_SearchExampleComparisons_sync",
+      "title": "datalabeling SearchExampleComparisons Sample",
+      "description": "SearchExampleComparisons searches example comparisons from an evaluation. The return format is a\nlist of example comparisons that show ground truth and prediction(s) for\na single input. Search by providing an evaluation ID.",
+      "file": "Client/SearchExampleComparisons/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchExampleComparisons",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.SearchExampleComparisons",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.SearchExampleComparisonsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchExampleComparisonsResponse_ExampleComparisonIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchExampleComparisons",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.SearchExampleComparisons",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_UpdateEvaluationJob_sync",
+      "title": "datalabeling UpdateEvaluationJob Sample",
+      "description": "UpdateEvaluationJob updates an evaluation job. You can only update certain fields of the job’s\nEvaluationJobConfig: humanAnnotationConfig.instruction,\nexampleCount, and exampleSamplePercentage.\n\nIf you want to change any other aspect of the evaluation job, you must\ndelete the job and create a new one.",
+      "file": "Client/UpdateEvaluationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEvaluationJob",
+        "fullName": "google.cloud.datalabeling.v1beta1.Client.UpdateEvaluationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datalabelingpb.UpdateEvaluationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datalabelingpb.EvaluationJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datalabeling.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateEvaluationJob",
+          "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService.UpdateEvaluationJob",
+          "service": {
+            "shortName": "DataLabelingService",
+            "fullName": "google.cloud.datalabeling.v1beta1.DataLabelingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

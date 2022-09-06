@@ -89,7 +89,7 @@ func defaultOrganizationsCallOptions() *OrganizationsCallOptions {
 	}
 }
 
-// internalOrganizationsClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalOrganizationsClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalOrganizationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

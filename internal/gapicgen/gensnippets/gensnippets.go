@@ -69,9 +69,6 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 	trimPrefix := "cloud.google.com/go"
 	errs := []error{}
 	for _, dir := range dirs {
-		if !strings.Contains(dir, "secret") {
-			continue
-		}
 		// Load does not look at nested modules.
 		pis, err := pkgload.Load("./...", dir, nil)
 		if err != nil {
@@ -135,6 +132,11 @@ func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, rootDir,
 	apiInfo, err := buildAPIInfo(rootDir, trimmed, apiShortnames, pkg, version)
 	if err != nil {
 		return []error{err}
+	}
+	if apiInfo == nil {
+		// There was no gapic_metadata.json, skip processing examples for
+		// non gapic lib.
+		return nil
 	}
 
 	regionTags := apiInfo.RegionTags()

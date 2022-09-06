@@ -17,6 +17,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"math"
 	"reflect"
 	"sync"
 
@@ -53,7 +54,9 @@ type Server struct {
 
 // NewServer creates a new mock Pub/Sub Lite server.
 func NewServer() (*Server, error) {
-	srv, err := testutil.NewServer()
+	srv, err := testutil.NewServer(
+		grpc.MaxRecvMsgSize(math.MaxInt32),
+		grpc.MaxSendMsgSize(math.MaxInt32))
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +73,9 @@ func NewServer() (*Server, error) {
 
 // ClientConn creates a client connection to the gRPC test server.
 func (s *Server) ClientConn() option.ClientOption {
-	conn, err := grpc.Dial(s.gRPCServer.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(s.gRPCServer.Addr, grpc.WithInsecure(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(math.MaxInt32)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(math.MaxInt32)))
 	if err != nil {
 		log.Fatal(err)
 	}

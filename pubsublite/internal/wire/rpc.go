@@ -86,7 +86,7 @@ func isRetryableSendCode(code codes.Code) bool {
 func isRetryableRecvCode(code codes.Code) bool {
 	switch code {
 	// Consistent with https://github.com/googleapis/java-pubsublite/blob/master/google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/ErrorCodes.java
-	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown:
+	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown, codes.Canceled:
 		return true
 	default:
 		return false
@@ -246,6 +246,12 @@ func stringValue(str string) *structpb.Value {
 	}
 }
 
+func numberValue(val int64) *structpb.Value {
+	return &structpb.Value{
+		Kind: &structpb.Value_NumberValue{NumberValue: float64(val)},
+	}
+}
+
 // pubsubMetadata stores key/value pairs that should be added to gRPC metadata.
 type pubsubMetadata map[string]string
 
@@ -274,8 +280,8 @@ func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, version string
 		s.Fields[frameworkKey] = stringValue(string(framework))
 	}
 	if version, ok := parseVersion(version); ok {
-		s.Fields[majorVersionKey] = stringValue(version.Major)
-		s.Fields[minorVersionKey] = stringValue(version.Minor)
+		s.Fields[majorVersionKey] = numberValue(version.Major)
+		s.Fields[minorVersionKey] = numberValue(version.Minor)
 	}
 	if bytes, err := proto.Marshal(s); err == nil {
 		pm[clientInfoMetadataHeader] = base64.StdEncoding.EncodeToString(bytes)

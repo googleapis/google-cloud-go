@@ -29,7 +29,6 @@ import (
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
 	"cloud.google.com/go/internal/gapicgen/gensnippets"
-	"cloud.google.com/go/internal/gapicgen/git"
 	"gopkg.in/yaml.v2"
 )
 
@@ -305,10 +304,42 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if len(conf.Transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.Transports, "+")))
 	}
+	if conf.NumericEnumsEnabled {
+		args = append(args, "--go_gapic_opt", "rest-numeric-enums")
+	}
 	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.
 	if conf.Pkg == "compute" {
 		args = append(args, "--go_gapic_opt", "diregapic")
 	}
+	if stubsDir := conf.getStubsDir(); stubsDir != "" {
+		// Enable protobuf/gRPC generation in the google-cloud-go directory.
+		args = append(args, "--go_out=plugins=grpc:"+g.googleCloudDir)
+
+		// For each file to be generated i.e. each file in the proto package,
+		// override the go_package option. Applied to both the protobuf/gRPC
+		// generated code, and to notify the GAPIC generator of the new
+		// import path used to reference those stubs.
+		stubPkg := filepath.Join(conf.ImportPath, stubsDir)
+		for _, f := range protoFiles {
+			f = strings.TrimPrefix(f, g.googleapisDir+"/")
+			// Storage is a special case because it is generating a hidden beta
+			// proto surface.
+			if conf.ImportPath == "cloud.google.com/go/storage/internal/apiv2" {
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
+				args = append(args,
+					"--go_opt="+rerouteGoPkg,
+					"--go_gapic_opt="+rerouteGoPkg,
+				)
+			} else {
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg+"pb")
+				args = append(args, "--go_opt="+rerouteGoPkg)
+				if conf.isMigrated() {
+					args = append(args, "--go_gapic_opt="+rerouteGoPkg)
+				}
+			}
+		}
+	}
+
 	args = append(args, protoFiles...)
 	c := execv.Command("protoc", args...)
 	c.Dir = g.googleapisDir
@@ -565,6 +596,7 @@ func (g *GapicGenerator) manifest(confs []*MicrogenConfig) (map[string]ManifestE
 			ClientLibraryType: "generated",
 			DocsURL:           docURL,
 			ReleaseLevel:      conf.ReleaseLevel,
+			LibraryType:       GapicAutoLibraryType,
 		}
 		entries[conf.ImportPath] = entry
 	}
@@ -615,33 +647,6 @@ func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEnt
 		shortnames[manual.DistributionName] = p
 	}
 	return shortnames, nil
-}
-
-func (g *GapicGenerator) findModifiedDirs() ([]string, error) {
-	log.Println("finding modifiled directories")
-	files, err := git.FindModifiedAndUntrackedFiles(g.googleCloudDir)
-	if err != nil {
-		return nil, err
-	}
-	dirs := map[string]bool{}
-	for _, file := range files {
-		dir := filepath.Dir(filepath.Join(g.googleCloudDir, file))
-		dirs[dir] = true
-	}
-
-	// Add modified dirs from genproto. Sometimes only a request struct will be
-	// updated, in these cases we should still make modifications the
-	// corresponding gapic directories.
-	for _, pkg := range g.modifiedPkgs {
-		dir := filepath.Join(g.googleCloudDir, pkg)
-		dirs[dir] = true
-	}
-
-	var dirList []string
-	for dir := range dirs {
-		dirList = append(dirList, dir)
-	}
-	return dirList, nil
 }
 
 func docURL(cloudDir, importPath string) (string, error) {

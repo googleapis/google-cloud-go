@@ -581,7 +581,9 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
 	setClientHeader(req.Header())
 	return runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.tables.insert")
 		_, err = req.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 }
@@ -664,22 +666,66 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	return t, nil
 }
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tableGetCall struct {
+	call *bq.TablesGetCall
+}
+
+// TableMetadataOption allow requests to alter requests for table metadata.
+type TableMetadataOption func(*tableGetCall)
+
+// TableMetadataView specifies which details about a table are desired.
+type TableMetadataView string
+
+const (
+	// BasicMetadataView populates basic table information including schema partitioning,
+	// but does not contain storage statistics like number or rows or bytes.  This is a more
+	// efficient view to use for large tables or higher metadata query rates.
+	BasicMetadataView TableMetadataView = "BASIC"
+
+	// FullMetadataView returns all table information, including storage statistics.  It currently
+	// returns the same information as StorageStatsMetadataView, but may include additional information
+	// in the future.
+	FullMetadataView TableMetadataView = "FULL"
+
+	// StorageStatsMetadataView includes all information from the basic view, and includes storage statistics.  It currently
+	StorageStatsMetadataView TableMetadataView = "STORAGE_STATS"
+)
+
+// WithMetadataView is used to customize what details are returned when interrogating a
+// table via the Metadata() call.  Generally this is used to limit data returned for performance
+// reasons (such as large tables that take time computing storage statistics).
+func WithMetadataView(tmv TableMetadataView) TableMetadataOption {
+	return func(tgc *tableGetCall) {
+		tgc.call.View(string(tmv))
+	}
+}
+
 // Metadata fetches the metadata for the table.
-func (t *Table) Metadata(ctx context.Context) (md *TableMetadata, err error) {
+func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req := t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
-	setClientHeader(req.Header())
-	var table *bq.Table
-	err = runWithRetry(ctx, func() (err error) {
-		table, err = req.Do()
+	tgc := &tableGetCall{
+		call: t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tgc)
+	}
+
+	setClientHeader(tgc.call.Header())
+	var res *bq.Table
+	if err := runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.tables.get")
+		res, err = tgc.call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
-	return bqToTableMetadata(table, t.c)
+	return bqToTableMetadata(res, t.c)
 }
 
 func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
@@ -741,7 +787,9 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	setClientHeader(call.Header())
 
 	return runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.tables.delete")
 		err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 }
@@ -758,8 +806,25 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 // NeverExpire is a sentinel value used to remove a table'e expiration time.
 var NeverExpire = time.Time{}.Add(-1)
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tablePatchCall struct {
+	call *bq.TablesPatchCall
+}
+
+// TableUpdateOption allow requests to update table metadata.
+type TableUpdateOption func(*tablePatchCall)
+
+// WithAutoDetectSchema governs whether the schema autodetection occurs as part of the table update.
+// This is relevant in cases like external tables where schema is detected from the source data.
+func WithAutoDetectSchema(b bool) TableUpdateOption {
+	return func(tpc *tablePatchCall) {
+		tpc.call.AutodetectSchema(b)
+	}
+}
+
 // Update modifies specific Table metadata fields.
-func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (md *TableMetadata, err error) {
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string, opts ...TableUpdateOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -767,14 +832,24 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	if err != nil {
 		return nil, err
 	}
-	call := t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx)
-	setClientHeader(call.Header())
+
+	tpc := &tablePatchCall{
+		call: t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tpc)
+	}
+
+	setClientHeader(tpc.call.Header())
 	if etag != "" {
-		call.Header().Set("If-Match", etag)
+		tpc.call.Header().Set("If-Match", etag)
 	}
 	var res *bq.Table
 	if err := runWithRetry(ctx, func() (err error) {
-		res, err = call.Do()
+		ctx = trace.StartSpan(ctx, "bigquery.tables.patch")
+		res, err = tpc.call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	}); err != nil {
 		return nil, err
@@ -806,6 +881,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.EncryptionConfig != nil {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
+	}
+	if tm.ExternalDataConfig != nil {
+		cfg := tm.ExternalDataConfig.toBQ()
+		t.ExternalDataConfiguration = &cfg
 	}
 
 	if tm.Clustering != nil {
@@ -892,6 +971,10 @@ type TableMetadataToUpdate struct {
 	// The time when this table expires. To remove a table's expiration,
 	// set ExpirationTime to NeverExpire. The zero value is ignored.
 	ExpirationTime time.Time
+
+	// ExternalDataConfig controls the definition of a table defined against
+	// an external source, such as one based on files in Google Cloud Storage.
+	ExternalDataConfig *ExternalDataConfig
 
 	// The query to use for a view.
 	ViewQuery optional.String

@@ -20,6 +20,11 @@
                 "CancelEntitlement"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "ChangeOffer": {
               "methods": [
                 "ChangeOffer"
@@ -45,9 +50,19 @@
                 "CreateChannelPartnerLink"
               ]
             },
+            "CreateChannelPartnerRepricingConfig": {
+              "methods": [
+                "CreateChannelPartnerRepricingConfig"
+              ]
+            },
             "CreateCustomer": {
               "methods": [
                 "CreateCustomer"
+              ]
+            },
+            "CreateCustomerRepricingConfig": {
+              "methods": [
+                "CreateCustomerRepricingConfig"
               ]
             },
             "CreateEntitlement": {
@@ -55,9 +70,24 @@
                 "CreateEntitlement"
               ]
             },
+            "DeleteChannelPartnerRepricingConfig": {
+              "methods": [
+                "DeleteChannelPartnerRepricingConfig"
+              ]
+            },
             "DeleteCustomer": {
               "methods": [
                 "DeleteCustomer"
+              ]
+            },
+            "DeleteCustomerRepricingConfig": {
+              "methods": [
+                "DeleteCustomerRepricingConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "GetChannelPartnerLink": {
@@ -65,14 +95,29 @@
                 "GetChannelPartnerLink"
               ]
             },
+            "GetChannelPartnerRepricingConfig": {
+              "methods": [
+                "GetChannelPartnerRepricingConfig"
+              ]
+            },
             "GetCustomer": {
               "methods": [
                 "GetCustomer"
               ]
             },
+            "GetCustomerRepricingConfig": {
+              "methods": [
+                "GetCustomerRepricingConfig"
+              ]
+            },
             "GetEntitlement": {
               "methods": [
                 "GetEntitlement"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ImportCustomer": {
@@ -83,6 +128,16 @@
             "ListChannelPartnerLinks": {
               "methods": [
                 "ListChannelPartnerLinks"
+              ]
+            },
+            "ListChannelPartnerRepricingConfigs": {
+              "methods": [
+                "ListChannelPartnerRepricingConfigs"
+              ]
+            },
+            "ListCustomerRepricingConfigs": {
+              "methods": [
+                "ListCustomerRepricingConfigs"
               ]
             },
             "ListCustomers": {
@@ -98,6 +153,11 @@
             "ListOffers": {
               "methods": [
                 "ListOffers"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListProducts": {
@@ -180,9 +240,19 @@
                 "UpdateChannelPartnerLink"
               ]
             },
+            "UpdateChannelPartnerRepricingConfig": {
+              "methods": [
+                "UpdateChannelPartnerRepricingConfig"
+              ]
+            },
             "UpdateCustomer": {
               "methods": [
                 "UpdateCustomer"
+              ]
+            },
+            "UpdateCustomerRepricingConfig": {
+              "methods": [
+                "UpdateCustomerRepricingConfig"
               ]
             }
           }

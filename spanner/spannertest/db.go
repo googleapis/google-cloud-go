@@ -55,12 +55,13 @@ type table struct {
 
 	// Information about the table columns.
 	// They are reordered on table creation so the primary key columns come first.
-	cols      []colInfo
-	colIndex  map[spansql.ID]int         // col name to index
-	origIndex map[spansql.ID]int         // original index of each column upon construction
-	pkCols    int                        // number of primary key columns (may be 0)
-	pkDesc    []bool                     // whether each primary key column is in descending order
-	rdw       *spansql.RowDeletionPolicy // RowDeletionPolicy of this table (may be nil)
+	cols        []colInfo
+	colIndex    map[spansql.ID]int         // col name to index
+	origIndex   map[spansql.ID]int         // original index of each column upon construction
+	pkCols      int                        // number of primary key columns (may be 0)
+	pkDesc      []bool                     // whether each primary key column is in descending order
+	constraints []constraintInfo           // constraints information of this table
+	rdw         *spansql.RowDeletionPolicy // RowDeletionPolicy of this table (may be nil)
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -74,6 +75,12 @@ type colInfo struct {
 	NotNull   bool            // only set for table columns
 	AggIndex  int             // Index+1 of SELECT list for which this is an aggregate value.
 	Alias     spansql.PathExp // an alternate name for this column (result sets only)
+}
+
+// constraintInfo represents information about a constraint in a table
+type constraintInfo struct {
+	Name       spansql.ID
+	Constraint spansql.Constraint
 }
 
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
@@ -157,6 +164,7 @@ func (tx *transaction) Rollback() {
 row represents a list of data elements.
 
 The mapping between Spanner types and Go types internal to this package are:
+
 	BOOL		bool
 	INT64		int64
 	FLOAT64		float64
@@ -302,6 +310,11 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 				return status.Newf(codes.InvalidArgument, "primary key column %q not in table", col)
 			}
 		}
+		for _, constraint := range stmt.Constraints {
+			if st := t.addConstraint(constraint); st.Code() != codes.OK {
+				return st
+			}
+		}
 		t.rdw = stmt.RowDeletionPolicy
 		d.tables[stmt.Name] = t
 		return nil
@@ -373,6 +386,17 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return nil
 		case spansql.DropRowDeletionPolicy:
 			if st := t.dropRowDeletionPolicy(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.AddConstraint:
+			// We do not validate if the referenced table and column exists.
+			if st := t.addConstraint(alt.Constraint); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.DropConstraint:
+			if st := t.dropConstraint(alt); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -735,6 +759,24 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	return nil
 }
 
+func (t *table) addConstraint(alt spansql.TableConstraint) *status.Status {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	for _, constraint := range t.constraints {
+		if constraint.Name == alt.Name {
+			return status.Newf(codes.AlreadyExists, "constraint name %s already exists", alt.Name)
+		}
+	}
+
+	t.constraints = append(t.constraints, constraintInfo{
+		Name:       alt.Name,
+		Constraint: alt.Constraint,
+	})
+
+	return nil
+}
+
 func (t *table) dropColumn(name spansql.ID) *status.Status {
 	// Only permit dropping non-key columns that aren't part of a secondary index.
 	// We don't support indexes, so only check that it isn't part of the primary key.
@@ -877,6 +919,25 @@ func (t *table) dropRowDeletionPolicy(ard spansql.DropRowDeletionPolicy) *status
 		return status.New(codes.InvalidArgument, "table does not have a row deletion policy")
 	}
 	t.rdw = nil
+	return nil
+}
+
+func (t *table) dropConstraint(alt spansql.DropConstraint) *status.Status {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	var ci int = -1 // index of the constraint in t.constraints: constraint index
+	for i, constraint := range t.constraints {
+		if constraint.Name == alt.Name {
+			ci = i
+		}
+	}
+
+	if ci == -1 {
+		return status.Newf(codes.InvalidArgument, "unknown constraint name %q", alt.Name)
+	}
+
+	t.constraints = append(t.constraints[:ci], t.constraints[ci+1:]...)
 	return nil
 }
 

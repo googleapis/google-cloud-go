@@ -97,7 +97,7 @@ func defaultVideoStitcherCallOptions() *VideoStitcherCallOptions {
 	}
 }
 
-// internalVideoStitcherClient is an interface that defines the methods availaible from Video Stitcher API.
+// internalVideoStitcherClient is an interface that defines the methods available from Video Stitcher API.
 type internalVideoStitcherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

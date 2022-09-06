@@ -77,14 +77,17 @@ var (
 	numericParamType    = &bq.QueryParameterType{Type: "NUMERIC"}
 	bigNumericParamType = &bq.QueryParameterType{Type: "BIGNUMERIC"}
 	geographyParamType  = &bq.QueryParameterType{Type: "GEOGRAPHY"}
+	intervalParamType   = &bq.QueryParameterType{Type: "INTERVAL"}
+	jsonParamType       = &bq.QueryParameterType{Type: "JSON"}
 )
 
 var (
-	typeOfDate     = reflect.TypeOf(civil.Date{})
-	typeOfTime     = reflect.TypeOf(civil.Time{})
-	typeOfDateTime = reflect.TypeOf(civil.DateTime{})
-	typeOfGoTime   = reflect.TypeOf(time.Time{})
-	typeOfRat      = reflect.TypeOf(&big.Rat{})
+	typeOfDate          = reflect.TypeOf(civil.Date{})
+	typeOfTime          = reflect.TypeOf(civil.Time{})
+	typeOfDateTime      = reflect.TypeOf(civil.DateTime{})
+	typeOfGoTime        = reflect.TypeOf(time.Time{})
+	typeOfRat           = reflect.TypeOf(&big.Rat{})
+	typeOfIntervalValue = reflect.TypeOf(&IntervalValue{})
 )
 
 // A QueryParameter is a parameter to a query.
@@ -106,6 +109,7 @@ type QueryParameter struct {
 	// []byte: BYTES
 	// time.Time: TIMESTAMP
 	// *big.Rat: NUMERIC
+	// *IntervalValue: INTERVAL
 	// Arrays and slices of the above.
 	// Structs of the above. Only the exported fields are used.
 	//
@@ -156,6 +160,8 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		return timestampParamType, nil
 	case typeOfRat:
 		return numericParamType, nil
+	case typeOfIntervalValue:
+		return intervalParamType, nil
 	case typeOfNullBool:
 		return boolParamType, nil
 	case typeOfNullFloat64:
@@ -166,6 +172,8 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		return stringParamType, nil
 	case typeOfNullGeography:
 		return geographyParamType, nil
+	case typeOfNullJSON:
+		return jsonParamType, nil
 	}
 	switch t.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint8, reflect.Uint16, reflect.Uint32:
@@ -238,7 +246,8 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		typeOfNullTimestamp,
 		typeOfNullDate,
 		typeOfNullTime,
-		typeOfNullDateTime:
+		typeOfNullDateTime,
+		typeOfNullJSON:
 		// Shared:  If the Null type isn't valid, we have no value to send.
 		// However, the backend requires us to send the QueryParameterValue with
 		// the fields empty.
@@ -256,6 +265,8 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 			res.Value = fmt.Sprint(v.FieldByName("StringVal").Interface())
 		case typeOfNullGeography:
 			res.Value = fmt.Sprint(v.FieldByName("GeographyVal").Interface())
+		case typeOfNullJSON:
+			res.Value = fmt.Sprint(v.FieldByName("JSONVal").Interface())
 		case typeOfNullFloat64:
 			res.Value = fmt.Sprint(v.FieldByName("Float64").Interface())
 		case typeOfNullBool:
@@ -299,6 +310,9 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		// disambiguate between NUMERIC and BIGNUMERIC.  For now, we'll continue
 		// to honor previous behavior and send as Numeric type.
 		res.Value = NumericString(v.Interface().(*big.Rat))
+		return res, nil
+	case typeOfIntervalValue:
+		res.Value = IntervalString(v.Interface().(*IntervalValue))
 		return res, nil
 	}
 	switch t.Kind() {
@@ -379,6 +393,8 @@ var paramTypeToFieldType = map[string]FieldType{
 	numericParamType.Type:    NumericFieldType,
 	bigNumericParamType.Type: BigNumericFieldType,
 	geographyParamType.Type:  GeographyFieldType,
+	intervalParamType.Type:   IntervalFieldType,
+	jsonParamType.Type:       JSONFieldType,
 }
 
 // Convert a parameter value from the service to a Go value. This is similar to, but
@@ -423,6 +439,8 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 				return NullTime{Valid: false}, nil
 			case "GEOGRAPHY":
 				return NullGeography{Valid: false}, nil
+			case "JSON":
+				return NullJSON{Valid: false}, nil
 			}
 
 		}

@@ -22,6 +22,7 @@ import (
 	retail "cloud.google.com/go/retail/apiv2"
 	"google.golang.org/api/iterator"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewCatalogClient() {
@@ -118,4 +119,190 @@ func ExampleCatalogClient_GetDefaultBranch() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleCatalogClient_GetCompletionConfig() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.GetCompletionConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetCompletionConfigRequest.
+	}
+	resp, err := c.GetCompletionConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_UpdateCompletionConfig() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.UpdateCompletionConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateCompletionConfigRequest.
+	}
+	resp, err := c.UpdateCompletionConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_GetAttributesConfig() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.GetAttributesConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetAttributesConfigRequest.
+	}
+	resp, err := c.GetAttributesConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_UpdateAttributesConfig() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.UpdateAttributesConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateAttributesConfigRequest.
+	}
+	resp, err := c.UpdateAttributesConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_AddCatalogAttribute() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.AddCatalogAttributeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#AddCatalogAttributeRequest.
+	}
+	resp, err := c.AddCatalogAttribute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_RemoveCatalogAttribute() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.RemoveCatalogAttributeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RemoveCatalogAttributeRequest.
+	}
+	resp, err := c.RemoveCatalogAttribute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_ReplaceCatalogAttribute() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.ReplaceCatalogAttributeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ReplaceCatalogAttributeRequest.
+	}
+	resp, err := c.ReplaceCatalogAttribute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_GetOperation() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_ListOperations() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

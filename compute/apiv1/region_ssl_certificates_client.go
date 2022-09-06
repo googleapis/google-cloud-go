@@ -48,7 +48,16 @@ type RegionSslCertificatesCallOptions struct {
 	List   []gax.CallOption
 }
 
-// internalRegionSslCertificatesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionSslCertificatesRESTCallOptions() *RegionSslCertificatesCallOptions {
+	return &RegionSslCertificatesCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+	}
+}
+
+// internalRegionSslCertificatesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionSslCertificatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -126,6 +135,9 @@ type regionSslCertificatesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionSslCertificatesClient
+	CallOptions **RegionSslCertificatesCallOptions
 }
 
 // NewRegionSslCertificatesRESTClient creates a new region ssl certificates rest client.
@@ -138,9 +150,11 @@ func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.Clie
 		return nil, err
 	}
 
+	callOpts := defaultRegionSslCertificatesRESTCallOptions()
 	c := &regionSslCertificatesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -154,7 +168,7 @@ func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.Clie
 	}
 	c.operationClient = opC
 
-	return &RegionSslCertificatesClient{internalClient: c, CallOptions: &RegionSslCertificatesCallOptions{}}, nil
+	return &RegionSslCertificatesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionSslCertificatesRESTClientOptions() []option.ClientOption {
@@ -195,7 +209,10 @@ func (c *regionSslCertificatesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified SslCertificate resource in the region.
 func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
 	params := url.Values{}
@@ -206,10 +223,16 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "ssl_certificate", url.QueryEscape(req.GetSslCertificate())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -254,14 +277,23 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 
 // Get returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
 func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "ssl_certificate", url.QueryEscape(req.GetSslCertificate())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SslCertificate{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -305,7 +337,10 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -316,10 +351,16 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -377,7 +418,10 @@ func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *compute
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -402,6 +446,9 @@ func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *compute
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err

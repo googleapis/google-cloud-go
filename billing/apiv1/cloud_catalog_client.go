@@ -60,7 +60,7 @@ func defaultCloudCatalogCallOptions() *CloudCatalogCallOptions {
 	}
 }
 
-// internalCloudCatalogClient is an interface that defines the methods availaible from Cloud Billing API.
+// internalCloudCatalogClient is an interface that defines the methods available from Cloud Billing API.
 type internalCloudCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)

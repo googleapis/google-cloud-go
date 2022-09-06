@@ -37,6 +37,18 @@ func ExampleNewContainerAnalysisV1Beta1Client() {
 	_ = c
 }
 
+func ExampleNewContainerAnalysisV1Beta1RESTClient() {
+	ctx := context.Background()
+	c, err := containeranalysis.NewContainerAnalysisV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
 func ExampleContainerAnalysisV1Beta1Client_SetIamPolicy() {
 	ctx := context.Background()
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)

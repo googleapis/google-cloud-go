@@ -24,6 +24,7 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -67,6 +68,8 @@ If you have been assigned to review this PR, please:
 genbot to assign reviewers to the google-cloud-go PR.
 `
 )
+
+var conventionalCommitScopeRe = regexp.MustCompile(`.*\((.*)\): .*`)
 
 // PullRequest represents a GitHub pull request.
 type PullRequest struct {
@@ -402,6 +405,15 @@ func updateDeps(tmpDir string) error {
 		updatedModDirs[modDir] = true
 	}
 
+	// Find modules based on conventional commit messages.
+	commitModDirs, err := processCommitMessage(tmpDir)
+	if err != nil {
+		return err
+	}
+	for _, v := range commitModDirs {
+		updatedModDirs[v] = true
+	}
+
 	// Update required modules.
 	for modDir := range updatedModDirs {
 		log.Printf("Updating module dir %q", modDir)
@@ -441,4 +453,41 @@ fi
 	}
 	c.Dir = tmpDir
 	return c.Run()
+}
+
+// processCommitMessage process the context aware commits mentioned in the PR
+// body to determine what modules need to have dependency bumps.
+func processCommitMessage(dir string) ([]string, error) {
+	c := execv.Command("git", "log", "-1", "--pretty=%B")
+	c.Dir = dir
+	out, err := c.Output()
+	if err != nil {
+		return nil, err
+	}
+	outStr := string(out)
+	ss := strings.Split(outStr, "Changes:\n\n")
+	if len(ss) != 2 {
+		return nil, fmt.Errorf("unable to process commit msg")
+	}
+	commits := strings.Split(ss[1], "\n\n")
+	var modDirs []string
+	for _, v := range commits {
+		pkg := parsePackage(v)
+		if pkg == "" {
+			continue
+		}
+		modDirs = append(modDirs, filepath.Join(dir, pkg))
+	}
+	return modDirs, nil
+}
+
+// parsePackage parses a package name from the conventional commit scope of a
+// commit message.
+func parsePackage(msg string) string {
+	matches := conventionalCommitScopeRe.FindStringSubmatch(msg)
+	if len(matches) < 2 {
+		return ""
+	}
+	return matches[1]
+
 }

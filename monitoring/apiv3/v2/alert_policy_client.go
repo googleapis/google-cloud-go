@@ -98,7 +98,7 @@ func defaultAlertPolicyCallOptions() *AlertPolicyCallOptions {
 	}
 }
 
-// internalAlertPolicyClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalAlertPolicyClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalAlertPolicyClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -114,14 +114,14 @@ type internalAlertPolicyClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AlertPolicyService API is used to manage (list, create, delete,
-// edit) alert policies in Stackdriver Monitoring. An alerting policy is
+// edit) alert policies in Cloud Monitoring. An alerting policy is
 // a description of the conditions under which some aspect of your
 // system is considered to be “unhealthy” and the ways to notify
 // people or services about this state. In addition to using this API, alert
 // policies can also be managed through
-// Stackdriver Monitoring (at https://cloud.google.com/monitoring/docs/),
+// Cloud Monitoring (at https://cloud.google.com/monitoring/docs/),
 // which can be reached by clicking the “Monitoring” tab in
-// Cloud Console (at https://console.cloud.google.com/).
+// Cloud console (at https://console.cloud.google.com/).
 type AlertPolicyClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAlertPolicyClient
@@ -204,14 +204,14 @@ type alertPolicyGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The AlertPolicyService API is used to manage (list, create, delete,
-// edit) alert policies in Stackdriver Monitoring. An alerting policy is
+// edit) alert policies in Cloud Monitoring. An alerting policy is
 // a description of the conditions under which some aspect of your
 // system is considered to be “unhealthy” and the ways to notify
 // people or services about this state. In addition to using this API, alert
 // policies can also be managed through
-// Stackdriver Monitoring (at https://cloud.google.com/monitoring/docs/),
+// Cloud Monitoring (at https://cloud.google.com/monitoring/docs/),
 // which can be reached by clicking the “Monitoring” tab in
-// Cloud Console (at https://console.cloud.google.com/).
+// Cloud console (at https://console.cloud.google.com/).
 func NewAlertPolicyClient(ctx context.Context, opts ...option.ClientOption) (*AlertPolicyClient, error) {
 	clientOpts := defaultAlertPolicyGRPCClientOptions()
 	if newAlertPolicyClientHook != nil {

@@ -17,6 +17,7 @@ package bigquery
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -39,7 +40,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -216,7 +216,7 @@ func initTestState(client *Client, t time.Time) func() {
 	tableIDs = uid.NewSpace("table", opts)
 	modelIDs = uid.NewSpace("model", opts)
 	routineIDs = uid.NewSpace("routine", opts)
-	testTableExpiration = t.Add(10 * time.Minute).Round(time.Second)
+	testTableExpiration = t.Add(2 * time.Hour).Round(time.Second)
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
 
@@ -317,6 +317,9 @@ func TestIntegration_JobFrom(t *testing.T) {
 		}
 		if got.jobID != want.jobID {
 			t.Errorf("case %q jobID mismatch, got %s want %s", tc.description, got.jobID, want.jobID)
+		}
+		if got.Email() == "" {
+			t.Errorf("case %q expected email to be populated, was empty", tc.description)
 		}
 	}
 
@@ -866,7 +869,7 @@ func TestIntegration_InsertErrors(t *testing.T) {
 		t.Errorf("Wanted row size error, got successful insert.")
 	}
 	var e1 *googleapi.Error
-	ok := xerrors.As(err, &e1)
+	ok := errors.As(err, &e1)
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
@@ -886,7 +889,7 @@ func TestIntegration_InsertErrors(t *testing.T) {
 		t.Errorf("Wanted error, got successful insert.")
 	}
 	var e2 *googleapi.Error
-	ok = xerrors.As(err, &e2)
+	ok = errors.As(err, &e2)
 	if !ok {
 		t.Errorf("wanted googleapi.Error, got: %v", err)
 	}
@@ -1187,7 +1190,7 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	rat := big.NewRat(33, 100)
-	rat2 := big.NewRat(66, 100)
+	rat2 := big.NewRat(66, 10e10)
 	geo := "POINT(-122.198939 47.669865)"
 
 	// Nil fields in the struct.
@@ -1437,7 +1440,7 @@ func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistic
 		job, err := q.Run(ctx)
 		if err != nil {
 			var e *googleapi.Error
-			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
+			if ok := errors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, err
@@ -1445,7 +1448,7 @@ func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistic
 		_, err = job.Wait(ctx)
 		if err != nil {
 			var e *googleapi.Error
-			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
+			if ok := errors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, fmt.Errorf("%q: %v", job.ID(), err)
@@ -1617,6 +1620,83 @@ func TestIntegration_IteratorSource(t *testing.T) {
 	if status == nil {
 		t.Errorf("got nil status")
 	}
+}
+
+func TestIntegration_ExternalAutodetect(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	testTable := dataset.Table(tableIDs.New())
+
+	origExtCfg := &ExternalDataConfig{
+		SourceFormat: Avro,
+		SourceURIs:   []string{"gs://cloud-samples-data/bigquery/autodetect-samples/original*.avro"},
+	}
+
+	err := testTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: origExtCfg,
+	})
+	if err != nil {
+		t.Fatalf("Table.Create(%q): %v", testTable.FullyQualifiedName(), err)
+	}
+
+	origMeta, err := testTable.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("Table.Metadata(%q): %v", testTable.FullyQualifiedName(), err)
+	}
+
+	wantSchema := Schema{
+		{Name: "stringfield", Type: "STRING"},
+		{Name: "int64field", Type: "INTEGER"},
+	}
+	if diff := testutil.Diff(origMeta.Schema, wantSchema); diff != "" {
+		t.Fatalf("orig schema, got=-, want=+\n%s", diff)
+	}
+
+	// Now, point at the new files, but don't signal autodetect.
+	newExtCfg := &ExternalDataConfig{
+		SourceFormat: Avro,
+		SourceURIs:   []string{"gs://cloud-samples-data/bigquery/autodetect-samples/widened*.avro"},
+	}
+
+	newMeta, err := testTable.Update(ctx, TableMetadataToUpdate{
+		ExternalDataConfig: newExtCfg,
+	}, origMeta.ETag)
+	if err != nil {
+		t.Fatalf("Table.Update(%q): %v", testTable.FullyQualifiedName(), err)
+	}
+	if diff := testutil.Diff(newMeta.Schema, wantSchema); diff != "" {
+		t.Fatalf("new schema, got=-, want=+\n%s", diff)
+	}
+
+	// Now, signal autodetect in another update.
+	// This should yield a new schema.
+	newMeta2, err := testTable.Update(ctx, TableMetadataToUpdate{}, newMeta.ETag, WithAutoDetectSchema(true))
+	if err != nil {
+		t.Fatalf("Table.Update(%q) with autodetect: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	wantSchema2 := Schema{
+		{Name: "stringfield", Type: "STRING"},
+		{Name: "int64field", Type: "INTEGER"},
+		{Name: "otherfield", Type: "INTEGER"},
+	}
+	if diff := testutil.Diff(newMeta2.Schema, wantSchema2); diff != "" {
+		t.Errorf("new schema after autodetect, got=-, want=+\n%s", diff)
+	}
+
+	id, _ := testTable.Identifier(StandardSQLID)
+	q := client.Query(fmt.Sprintf("SELECT * FROM %s", id))
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("query read: %v", err)
+	}
+	wantRows := [][]Value{
+		{"bar", int64(32), int64(314)},
+	}
+	checkReadAndTotalRows(t, "row check", it, wantRows)
 }
 
 func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
@@ -2715,7 +2795,7 @@ func (b byCol0) Less(i, j int) bool {
 
 func hasStatusCode(err error, code int) bool {
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == code {
+	if ok := errors.As(err, &e); ok && e.Code == code {
 		return true
 	}
 	return false

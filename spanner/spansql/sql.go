@@ -157,10 +157,14 @@ func (rrdp ReplaceRowDeletionPolicy) SQL() string {
 func (drdp DropRowDeletionPolicy) SQL() string {
 	return "DROP ROW DELETION POLICY"
 }
+
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
 		str += " NOT NULL"
+	}
+	if sct.Default != nil {
+		str += " DEFAULT (" + sct.Default.SQL() + ")"
 	}
 	return str
 }
@@ -168,6 +172,14 @@ func (sct SetColumnType) SQL() string {
 func (sco SetColumnOptions) SQL() string {
 	// TODO: not clear what to do for no options.
 	return "SET " + sco.Options.SQL()
+}
+
+func (sd SetDefault) SQL() string {
+	return "SET DEFAULT (" + sd.Default.SQL() + ")"
+}
+
+func (dp DropDefault) SQL() string {
+	return "DROP DEFAULT"
 }
 
 func (co ColumnOptions) SQL() string {
@@ -249,10 +261,45 @@ func (u *Update) SQL() string {
 	return str
 }
 
+func (i *Insert) SQL() string {
+	str := "INSERT INTO " + i.Table.SQL() + " ("
+	for i, column := range i.Columns {
+		if i > 0 {
+			str += ", "
+		}
+		str += column.SQL()
+	}
+	str += ") "
+	str += i.Input.SQL()
+	return str
+}
+
+func (v Values) SQL() string {
+	str := "VALUES "
+	for j, values := range v {
+		if j > 0 {
+			str += ", "
+		}
+		str += "("
+
+		for k, value := range values {
+			if k > 0 {
+				str += ", "
+			}
+			str += value.SQL()
+		}
+		str += ")"
+	}
+	return str
+}
+
 func (cd ColumnDef) SQL() string {
 	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
 		str += " NOT NULL"
+	}
+	if cd.Default != nil {
+		str += " DEFAULT (" + cd.Default.SQL() + ")"
 	}
 	if cd.Generated != nil {
 		str += " AS (" + cd.Generated.SQL() + ") STORED"
@@ -686,6 +733,47 @@ func (c Case) addSQL(sb *strings.Builder) {
 	sb.WriteString("END")
 }
 
+func (c Coalesce) SQL() string { return buildSQL(c) }
+func (c Coalesce) addSQL(sb *strings.Builder) {
+	sb.WriteString("COALESCE(")
+	for i, expr := range c.ExprList {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		expr.addSQL(sb)
+	}
+	sb.WriteString(")")
+}
+
+func (i If) SQL() string { return buildSQL(i) }
+func (i If) addSQL(sb *strings.Builder) {
+	sb.WriteString("IF(")
+	i.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	i.TrueResult.addSQL(sb)
+	sb.WriteString(", ")
+	i.ElseResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (in IfNull) SQL() string { return buildSQL(in) }
+func (in IfNull) addSQL(sb *strings.Builder) {
+	sb.WriteString("IFNULL(")
+	in.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	in.NullResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (ni NullIf) SQL() string { return buildSQL(ni) }
+func (ni NullIf) addSQL(sb *strings.Builder) {
+	sb.WriteString("NULLIF(")
+	ni.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	ni.ExprToMatch.addSQL(sb)
+	sb.WriteString(")")
+}
+
 func (b BoolLiteral) SQL() string { return buildSQL(b) }
 func (b BoolLiteral) addSQL(sb *strings.Builder) {
 	if b {
@@ -722,5 +810,10 @@ func (dl DateLiteral) addSQL(sb *strings.Builder) {
 
 func (tl TimestampLiteral) SQL() string { return buildSQL(tl) }
 func (tl TimestampLiteral) addSQL(sb *strings.Builder) {
-	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000 -07:00"))
+	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000-07:00"))
+}
+
+func (jl JSONLiteral) SQL() string { return buildSQL(jl) }
+func (jl JSONLiteral) addSQL(sb *strings.Builder) {
+	fmt.Fprintf(sb, "JSON '%s'", jl)
 }

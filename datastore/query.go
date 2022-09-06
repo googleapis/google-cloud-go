@@ -38,6 +38,9 @@ const (
 	equal
 	greaterEq
 	greaterThan
+	in
+	notIn
+	notEqual
 
 	keyFieldName = "__key__"
 )
@@ -48,6 +51,9 @@ var operatorToProto = map[operator]pb.PropertyFilter_Operator{
 	equal:       pb.PropertyFilter_EQUAL,
 	greaterEq:   pb.PropertyFilter_GREATER_THAN_OR_EQUAL,
 	greaterThan: pb.PropertyFilter_GREATER_THAN,
+	in:          pb.PropertyFilter_IN,
+	notIn:       pb.PropertyFilter_NOT_IN,
+	notEqual:    pb.PropertyFilter_NOT_EQUAL,
 }
 
 // filter is a conditional filter on query results.
@@ -171,25 +177,46 @@ func (q *Query) Transaction(t *Transaction) *Query {
 }
 
 // Filter returns a derivative query with a field-based filter.
+//
+// Deprecated: Use the FilterField method instead, which supports the same
+// set of operations (and more).
+//
 // The filterStr argument must be a field name followed by optional space,
-// followed by an operator, one of ">", "<", ">=", "<=", or "=".
+// followed by an operator, one of ">", "<", ">=", "<=", "=", and "!=".
 // Fields are compared against the provided value using the operator.
 // Multiple filters are AND'ed together.
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
 func (q *Query) Filter(filterStr string, value interface{}) *Query {
-	q = q.clone()
+	// TODO( #5977 ): Add better string parsing (or something)
 	filterStr = strings.TrimSpace(filterStr)
 	if filterStr == "" {
 		q.err = fmt.Errorf("datastore: invalid filter %q", filterStr)
 		return q
 	}
+	f := strings.TrimRight(filterStr, " ><=!")
+	op := strings.TrimSpace(filterStr[len(f):])
+	return q.FilterField(f, op, value)
+}
+
+// FilterField returns a derivative query with a field-based filter.
+// The operation parameter takes the following strings: ">", "<", ">=", "<=",
+// "=", "!=", "in", and "not-in".
+// Fields are compared against the provided value using the operator.
+// Multiple filters are AND'ed together.
+// Field names which contain spaces, quote marks, or operator characters
+// should be passed as quoted Go string literals as returned by strconv.Quote
+// or the fmt package's %q verb.
+func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
+	q = q.clone()
+
 	f := filter{
-		FieldName: strings.TrimRight(filterStr, " ><=!"),
+		FieldName: fieldName,
 		Value:     value,
 	}
-	switch op := strings.TrimSpace(filterStr[len(f.FieldName):]); op {
+
+	switch o := strings.TrimSpace(operator); o {
 	case "<=":
 		f.Op = lessEq
 	case ">=":
@@ -200,8 +227,14 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 		f.Op = greaterThan
 	case "=":
 		f.Op = equal
+	case "in":
+		f.Op = in
+	case "not-in":
+		f.Op = notIn
+	case "!=":
+		f.Op = notEqual
 	default:
-		q.err = fmt.Errorf("datastore: invalid operator %q in filter %q", op, filterStr)
+		q.err = fmt.Errorf("datastore: invalid operator %q in filter", operator)
 		return q
 	}
 	var err error
@@ -488,7 +521,7 @@ func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 // The keys returned by GetAll will be in a 1-1 correspondence with the entities
 // added to dst.
 //
-// If q is a ``keys-only'' query, GetAll ignores dst and only returns the keys.
+// If q is a “keys-only” query, GetAll ignores dst and only returns the keys.
 //
 // The running time and number of API calls made by GetAll scale linearly with
 // with the sum of the query's offset and limit. Unless the result count is

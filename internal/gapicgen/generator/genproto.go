@@ -36,9 +36,6 @@ var goPkgOptRe = regexp.MustCompile(`(?m)^option go_package = (.*);`)
 
 // denylist is a set of clients to NOT generate.
 var denylist = map[string]bool{
-	// TODO(codyoss): re-enable after issue is resolve -- https://github.com/googleapis/go-genproto/issues/357
-	"google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1": true,
-
 	// Temporarily stop generation of removed protos. Will be manually cleaned
 	// up with: https://github.com/googleapis/google-cloud-go/issues/4098
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2": true,
@@ -73,6 +70,7 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 
 var skipPrefixes = []string{
 	"google.golang.org/genproto/googleapis/ads",
+	"google.golang.org/genproto/googleapis/storage",
 }
 
 func hasPrefix(s string, prefixes []string) bool {
@@ -135,10 +133,15 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		grpc := !noGRPC[pkg]
 		pk := pkg
 		fn := fileNames
-		grp.Go(func() error {
-			log.Println("running protoc on", pk)
-			return g.protoc(fn, grpc)
-		})
+
+		if !isMigrated(pkg) {
+			grp.Go(func() error {
+				log.Println("running protoc on", pk)
+				return g.protoc(fn, grpc)
+			})
+		} else {
+			log.Printf("skipping, %q has been migrated", pkg)
+		}
 	}
 	if err := grp.Wait(); err != nil {
 		return err
@@ -259,7 +262,7 @@ func (g *GenprotoGenerator) getAllPackages() (map[string][]string, error) {
 }
 
 // moveAndCleanupGeneratedSrc moves all generated src to their correct locations
-// in the repository, because protoc puts it in a folder called `generated/``.
+// in the repository, because protoc puts it in a folder called `generated/“.
 func (g *GenprotoGenerator) moveAndCleanupGeneratedSrc() error {
 	log.Println("moving generated code")
 	// The period at the end is analogous to * (copy everything in this dir).

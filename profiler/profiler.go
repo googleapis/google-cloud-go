@@ -16,11 +16,11 @@
 //
 // Usage example:
 //
-//   import "cloud.google.com/go/profiler"
-//   ...
-//   if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
-//       // TODO: Handle error.
-//   }
+//	import "cloud.google.com/go/profiler"
+//	...
+//	if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
+//	    // TODO: Handle error.
+//	}
 //
 // Calling Start will start a goroutine to collect profiles and upload to
 // the profiler server, at the rhythm specified by the server.
@@ -80,7 +80,7 @@ var (
 	sleep            = gax.Sleep
 	dialGRPC         = gtransport.DialPool
 	onGCE            = gcemd.OnGCE
-	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
+	serviceRegexp    = regexp.MustCompile(`^[a-z0-9]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
 
 	// For testing only.
 	// When the profiling loop has exited without error and this channel is

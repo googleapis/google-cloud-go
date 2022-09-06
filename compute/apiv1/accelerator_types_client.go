@@ -47,7 +47,15 @@ type AcceleratorTypesCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalAcceleratorTypesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultAcceleratorTypesRESTCallOptions() *AcceleratorTypesCallOptions {
+	return &AcceleratorTypesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalAcceleratorTypesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalAcceleratorTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -60,7 +68,7 @@ type internalAcceleratorTypesClient interface {
 // AcceleratorTypesClient is a client for interacting with Google Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 type AcceleratorTypesClient struct {
@@ -118,11 +126,14 @@ type acceleratorTypesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing AcceleratorTypesClient
+	CallOptions **AcceleratorTypesCallOptions
 }
 
 // NewAcceleratorTypesRESTClient creates a new accelerator types rest client.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AcceleratorTypesClient, error) {
@@ -132,13 +143,15 @@ func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultAcceleratorTypesRESTCallOptions()
 	c := &acceleratorTypesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &AcceleratorTypesClient{internalClient: c, CallOptions: &AcceleratorTypesCallOptions{}}, nil
+	return &AcceleratorTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultAcceleratorTypesRESTClientOptions() []option.ClientOption {
@@ -189,7 +202,10 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/acceleratorTypes", req.GetProject())
 
 		params := url.Values{}
@@ -217,6 +233,9 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -276,14 +295,23 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 
 // Get returns the specified accelerator type.
 func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.GetAcceleratorTypeRequest, opts ...gax.CallOption) (*computepb.AcceleratorType, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorTypes/%v", req.GetProject(), req.GetZone(), req.GetAcceleratorType())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "accelerator_type", url.QueryEscape(req.GetAcceleratorType())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.AcceleratorType{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -333,7 +361,10 @@ func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.Li
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorTypes", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
@@ -358,6 +389,9 @@ func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.Li
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err

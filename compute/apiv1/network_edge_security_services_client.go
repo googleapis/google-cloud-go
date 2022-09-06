@@ -50,7 +50,17 @@ type NetworkEdgeSecurityServicesCallOptions struct {
 	Patch          []gax.CallOption
 }
 
-// internalNetworkEdgeSecurityServicesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultNetworkEdgeSecurityServicesRESTCallOptions() *NetworkEdgeSecurityServicesCallOptions {
+	return &NetworkEdgeSecurityServicesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		Patch:          []gax.CallOption{},
+	}
+}
+
+// internalNetworkEdgeSecurityServicesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalNetworkEdgeSecurityServicesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -134,6 +144,9 @@ type networkEdgeSecurityServicesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing NetworkEdgeSecurityServicesClient
+	CallOptions **NetworkEdgeSecurityServicesCallOptions
 }
 
 // NewNetworkEdgeSecurityServicesRESTClient creates a new network edge security services rest client.
@@ -146,9 +159,11 @@ func NewNetworkEdgeSecurityServicesRESTClient(ctx context.Context, opts ...optio
 		return nil, err
 	}
 
+	callOpts := defaultNetworkEdgeSecurityServicesRESTCallOptions()
 	c := &networkEdgeSecurityServicesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -162,7 +177,7 @@ func NewNetworkEdgeSecurityServicesRESTClient(ctx context.Context, opts ...optio
 	}
 	c.operationClient = opC
 
-	return &NetworkEdgeSecurityServicesClient{internalClient: c, CallOptions: &NetworkEdgeSecurityServicesCallOptions{}}, nil
+	return &NetworkEdgeSecurityServicesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultNetworkEdgeSecurityServicesRESTClientOptions() []option.ClientOption {
@@ -216,7 +231,10 @@ func (c *networkEdgeSecurityServicesRESTClient) AggregatedList(ctx context.Conte
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/networkEdgeSecurityServices", req.GetProject())
 
 		params := url.Values{}
@@ -244,6 +262,9 @@ func (c *networkEdgeSecurityServicesRESTClient) AggregatedList(ctx context.Conte
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -303,7 +324,10 @@ func (c *networkEdgeSecurityServicesRESTClient) AggregatedList(ctx context.Conte
 
 // Delete deletes the specified service.
 func (c *networkEdgeSecurityServicesRESTClient) Delete(ctx context.Context, req *computepb.DeleteNetworkEdgeSecurityServiceRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEdgeSecurityServices/%v", req.GetProject(), req.GetRegion(), req.GetNetworkEdgeSecurityService())
 
 	params := url.Values{}
@@ -314,10 +338,16 @@ func (c *networkEdgeSecurityServicesRESTClient) Delete(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "network_edge_security_service", url.QueryEscape(req.GetNetworkEdgeSecurityService())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -362,14 +392,23 @@ func (c *networkEdgeSecurityServicesRESTClient) Delete(ctx context.Context, req 
 
 // Get gets a specified NetworkEdgeSecurityService.
 func (c *networkEdgeSecurityServicesRESTClient) Get(ctx context.Context, req *computepb.GetNetworkEdgeSecurityServiceRequest, opts ...gax.CallOption) (*computepb.NetworkEdgeSecurityService, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEdgeSecurityServices/%v", req.GetProject(), req.GetRegion(), req.GetNetworkEdgeSecurityService())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "network_edge_security_service", url.QueryEscape(req.GetNetworkEdgeSecurityService())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworkEdgeSecurityService{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -413,7 +452,10 @@ func (c *networkEdgeSecurityServicesRESTClient) Insert(ctx context.Context, req 
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEdgeSecurityServices", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -427,10 +469,16 @@ func (c *networkEdgeSecurityServicesRESTClient) Insert(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -482,7 +530,10 @@ func (c *networkEdgeSecurityServicesRESTClient) Patch(ctx context.Context, req *
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEdgeSecurityServices/%v", req.GetProject(), req.GetRegion(), req.GetNetworkEdgeSecurityService())
 
 	params := url.Values{}
@@ -499,10 +550,16 @@ func (c *networkEdgeSecurityServicesRESTClient) Patch(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "network_edge_security_service", url.QueryEscape(req.GetNetworkEdgeSecurityService())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
