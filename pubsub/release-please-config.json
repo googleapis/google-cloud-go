@@ -7,5 +7,6 @@
         "pubsub": {
             "component": "pubsub"
         }
-    }
+    },
+    "plugins": ["sentence-case"]
 }
