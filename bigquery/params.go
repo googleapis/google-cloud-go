@@ -145,6 +145,7 @@ type ParameterValue interface {
 
 // Parameter implements ParameterType and ParameterValue.
 type Parameter interface {
+	parameterName() string
 	ParameterType
 	ParameterValue
 }
@@ -200,10 +201,10 @@ type StructQueryParameter struct {
 	Name string
 
 	// Schema complex struct value passed as a map of field names and ParameterTypes.
-	Schema map[string]ParameterType
+	Schema []Parameter
 
 	// Value complex struct value passed as a map of field names and ParameterValues.
-	Value map[string]ParameterValue
+	Value []Parameter
 }
 
 // QueryParameter converts an explicit ScalarQueryParameter to a common QueryParameter
@@ -213,6 +214,11 @@ func (p ScalarQueryParameter) QueryParameter() QueryParameter {
 		Value:             p.Value,
 		explicitParameter: p,
 	}
+}
+
+// Name of the parameter
+func (p ScalarQueryParameter) parameterName() string {
+	return p.Name
 }
 
 // ParameterType
@@ -226,6 +232,11 @@ func (p ScalarQueryParameter) parameterValue() *bq.QueryParameterValue {
 		return &bq.QueryParameterValue{}
 	}
 	return pv
+}
+
+// Name of the parameter
+func (p ArrayQueryParameter) parameterName() string {
+	return p.Name
 }
 
 // QueryParameter converts an explicit ArrayQueryParameter to a common QueryParameter
@@ -249,6 +260,11 @@ func (p ArrayQueryParameter) parameterValue() *bq.QueryParameterValue {
 	return pv
 }
 
+// Name of the parameter
+func (p StructQueryParameter) parameterName() string {
+	return p.Name
+}
+
 // QueryParameter converts an explicit StructQueryParameter to a common QueryParameter
 func (p StructQueryParameter) QueryParameter() QueryParameter {
 	return QueryParameter{
@@ -260,9 +276,9 @@ func (p StructQueryParameter) QueryParameter() QueryParameter {
 
 func (p StructQueryParameter) parameterType() *bq.QueryParameterType {
 	var fts []*bq.QueryParameterTypeStructTypes
-	for field, param := range p.Schema {
+	for _, param := range p.Schema {
 		fts = append(fts, &bq.QueryParameterTypeStructTypes{
-			Name: field,
+			Name: param.parameterName(),
 			Type: param.parameterType(),
 		})
 	}
@@ -272,9 +288,9 @@ func (p StructQueryParameter) parameterType() *bq.QueryParameterType {
 func (p StructQueryParameter) parameterValue() *bq.QueryParameterValue {
 	pv := &bq.QueryParameterValue{}
 	pv.StructValues = map[string]bq.QueryParameterValue{}
-	for field, param := range p.Value {
+	for _, param := range p.Value {
 		v := param.parameterValue()
-		pv.StructValues[field] = *v
+		pv.StructValues[param.parameterName()] = *v
 	}
 	return pv
 }
@@ -282,14 +298,14 @@ func (p StructQueryParameter) parameterValue() *bq.QueryParameterValue {
 func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	if p.explicitParameter != nil {
 		return &bq.QueryParameter{
-			Name:           p.Name,
+			Name:           p.explicitParameter.parameterName(),
 			ParameterType:  p.explicitParameter.parameterType(),
 			ParameterValue: p.explicitParameter.parameterValue(),
 		}, nil
 	}
 	if param, ok := p.Value.(Parameter); ok {
 		return &bq.QueryParameter{
-			Name:           p.Name,
+			Name:           param.parameterName(),
 			ParameterType:  param.parameterType(),
 			ParameterValue: param.parameterValue(),
 		}, nil

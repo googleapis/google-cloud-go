@@ -1948,36 +1948,76 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{
 				StructQueryParameter{
 					Name: "val",
-					Value: map[string]ParameterValue{
-						"Timestamp": ScalarQueryParameter{
+					Value: []Parameter{
+						ScalarQueryParameter{
+							Name:  "Timestamp",
 							Value: ts,
 						},
-						"BigNumericArray": ArrayQueryParameter{
+						ArrayQueryParameter{
+							Name: "BigNumericArray",
 							Value: []string{
 								BigNumericString(bigRat),
 								BigNumericString(rat),
 							},
 						},
-						"SubStruct": StructQueryParameter{
-							Value: map[string]ParameterValue{
-								"String": ScalarQueryParameter{
+						ArrayQueryParameter{
+							Name: "ArraySingleValueStruct",
+							Value: []StructQueryParameter{
+								{
+									Value: []Parameter{
+										ScalarQueryParameter{
+											Name:  "Number",
+											Value: int64(42),
+										},
+									},
+								},
+								{
+									Value: []Parameter{
+										ScalarQueryParameter{
+											Name:  "Number",
+											Value: int64(43),
+										},
+									},
+								},
+							},
+						},
+						StructQueryParameter{
+							Name: "SubStruct",
+							Value: []Parameter{
+								ScalarQueryParameter{
+									Name:  "String",
 									Value: "c",
 								},
 							},
 						},
 					},
-					Schema: map[string]ParameterType{
-						"Timestamp": ScalarQueryParameter{
+					Schema: []Parameter{
+						ScalarQueryParameter{
+							Name: "Timestamp",
 							Type: "TIMESTAMP",
 						},
-						"BigNumericArray": ArrayQueryParameter{
+						ArrayQueryParameter{
+							Name: "BigNumericArray",
 							Type: ScalarQueryParameter{
 								Type: "BIGNUMERIC",
 							},
 						},
-						"SubStruct": StructQueryParameter{
-							Schema: map[string]ParameterType{
-								"String": ScalarQueryParameter{
+						ArrayQueryParameter{
+							Name: "ArraySingleValueStruct",
+							Type: StructQueryParameter{
+								Schema: []Parameter{
+									ScalarQueryParameter{
+										Name: "Number",
+										Type: "INT64",
+									},
+								},
+							},
+						},
+						StructQueryParameter{
+							Name: "SubStruct",
+							Schema: []Parameter{
+								ScalarQueryParameter{
+									Name: "String",
 									Type: "STRING",
 								},
 							},
@@ -1985,11 +2025,15 @@ func TestIntegration_QueryParameters(t *testing.T) {
 					},
 				}.QueryParameter(),
 			},
-			[]Value{[]Value{ts, []Value{bigRat, rat}, []Value{"c"}}},
+			[]Value{[]Value{ts, []Value{bigRat, rat}, []Value{[]Value{int64(42)}, []Value{int64(43)}}, []Value{"c"}}},
 			map[string]interface{}{
 				"Timestamp":       ts,
 				"BigNumericArray": []interface{}{bigRat, rat},
-				"SubStruct":       map[string]interface{}{"String": "c"},
+				"ArraySingleValueStruct": []interface{}{
+					map[string]interface{}{"Number": int64(42)},
+					map[string]interface{}{"Number": int64(43)},
+				},
+				"SubStruct": map[string]interface{}{"String": "c"},
 			},
 		},
 	}
@@ -1998,7 +2042,12 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		q.Parameters = c.parameters
 		job, err := q.Run(ctx)
 		if err != nil {
-			t.Fatal(err)
+			bqOut, _ := q.toBQ()
+			for _, qp := range bqOut.Query.QueryParameters {
+				out, _ := qp.MarshalJSON()
+				log.Printf("query param: `%s` - %s", qp.Name, out)
+			}
+			t.Fatalf("%v job with error: %v", bqOut.Query.QueryParameters, err)
 		}
 		if job.LastStatus() == nil {
 			t.Error("no LastStatus")
