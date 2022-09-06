@@ -24,3 +24,5 @@ ignoreFiles:
   - "third_party/go/doc/reader.go"
   - "third_party/go/doc/synopsis.go"
   - "third_party/go/doc/synopsis_test.go"
+  # Ignore all proto files
+  - ".pb.go"
