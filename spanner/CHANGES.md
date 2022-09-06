@@ -1,5 +1,19 @@
 # Changes
 
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.37.0...spanner/v1.38.0) (2022-09-03)
+
+
+### Features
+
+* **spanner/spannertest:** add support for adding and dropping Foreign Keys ([#6608](https://github.com/googleapis/google-cloud-go/issues/6608)) ([ccd3614](https://github.com/googleapis/google-cloud-go/commit/ccd3614f6edbaf3d7d202feb4df220f244550a78))
+* **spanner/spansql:** add support for coalesce expressions ([#6461](https://github.com/googleapis/google-cloud-go/issues/6461)) ([bff16a7](https://github.com/googleapis/google-cloud-go/commit/bff16a783c1fd4d7e888d4ee3b5420c1bbf10da1))
+* **spanner:** Adds auto-generated CL for googleapis for jsonb ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+
+
+### Bug Fixes
+
+* **spanner:** pass userAgent to cloud spanner requests ([#6598](https://github.com/googleapis/google-cloud-go/issues/6598)) ([59d162b](https://github.com/googleapis/google-cloud-go/commit/59d162bdfcbe00a060a52930be7185f00e8df2c1))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.36.0...spanner/v1.37.0) (2022-08-28)
 
 
