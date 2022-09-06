@@ -743,6 +743,13 @@ type WhenClause struct {
 	Result Expr
 }
 
+type Coalesce struct {
+	ExprList []Expr
+}
+
+func (Coalesce) isBoolExpr() {} // possibly bool
+func (Coalesce) isExpr()     {}
+
 type If struct {
 	Expr       Expr
 	TrueResult Expr

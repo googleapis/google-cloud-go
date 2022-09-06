@@ -733,6 +733,18 @@ func (c Case) addSQL(sb *strings.Builder) {
 	sb.WriteString("END")
 }
 
+func (c Coalesce) SQL() string { return buildSQL(c) }
+func (c Coalesce) addSQL(sb *strings.Builder) {
+	sb.WriteString("COALESCE(")
+	for i, expr := range c.ExprList {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		expr.addSQL(sb)
+	}
+	sb.WriteString(")")
+}
+
 func (i If) SQL() string { return buildSQL(i) }
 func (i If) addSQL(sb *strings.Builder) {
 	sb.WriteString("IF(")
