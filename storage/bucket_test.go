@@ -843,6 +843,13 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 			},
 			expectSuccess: true,
 		},
+		{
+			name: "no creds",
+			creds: func(_ string) string {
+				return ""
+			},
+			expectSuccess: false,
+		},
 	}
 
 	for _, tc := range testCases {

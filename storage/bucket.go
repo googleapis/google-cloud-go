@@ -165,35 +165,12 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 // For more information about signed URLs, see "[Overview of access control]."
 //
 // This method requires the Method and Expires fields in the specified
-// SignedURLOptions to be non-nil.
-//
-// If the GoogleAccessID and PrivateKey fields are not provided, they will be
-// automatically detected when:
-//   - you are authenticated to the Storage Client with a service account's
-//     downloaded private key, either directly in code or by setting the
-//     GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
-//   - your application is running on Google Compute Engine (GCE), or
-//   - you are logged into [gcloud using application default credentials]
-//     with [impersonation enabled].
-//
-// In some cases, you may not need to set PrivateKey but must set GoogleAccessID.
-// GoogleAccessID should be set to a service account that will be used to attempt
-// to sign the URL. This is true of cases where credentials are provided but not
-// attached to a service account, such as when:
-//   - you are authenticated to the Storage Client with a token source,
-//   - you are using a custom HTTP client, or
-//   - you are logged into [gcloud using application default credentials]
-//     without [impersonation enabled].
-//
-// To sign the URL with only the GoogleAccessID set you require:
-//   - the [IAM Service Account Credentials API enabled], and
-//   - iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+// SignedURLOptions to be non-nil. You may need to set the GoogleAccessID and
+// PrivateKey fields in some cases. Read more on the [automatic detection of credentials]
+// for this method.
 //
 // [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
-// [Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
-// [gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
-// [impersonation enabled]: https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account
-// [IAM Service Account Credentials API enabled]: https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_detection_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return SignedURL(b.name, object, opts)
@@ -232,34 +209,10 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 // The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
 //
 // This method requires the Expires field in the specified PostPolicyV4Options
-// to be non-nil.
+// to be non-nil. You may need to set the GoogleAccessID and PrivateKey fields
+// in some cases. Read more on the [automatic detection of credentials] for this method.
 //
-// If the GoogleAccessID and PrivateKey fields are not provided, they will be
-// automatically detected when:
-//   - you are authenticated to the Storage Client with a service account's
-//     downloaded private key, either directly in code or by setting the
-//     GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
-//   - your application is running on Google Compute Engine (GCE), or
-//   - you are logged into [gcloud using application default credentials]
-//     with [impersonation enabled].
-//
-// In some cases, you may not need to set PrivateKey but must set GoogleAccessID.
-// GoogleAccessID should be set to a service account that will be used to attempt
-// to sign the PostPolicyV4. This is true of cases where credentials are provided
-// but not attached to a service account, such as when:
-//   - you are authenticated to the Storage Client with a token source,
-//   - you are using a custom HTTP client, or
-//   - you are logged into [gcloud using application default credentials]
-//     without [impersonation enabled].
-//
-// To generate the PostPolicyV4 with only the GoogleAccessID set you require:
-//   - the [IAM Service Account Credentials API enabled], and
-//   - iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-//
-// [Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
-// [gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
-// [impersonation enabled]: https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account
-// [IAM Service Account Credentials API enabled]: https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_detection_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return GenerateSignedPostPolicyV4(b.name, object, opts)
@@ -318,7 +271,7 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		} else if sa.CredType == "service_account" && sa.ClientEmail != "" {
 			return sa.ClientEmail, nil
 		} else {
-			returnErr = errors.New("unable to parse credentials")
+			returnErr = errors.New("unable to parse credentials; only service_account and impersonated_service_account credentials are supported")
 		}
 	}
 
@@ -334,7 +287,7 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		}
 
 	}
-	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %v", returnErr)
+	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %w. Please provide the GoogleAccessID or use a supported means for autodetecting it (see https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_detection_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]).", returnErr)
 }
 
 func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
