@@ -714,3 +714,17 @@ func TestForeignKeyAddAndAlterConstraint(t *testing.T) {
 		}
 	}
 }
+
+func TestAddBackQuoteForHypen(t *testing.T) {
+	ddl, err := spansql.ParseDDL("filename", "ALTER DATABASE `test-db` SET OPTIONS (optimizer_version=4, version_retention_period = '7d', enable_key_visualizer=true)")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got := ddl.List[0].SQL()
+	want := "ALTER DATABASE `test-db` SET OPTIONS (optimizer_version=4, version_retention_period='7d', enable_key_visualizer=true)"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+}

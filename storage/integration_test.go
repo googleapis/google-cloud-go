@@ -4986,12 +4986,12 @@ func hasRule(acl []ACLRule, rule ACLRule) bool {
 }
 
 // retry retries a function call as well as an (optional) correctness check for up
-// to 11 seconds. Both call and check must run without error in order to succeed.
+// to 60 seconds. Both call and check must run without error in order to succeed.
 // If the timeout is hit, the most recent error from call or check will be returned.
 // This function should be used to wrap calls that might cause integration test
 // flakes due to delays in propagation (for example, metadata updates).
 func retry(ctx context.Context, call func() error, check func() error) error {
-	timeout := time.After(11 * time.Second)
+	timeout := time.After(60 * time.Second)
 	var err error
 	for {
 		select {
