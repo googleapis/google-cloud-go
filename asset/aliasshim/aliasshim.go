@@ -20,3 +20,5 @@
 // Package aliasshim is used to keep the dependency on go-genproto during our
 // go-genproto to google-cloud-go stubs migration window.
 package aliasshim
+
+import _ "google.golang.org/genproto/protobuf/api"
