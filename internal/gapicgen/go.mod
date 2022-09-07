@@ -5,6 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go v0.102.1
 	cloud.google.com/go/internal/aliasfix v0.0.0
+	cloud.google.com/go/internal/aliasgen v0.0.0-20220902151655-a6004e762f78
 	cloud.google.com/go/internal/godocfx v0.0.0-20220625055333-3f8d1627b9c2
 	github.com/google/go-github/v35 v35.3.0
 	github.com/shurcooL/githubv4 v0.0.0-20220520033151-0b4e3294ff00
@@ -39,3 +40,5 @@ require (
 )
 
 replace cloud.google.com/go/internal/aliasfix => ../aliasfix
+
+replace cloud.google.com/go/internal/aliasgen => ../aliasgen
