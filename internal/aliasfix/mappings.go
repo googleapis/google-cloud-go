@@ -92,11 +92,11 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1": {
 		ImportPath: "cloud.google.com/go/asset/apiv1p2beta1/assetpb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1": {
 		ImportPath: "cloud.google.com/go/asset/apiv1p5beta1/assetpb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1": {
 		ImportPath: "cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb",
