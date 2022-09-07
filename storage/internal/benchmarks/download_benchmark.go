@@ -20,61 +20,55 @@ import (
 	"io"
 	"os"
 	"time"
-
-	"cloud.google.com/go/storage"
 )
 
-type downloadOpts struct {
-	o          *storage.ObjectHandle
-	objectSize int64
-}
-
-func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
+func download(ctx context.Context, opts benchmarkOptions, results *w1r3, idx int) (err error) {
+	result := results.readResults[idx]
 	start := time.Now()
 	defer func() {
-		elapsedTime = time.Since(start)
+		result.isRead = true
+		result.readIteration = idx
+		result.elapsedTime = time.Since(start)
+		result.completed = err == nil
 	}()
 
-	f, err := os.Create(dopts.o.ObjectName())
+	o := results.client.Bucket(results.bucketName).Object(results.objectName)
+
+	f, err := os.Create(o.ObjectName())
 	if err != nil {
-		rerr = fmt.Errorf("os.Create: %v", err)
-		return
+		return fmt.Errorf("os.Create: %w", err)
 	}
 	defer func() {
 		closeErr := f.Close()
-		removeErr := os.Remove(dopts.o.ObjectName())
+		removeErr := os.Remove(o.ObjectName())
 		// if we don't have another error to return, return error for closing file
 		// if that error is also nil, return removeErr
-		if rerr == nil {
-			rerr = removeErr
+		if err == nil {
+			err = removeErr
 			if closeErr != nil {
-				rerr = closeErr
+				err = closeErr
 			}
 		}
 	}()
 
-	objectReader, err := dopts.o.NewReader(ctx)
+	objectReader, err := o.NewReader(ctx)
 	if err != nil {
-		rerr = fmt.Errorf("Object(%q).NewReader: %v", dopts.o.ObjectName(), err)
-		return
+		return fmt.Errorf("Object(%q).NewReader: %w", o.ObjectName(), err)
 	}
 	defer func() {
-		err := objectReader.Close()
+		rerr := objectReader.Close()
 		if rerr == nil {
-			rerr = err
+			err = rerr
 		}
 	}()
 
 	written, err := io.Copy(f, objectReader)
 	if err != nil {
-		rerr = fmt.Errorf("io.Copy: %v", err)
-		return
+		return fmt.Errorf("io.Copy: %w", err)
 	}
 
-	if written != dopts.objectSize {
-		rerr = fmt.Errorf("did not read all bytes; read: %d, expected to read: %d", written, dopts.objectSize)
-		return
+	if written != result.objectSize {
+		return fmt.Errorf("did not read all bytes; read: %d, expected to read: %d", written, result.objectSize)
 	}
-
-	return
+	return nil
 }

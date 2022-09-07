@@ -36,8 +36,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-const bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
-const objectPrefix = "benchmark-obj-"
+const (
+	kib          = 1024
+	bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
+	objectPrefix = "benchmark-obj-"
+)
 
 func randomBool() bool {
 	return rand.Intn(2) == 0
@@ -82,7 +85,7 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 	ctx := context.Background()
 
 	// Create a bucket for the tests. We do not need to benchmark this.
-	c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+	c, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -134,9 +137,7 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 		WriteBufferSize:       writeBufferSize,
 		ReadBufferSize:        readBufferSize,
 	}
-	trans, err := htransport.NewTransport(ctx, base,
-		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
-		option.WithCredentialsFile(credentialsFile))
+	trans, err := htransport.NewTransport(ctx, base, option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
 	if err != nil {
 		return nil, "", "", err
 	}
@@ -152,7 +153,7 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 	case grpcAPI:
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
-		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
+		client, err = storage.NewClient(ctx,
 			option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
 			option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
 			option.WithGRPCConnectionPool(connPoolSize))
@@ -212,7 +213,7 @@ func generateDefaultTransportWithBufferSizes(writeBufferSize, readBufferSize int
 func initGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int) (*storage.Client, error) {
 	clientMu.Lock()
 	os.Setenv("STORAGE_USE_GRPC", "true")
-	c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
+	c, err := storage.NewClient(ctx,
 		option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
 		option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
 		option.WithGRPCConnectionPool(opts.connPoolSize))
@@ -223,8 +224,7 @@ func initGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int) (*
 
 func initHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int) (*storage.Client, error) {
 	base := generateDefaultTransportWithBufferSizes(writeBufferSize, readBufferSize)
-	trans, err := htransport.NewTransport(ctx, base, option.WithCredentialsFile(credentialsFile),
-		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
+	trans, err := htransport.NewTransport(ctx, base, option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
 	if err != nil {
 		return nil, err
 	}

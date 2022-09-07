@@ -26,60 +26,45 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"google.golang.org/api/option"
 )
 
-type uploadOpts struct {
-	o         *storage.ObjectHandle
-	fileName  string
-	chunkSize int
-	md5       bool
-	crc32c    bool
-}
-
-func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
+func upload(ctx context.Context, opts benchmarkOptions, results *w1r3) (err error) {
 	start := time.Now()
 	defer func() {
-		elapsedTime = time.Since(start)
+		results.writeResult.elapsedTime = time.Since(start)
+		results.writeResult.completed = err == nil
 	}()
 
-	o := uopts.o.If(storage.Conditions{DoesNotExist: true})
-	objectWriter := o.NewWriter(ctx)
-	objectWriter.ChunkSize = uopts.chunkSize
+	o := results.client.Bucket(results.bucketName).Object(results.objectName)
+	o = o.If(storage.Conditions{DoesNotExist: true})
 
-	f, err := os.Open(uopts.fileName)
+	objectWriter := o.NewWriter(ctx)
+	objectWriter.ChunkSize = results.writeResult.chunkSize
+
+	f, err := os.Open(results.objectName)
 	if err != nil {
-		return elapsedTime, fmt.Errorf("os.Open: %v", err)
+		return fmt.Errorf("os.Open: %w", err)
 	}
 	defer f.Close()
 
-	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.md5, uopts.crc32c)
+	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, results.writeResult.md5Enabled, results.writeResult.crc32cEnabled)
 
 	if _, err = io.Copy(mw, f); err != nil {
-		return elapsedTime, fmt.Errorf("io.Copy: %v", err)
+		return fmt.Errorf("io.Copy: %w", err)
 	}
 
 	err = objectWriter.Close()
 	if err != nil {
-		return elapsedTime, fmt.Errorf("writer.Close: %v", err)
+		return fmt.Errorf("writer.Close: %w", err)
 	}
 
-	if uopts.crc32c || uopts.md5 {
-		// TODO: remove use of separate client once grpc is fully implemented
-		clientMu.Lock()
-		httpClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
-		clientMu.Unlock()
-		if err != nil {
-			return elapsedTime, fmt.Errorf("NewClient: %v", err)
-		}
-		o := httpClient.Bucket(uopts.o.BucketName()).Object(uopts.o.ObjectName())
-
+	if results.writeResult.md5Enabled || results.writeResult.crc32cEnabled {
 		attrs, aerr := o.Attrs(ctx)
 		if aerr != nil {
-			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %v", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
+			return fmt.Errorf("get attrs on object: %w", aerr)
 		}
 
-		rerr = verifyHash(md5Hash, crc32cHash, attrs.MD5, attrs.CRC32C)
+		return verifyHash(md5Hash, crc32cHash, attrs.MD5, attrs.CRC32C)
 	}
 
 	return
