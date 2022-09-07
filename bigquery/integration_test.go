@@ -1932,13 +1932,15 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		{
 			"SELECT @val",
 			[]QueryParameter{
-				ArrayQueryParameter{
-					Name:  "val",
-					Value: []string{"a", "b"},
-					Type: ScalarQueryParameter{
-						Type: "STRING",
+				{
+					Name: "val",
+					Value: ArrayQueryParameter{
+						Value: []string{"a", "b"},
+						Type: ScalarQueryParameter{
+							Type: "STRING",
+						},
 					},
-				}.QueryParameter(),
+				},
 			},
 			[]Value{[]Value{"a", "b"}},
 			[]interface{}{"a", "b"},

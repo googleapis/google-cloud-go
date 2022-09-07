@@ -297,15 +297,23 @@ func (p StructQueryParameter) parameterValue() *bq.QueryParameterValue {
 
 func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	if p.explicitParameter != nil {
+		name := p.Name
+		if name == "" {
+			name = p.explicitParameter.parameterName()
+		}
 		return &bq.QueryParameter{
-			Name:           p.explicitParameter.parameterName(),
+			Name:           name,
 			ParameterType:  p.explicitParameter.parameterType(),
 			ParameterValue: p.explicitParameter.parameterValue(),
 		}, nil
 	}
 	if param, ok := p.Value.(Parameter); ok {
+		name := p.Name
+		if name == "" {
+			name = param.parameterName()
+		}
 		return &bq.QueryParameter{
-			Name:           param.parameterName(),
+			Name:           name,
 			ParameterType:  param.parameterType(),
 			ParameterValue: param.parameterValue(),
 		}, nil
