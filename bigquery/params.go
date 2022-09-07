@@ -127,8 +127,6 @@ type QueryParameter struct {
 	// above.  Null strings will report in query statistics as a valid empty
 	// string.
 	Value interface{}
-
-	explicitParameter Parameter
 }
 
 // ParameterType represents an explicit typed parameter to a query.
@@ -207,15 +205,6 @@ type StructQueryParameter struct {
 	Value []Parameter
 }
 
-// QueryParameter converts an explicit ScalarQueryParameter to a common QueryParameter
-func (p ScalarQueryParameter) QueryParameter() QueryParameter {
-	return QueryParameter{
-		Name:              p.Name,
-		Value:             p.Value,
-		explicitParameter: p,
-	}
-}
-
 // Name of the parameter
 func (p ScalarQueryParameter) parameterName() string {
 	return p.Name
@@ -239,15 +228,6 @@ func (p ArrayQueryParameter) parameterName() string {
 	return p.Name
 }
 
-// QueryParameter converts an explicit ArrayQueryParameter to a common QueryParameter
-func (p ArrayQueryParameter) QueryParameter() QueryParameter {
-	return QueryParameter{
-		Name:              p.Name,
-		Value:             p.Value,
-		explicitParameter: p,
-	}
-}
-
 func (p ArrayQueryParameter) parameterType() *bq.QueryParameterType {
 	return &bq.QueryParameterType{Type: "ARRAY", ArrayType: p.Type.parameterType()}
 }
@@ -263,15 +243,6 @@ func (p ArrayQueryParameter) parameterValue() *bq.QueryParameterValue {
 // Name of the parameter
 func (p StructQueryParameter) parameterName() string {
 	return p.Name
-}
-
-// QueryParameter converts an explicit StructQueryParameter to a common QueryParameter
-func (p StructQueryParameter) QueryParameter() QueryParameter {
-	return QueryParameter{
-		Name:              p.Name,
-		Value:             p.Value,
-		explicitParameter: p,
-	}
 }
 
 func (p StructQueryParameter) parameterType() *bq.QueryParameterType {
@@ -296,17 +267,6 @@ func (p StructQueryParameter) parameterValue() *bq.QueryParameterValue {
 }
 
 func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
-	if p.explicitParameter != nil {
-		name := p.Name
-		if name == "" {
-			name = p.explicitParameter.parameterName()
-		}
-		return &bq.QueryParameter{
-			Name:           name,
-			ParameterType:  p.explicitParameter.parameterType(),
-			ParameterValue: p.explicitParameter.parameterValue(),
-		}, nil
-	}
 	if param, ok := p.Value.(Parameter); ok {
 		name := p.Name
 		if name == "" {

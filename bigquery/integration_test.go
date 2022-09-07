@@ -1920,11 +1920,14 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		{
 			"SELECT @val",
 			[]QueryParameter{
-				ScalarQueryParameter{
-					Name:  "val",
-					Type:  "BIGNUMERIC",
-					Value: BigNumericString(bigRat),
-				}.QueryParameter(),
+				{
+					Name: "val",
+					Value: ScalarQueryParameter{
+						Name:  "val",
+						Type:  "BIGNUMERIC",
+						Value: BigNumericString(bigRat),
+					},
+				},
 			},
 			[]Value{bigRat},
 			bigRat,
@@ -1948,84 +1951,86 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		{
 			"SELECT @val",
 			[]QueryParameter{
-				StructQueryParameter{
+				{
 					Name: "val",
-					Value: []Parameter{
-						ScalarQueryParameter{
-							Name:  "Timestamp",
-							Value: ts,
-						},
-						ArrayQueryParameter{
-							Name: "BigNumericArray",
-							Value: []string{
-								BigNumericString(bigRat),
-								BigNumericString(rat),
+					Value: StructQueryParameter{
+						Value: []Parameter{
+							ScalarQueryParameter{
+								Name:  "Timestamp",
+								Value: ts,
 							},
-						},
-						ArrayQueryParameter{
-							Name: "ArraySingleValueStruct",
-							Value: []StructQueryParameter{
-								{
-									Value: []Parameter{
-										ScalarQueryParameter{
-											Name:  "Number",
-											Value: int64(42),
+							ArrayQueryParameter{
+								Name: "BigNumericArray",
+								Value: []string{
+									BigNumericString(bigRat),
+									BigNumericString(rat),
+								},
+							},
+							ArrayQueryParameter{
+								Name: "ArraySingleValueStruct",
+								Value: []StructQueryParameter{
+									{
+										Value: []Parameter{
+											ScalarQueryParameter{
+												Name:  "Number",
+												Value: int64(42),
+											},
+										},
+									},
+									{
+										Value: []Parameter{
+											ScalarQueryParameter{
+												Name:  "Number",
+												Value: int64(43),
+											},
 										},
 									},
 								},
-								{
-									Value: []Parameter{
-										ScalarQueryParameter{
-											Name:  "Number",
-											Value: int64(43),
-										},
+							},
+							StructQueryParameter{
+								Name: "SubStruct",
+								Value: []Parameter{
+									ScalarQueryParameter{
+										Name:  "String",
+										Value: "c",
 									},
 								},
 							},
 						},
-						StructQueryParameter{
-							Name: "SubStruct",
-							Value: []Parameter{
-								ScalarQueryParameter{
-									Name:  "String",
-									Value: "c",
+						Schema: []Parameter{
+							ScalarQueryParameter{
+								Name: "Timestamp",
+								Type: "TIMESTAMP",
+							},
+							ArrayQueryParameter{
+								Name: "BigNumericArray",
+								Type: ScalarQueryParameter{
+									Type: "BIGNUMERIC",
 								},
 							},
-						},
-					},
-					Schema: []Parameter{
-						ScalarQueryParameter{
-							Name: "Timestamp",
-							Type: "TIMESTAMP",
-						},
-						ArrayQueryParameter{
-							Name: "BigNumericArray",
-							Type: ScalarQueryParameter{
-								Type: "BIGNUMERIC",
+							ArrayQueryParameter{
+								Name: "ArraySingleValueStruct",
+								Type: StructQueryParameter{
+									Schema: []Parameter{
+										ScalarQueryParameter{
+											Name: "Number",
+											Type: "INT64",
+										},
+									},
+								},
 							},
-						},
-						ArrayQueryParameter{
-							Name: "ArraySingleValueStruct",
-							Type: StructQueryParameter{
+							StructQueryParameter{
+								Name: "SubStruct",
 								Schema: []Parameter{
 									ScalarQueryParameter{
-										Name: "Number",
-										Type: "INT64",
+										Name: "String",
+										Type: "STRING",
 									},
 								},
 							},
 						},
-						StructQueryParameter{
-							Name: "SubStruct",
-							Schema: []Parameter{
-								ScalarQueryParameter{
-									Name: "String",
-									Type: "STRING",
-								},
-							},
-						},
 					},
-				}.QueryParameter(),
+				},
 			},
 			[]Value{[]Value{ts, []Value{bigRat, rat}, []Value{[]Value{int64(42)}, []Value{int64(43)}}, []Value{"c"}}},
 			map[string]interface{}{
