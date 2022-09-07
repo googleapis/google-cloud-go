@@ -118,8 +118,10 @@ var scalarTests = []scalarTest{
 		dateTimeParamType,
 		NullDateTime{Valid: false}},
 	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
-	{ScalarQueryParameter{
-		Type:  "BIGNUMERIC",
+	{&QueryParameterValue{
+		Type: StandardSQLDataType{
+			TypeKind: "BIGNUMERIC",
+		},
 		Value: BigNumericString(big.NewRat(12345, 10e10)),
 	}, false, "0.00000012345000000000000000000000000000", bigNumericParamType, big.NewRat(12345, 10e10)},
 	{&IntervalValue{Years: 1, Months: 2, Days: 3}, false, "1-2 3 0:0:0", intervalParamType, &IntervalValue{Years: 1, Months: 2, Days: 3}},

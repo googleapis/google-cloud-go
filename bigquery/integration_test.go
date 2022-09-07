@@ -1922,9 +1922,10 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{
 				{
 					Name: "val",
-					Value: ScalarQueryParameter{
-						Name:  "val",
-						Type:  "BIGNUMERIC",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "BIGNUMERIC",
+						},
 						Value: BigNumericString(bigRat),
 					},
 				},
@@ -1937,10 +1938,15 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{
 				{
 					Name: "val",
-					Value: ArrayQueryParameter{
-						Value: []string{"a", "b"},
-						Type: ScalarQueryParameter{
-							Type: "STRING",
+					Value: &QueryParameterValue{
+						ArrayValue: []QueryParameterValue{
+							{Value: "a"},
+							{Value: "b"},
+						},
+						Type: StandardSQLDataType{
+							ArrayElementType: &StandardSQLDataType{
+								TypeKind: "STRING",
+							},
 						},
 					},
 				},
@@ -1953,78 +1959,87 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{
 				{
 					Name: "val",
-					Value: StructQueryParameter{
-						Value: []Parameter{
-							ScalarQueryParameter{
-								Name:  "Timestamp",
+					Value: &QueryParameterValue{
+						StructValue: map[string]QueryParameterValue{
+							"Timestamp": {
 								Value: ts,
 							},
-							ArrayQueryParameter{
-								Name: "BigNumericArray",
-								Value: []string{
-									BigNumericString(bigRat),
-									BigNumericString(rat),
+							"BigNumericArray": {
+								ArrayValue: []QueryParameterValue{
+									{Value: BigNumericString(bigRat)},
+									{Value: BigNumericString(rat)},
 								},
 							},
-							ArrayQueryParameter{
-								Name: "ArraySingleValueStruct",
-								Value: []StructQueryParameter{
-									{
-										Value: []Parameter{
-											ScalarQueryParameter{
-												Name:  "Number",
-												Value: int64(42),
-											},
+							"ArraySingleValueStruct": {
+								ArrayValue: []QueryParameterValue{
+									{StructValue: map[string]QueryParameterValue{
+										"Number": {
+											Value: int64(42),
 										},
-									},
-									{
-										Value: []Parameter{
-											ScalarQueryParameter{
-												Name:  "Number",
-												Value: int64(43),
-											},
+									}},
+									{StructValue: map[string]QueryParameterValue{
+										"Number": {
+											Value: int64(43),
 										},
-									},
+									}},
 								},
 							},
-							StructQueryParameter{
-								Name: "SubStruct",
-								Value: []Parameter{
-									ScalarQueryParameter{
-										Name:  "String",
+							"SubStruct": {
+								StructValue: map[string]QueryParameterValue{
+									"String": {
 										Value: "c",
 									},
 								},
 							},
 						},
-						Schema: []Parameter{
-							ScalarQueryParameter{
-								Name: "Timestamp",
-								Type: "TIMESTAMP",
-							},
-							ArrayQueryParameter{
-								Name: "BigNumericArray",
-								Type: ScalarQueryParameter{
-									Type: "BIGNUMERIC",
-								},
-							},
-							ArrayQueryParameter{
-								Name: "ArraySingleValueStruct",
-								Type: StructQueryParameter{
-									Schema: []Parameter{
-										ScalarQueryParameter{
-											Name: "Number",
-											Type: "INT64",
+						Type: StandardSQLDataType{
+							StructType: &StandardSQLStructType{
+								Fields: []*StandardSQLField{
+									{
+										Name: "Timestamp",
+										Type: &StandardSQLDataType{
+											TypeKind: "TIMESTAMP",
 										},
 									},
-								},
-							},
-							StructQueryParameter{
-								Name: "SubStruct",
-								Schema: []Parameter{
-									ScalarQueryParameter{
-										Name: "String",
-										Type: "STRING",
+									{
+										Name: "BigNumericArray",
+										Type: &StandardSQLDataType{
+											ArrayElementType: &StandardSQLDataType{
+												TypeKind: "BIGNUMERIC",
+											},
+										},
+									},
+									{
+										Name: "ArraySingleValueStruct",
+										Type: &StandardSQLDataType{
+											ArrayElementType: &StandardSQLDataType{
+												StructType: &StandardSQLStructType{
+													Fields: []*StandardSQLField{
+														{
+															Name: "Number",
+															Type: &StandardSQLDataType{
+																TypeKind: "INT64",
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									{
+										Name: "SubStruct",
+										Type: &StandardSQLDataType{
+											StructType: &StandardSQLStructType{
+												Fields: []*StandardSQLField{
+													{
+														Name: "String",
+														Type: &StandardSQLDataType{
+															TypeKind: "STRING",
+														},
+													},
+												},
+											},
+										},
 									},
 								},
 							},
