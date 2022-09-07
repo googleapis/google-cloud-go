@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.4.0...asset/v1.5.0) (2022-09-06)
+
+
+### Features
+
+* **asset:** start generating stubs dirs for betas ([#6617](https://github.com/googleapis/google-cloud-go/issues/6617)) ([bb4a220](https://github.com/googleapis/google-cloud-go/commit/bb4a2205c65e9d030abbb73ebec040e0a13fa731))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.3.0...asset/v1.4.0) (2022-08-18)
 
 
