@@ -287,7 +287,7 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		}
 
 	}
-	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %w. Please provide the GoogleAccessID or use a supported means for autodetecting it (see https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_detection_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]).", returnErr)
+	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %w. Please provide the GoogleAccessID or use a supported means for autodetecting it (see https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_detection_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4])", returnErr)
 }
 
 func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
