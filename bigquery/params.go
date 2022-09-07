@@ -117,7 +117,14 @@ type QueryParameter struct {
 	// For scalar values, you can supply the Null types within this library
 	// to send the appropriate NULL values (e.g. NullInt64, NullString, etc).
 	//
-	// For values with a more explicit data type, you *QueryParameterValue can be used.
+	// For values with a explicit data type, *QueryParameterValue can be used.
+	// For example, a BIGNUMERIC can be specified like this:
+	// &QueryParameterValue{
+	//		Type: StandardSQLDataType{
+	//			TypeKind: "BIGNUMERIC",
+	//		},
+	//		Value: BigNumericString(*big.Rat),
+	//	}
 	//
 	// When a QueryParameter is returned inside a QueryConfig from a call to
 	// Job.Config:
