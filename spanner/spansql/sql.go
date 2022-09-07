@@ -701,7 +701,8 @@ func (id ID) addSQL(sb *strings.Builder) {
 
 	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
 
-	if IsKeyword(string(id)) {
+	// Naming Convention: Must be enclosed in backticks (`) if it's a reserved keyword or contains a hyphen.
+	if IsKeyword(string(id)) || strings.Contains(string(id), "-") {
 		// TODO: Escaping may be needed here.
 		sb.WriteString("`")
 		sb.WriteString(string(id))
