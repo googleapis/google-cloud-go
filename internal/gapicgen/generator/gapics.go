@@ -650,6 +650,8 @@ func (g *GapicGenerator) genAliasShim(modPath string) error {
 // Package aliasshim is used to keep the dependency on go-genproto during our
 // go-genproto to google-cloud-go stubs migration window.
 package aliasshim
+
+import _ "google.golang.org/genproto/protobuf/api"
 `
 	os.MkdirAll(filepath.Join(modPath, "aliasshim"), os.ModePerm)
 	f, err := os.Create(filepath.Join(modPath, "aliasshim", "aliasshim.go"))
