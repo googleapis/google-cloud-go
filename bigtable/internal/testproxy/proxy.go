@@ -23,6 +23,7 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/bigtable"
 	gauth "golang.org/x/oauth2/google"
@@ -85,14 +86,11 @@ func rowToRowProto(btRow bigtable.Row) (*btpb.Row, error) {
 
 // rowSetFromProto translates a Bigtable v2.RowSet object to a Bigtable.RowSet
 // object.
-func rowSetFromProto(rs btpb.RowSet) bigtable.RowSet {
-	rowKeys := rs.RowKeys
-	rowRanges := rs.RowRanges
-
+func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
 	rowRangeList := make(bigtable.RowRangeList, 0)
 
 	// Convert all rowKeys into single-row RowRanges
-	if len(rowKeys) > 0 {
+	if rowKeys := rs.GetRowKeys(); len(rowKeys) > 0 {
 		for _, b := range rowKeys {
 
 			// Find the next highest key using byte operations
@@ -108,7 +106,7 @@ func rowSetFromProto(rs btpb.RowSet) bigtable.RowSet {
 		}
 	}
 
-	if len(rowRanges) > 0 {
+	if rowRanges := rs.GetRowRanges(); len(rowRanges) > 0 {
 		for _, rrs := range rowRanges {
 			var start, end string
 			var rr bigtable.RowRange
@@ -370,6 +368,8 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	return resp, nil
 }
 
+// ReadRow responds to the ReadRow RPC. This method gets all of the column
+// data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
@@ -402,6 +402,8 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	return res, nil
 }
 
+// ReadRows responds to the ReadRows RPC. This method gets all of the column
+// data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
@@ -412,28 +414,123 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	rrq := req.GetRequest()
 	lim := req.GetCancelAfterRows()
 
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
+	}
+
 	t := btc.c.Open(rrq.TableName)
 
 	ctx, cancel := context.WithCancel(ctx)
 	btc.cancels = append(btc.cancels, cancel)
 
-	rs := rowSetFromProto(*req.Request.GetRows())
+	rowPbs := rrq.Rows
+
+	var rs bigtable.RowSet
+
+	// Go client doesn't have a Table.GetAll() function--RowSet must be provided
+	// for ReadRows. We need to use
+	if len(rowPbs.GetRowKeys()) == 0 && len(rowPbs.GetRowRanges()) == 0 {
+		// Should be lowest possible key value
+		rs = bigtable.InfiniteRange("0")
+	} else {
+		rs = rowSetFromProto(rowPbs)
+	}
+
 	var c int32
+	rowsPb := make([]*btpb.Row, 0)
 
 	t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 		c++
 		if c == lim {
-			return true
+			return false
 		}
-		// TODO(developer): Process each individual row
+		rpb, err := rowToRowProto(r)
+		if err != nil {
+			return false
+		}
+		rowsPb = append(rowsPb, rpb)
 		return true
 	})
 
-	return nil, stat.Error(codes.Unimplemented, "method ReadRows() not implemented")
+	res := &pb.RowsResult{
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+		Row: rowsPb,
+	}
+
+	return res, nil
 }
 
+// MutateRow responds to the MutateRow RPC. This methods applies a series of
+// changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "method MutateRow() not implemented")
+	btc, exists := s.clientIDs[req.ClientId]
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
+	}
+
+	m := bigtable.NewMutation()
+	mPbs := rrq.Mutations
+	for _, mpb := range mPbs {
+
+		switch mut := mpb.Mutation; mut.(type) {
+		case *btpb.Mutation_DeleteFromColumn_:
+			del := mut.(*btpb.Mutation_DeleteFromColumn_)
+			fam := del.DeleteFromColumn.FamilyName
+			col := del.DeleteFromColumn.ColumnQualifier
+
+			if del.DeleteFromColumn.TimeRange != nil {
+				start := bigtable.Time(time.UnixMicro(del.DeleteFromColumn.TimeRange.StartTimestampMicros))
+				end := bigtable.Time(time.UnixMicro(del.DeleteFromColumn.TimeRange.EndTimestampMicros))
+				m.DeleteTimestampRange(fam, string(col), start, end)
+			} else {
+				m.DeleteCellsInColumn(fam, string(col))
+			}
+
+		case *btpb.Mutation_DeleteFromFamily_:
+			del := mut.(*btpb.Mutation_DeleteFromFamily_)
+			fam := del.DeleteFromFamily.FamilyName
+			m.DeleteCellsInFamily(fam)
+
+		case *btpb.Mutation_DeleteFromRow_:
+			m.DeleteRow()
+
+		case *btpb.Mutation_SetCell_:
+			setCell := mut.(*btpb.Mutation_SetCell_)
+			fam := setCell.SetCell.FamilyName
+			col := setCell.SetCell.ColumnQualifier
+			val := setCell.SetCell.Value
+			ts := setCell.SetCell.TimestampMicros
+			bts := bigtable.Time(time.UnixMicro(ts))
+			m.Set(fam, string(col), bts, val)
+
+		}
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	row := rrq.RowKey
+
+	ctx, cancel := context.WithCancel(ctx)
+	btc.cancels = append(btc.cancels, cancel)
+
+	err := t.Apply(ctx, string(row), m)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &pb.MutateRowResult{
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+	}
+	return res, nil
 }
 
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
