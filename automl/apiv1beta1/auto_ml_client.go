@@ -483,7 +483,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -811,7 +812,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -923,7 +925,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1807,8 +1809,12 @@ func (c *restClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataset().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2118,8 +2124,12 @@ func (c *restClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
-	if req.GetFieldMask().GetPaths() != nil {
-		params.Add("fieldMask.paths", fmt.Sprintf("%v", req.GetFieldMask().GetPaths()))
+	if req.GetFieldMask() != nil {
+		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("fieldMask", string(fieldMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2191,8 +2201,12 @@ func (c *restClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tableSpecs", req.GetParent())
 
 		params := url.Values{}
-		if req.GetFieldMask().GetPaths() != nil {
-			params.Add("fieldMask.paths", fmt.Sprintf("%v", req.GetFieldMask().GetPaths()))
+		if req.GetFieldMask() != nil {
+			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			if err != nil {
+				return nil, err
+			}
+			params.Add("fieldMask", string(fieldMask))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -2278,8 +2292,12 @@ func (c *restClient) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTa
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTableSpec().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2338,8 +2356,12 @@ func (c *restClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
-	if req.GetFieldMask().GetPaths() != nil {
-		params.Add("fieldMask.paths", fmt.Sprintf("%v", req.GetFieldMask().GetPaths()))
+	if req.GetFieldMask() != nil {
+		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("fieldMask", string(fieldMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2411,8 +2433,12 @@ func (c *restClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/columnSpecs", req.GetParent())
 
 		params := url.Values{}
-		if req.GetFieldMask().GetPaths() != nil {
-			params.Add("fieldMask.paths", fmt.Sprintf("%v", req.GetFieldMask().GetPaths()))
+		if req.GetFieldMask() != nil {
+			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			if err != nil {
+				return nil, err
+			}
+			params.Add("fieldMask", string(fieldMask))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -2498,8 +2524,12 @@ func (c *restClient) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateC
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetColumnSpec().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

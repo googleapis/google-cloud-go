@@ -26,6 +26,11 @@ import (
 
 func ExampleNewGlobalForwardingRulesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewGlobalForwardingRulesRESTClient() {
 
 func ExampleGlobalForwardingRulesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleGlobalForwardingRulesClient_Delete() {
 
 func ExampleGlobalForwardingRulesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -81,6 +96,11 @@ func ExampleGlobalForwardingRulesClient_Get() {
 
 func ExampleGlobalForwardingRulesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleGlobalForwardingRulesClient_Insert() {
 
 func ExampleGlobalForwardingRulesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,6 +155,11 @@ func ExampleGlobalForwardingRulesClient_List() {
 
 func ExampleGlobalForwardingRulesClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -153,6 +183,11 @@ func ExampleGlobalForwardingRulesClient_Patch() {
 
 func ExampleGlobalForwardingRulesClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +211,11 @@ func ExampleGlobalForwardingRulesClient_SetLabels() {
 
 func ExampleGlobalForwardingRulesClient_SetTarget() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalForwardingRulesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

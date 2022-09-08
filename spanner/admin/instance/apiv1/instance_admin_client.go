@@ -221,7 +221,8 @@ func (c *InstanceAdminClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *InstanceAdminClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -488,7 +489,8 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *instanceAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

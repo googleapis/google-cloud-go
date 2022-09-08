@@ -150,7 +150,8 @@ func (c *DeploymentResourcePoolClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DeploymentResourcePoolClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -338,7 +339,8 @@ func NewDeploymentResourcePoolClient(ctx context.Context, opts ...option.ClientO
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *deploymentResourcePoolGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -26,6 +26,11 @@ import (
 
 func ExampleNewTargetPoolsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewTargetPoolsRESTClient() {
 
 func ExampleTargetPoolsClient_AddHealthCheck() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleTargetPoolsClient_AddHealthCheck() {
 
 func ExampleTargetPoolsClient_AddInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleTargetPoolsClient_AddInstance() {
 
 func ExampleTargetPoolsClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,6 +130,11 @@ func ExampleTargetPoolsClient_AggregatedList() {
 
 func ExampleTargetPoolsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -133,6 +158,11 @@ func ExampleTargetPoolsClient_Delete() {
 
 func ExampleTargetPoolsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -153,6 +183,11 @@ func ExampleTargetPoolsClient_Get() {
 
 func ExampleTargetPoolsClient_GetHealth() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -173,6 +208,11 @@ func ExampleTargetPoolsClient_GetHealth() {
 
 func ExampleTargetPoolsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,6 +236,11 @@ func ExampleTargetPoolsClient_Insert() {
 
 func ExampleTargetPoolsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,6 +267,11 @@ func ExampleTargetPoolsClient_List() {
 
 func ExampleTargetPoolsClient_RemoveHealthCheck() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -245,6 +295,11 @@ func ExampleTargetPoolsClient_RemoveHealthCheck() {
 
 func ExampleTargetPoolsClient_RemoveInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -268,6 +323,11 @@ func ExampleTargetPoolsClient_RemoveInstance() {
 
 func ExampleTargetPoolsClient_SetBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -127,7 +127,8 @@ func (c *ControlClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ControlClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -152,7 +153,7 @@ func (c *ControlClient) DeleteControl(ctx context.Context, req *retailpb.DeleteC
 //
 // Control cannot be set to a different
 // oneof field, if so an INVALID_ARGUMENT is returned. If the
-// Control to delete does not exist, a
+// Control to update does not exist, a
 // NOT_FOUND error is returned.
 func (c *ControlClient) UpdateControl(ctx context.Context, req *retailpb.UpdateControlRequest, opts ...gax.CallOption) (*retailpb.Control, error) {
 	return c.internalClient.UpdateControl(ctx, req, opts...)
@@ -163,7 +164,8 @@ func (c *ControlClient) GetControl(ctx context.Context, req *retailpb.GetControl
 	return c.internalClient.GetControl(ctx, req, opts...)
 }
 
-// ListControls lists all Controls linked to this catalog.
+// ListControls lists all Controls by their parent
+// Catalog.
 func (c *ControlClient) ListControls(ctx context.Context, req *retailpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	return c.internalClient.ListControls(ctx, req, opts...)
 }
@@ -241,7 +243,8 @@ func NewControlClient(ctx context.Context, opts ...option.ClientOption) (*Contro
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *controlGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

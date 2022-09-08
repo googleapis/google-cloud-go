@@ -153,7 +153,8 @@ func (c *ErrorGroupClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ErrorGroupClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -229,7 +230,8 @@ func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*Err
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *errorGroupGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -313,7 +315,7 @@ func (c *errorGroupRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *errorGroupRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

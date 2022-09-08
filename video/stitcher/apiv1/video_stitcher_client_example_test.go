@@ -26,6 +26,11 @@ import (
 
 func ExampleNewVideoStitcherClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewVideoStitcherClient() {
 
 func ExampleVideoStitcherClient_CreateCdnKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleVideoStitcherClient_CreateCdnKey() {
 
 func ExampleVideoStitcherClient_ListCdnKeys() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleVideoStitcherClient_ListCdnKeys() {
 
 func ExampleVideoStitcherClient_GetCdnKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleVideoStitcherClient_GetCdnKey() {
 
 func ExampleVideoStitcherClient_DeleteCdnKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -122,6 +147,11 @@ func ExampleVideoStitcherClient_DeleteCdnKey() {
 
 func ExampleVideoStitcherClient_UpdateCdnKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,6 +172,11 @@ func ExampleVideoStitcherClient_UpdateCdnKey() {
 
 func ExampleVideoStitcherClient_CreateVodSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -162,6 +197,11 @@ func ExampleVideoStitcherClient_CreateVodSession() {
 
 func ExampleVideoStitcherClient_GetVodSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +222,11 @@ func ExampleVideoStitcherClient_GetVodSession() {
 
 func ExampleVideoStitcherClient_ListVodStitchDetails() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -208,6 +253,11 @@ func ExampleVideoStitcherClient_ListVodStitchDetails() {
 
 func ExampleVideoStitcherClient_GetVodStitchDetail() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +278,11 @@ func ExampleVideoStitcherClient_GetVodStitchDetail() {
 
 func ExampleVideoStitcherClient_ListVodAdTagDetails() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -254,6 +309,11 @@ func ExampleVideoStitcherClient_ListVodAdTagDetails() {
 
 func ExampleVideoStitcherClient_GetVodAdTagDetail() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -274,6 +334,11 @@ func ExampleVideoStitcherClient_GetVodAdTagDetail() {
 
 func ExampleVideoStitcherClient_ListLiveAdTagDetails() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -300,6 +365,11 @@ func ExampleVideoStitcherClient_ListLiveAdTagDetails() {
 
 func ExampleVideoStitcherClient_GetLiveAdTagDetail() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -320,6 +390,11 @@ func ExampleVideoStitcherClient_GetLiveAdTagDetail() {
 
 func ExampleVideoStitcherClient_CreateSlate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -340,6 +415,11 @@ func ExampleVideoStitcherClient_CreateSlate() {
 
 func ExampleVideoStitcherClient_ListSlates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -366,6 +446,11 @@ func ExampleVideoStitcherClient_ListSlates() {
 
 func ExampleVideoStitcherClient_GetSlate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -386,6 +471,11 @@ func ExampleVideoStitcherClient_GetSlate() {
 
 func ExampleVideoStitcherClient_UpdateSlate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -406,6 +496,11 @@ func ExampleVideoStitcherClient_UpdateSlate() {
 
 func ExampleVideoStitcherClient_DeleteSlate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -424,6 +519,11 @@ func ExampleVideoStitcherClient_DeleteSlate() {
 
 func ExampleVideoStitcherClient_CreateLiveSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -444,6 +544,11 @@ func ExampleVideoStitcherClient_CreateLiveSession() {
 
 func ExampleVideoStitcherClient_GetLiveSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := stitcher.NewVideoStitcherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

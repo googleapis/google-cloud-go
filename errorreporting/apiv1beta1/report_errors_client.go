@@ -106,7 +106,8 @@ func (c *ReportErrorsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -191,7 +192,8 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *reportErrorsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -275,7 +277,7 @@ func (c *reportErrorsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *reportErrorsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

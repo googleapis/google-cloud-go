@@ -129,7 +129,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -200,7 +201,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -284,7 +286,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -368,11 +370,12 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req.GetReadTime().GetNanos() != 0 {
-			params.Add("readTime.nanos", fmt.Sprintf("%v", req.GetReadTime().GetNanos()))
-		}
-		if req.GetReadTime().GetSeconds() != 0 {
-			params.Add("readTime.seconds", fmt.Sprintf("%v", req.GetReadTime().GetSeconds()))
+		if req.GetReadTime() != nil {
+			readTime, err := protojson.Marshal(req.GetReadTime())
+			if err != nil {
+				return nil, err
+			}
+			params.Add("readTime", string(readTime))
 		}
 
 		baseUrl.RawQuery = params.Encode()

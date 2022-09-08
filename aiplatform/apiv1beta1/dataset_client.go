@@ -171,7 +171,8 @@ func (c *DatasetClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DatasetClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -402,7 +403,8 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *datasetGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

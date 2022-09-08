@@ -13,7 +13,7 @@ require (
 	cloud.google.com/go/appengine v1.3.0
 	cloud.google.com/go/area120 v0.4.0
 	cloud.google.com/go/artifactregistry v1.4.0
-	cloud.google.com/go/asset v1.4.0
+	cloud.google.com/go/asset v1.5.0
 	cloud.google.com/go/assuredworkloads v1.2.0
 	cloud.google.com/go/automl v1.4.0
 	cloud.google.com/go/baremetalsolution v0.2.0
@@ -120,7 +120,7 @@ require (
 	cloud.google.com/go/workflows v1.5.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.94.0
-	google.golang.org/genproto v0.0.0-20220829175752-36a9c930ecbf
+	google.golang.org/genproto v0.0.0-20220908141613-51c1cc9bc6d0
 )
 
 require (

@@ -40,19 +40,20 @@ var newCatalogClientHook clientHook
 
 // CatalogCallOptions contains the retry settings for each method of CatalogClient.
 type CatalogCallOptions struct {
-	ListCatalogs            []gax.CallOption
-	UpdateCatalog           []gax.CallOption
-	SetDefaultBranch        []gax.CallOption
-	GetDefaultBranch        []gax.CallOption
-	GetCompletionConfig     []gax.CallOption
-	UpdateCompletionConfig  []gax.CallOption
-	GetAttributesConfig     []gax.CallOption
-	UpdateAttributesConfig  []gax.CallOption
-	AddCatalogAttribute     []gax.CallOption
-	RemoveCatalogAttribute  []gax.CallOption
-	ReplaceCatalogAttribute []gax.CallOption
-	GetOperation            []gax.CallOption
-	ListOperations          []gax.CallOption
+	ListCatalogs                 []gax.CallOption
+	UpdateCatalog                []gax.CallOption
+	SetDefaultBranch             []gax.CallOption
+	GetDefaultBranch             []gax.CallOption
+	GetCompletionConfig          []gax.CallOption
+	UpdateCompletionConfig       []gax.CallOption
+	GetAttributesConfig          []gax.CallOption
+	UpdateAttributesConfig       []gax.CallOption
+	AddCatalogAttribute          []gax.CallOption
+	RemoveCatalogAttribute       []gax.CallOption
+	BatchRemoveCatalogAttributes []gax.CallOption
+	ReplaceCatalogAttribute      []gax.CallOption
+	GetOperation                 []gax.CallOption
+	ListOperations               []gax.CallOption
 }
 
 func defaultCatalogGRPCClientOptions() []option.ClientOption {
@@ -189,6 +190,18 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 				})
 			}),
 		},
+		BatchRemoveCatalogAttributes: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ReplaceCatalogAttribute: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -232,6 +245,7 @@ type internalCatalogClient interface {
 	UpdateAttributesConfig(context.Context, *retailpb.UpdateAttributesConfigRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
 	AddCatalogAttribute(context.Context, *retailpb.AddCatalogAttributeRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
 	RemoveCatalogAttribute(context.Context, *retailpb.RemoveCatalogAttributeRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
+	BatchRemoveCatalogAttributes(context.Context, *retailpb.BatchRemoveCatalogAttributesRequest, ...gax.CallOption) (*retailpb.BatchRemoveCatalogAttributesResponse, error)
 	ReplaceCatalogAttribute(context.Context, *retailpb.ReplaceCatalogAttributeRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -266,7 +280,8 @@ func (c *CatalogClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CatalogClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -377,6 +392,13 @@ func (c *CatalogClient) RemoveCatalogAttribute(ctx context.Context, req *retailp
 	return c.internalClient.RemoveCatalogAttribute(ctx, req, opts...)
 }
 
+// BatchRemoveCatalogAttributes removes all specified
+// CatalogAttributes from the
+// AttributesConfig.
+func (c *CatalogClient) BatchRemoveCatalogAttributes(ctx context.Context, req *retailpb.BatchRemoveCatalogAttributesRequest, opts ...gax.CallOption) (*retailpb.BatchRemoveCatalogAttributesResponse, error) {
+	return c.internalClient.BatchRemoveCatalogAttributes(ctx, req, opts...)
+}
+
 // ReplaceCatalogAttribute replaces the specified
 // CatalogAttribute in the
 // AttributesConfig by updating
@@ -462,7 +484,8 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -713,6 +736,28 @@ func (c *catalogGRPCClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.catalogClient.RemoveCatalogAttribute(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) BatchRemoveCatalogAttributes(ctx context.Context, req *retailpb.BatchRemoveCatalogAttributesRequest, opts ...gax.CallOption) (*retailpb.BatchRemoveCatalogAttributesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchRemoveCatalogAttributes[0:len((*c.CallOptions).BatchRemoveCatalogAttributes):len((*c.CallOptions).BatchRemoveCatalogAttributes)], opts...)
+	var resp *retailpb.BatchRemoveCatalogAttributesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.BatchRemoveCatalogAttributes(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

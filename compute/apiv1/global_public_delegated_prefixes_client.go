@@ -100,7 +100,8 @@ func (c *GlobalPublicDelegatedPrefixesClient) setGoogleClientInfo(keyval ...stri
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *GlobalPublicDelegatedPrefixesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -210,7 +211,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *globalPublicDelegatedPrefixesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
