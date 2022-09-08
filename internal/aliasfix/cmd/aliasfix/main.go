@@ -18,7 +18,7 @@ import (
 	"flag"
 	"log"
 
-	"cloud.google.com/go/aliasfix"
+	"cloud.google.com/go/internal/aliasfix"
 )
 
 func main() {

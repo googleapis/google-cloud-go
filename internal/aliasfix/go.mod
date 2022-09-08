@@ -1,4 +1,4 @@
-module cloud.google.com/go/aliasfix
+module cloud.google.com/go/internal/aliasfix
 
 go 1.19
 
