@@ -1701,8 +1701,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dialogflow/apiv2beta1",
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v2beta1.yaml",
-		// GA after 2022/10/01
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/iam/v2",
@@ -1712,6 +1711,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "iam_v2.yaml",
 		// GA after 2022/10/01
 		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/security/publicca/v1beta1",
+		Pkg:                   "publicca",
+		ImportPath:            "cloud.google.com/go/security/publicca/apiv1beta1",
+		GRPCServiceConfigPath: "publicca_v1beta1_grpc_service_config.json",
+		ApiServiceConfigPath:  "publicca_v1beta1.yaml",
+		ReleaseLevel:          "beta",
 	},
 
 	// Non-Cloud APIs
