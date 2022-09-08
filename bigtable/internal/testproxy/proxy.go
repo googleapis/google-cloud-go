@@ -16,6 +16,8 @@ package main
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
@@ -23,6 +25,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/bigtable"
+	gauth "golang.org/x/oauth2/google"
 
 	"github.com/golang/protobuf/ptypes/duration"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
@@ -32,7 +35,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	oauth "google.golang.org/grpc/credentials/oauth"
+
 	stat "google.golang.org/grpc/status"
 )
 
@@ -40,21 +45,6 @@ var (
 	port     = flag.Int("port", 9999, "The server port")
 	logLabel = "cbt-go-proxy"
 )
-
-// testClient contains a bigtable.Client object and cancel functions
-type testClient struct {
-	c                   *bigtable.Client     // c stores the Bigtable client under test
-	cancels             []context.CancelFunc // cancels stores a cancel() for each call to this client
-	appProfileID        string               // appProfileID is currently unused
-	perOperationTimeout *duration.Duration   // perOperationTimeout sets a custom timeout for methods calls on this client
-}
-
-// cancelAll calls all of the context.CancelFuncs stored in this testClient.
-func (tc *testClient) cancelAll() {
-	for _, c := range tc.cancels {
-		c()
-	}
-}
 
 // rowToRowProto converts a Bigtable Go client Row struct into a
 // Bigtable protobuf Row struct. It iterates over all of the column families
@@ -93,7 +83,82 @@ func rowToRowProto(btRow bigtable.Row) (*btpb.Row, error) {
 	return pbRow, nil
 }
 
+// rowSetFromProto translates a Bigtable v2.RowSet object to a Bigtable.RowSet
+// object.
+func rowSetFromProto(rs btpb.RowSet) bigtable.RowSet {
+	rowKeys := rs.RowKeys
+	rowRanges := rs.RowRanges
+
+	rowRangeList := make(bigtable.RowRangeList, 0)
+
+	// Convert all rowKeys into single-row RowRanges
+	if len(rowKeys) > 0 {
+		for _, b := range rowKeys {
+
+			// Find the next highest key using byte operations
+			// This allows us to create a RowRange of 1 rowKey
+			e := binary.BigEndian.Uint64(b)
+			e++
+
+			s := binary.Size(e)
+			bOut := make([]byte, s)
+			binary.BigEndian.PutUint64(bOut, e)
+
+			rowRangeList = append(rowRangeList, bigtable.NewRange(string(b), string(bOut)))
+		}
+	}
+
+	if len(rowRanges) > 0 {
+		for _, rrs := range rowRanges {
+			var start, end string
+			var rr bigtable.RowRange
+
+			switch rrs.StartKey.(type) {
+			case *btpb.RowRange_StartKeyClosed:
+				start = string(rrs.GetStartKeyClosed())
+			case *btpb.RowRange_StartKeyOpen:
+				start = string(rrs.GetStartKeyOpen())
+			default:
+				start = ""
+			}
+
+			switch rrs.EndKey.(type) {
+			case *btpb.RowRange_EndKeyClosed:
+				end = string(rrs.GetEndKeyClosed())
+				rr = bigtable.NewRange(start, end)
+			case *btpb.RowRange_EndKeyOpen:
+				end = string(rrs.GetEndKeyOpen())
+				rr = bigtable.NewRange(start, end)
+			default:
+				// If not set, get the infinite row range
+				rr = bigtable.InfiniteRange(start)
+			}
+
+			rowRangeList = append(rowRangeList, rr)
+		}
+	}
+	return rowRangeList
+}
+
+// testClient contains a bigtable.Client object, cancel functions for the calls
+// made using the client, an appProfileID (optionally), and a
+// perOperationTimeout (optionally).
+type testClient struct {
+	c                   *bigtable.Client     // c stores the Bigtable client under test
+	cancels             []context.CancelFunc // cancels stores a cancel() for each call to this client
+	appProfileID        string               // appProfileID is currently unused
+	perOperationTimeout *duration.Duration   // perOperationTimeout sets a custom timeout for methods calls on this client
+}
+
+// cancelAll calls all of the context.CancelFuncs stored in this testClient.
+func (tc *testClient) cancelAll() {
+	for _, c := range tc.cancels {
+		c()
+	}
+}
+
 // credentialsBundle implements credentials.Bundle interface
+// [See documentation for usage](https://pkg.go.dev/google.golang.org/grpc/credentials#Bundle).
 type credentialsBundle struct {
 	channel credentials.TransportCredentials
 	call    credentials.PerRPCCredentials
@@ -125,8 +190,11 @@ func (c credentialsBundle) NewWithMode(mode string) (credentials.Bundle, error) 
 //     this case, we need to create a combined credential (Bundle).
 //
 // Discussed [here](https://github.com/grpc/grpc-go/tree/master/examples/features/authentication).
-func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, error) {
-	opts := make([]option.ClientOption, 0)
+// Note that the Go client libraries don't explicitly have the concept of
+// channel credentials, call credentials, or composite call credentials per
+// [gRPC documentation](https://grpc.io/docs/guides/auth/).
+func getCredentialsOptions(req *pb.CreateClientRequest) ([]grpc.DialOption, error) {
+	opts := make([]grpc.DialOption, 0)
 
 	if req.CallCredential == nil &&
 		req.ChannelCredential == nil &&
@@ -139,13 +207,15 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, 
 		return nil, fmt.Errorf("%s: must supply channel credentials with call credentials", logLabel)
 	}
 
+	// This may not be needed--OverrideSslTargetName is provided to when
+	// creating the channel credentials.
 	if req.OverrideSslTargetName != "" {
 		d := grpc.WithAuthority(req.OverrideSslTargetName)
-		opts = append(opts, option.WithGRPCDialOption(d))
+		opts = append(opts, d)
 	}
 
 	// Case 1: No additional credentials provided
-	chc := req.ChannelCredential
+	chc := req.GetChannelCredential()
 	if chc == nil {
 		return opts, nil
 	}
@@ -158,7 +228,7 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, 
 	cc := req.CallCredential
 	if cc == nil {
 		d := grpc.WithTransportCredentials(channelCreds)
-		opts = append(opts, option.WithGRPCDialOption(d))
+		opts = append(opts, d)
 		return opts, nil
 	}
 
@@ -175,25 +245,58 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]option.ClientOption, 
 	}
 
 	d := grpc.WithCredentialsBundle(b)
-	opts = append(opts, option.WithGRPCDialOption(d))
+	opts = append(opts, d)
 
 	return opts, nil
 }
 
+// getChannelCredentials extracts the channel credentials (credentials for use)
+// with all calls on this client.
 func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName string) (credentials.TransportCredentials, error) {
-	pem := credsProto.GetSsl().GetPemRootCerts()
-	creds, err := credentials.NewClientTLSFromFile(pem, sslTargetName)
-	if err != nil {
-		return nil, err
+	var creds credentials.TransportCredentials
+	v := credsProto.GetValue()
+	switch t := v.(type) {
+	case *pb.ChannelCredential_Ssl:
+		pem := t.Ssl.GetPemRootCerts()
+
+		cert, err := x509.ParseCertificate([]byte(pem))
+		if err != nil {
+			return nil, err
+		}
+
+		pool := x509.NewCertPool()
+		pool.AddCert(cert)
+
+		creds = credentials.NewClientTLSFromCert(pool, sslTargetName)
+		if err != nil {
+			return nil, err
+		}
+	case *pb.ChannelCredential_None:
+		creds = insecure.NewCredentials()
+	default:
+		ctx := context.Background()
+		c, err := gauth.FindDefaultCredentials(ctx, []string{"https://www.googleapis.com/auth/cloud-platform"}...)
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO(developer): Determine how to pass this call option back to caller
+		option.WithTokenSource(c.TokenSource)
+
+		return nil, nil
 	}
 	return creds, nil
 }
 
+// goTestProxyServer represents an instance of the test proxy server. It keeps
+// a reference to individual clients instances (stored in a testClient object).
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
 	clientIDs map[string]testClient // clientIDs has all of the bigtable.Client objects under test
 }
 
+// CreateClient responds to the CreateClient RPC. This method adds a new client
+// instance to the goTestProxyServer
 func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClientRequest) (*pb.CreateClientResponse, error) {
 	if req.ClientId == "" ||
 		req.DataTarget == "" ||
@@ -203,29 +306,28 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 			fmt.Sprintf("%s must provide ClientId, DataTarget, ProjectId, and InstanceId", logLabel))
 	}
 
-	opts := make([]option.ClientOption, 0)
-	opts = append(opts, option.WithEndpoint(req.DataTarget))
+	if _, exists := s.clientIDs[req.ClientId]; exists {
+		return nil, stat.Error(codes.AlreadyExists,
+			fmt.Sprintf("%s: ClientID already exists", logLabel))
+	}
 
-	credOpts, err := getCredentialsOptions(req)
+	opts, err := getCredentialsOptions(req)
 	if err != nil {
 		return nil, stat.Error(codes.Unauthenticated,
-			fmt.Sprintf("%s: failed to set credentials: %v", logLabel, err))
+			fmt.Sprintf("%s: failed to get credentials: %v", logLabel, err))
 	}
-	opts = append(opts, credOpts...)
+
+	conn, err := grpc.Dial(req.DataTarget, opts...)
+	if err != nil {
+		return nil, stat.Error(codes.Unknown, fmt.Sprintf("%s: failed to create connection: %v", logLabel, err))
+	}
 
 	localCtx, cancel := context.WithCancel(context.Background())
-
-	c, err := bigtable.NewClient(localCtx, req.ProjectId, req.InstanceId, opts...)
+	c, err := bigtable.NewClient(localCtx, req.ProjectId, req.InstanceId, option.WithGRPCConn(conn))
 	if err != nil {
 		cancel()
 		return nil, stat.Error(codes.Internal,
 			fmt.Sprintf("%s: failed to create client: %v", logLabel, err))
-	}
-
-	if _, exists := s.clientIDs[req.ClientId]; exists {
-		cancel()
-		return nil, stat.Error(codes.AlreadyExists,
-			fmt.Sprintf("%s: ClientID already exists %v", logLabel, err))
 	}
 
 	if s.clientIDs == nil {
@@ -246,16 +348,17 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	return res, nil
 }
 
+// RemoveClient responds to the RemoveClient RPC. This method removes an
+// existing client from the goTestProxyServer
 func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClientRequest) (*pb.RemoveClientResponse, error) {
 	clientId := req.ClientId
 	doCancelAll := req.CancelAll
 
-	if _, exists := s.clientIDs[clientId]; !exists {
+	btc, exists := s.clientIDs[clientId]
+	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-
-	btc := s.clientIDs[clientId]
 
 	if doCancelAll {
 		for _, c := range btc.cancels {
@@ -268,19 +371,16 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 }
 
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
-
-	if _, exists := s.clientIDs[req.ClientId]; !exists {
+	btc, exists := s.clientIDs[req.ClientId]
+	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-
-	btc := s.clientIDs[req.ClientId]
 
 	tName := req.TableName
 	t := btc.c.Open(tName)
 
 	r, err := t.ReadRow(ctx, req.RowKey)
-
 	if err != nil {
 		return nil, err
 	}
@@ -303,27 +403,53 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 }
 
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
-	return nil, fmt.Errorf("not implemented")
+	btc, exists := s.clientIDs[req.ClientId]
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	lim := req.GetCancelAfterRows()
+
+	t := btc.c.Open(rrq.TableName)
+
+	ctx, cancel := context.WithCancel(ctx)
+	btc.cancels = append(btc.cancels, cancel)
+
+	rs := rowSetFromProto(*req.Request.GetRows())
+	var c int32
+
+	t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+		c++
+		if c == lim {
+			return true
+		}
+		// TODO(developer): Process each individual row
+		return true
+	})
+
+	return nil, stat.Error(codes.Unimplemented, "method ReadRows() not implemented")
 }
 
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, stat.Error(codes.Unimplemented, "method MutateRow() not implemented")
 }
 
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, stat.Error(codes.Unimplemented, "method BulkMutateRows() not implemented")
 }
 
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, stat.Error(codes.Unimplemented, "method CheckAndMutateRow() not implemented")
 }
 
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, stat.Error(codes.Unimplemented, "method SampleRowKeys() not implemented")
 }
 
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, stat.Error(codes.Unimplemented, "method ReadModifyWriteRow() not implemented")
 }
 
 func (s *goTestProxyServer) mustEmbedUnimplementedCloudBigtableV2TestProxyServer() {}

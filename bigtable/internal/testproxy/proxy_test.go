@@ -32,6 +32,7 @@ func bufDialer(context.Context, string) (net.Conn, error) {
 }
 
 func TestCreateClient(t *testing.T) {
+	// Test
 	cid := "testCreateClient"
 	ctx := context.Background()
 	conn, err := grpc.DialContext(ctx, "testproxy", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
