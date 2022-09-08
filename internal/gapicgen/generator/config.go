@@ -1476,8 +1476,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/certificatemanager/apiv1",
 		GRPCServiceConfigPath: "certificatemanager_grpc_service_config.json",
 		ApiServiceConfigPath:  "certificatemanager_v1.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/optimization/v1",
