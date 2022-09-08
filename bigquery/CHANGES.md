@@ -1,6 +1,7 @@
 # Changes
 
 
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.38.0...bigquery/v1.39.0) (2022-08-23)
 
 
