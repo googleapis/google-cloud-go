@@ -29,15 +29,13 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
-type scalarTest struct {
+var scalarTests = []struct {
 	val      interface{}            // input value sent as query param
 	wantNil  bool                   // whether the value returned in a query field should be nil.
 	wantVal  string                 // the string form of the scalar value in QueryParameterValue.
 	wantType *bq.QueryParameterType // paramType's desired output
 	wantStat interface{}            // val when roundtripped and represented as part of job statistics.
-}
-
-var scalarTests = []scalarTest{
+}{
 	{int64(0), false, "0", int64ParamType, int64(0)},
 	{NullInt64{Int64: 3, Valid: true}, false, "3", int64ParamType, int64(3)},
 	{NullInt64{Valid: false}, true, "", int64ParamType, NullInt64{Valid: false}},
