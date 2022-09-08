@@ -49,7 +49,7 @@
 //
 //	req := &assetpb.ListAssetsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1#ListAssetsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p5beta1/assetpb#ListAssetsRequest.
 //	}
 //	it := c.ListAssets(ctx, req)
 //	for {
