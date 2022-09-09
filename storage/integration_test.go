@@ -262,7 +262,7 @@ func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T,
 			var prefix string
 			if transport == "grpc" {
 				bucket = grpcBucketName
-				prefix = grpcTestPrefix
+				prefix = grpcTestPrefix + "-"
 			}
 
 			test(t, ctx, bucket, prefix, client)
