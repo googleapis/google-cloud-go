@@ -1,6 +1,31 @@
 # Changes
 
 
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.39.0...bigquery/v1.40.0) (2022-09-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bigquery/dataexchange:** update BigQuery Analytics Hub API v1beta1 client BREAKING CHANGE: refresh current dataexchange/v1beta1/* directory to include recent change in protos. Removed common directory and use local enum Category fix!: refactor references to Category message docs: improve proto documentation.
+
+### Features
+
+* **bigquery/dataexchange:** update BigQuery Analytics Hub API v1beta1 client BREAKING CHANGE: refresh current dataexchange/v1beta1/* directory to include recent change in protos. Removed common directory and use local enum Category fix!: refactor references to Category message docs: improve proto documentation. ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+* **bigquery/storage/managedwriter:** Augment reconnection logic ([#6609](https://github.com/googleapis/google-cloud-go/issues/6609)) ([6b0ac0c](https://github.com/googleapis/google-cloud-go/commit/6b0ac0c400d2d5b26689176c71cc6db1db9b283f))
+* **bigquery:** Add trace instrumentation support for individual rpcs ([#6493](https://github.com/googleapis/google-cloud-go/issues/6493)) ([eedc632](https://github.com/googleapis/google-cloud-go/commit/eedc6327b845850d9d6109014a5d531dfbfa7d04))
+* **bigquery:** Improve error when reading null values ([#6566](https://github.com/googleapis/google-cloud-go/issues/6566)) ([e9a94c2](https://github.com/googleapis/google-cloud-go/commit/e9a94c2e52ca3d07bc15030cf411f7e1c5235d39)), refs [#2612](https://github.com/googleapis/google-cloud-go/issues/2612)
+
+
+### Documentation
+
+* **bigquery:** Add numeric and bignumeric to RowIterator docs ([#6560](https://github.com/googleapis/google-cloud-go/issues/6560)) ([bea4028](https://github.com/googleapis/google-cloud-go/commit/bea4028a5fde6e790f70b0a98c33b81b3ad4023e))
+
+
+### Miscellaneous Chores
+
+* **bigquery:** Release 1.40.0 ([#6635](https://github.com/googleapis/google-cloud-go/issues/6635)) ([628deae](https://github.com/googleapis/google-cloud-go/commit/628deae4e0e0f4f1ae7e99433eefdc8f7cc41b41))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.38.0...bigquery/v1.39.0) (2022-08-23)
 
 
