@@ -245,7 +245,9 @@ func (am *aliasGenerator) writeHeader(w io.Writer) error {
 // Package %s aliases all exported identifiers in package
 // %q.
 //
-// Deprecated: Please use types in: %s
+// Deprecated: Please use types in: %s.
+// Please read https://github.com/googleapis/google-cloud-go/blob/main/migration.md
+// for more details.
 package %s
 
 import (
