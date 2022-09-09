@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.5.0...asset/v1.6.0) (2022-09-08)
+
+
+### Features
+
+* **asset:** Rewrite signatures in terms of new types for betas ([#6624](https://github.com/googleapis/google-cloud-go/issues/6624)) ([1ad1aba](https://github.com/googleapis/google-cloud-go/commit/1ad1aba985d58e45774c27aa07cab446c6055ab0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.4.0...asset/v1.5.0) (2022-09-06)
 
 
