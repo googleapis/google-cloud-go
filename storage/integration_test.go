@@ -259,13 +259,13 @@ func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T,
 			defer client.Close()
 
 			bucket := bucketName
-			toCreate := uidSpace.New()
+			var prefix string
 			if transport == "grpc" {
 				bucket = grpcBucketName
-				toCreate = uidSpaceGRPC.New()
+				prefix = grpcTestPrefix
 			}
 
-			test(t, ctx, bucket, toCreate, client)
+			test(t, ctx, bucket, prefix, client)
 		})
 	}
 }
