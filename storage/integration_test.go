@@ -250,19 +250,22 @@ func initTransportClients(ctx context.Context, t *testing.T) map[string]*Client 
 
 // multiTransportTest initializes fresh clients for each transport, then runs
 // given testing function using each transport-specific client, supplying the
-// test function with the sub-test instance, the context it was given, the bucket
-// name to use directly, or as a prefix, and the client to use.
-func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T, context.Context, string, *Client)) {
+// test function with the sub-test instance, the context it was given, the name
+// of an existing bucket to use, a bucket name to use for bucket creation, and
+// the client to use.
+func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T, context.Context, string, string, *Client)) {
 	for transport, client := range initTransportClients(ctx, t) {
 		t.Run(transport, func(t *testing.T) {
 			defer client.Close()
 
 			bucket := bucketName
+			toCreate := uidSpace.New()
 			if transport == "grpc" {
 				bucket = grpcBucketName
+				toCreate = uidSpaceGRPC.New()
 			}
 
-			test(t, ctx, bucket, client)
+			test(t, ctx, bucket, toCreate, client)
 		})
 	}
 }
@@ -865,7 +868,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
 		o := client.Bucket(bucket).Object("conddel")
@@ -1451,7 +1454,7 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_ConditionalDownload(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
 		o := client.Bucket(bucket).Object("condread")
