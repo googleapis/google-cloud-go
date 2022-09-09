@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.4.1...security/v1.5.0) (2022-09-09)
+
+
+### Features
+
+* **security/publicca:** Start generating apiv1beta1 ([#6642](https://github.com/googleapis/google-cloud-go/issues/6642)) ([778161b](https://github.com/googleapis/google-cloud-go/commit/778161b208819783618c5be8191960167bd67e1e))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.4.0...security/v1.4.1) (2022-07-12)
 
 
