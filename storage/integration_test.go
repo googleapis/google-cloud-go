@@ -2700,6 +2700,16 @@ func TestIntegration_Encryption(t *testing.T) {
 	}
 }
 
+func TestIntegration_NonexistentObjectRead(t *testing.T) {
+	t.Parallel()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		_, err := client.Bucket(bucket).Object("object-does-not-exist").NewReader(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("Objects: got %v, want ErrObjectNotExist", err)
+		}
+	})
+}
+
 func TestIntegration_NonexistentBucket(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
