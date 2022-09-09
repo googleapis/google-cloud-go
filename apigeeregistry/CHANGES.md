@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.2.0...apigeeregistry/v0.2.1) (2022-09-08)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** additional error codes added to service configuration for retry ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.1.0...apigeeregistry/v0.2.0) (2022-08-23)
 
 
