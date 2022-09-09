@@ -603,8 +603,10 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	}
 
 	res := &pb.RowResult{
-		Status: &status.Status{},
-		Row:    pbRow,
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+		Row: pbRow,
 	}
 
 	return res, nil
@@ -795,7 +797,12 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	falseMuts := mutationFromProto(rrq.FalseMutations)
 
 	rfPb := rrq.PredicateFilter
-	f := filterFromProto(rfPb)
+	var f *bigtable.Filter
+
+	if rfPb != nil {
+		f = filterFromProto(rfPb)
+	}
+
 	c := bigtable.NewCondMutation(*f, trueMuts, falseMuts)
 
 	t := btc.c.Open(rrq.TableName)
@@ -817,7 +824,8 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	return res, nil
 }
 
-// SampleRowKeys responds to the SampleRowKeys RPC.
+// SampleRowKeys responds to the SampleRowKeys RPC. This method gets a sampling
+// of the keys available in a table.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
@@ -857,8 +865,58 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 	return res, nil
 }
 
+// ReadModifyWriteRow responds to the ReadModifyWriteRow RPC. This method
+// applies a non-idempotent change to a row.
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "method ReadModifyWriteRow() not implemented")
+	btc, exists := s.clientIDs[req.ClientId]
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to CheckAndMutateRow() is missing inner request")
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	k := string(rrq.RowKey)
+	rpb := rrq.Rules
+
+	rmw := bigtable.NewReadModifyWrite()
+
+	for _, rp := range rpb {
+		switch r := rp.Rule; r.(type) {
+		case *btpb.ReadModifyWriteRule_AppendValue:
+			av := r.(*btpb.ReadModifyWriteRule_AppendValue)
+			rmw.AppendValue(rp.FamilyName, string(rp.ColumnQualifier), av.AppendValue)
+		case *btpb.ReadModifyWriteRule_IncrementAmount:
+			ia := r.(*btpb.ReadModifyWriteRule_IncrementAmount)
+			rmw.Increment(rp.FamilyName, string(rp.ColumnQualifier), ia.IncrementAmount)
+		}
+	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	btc.cancels = append(btc.cancels, cancel)
+
+	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
+
+	if err != nil {
+		return nil, err
+	}
+
+	rp, err := rowToProto(r)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &pb.RowResult{
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+		Row: rp,
+	}
+	return res, nil
 }
 
 func (s *goTestProxyServer) mustEmbedUnimplementedCloudBigtableV2TestProxyServer() {}
