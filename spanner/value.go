@@ -1689,23 +1689,23 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		}
 		*p = y
 	case *PGJsonB:
-  		if p == nil {
-  			return errNilDst(p)
-  		}
-      if code != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
-        return errTypeMismatch(code, acode, ptr)
-      }
-      if isNull {
-        *p = PGJsonB{}
-        break
-      }
-      x := v.GetStringValue()
-      var y interface{}
-      err := json.Unmarshal([]byte(x), &y)
-      if err != nil {
-        return err
-      }
-      *p = PGJsonB{y, true}
+    if p == nil {
+      return errNilDst(p)
+    }
+    if code != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
+      return errTypeMismatch(code, acode, ptr)
+    }
+    if isNull {
+      *p = PGJsonB{}
+      break
+    }
+    x := v.GetStringValue()
+    var y interface{}
+    err := json.Unmarshal([]byte(x), &y)
+    if err != nil {
+      return err
+    }
+    *p = PGJsonB{y, true}
   case *[]PGJsonB:
     if p == nil {
       return errNilDst(p)
@@ -2034,7 +2034,7 @@ const (
 	spannerTypeArrayOfNullTime
 	spannerTypeArrayOfNullDate
 	spannerTypeArrayOfPGNumeric
-  spannerTypeArrayOfPGJsonB
+	spannerTypeArrayOfPGJsonB
 )
 
 // supportsNull returns true for the Go types that can hold a null value from
@@ -2141,7 +2141,7 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			return spannerTypePGNumeric
 		}
 		if t.ConvertibleTo(typeOfPGJsonB) {
-    	return spannerTypePGJsonB
+		  return spannerTypePGJsonB
     }
 	case reflect.Slice:
 		kind := val.Type().Elem().Kind()
@@ -2202,7 +2202,7 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 				return spannerTypeArrayOfPGNumeric
 			}
 			if t.ConvertibleTo(typeOfPGJsonB) {
-      	return spannerTypeArrayOfPGJsonB
+        return spannerTypeArrayOfPGJsonB
       }
 		case reflect.Slice:
 			// The only array-of-array type that is supported is [][]byte.
@@ -2365,7 +2365,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		result = &NullJSON{y, true}
 	case spannerTypePGJsonB:
-    if code != sppb.TypeCode_JSON ||  typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB{
+    if code != sppb.TypeCode_JSON ||  typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
       return errTypeMismatch(code, acode, ptr)
     }
     if isNull {
@@ -3809,7 +3809,7 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 	case spannerTypeNullJSON:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullJSON{})))
 	case spannerTypePGJsonB:
-  	destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGJsonB{})))
+	  destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGJsonB{})))
 	case spannerTypePGNumeric:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(PGNumeric{})))
 	case spannerTypeArrayOfNonNullString:
