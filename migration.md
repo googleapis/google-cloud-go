@@ -46,5 +46,5 @@ to work.
 
 ## Have questions?
 
-Please reach out to us on our [issue tracker](link) if you have any questions or
-concerns.
+Please reach out to us on our [issue tracker](https://github.com/googleapis/google-cloud-go/issues/new?assignees=&labels=genproto-migration&template=migration-issue.md&title=package%3A+migration+help)
+if you have any questions or concerns.
