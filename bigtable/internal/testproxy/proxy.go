@@ -47,10 +47,10 @@ var (
 	logLabel = "cbt-go-proxy"
 )
 
-// rowToRowProto converts a Bigtable Go client Row struct into a
+// rowToProto converts a Bigtable Go client Row struct into a
 // Bigtable protobuf Row struct. It iterates over all of the column families
 // (keys) and ReadItem slices (values) in the client Row struct
-func rowToRowProto(btRow bigtable.Row) (*btpb.Row, error) {
+func rowToProto(btRow bigtable.Row) (*btpb.Row, error) {
 	pbRow := &btpb.Row{
 		Key:      []byte(btRow.Key()),
 		Families: make([]*btpb.Family, 0),
@@ -136,6 +136,48 @@ func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
 		}
 	}
 	return rowRangeList
+}
+
+// mutationFromProto translates a slice of Bigtable v2.Mutation objects into
+// a single Bigtable.Mutation object.
+func mutationFromProto(mPbs []*btpb.Mutation) *bigtable.Mutation {
+	m := bigtable.NewMutation()
+	for _, mpb := range mPbs {
+
+		switch mut := mpb.Mutation; mut.(type) {
+		case *btpb.Mutation_DeleteFromColumn_:
+			del := mut.(*btpb.Mutation_DeleteFromColumn_)
+			fam := del.DeleteFromColumn.FamilyName
+			col := del.DeleteFromColumn.ColumnQualifier
+
+			if del.DeleteFromColumn.TimeRange != nil {
+				start := bigtable.Time(time.UnixMicro(del.DeleteFromColumn.TimeRange.StartTimestampMicros))
+				end := bigtable.Time(time.UnixMicro(del.DeleteFromColumn.TimeRange.EndTimestampMicros))
+				m.DeleteTimestampRange(fam, string(col), start, end)
+			} else {
+				m.DeleteCellsInColumn(fam, string(col))
+			}
+
+		case *btpb.Mutation_DeleteFromFamily_:
+			del := mut.(*btpb.Mutation_DeleteFromFamily_)
+			fam := del.DeleteFromFamily.FamilyName
+			m.DeleteCellsInFamily(fam)
+
+		case *btpb.Mutation_DeleteFromRow_:
+			m.DeleteRow()
+
+		case *btpb.Mutation_SetCell_:
+			setCell := mut.(*btpb.Mutation_SetCell_)
+			fam := setCell.SetCell.FamilyName
+			col := setCell.SetCell.ColumnQualifier
+			val := setCell.SetCell.Value
+			ts := setCell.SetCell.TimestampMicros
+			bts := bigtable.Time(time.UnixMicro(ts))
+			m.Set(fam, string(col), bts, val)
+
+		}
+	}
+	return m
 }
 
 // testClient contains a bigtable.Client object, cancel functions for the calls
@@ -380,6 +422,11 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	tName := req.TableName
 	t := btc.c.Open(tName)
 
+	ctx, cancel := context.WithCancel(ctx)
+	btc.cancels = append(btc.cancels, cancel)
+
+	// TODO(developer): apply timeout, if any, from
+
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
 		return nil, err
@@ -389,7 +436,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 		return nil, fmt.Errorf("%s: no error or row returned from ReadRow()", logLabel)
 	}
 
-	pbRow, err := rowToRowProto(r)
+	pbRow, err := rowToProto(r)
 	if err != nil {
 		return nil, err
 	}
@@ -423,15 +470,16 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	ctx, cancel := context.WithCancel(ctx)
 	btc.cancels = append(btc.cancels, cancel)
 
-	rowPbs := rrq.Rows
+	// TODO(developer): apply timeout, if any, from
 
+	rowPbs := rrq.Rows
 	var rs bigtable.RowSet
 
 	// Go client doesn't have a Table.GetAll() function--RowSet must be provided
 	// for ReadRows. We need to use
 	if len(rowPbs.GetRowKeys()) == 0 && len(rowPbs.GetRowRanges()) == 0 {
 		// Should be lowest possible key value
-		rs = bigtable.InfiniteRange("0")
+		rs = bigtable.InfiniteRange("!")
 	} else {
 		rs = rowSetFromProto(rowPbs)
 	}
@@ -444,7 +492,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		if c == lim {
 			return false
 		}
-		rpb, err := rowToRowProto(r)
+		rpb, err := rowToProto(r)
 		if err != nil {
 			return false
 		}
@@ -473,52 +521,19 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 
 	rrq := req.GetRequest()
 	if rrq == nil {
-		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
+		return nil, stat.Error(codes.InvalidArgument, "request to MutateRow() is missing inner request")
 	}
 
-	m := bigtable.NewMutation()
 	mPbs := rrq.Mutations
-	for _, mpb := range mPbs {
-
-		switch mut := mpb.Mutation; mut.(type) {
-		case *btpb.Mutation_DeleteFromColumn_:
-			del := mut.(*btpb.Mutation_DeleteFromColumn_)
-			fam := del.DeleteFromColumn.FamilyName
-			col := del.DeleteFromColumn.ColumnQualifier
-
-			if del.DeleteFromColumn.TimeRange != nil {
-				start := bigtable.Time(time.UnixMicro(del.DeleteFromColumn.TimeRange.StartTimestampMicros))
-				end := bigtable.Time(time.UnixMicro(del.DeleteFromColumn.TimeRange.EndTimestampMicros))
-				m.DeleteTimestampRange(fam, string(col), start, end)
-			} else {
-				m.DeleteCellsInColumn(fam, string(col))
-			}
-
-		case *btpb.Mutation_DeleteFromFamily_:
-			del := mut.(*btpb.Mutation_DeleteFromFamily_)
-			fam := del.DeleteFromFamily.FamilyName
-			m.DeleteCellsInFamily(fam)
-
-		case *btpb.Mutation_DeleteFromRow_:
-			m.DeleteRow()
-
-		case *btpb.Mutation_SetCell_:
-			setCell := mut.(*btpb.Mutation_SetCell_)
-			fam := setCell.SetCell.FamilyName
-			col := setCell.SetCell.ColumnQualifier
-			val := setCell.SetCell.Value
-			ts := setCell.SetCell.TimestampMicros
-			bts := bigtable.Time(time.UnixMicro(ts))
-			m.Set(fam, string(col), bts, val)
-
-		}
-	}
+	m := mutationFromProto(mPbs)
 
 	t := btc.c.Open(rrq.TableName)
 	row := rrq.RowKey
 
 	ctx, cancel := context.WithCancel(ctx)
 	btc.cancels = append(btc.cancels, cancel)
+
+	// TODO(developer): apply timeout, if any, from
 
 	err := t.Apply(ctx, string(row), m)
 	if err != nil {
@@ -533,8 +548,73 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	return res, nil
 }
 
+// BulkMutateRows responds to the BulkMutateRows RPC. This method applies a
+// series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "method BulkMutateRows() not implemented")
+	btc, exists := s.clientIDs[req.ClientId]
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to BulkMutateRows() is missing inner request")
+	}
+
+	mrs := rrq.Entries
+	t := btc.c.Open(rrq.TableName)
+
+	keys := make([]string, len(mrs))
+	muts := make([]*bigtable.Mutation, len(mrs))
+
+	for i, mr := range mrs {
+
+		key := string(mr.RowKey)
+		m := mutationFromProto(mr.Mutations)
+
+		// A little tricky here ... each key corresponds to a single Mutation
+		// object, where the indices of each slice must be sync'ed.
+		keys[i] = key
+		muts[i] = m
+	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	btc.cancels = append(btc.cancels, cancel)
+
+	// TODO(developer): apply timeout, if any, from
+
+	errs, err := t.ApplyBulk(ctx, keys, muts)
+	if err != nil {
+		return nil, err
+	}
+
+	entries := make([]*btpb.MutateRowsResponse_Entry, 0)
+
+	// Iterate over any errors returned, matching indices with errors. If
+	// errs is nil, this block is skipped.
+	for i, e := range errs {
+		if e != nil {
+			me := &btpb.MutateRowsResponse_Entry{
+				Index: int64(i),
+				Status: &status.Status{
+					Code:    int32(codes.Internal),
+					Message: e.Error(),
+				},
+			}
+			entries = append(entries, me)
+		}
+	}
+
+	res := &pb.MutateRowsResult{
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+		Entry: entries,
+	}
+
+	return res, nil
+
 }
 
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
