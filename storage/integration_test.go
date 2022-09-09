@@ -200,9 +200,9 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t})
+	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t, Short: true})
 	bucketName = uidSpace.New()
-	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t})
+	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t, Short: true})
 	grpcBucketName = uidSpaceGRPC.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
