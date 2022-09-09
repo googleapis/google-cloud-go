@@ -222,14 +222,14 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 			defer r.Close()
-			body, err := ioutil.ReadAll(r)
+			data, err := ioutil.ReadAll(r)
 			if err != nil {
 				return fmt.Errorf("failed to ReadAll, err: %v", err)
 			}
-			if got, want := len(body), size9MB; got != want {
+			if got, want := len(data), size9MB; got != want {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
-			if got, want := body, randomBytes9MB; !bytes.Equal(got, want) {
+			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
 				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return nil
