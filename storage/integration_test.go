@@ -2385,19 +2385,15 @@ func TestIntegration_ACL(t *testing.T) {
 	} else if !hasRule(acl, rule) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
-	aclObjects := []string{"acl1", "acl2"}
-	name := aclObjects[0]
+	name := "acl1"
 	o := bkt.Object(name)
-
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj).If(Conditions{DoesNotExist: true}), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-	}
+	c := randomContents()
 
 	// Retry to account for propagation delay in metadata update.
 	err = retry(ctx, func() error {
+		if err := writeObject(ctx, o, "", c); err != nil {
+			return fmt.Errorf("Write for %v failed with %v", name, err)
+		}
 		acl, err = o.ACL().List(ctx)
 		return err
 	}, func() error {
