@@ -814,4 +814,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb",
 		Status:     StatusNotMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/security/publicca/v1beta1": {
+		ImportPath: "cloud.google.com/go/security/publicca/apiv1beta1/publiccapb",
+		Status:     StatusMigrated,
+	},
 }
