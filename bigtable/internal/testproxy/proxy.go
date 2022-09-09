@@ -180,6 +180,165 @@ func mutationFromProto(mPbs []*btpb.Mutation) *bigtable.Mutation {
 	return m
 }
 
+// filterFromProto translates a Bigtable v2.RowFilter object into a Bigtable
+// Filter object.
+func filterFromProto(rfPb *btpb.RowFilter) (f *bigtable.Filter) {
+
+	switch fpb := rfPb.Filter; fpb.(type) {
+	case *btpb.RowFilter_Chain_:
+		c := fpb.(*btpb.RowFilter_Chain_)
+		fs := make([]bigtable.Filter, 0)
+		for _, cfpb := range c.Chain.Filters {
+			cf := filterFromProto(cfpb)
+			fs = append(fs, *cf)
+		}
+		cf := bigtable.ChainFilters(fs...)
+		f = &cf
+
+	case *btpb.RowFilter_Interleave_:
+		i := fpb.(*btpb.RowFilter_Interleave_)
+		fs := make([]bigtable.Filter, 0)
+		for _, ipb := range i.Interleave.Filters {
+			ipbf := filterFromProto(ipb)
+			fs = append(fs, *ipbf)
+		}
+		inf := bigtable.InterleaveFilters(fs...)
+		f = &inf
+
+	case *btpb.RowFilter_Condition_:
+		cond := fpb.(*btpb.RowFilter_Condition_)
+
+		tf := filterFromProto(cond.Condition.TrueFilter)
+		ff := filterFromProto(cond.Condition.TrueFilter)
+		pf := filterFromProto(cond.Condition.PredicateFilter)
+
+		cf := bigtable.ConditionFilter(*pf, *tf, *ff)
+		f = &cf
+
+	case *btpb.RowFilter_Sink:
+		// Not currently supported.
+		f = nil
+
+	case *btpb.RowFilter_PassAllFilter:
+		p := bigtable.PassAllFilter()
+		f = &p
+
+	case *btpb.RowFilter_BlockAllFilter:
+		b := bigtable.BlockAllFilter()
+		f = &b
+
+	case *btpb.RowFilter_RowKeyRegexFilter:
+		rf := fpb.(*btpb.RowFilter_RowKeyRegexFilter)
+		re := rf.RowKeyRegexFilter
+		rrf := bigtable.RowKeyFilter(string(re))
+		f = &rrf
+
+	case *btpb.RowFilter_RowSampleFilter:
+		rsf := fpb.(*btpb.RowFilter_RowSampleFilter)
+		rs := rsf.RowSampleFilter
+		rf := bigtable.RowSampleFilter(rs)
+		f = &rf
+
+	case *btpb.RowFilter_FamilyNameRegexFilter:
+		fnf := fpb.(*btpb.RowFilter_FamilyNameRegexFilter)
+		re := fnf.FamilyNameRegexFilter
+		fn := bigtable.FamilyFilter(re)
+		f = &fn
+
+	case *btpb.RowFilter_ColumnQualifierRegexFilter:
+		cqf := fpb.(*btpb.RowFilter_ColumnQualifierRegexFilter)
+		re := cqf.ColumnQualifierRegexFilter
+		cq := bigtable.ColumnFilter(string(re))
+		f = &cq
+
+	case *btpb.RowFilter_ColumnRangeFilter:
+		crf := fpb.(*btpb.RowFilter_ColumnRangeFilter)
+		cr := crf.ColumnRangeFilter
+
+		var start, end string
+		switch sf := cr.StartQualifier; sf.(type) {
+		case *btpb.ColumnRange_StartQualifierOpen:
+			start = string(sf.(*btpb.ColumnRange_StartQualifierOpen).StartQualifierOpen)
+		case *btpb.ColumnRange_StartQualifierClosed:
+			start = string(sf.(*btpb.ColumnRange_StartQualifierClosed).StartQualifierClosed)
+		}
+
+		switch ef := cr.EndQualifier; ef.(type) {
+		case *btpb.ColumnRange_EndQualifierClosed:
+			end = string(ef.(*btpb.ColumnRange_EndQualifierClosed).EndQualifierClosed)
+		case *btpb.ColumnRange_EndQualifierOpen:
+			end = string(ef.(*btpb.ColumnRange_EndQualifierOpen).EndQualifierOpen)
+		}
+
+		cf := bigtable.ColumnRangeFilter(cr.FamilyName, start, end)
+		f = &cf
+
+	case *btpb.RowFilter_TimestampRangeFilter:
+		trf := fpb.(*btpb.RowFilter_TimestampRangeFilter)
+		tsr := trf.TimestampRangeFilter
+
+		tsf := bigtable.TimestampRangeFilter(time.UnixMicro(tsr.StartTimestampMicros), time.UnixMicro(tsr.EndTimestampMicros))
+		f = &tsf
+
+	case *btpb.RowFilter_ValueRegexFilter:
+		vrf := fpb.(*btpb.RowFilter_ValueRegexFilter)
+		re := vrf.ValueRegexFilter
+		vr := bigtable.ValueFilter(string(re))
+		f = &vr
+
+	case *btpb.RowFilter_ValueRangeFilter:
+		vrf := fpb.(*btpb.RowFilter_ValueRangeFilter)
+
+		var start, end []byte
+		switch sv := vrf.ValueRangeFilter.StartValue; sv.(type) {
+		case *btpb.ValueRange_StartValueOpen:
+			start = sv.(*btpb.ValueRange_StartValueOpen).StartValueOpen
+		case *btpb.ValueRange_StartValueClosed:
+			start = sv.(*btpb.ValueRange_StartValueClosed).StartValueClosed
+		}
+
+		switch ev := vrf.ValueRangeFilter.EndValue; ev.(type) {
+		case *btpb.ValueRange_EndValueOpen:
+			end = ev.(*btpb.ValueRange_EndValueOpen).EndValueOpen
+		case *btpb.ValueRange_EndValueClosed:
+			end = ev.(*btpb.ValueRange_EndValueClosed).EndValueClosed
+		}
+
+		vr := bigtable.ValueRangeFilter(start, end)
+		f = &vr
+
+	case *btpb.RowFilter_CellsPerRowOffsetFilter:
+		cof := fpb.(*btpb.RowFilter_CellsPerRowOffsetFilter)
+		off := cof.CellsPerRowOffsetFilter
+		co := bigtable.CellsPerRowOffsetFilter(int(off))
+		f = &co
+
+	case *btpb.RowFilter_CellsPerRowLimitFilter:
+		clf := fpb.(*btpb.RowFilter_CellsPerRowLimitFilter)
+		lim := clf.CellsPerRowLimitFilter
+		cl := bigtable.CellsPerRowLimitFilter(int(lim))
+		f = &cl
+
+	case *btpb.RowFilter_CellsPerColumnLimitFilter:
+		ccf := fpb.(*btpb.RowFilter_CellsPerColumnLimitFilter)
+		lim := ccf.CellsPerColumnLimitFilter
+		cc := bigtable.LatestNFilter(int(lim))
+		f = &cc
+
+	case *btpb.RowFilter_StripValueTransformer:
+		sv := bigtable.StripValueFilter()
+		f = &sv
+
+	case *btpb.RowFilter_ApplyLabelTransformer:
+		alf := fpb.(*btpb.RowFilter_ApplyLabelTransformer)
+		l := alf.ApplyLabelTransformer
+		al := bigtable.LabelFilter(l)
+		f = &al
+	}
+
+	return f
+}
+
 // testClient contains a bigtable.Client object, cancel functions for the calls
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
@@ -405,6 +564,8 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 			c()
 		}
 	}
+	btc.c.Close()
+	delete(s.clientIDs, clientId)
 
 	resp := &pb.RemoveClientResponse{}
 	return resp, nil
@@ -475,8 +636,8 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	rowPbs := rrq.Rows
 	var rs bigtable.RowSet
 
-	// Go client doesn't have a Table.GetAll() function--RowSet must be provided
-	// for ReadRows. We need to use
+	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
+	// provided for ReadRows. Use InfiniteRange() to get the full table.
 	if len(rowPbs.GetRowKeys()) == 0 && len(rowPbs.GetRowRanges()) == 0 {
 		// Should be lowest possible key value
 		rs = bigtable.InfiniteRange("!")
@@ -582,7 +743,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	ctx, cancel := context.WithCancel(ctx)
 	btc.cancels = append(btc.cancels, cancel)
 
-	// TODO(developer): apply timeout, if any, from
+	// TODO(developer): apply timeout, if any, from testClient
 
 	errs, err := t.ApplyBulk(ctx, keys, muts)
 	if err != nil {
@@ -614,11 +775,45 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	}
 
 	return res, nil
-
 }
 
+// CheckAndMutateRow responds to the CheckAndMutateRow RPC.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "method CheckAndMutateRow() not implemented")
+	btc, exists := s.clientIDs[req.ClientId]
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to CheckAndMutateRow() is missing inner request")
+	}
+
+	trueMuts := mutationFromProto(rrq.TrueMutations)
+	falseMuts := mutationFromProto(rrq.FalseMutations)
+
+	rfPb := rrq.PredicateFilter
+	f := filterFromProto(rfPb)
+	c := bigtable.NewCondMutation(*f, trueMuts, falseMuts)
+
+	t := btc.c.Open(rrq.TableName)
+	rowKey := string(rrq.RowKey)
+
+	ctx, cancel := context.WithCancel(ctx)
+	btc.cancels = append(btc.cancels, cancel)
+
+	err := t.Apply(ctx, rowKey, c)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &pb.CheckAndMutateRowResult{
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+	}
+	return res, nil
 }
 
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
