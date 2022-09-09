@@ -777,7 +777,8 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	return res, nil
 }
 
-// CheckAndMutateRow responds to the CheckAndMutateRow RPC.
+// CheckAndMutateRow responds to the CheckAndMutateRow RPC. This method applies
+// one mutation if a condition is true and another mutation if it is false.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
@@ -816,8 +817,44 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	return res, nil
 }
 
+// SampleRowKeys responds to the SampleRowKeys RPC.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "method SampleRowKeys() not implemented")
+	btc, exists := s.clientIDs[req.ClientId]
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to CheckAndMutateRow() is missing inner request")
+	}
+
+	t := btc.c.Open(rrq.TableName)
+
+	ctx, cancel := context.WithCancel(ctx)
+	btc.cancels = append(btc.cancels, cancel)
+
+	keys, err := t.SampleRowKeys(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	sk := make([]*btpb.SampleRowKeysResponse, 0)
+	for _, k := range keys {
+		s := &btpb.SampleRowKeysResponse{
+			RowKey: []byte(k),
+		}
+		sk = append(sk, s)
+	}
+
+	res := &pb.SampleRowKeysResult{
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+		Sample: sk,
+	}
+	return res, nil
 }
 
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
