@@ -1713,6 +1713,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/10/01
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/security/publicca/v1beta1",
+		Pkg:                   "publicca",
+		ImportPath:            "cloud.google.com/go/security/publicca/apiv1beta1",
+		GRPCServiceConfigPath: "publicca_v1beta1_grpc_service_config.json",
+		ApiServiceConfigPath:  "publicca_v1beta1.yaml",
+		// GA after 2022/10/10
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
