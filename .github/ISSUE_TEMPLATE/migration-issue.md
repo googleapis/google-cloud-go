@@ -1,6 +1,6 @@
 ---
 name: Migration Issue
-about: Ask a question related to the go-genproto type migration
+about: Ask a question or report an issue related related to the go-genproto type migration
 title: 'package: migration help'
 labels: genproto-migration
 assignees: ''
