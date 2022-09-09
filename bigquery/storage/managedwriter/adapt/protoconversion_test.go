@@ -419,8 +419,8 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			bq: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{
 					{Name: "foo", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
-					{Name: "💩", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
-					{Name: "☕_addict", Type: storagepb.TableFieldSchema_BYTES, Mode: storagepb.TableFieldSchema_REPEATED},
+					{Name: "火", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
+					{Name: "水_addict", Type: storagepb.TableFieldSchema_BYTES, Mode: storagepb.TableFieldSchema_REPEATED},
 				}},
 			wantProto2: func() *descriptorpb.DescriptorProto {
 				dp := &descriptorpb.DescriptorProto{
@@ -446,8 +446,8 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						},
 					},
 				}
-				proto.SetExtension(dp.Field[1].Options, annotations.E_ColumnName, "💩")
-				proto.SetExtension(dp.Field[2].Options, annotations.E_ColumnName, "☕_addict")
+				proto.SetExtension(dp.Field[1].Options, annotations.E_ColumnName, "火")
+				proto.SetExtension(dp.Field[2].Options, annotations.E_ColumnName, "水_addict")
 				return dp
 			}(),
 		},
