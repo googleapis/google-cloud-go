@@ -412,7 +412,7 @@ func TestValidation_Values(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east4")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
@@ -427,12 +427,6 @@ func TestValidation_Values(t *testing.T) {
 		if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: tc.tableSchema}); err != nil {
 			t.Errorf("%s: failed to create test table %q: %v", tc.description, testTable.FullyQualifiedName(), err)
 			continue
-		}
-
-		if meta, err := testTable.Metadata(ctx); err == nil {
-			for n, field := range meta.Schema {
-				t.Logf("(%s) field %d: %s", tc.description, n, field.Name)
-			}
 		}
 
 		// normalize the proto schema based on the provided message.
