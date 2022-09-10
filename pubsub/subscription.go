@@ -29,10 +29,6 @@ import (
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	otelcodes "go.opentelemetry.io/otel/codes"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
-	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
@@ -60,7 +56,6 @@ type Subscription struct {
 
 	// topicName is for creating spans for OpenTelemetry tracing.
 	topicName string
-	tracer    trace.Tracer
 }
 
 // Subscription creates a reference to a subscription.
@@ -78,7 +73,6 @@ func newSubscription(c *Client, name string) *Subscription {
 		c:               c,
 		name:            name,
 		ReceiveSettings: DefaultReceiveSettings,
-		tracer:          otel.Tracer(defaultTracerName),
 	}
 }
 
@@ -1154,26 +1148,16 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				if err == io.EOF {
 					return nil
 				}
-				// If context is done and messages have been pulled,
-				// nack them.
-				select {
-				case <-ctx.Done():
-					for _, m := range msgs {
-						m.Nack()
-					}
-					return nil
-				default:
-				}
 
 				for i, msg := range msgs {
-					opts := getSubSpanAttributes(s.topicName, msg, semconv.MessagingOperationProcess)
-					_, ps := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
-					ps.AddEvent("waiting for subscriber flow control")
-					var fcTimer time.Time
-					if ps.IsRecording() {
-						fcTimer = time.Now()
+					iter.eoMu.RLock()
+					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
+					iter.eoMu.RUnlock()
+					ctx := context.Background()
+					if msg.Attributes != nil {
+						ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 					}
-					// TODO(jba): call acquire closer to when the message is allocated.
+					ctx, fcSpan := tracer().Start(ctx, "subscriber flow control")
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
@@ -1182,20 +1166,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					ps.AddEvent("acquired subscriber flow control resources", trace.WithAttributes(attribute.Float64("elapsed_ms", float64(time.Since(fcTimer))/float64(time.Millisecond))))
-					iter.eoMu.RLock()
-					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
-					iter.eoMu.RUnlock()
-					old := ackh.doneFunc
+					fcSpan.End()
 					msgLen := len(msg.Data)
+					old := ackh.doneFunc
 					ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 						defer fc.release(ctx, msgLen)
-						defer ps.End()
-						if ack {
-							ps.SetAttributes(attribute.String("result", "ack"))
-						} else {
-							ps.SetAttributes(attribute.String("result", "nack"))
-						}
 						old(ackID, ack, r, receiveTime)
 					}
 					wg.Add(1)
@@ -1208,13 +1183,13 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// constructor level?
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						defer wg.Done()
-						ps.AddEvent("started handling provided callback")
+						_, cSpan := tracer().Start(ctx, "calling user defined callback")
+						defer cSpan.End()
 						f(ctx2, msg.(*Message))
-						ps.AddEvent("finished handling provided callback")
 					}); err != nil {
 						wg.Done()
-						ps.RecordError(err)
-						ps.SetStatus(otelcodes.Error, err.Error())
+						// TODO(hongalex): propagate these errors to an otel span.
+
 						// If there are any errors with scheduling messages,
 						// nack them so they can be redelivered.
 						msg.Nack()

@@ -19,9 +19,11 @@ import (
 	"log"
 	"sync"
 
+	"cloud.google.com/go/pubsub/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
@@ -265,6 +267,10 @@ func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 
 const defaultTracerName = "cloud.google.com/go/pubsub"
 
+func tracer() trace.Tracer {
+	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
+}
+
 var _ propagation.TextMapCarrier = (*PubsubMessageCarrier)(nil)
 
 // PubsubMessageCarrier injects and extracts traces from a pubsub.Message.
@@ -298,11 +304,17 @@ func (c PubsubMessageCarrier) Keys() []string {
 	return out
 }
 
-const orderingAttribute = "messaging.pubsub.ordering_key"
+const (
+	subscriptionAttribute = "messaging.pubsub.subscription"
+	orderingAttribute     = "messaging.pubsub.ordering_key"
+	ackAttribute          = "messaging.pubsub.is_acked"
+	numMessagesAttribute  = "messaging.pubsub.num_messages_in_receive_batch"
+)
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
 	// TODO(hongalex): benchmark this to make sure no significant performance degradation
 	// when calculating proto.Size in receive paths.
+	// TODO(hongalex): find way to incorporate pubsub client library version in attribute.
 	msgSize := proto.Size(&pb.PubsubMessage{
 		Data:        msg.Data,
 		Attributes:  msg.Attributes,
@@ -323,7 +335,7 @@ func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyV
 	return ss
 }
 
-func getSubSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
 	msgSize := proto.Size(&pb.PubsubMessage{
 		Data:        msg.Data,
 		Attributes:  msg.Attributes,
@@ -332,10 +344,10 @@ func getSubSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue
 	ss := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationKey.String(topic),
 			semconv.MessagingDestinationKindTopic,
 			semconv.MessagingMessageIDKey.String(msg.ID),
 			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+			attribute.String(subscriptionAttribute, sub),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(opts...),

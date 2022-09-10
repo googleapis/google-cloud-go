@@ -88,8 +88,6 @@ type Topic struct {
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
-
-	tracer trace.Tracer
 }
 
 // PublishSettings control the bundling of published messages.
@@ -207,7 +205,6 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
-		tracer:          otel.Tracer(defaultTracerName),
 	}
 }
 
@@ -539,9 +536,8 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	otelctx := ctx
 	opts := getPublishSpanAttributes(t.String(), msg)
-	ctx, span := t.tracer.Start(ctx, t.String()+" send", opts...)
+	ctx, span := tracer().Start(ctx, t.String()+" send", opts...)
 	span.AddEvent("waiting for publisher flow control")
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
@@ -570,7 +566,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	})
 	span.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
 
-	t.initBundler(otelctx)
+	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
@@ -642,9 +638,7 @@ type bundledMessage struct {
 	batchSpan trace.Span
 }
 
-// The context passed into this method is only for keeping track of opentelemetry traces.
-// It is not used for cancellation.
-func (t *Topic) initBundler(otelctx context.Context) {
+func (t *Topic) initBundler() {
 	t.mu.RLock()
 	noop := t.stopped || t.scheduler != nil
 	t.mu.RUnlock()
@@ -680,7 +674,7 @@ func (t *Topic) initBundler(otelctx context.Context) {
 		for _, m := range bmsgs {
 			m.span.AddEvent("removed from batch")
 		}
-		t.publishMessageBundle(otelctx, ctx2, bmsgs)
+		t.publishMessageBundle(ctx2, bmsgs)
 	})
 	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
 	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
@@ -718,7 +712,7 @@ func (t *Topic) initBundler(otelctx context.Context) {
 	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
 }
 
-func (t *Topic) publishMessageBundle(otelctx, ctx context.Context, bms []*bundledMessage) {
+func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
@@ -732,6 +726,7 @@ func (t *Topic) publishMessageBundle(otelctx, ctx context.Context, bms []*bundle
 		// key, it doesn't matter which we read from.
 		orderingKey = bms[0].msg.OrderingKey
 	}
+	ctx2 := bms[0].ctx
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
@@ -756,7 +751,7 @@ func (t *Topic) publishMessageBundle(otelctx, ctx context.Context, bms []*bundle
 			opt.Resolve(&settings)
 		}
 		r := &publishRetryer{defaultRetryer: settings.Retry()}
-		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
+		res, err = t.c.pubc.Publish(ctx2, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
 		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),

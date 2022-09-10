@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsub/internal/distribution"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/otel"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -99,6 +100,8 @@ type messageIterator struct {
 	// This stores pending AckResults for cleaner shutdown when sub.Receive's ctx is cancelled.
 	// If exactly once delivery is not enabled, this map should not be populated.
 	pendingAckResults map[string]*AckResult
+
+	pendingMessages map[string]*Message
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -145,6 +148,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pendingNacks:       map[string]*AckResult{},
 		pendingModAcks:     map[string]*AckResult{},
 		pendingAckResults:  map[string]*AckResult{},
+		pendingMessages:    map[string]*Message{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -253,7 +257,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
 	now := time.Now()
-	msgs, err := convertMessages(rmsgs, now, it.done)
+	msgs, err := convertMessages(rmsgs, now, it.done, it.subName)
 	if err != nil {
 		return nil, it.fail(err)
 	}
@@ -267,6 +271,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.eoMu.RUnlock()
 	for _, m := range msgs {
 		ackID := msgAckID(m)
+		it.pendingMessages[ackID] = m
 		addRecv(m.ID, ackID, now)
 		it.keepAliveDeadlines[ackID] = maxExt
 		// Don't change the mod-ack if the message is going to be nacked. This is
@@ -441,6 +446,7 @@ func (it *messageIterator) handleKeepAlives() {
 			// statements with range clause", note 3, and stated explicitly at
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
+			delete(it.pendingMessages, id)
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
 			it.pendingModAcks[id] = newSuccessAckResult()
@@ -453,8 +459,15 @@ func (it *messageIterator) handleKeepAlives() {
 // enabled, we'll retry these messages for a short duration in a goroutine.
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	ackIDs := make([]string, 0, len(m))
-	for k := range m {
-		ackIDs = append(ackIDs, k)
+	for ackID := range m {
+		ackIDs = append(ackIDs, ackID)
+		msg := it.pendingMessages[ackID]
+		ctx := context.Background()
+		if msg.Attributes != nil {
+			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
+		}
+		_, ackSpan := tracer().Start(ctx, "send ack")
+		defer ackSpan.End()
 	}
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
@@ -500,8 +513,15 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration) {
 	deadlineSec := int32(deadline / time.Second)
 	ackIDs := make([]string, 0, len(m))
-	for k := range m {
-		ackIDs = append(ackIDs, k)
+	for ackID := range m {
+		ackIDs = append(ackIDs, ackID)
+		msg := it.pendingMessages[ackID]
+		ctx := context.Background()
+		if msg.Attributes != nil {
+			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
+		}
+		_, modAckSpan := tracer().Start(ctx, "sending mod ack")
+		defer modAckSpan.End()
 	}
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
