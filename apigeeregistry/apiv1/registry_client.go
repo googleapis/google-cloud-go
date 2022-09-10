@@ -106,9 +106,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApis: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -117,9 +120,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -128,9 +134,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -139,9 +148,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -150,9 +162,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -161,9 +176,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiVersions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -172,9 +190,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -183,9 +204,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -194,9 +218,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -205,9 +232,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -216,9 +246,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiSpecs: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -227,9 +260,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -238,9 +274,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiSpecContents: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -249,9 +288,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -260,9 +302,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -271,9 +316,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -282,9 +330,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		TagApiSpecRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -293,9 +344,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiSpecRevisions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -305,9 +359,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiSpecRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -316,9 +373,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiDeployments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -327,9 +387,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -338,9 +401,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -349,9 +415,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -360,9 +429,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -371,9 +443,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		TagApiDeploymentRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -382,9 +457,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiDeploymentRevisions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -394,9 +472,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiDeploymentRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -405,9 +486,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListArtifacts: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -416,9 +500,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -427,9 +514,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetArtifactContents: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -438,9 +528,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -449,9 +542,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ReplaceArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -460,9 +556,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -565,69 +664,69 @@ func (c *RegistryClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListApis listApis returns matching APIs.
+// ListApis returns matching APIs.
 func (c *RegistryClient) ListApis(ctx context.Context, req *apigeeregistrypb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
 	return c.internalClient.ListApis(ctx, req, opts...)
 }
 
-// GetApi getApi returns a specified API.
+// GetApi returns a specified API.
 func (c *RegistryClient) GetApi(ctx context.Context, req *apigeeregistrypb.GetApiRequest, opts ...gax.CallOption) (*apigeeregistrypb.Api, error) {
 	return c.internalClient.GetApi(ctx, req, opts...)
 }
 
-// CreateApi createApi creates a specified API.
+// CreateApi creates a specified API.
 func (c *RegistryClient) CreateApi(ctx context.Context, req *apigeeregistrypb.CreateApiRequest, opts ...gax.CallOption) (*apigeeregistrypb.Api, error) {
 	return c.internalClient.CreateApi(ctx, req, opts...)
 }
 
-// UpdateApi updateApi can be used to modify a specified API.
+// UpdateApi used to modify a specified API.
 func (c *RegistryClient) UpdateApi(ctx context.Context, req *apigeeregistrypb.UpdateApiRequest, opts ...gax.CallOption) (*apigeeregistrypb.Api, error) {
 	return c.internalClient.UpdateApi(ctx, req, opts...)
 }
 
-// DeleteApi deleteApi removes a specified API and all of the resources that it
+// DeleteApi removes a specified API and all of the resources that it
 // owns.
 func (c *RegistryClient) DeleteApi(ctx context.Context, req *apigeeregistrypb.DeleteApiRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteApi(ctx, req, opts...)
 }
 
-// ListApiVersions listApiVersions returns matching versions.
+// ListApiVersions returns matching versions.
 func (c *RegistryClient) ListApiVersions(ctx context.Context, req *apigeeregistrypb.ListApiVersionsRequest, opts ...gax.CallOption) *ApiVersionIterator {
 	return c.internalClient.ListApiVersions(ctx, req, opts...)
 }
 
-// GetApiVersion getApiVersion returns a specified version.
+// GetApiVersion returns a specified version.
 func (c *RegistryClient) GetApiVersion(ctx context.Context, req *apigeeregistrypb.GetApiVersionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiVersion, error) {
 	return c.internalClient.GetApiVersion(ctx, req, opts...)
 }
 
-// CreateApiVersion createApiVersion creates a specified version.
+// CreateApiVersion creates a specified version.
 func (c *RegistryClient) CreateApiVersion(ctx context.Context, req *apigeeregistrypb.CreateApiVersionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiVersion, error) {
 	return c.internalClient.CreateApiVersion(ctx, req, opts...)
 }
 
-// UpdateApiVersion updateApiVersion can be used to modify a specified version.
+// UpdateApiVersion used to modify a specified version.
 func (c *RegistryClient) UpdateApiVersion(ctx context.Context, req *apigeeregistrypb.UpdateApiVersionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiVersion, error) {
 	return c.internalClient.UpdateApiVersion(ctx, req, opts...)
 }
 
-// DeleteApiVersion deleteApiVersion removes a specified version and all of the resources that
+// DeleteApiVersion removes a specified version and all of the resources that
 // it owns.
 func (c *RegistryClient) DeleteApiVersion(ctx context.Context, req *apigeeregistrypb.DeleteApiVersionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteApiVersion(ctx, req, opts...)
 }
 
-// ListApiSpecs listApiSpecs returns matching specs.
+// ListApiSpecs returns matching specs.
 func (c *RegistryClient) ListApiSpecs(ctx context.Context, req *apigeeregistrypb.ListApiSpecsRequest, opts ...gax.CallOption) *ApiSpecIterator {
 	return c.internalClient.ListApiSpecs(ctx, req, opts...)
 }
 
-// GetApiSpec getApiSpec returns a specified spec.
+// GetApiSpec returns a specified spec.
 func (c *RegistryClient) GetApiSpec(ctx context.Context, req *apigeeregistrypb.GetApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
 	return c.internalClient.GetApiSpec(ctx, req, opts...)
 }
 
-// GetApiSpecContents getApiSpecContents returns the contents of a specified spec.
+// GetApiSpecContents returns the contents of a specified spec.
 // If specs are stored with GZip compression, the default behavior
 // is to return the spec uncompressed (the mime_type response field
 // indicates the exact format returned).
@@ -635,104 +734,104 @@ func (c *RegistryClient) GetApiSpecContents(ctx context.Context, req *apigeeregi
 	return c.internalClient.GetApiSpecContents(ctx, req, opts...)
 }
 
-// CreateApiSpec createApiSpec creates a specified spec.
+// CreateApiSpec creates a specified spec.
 func (c *RegistryClient) CreateApiSpec(ctx context.Context, req *apigeeregistrypb.CreateApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
 	return c.internalClient.CreateApiSpec(ctx, req, opts...)
 }
 
-// UpdateApiSpec updateApiSpec can be used to modify a specified spec.
+// UpdateApiSpec used to modify a specified spec.
 func (c *RegistryClient) UpdateApiSpec(ctx context.Context, req *apigeeregistrypb.UpdateApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
 	return c.internalClient.UpdateApiSpec(ctx, req, opts...)
 }
 
-// DeleteApiSpec deleteApiSpec removes a specified spec, all revisions, and all child
-// resources (e.g. artifacts).
+// DeleteApiSpec removes a specified spec, all revisions, and all child
+// resources (e.g., artifacts).
 func (c *RegistryClient) DeleteApiSpec(ctx context.Context, req *apigeeregistrypb.DeleteApiSpecRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteApiSpec(ctx, req, opts...)
 }
 
-// TagApiSpecRevision tagApiSpecRevision adds a tag to a specified revision of a spec.
+// TagApiSpecRevision adds a tag to a specified revision of a spec.
 func (c *RegistryClient) TagApiSpecRevision(ctx context.Context, req *apigeeregistrypb.TagApiSpecRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
 	return c.internalClient.TagApiSpecRevision(ctx, req, opts...)
 }
 
-// ListApiSpecRevisions listApiSpecRevisions lists all revisions of a spec.
+// ListApiSpecRevisions lists all revisions of a spec.
 // Revisions are returned in descending order of revision creation time.
 func (c *RegistryClient) ListApiSpecRevisions(ctx context.Context, req *apigeeregistrypb.ListApiSpecRevisionsRequest, opts ...gax.CallOption) *ApiSpecIterator {
 	return c.internalClient.ListApiSpecRevisions(ctx, req, opts...)
 }
 
-// RollbackApiSpec rollbackApiSpec sets the current revision to a specified prior revision.
+// RollbackApiSpec sets the current revision to a specified prior revision.
 // Note that this creates a new revision with a new revision ID.
 func (c *RegistryClient) RollbackApiSpec(ctx context.Context, req *apigeeregistrypb.RollbackApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
 	return c.internalClient.RollbackApiSpec(ctx, req, opts...)
 }
 
-// DeleteApiSpecRevision deleteApiSpecRevision deletes a revision of a spec.
+// DeleteApiSpecRevision deletes a revision of a spec.
 func (c *RegistryClient) DeleteApiSpecRevision(ctx context.Context, req *apigeeregistrypb.DeleteApiSpecRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
 	return c.internalClient.DeleteApiSpecRevision(ctx, req, opts...)
 }
 
-// ListApiDeployments listApiDeployments returns matching deployments.
+// ListApiDeployments returns matching deployments.
 func (c *RegistryClient) ListApiDeployments(ctx context.Context, req *apigeeregistrypb.ListApiDeploymentsRequest, opts ...gax.CallOption) *ApiDeploymentIterator {
 	return c.internalClient.ListApiDeployments(ctx, req, opts...)
 }
 
-// GetApiDeployment getApiDeployment returns a specified deployment.
+// GetApiDeployment returns a specified deployment.
 func (c *RegistryClient) GetApiDeployment(ctx context.Context, req *apigeeregistrypb.GetApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
 	return c.internalClient.GetApiDeployment(ctx, req, opts...)
 }
 
-// CreateApiDeployment createApiDeployment creates a specified deployment.
+// CreateApiDeployment creates a specified deployment.
 func (c *RegistryClient) CreateApiDeployment(ctx context.Context, req *apigeeregistrypb.CreateApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
 	return c.internalClient.CreateApiDeployment(ctx, req, opts...)
 }
 
-// UpdateApiDeployment updateApiDeployment can be used to modify a specified deployment.
+// UpdateApiDeployment used to modify a specified deployment.
 func (c *RegistryClient) UpdateApiDeployment(ctx context.Context, req *apigeeregistrypb.UpdateApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
 	return c.internalClient.UpdateApiDeployment(ctx, req, opts...)
 }
 
-// DeleteApiDeployment deleteApiDeployment removes a specified deployment, all revisions, and all
-// child resources (e.g. artifacts).
+// DeleteApiDeployment removes a specified deployment, all revisions, and all
+// child resources (e.g., artifacts).
 func (c *RegistryClient) DeleteApiDeployment(ctx context.Context, req *apigeeregistrypb.DeleteApiDeploymentRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteApiDeployment(ctx, req, opts...)
 }
 
-// TagApiDeploymentRevision tagApiDeploymentRevision adds a tag to a specified revision of a
+// TagApiDeploymentRevision adds a tag to a specified revision of a
 // deployment.
 func (c *RegistryClient) TagApiDeploymentRevision(ctx context.Context, req *apigeeregistrypb.TagApiDeploymentRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
 	return c.internalClient.TagApiDeploymentRevision(ctx, req, opts...)
 }
 
-// ListApiDeploymentRevisions listApiDeploymentRevisions lists all revisions of a deployment.
+// ListApiDeploymentRevisions lists all revisions of a deployment.
 // Revisions are returned in descending order of revision creation time.
 func (c *RegistryClient) ListApiDeploymentRevisions(ctx context.Context, req *apigeeregistrypb.ListApiDeploymentRevisionsRequest, opts ...gax.CallOption) *ApiDeploymentIterator {
 	return c.internalClient.ListApiDeploymentRevisions(ctx, req, opts...)
 }
 
-// RollbackApiDeployment rollbackApiDeployment sets the current revision to a specified prior
+// RollbackApiDeployment sets the current revision to a specified prior
 // revision. Note that this creates a new revision with a new revision ID.
 func (c *RegistryClient) RollbackApiDeployment(ctx context.Context, req *apigeeregistrypb.RollbackApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
 	return c.internalClient.RollbackApiDeployment(ctx, req, opts...)
 }
 
-// DeleteApiDeploymentRevision deleteApiDeploymentRevision deletes a revision of a deployment.
+// DeleteApiDeploymentRevision deletes a revision of a deployment.
 func (c *RegistryClient) DeleteApiDeploymentRevision(ctx context.Context, req *apigeeregistrypb.DeleteApiDeploymentRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
 	return c.internalClient.DeleteApiDeploymentRevision(ctx, req, opts...)
 }
 
-// ListArtifacts listArtifacts returns matching artifacts.
+// ListArtifacts returns matching artifacts.
 func (c *RegistryClient) ListArtifacts(ctx context.Context, req *apigeeregistrypb.ListArtifactsRequest, opts ...gax.CallOption) *ArtifactIterator {
 	return c.internalClient.ListArtifacts(ctx, req, opts...)
 }
 
-// GetArtifact getArtifact returns a specified artifact.
+// GetArtifact returns a specified artifact.
 func (c *RegistryClient) GetArtifact(ctx context.Context, req *apigeeregistrypb.GetArtifactRequest, opts ...gax.CallOption) (*apigeeregistrypb.Artifact, error) {
 	return c.internalClient.GetArtifact(ctx, req, opts...)
 }
 
-// GetArtifactContents getArtifactContents returns the contents of a specified artifact.
+// GetArtifactContents returns the contents of a specified artifact.
 // If artifacts are stored with GZip compression, the default behavior
 // is to return the artifact uncompressed (the mime_type response field
 // indicates the exact format returned).
@@ -740,17 +839,17 @@ func (c *RegistryClient) GetArtifactContents(ctx context.Context, req *apigeereg
 	return c.internalClient.GetArtifactContents(ctx, req, opts...)
 }
 
-// CreateArtifact createArtifact creates a specified artifact.
+// CreateArtifact creates a specified artifact.
 func (c *RegistryClient) CreateArtifact(ctx context.Context, req *apigeeregistrypb.CreateArtifactRequest, opts ...gax.CallOption) (*apigeeregistrypb.Artifact, error) {
 	return c.internalClient.CreateArtifact(ctx, req, opts...)
 }
 
-// ReplaceArtifact replaceArtifact can be used to replace a specified artifact.
+// ReplaceArtifact used to replace a specified artifact.
 func (c *RegistryClient) ReplaceArtifact(ctx context.Context, req *apigeeregistrypb.ReplaceArtifactRequest, opts ...gax.CallOption) (*apigeeregistrypb.Artifact, error) {
 	return c.internalClient.ReplaceArtifact(ctx, req, opts...)
 }
 
-// DeleteArtifact deleteArtifact removes a specified artifact.
+// DeleteArtifact removes a specified artifact.
 func (c *RegistryClient) DeleteArtifact(ctx context.Context, req *apigeeregistrypb.DeleteArtifactRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteArtifact(ctx, req, opts...)
 }

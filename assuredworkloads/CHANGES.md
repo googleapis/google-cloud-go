@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.2.0...assuredworkloads/v1.3.0) (2022-09-06)
+
+
+### Features
+
+* **assuredworkloads:** Updated v1beta1 analyzeWorkloadMove documentation ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.1.0...assuredworkloads/v1.2.0) (2022-07-19)
 
 

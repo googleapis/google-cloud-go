@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/bigquery/internal"
 	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/detect"
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
 	bq "google.golang.org/api/bigquery/v2"
@@ -119,7 +120,9 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	var res *bq.Job
 	var err error
 	invoke := func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.insert")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}
 	// A job with a client-generated ID can be retried; the presence of the
@@ -149,7 +152,9 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 	var res *bq.QueryResponse
 	var err error
 	invoke := func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.query")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}
 

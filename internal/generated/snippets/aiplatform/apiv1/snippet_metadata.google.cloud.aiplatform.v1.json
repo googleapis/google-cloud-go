@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.16.0",
+    "version": "1.17.0",
     "language": "GO",
     "apis": [
       {
@@ -4187,6 +4187,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_IndexService_RemoveDatapoints_sync",
+      "title": "aiplatform RemoveDatapoints Sample",
+      "description": "RemoveDatapoints remove Datapoints from an Index.",
+      "file": "IndexClient/RemoveDatapoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveDatapoints",
+        "fullName": "google.cloud.aiplatform.v1.IndexClient.RemoveDatapoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RemoveDatapointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.RemoveDatapointsResponse",
+        "client": {
+          "shortName": "IndexClient",
+          "fullName": "google.cloud.aiplatform.v1.IndexClient"
+        },
+        "method": {
+          "shortName": "RemoveDatapoints",
+          "fullName": "google.cloud.aiplatform.v1.IndexService.RemoveDatapoints",
+          "service": {
+            "shortName": "IndexService",
+            "fullName": "google.cloud.aiplatform.v1.IndexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_IndexService_SetIamPolicy_sync",
       "title": "aiplatform SetIamPolicy Sample",
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
@@ -4320,6 +4366,52 @@
         {
           "start": 18,
           "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_IndexService_UpsertDatapoints_sync",
+      "title": "aiplatform UpsertDatapoints Sample",
+      "description": "UpsertDatapoints add/update Datapoints into an Index.",
+      "file": "IndexClient/UpsertDatapoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpsertDatapoints",
+        "fullName": "google.cloud.aiplatform.v1.IndexClient.UpsertDatapoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpsertDatapointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.UpsertDatapointsResponse",
+        "client": {
+          "shortName": "IndexClient",
+          "fullName": "google.cloud.aiplatform.v1.IndexClient"
+        },
+        "method": {
+          "shortName": "UpsertDatapoints",
+          "fullName": "google.cloud.aiplatform.v1.IndexService.UpsertDatapoints",
+          "service": {
+            "shortName": "IndexService",
+            "fullName": "google.cloud.aiplatform.v1.IndexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
           "type": "FULL"
         }
       ]
