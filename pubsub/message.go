@@ -108,14 +108,8 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
 
 	ackh.receiveTime = receiveTime
+	ackh.doneFunc = doneFunc
 	ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-		var eventString string
-		if ack {
-			eventString = "msg.Ack() called"
-		} else {
-			eventString = "msg.Nack() called"
-		}
-		ps.AddEvent(eventString)
 		ps.SetAttributes(attribute.Bool(ackAttribute, ack))
 		defer ps.End()
 		doneFunc(ackID, ack, r, receiveTime)

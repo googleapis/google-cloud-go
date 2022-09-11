@@ -29,6 +29,7 @@ import (
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"golang.org/x/sync/errgroup"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
@@ -1185,6 +1186,20 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						defer wg.Done()
 						_, cSpan := tracer().Start(ctx, "calling user defined callback")
 						defer cSpan.End()
+						old2 := ackh.doneFunc
+						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
+							var eventString string
+							if ack {
+								eventString = "msg.Ack() called"
+							} else {
+								eventString = "msg.Nack() called"
+							}
+							cSpan.AddEvent(eventString)
+							cSpan.SetAttributes(attribute.Bool(ackAttribute, ack))
+							defer cSpan.End()
+							old2(ackID, ack, r, receiveTime)
+						}
+
 						f(ctx2, msg.(*Message))
 					}); err != nil {
 						wg.Done()

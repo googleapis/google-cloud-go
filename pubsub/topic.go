@@ -33,7 +33,6 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
@@ -538,7 +537,6 @@ type PublishResult = ipubsub.PublishResult
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	opts := getPublishSpanAttributes(t.String(), msg)
 	ctx, span := tracer().Start(ctx, t.String()+" send", opts...)
-	span.AddEvent("waiting for publisher flow control")
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -548,13 +546,6 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
 		return r
-	}
-
-	if span.SpanContext().IsValid() {
-		if msg.Attributes == nil {
-			msg.Attributes = make(map[string]string)
-		}
-		otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
 	}
 
 	// Calculate the size of the encoded proto message by accounting
@@ -577,6 +568,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
+	ctx, fcSpan := tracer().Start(ctx, t.String()+" publisher flow control", opts...)
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -584,14 +576,16 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
 		return r
 	}
-	span.AddEvent("acquired publisher flow control resources")
+	fcSpan.End()
+
+	ctx, batchSpan := tracer().Start(ctx, t.String()+" publish batching", opts...)
 
 	bmsg := &bundledMessage{
-		ctx:  ctx,
-		msg:  msg,
-		res:  r,
-		size: msgSize,
-		span: span,
+		msg:       msg,
+		res:       r,
+		size:      msgSize,
+		span:      span,
+		batchSpan: batchSpan,
 	}
 
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
@@ -600,7 +594,13 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		span.RecordError(errTopicStopped)
 		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
 	}
-	span.AddEvent("added to batch")
+
+	if span.SpanContext().IsValid() {
+		if msg.Attributes == nil {
+			msg.Attributes = make(map[string]string)
+		}
+		otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
+	}
 
 	return r
 }
@@ -628,7 +628,6 @@ func (t *Topic) Flush() {
 }
 
 type bundledMessage struct {
-	ctx  context.Context
 	msg  *Message
 	res  *PublishResult
 	size int
@@ -672,7 +671,7 @@ func (t *Topic) initBundler() {
 		}
 		bmsgs := bundle.([]*bundledMessage)
 		for _, m := range bmsgs {
-			m.span.AddEvent("removed from batch")
+			m.batchSpan.End()
 		}
 		t.publishMessageBundle(ctx2, bmsgs)
 	})
@@ -726,14 +725,19 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		// key, it doesn't matter which we read from.
 		orderingKey = bms[0].msg.OrderingKey
 	}
-	ctx2 := bms[0].ctx
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		bm.span.AddEvent("starting publish RPC", trace.WithAttributes(attribute.Int("num_messages_in_batch", numMsgs)))
+		// bm.span.AddEvent("starting publish RPC", trace.WithAttributes(attribute.Int("num_messages_in_batch", numMsgs)))
+		// defer bm.span.End()
+		if bm.msg.Attributes != nil {
+			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(bm.msg))
+		}
+		_, pSpan := tracer().Start(ctx, t.String()+" publish RPC")
+		defer pSpan.End()
 		defer bm.span.End()
 		bm.msg = nil // release bm.msg for GC
 	}
@@ -751,7 +755,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			opt.Resolve(&settings)
 		}
 		r := &publishRetryer{defaultRetryer: settings.Retry()}
-		res, err = t.c.pubc.Publish(ctx2, &pb.PublishRequest{
+		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
 		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
@@ -777,7 +781,6 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
 			bm.span.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
-			bm.span.AddEvent("received publish rpc results")
 		}
 	}
 }

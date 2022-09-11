@@ -299,7 +299,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		if len(ackIDs) > 0 {
 			// Don't check the return value of this since modacks are fire and forget,
 			// meaning errors should not be propagated to the client.
-			it.sendModAck(ackIDs, deadline)
+			it.sendModAck(ackIDs, deadline, true)
 		}
 	}()
 	return msgs, nil
@@ -422,10 +422,10 @@ func (it *messageIterator) sender() {
 		}
 		if sendNacks {
 			// Nack indicated by modifying the deadline to zero.
-			it.sendModAck(nacks, 0)
+			it.sendModAck(nacks, 0, false)
 		}
 		if sendModAcks {
-			it.sendModAck(modAcks, dl)
+			it.sendModAck(modAcks, dl, false)
 		}
 		if sendPing {
 			it.pingStream()
@@ -510,7 +510,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 // percentile in order to capture the highest amount of time necessary without
 // considering 1% outliers. If the ModAck RPC fails and exactly once delivery is
 // enabled, we retry it in a separate goroutine for a short duration.
-func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration) {
+func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration, isReceipt bool) {
 	deadlineSec := int32(deadline / time.Second)
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
@@ -520,7 +520,15 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 		if msg.Attributes != nil {
 			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 		}
-		_, modAckSpan := tracer().Start(ctx, "sending mod ack")
+		var spanName string
+		if isReceipt {
+			spanName = "sending receipt modack"
+		} else if deadline > 0 {
+			spanName = "sending modack"
+		} else {
+			spanName = "sending nack"
+		}
+		_, modAckSpan := tracer().Start(ctx, spanName)
 		defer modAckSpan.End()
 	}
 	it.eoMu.RLock()
