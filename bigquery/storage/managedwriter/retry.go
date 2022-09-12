@@ -112,8 +112,8 @@ func (r *defaultRetryer) RetryAppend(err error, attemptCount int) (pause time.Du
 		return r.bo.Pause(), true
 	case codes.ResourceExhausted:
 		if strings.HasPrefix(apiErr.GRPCStatus().Message(), "Exceeds 'AppendRows throughput' quota") {
-			// Note: b/246031522 is open against backend to give this a structured error
-			// and avoid string parsing.
+			// Note: internal b/246031522 opened to give this a structured error
+			// and avoid string parsing.  Should be a QuotaFailure or similar.
 			return r.bigBo.Pause(), true // more aggressive backoff
 		}
 	}

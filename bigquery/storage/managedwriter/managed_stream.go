@@ -223,7 +223,7 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 //
 // Only getStream() should call this.
 func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
-	r := newDefaultRetryer()
+	r := defaultRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
 		streamID := ""
