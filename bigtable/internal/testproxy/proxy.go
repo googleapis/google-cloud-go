@@ -583,10 +583,13 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	tName := req.TableName
 	t := btc.c.Open(tName)
 
-	ctx, cancel := context.WithCancel(ctx)
+	var cancel context.CancelFunc
+	if btc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	btc.cancels = append(btc.cancels, cancel)
-
-	// TODO(developer): apply timeout, if any, from
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
@@ -630,10 +633,13 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 
 	t := btc.c.Open(rrq.TableName)
 
-	ctx, cancel := context.WithCancel(ctx)
+	var cancel context.CancelFunc
+	if btc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	btc.cancels = append(btc.cancels, cancel)
-
-	// TODO(developer): apply timeout, if any, from
 
 	rowPbs := rrq.Rows
 	var rs bigtable.RowSet
@@ -693,10 +699,13 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	t := btc.c.Open(rrq.TableName)
 	row := rrq.RowKey
 
-	ctx, cancel := context.WithCancel(ctx)
+	var cancel context.CancelFunc
+	if btc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	btc.cancels = append(btc.cancels, cancel)
-
-	// TODO(developer): apply timeout, if any, from
 
 	err := t.Apply(ctx, string(row), m)
 	if err != nil {
@@ -742,10 +751,13 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 		muts[i] = m
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
+	var cancel context.CancelFunc
+	if btc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	btc.cancels = append(btc.cancels, cancel)
-
-	// TODO(developer): apply timeout, if any, from testClient
 
 	errs, err := t.ApplyBulk(ctx, keys, muts)
 	if err != nil {
@@ -810,7 +822,12 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	t := btc.c.Open(rrq.TableName)
 	rowKey := string(rrq.RowKey)
 
-	ctx, cancel := context.WithCancel(ctx)
+	var cancel context.CancelFunc
+	if btc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	btc.cancels = append(btc.cancels, cancel)
 
 	var matched bool
@@ -848,7 +865,12 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 
 	t := btc.c.Open(rrq.TableName)
 
-	ctx, cancel := context.WithCancel(ctx)
+	var cancel context.CancelFunc
+	if btc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	btc.cancels = append(btc.cancels, cancel)
 
 	keys, err := t.SampleRowKeys(ctx)
@@ -904,7 +926,12 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 		}
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
+	var cancel context.CancelFunc
+	if btc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	btc.cancels = append(btc.cancels, cancel)
 
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
