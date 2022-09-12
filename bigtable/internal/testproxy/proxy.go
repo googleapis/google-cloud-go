@@ -550,10 +550,10 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 // RemoveClient responds to the RemoveClient RPC. This method removes an
 // existing client from the goTestProxyServer
 func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClientRequest) (*pb.RemoveClientResponse, error) {
-	clientId := req.ClientId
+	clientID := req.ClientId
 	doCancelAll := req.CancelAll
 
-	btc, exists := s.clientIDs[clientId]
+	btc, exists := s.clientIDs[clientID]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
@@ -565,7 +565,7 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 		}
 	}
 	btc.c.Close()
-	delete(s.clientIDs, clientId)
+	delete(s.clientIDs, clientID)
 
 	resp := &pb.RemoveClientResponse{}
 	return resp, nil
