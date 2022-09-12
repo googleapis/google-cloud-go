@@ -797,13 +797,15 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	falseMuts := mutationFromProto(rrq.FalseMutations)
 
 	rfPb := rrq.PredicateFilter
-	var f *bigtable.Filter
+	var f bigtable.Filter
 
 	if rfPb != nil {
-		f = filterFromProto(rfPb)
+		f = *filterFromProto(rfPb)
+	} else {
+		f = bigtable.PassAllFilter()
 	}
 
-	c := bigtable.NewCondMutation(*f, trueMuts, falseMuts)
+	c := bigtable.NewCondMutation(f, trueMuts, falseMuts)
 
 	t := btc.c.Open(rrq.TableName)
 	rowKey := string(rrq.RowKey)
@@ -811,7 +813,10 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	ctx, cancel := context.WithCancel(ctx)
 	btc.cancels = append(btc.cancels, cancel)
 
-	err := t.Apply(ctx, rowKey, c)
+	var matched bool
+	ao := bigtable.GetCondMutationResult(&matched)
+
+	err := t.Apply(ctx, rowKey, c, ao)
 	if err != nil {
 		return nil, err
 	}
@@ -819,6 +824,9 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	res := &pb.CheckAndMutateRowResult{
 		Status: &status.Status{
 			Code: int32(codes.OK),
+		},
+		Result: &btpb.CheckAndMutateRowResponse{
+			PredicateMatched: matched,
 		},
 	}
 	return res, nil
