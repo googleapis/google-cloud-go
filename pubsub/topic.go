@@ -33,6 +33,7 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
@@ -568,7 +569,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	ctx, fcSpan := tracer().Start(ctx, t.String()+" publisher flow control", opts...)
+	ctx, fcSpan := tracer().Start(ctx, "publisher flow control")
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -578,7 +579,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	fcSpan.End()
 
-	ctx, batchSpan := tracer().Start(ctx, t.String()+" publish batching", opts...)
+	ctx, batchSpan := tracer().Start(ctx, "publish batching")
 
 	bmsg := &bundledMessage{
 		msg:       msg,
@@ -731,12 +732,11 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		// bm.span.AddEvent("starting publish RPC", trace.WithAttributes(attribute.Int("num_messages_in_batch", numMsgs)))
-		// defer bm.span.End()
 		if bm.msg.Attributes != nil {
 			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(bm.msg))
 		}
-		_, pSpan := tracer().Start(ctx, t.String()+" publish RPC")
+		_, pSpan := tracer().Start(ctx, "publish RPC")
+		pSpan.SetAttributes(attribute.Int(numMessagesAttribute, numMsgs))
 		defer pSpan.End()
 		defer bm.span.End()
 		bm.msg = nil // release bm.msg for GC

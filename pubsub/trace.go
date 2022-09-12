@@ -307,6 +307,7 @@ func (c PubsubMessageCarrier) Keys() []string {
 const (
 	subscriptionAttribute = "messaging.pubsub.subscription"
 	orderingAttribute     = "messaging.pubsub.ordering_key"
+	eosAttribute          = "messaging.pubsub.exactly_once_delivery"
 	ackAttribute          = "messaging.pubsub.is_acked"
 	numMessagesAttribute  = "messaging.pubsub.num_messages_in_receive_batch"
 )

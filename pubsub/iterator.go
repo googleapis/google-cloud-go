@@ -256,8 +256,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	}
 
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
+
+	it.eoMu.RLock()
+	enableExactlyOnceDelivery := it.enableExactlyOnceDelivery
+	it.eoMu.RUnlock()
+
 	now := time.Now()
-	msgs, err := convertMessages(rmsgs, now, it.done, it.subName)
+	msgs, err := convertMessages(rmsgs, now, it.done, it.subName, enableExactlyOnceDelivery)
 	if err != nil {
 		return nil, it.fail(err)
 	}
@@ -266,9 +271,6 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	maxExt := time.Now().Add(it.po.maxExtension)
 	ackIDs := map[string]*AckResult{}
 	it.mu.Lock()
-	it.eoMu.RLock()
-	enableExactlyOnceDelivery := it.enableExactlyOnceDelivery
-	it.eoMu.RUnlock()
 	for _, m := range msgs {
 		ackID := msgAckID(m)
 		it.pendingMessages[ackID] = m

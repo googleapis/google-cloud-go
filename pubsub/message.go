@@ -62,10 +62,10 @@ func msgAckID(m *Message) string {
 // The done method of the iterator that created a Message.
 type iterDoneFunc func(string, bool, *AckResult, time.Time)
 
-func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string) ([]*Message, error) {
+func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool) ([]*Message, error) {
 	msgs := make([]*Message, 0, len(rms))
 	for i, m := range rms {
-		msg, err := toMessage(m, receiveTime, doneFunc, subName)
+		msg, err := toMessage(m, receiveTime, doneFunc, subName, eos)
 		if err != nil {
 			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, message: %+v", i, m)
 		}
@@ -74,7 +74,7 @@ func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc 
 	return msgs, nil
 }
 
-func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string) (*Message, error) {
+func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool) (*Message, error) {
 	ackh := &psAckHandler{ackID: resp.AckId}
 	msg := ipubsub.NewMessage(ackh)
 	if resp.Message == nil {
@@ -102,6 +102,7 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 		ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 	}
 	ctx, ps := tracer().Start(ctx, fmt.Sprintf("%s receive", subName), opts...)
+	ps.SetAttributes(attribute.Bool(eosAttribute, eos))
 	// inject the new ctx into message for propagation across the other receive paths
 	// that cannot directly access this ctx. We do this to avoid storing context
 	// inside a message, which is bad practice.
