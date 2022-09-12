@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
@@ -35,8 +36,19 @@ var (
 	}
 )
 
+func newDefaultRetryer() *defaultRetryer {
+	return &defaultRetryer{
+		bigBo: gax.Backoff{
+			Initial:    2 * time.Second,
+			Multiplier: 5,
+			Max:        5 * time.Minute,
+		},
+	}
+}
+
 type defaultRetryer struct {
-	bo gax.Backoff
+	bo    gax.Backoff
+	bigBo gax.Backoff // for more aggressive backoff, such as throughput quota
 }
 
 func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
@@ -90,10 +102,6 @@ func (r *defaultRetryer) RetryAppend(err error, attemptCount int) (pause time.Du
 		// No other service-specific errors should be retried.
 		return 0, false
 	}
-	if quota := apiErr.Details().QuotaFailure; quota != nil {
-		// TODO: followup with yiru on this, there's some deeper checks on resource exhaustion.
-		return r.bo.Pause(), true
-	}
 	// Finally, evaluate based on the more generic grpc error status:
 	code := apiErr.GRPCStatus().Code()
 	switch code {
@@ -103,7 +111,11 @@ func (r *defaultRetryer) RetryAppend(err error, attemptCount int) (pause time.Du
 		codes.Unavailable:
 		return r.bo.Pause(), true
 	case codes.ResourceExhausted:
-		// TODO: is there a special case here that's not quota?
+		if strings.HasPrefix(apiErr.GRPCStatus().Message(), "Exceeds 'AppendRows throughput' quota") {
+			// Note: b/246031522 is open against backend to give this a structured error
+			// and avoid string parsing.
+			return r.bigBo.Pause(), true // more aggressive backoff
+		}
 	}
 	// We treat all other failures as non-retriable.
 	return 0, false

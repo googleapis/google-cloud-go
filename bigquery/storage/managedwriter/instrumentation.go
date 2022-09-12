@@ -67,6 +67,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestRows = stats.Int64(statsPrefix+"append_rows", "Number of append rows sent", stats.UnitDimensionless)
 
+	// AppendRequestRetries is a measure of the number of append requests that were retried.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestRetries = stats.Int64(statsPrefix+"append_request_retries", "Number of append requests retried", stats.UnitDimensionless)
+
 	// AppendResponses is a measure of the number of append responses received.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponses = stats.Int64(statsPrefix+"append_responses", "Number of append responses sent", stats.UnitDimensionless)
@@ -102,7 +106,11 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestErrorsView *view.View
 
-	// AppendRequestRowsView is a cumulative sum of AppendRows.
+	// AppendRequestRowsView is a cumulative sum of AppendRequestRows.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestRetriesView *view.View
+
+	// AppendRequestRetriesView is a cumulative sum of AppendRequestRetries.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestRowsView *view.View
 
@@ -127,6 +135,7 @@ func init() {
 	AppendRequestBytesView = createSumView(stats.Measure(AppendRequestBytes), keyStream, keyDataOrigin)
 	AppendRequestErrorsView = createSumView(stats.Measure(AppendRequestErrors), keyStream, keyDataOrigin, keyError)
 	AppendRequestRowsView = createSumView(stats.Measure(AppendRequestRows), keyStream, keyDataOrigin)
+	AppendRequestRetriesView = createSumView(stats.Measure(AppendRequestRows), keyStream, keyDataOrigin)
 
 	AppendResponsesView = createSumView(stats.Measure(AppendResponses), keyStream, keyDataOrigin)
 	AppendResponseErrorsView = createSumView(stats.Measure(AppendResponseErrors), keyStream, keyDataOrigin, keyError)
@@ -141,6 +150,7 @@ func init() {
 		AppendRequestBytesView,
 		AppendRequestErrorsView,
 		AppendRequestRowsView,
+		AppendRequestRetriesView,
 
 		AppendResponsesView,
 		AppendResponseErrorsView,
