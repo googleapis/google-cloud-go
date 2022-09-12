@@ -39,6 +39,7 @@ type localConfig struct {
 	regenOnly       bool
 	forceAll        bool
 	genModule       bool
+	genAlias        bool
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
@@ -75,6 +76,7 @@ func genLocal(ctx context.Context, c localConfig) error {
 		RegenOnly:         c.regenOnly,
 		ForceAll:          c.forceAll,
 		GenModule:         c.genModule,
+		GenAlias:          c.genAlias,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)

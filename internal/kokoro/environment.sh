@@ -29,6 +29,11 @@ if [[ -z "${PROJECT_ROOT:-}"  ]]; then
     PROJECT_ROOT="github/google-cloud-go"
 fi
 
+# add kokoro labels for testgrid filtering
+export PRODUCT_AREA_LABEL=observability
+export PRODUCT_LABEL=logging
+export LANGUAGE_LABEL=go
+
 # Add the test module as a submodule to the repo.
 cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
@@ -81,6 +86,12 @@ if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
   mkdir -p ~/.local/bin
   mv ./kubectl ~/.local/bin
   export PATH=$PATH:~/.local/bin/
+fi
+
+# If Functions, use python3.8, since that's what's in go116 container
+if [[ $ENVIRONMENT == *"functions"* ]]; then
+  export ENV_TEST_PY_VERSION=3.8
+  python3 -m pip install nox
 fi
 
 # Run the environment test for the specified GCP service

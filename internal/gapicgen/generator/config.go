@@ -243,7 +243,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		InputDirectoryPath:    "google/cloud/bigquery/dataexchange/v1beta1",
 		Pkg:                   "dataexchange",
 		ImportPath:            "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
-		GRPCServiceConfigPath: "analyticshub_grpc_service_config.json",
+		GRPCServiceConfigPath: "analyticshub_v1beta1_grpc_service_config.json",
 		ApiServiceConfigPath:  "analyticshub_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
@@ -1693,6 +1693,33 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "apikeys_grpc_service_config.json",
 		ApiServiceConfigPath:  "apikeys_v2.yaml",
 		// GA after 2022/09/17
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/dialogflow/v2beta1",
+		Pkg:                   "dialogflow",
+		ImportPath:            "cloud.google.com/go/dialogflow/apiv2beta1",
+		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
+		ApiServiceConfigPath:  "dialogflow_v2beta1.yaml",
+		// GA after 2022/10/01
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/iam/v2",
+		Pkg:                   "iam",
+		ImportPath:            "cloud.google.com/go/iam/apiv2",
+		GRPCServiceConfigPath: "iam_grpc_service_config.json",
+		ApiServiceConfigPath:  "iam_v2.yaml",
+		// GA after 2022/10/01
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/security/publicca/v1beta1",
+		Pkg:                   "publicca",
+		ImportPath:            "cloud.google.com/go/security/publicca/apiv1beta1",
+		GRPCServiceConfigPath: "publicca_v1beta1_grpc_service_config.json",
+		ApiServiceConfigPath:  "publicca_v1beta1.yaml",
+		// GA after 2022/10/10
 		ReleaseLevel: "beta",
 	},
 
