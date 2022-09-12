@@ -40,6 +40,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -1940,6 +1941,102 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		if !testutil.Equal(got, c.wantConfig) {
 			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
 				c.parameters[0].Value, got, c.wantConfig)
+		}
+	}
+}
+
+// This test can be merged with the TestIntegration_QueryParameters as soon as support for explicit typed query parameter lands.
+// To test timestamps with different formats, we need to be able to specify the type explicitly.
+func TestIntegration_TimestampFormat(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	ts := time.Date(2020, 10, 15, 15, 04, 05, 0, time.UTC)
+
+	testCases := []struct {
+		query      string
+		parameters []*bq.QueryParameter
+		wantRow    []Value
+		wantConfig interface{}
+	}{
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(timestampFormat),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(time.RFC3339Nano),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(time.RFC3339),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+	}
+	for _, c := range testCases {
+		q := client.Query(c.query)
+		bqJob, err := q.newJob()
+		if err != nil {
+			t.Fatal(err)
+		}
+		bqJob.Configuration.Query.QueryParameters = c.parameters
+
+		job, err := q.client.insertJob(ctx, bqJob, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if job.LastStatus() == nil {
+			t.Error("no LastStatus")
+		}
+		it, err := job.Read(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
+		config, err := job.Config()
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := config.(*QueryConfig).Parameters[0].Value
+		if !testutil.Equal(got, c.wantConfig) {
+			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
+				c.parameters[0].ParameterValue.Value, got, c.wantConfig)
 		}
 	}
 }

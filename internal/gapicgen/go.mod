@@ -12,7 +12,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f
-	google.golang.org/genproto v0.0.0-20220829175752-36a9c930ecbf
+	google.golang.org/genproto v0.0.0-20220908141613-51c1cc9bc6d0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
