@@ -45,6 +45,11 @@
                 "GetListing"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "ListDataExchanges": {
               "methods": [
                 "ListDataExchanges"
@@ -53,6 +58,11 @@
             "ListListings": {
               "methods": [
                 "ListListings"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOrgDataExchanges": {
@@ -125,6 +135,11 @@
                 "GetListing"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "ListDataExchanges": {
               "methods": [
                 "ListDataExchanges"
@@ -133,6 +148,11 @@
             "ListListings": {
               "methods": [
                 "ListListings"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOrgDataExchanges": {

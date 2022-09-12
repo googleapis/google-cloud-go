@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/batch/v0.2.0...batch/v0.2.1) (2022-09-08)
+
+
+### Bug Fixes
+
+* **batch:** mark service_account_email as deprecated docs: removing comment from a deprecated field ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.1.0...batch/v0.2.0) (2022-09-06)
 
 
