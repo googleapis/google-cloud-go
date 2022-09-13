@@ -132,7 +132,8 @@ func (c *DashboardsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DashboardsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -240,7 +241,8 @@ func NewDashboardsClient(ctx context.Context, opts ...option.ClientOption) (*Das
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *dashboardsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

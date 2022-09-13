@@ -279,7 +279,8 @@ func (c *TestCasesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TestCasesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -511,7 +512,8 @@ func NewTestCasesClient(ctx context.Context, opts ...option.ClientOption) (*Test
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *testCasesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

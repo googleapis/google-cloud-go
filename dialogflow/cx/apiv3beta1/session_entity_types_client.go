@@ -242,7 +242,8 @@ func (c *SessionEntityTypesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SessionEntityTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -363,7 +364,8 @@ func NewSessionEntityTypesClient(ctx context.Context, opts ...option.ClientOptio
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *sessionEntityTypesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -447,7 +449,7 @@ func (c *sessionEntityTypesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *sessionEntityTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -933,8 +935,12 @@ func (c *sessionEntityTypesRESTClient) UpdateSessionEntityType(ctx context.Conte
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetSessionEntityType().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

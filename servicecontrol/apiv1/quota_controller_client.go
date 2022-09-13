@@ -96,7 +96,8 @@ func (c *QuotaControllerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *QuotaControllerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -179,7 +180,8 @@ func NewQuotaControllerClient(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *quotaControllerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

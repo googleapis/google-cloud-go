@@ -162,7 +162,8 @@ func (c *IndexEndpointClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IndexEndpointClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -386,7 +387,8 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *indexEndpointGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

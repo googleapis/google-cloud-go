@@ -93,7 +93,8 @@ func (c *GlobalOrganizationOperationsClient) setGoogleClientInfo(keyval ...strin
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *GlobalOrganizationOperationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -177,7 +178,7 @@ func (c *globalOrganizationOperationsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *globalOrganizationOperationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
