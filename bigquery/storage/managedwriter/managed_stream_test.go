@@ -324,12 +324,11 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 		[]byte("foo"),
 	}
 
-	// Create a context that will expire during the append, to verify the passed in
-	// context expires.
+	// Create a context and immediately cancel it.
 	cancelCtx, cancel := context.WithCancel(ctx)
 	cancel()
 
-	// force an append with an invalid context.
+	// First, append with an invalid context.
 	pw := newPendingWrite(cancelCtx, fakeData)
 	err := ms.appendWithRetry(pw)
 	if err != context.Canceled {
