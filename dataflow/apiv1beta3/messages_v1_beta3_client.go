@@ -351,7 +351,7 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		if req.GetEndTime() != nil {
 			endTime, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("endTime", string(endTime))
 		}
@@ -367,7 +367,7 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		if req.GetStartTime() != nil {
 			startTime, err := protojson.Marshal(req.GetStartTime())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("startTime", string(startTime))
 		}

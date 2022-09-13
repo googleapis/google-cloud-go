@@ -2204,7 +2204,7 @@ func (c *restClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 		if req.GetFieldMask() != nil {
 			fieldMask, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("fieldMask", string(fieldMask))
 		}
@@ -2436,7 +2436,7 @@ func (c *restClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 		if req.GetFieldMask() != nil {
 			fieldMask, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("fieldMask", string(fieldMask))
 		}

@@ -492,7 +492,7 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *clouderr
 		if req.GetAlignmentTime() != nil {
 			alignmentTime, err := protojson.Marshal(req.GetAlignmentTime())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("alignmentTime", string(alignmentTime))
 		}
@@ -523,7 +523,7 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *clouderr
 		if req.GetTimedCountDuration() != nil {
 			timedCountDuration, err := protojson.Marshal(req.GetTimedCountDuration())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("timedCountDuration", string(timedCountDuration))
 		}

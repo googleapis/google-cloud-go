@@ -1295,7 +1295,7 @@ func (c *restClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequ
 		if req.GetReadMask() != nil {
 			readMask, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("readMask", string(readMask))
 		}

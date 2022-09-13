@@ -598,7 +598,7 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 		if req.GetEndTime() != nil {
 			endTime, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("endTime", string(endTime))
 		}
@@ -611,7 +611,7 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 		if req.GetStartTime() != nil {
 			startTime, err := protojson.Marshal(req.GetStartTime())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("startTime", string(startTime))
 		}
