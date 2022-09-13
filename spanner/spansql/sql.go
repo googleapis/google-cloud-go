@@ -701,7 +701,8 @@ func (id ID) addSQL(sb *strings.Builder) {
 
 	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
 
-	if IsKeyword(string(id)) {
+	// Naming Convention: Must be enclosed in backticks (`) if it's a reserved keyword or contains a hyphen.
+	if IsKeyword(string(id)) || strings.Contains(string(id), "-") {
 		// TODO: Escaping may be needed here.
 		sb.WriteString("`")
 		sb.WriteString(string(id))
@@ -731,6 +732,18 @@ func (c Case) addSQL(sb *strings.Builder) {
 		fmt.Fprintf(sb, "ELSE %s ", c.ElseResult.SQL())
 	}
 	sb.WriteString("END")
+}
+
+func (c Coalesce) SQL() string { return buildSQL(c) }
+func (c Coalesce) addSQL(sb *strings.Builder) {
+	sb.WriteString("COALESCE(")
+	for i, expr := range c.ExprList {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		expr.addSQL(sb)
+	}
+	sb.WriteString(")")
 }
 
 func (i If) SQL() string { return buildSQL(i) }

@@ -28,15 +28,16 @@ import (
 
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
-	vkit "cloud.google.com/go/spanner/apiv1"
-	. "cloud.google.com/go/spanner/internal/testutil"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	vkit "cloud.google.com/go/spanner/apiv1"
+	. "cloud.google.com/go/spanner/internal/testutil"
 )
 
 func setupMockedTestServer(t *testing.T) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
@@ -416,6 +417,24 @@ func TestClient_Single_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_Single_ReadOptions(t *testing.T) {
+	for _, tt := range readOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			var iter *RowIterator
+			if tt.read == nil {
+				iter = client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+			} else {
+				iter = client.Single().ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+			}
+			testReadOptions(t, iter, server.TestSpanner, *tt.want)
+		})
+	}
+}
+
 func TestClient_ReturnDatabaseName(t *testing.T) {
 	t.Parallel()
 
@@ -460,6 +479,76 @@ func checkReqsForQueryOptions(t *testing.T, server InMemSpannerServer, qo QueryO
 	}
 	if got, want := reqQueryOptions.OptimizerStatisticsPackage, qo.Options.OptimizerStatisticsPackage; got != want {
 		t.Fatalf("Optimizer statistics package mismatch, got %v, want %v", got, want)
+	}
+}
+
+func testReadOptions(t *testing.T, iter *RowIterator, server InMemSpannerServer, ro ReadOptions) {
+	defer iter.Stop()
+
+	_, err := iter.Next()
+	if err != nil {
+		t.Fatalf("Failed to read from the iterator: %v", err)
+	}
+
+	checkReqsForReadOptions(t, server, ro)
+}
+
+func checkReqsForReadOptions(t *testing.T, server InMemSpannerServer, ro ReadOptions) {
+	reqs := drainRequestsFromServer(server)
+	sqlReqs := []*sppb.ReadRequest{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.ReadRequest); ok {
+			sqlReqs = append(sqlReqs, sqlReq)
+		}
+	}
+
+	if got, want := len(sqlReqs), 1; got != want {
+		t.Fatalf("Length mismatch, got %v, want %v", got, want)
+	}
+
+	sqlReq := sqlReqs[0]
+	if got, want := sqlReq.Index, ro.Index; got != want {
+		t.Fatalf("Index mismatch, got %v, want %v", got, want)
+	}
+	if got, want := sqlReq.Limit, ro.Limit; got != int64(want) {
+		t.Fatalf("Limit mismatch, got %v, want %v", got, want)
+	}
+
+	reqRequestOptions := sqlReq.RequestOptions
+	if got, want := reqRequestOptions.Priority, ro.Priority; got != want {
+		t.Fatalf("Priority mismatch, got %v, want %v", got, want)
+	}
+	if got, want := reqRequestOptions.RequestTag, ro.RequestTag; got != want {
+		t.Fatalf("Request tag mismatch, got %v, want %v", got, want)
+	}
+}
+
+func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo TransactionOptions) {
+	reqs := drainRequestsFromServer(server)
+	sqlReqs := []*sppb.CommitRequest{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.CommitRequest); ok {
+			sqlReqs = append(sqlReqs, sqlReq)
+		}
+	}
+
+	if got, want := len(sqlReqs), 1; got != want {
+		t.Fatalf("Length mismatch, got %v, want %v", got, want)
+	}
+
+	sqlReq := sqlReqs[0]
+	if got, want := sqlReq.ReturnCommitStats, txo.CommitOptions.ReturnCommitStats; got != want {
+		t.Fatalf("Return commit stats mismatch, got %v, want %v", got, want)
+	}
+
+	reqRequestOptions := sqlReq.RequestOptions
+	if got, want := reqRequestOptions.Priority, txo.CommitPriority; got != want {
+		t.Fatalf("Commit priority mismatch, got %v, want %v", got, want)
+	}
+	if got, want := reqRequestOptions.TransactionTag, txo.TransactionTag; got != want {
+		t.Fatalf("Transaction tag mismatch, got %v, want %v", got, want)
 	}
 }
 
@@ -648,6 +737,27 @@ func TestClient_ReadOnlyTransaction_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
+	for _, tt := range readOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			tx := client.ReadOnlyTransaction()
+			defer tx.Close()
+
+			var iter *RowIterator
+			if tt.read == nil {
+				iter = tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+			} else {
+				iter = tx.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+			}
+			testReadOptions(t, iter, server.TestSpanner, *tt.want)
+		})
+	}
+}
+
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
 	os.Setenv("SPANNER_OPTIMIZER_VERSION", opts.OptimizerVersion)
 	os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", opts.OptimizerStatisticsPackage)
@@ -821,6 +931,30 @@ func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_Query_ReadOptions(t *testing.T) {
+	for _, tt := range readOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				var iter *RowIterator
+				if tt.read == nil {
+					iter = tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+				} else {
+					iter = tx.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+				}
+				testReadOptions(t, iter, server.TestSpanner, *tt.want)
+				return nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
 func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
@@ -850,6 +984,32 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 				t.Fatalf("Failed to update rows: %v", err)
 			}
 			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
+		})
+	}
+}
+
+func TestClient_ReadWriteTransaction_TransactionOptions(t *testing.T) {
+	for _, tt := range transactionOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: *tt.client})
+			defer teardown()
+
+			var err error
+			if tt.write == nil {
+				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					return nil
+				})
+			} else {
+				_, err = client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					return nil
+				}, *tt.write)
+			}
+
+			if err != nil {
+				t.Fatalf("Failed executing a read-write transaction: %v", err)
+			}
+			checkReqsForTransactionOptions(t, server.TestSpanner, *tt.want)
 		})
 	}
 }
@@ -887,6 +1047,32 @@ func TestClient_ReadWriteTransactionWithOptions(t *testing.T) {
 	}
 	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
 		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
+func TestClient_ReadWriteStmtBasedTransaction_TransactionOptions(t *testing.T) {
+	for _, tt := range transactionOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: *tt.client})
+			defer teardown()
+
+			var tx *ReadWriteStmtBasedTransaction
+			var err error
+			if tt.write == nil {
+				tx, err = NewReadWriteStmtBasedTransaction(ctx, client)
+			} else {
+				tx, err = NewReadWriteStmtBasedTransactionWithOptions(ctx, client, *tt.write)
+			}
+
+			if err != nil {
+				t.Fatalf("Failed initializing a read-write stmt based transaction: %v", err)
+			}
+
+			if got, want := tx.txOpts, *tt.want; got != want {
+				t.Fatalf("Transaction options mismatch, got %v, want %v", got, want)
+			}
+		})
 	}
 }
 
@@ -1390,6 +1576,70 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 	client.idleSessions.mu.Unlock()
 	if g != w {
 		t.Fatalf("checked out sessions count mismatch:\nGot: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_Apply_ApplyOptions(t *testing.T) {
+	t.Parallel()
+
+	testcases := []struct {
+		name               string
+		client             []ApplyOption
+		apply              []ApplyOption
+		wantTransactionTag string
+		wantPriority       sppb.RequestOptions_Priority
+	}{
+		{
+			name:               "At least once & client level",
+			client:             []ApplyOption{ApplyAtLeastOnce(), TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Not at least once & client level",
+			client:             []ApplyOption{TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "At least once & apply level",
+			apply:              []ApplyOption{ApplyAtLeastOnce(), TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Not at least once & apply level",
+			apply:              []ApplyOption{TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "At least once & query level has precedence than client level",
+			client:             []ApplyOption{ApplyAtLeastOnce(), TransactionTag("clientTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			apply:              []ApplyOption{ApplyAtLeastOnce(), TransactionTag("applyTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_MEDIUM)},
+			wantTransactionTag: "applyTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_MEDIUM,
+		},
+		{
+			name:               "Not at least once & apply level",
+			client:             []ApplyOption{TransactionTag("clientTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			apply:              []ApplyOption{TransactionTag("applyTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_MEDIUM)},
+			wantTransactionTag: "applyTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_MEDIUM,
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ApplyOptions: tt.client})
+			defer teardown()
+
+			_, err := client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, tt.apply...)
+			if err != nil {
+				t.Fatalf("failed applying mutations: %v", err)
+			}
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: tt.wantPriority, TransactionTag: tt.wantTransactionTag})
+		})
 	}
 }
 
@@ -2296,6 +2546,45 @@ func TestBatchReadOnlyTransactionFromID_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestBatchReadOnlyTransaction_ReadOptions(t *testing.T) {
+	ctx := context.Background()
+	ro := ReadOptions{
+		Index:      "testIndex",
+		Limit:      100,
+		Priority:   sppb.RequestOptions_PRIORITY_LOW,
+		RequestTag: "testRequestTag",
+	}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: ro})
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+
+	if txn.ro != ro {
+		t.Fatalf("Read options are mismatched: got %v, want %v", txn.ro, ro)
+	}
+}
+
+func TestBatchReadOnlyTransactionFromID_ReadOptions(t *testing.T) {
+	ro := ReadOptions{
+		Index:      "testIndex",
+		Limit:      100,
+		Priority:   sppb.RequestOptions_PRIORITY_LOW,
+		RequestTag: "testRequestTag",
+	}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: ro})
+	defer teardown()
+
+	txn := client.BatchReadOnlyTransactionFromID(BatchReadOnlyTransactionID{})
+
+	if txn.ro != ro {
+		t.Fatalf("Read options are mismatched: got %v, want %v", txn.ro, ro)
+	}
+}
+
 type QueryOptionsTestCase struct {
 	name   string
 	client QueryOptions
@@ -2348,6 +2637,64 @@ func queryOptionsTestCases() []QueryOptionsTestCase {
 			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+		},
+	}
+}
+
+type ReadOptionsTestCase struct {
+	name   string
+	client *ReadOptions
+	read   *ReadOptions
+	want   *ReadOptions
+}
+
+func readOptionsTestCases() []ReadOptionsTestCase {
+	return []ReadOptionsTestCase{
+		{
+			name:   "Client level",
+			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+		},
+		{
+			name:   "Read level",
+			client: &ReadOptions{},
+			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+		},
+		{
+			name:   "Read level has precedence than client level",
+			client: &ReadOptions{Index: "clientIndex", Limit: 10, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "clientRequestTag"},
+			read:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+			want:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+		},
+	}
+}
+
+type TransactionOptionsTestCase struct {
+	name   string
+	client *TransactionOptions
+	write  *TransactionOptions
+	want   *TransactionOptions
+}
+
+func transactionOptionsTestCases() []TransactionOptionsTestCase {
+	return []TransactionOptionsTestCase{
+		{
+			name:   "Client level",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
+			name:   "Write level",
+			client: &TransactionOptions{},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
+			name:   "Write level has precedence than client level",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
 		},
 	}
 }

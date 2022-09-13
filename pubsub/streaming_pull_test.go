@@ -69,7 +69,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
-			panic(err)
+			t.Fatalf("pullN err: %v", err)
 		}
 		// ack evens, nack odds
 		if id%2 == 0 {
@@ -90,14 +90,24 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 		if err != nil {
 			t.Fatal(err)
 		}
-		wantAckh, _ := msgAckHandler(want)
+		wantAckh, _ := msgAckHandler(want, false)
 		wantAckh.calledDone = true
 		got := gotMap[wantAckh.ackID]
 		if got == nil {
 			t.Errorf("%d: no message for ackID %q", i, wantAckh.ackID)
 			continue
 		}
-		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}, psAckHandler{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
+		opts := []cmp.Option{
+			cmp.AllowUnexported(Message{}, psAckHandler{}),
+			cmpopts.IgnoreTypes(
+				time.Time{},
+				func(string, bool,
+					*AckResult, time.Time) {
+				},
+				AckResult{},
+			),
+		}
+		if !testutil.Equal(got, want, opts...) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}
@@ -184,7 +194,66 @@ func TestStreamingPullRetry(t *testing.T) {
 	server.addStreamingPullError(status.Errorf(codes.Unavailable, ""))
 	server.addStreamingPullMessages(testMessages[2:])
 
-	testStreamingPullIteration(t, client, server, testMessages)
+	sub := client.Subscription("S")
+	sub.ReceiveSettings.NumGoroutines = 1
+	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), func(_ context.Context, m *Message) {
+		id, err := strconv.Atoi(msgAckID(m))
+		if err != nil {
+			t.Fatalf("pullN err: %v", err)
+		}
+		// ack evens, nack odds
+		if id%2 == 0 {
+			m.Ack()
+		} else {
+			m.Nack()
+		}
+	})
+	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+		t.Fatalf("Pull: %v", err)
+	}
+	gotMap := map[string]*Message{}
+	for _, m := range gotMsgs {
+		gotMap[msgAckID(m)] = m
+	}
+	for i, msg := range testMessages {
+		want, err := toMessage(msg, time.Time{}, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		wantAckh, _ := msgAckHandler(want, false)
+		wantAckh.calledDone = true
+		got := gotMap[wantAckh.ackID]
+		if got == nil {
+			t.Errorf("%d: no message for ackID %q", i, wantAckh.ackID)
+			continue
+		}
+		opts := []cmp.Option{
+			cmp.AllowUnexported(Message{}, psAckHandler{}),
+			cmpopts.IgnoreTypes(
+				time.Time{},
+				func(string, bool,
+					*AckResult, time.Time) {
+				},
+				AckResult{},
+			),
+		}
+		if !testutil.Equal(got, want, opts...) {
+			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
+		}
+	}
+	server.wait()
+	for i := 0; i < len(testMessages); i++ {
+		id := testMessages[i].AckId
+		if i%2 == 0 {
+			if !server.Acked[id] {
+				t.Errorf("msg %q should have been acked but wasn't", id)
+			}
+		} else {
+			if dl, ok := server.Deadlines[id]; !ok || dl != 0 {
+				t.Errorf("msg %q should have been nacked but wasn't", id)
+			}
+		}
+	}
 }
 
 func TestStreamingPullOneActive(t *testing.T) {
