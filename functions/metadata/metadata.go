@@ -48,8 +48,8 @@ type Resource struct {
 	// https://cloud.google.com/storage/docs/pubsub-notifications,
 	// which populate the resource field as a string containing the topic
 	// rather than as the expected dictionary.
-	// It is also used by the Firebase Realtime Database example shown in
-	// https://cloud.google.com/functions/docs/calling/realtime-database.
+	// It is also used when triggering Cloud Functions by [Firebase Realtime Database
+	// Triggers](https://cloud.google.com/functions/docs/calling/realtime-data).
 	RawPath string `json:"-"`
 }
 
