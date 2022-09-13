@@ -88,8 +88,6 @@ var (
 	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
 	replaying     bool
 	testTime      time.Time
-	skipGRPC      = skipTransportTestKey("grpc")
-	skipHTTP      = skipTransportTestKey("http")
 )
 
 func TestMain(m *testing.M) {
@@ -478,8 +476,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	ctx := context.WithValue(context.Background(), skipGRPC, "b/245997450")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		wantLifecycle := Lifecycle{
@@ -1338,8 +1335,7 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
-	ctx := context.WithValue(context.Background(), skipHTTP, "gRPC implementation specific test")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
 		name := uidSpace.New()
@@ -5046,4 +5042,12 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+}
+
+func skipGRPC(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("grpc"), reason)
+}
+
+func skipHTTP(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
 }
