@@ -373,7 +373,7 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		if req.GetReadTime() != nil {
 			readTime, err := protojson.Marshal(req.GetReadTime())
 			if err != nil {
-				return nil, err
+				return nil, "", err
 			}
 			params.Add("readTime", string(readTime))
 		}
