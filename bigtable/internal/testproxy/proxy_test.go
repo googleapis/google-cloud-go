@@ -40,6 +40,7 @@ const (
 	tpc = "testProxyClient"
 	tpa = "localhost:9990"
 	bta = "localhost:9999"
+	rk  = "row"
 )
 
 var (
@@ -96,7 +97,7 @@ func populateTable(bts *bttest.Server) error {
 				rmw := bigtable.NewReadModifyWrite()
 				rmw.AppendValue(fmt.Sprintf("%s%d", cf, fc), fmt.Sprintf("coll%d", cc), []byte("test data"))
 
-				_, err = t.ApplyReadModifyWrite(ctx, "row", rmw)
+				_, err = t.ApplyReadModifyWrite(ctx, rk, rmw)
 				if err != nil {
 					return fmt.Errorf("testproxy setup: failure populating row: %v", err)
 				}
@@ -115,7 +116,7 @@ TestMain has three threads that it needs to start:
 
 	The communication sequence looks kind of like:
 
-	TestProxyClient <=> test proxy server (what we're testing) <=> Mocked BT server
+	TestProxyClient <=> test proxy server (what we're testing) <=> mocked BT server
 */
 func TestMain(m *testing.M) {
 	ctx := context.Background()
@@ -151,6 +152,8 @@ func TestMain(m *testing.M) {
 
 	// This could create a little bit of a race condition with the previous
 	// go routine ...
+	// However, we need to have the test proxy server running in order to create
+	// a reusable client stored in its memory
 	req := &pb.CreateClientRequest{
 		ClientId:   tpc,
 		ProjectId:  "client",
@@ -227,7 +230,7 @@ func TestReadRow(t *testing.T) {
 	req := &pb.ReadRowRequest{
 		TableName: tbl,
 		ClientId:  tpc,
-		RowKey:    "row",
+		RowKey:    rk,
 	}
 
 	resp, err := (*client).ReadRow(ctx, req)
@@ -298,7 +301,7 @@ func TestMutateRow(t *testing.T) {
 		ClientId: tpc,
 		Request: &btpb.MutateRowRequest{
 			TableName: tbl,
-			RowKey:    []byte("row"),
+			RowKey:    []byte(rk),
 			Mutations: []*btpb.Mutation{
 				{
 					Mutation: &btpb.Mutation_SetCell_{
@@ -331,7 +334,7 @@ func TestBulkMutateRows(t *testing.T) {
 			TableName: tbl,
 			Entries: []*btpb.MutateRowsRequest_Entry{
 				{
-					RowKey: []byte("row"),
+					RowKey: []byte(rk),
 					Mutations: []*btpb.Mutation{
 						{
 							Mutation: &btpb.Mutation_SetCell_{
@@ -361,5 +364,87 @@ func TestBulkMutateRows(t *testing.T) {
 	// TODO(developer): Figure out why this next part fails :(
 	if len(resp.Entry) != 1 {
 		t.Errorf("testproxy test: BulkMutateRows() returned wrong number of results; got: %d", len(resp.Entry))
+	}
+}
+
+func TestCheckAndMutateRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.CheckAndMutateRowRequest{
+		ClientId: tpc,
+		Request: &btpb.CheckAndMutateRowRequest{
+			TableName: tbl,
+			RowKey:    []byte(rk),
+			PredicateFilter: &btpb.RowFilter{
+				Filter: &btpb.RowFilter_PassAllFilter{},
+			},
+			TrueMutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("check success"),
+						},
+					},
+				},
+			},
+			FalseMutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("check failed!"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := (*client).CheckAndMutateRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: CheckAndMutateRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: CheckAndMutateRow() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if resp.Result.PredicateMatched != true {
+		t.Errorf("testproxy test: CheckAndMutateRow() returned wrong results; got: %v", resp.Result.PredicateMatched)
+	}
+}
+
+func TestReadWriteRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.ReadModifyWriteRowRequest{
+		ClientId: tpc,
+		Request: &btpb.ReadModifyWriteRowRequest{
+			TableName: tbl,
+			RowKey:    []byte(rk),
+			Rules: []*btpb.ReadModifyWriteRule{
+				{
+					Rule: &btpb.ReadModifyWriteRule_AppendValue{
+						AppendValue: []byte("appended!"),
+					},
+					FamilyName:      "cf0",
+					ColumnQualifier: []byte("coll1"),
+				},
+			},
+		},
+	}
+
+	resp, err := (*client).ReadModifyWriteRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: ReadModifyWriteRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: ReadModifyWriteRow() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if string(resp.Row.Key) != rk {
+		t.Errorf("testproxy test: ReadModifyWriteRow() returned wrong results; got: %v", resp.Row.Key)
 	}
 }
