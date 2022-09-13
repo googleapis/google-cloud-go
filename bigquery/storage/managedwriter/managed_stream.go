@@ -358,11 +358,8 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 				}
 				continue
 			}
-			// We've got a non-retriable error, so propagate that up. and mark the write done.
-			ms.mu.Lock()
-			ms.err = appendErr
+			// Mark the pending write done.  This will not be returned to the user, they'll receive the returned error.
 			pw.markDone(nil, appendErr, ms.fc)
-			ms.mu.Unlock()
 			return appendErr
 		}
 		recordStat(ms.ctx, AppendRequests, 1)
