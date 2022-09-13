@@ -256,9 +256,6 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	maxExt := time.Now().Add(it.po.maxExtension)
 	ackIDs := map[string]*AckResult{}
 	it.mu.Lock()
-	it.eoMu.RLock()
-	enableExactlyOnceDelivery := it.enableExactlyOnceDelivery
-	it.eoMu.RUnlock()
 	for _, m := range msgs {
 		ackID := msgAckID(m)
 		addRecv(m.ID, ackID, now)
