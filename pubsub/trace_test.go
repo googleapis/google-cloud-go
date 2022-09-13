@@ -19,9 +19,14 @@ import (
 	"fmt"
 	"testing"
 
+	"cloud.google.com/go/internal/testutil"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestPublishSpan(t *testing.T) {
@@ -34,20 +39,76 @@ func TestPublishSpan(t *testing.T) {
 	provider := trace.NewTracerProvider(trace.WithSpanProcessor(spanRecorder))
 	otel.SetTracerProvider(provider)
 
-	topic := c.Topic("t")
-	r := topic.Publish(ctx, &Message{
+	topic, err := c.CreateTopic(ctx, "t")
+	if err != nil {
+		t.Fatalf("failed to create topic: %v", err)
+	}
+	m := &Message{
 		Data: []byte("test"),
-	})
-	r.Get(ctx)
+	}
+	r := topic.Publish(ctx, m)
+	id, err := r.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
 	defer topic.Stop()
 
 	spans := spanRecorder.Ended()
-	for i, span := range spans {
 
-		// Check span
-		// assert.True(t, span.SpanContext().IsValid())
-		// assert.Equal(t, "pubsub.topic", span.Name())
-		fmt.Printf("got span %d: %+v\n", i, span)
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        m.Data,
+		Attributes:  m.Attributes,
+		OrderingKey: m.OrderingKey,
+	})
+
+	want := []struct {
+		spanName   string
+		attributes []attribute.KeyValue
+	}{
+		{
+			spanName:   "publisher flow control",
+			attributes: []attribute.KeyValue{},
+		},
+		{
+			spanName:   "publish batching",
+			attributes: []attribute.KeyValue{},
+		},
+		{
+			spanName: "publish RPC",
+			attributes: []attribute.KeyValue{
+				attribute.Int(numBatchedMessagesAttribute, 1),
+			},
+		},
+		{
+			spanName: "projects/P/topics/t send",
+			attributes: []attribute.KeyValue{
+				semconv.MessagingSystemKey.String("pubsub"),
+				semconv.MessagingDestinationKey.String(topic.name),
+				semconv.MessagingDestinationKindTopic,
+				semconv.MessagingMessageIDKey.String(id),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+				attribute.String(orderingAttribute, m.OrderingKey),
+			},
+		},
+	}
+	for i, span := range spans {
+		if !span.SpanContext().IsValid() {
+			t.Fatalf("span(%d) is invalid: %v", i, span)
+		}
+		if span.Name() != want[i].spanName {
+			t.Errorf("span(%d) got name: %s, want: %s", i, span.Name(), want[i].spanName)
+		}
+		gotLength := len(span.Attributes())
+		wantLength := len(want[i].attributes)
+		if gotLength != wantLength {
+			t.Fatalf("got mismatched attribute lengths for span(%d), got: %d, want: %d", i, gotLength, wantLength)
+		}
+		for j, kv := range span.Attributes() {
+			// got := kv.Value
+			if diff := testutil.Diff(kv.Key, want[i].attributes[j].Key); diff != "" {
+				t.Errorf("span(%d): +got,-want: %s", i, diff)
+			}
+		}
 	}
 }
 
@@ -70,10 +131,7 @@ func TestSubscribeSpan(t *testing.T) {
 
 	spans := spanRecorder.Ended()
 	for i, span := range spans {
-
-		// Check span
-		// assert.True(t, span.SpanContext().IsValid())
-		// assert.Equal(t, "pubsub.topic", span.Name())
-		fmt.Printf("got span %d: %+v\n", i, span)
+		// TODO(hongalex): test subscribe path spans
+		fmt.Printf("got span(%d): %+v\n", i, span)
 	}
 }

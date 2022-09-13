@@ -736,9 +736,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(bm.msg))
 		}
 		_, pSpan := tracer().Start(ctx, "publish RPC")
-		pSpan.SetAttributes(attribute.Int(numMessagesAttribute, numMsgs))
-		defer pSpan.End()
+		pSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, numMsgs))
 		defer bm.span.End()
+		defer pSpan.End()
 		bm.msg = nil // release bm.msg for GC
 	}
 

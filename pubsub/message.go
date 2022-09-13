@@ -106,6 +106,9 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	// inject the new ctx into message for propagation across the other receive paths
 	// that cannot directly access this ctx. We do this to avoid storing context
 	// inside a message, which is bad practice.
+	if msg.Attributes == nil {
+		msg.Attributes = map[string]string{}
+	}
 	otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
 
 	ackh.receiveTime = receiveTime

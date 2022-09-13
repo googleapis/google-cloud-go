@@ -305,12 +305,13 @@ func (c PubsubMessageCarrier) Keys() []string {
 }
 
 const (
-	subscriptionAttribute    = "messaging.pubsub.subscription"
-	orderingAttribute        = "messaging.pubsub.ordering_key"
-	deliveryAttemptAttribute = "messaging.pubsub.delivery_attempt"
-	eosAttribute             = "messaging.pubsub.exactly_once_delivery"
-	ackAttribute             = "messaging.pubsub.is_acked"
-	numMessagesAttribute     = "messaging.pubsub.num_messages_in_receive_batch"
+	subscriptionAttribute       = "messaging.pubsub.subscription"
+	orderingAttribute           = "messaging.pubsub.ordering_key"
+	deliveryAttemptAttribute    = "messaging.pubsub.delivery_attempt"
+	eosAttribute                = "messaging.pubsub.exactly_once_delivery"
+	ackAttribute                = "messaging.pubsub.is_acked"
+	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_publish_batch"
+	// numRecvMessagesAttribute    = "messaging.pubsub.num_messages_in_receive_batch"
 )
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {

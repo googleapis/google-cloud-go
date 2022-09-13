@@ -24,7 +24,6 @@ import (
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -462,10 +461,7 @@ func (c *publisherGRPCClient) Publish(ctx context.Context, req *pubsubpb.Publish
 		ctx = cctx
 	}
 
-	sc := trace.SpanContextFromContext(ctx)
-	fmt.Printf("trace ID: %v\nspan ID: %v\n", sc.TraceID(), sc.SpanID())
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())), 
-	"x-cloud-trace-context", fmt.Sprintf("%s/%s;o=1", sc.TraceID(), sc.SpanID()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Publish[0:len((*c.CallOptions).Publish):len((*c.CallOptions).Publish)], opts...)
