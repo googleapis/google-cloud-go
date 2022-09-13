@@ -398,6 +398,7 @@ func getCredentialsOptions(req *pb.CreateClientRequest) ([]grpc.DialOption, erro
 	if req.CallCredential == nil &&
 		req.ChannelCredential == nil &&
 		req.OverrideSslTargetName == "" {
+		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		return opts, nil
 	}
 

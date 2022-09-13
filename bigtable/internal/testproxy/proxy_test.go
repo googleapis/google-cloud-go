@@ -21,28 +21,71 @@ import (
 
 	"testing"
 
+	"cloud.google.com/go/bigtable"
+	"cloud.google.com/go/bigtable/bttest"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 )
 
 const bufSize = 1024 * 1024
 
 var lis *bufconn.Listener
+var c *pb.CloudBigtableV2TestProxyClient
 
-func init() {
+func bufDialer(context.Context, string) (net.Conn, error) {
+	return lis.Dial()
+}
+
+/*
+TestMain has three threads that it needs to start:
+1) The mocked Bigtable service (server)
+2) The testproxy server under test
+3) The NewCloudBigtableV2TestProxyClient client that sends requests to the testproxy server.
+
+	The communication sequence looks kind of like:
+
+	TestProxyClient <=> test proxy server (what we're testing) <=> Mocked BT server
+*/
+func TestMain(m *testing.M) {
+
 	lis = bufconn.Listen(bufSize)
 	s := newProxyServer(lis)
+
+	srv, err := bttest.NewServer("localhost:9999")
+	if err != nil {
+		log.Fatalf("can't create inmem Bigtable server")
+	}
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("can't dial inmem Bigtable server")
+	}
+
+	adminClient, err := bigtable.NewAdminClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	if err != nil {
+		log.Fatalf("can't create AdminClient")
+	}
+	defer adminClient.Close()
+
+	if err := adminClient.CreateTable(context.Background(), "table"); err != nil {
+		log.Fatalf("can't create table")
+	}
+	if err := adminClient.CreateColumnFamily(context.Background(), "table", "cf"); err != nil {
+		log.Fatalf("can't create column family")
+	}
 
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
-}
 
-func bufDialer(context.Context, string) (net.Conn, error) {
-	return lis.Dial()
+	go func() {
+
+	}()
+	m.Run()
 }
 
 func TestCreateClient(t *testing.T) {
