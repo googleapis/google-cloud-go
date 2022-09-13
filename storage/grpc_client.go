@@ -893,6 +893,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			}
 
 			msg, err = stream.Recv()
+			// These types of errors show up on the Recv call, rather than the
+			// initialization of the stream via ReadObject above.
+			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+				return ErrObjectNotExist
+			}
 
 			return err
 		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))

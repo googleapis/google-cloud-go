@@ -35,6 +35,9 @@ const (
 // Run generators aliases from the srcDir into the destDir and tidies required
 // files.
 func Run(srcDir, destDir string) error {
+	if err := cleanDir(destDir); err != nil {
+		return err
+	}
 	am, err := createMappings(srcDir)
 	if err != nil {
 		return err
@@ -48,6 +51,20 @@ func Run(srcDir, destDir string) error {
 	if err := goModTidy(destDir); err != nil {
 		return err
 	}
+	return nil
+}
+
+func cleanDir(dir string) error {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if err := os.RemoveAll(filepath.Join(dir, entry.Name())); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -228,7 +245,9 @@ func (am *aliasGenerator) writeHeader(w io.Writer) error {
 // Package %s aliases all exported identifiers in package
 // %q.
 //
-// Deprecated: Please use types in: %s
+// Deprecated: Please use types in: %s.
+// Please read https://github.com/googleapis/google-cloud-go/blob/main/migration.md
+// for more details.
 package %s
 
 import (
@@ -303,6 +322,7 @@ func (am *aliasGenerator) writeTypeNames(w io.Writer) error {
 }
 
 func (am *aliasGenerator) writeFuncs(w io.Writer) error {
+	newpkg := am.importPath[strings.LastIndex(am.importPath, "/")+1:]
 	for _, f := range am.funcs {
 		if _, err := fmt.Fprintf(w, "// Deprecated: Please use funcs in: %s\n", am.importPath); err != nil {
 			return err
@@ -318,7 +338,7 @@ func (am *aliasGenerator) writeFuncs(w io.Writer) error {
 					return err
 				}
 			}
-			if _, err := fmt.Fprintf(w, "%s %s", p.name, p.FullType(am.pkg)); err != nil {
+			if _, err := fmt.Fprintf(w, "%s %s", p.name, p.FullType(newpkg)); err != nil {
 				return err
 			}
 		}
@@ -331,7 +351,7 @@ func (am *aliasGenerator) writeFuncs(w io.Writer) error {
 			return fmt.Errorf("expected max of 1 return value for %q, found: %d", f.name, len(f.returns))
 		}
 		if len(f.returns) == 1 {
-			if _, err := fmt.Fprintf(w, " %s", f.returns[0].FullType(am.pkg)); err != nil {
+			if _, err := fmt.Fprintf(w, " %s", f.returns[0].FullType(newpkg)); err != nil {
 				return err
 			}
 		}

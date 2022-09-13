@@ -156,14 +156,20 @@ type pendingWrite struct {
 
 	// this is used by the flow controller.
 	reqSize int
+
+	// retains the original request context, primarily for checking against
+	// cancellation signals.
+	reqCtx context.Context
+
+	// tracks the number of times we've attempted this append request.
+	attemptCount int
 }
 
 // newPendingWrite constructs the proto request and attaches references
-// to the pending results for later consumption.  The reason for this is
-// that in the future, we may want to allow row batching to be managed by
-// the server (e.g. for default/COMMITTED streams).  For BUFFERED/PENDING
-// streams, this should be managed by the user.
-func newPendingWrite(appends [][]byte) *pendingWrite {
+// to the pending results for later consumption.  The provided context is
+// embedded in the pending write, as the write may be retried and we want
+// to respect the original context for expiry/cancellation etc.
+func newPendingWrite(ctx context.Context, appends [][]byte) *pendingWrite {
 	pw := &pendingWrite{
 		request: &storagepb.AppendRowsRequest{
 			Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -174,7 +180,9 @@ func newPendingWrite(appends [][]byte) *pendingWrite {
 				},
 			},
 		},
-		result: newAppendResult(appends),
+		result:       newAppendResult(appends),
+		attemptCount: 1,
+		reqCtx:       ctx,
 	}
 	// We compute the size now for flow controller purposes, though
 	// the actual request size may be slightly larger (e.g. the first

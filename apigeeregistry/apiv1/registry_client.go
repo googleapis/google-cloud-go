@@ -106,9 +106,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApis: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -117,9 +120,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -128,9 +134,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -139,9 +148,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -150,9 +162,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApi: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -161,9 +176,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiVersions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -172,9 +190,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -183,9 +204,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -194,9 +218,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -205,9 +232,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -216,9 +246,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiSpecs: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -227,9 +260,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -238,9 +274,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiSpecContents: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -249,9 +288,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -260,9 +302,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -271,9 +316,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiSpec: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -282,9 +330,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		TagApiSpecRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -293,9 +344,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiSpecRevisions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -305,9 +359,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiSpecRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -316,9 +373,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiDeployments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -327,9 +387,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -338,9 +401,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -349,9 +415,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		UpdateApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -360,9 +429,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiDeployment: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -371,9 +443,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		TagApiDeploymentRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -382,9 +457,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListApiDeploymentRevisions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -394,9 +472,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteApiDeploymentRevision: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -405,9 +486,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ListArtifacts: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -416,9 +500,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -427,9 +514,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		GetArtifactContents: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -438,9 +528,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		CreateArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -449,9 +542,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		ReplaceArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
@@ -460,9 +556,12 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 		DeleteArtifact: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.Canceled,
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    200 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})

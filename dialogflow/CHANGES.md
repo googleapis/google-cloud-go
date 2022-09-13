@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.12.1...dialogflow/v1.13.0) (2022-09-06)
+
+
+### Features
+
+* **dialogflow:** start generating apiv2beta1 ([#6601](https://github.com/googleapis/google-cloud-go/issues/6601)) ([6f8b1eb](https://github.com/googleapis/google-cloud-go/commit/6f8b1eb205740568be20c9d1094860812aa27cb1))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.12.0...dialogflow/v1.12.1) (2022-08-02)
 
 

@@ -50,7 +50,6 @@ var newClientHook clientHook
 type CallOptions struct {
 	CreateWorkload           []gax.CallOption
 	UpdateWorkload           []gax.CallOption
-	RestrictAllowedServices  []gax.CallOption
 	RestrictAllowedResources []gax.CallOption
 	DeleteWorkload           []gax.CallOption
 	GetWorkload              []gax.CallOption
@@ -76,7 +75,6 @@ func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateWorkload:           []gax.CallOption{},
 		UpdateWorkload:           []gax.CallOption{},
-		RestrictAllowedServices:  []gax.CallOption{},
 		RestrictAllowedResources: []gax.CallOption{},
 		DeleteWorkload: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -151,7 +149,6 @@ func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateWorkload:           []gax.CallOption{},
 		UpdateWorkload:           []gax.CallOption{},
-		RestrictAllowedServices:  []gax.CallOption{},
 		RestrictAllowedResources: []gax.CallOption{},
 		DeleteWorkload: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -224,7 +221,6 @@ type internalClient interface {
 	CreateWorkload(context.Context, *assuredworkloadspb.CreateWorkloadRequest, ...gax.CallOption) (*CreateWorkloadOperation, error)
 	CreateWorkloadOperation(name string) *CreateWorkloadOperation
 	UpdateWorkload(context.Context, *assuredworkloadspb.UpdateWorkloadRequest, ...gax.CallOption) (*assuredworkloadspb.Workload, error)
-	RestrictAllowedServices(context.Context, *assuredworkloadspb.RestrictAllowedServicesRequest, ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedServicesResponse, error)
 	RestrictAllowedResources(context.Context, *assuredworkloadspb.RestrictAllowedResourcesRequest, ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error)
 	DeleteWorkload(context.Context, *assuredworkloadspb.DeleteWorkloadRequest, ...gax.CallOption) error
 	GetWorkload(context.Context, *assuredworkloadspb.GetWorkloadRequest, ...gax.CallOption) (*assuredworkloadspb.Workload, error)
@@ -292,16 +288,6 @@ func (c *Client) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.Upd
 	return c.internalClient.UpdateWorkload(ctx, req, opts...)
 }
 
-// RestrictAllowedServices restrict the list of services allowed in the Workload environment.
-// The current list of allowed services can be found at
-// https://cloud.google.com/assured-workloads/docs/supported-products (at https://cloud.google.com/assured-workloads/docs/supported-products)
-// In addition to assuredworkloads.workload.update permission, the user should
-// also have orgpolicy.policy.set permission on the folder resource
-// to use this functionality.
-func (c *Client) RestrictAllowedServices(ctx context.Context, req *assuredworkloadspb.RestrictAllowedServicesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedServicesResponse, error) {
-	return c.internalClient.RestrictAllowedServices(ctx, req, opts...)
-}
-
 // RestrictAllowedResources restrict the list of resources allowed in the Workload environment.
 // The current list of allowed products can be found at
 // https://cloud.google.com/assured-workloads/docs/supported-products (at https://cloud.google.com/assured-workloads/docs/supported-products)
@@ -327,8 +313,8 @@ func (c *Client) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWor
 	return c.internalClient.GetWorkload(ctx, req, opts...)
 }
 
-// AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured
-// Workload
+// AnalyzeWorkloadMove a request to analyze a hypothetical move of a source project or
+// project-based workload to a target (destination) folder-based workload.
 func (c *Client) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
 	return c.internalClient.AnalyzeWorkloadMove(ctx, req, opts...)
 }
@@ -560,29 +546,12 @@ func (c *gRPCClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workload.name", url.QueryEscape(req.GetWorkload().GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
 	var resp *assuredworkloadspb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateWorkload(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) RestrictAllowedServices(ctx context.Context, req *assuredworkloadspb.RestrictAllowedServicesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedServicesResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).RestrictAllowedServices[0:len((*c.CallOptions).RestrictAllowedServices):len((*c.CallOptions).RestrictAllowedServices)], opts...)
-	var resp *assuredworkloadspb.RestrictAllowedServicesResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.RestrictAllowedServices(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -852,78 +821,6 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 // For force updates don’t set etag field in the Workload.
 // Only one update operation per workload can be in progress.
 func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetWorkload()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetWorkload().GetName())
-
-	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workload.name", url.QueryEscape(req.GetWorkload().GetName())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &assuredworkloadspb.Workload{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// RestrictAllowedServices restrict the list of services allowed in the Workload environment.
-// The current list of allowed services can be found at
-// https://cloud.google.com/assured-workloads/docs/supported-products (at https://cloud.google.com/assured-workloads/docs/supported-products)
-// In addition to assuredworkloads.workload.update permission, the user should
-// also have orgpolicy.policy.set permission on the folder resource
-// to use this functionality.
-func (c *restClient) RestrictAllowedServices(ctx context.Context, req *assuredworkloadspb.RestrictAllowedServicesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedServicesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -931,16 +828,109 @@ func (c *restClient) RestrictAllowedServices(ctx context.Context, req *assuredwo
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
-	params.Add("name", fmt.Sprintf("%v", req.GetName()))
-	params.Add("restrictionType", fmt.Sprintf("%v", req.GetRestrictionType()))
+	if req.GetUpdateMask().GetPaths() != nil {
+		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	}
+	if req.GetWorkload().GetBillingAccount() != "" {
+		params.Add("workload.billingAccount", fmt.Sprintf("%v", req.GetWorkload().GetBillingAccount()))
+	}
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
+		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	}
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
+		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
+	}
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
+		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetNanos()))
+	}
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
+		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	}
+	params.Add("workload.complianceRegime", fmt.Sprintf("%v", req.GetWorkload().GetComplianceRegime()))
+	if req.GetWorkload().GetCreateTime().GetNanos() != 0 {
+		params.Add("workload.createTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetCreateTime().GetNanos()))
+	}
+	if req.GetWorkload().GetCreateTime().GetSeconds() != 0 {
+		params.Add("workload.createTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetCreateTime().GetSeconds()))
+	}
+	params.Add("workload.displayName", fmt.Sprintf("%v", req.GetWorkload().GetDisplayName()))
+	if req.GetWorkload().GetEnableSovereignControls() {
+		params.Add("workload.enableSovereignControls", fmt.Sprintf("%v", req.GetWorkload().GetEnableSovereignControls()))
+	}
+	if req.GetWorkload().GetEtag() != "" {
+		params.Add("workload.etag", fmt.Sprintf("%v", req.GetWorkload().GetEtag()))
+	}
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
+		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	}
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
+		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
+	}
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
+		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetNanos()))
+	}
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
+		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	}
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
+		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	}
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
+		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
+	}
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
+		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetNanos()))
+	}
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
+		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	}
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
+		params.Add("workload.il4Settings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	}
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
+		params.Add("workload.il4Settings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
+	}
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
+		params.Add("workload.il4Settings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetNanos()))
+	}
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
+		params.Add("workload.il4Settings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	}
+	if req.GetWorkload().GetKajEnrollmentState() != 0 {
+		params.Add("workload.kajEnrollmentState", fmt.Sprintf("%v", req.GetWorkload().GetKajEnrollmentState()))
+	}
+	if req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
+		params.Add("workload.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	}
+	if req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
+		params.Add("workload.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetSeconds()))
+	}
+	if req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
+		params.Add("workload.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetNanos()))
+	}
+	if req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
+		params.Add("workload.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	}
+	if req.GetWorkload().GetName() != "" {
+		params.Add("workload.name", fmt.Sprintf("%v", req.GetWorkload().GetName()))
+	}
+	if req.GetWorkload().GetProvisionedResourcesParent() != "" {
+		params.Add("workload.provisionedResourcesParent", fmt.Sprintf("%v", req.GetWorkload().GetProvisionedResourcesParent()))
+	}
+	if req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors() != nil {
+		params.Add("workload.saaEnrollmentResponse.setupErrors", fmt.Sprintf("%v", req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors()))
+	}
+	if req.GetWorkload().GetSaaEnrollmentResponse() != nil && req.GetWorkload().GetSaaEnrollmentResponse().SetupStatus != nil {
+		params.Add("workload.saaEnrollmentResponse.setupStatus", fmt.Sprintf("%v", req.GetWorkload().GetSaaEnrollmentResponse().GetSetupStatus()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).RestrictAllowedServices[0:len((*c.CallOptions).RestrictAllowedServices):len((*c.CallOptions).RestrictAllowedServices)], opts...)
+	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &assuredworkloadspb.RestrictAllowedServicesResponse{}
+	resp := &assuredworkloadspb.Workload{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1146,8 +1136,8 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 	return resp, nil
 }
 
-// AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured
-// Workload
+// AnalyzeWorkloadMove a request to analyze a hypothetical move of a source project or
+// project-based workload to a target (destination) folder-based workload.
 func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
