@@ -51,9 +51,7 @@ TestMain has three threads that it needs to start:
 */
 func TestMain(m *testing.M) {
 
-	lis = bufconn.Listen(bufSize)
-	s := newProxyServer(lis)
-
+	// 1) Start the mocked Bigtable service
 	srv, err := bttest.NewServer("localhost:9999")
 	if err != nil {
 		log.Fatalf("can't create inmem Bigtable server")
@@ -62,6 +60,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("can't dial inmem Bigtable server")
 	}
+	defer conn.Close()
 
 	adminClient, err := bigtable.NewAdminClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
@@ -76,15 +75,15 @@ func TestMain(m *testing.M) {
 		log.Fatalf("can't create column family")
 	}
 
+	// 2) Start the test proxy server
+	lis = bufconn.Listen(bufSize)
+	s := newProxyServer(lis)
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
 
-	go func() {
-
-	}()
 	m.Run()
 }
 
@@ -92,7 +91,7 @@ func TestCreateClient(t *testing.T) {
 	// Test
 	cid := "testCreateClient"
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "testproxy", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, "testproxy", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatalf("testproxy test: failed to dial testproxy: %v", err)
 	}
@@ -127,7 +126,7 @@ func TestRemoveClient(t *testing.T) {
 	// Setup
 	cid := "testRemoveClient"
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "testproxy", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, "testproxy", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		t.Fatalf("testproxy test: failed to dial testproxy: %v", err)
 	}
