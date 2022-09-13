@@ -117,7 +117,7 @@ type QueryParameter struct {
 	// For scalar values, you can supply the Null types within this library
 	// to send the appropriate NULL values (e.g. NullInt64, NullString, etc).
 	//
-	// For values with a explicit data type, *QueryParameterValue can be used.
+	// To specify query parameters explicitly rather by inference, *QueryParameterValue can be used.
 	// For example, a BIGNUMERIC can be specified like this:
 	// &QueryParameterValue{
 	//		Type: StandardSQLDataType{
@@ -147,16 +147,16 @@ type QueryParameterValue struct {
 	Value       interface{}
 }
 
-func (p QueryParameterValue) toBQQueryType() *bq.QueryParameterType {
-	return p.Type.toBQQueryType()
+func (p QueryParameterValue) toBQParamType() *bq.QueryParameterType {
+	return p.Type.toBQParamType()
 }
 
-func (p QueryParameterValue) toBQQueryValue() (*bq.QueryParameterValue, error) {
+func (p QueryParameterValue) toBQParamValue() (*bq.QueryParameterValue, error) {
 	if len(p.ArrayValue) > 0 {
 		pv := &bq.QueryParameterValue{}
 		pv.ArrayValues = []*bq.QueryParameterValue{}
 		for _, v := range p.ArrayValue {
-			val, err := v.toBQQueryValue()
+			val, err := v.toBQParamValue()
 			if err != nil {
 				return nil, err
 			}
@@ -168,7 +168,7 @@ func (p QueryParameterValue) toBQQueryValue() (*bq.QueryParameterValue, error) {
 		pv := &bq.QueryParameterValue{}
 		pv.StructValues = map[string]bq.QueryParameterValue{}
 		for name, param := range p.StructValue {
-			v, err := param.toBQQueryValue()
+			v, err := param.toBQParamValue()
 			if err != nil {
 				return nil, err
 			}
@@ -230,7 +230,7 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 	case typeOfNullJSON:
 		return jsonParamType, nil
 	case typeOfQueryParameterValue:
-		return v.Interface().(*QueryParameterValue).toBQQueryType(), nil
+		return v.Interface().(*QueryParameterValue).toBQParamType(), nil
 	}
 	switch t.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint8, reflect.Uint16, reflect.Uint32:
@@ -363,13 +363,16 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		return res, nil
 
 	case typeOfRat:
+		// big.Rat types don't communicate scale or precision, so we cannot
+		// disambiguate between NUMERIC and BIGNUMERIC.  For now, we'll continue
+		// to honor previous behavior and send as Numeric type.
 		res.Value = NumericString(v.Interface().(*big.Rat))
 		return res, nil
 	case typeOfIntervalValue:
 		res.Value = IntervalString(v.Interface().(*IntervalValue))
 		return res, nil
 	case typeOfQueryParameterValue:
-		return v.Interface().(*QueryParameterValue).toBQQueryValue()
+		return v.Interface().(*QueryParameterValue).toBQParamValue()
 	}
 	switch t.Kind() {
 	case reflect.Slice:

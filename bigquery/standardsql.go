@@ -63,16 +63,16 @@ func (ssdt *StandardSQLDataType) toBQ() (*bq.StandardSqlDataType, error) {
 	return bqdt, nil
 }
 
-func (ssdt StandardSQLDataType) toBQQueryType() *bq.QueryParameterType {
+func (ssdt StandardSQLDataType) toBQParamType() *bq.QueryParameterType {
 	if ssdt.ArrayElementType != nil {
-		return &bq.QueryParameterType{Type: "ARRAY", ArrayType: ssdt.ArrayElementType.toBQQueryType()}
+		return &bq.QueryParameterType{Type: "ARRAY", ArrayType: ssdt.ArrayElementType.toBQParamType()}
 	}
 	if ssdt.StructType != nil {
 		var fts []*bq.QueryParameterTypeStructTypes
 		for _, field := range ssdt.StructType.Fields {
 			fts = append(fts, &bq.QueryParameterTypeStructTypes{
 				Name: field.Name,
-				Type: field.Type.toBQQueryType(),
+				Type: field.Type.toBQParamType(),
 			})
 		}
 		return &bq.QueryParameterType{Type: "STRUCT", StructTypes: fts}
