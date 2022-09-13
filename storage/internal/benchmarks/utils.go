@@ -150,7 +150,7 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 		clientMu.Lock()
 		client, err = storage.NewClient(ctx, option.WithHTTPClient(&c))
 		clientMu.Unlock()
-		readAPI, writeAPI = jsonAPI, xmlAPI
+		readAPI, writeAPI = xmlAPI, jsonAPI
 	case grpcAPI:
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
