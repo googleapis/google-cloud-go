@@ -95,7 +95,7 @@ require (
 	cloud.google.com/go/run v0.1.1
 	cloud.google.com/go/scheduler v1.3.0
 	cloud.google.com/go/secretmanager v1.5.0
-	cloud.google.com/go/security v1.4.1
+	cloud.google.com/go/security v1.5.0
 	cloud.google.com/go/securitycenter v1.10.0
 	cloud.google.com/go/servicecontrol v1.3.0
 	cloud.google.com/go/servicedirectory v1.3.0
@@ -120,7 +120,7 @@ require (
 	cloud.google.com/go/workflows v1.5.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.94.0
-	google.golang.org/genproto v0.0.0-20220908141613-51c1cc9bc6d0
+	google.golang.org/genproto v0.0.0-20220913154956-18f8339a66a5
 )
 
 require (
