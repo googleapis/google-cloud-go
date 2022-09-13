@@ -75,7 +75,6 @@ func randomName(prefix string) string {
 	var sb strings.Builder
 
 	sb.WriteString(prefix)
-	sb.WriteRune('-')
 	sb.WriteString(uuid.New().String())
 	return sb.String()
 }

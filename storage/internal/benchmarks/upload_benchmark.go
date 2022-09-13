@@ -64,7 +64,7 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	}
 
 	if uopts.crc32c || uopts.md5 {
-		attrs, aerr := o.Attrs(ctx)
+		attrs, aerr := uopts.o.Attrs(ctx)
 		if aerr != nil {
 			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %w", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
 		}
