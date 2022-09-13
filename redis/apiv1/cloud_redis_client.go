@@ -161,7 +161,8 @@ func (c *CloudRedisClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudRedisClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -405,7 +406,8 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudRedisGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

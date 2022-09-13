@@ -223,7 +223,8 @@ func (c *TensorboardClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TensorboardClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -566,7 +567,8 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *tensorboardGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

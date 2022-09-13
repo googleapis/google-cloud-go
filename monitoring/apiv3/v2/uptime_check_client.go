@@ -159,7 +159,8 @@ func (c *UptimeCheckClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *UptimeCheckClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -267,7 +268,8 @@ func NewUptimeCheckClient(ctx context.Context, opts ...option.ClientOption) (*Up
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *uptimeCheckGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

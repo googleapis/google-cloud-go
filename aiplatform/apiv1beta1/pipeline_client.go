@@ -167,7 +167,8 @@ func (c *PipelineClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PipelineClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -401,7 +402,8 @@ func NewPipelineClient(ctx context.Context, opts ...option.ClientOption) (*Pipel
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *pipelineGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

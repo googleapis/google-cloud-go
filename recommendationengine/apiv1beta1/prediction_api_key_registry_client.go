@@ -140,7 +140,8 @@ func (c *PredictionApiKeyRegistryClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PredictionApiKeyRegistryClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -224,7 +225,8 @@ func NewPredictionApiKeyRegistryClient(ctx context.Context, opts ...option.Clien
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *predictionApiKeyRegistryGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

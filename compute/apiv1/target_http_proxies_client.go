@@ -107,7 +107,8 @@ func (c *TargetHttpProxiesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TargetHttpProxiesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -227,7 +228,7 @@ func (c *targetHttpProxiesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *targetHttpProxiesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
