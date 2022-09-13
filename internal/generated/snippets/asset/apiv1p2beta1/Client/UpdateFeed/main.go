@@ -22,7 +22,7 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1p2beta1"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1"
+	"cloud.google.com/go/asset/apiv1p2beta1/assetpb"
 )
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 
 	req := &assetpb.UpdateFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#UpdateFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p2beta1/assetpb#UpdateFeedRequest.
 	}
 	resp, err := c.UpdateFeed(ctx, req)
 	if err != nil {

@@ -17,7 +17,9 @@
 // Package fake aliases all exported identifiers in package
 // "cloud.google.com/go/internal/aliasgen/testdata/fakepb".
 //
-// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb.
+// Please read https://github.com/googleapis/google-cloud-go/blob/main/migration.md
+// for more details.
 package fake
 
 import (
