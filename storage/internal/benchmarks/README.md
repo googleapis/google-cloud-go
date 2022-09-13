@@ -14,7 +14,6 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -p | projectID | a project ID | * |
 | -creds | path to credentials file | any path | from environment |
 | -o | file to output results to | any file path | `res.csv` |
-| --------- | ----------- | --------------- |:-------:|
 | -api | which API to use | `JSON`: use JSON to upload and XML to download <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `MIXED`: select an API at random for each upload/download  | `MIXED` |
 | -r | bucket region for benchmarks | any GCS region | `US-WEST1` |
 | -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
@@ -23,11 +22,11 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -max_samples | maximum number of objects to upload | any positive integer | `10 000` |
 | -gc_f | whether to force garbage collection <br> before every write or read benchmark |  `true` or `false` (present/not present) | `false` |
 | -min_size | minimum object size in kib | any positive integer | `512` |
-| -max_size | maximum object size in kib | any positive integer | `2097152` (2 GiB) |
+| -max_size | maximum object size in kib | any positive integer | `2 097 152` (2 GiB) |
 | -defaults | use default settings for the client <br> (conn_pool, read, write and chunk size parameters will be ignored) | `true` or `false` | `false`
 | -conn_pool | GRPC connection pool size | any positive integer | 4 |
-| -min_cs | minimum ChunkSize in kib | any positive integer | `16384` |
-| -max_cs | maximum ChunkSize in kib | any positive integer | `16384` |
+| -min_cs | minimum ChunkSize in kib | any positive integer | `16 384` (16 MiB) |
+| -max_cs | maximum ChunkSize in kib | any positive integer | `16 384` (16 MiB) |
 | -q_read | download quantum | any positive integer | 1 |
 | -q_write | upload quantum | any positive integer | 1 |
 | -min_r_size | minimum read size in bytes | any positive integer | `4000` |
