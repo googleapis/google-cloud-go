@@ -40,25 +40,26 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	GetDocument       []gax.CallOption
-	ListDocuments     []gax.CallOption
-	UpdateDocument    []gax.CallOption
-	DeleteDocument    []gax.CallOption
-	BatchGetDocuments []gax.CallOption
-	BeginTransaction  []gax.CallOption
-	Commit            []gax.CallOption
-	Rollback          []gax.CallOption
-	RunQuery          []gax.CallOption
-	PartitionQuery    []gax.CallOption
-	Write             []gax.CallOption
-	Listen            []gax.CallOption
-	ListCollectionIds []gax.CallOption
-	BatchWrite        []gax.CallOption
-	CreateDocument    []gax.CallOption
-	CancelOperation   []gax.CallOption
-	DeleteOperation   []gax.CallOption
-	GetOperation      []gax.CallOption
-	ListOperations    []gax.CallOption
+	GetDocument         []gax.CallOption
+	ListDocuments       []gax.CallOption
+	UpdateDocument      []gax.CallOption
+	DeleteDocument      []gax.CallOption
+	BatchGetDocuments   []gax.CallOption
+	BeginTransaction    []gax.CallOption
+	Commit              []gax.CallOption
+	Rollback            []gax.CallOption
+	RunQuery            []gax.CallOption
+	RunAggregationQuery []gax.CallOption
+	PartitionQuery      []gax.CallOption
+	Write               []gax.CallOption
+	Listen              []gax.CallOption
+	ListCollectionIds   []gax.CallOption
+	BatchWrite          []gax.CallOption
+	CreateDocument      []gax.CallOption
+	CancelOperation     []gax.CallOption
+	DeleteOperation     []gax.CallOption
+	GetOperation        []gax.CallOption
+	ListOperations      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -197,6 +198,20 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		RunAggregationQuery: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		PartitionQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -286,6 +301,7 @@ type internalClient interface {
 	Commit(context.Context, *firestorepb.CommitRequest, ...gax.CallOption) (*firestorepb.CommitResponse, error)
 	Rollback(context.Context, *firestorepb.RollbackRequest, ...gax.CallOption) error
 	RunQuery(context.Context, *firestorepb.RunQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error)
+	RunAggregationQuery(context.Context, *firestorepb.RunAggregationQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error)
 	PartitionQuery(context.Context, *firestorepb.PartitionQueryRequest, ...gax.CallOption) *CursorIterator
 	Write(context.Context, ...gax.CallOption) (firestorepb.Firestore_WriteClient, error)
 	Listen(context.Context, ...gax.CallOption) (firestorepb.Firestore_ListenClient, error)
@@ -386,6 +402,17 @@ func (c *Client) Rollback(ctx context.Context, req *firestorepb.RollbackRequest,
 // RunQuery runs a query.
 func (c *Client) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error) {
 	return c.internalClient.RunQuery(ctx, req, opts...)
+}
+
+// RunAggregationQuery runs an aggregation query.
+//
+// Rather than producing Document results like Firestore.RunQuery,
+// this API allows running an aggregation to produce a series of
+// AggregationResult server-side.
+//
+// High-Level Example:
+func (c *Client) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
+	return c.internalClient.RunAggregationQuery(ctx, req, opts...)
 }
 
 // PartitionQuery partitions a query by returning partition cursors that can be used to run
@@ -732,6 +759,22 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.RunQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	var resp firestorepb.Firestore_RunAggregationQueryClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RunAggregationQuery(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
