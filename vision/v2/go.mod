@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/vision v1.2.0
 	github.com/googleapis/gax-go/v2 v2.4.0
 	google.golang.org/api v0.95.0
-	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959
+	google.golang.org/genproto v0.0.0-20220914142337-ca0e39ece12f
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
 )
