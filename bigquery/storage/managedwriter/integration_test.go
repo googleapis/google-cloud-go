@@ -56,7 +56,7 @@ var testSimpleData = []*testdata.SimpleMessageProto2{
 	{Name: proto.String("five"), Value: proto.Int64(2)},
 }
 
-func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) (*Client, *bigquery.Client) {
+func getTestClients(ctx context.Context, t testing.TB, opts ...option.ClientOption) (*Client, *bigquery.Client) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -82,7 +82,7 @@ func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 }
 
 // setupTestDataset generates a unique dataset for testing, and a cleanup that can be deferred.
-func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client, location string) (ds *bigquery.Dataset, cleanup func(), err error) {
+func setupTestDataset(ctx context.Context, t testing.TB, bqc *bigquery.Client, location string) (ds *bigquery.Dataset, cleanup func(), err error) {
 	dataset := bqc.Dataset(datasetIDs.New())
 	if err := dataset.Create(ctx, &bigquery.DatasetMetadata{Location: location}); err != nil {
 		return nil, nil, err
