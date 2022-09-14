@@ -26,6 +26,11 @@ import (
 
 func ExampleNewCloudFilestoreManagerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewCloudFilestoreManagerClient() {
 
 func ExampleCloudFilestoreManagerClient_ListInstances() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleCloudFilestoreManagerClient_ListInstances() {
 
 func ExampleCloudFilestoreManagerClient_GetInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleCloudFilestoreManagerClient_GetInstance() {
 
 func ExampleCloudFilestoreManagerClient_CreateInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleCloudFilestoreManagerClient_CreateInstance() {
 
 func ExampleCloudFilestoreManagerClient_UpdateInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +159,11 @@ func ExampleCloudFilestoreManagerClient_UpdateInstance() {
 
 func ExampleCloudFilestoreManagerClient_RestoreInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -159,6 +189,11 @@ func ExampleCloudFilestoreManagerClient_RestoreInstance() {
 
 func ExampleCloudFilestoreManagerClient_DeleteInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +217,11 @@ func ExampleCloudFilestoreManagerClient_DeleteInstance() {
 
 func ExampleCloudFilestoreManagerClient_ListBackups() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -208,6 +248,11 @@ func ExampleCloudFilestoreManagerClient_ListBackups() {
 
 func ExampleCloudFilestoreManagerClient_GetBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +273,11 @@ func ExampleCloudFilestoreManagerClient_GetBackup() {
 
 func ExampleCloudFilestoreManagerClient_CreateBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,6 +303,11 @@ func ExampleCloudFilestoreManagerClient_CreateBackup() {
 
 func ExampleCloudFilestoreManagerClient_DeleteBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,6 +331,11 @@ func ExampleCloudFilestoreManagerClient_DeleteBackup() {
 
 func ExampleCloudFilestoreManagerClient_UpdateBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

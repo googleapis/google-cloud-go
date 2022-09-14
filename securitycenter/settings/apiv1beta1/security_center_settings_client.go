@@ -279,7 +279,8 @@ func (c *SecurityCenterSettingsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SecurityCenterSettingsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -447,7 +448,8 @@ func NewSecurityCenterSettingsClient(ctx context.Context, opts ...option.ClientO
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *securityCenterSettingsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

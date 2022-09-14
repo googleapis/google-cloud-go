@@ -97,7 +97,8 @@ func (c *PolicyTagManagerSerializationClient) setGoogleClientInfo(keyval ...stri
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -180,7 +181,8 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *policyTagManagerSerializationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

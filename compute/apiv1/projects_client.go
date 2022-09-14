@@ -124,7 +124,8 @@ func (c *ProjectsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ProjectsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -274,7 +275,7 @@ func (c *projectsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *projectsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
