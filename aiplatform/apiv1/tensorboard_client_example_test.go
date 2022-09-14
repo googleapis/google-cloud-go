@@ -29,6 +29,11 @@ import (
 
 func ExampleNewTensorboardClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewTensorboardClient() {
 
 func ExampleTensorboardClient_CreateTensorboard() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,6 +76,11 @@ func ExampleTensorboardClient_CreateTensorboard() {
 
 func ExampleTensorboardClient_GetTensorboard() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,6 +101,11 @@ func ExampleTensorboardClient_GetTensorboard() {
 
 func ExampleTensorboardClient_UpdateTensorboard() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -111,6 +131,11 @@ func ExampleTensorboardClient_UpdateTensorboard() {
 
 func ExampleTensorboardClient_ListTensorboards() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,6 +162,11 @@ func ExampleTensorboardClient_ListTensorboards() {
 
 func ExampleTensorboardClient_DeleteTensorboard() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -160,6 +190,11 @@ func ExampleTensorboardClient_DeleteTensorboard() {
 
 func ExampleTensorboardClient_CreateTensorboardExperiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,6 +215,11 @@ func ExampleTensorboardClient_CreateTensorboardExperiment() {
 
 func ExampleTensorboardClient_GetTensorboardExperiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -200,6 +240,11 @@ func ExampleTensorboardClient_GetTensorboardExperiment() {
 
 func ExampleTensorboardClient_UpdateTensorboardExperiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -220,6 +265,11 @@ func ExampleTensorboardClient_UpdateTensorboardExperiment() {
 
 func ExampleTensorboardClient_ListTensorboardExperiments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -246,6 +296,11 @@ func ExampleTensorboardClient_ListTensorboardExperiments() {
 
 func ExampleTensorboardClient_DeleteTensorboardExperiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -269,6 +324,11 @@ func ExampleTensorboardClient_DeleteTensorboardExperiment() {
 
 func ExampleTensorboardClient_CreateTensorboardRun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -289,6 +349,11 @@ func ExampleTensorboardClient_CreateTensorboardRun() {
 
 func ExampleTensorboardClient_BatchCreateTensorboardRuns() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -309,6 +374,11 @@ func ExampleTensorboardClient_BatchCreateTensorboardRuns() {
 
 func ExampleTensorboardClient_GetTensorboardRun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -329,6 +399,11 @@ func ExampleTensorboardClient_GetTensorboardRun() {
 
 func ExampleTensorboardClient_UpdateTensorboardRun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -349,6 +424,11 @@ func ExampleTensorboardClient_UpdateTensorboardRun() {
 
 func ExampleTensorboardClient_ListTensorboardRuns() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -375,6 +455,11 @@ func ExampleTensorboardClient_ListTensorboardRuns() {
 
 func ExampleTensorboardClient_DeleteTensorboardRun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -398,6 +483,11 @@ func ExampleTensorboardClient_DeleteTensorboardRun() {
 
 func ExampleTensorboardClient_BatchCreateTensorboardTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -418,6 +508,11 @@ func ExampleTensorboardClient_BatchCreateTensorboardTimeSeries() {
 
 func ExampleTensorboardClient_CreateTensorboardTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -438,6 +533,11 @@ func ExampleTensorboardClient_CreateTensorboardTimeSeries() {
 
 func ExampleTensorboardClient_GetTensorboardTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -458,6 +558,11 @@ func ExampleTensorboardClient_GetTensorboardTimeSeries() {
 
 func ExampleTensorboardClient_UpdateTensorboardTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -478,6 +583,11 @@ func ExampleTensorboardClient_UpdateTensorboardTimeSeries() {
 
 func ExampleTensorboardClient_ListTensorboardTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -504,6 +614,11 @@ func ExampleTensorboardClient_ListTensorboardTimeSeries() {
 
 func ExampleTensorboardClient_DeleteTensorboardTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -527,6 +642,11 @@ func ExampleTensorboardClient_DeleteTensorboardTimeSeries() {
 
 func ExampleTensorboardClient_BatchReadTensorboardTimeSeriesData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -547,6 +667,11 @@ func ExampleTensorboardClient_BatchReadTensorboardTimeSeriesData() {
 
 func ExampleTensorboardClient_ReadTensorboardTimeSeriesData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -567,6 +692,11 @@ func ExampleTensorboardClient_ReadTensorboardTimeSeriesData() {
 
 func ExampleTensorboardClient_WriteTensorboardExperimentData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -587,6 +717,11 @@ func ExampleTensorboardClient_WriteTensorboardExperimentData() {
 
 func ExampleTensorboardClient_WriteTensorboardRunData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -607,6 +742,11 @@ func ExampleTensorboardClient_WriteTensorboardRunData() {
 
 func ExampleTensorboardClient_ExportTensorboardTimeSeriesData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -633,6 +773,11 @@ func ExampleTensorboardClient_ExportTensorboardTimeSeriesData() {
 
 func ExampleTensorboardClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -653,6 +798,11 @@ func ExampleTensorboardClient_GetLocation() {
 
 func ExampleTensorboardClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -679,6 +829,11 @@ func ExampleTensorboardClient_ListLocations() {
 
 func ExampleTensorboardClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -699,6 +854,11 @@ func ExampleTensorboardClient_GetIamPolicy() {
 
 func ExampleTensorboardClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -719,6 +879,11 @@ func ExampleTensorboardClient_SetIamPolicy() {
 
 func ExampleTensorboardClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -739,6 +904,11 @@ func ExampleTensorboardClient_TestIamPermissions() {
 
 func ExampleTensorboardClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -757,6 +927,11 @@ func ExampleTensorboardClient_CancelOperation() {
 
 func ExampleTensorboardClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -775,6 +950,11 @@ func ExampleTensorboardClient_DeleteOperation() {
 
 func ExampleTensorboardClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -795,6 +975,11 @@ func ExampleTensorboardClient_GetOperation() {
 
 func ExampleTensorboardClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -821,6 +1006,11 @@ func ExampleTensorboardClient_ListOperations() {
 
 func ExampleTensorboardClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewTensorboardClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

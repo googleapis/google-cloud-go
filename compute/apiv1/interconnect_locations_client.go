@@ -90,7 +90,8 @@ func (c *InterconnectLocationsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *InterconnectLocationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -169,7 +170,7 @@ func (c *interconnectLocationsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *interconnectLocationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

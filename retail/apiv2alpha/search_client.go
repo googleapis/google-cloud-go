@@ -129,7 +129,8 @@ func (c *SearchClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SearchClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -218,7 +219,8 @@ func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *searchGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

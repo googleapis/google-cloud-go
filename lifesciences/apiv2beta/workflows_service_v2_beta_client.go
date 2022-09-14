@@ -116,7 +116,8 @@ func (c *WorkflowsServiceV2BetaClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -225,7 +226,8 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *workflowsServiceV2BetaGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -325,7 +327,7 @@ func (c *workflowsServiceV2BetaRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *workflowsServiceV2BetaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

@@ -26,6 +26,11 @@ import (
 
 func ExampleNewGameServerDeploymentsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewGameServerDeploymentsClient() {
 
 func ExampleGameServerDeploymentsClient_ListGameServerDeployments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleGameServerDeploymentsClient_ListGameServerDeployments() {
 
 func ExampleGameServerDeploymentsClient_GetGameServerDeployment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleGameServerDeploymentsClient_GetGameServerDeployment() {
 
 func ExampleGameServerDeploymentsClient_CreateGameServerDeployment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleGameServerDeploymentsClient_CreateGameServerDeployment() {
 
 func ExampleGameServerDeploymentsClient_DeleteGameServerDeployment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,6 +157,11 @@ func ExampleGameServerDeploymentsClient_DeleteGameServerDeployment() {
 
 func ExampleGameServerDeploymentsClient_UpdateGameServerDeployment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleGameServerDeploymentsClient_UpdateGameServerDeployment() {
 
 func ExampleGameServerDeploymentsClient_GetGameServerDeploymentRollout() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -177,6 +212,11 @@ func ExampleGameServerDeploymentsClient_GetGameServerDeploymentRollout() {
 
 func ExampleGameServerDeploymentsClient_UpdateGameServerDeploymentRollout() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +242,11 @@ func ExampleGameServerDeploymentsClient_UpdateGameServerDeploymentRollout() {
 
 func ExampleGameServerDeploymentsClient_PreviewGameServerDeploymentRollout() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,6 +267,11 @@ func ExampleGameServerDeploymentsClient_PreviewGameServerDeploymentRollout() {
 
 func ExampleGameServerDeploymentsClient_FetchDeploymentState() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

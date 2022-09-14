@@ -113,7 +113,8 @@ func (c *SnapshotsV1Beta3Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SnapshotsV1Beta3Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -193,7 +194,8 @@ func NewSnapshotsV1Beta3Client(ctx context.Context, opts ...option.ClientOption)
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *snapshotsV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -277,7 +279,7 @@ func (c *snapshotsV1Beta3RESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *snapshotsV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
