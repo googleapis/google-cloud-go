@@ -776,6 +776,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		LocationType:             b.GetLocationType(),
 		RPO:                      toRPOFromProto(b),
 		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
+		ProjectNumber:            parseProjectNumber(b.GetProject()), // this can return 0 the project resource name is ID based
 	}
 }
 
