@@ -69,19 +69,56 @@ func benchmarkAppend(location string, schema bigquery.Schema, dp *descriptorpb.D
 	}
 }
 
-func BenchmarkAppend_SingleSimpleData(b *testing.B) {
+func BenchmarkAppend(b *testing.B) {
 
-	// prepare test append payload
-	by, err := proto.Marshal(testSimpleData[0])
-	if err != nil {
-		b.Fatalf("failed to marshall proto data: %v", err)
-	}
-	rowData := [][]byte{by}
+	for _, bm := range []struct {
+		name       string
+		schema     bigquery.Schema
+		descriptor *descriptorpb.DescriptorProto
+		rowData    [][]byte
+	}{
+		{
+			name:   "Single_SimpleMessage",
+			schema: testdata.SimpleMessageSchema,
+			descriptor: func() *descriptorpb.DescriptorProto {
+				desc, _ := adapt.NormalizeDescriptor(testSimpleData[0].ProtoReflect().Descriptor())
+				return desc
+			}(),
+			rowData: func() [][]byte {
+				by, err := proto.Marshal(testSimpleData[0])
+				if err != nil {
+					b.Fatalf("failed to marshall proto data: %v", err)
+				}
+				rowData := [][]byte{by}
+				return rowData
+			}(),
+		},
+		{
+			name:   "2MB_SimpleMessage",
+			schema: testdata.SimpleMessageSchema,
+			descriptor: func() *descriptorpb.DescriptorProto {
+				desc, _ := adapt.NormalizeDescriptor(testSimpleData[0].ProtoReflect().Descriptor())
+				return desc
+			}(),
+			rowData: func() [][]byte {
+				by, err := proto.Marshal(testSimpleData[0])
+				if err != nil {
+					b.Fatalf("failed to marshall proto data: %v", err)
+				}
 
-	// prepare schema
-	desc, err := adapt.NormalizeDescriptor(testSimpleData[0].ProtoReflect().Descriptor())
-	if err != nil {
-		b.Fatalf("NormalizeDescriptor: %v", err)
+				targetBytes := 2 * 1024 * 1024
+				numRows := targetBytes / len(by)
+
+				rowData := make([][]byte, numRows)
+				for i := 0; i < numRows; i++ {
+					rowData[i] = by
+				}
+				return rowData
+			}(),
+		},
+	} {
+		b.Run(bm.name, func(b *testing.B) {
+			benchmarkAppend(benchLocation, bm.schema, bm.descriptor, bm.rowData, b)
+		})
 	}
-	benchmarkAppend(benchLocation, testdata.SimpleMessageSchema, desc, rowData, b)
 }
