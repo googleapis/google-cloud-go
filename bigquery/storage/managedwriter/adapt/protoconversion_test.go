@@ -19,7 +19,6 @@ import (
 	"reflect"
 	"testing"
 
-	"cloud.google.com/go/bigquery/storage/managedwriter/internal/annotations"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
@@ -446,8 +445,8 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						},
 					},
 				}
-				proto.SetExtension(dp.Field[1].Options, annotations.E_ColumnName, "火")
-				proto.SetExtension(dp.Field[2].Options, annotations.E_ColumnName, "水_addict")
+				proto.SetExtension(dp.Field[1].Options, storagepb.E_ColumnName, "火")
+				proto.SetExtension(dp.Field[2].Options, storagepb.E_ColumnName, "水_addict")
 				return dp
 			}(),
 		},

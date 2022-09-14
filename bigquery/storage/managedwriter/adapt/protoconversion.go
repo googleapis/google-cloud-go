@@ -20,7 +20,6 @@ import (
 	"strings"
 	"unicode"
 
-	"cloud.google.com/go/bigquery/storage/managedwriter/internal/annotations"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -340,7 +339,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		if opts == nil {
 			fdp.Options = &descriptorpb.FieldOptions{}
 		}
-		proto.SetExtension(fdp.Options, annotations.E_ColumnName, name)
+		proto.SetExtension(fdp.Options, storagepb.E_ColumnName, name)
 	}
 	return fdp, nil
 }

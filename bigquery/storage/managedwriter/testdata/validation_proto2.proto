@@ -16,7 +16,8 @@ syntax = "proto2";
 
 package testdata;
 
-import "internal/annotations/annotations.proto";
+// Source protos located in github.com/googleapis/googleapis
+import "google/cloud/bigquery/storage/v1/annotations.proto";
 
 option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
 
