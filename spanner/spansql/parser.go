@@ -2120,9 +2120,8 @@ func (p *parser) parseAlterChangeStream() (*AlterChangeStream, *parseError) {
 		}
 		acs.Alteration = AlterChangeStreamOptions{Options: options}
 		return acs, nil
-	} else {
-		return nil, p.errorf("got %q, expected OPTIONS", p.next())
 	}
+	return nil, p.errorf("got %q, expected OPTIONS", p.next())
 }
 
 func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
