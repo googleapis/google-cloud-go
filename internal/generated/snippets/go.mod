@@ -120,7 +120,7 @@ require (
 	cloud.google.com/go/workflows v1.5.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.95.0
-	google.golang.org/genproto v0.0.0-20220914142337-ca0e39ece12f
+	google.golang.org/genproto v0.0.0-20220914210030-581e60b4ef85
 )
 
 require (
