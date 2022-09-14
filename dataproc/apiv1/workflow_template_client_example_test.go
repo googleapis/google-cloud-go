@@ -26,6 +26,11 @@ import (
 
 func ExampleNewWorkflowTemplateClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewWorkflowTemplateClient() {
 
 func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -101,6 +121,11 @@ func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +149,11 @@ func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,6 +174,11 @@ func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,6 +205,11 @@ func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
 
 func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -29,6 +29,11 @@ import (
 
 func ExampleNewPredictionClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewPredictionClient() {
 
 func ExamplePredictionClient_Predict() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExamplePredictionClient_Predict() {
 
 func ExamplePredictionClient_RawPredict() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -81,6 +96,11 @@ func ExamplePredictionClient_RawPredict() {
 
 func ExamplePredictionClient_Explain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -101,6 +121,11 @@ func ExamplePredictionClient_Explain() {
 
 func ExamplePredictionClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -121,6 +146,11 @@ func ExamplePredictionClient_GetLocation() {
 
 func ExamplePredictionClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -147,6 +177,11 @@ func ExamplePredictionClient_ListLocations() {
 
 func ExamplePredictionClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -167,6 +202,11 @@ func ExamplePredictionClient_GetIamPolicy() {
 
 func ExamplePredictionClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -187,6 +227,11 @@ func ExamplePredictionClient_SetIamPolicy() {
 
 func ExamplePredictionClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,6 +252,11 @@ func ExamplePredictionClient_TestIamPermissions() {
 
 func ExamplePredictionClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -225,6 +275,11 @@ func ExamplePredictionClient_CancelOperation() {
 
 func ExamplePredictionClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,6 +298,11 @@ func ExamplePredictionClient_DeleteOperation() {
 
 func ExamplePredictionClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -263,6 +323,11 @@ func ExamplePredictionClient_GetOperation() {
 
 func ExamplePredictionClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -289,6 +354,11 @@ func ExamplePredictionClient_ListOperations() {
 
 func ExamplePredictionClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

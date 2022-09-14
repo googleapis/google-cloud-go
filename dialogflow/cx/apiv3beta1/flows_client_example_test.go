@@ -28,6 +28,11 @@ import (
 
 func ExampleNewFlowsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewFlowsClient() {
 
 func ExampleNewFlowsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -52,6 +62,11 @@ func ExampleNewFlowsRESTClient() {
 
 func ExampleFlowsClient_CreateFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,6 +87,11 @@ func ExampleFlowsClient_CreateFlow() {
 
 func ExampleFlowsClient_DeleteFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -90,6 +110,11 @@ func ExampleFlowsClient_DeleteFlow() {
 
 func ExampleFlowsClient_ListFlows() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -116,6 +141,11 @@ func ExampleFlowsClient_ListFlows() {
 
 func ExampleFlowsClient_GetFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -136,6 +166,11 @@ func ExampleFlowsClient_GetFlow() {
 
 func ExampleFlowsClient_UpdateFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,6 +191,11 @@ func ExampleFlowsClient_UpdateFlow() {
 
 func ExampleFlowsClient_TrainFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -179,6 +219,11 @@ func ExampleFlowsClient_TrainFlow() {
 
 func ExampleFlowsClient_ValidateFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -199,6 +244,11 @@ func ExampleFlowsClient_ValidateFlow() {
 
 func ExampleFlowsClient_GetFlowValidationResult() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -219,6 +269,11 @@ func ExampleFlowsClient_GetFlowValidationResult() {
 
 func ExampleFlowsClient_ImportFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -244,6 +299,11 @@ func ExampleFlowsClient_ImportFlow() {
 
 func ExampleFlowsClient_ExportFlow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -269,6 +329,11 @@ func ExampleFlowsClient_ExportFlow() {
 
 func ExampleFlowsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -289,6 +354,11 @@ func ExampleFlowsClient_GetLocation() {
 
 func ExampleFlowsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -315,6 +385,11 @@ func ExampleFlowsClient_ListLocations() {
 
 func ExampleFlowsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -333,6 +408,11 @@ func ExampleFlowsClient_CancelOperation() {
 
 func ExampleFlowsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -353,6 +433,11 @@ func ExampleFlowsClient_GetOperation() {
 
 func ExampleFlowsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -26,6 +26,11 @@ import (
 
 func ExampleNewReservationsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewReservationsRESTClient() {
 
 func ExampleReservationsClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleReservationsClient_AggregatedList() {
 
 func ExampleReservationsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,6 +102,11 @@ func ExampleReservationsClient_Delete() {
 
 func ExampleReservationsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,6 +127,11 @@ func ExampleReservationsClient_Get() {
 
 func ExampleReservationsClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -127,6 +152,11 @@ func ExampleReservationsClient_GetIamPolicy() {
 
 func ExampleReservationsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,6 +180,11 @@ func ExampleReservationsClient_Insert() {
 
 func ExampleReservationsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +211,11 @@ func ExampleReservationsClient_List() {
 
 func ExampleReservationsClient_Resize() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -199,6 +239,11 @@ func ExampleReservationsClient_Resize() {
 
 func ExampleReservationsClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -219,6 +264,11 @@ func ExampleReservationsClient_SetIamPolicy() {
 
 func ExampleReservationsClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -239,6 +289,11 @@ func ExampleReservationsClient_TestIamPermissions() {
 
 func ExampleReservationsClient_Update() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewReservationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

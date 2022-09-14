@@ -28,6 +28,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewClient() {
 
 func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -52,6 +62,11 @@ func ExampleNewRESTClient() {
 
 func ExampleClient_ListRepositories() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleClient_ListRepositories() {
 
 func ExampleClient_GetRepository() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +118,11 @@ func ExampleClient_GetRepository() {
 
 func ExampleClient_CreateRepository() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,6 +143,11 @@ func ExampleClient_CreateRepository() {
 
 func ExampleClient_UpdateRepository() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,6 +168,11 @@ func ExampleClient_UpdateRepository() {
 
 func ExampleClient_DeleteRepository() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,6 +191,11 @@ func ExampleClient_DeleteRepository() {
 
 func ExampleClient_FetchRemoteBranches() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +216,11 @@ func ExampleClient_FetchRemoteBranches() {
 
 func ExampleClient_ListWorkspaces() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +247,11 @@ func ExampleClient_ListWorkspaces() {
 
 func ExampleClient_GetWorkspace() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,6 +272,11 @@ func ExampleClient_GetWorkspace() {
 
 func ExampleClient_CreateWorkspace() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -242,6 +297,11 @@ func ExampleClient_CreateWorkspace() {
 
 func ExampleClient_DeleteWorkspace() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -260,6 +320,11 @@ func ExampleClient_DeleteWorkspace() {
 
 func ExampleClient_InstallNpmPackages() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -280,6 +345,11 @@ func ExampleClient_InstallNpmPackages() {
 
 func ExampleClient_PullGitCommits() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -298,6 +368,11 @@ func ExampleClient_PullGitCommits() {
 
 func ExampleClient_PushGitCommits() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -316,6 +391,11 @@ func ExampleClient_PushGitCommits() {
 
 func ExampleClient_FetchFileGitStatuses() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -336,6 +416,11 @@ func ExampleClient_FetchFileGitStatuses() {
 
 func ExampleClient_FetchGitAheadBehind() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -356,6 +441,11 @@ func ExampleClient_FetchGitAheadBehind() {
 
 func ExampleClient_CommitWorkspaceChanges() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -374,6 +464,11 @@ func ExampleClient_CommitWorkspaceChanges() {
 
 func ExampleClient_ResetWorkspaceChanges() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -392,6 +487,11 @@ func ExampleClient_ResetWorkspaceChanges() {
 
 func ExampleClient_FetchFileDiff() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -412,6 +512,11 @@ func ExampleClient_FetchFileDiff() {
 
 func ExampleClient_QueryDirectoryContents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -438,6 +543,11 @@ func ExampleClient_QueryDirectoryContents() {
 
 func ExampleClient_MakeDirectory() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -458,6 +568,11 @@ func ExampleClient_MakeDirectory() {
 
 func ExampleClient_RemoveDirectory() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -476,6 +591,11 @@ func ExampleClient_RemoveDirectory() {
 
 func ExampleClient_MoveDirectory() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -496,6 +616,11 @@ func ExampleClient_MoveDirectory() {
 
 func ExampleClient_ReadFile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -516,6 +641,11 @@ func ExampleClient_ReadFile() {
 
 func ExampleClient_RemoveFile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -534,6 +664,11 @@ func ExampleClient_RemoveFile() {
 
 func ExampleClient_MoveFile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -554,6 +689,11 @@ func ExampleClient_MoveFile() {
 
 func ExampleClient_WriteFile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -574,6 +714,11 @@ func ExampleClient_WriteFile() {
 
 func ExampleClient_ListCompilationResults() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -600,6 +745,11 @@ func ExampleClient_ListCompilationResults() {
 
 func ExampleClient_GetCompilationResult() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -620,6 +770,11 @@ func ExampleClient_GetCompilationResult() {
 
 func ExampleClient_CreateCompilationResult() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -640,6 +795,11 @@ func ExampleClient_CreateCompilationResult() {
 
 func ExampleClient_QueryCompilationResultActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -666,6 +826,11 @@ func ExampleClient_QueryCompilationResultActions() {
 
 func ExampleClient_ListWorkflowInvocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -692,6 +857,11 @@ func ExampleClient_ListWorkflowInvocations() {
 
 func ExampleClient_GetWorkflowInvocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -712,6 +882,11 @@ func ExampleClient_GetWorkflowInvocation() {
 
 func ExampleClient_CreateWorkflowInvocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -732,6 +907,11 @@ func ExampleClient_CreateWorkflowInvocation() {
 
 func ExampleClient_DeleteWorkflowInvocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -750,6 +930,11 @@ func ExampleClient_DeleteWorkflowInvocation() {
 
 func ExampleClient_CancelWorkflowInvocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -768,6 +953,11 @@ func ExampleClient_CancelWorkflowInvocation() {
 
 func ExampleClient_QueryWorkflowInvocationActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -794,6 +984,11 @@ func ExampleClient_QueryWorkflowInvocationActions() {
 
 func ExampleClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -814,6 +1009,11 @@ func ExampleClient_GetLocation() {
 
 func ExampleClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -840,6 +1040,11 @@ func ExampleClient_ListLocations() {
 
 func ExampleClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -860,6 +1065,11 @@ func ExampleClient_GetIamPolicy() {
 
 func ExampleClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -880,6 +1090,11 @@ func ExampleClient_SetIamPolicy() {
 
 func ExampleClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

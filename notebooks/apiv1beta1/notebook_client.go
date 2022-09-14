@@ -172,7 +172,8 @@ func (c *NotebookClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *NotebookClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -439,7 +440,8 @@ func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*Noteb
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *notebookGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

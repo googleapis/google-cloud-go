@@ -207,7 +207,8 @@ func (c *CloudFilestoreManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudFilestoreManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -418,7 +419,8 @@ func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOp
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudFilestoreManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

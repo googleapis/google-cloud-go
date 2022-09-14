@@ -128,7 +128,8 @@ func (c *LookupClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *LookupClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -200,7 +201,8 @@ func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *lookupGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -284,7 +286,7 @@ func (c *lookupRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *lookupRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

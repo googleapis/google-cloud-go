@@ -25,6 +25,11 @@ import (
 
 func ExampleNewTemplatesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewTemplatesClient() {
 
 func ExampleNewTemplatesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +59,11 @@ func ExampleNewTemplatesRESTClient() {
 
 func ExampleTemplatesClient_CreateJobFromTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,6 +84,11 @@ func ExampleTemplatesClient_CreateJobFromTemplate() {
 
 func ExampleTemplatesClient_LaunchTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,6 +109,11 @@ func ExampleTemplatesClient_LaunchTemplate() {
 
 func ExampleTemplatesClient_GetTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

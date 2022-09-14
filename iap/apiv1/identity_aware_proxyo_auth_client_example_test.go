@@ -26,6 +26,11 @@ import (
 
 func ExampleNewIdentityAwareProxyOAuthClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewIdentityAwareProxyOAuthClient() {
 
 func ExampleIdentityAwareProxyOAuthClient_ListBrands() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleIdentityAwareProxyOAuthClient_ListBrands() {
 
 func ExampleIdentityAwareProxyOAuthClient_CreateBrand() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleIdentityAwareProxyOAuthClient_CreateBrand() {
 
 func ExampleIdentityAwareProxyOAuthClient_GetBrand() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +118,11 @@ func ExampleIdentityAwareProxyOAuthClient_GetBrand() {
 
 func ExampleIdentityAwareProxyOAuthClient_CreateIdentityAwareProxyClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,6 +143,11 @@ func ExampleIdentityAwareProxyOAuthClient_CreateIdentityAwareProxyClient() {
 
 func ExampleIdentityAwareProxyOAuthClient_ListIdentityAwareProxyClients() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,6 +174,11 @@ func ExampleIdentityAwareProxyOAuthClient_ListIdentityAwareProxyClients() {
 
 func ExampleIdentityAwareProxyOAuthClient_GetIdentityAwareProxyClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,6 +199,11 @@ func ExampleIdentityAwareProxyOAuthClient_GetIdentityAwareProxyClient() {
 
 func ExampleIdentityAwareProxyOAuthClient_ResetIdentityAwareProxyClientSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -184,6 +224,11 @@ func ExampleIdentityAwareProxyOAuthClient_ResetIdentityAwareProxyClientSecret() 
 
 func ExampleIdentityAwareProxyOAuthClient_DeleteIdentityAwareProxyClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyOAuthClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

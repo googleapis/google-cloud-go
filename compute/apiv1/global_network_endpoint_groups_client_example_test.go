@@ -26,6 +26,11 @@ import (
 
 func ExampleNewGlobalNetworkEndpointGroupsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewGlobalNetworkEndpointGroupsRESTClient() {
 
 func ExampleGlobalNetworkEndpointGroupsClient_AttachNetworkEndpoints() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleGlobalNetworkEndpointGroupsClient_AttachNetworkEndpoints() {
 
 func ExampleGlobalNetworkEndpointGroupsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleGlobalNetworkEndpointGroupsClient_Delete() {
 
 func ExampleGlobalNetworkEndpointGroupsClient_DetachNetworkEndpoints() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,6 +127,11 @@ func ExampleGlobalNetworkEndpointGroupsClient_DetachNetworkEndpoints() {
 
 func ExampleGlobalNetworkEndpointGroupsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -127,6 +152,11 @@ func ExampleGlobalNetworkEndpointGroupsClient_Get() {
 
 func ExampleGlobalNetworkEndpointGroupsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,6 +180,11 @@ func ExampleGlobalNetworkEndpointGroupsClient_Insert() {
 
 func ExampleGlobalNetworkEndpointGroupsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +211,11 @@ func ExampleGlobalNetworkEndpointGroupsClient_List() {
 
 func ExampleGlobalNetworkEndpointGroupsClient_ListNetworkEndpoints() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewGlobalNetworkEndpointGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

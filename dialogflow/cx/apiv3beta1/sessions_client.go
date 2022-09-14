@@ -202,7 +202,8 @@ func (c *SessionsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SessionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -336,7 +337,8 @@ func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*Sessi
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *sessionsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -422,7 +424,7 @@ func (c *sessionsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *sessionsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

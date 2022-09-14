@@ -104,7 +104,8 @@ func (c *StreamingVideoIntelligenceClient) setGoogleClientInfo(keyval ...string)
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *StreamingVideoIntelligenceClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -176,7 +177,8 @@ func NewStreamingVideoIntelligenceClient(ctx context.Context, opts ...option.Cli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *streamingVideoIntelligenceGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
