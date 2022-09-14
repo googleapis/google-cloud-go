@@ -232,7 +232,22 @@ You can also sign a URL wihout creating a client. See the documentation of
 	}
 	fmt.Println(url)
 
-# Credential detection for [BucketHandle.SignedURL] and [BucketHandle.GenerateSignedPostPolicyV4]
+# Post Policy V4 Signed Request
+
+A type of signed request that allows uploads through HTML forms directly to Cloud Storage with
+temporary permission. Conditions can be applied to restrict how the HTML form is used and exercised
+by a user.
+
+For more information, please see https://cloud.google.com/storage/docs/xml-api/post-object as well
+as the documentation of BucketHandle.GenerateSignedPostPolicyV4.
+
+	pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName, opts)
+	if err != nil {
+	    // TODO: Handle error.
+	}
+	fmt.Printf("URL: %s\nFields; %v\n", pv4.URL, pv4.Fields)
+
+# Credential requirements for [BucketHandle.SignedURL] and [BucketHandle.GenerateSignedPostPolicyV4]
 
 If the GoogleAccessID and PrivateKey option fields are not provided, they will
 be automatically detected if any of the following are true:
@@ -248,24 +263,9 @@ token source or using [option.WithHTTPClient]. In this case, you can provide a
 service account email for GoogleAccessID and the client will attempt to sign
 the URL or Post Policy using that service account.
 
-To sign without a custom signing function you require:
-  - the [IAM Service Account Credentials API] enabled, and
-  - iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-
-# Post Policy V4 Signed Request
-
-A type of signed request that allows uploads through HTML forms directly to Cloud Storage with
-temporary permission. Conditions can be applied to restrict how the HTML form is used and exercised
-by a user.
-
-For more information, please see https://cloud.google.com/storage/docs/xml-api/post-object as well
-as the documentation of BucketHandle.GenerateSignedPostPolicyV4.
-
-	pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName, opts)
-	if err != nil {
-	    // TODO: Handle error.
-	}
-	fmt.Printf("URL: %s\nFields; %v\n", pv4.URL, pv4.Fields)
+To generate the signature, you must have:
+- iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account, and
+- the [IAM Service Account Credentials API] enabled (unless authenticating with a downloaded private key).
 
 # Errors
 
