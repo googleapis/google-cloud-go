@@ -91,7 +91,8 @@ func (c *SpeechTranslationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SpeechTranslationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -162,7 +163,8 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *speechTranslationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

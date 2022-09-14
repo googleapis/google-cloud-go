@@ -176,7 +176,8 @@ func (c *WebhooksClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *WebhooksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -297,7 +298,8 @@ func NewWebhooksClient(ctx context.Context, opts ...option.ClientOption) (*Webho
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *webhooksGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

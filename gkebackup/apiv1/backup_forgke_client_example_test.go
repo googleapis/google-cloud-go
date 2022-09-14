@@ -26,6 +26,11 @@ import (
 
 func ExampleNewBackupForGKEClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewBackupForGKEClient() {
 
 func ExampleBackupForGKEClient_CreateBackupPlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -63,6 +73,11 @@ func ExampleBackupForGKEClient_CreateBackupPlan() {
 
 func ExampleBackupForGKEClient_ListBackupPlans() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,6 +104,11 @@ func ExampleBackupForGKEClient_ListBackupPlans() {
 
 func ExampleBackupForGKEClient_GetBackupPlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleBackupForGKEClient_GetBackupPlan() {
 
 func ExampleBackupForGKEClient_UpdateBackupPlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +159,11 @@ func ExampleBackupForGKEClient_UpdateBackupPlan() {
 
 func ExampleBackupForGKEClient_DeleteBackupPlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleBackupForGKEClient_DeleteBackupPlan() {
 
 func ExampleBackupForGKEClient_CreateBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +217,11 @@ func ExampleBackupForGKEClient_CreateBackup() {
 
 func ExampleBackupForGKEClient_ListBackups() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -208,6 +248,11 @@ func ExampleBackupForGKEClient_ListBackups() {
 
 func ExampleBackupForGKEClient_GetBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +273,11 @@ func ExampleBackupForGKEClient_GetBackup() {
 
 func ExampleBackupForGKEClient_UpdateBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,6 +303,11 @@ func ExampleBackupForGKEClient_UpdateBackup() {
 
 func ExampleBackupForGKEClient_DeleteBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,6 +331,11 @@ func ExampleBackupForGKEClient_DeleteBackup() {
 
 func ExampleBackupForGKEClient_ListVolumeBackups() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -302,6 +362,11 @@ func ExampleBackupForGKEClient_ListVolumeBackups() {
 
 func ExampleBackupForGKEClient_GetVolumeBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -322,6 +387,11 @@ func ExampleBackupForGKEClient_GetVolumeBackup() {
 
 func ExampleBackupForGKEClient_CreateRestorePlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -347,6 +417,11 @@ func ExampleBackupForGKEClient_CreateRestorePlan() {
 
 func ExampleBackupForGKEClient_ListRestorePlans() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -373,6 +448,11 @@ func ExampleBackupForGKEClient_ListRestorePlans() {
 
 func ExampleBackupForGKEClient_GetRestorePlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -393,6 +473,11 @@ func ExampleBackupForGKEClient_GetRestorePlan() {
 
 func ExampleBackupForGKEClient_UpdateRestorePlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -418,6 +503,11 @@ func ExampleBackupForGKEClient_UpdateRestorePlan() {
 
 func ExampleBackupForGKEClient_DeleteRestorePlan() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -441,6 +531,11 @@ func ExampleBackupForGKEClient_DeleteRestorePlan() {
 
 func ExampleBackupForGKEClient_CreateRestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -466,6 +561,11 @@ func ExampleBackupForGKEClient_CreateRestore() {
 
 func ExampleBackupForGKEClient_ListRestores() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -492,6 +592,11 @@ func ExampleBackupForGKEClient_ListRestores() {
 
 func ExampleBackupForGKEClient_GetRestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -512,6 +617,11 @@ func ExampleBackupForGKEClient_GetRestore() {
 
 func ExampleBackupForGKEClient_UpdateRestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -537,6 +647,11 @@ func ExampleBackupForGKEClient_UpdateRestore() {
 
 func ExampleBackupForGKEClient_DeleteRestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -560,6 +675,11 @@ func ExampleBackupForGKEClient_DeleteRestore() {
 
 func ExampleBackupForGKEClient_ListVolumeRestores() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -586,6 +706,11 @@ func ExampleBackupForGKEClient_ListVolumeRestores() {
 
 func ExampleBackupForGKEClient_GetVolumeRestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

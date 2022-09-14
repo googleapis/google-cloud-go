@@ -228,7 +228,8 @@ func (c *BigQueryStorageClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BigQueryStorageClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -366,7 +367,8 @@ func NewBigQueryStorageClient(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *bigQueryStorageGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -452,7 +454,7 @@ func (c *bigQueryStorageRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *bigQueryStorageRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

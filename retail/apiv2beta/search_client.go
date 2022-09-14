@@ -103,7 +103,7 @@ type internalSearchClient interface {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 type SearchClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSearchClient
@@ -129,7 +129,8 @@ func (c *SearchClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SearchClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -137,7 +138,7 @@ func (c *SearchClient) Connection() *grpc.ClientConn {
 // Search performs a search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func (c *SearchClient) Search(ctx context.Context, req *retailpb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	return c.internalClient.Search(ctx, req, opts...)
 }
@@ -180,7 +181,7 @@ type searchGRPCClient struct {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
 	clientOpts := defaultSearchGRPCClientOptions()
 	if newSearchClientHook != nil {
@@ -218,7 +219,8 @@ func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *searchGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

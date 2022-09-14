@@ -27,6 +27,11 @@ import (
 
 func ExampleNewPublisherClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewPublisherClient() {
 
 func ExamplePublisherClient_CreateTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -59,6 +69,11 @@ func ExamplePublisherClient_CreateTopic() {
 
 func ExamplePublisherClient_UpdateTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -79,6 +94,11 @@ func ExamplePublisherClient_UpdateTopic() {
 
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -99,6 +119,11 @@ func ExamplePublisherClient_Publish() {
 
 func ExamplePublisherClient_GetTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,6 +144,11 @@ func ExamplePublisherClient_GetTopic() {
 
 func ExamplePublisherClient_ListTopics() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -145,6 +175,11 @@ func ExamplePublisherClient_ListTopics() {
 
 func ExamplePublisherClient_ListTopicSubscriptions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -171,6 +206,11 @@ func ExamplePublisherClient_ListTopicSubscriptions() {
 
 func ExamplePublisherClient_ListTopicSnapshots() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -197,6 +237,11 @@ func ExamplePublisherClient_ListTopicSnapshots() {
 
 func ExamplePublisherClient_DeleteTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -215,6 +260,11 @@ func ExamplePublisherClient_DeleteTopic() {
 
 func ExamplePublisherClient_DetachSubscription() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -235,6 +285,11 @@ func ExamplePublisherClient_DetachSubscription() {
 
 func ExamplePublisherClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -255,6 +310,11 @@ func ExamplePublisherClient_GetIamPolicy() {
 
 func ExamplePublisherClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -275,6 +335,11 @@ func ExamplePublisherClient_SetIamPolicy() {
 
 func ExamplePublisherClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
