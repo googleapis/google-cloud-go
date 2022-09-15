@@ -119,8 +119,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.2.0
 	cloud.google.com/go/workflows v1.5.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.95.0
-	google.golang.org/genproto v0.0.0-20220913154956-18f8339a66a5
+	google.golang.org/api v0.96.0
+	google.golang.org/genproto v0.0.0-20220915135415-7fd63a7952de
 )
 
 require (
@@ -134,7 +134,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.5.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
+	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/text v0.3.7 // indirect

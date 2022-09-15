@@ -2,6 +2,19 @@
 
 
 
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.40.0...bigquery/v1.41.0) (2022-09-14)
+
+
+### Features
+
+* **bigquery/storage:** add location to WriteStream and add WriteStreamView support ([6a0080a](https://github.com/googleapis/google-cloud-go/commit/6a0080ad69398c572d856886293e19c79cf0fc0e))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Fix incorrect error retention ([#6659](https://github.com/googleapis/google-cloud-go/issues/6659)) ([dc02bca](https://github.com/googleapis/google-cloud-go/commit/dc02bca4ac14acb4f536f078a7d8f209626340bb))
+* **bigquery:** Parse timestamp query parameter with RFC3339 ([#6653](https://github.com/googleapis/google-cloud-go/issues/6653)) ([aabd2d6](https://github.com/googleapis/google-cloud-go/commit/aabd2d61c81ed598755656b4e7c3fd84dcd3b2d4))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.39.0...bigquery/v1.40.0) (2022-09-08)
 
 
