@@ -139,12 +139,120 @@ type QueryParameter struct {
 	Value interface{}
 }
 
-// QueryParameterValue is a go type for representing a explicit typed BigQuery Query Parameter.
+// QueryParameterValue is a go type for representing a explicit typed QueryParameter.
 type QueryParameterValue struct {
-	Type        StandardSQLDataType
-	ArrayValue  []QueryParameterValue
+	// Type specifies the parameter type. See StandardSQLDataType for more.
+	// Scalar parameters and more complex types can be defined within this field.
+	// See examples on the value fields.
+	Type StandardSQLDataType
+
+	// Value is the value of the parameter, if a simple scalar type.
+	// The default behavior for scalar values is to do type inference
+	// and format it accordingly.
+	// Because of that, depending on the parameter type, is recommended
+	// to send value as a String.
+	// We provide some formatter functions for some types:
+	//   CivilTimeString(civil.Time)
+	//   CivilDateTimeString(civil.DateTime)
+	//   NumericString(*big.Rat)
+	//   BigNumericString(*big.Rat)
+	//   IntervalString(*IntervalValue)
+	//
+	// Example:
+	//
+	// &QueryParameterValue{
+	// 		Type: StandardSQLDataType{
+	//			TypeKind: "BIGNUMERIC",
+	//		},
+	//		Value: BigNumericString(*big.Rat),
+	//	}
+	Value interface{}
+
+	// ArrayValue is the array of values for the parameter.
+	//
+	// Must be used with QueryParameterValue.Type being a StandardSQLDataType
+	// with ArrayElementType filled with the given element type.
+	//
+	// Example of an array of strings :
+	// &QueryParameterValue{
+	//		Type: &StandardSQLDataType{
+	// 			ArrayElementType: &StandardSQLDataType{
+	//				TypeKind: "STRING",
+	//			},
+	//		},
+	//		ArrayValue: []QueryParameterValue{
+	//			{Value: "a"},
+	//			{Value: "b"},
+	//		},
+	//	}
+	//
+	// Example of an array of structs :
+	// &QueryParameterValue{
+	//		Type: &StandardSQLDataType{
+	// 			ArrayElementType: &StandardSQLDataType{
+	//	 			StructType: &StandardSQLDataType{
+	//					Fields: []*StandardSQLField{
+	//						{
+	//							Name: "NumberField",
+	//							Type: &StandardSQLDataType{
+	//								TypeKind: "INT64",
+	//							},
+	//						},
+	//					},
+	//				},
+	//			},
+	// 		},
+	//		ArrayValue: []QueryParameterValue{
+	//			{StructValue: map[string]QueryParameterValue{
+	//				"NumberField": {
+	//					Value: int64(42),
+	//				},
+	// 			}},
+	// 			{StructValue: map[string]QueryParameterValue{
+	//				"NumberField": {
+	//					Value: int64(43),
+	//				},
+	// 			}},
+	//		},
+	//	}
+	ArrayValue []QueryParameterValue
+
+	// StructValue is the struct field values for the parameter.
+	//
+	// Must be used with QueryParameterValue.Type being a StandardSQLDataType
+	// with StructType filled with the given field types.
+	//
+	// Example:
+	//
+	// &QueryParameterValue{
+	//		Type: &StandardSQLDataType{
+	// 			StructType{
+	//				Fields: []*StandardSQLField{
+	//					{
+	//						Name: "StringField",
+	//						Type: &StandardSQLDataType{
+	//							TypeKind: "STRING",
+	//						},
+	//					},
+	//					{
+	//						Name: "NumberField",
+	//						Type: &StandardSQLDataType{
+	//							TypeKind: "INT64",
+	//						},
+	//					},
+	//				},
+	//			},
+	//		},
+	//		StructValue: []map[string]QueryParameterValue{
+	//			"NumberField": {
+	//				Value: int64(42),
+	//			},
+	//			"StringField": {
+	//				Value: "Value",
+	//			},
+	//		},
+	//	}
 	StructValue map[string]QueryParameterValue
-	Value       interface{}
 }
 
 func (p QueryParameterValue) toBQParamType() *bq.QueryParameterType {
