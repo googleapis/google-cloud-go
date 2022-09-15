@@ -86,7 +86,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	return &Client{
