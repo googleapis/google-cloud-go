@@ -261,6 +261,23 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 	return err
 }
 
+// UpdateTable updates a table in the instance from the given configuration.
+func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) error {
+	if conf.TableID == "" {
+		return errors.New("TableID is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	var tbl btapb.Table
+	tbl.DeletionProtection = conf.DeletionProtection
+	tbl.name = conf.TableID
+	req := &btapb.UpdateTableRequest{
+		Table: &tbl,
+	}
+	_, err := ac.tClient.UpdateTable(ctx, req)
+	return err
+}
+
 // CreateColumnFamily creates a new column family in a table.
 func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family string) error {
 	// TODO(dsymonds): Permit specifying gcexpr and any other family settings.
