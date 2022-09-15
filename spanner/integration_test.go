@@ -454,6 +454,9 @@ loop:
 		if s == nil {
 			break
 		}
+		// This will delete the session on the backend without removing it
+		// from the pool.
+		s.Value.(*session).delete(context.Background())
 		s = s.Next()
 	}
 	sp.mu.Unlock()
