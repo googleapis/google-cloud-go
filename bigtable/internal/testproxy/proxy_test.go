@@ -361,7 +361,6 @@ func TestBulkMutateRows(t *testing.T) {
 	}
 
 	t.SkipNow()
-	// TODO(developer): Figure out why this next part fails :(
 	if len(resp.Entry) != 1 {
 		t.Errorf("testproxy test: BulkMutateRows() returned wrong number of results; got: %d", len(resp.Entry))
 	}

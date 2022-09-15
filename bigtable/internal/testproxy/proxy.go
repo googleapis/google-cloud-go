@@ -349,6 +349,19 @@ type testClient struct {
 	perOperationTimeout *duration.Duration   // perOperationTimeout sets a custom timeout for methods calls on this client
 }
 
+// addCancelFunction appends a context.CancelFunc to testClient.cancels slice.
+// It returns a new context object composed from the original.
+func (tc *testClient) addCancelFunction(ctx context.Context) context.Context {
+	var cancel context.CancelFunc
+	if tc.perOperationTimeout.AsDuration() > 0 {
+		ctx, cancel = context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
+	tc.cancels = append(tc.cancels, cancel)
+	return ctx
+}
+
 // cancelAll calls all of the context.CancelFuncs stored in this testClient.
 func (tc *testClient) cancelAll() {
 	for _, c := range tc.cancels {
@@ -561,9 +574,7 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	}
 
 	if doCancelAll {
-		for _, c := range btc.cancels {
-			c()
-		}
+		btc.cancelAll()
 	}
 	btc.c.Close()
 	delete(s.clientIDs, clientID)
@@ -584,13 +595,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	tName := req.TableName
 	t := btc.c.Open(tName)
 
-	var cancel context.CancelFunc
-	if btc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	btc.cancels = append(btc.cancels, cancel)
+	ctx = btc.addCancelFunction(ctx)
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
@@ -634,13 +639,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 
 	t := btc.c.Open(rrq.TableName)
 
-	var cancel context.CancelFunc
-	if btc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	btc.cancels = append(btc.cancels, cancel)
+	ctx = btc.addCancelFunction(ctx)
 
 	rowPbs := rrq.Rows
 	var rs bigtable.RowSet
@@ -700,13 +699,7 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	t := btc.c.Open(rrq.TableName)
 	row := rrq.RowKey
 
-	var cancel context.CancelFunc
-	if btc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	btc.cancels = append(btc.cancels, cancel)
+	ctx = btc.addCancelFunction(ctx)
 
 	err := t.Apply(ctx, string(row), m)
 	if err != nil {
@@ -752,13 +745,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 		muts[i] = m
 	}
 
-	var cancel context.CancelFunc
-	if btc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	btc.cancels = append(btc.cancels, cancel)
+	ctx = btc.addCancelFunction(ctx)
 
 	errs, err := t.ApplyBulk(ctx, keys, muts)
 	if err != nil {
@@ -823,13 +810,7 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	t := btc.c.Open(rrq.TableName)
 	rowKey := string(rrq.RowKey)
 
-	var cancel context.CancelFunc
-	if btc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	btc.cancels = append(btc.cancels, cancel)
+	ctx = btc.addCancelFunction(ctx)
 
 	var matched bool
 	ao := bigtable.GetCondMutationResult(&matched)
@@ -866,13 +847,7 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 
 	t := btc.c.Open(rrq.TableName)
 
-	var cancel context.CancelFunc
-	if btc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	btc.cancels = append(btc.cancels, cancel)
+	ctx = btc.addCancelFunction(ctx)
 
 	keys, err := t.SampleRowKeys(ctx)
 	if err != nil {
