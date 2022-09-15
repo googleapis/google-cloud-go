@@ -1,5 +1,12 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.3.0...gkeconnect/v0.4.0) (2022-09-15)
+
+
+### Features
+
+* **gkeconnect/gateway/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.2.0...gkeconnect/v0.3.0) (2022-02-23)
 
 
