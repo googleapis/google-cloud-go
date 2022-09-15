@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -42,6 +43,7 @@ var newSslPoliciesClientHook clientHook
 
 // SslPoliciesCallOptions contains the retry settings for each method of SslPoliciesClient.
 type SslPoliciesCallOptions struct {
+	AggregatedList        []gax.CallOption
 	Delete                []gax.CallOption
 	Get                   []gax.CallOption
 	Insert                []gax.CallOption
@@ -52,6 +54,7 @@ type SslPoliciesCallOptions struct {
 
 func defaultSslPoliciesRESTCallOptions() *SslPoliciesCallOptions {
 	return &SslPoliciesCallOptions{
+		AggregatedList:        []gax.CallOption{},
 		Delete:                []gax.CallOption{},
 		Get:                   []gax.CallOption{},
 		Insert:                []gax.CallOption{},
@@ -66,6 +69,7 @@ type internalSslPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	AggregatedList(context.Context, *computepb.AggregatedListSslPoliciesRequest, ...gax.CallOption) *SslPoliciesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteSslPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSslPolicyRequest, ...gax.CallOption) (*computepb.SslPolicy, error)
 	Insert(context.Context, *computepb.InsertSslPolicyRequest, ...gax.CallOption) (*Operation, error)
@@ -103,9 +107,15 @@ func (c *SslPoliciesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SslPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project.
+func (c *SslPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslPoliciesRequest, opts ...gax.CallOption) *SslPoliciesScopedListPairIterator {
+	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
 // Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
@@ -218,9 +228,115 @@ func (c *sslPoliciesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *sslPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
+}
+
+// AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project.
+func (c *sslPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslPoliciesRequest, opts ...gax.CallOption) *SslPoliciesScopedListPairIterator {
+	it := &SslPoliciesScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListSslPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]SslPoliciesScopedListPair, string, error) {
+		resp := &computepb.SslPoliciesAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/sslPolicies", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+
+		elems := make([]SslPoliciesScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, SslPoliciesScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
@@ -659,9 +775,15 @@ func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	return op, nil
 }
 
-// SslPolicyIterator manages a stream of *computepb.SslPolicy.
-type SslPolicyIterator struct {
-	items    []*computepb.SslPolicy
+// SslPoliciesScopedListPair is a holder type for string/*computepb.SslPoliciesScopedList map entries
+type SslPoliciesScopedListPair struct {
+	Key   string
+	Value *computepb.SslPoliciesScopedList
+}
+
+// SslPoliciesScopedListPairIterator manages a stream of SslPoliciesScopedListPair.
+type SslPoliciesScopedListPairIterator struct {
+	items    []SslPoliciesScopedListPair
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -676,18 +798,18 @@ type SslPolicyIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.SslPolicy, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []SslPoliciesScopedListPair, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SslPolicyIterator) PageInfo() *iterator.PageInfo {
+func (it *SslPoliciesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SslPolicyIterator) Next() (*computepb.SslPolicy, error) {
-	var item *computepb.SslPolicy
+func (it *SslPoliciesScopedListPairIterator) Next() (SslPoliciesScopedListPair, error) {
+	var item SslPoliciesScopedListPair
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -696,11 +818,11 @@ func (it *SslPolicyIterator) Next() (*computepb.SslPolicy, error) {
 	return item, nil
 }
 
-func (it *SslPolicyIterator) bufLen() int {
+func (it *SslPoliciesScopedListPairIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *SslPolicyIterator) takeBuf() interface{} {
+func (it *SslPoliciesScopedListPairIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

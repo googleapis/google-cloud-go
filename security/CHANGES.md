@@ -1,5 +1,14 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.5.0...security/v1.6.0) (2022-09-15)
+
+
+### Features
+
+* **security/privateca/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **security/publicca/apiv1beta1/publiccapb:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **security/publicca/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.4.1...security/v1.5.0) (2022-09-09)
 
 

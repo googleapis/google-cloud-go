@@ -424,7 +424,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -474,14 +475,14 @@ func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyCon
 	return c.internalClient.ReidentifyContent(ctx, req, opts...)
 }
 
-// ListInfoTypes returns a list of the sensitive information types that the DLP API
+// ListInfoTypes returns a list of the sensitive information types that DLP API
 // supports. See https://cloud.google.com/dlp/docs/infotypes-reference (at https://cloud.google.com/dlp/docs/infotypes-reference) to
 // learn more.
 func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
 	return c.internalClient.ListInfoTypes(ctx, req, opts...)
 }
 
-// CreateInspectTemplate creates an InspectTemplate for re-using frequently used configuration
+// CreateInspectTemplate creates an InspectTemplate for reusing frequently used configuration
 // for inspecting content, images, and storage.
 // See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
 func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
@@ -512,7 +513,7 @@ func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteIns
 	return c.internalClient.DeleteInspectTemplate(ctx, req, opts...)
 }
 
-// CreateDeidentifyTemplate creates a DeidentifyTemplate for re-using frequently used configuration
+// CreateDeidentifyTemplate creates a DeidentifyTemplate for reusing frequently used configuration
 // for de-identifying content, images, and storage.
 // See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
 // more.
@@ -618,7 +619,7 @@ func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opt
 }
 
 // DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is
-// no longer interested in the DlpJob result. The job will be cancelled if
+// no longer interested in the DlpJob result. The job will be canceled if
 // possible.
 // See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
 // https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
@@ -752,7 +753,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

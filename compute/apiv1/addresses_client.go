@@ -48,6 +48,7 @@ type AddressesCallOptions struct {
 	Get            []gax.CallOption
 	Insert         []gax.CallOption
 	List           []gax.CallOption
+	SetLabels      []gax.CallOption
 }
 
 func defaultAddressesRESTCallOptions() *AddressesCallOptions {
@@ -57,6 +58,7 @@ func defaultAddressesRESTCallOptions() *AddressesCallOptions {
 		Get:            []gax.CallOption{},
 		Insert:         []gax.CallOption{},
 		List:           []gax.CallOption{},
+		SetLabels:      []gax.CallOption{},
 	}
 }
 
@@ -70,6 +72,7 @@ type internalAddressesClient interface {
 	Get(context.Context, *computepb.GetAddressRequest, ...gax.CallOption) (*computepb.Address, error)
 	Insert(context.Context, *computepb.InsertAddressRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListAddressesRequest, ...gax.CallOption) *AddressIterator
+	SetLabels(context.Context, *computepb.SetLabelsAddressRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // AddressesClient is a client for interacting with Google Compute Engine API.
@@ -101,7 +104,8 @@ func (c *AddressesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AddressesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -129,6 +133,11 @@ func (c *AddressesClient) Insert(ctx context.Context, req *computepb.InsertAddre
 // List retrieves a list of addresses contained within the specified region.
 func (c *AddressesClient) List(ctx context.Context, req *computepb.ListAddressesRequest, opts ...gax.CallOption) *AddressIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// SetLabels sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
+func (c *AddressesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsAddressRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -211,7 +220,7 @@ func (c *addressesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *addressesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -612,6 +621,81 @@ func (c *addressesRESTClient) List(ctx context.Context, req *computepb.ListAddre
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// SetLabels sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
+func (c *addressesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsAddressRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionSetLabelsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }
 
 // AddressIterator manages a stream of *computepb.Address.

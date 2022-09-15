@@ -26,6 +26,11 @@ import (
 
 func ExampleNewBinauthzManagementServiceV1Beta1Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewBinauthzManagementServiceV1Beta1Client() {
 
 func ExampleNewBinauthzManagementServiceV1Beta1RESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -50,6 +60,11 @@ func ExampleNewBinauthzManagementServiceV1Beta1RESTClient() {
 
 func ExampleBinauthzManagementServiceV1Beta1Client_GetPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -70,6 +85,11 @@ func ExampleBinauthzManagementServiceV1Beta1Client_GetPolicy() {
 
 func ExampleBinauthzManagementServiceV1Beta1Client_UpdatePolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -90,6 +110,11 @@ func ExampleBinauthzManagementServiceV1Beta1Client_UpdatePolicy() {
 
 func ExampleBinauthzManagementServiceV1Beta1Client_CreateAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,6 +135,11 @@ func ExampleBinauthzManagementServiceV1Beta1Client_CreateAttestor() {
 
 func ExampleBinauthzManagementServiceV1Beta1Client_GetAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,6 +160,11 @@ func ExampleBinauthzManagementServiceV1Beta1Client_GetAttestor() {
 
 func ExampleBinauthzManagementServiceV1Beta1Client_UpdateAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,6 +185,11 @@ func ExampleBinauthzManagementServiceV1Beta1Client_UpdateAttestor() {
 
 func ExampleBinauthzManagementServiceV1Beta1Client_ListAttestors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +216,11 @@ func ExampleBinauthzManagementServiceV1Beta1Client_ListAttestors() {
 
 func ExampleBinauthzManagementServiceV1Beta1Client_DeleteAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.

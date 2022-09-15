@@ -120,7 +120,8 @@ func (c *AutoSuggestionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AutoSuggestionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -205,7 +206,8 @@ func NewAutoSuggestionClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *autoSuggestionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -303,7 +305,7 @@ func (c *autoSuggestionRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *autoSuggestionRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

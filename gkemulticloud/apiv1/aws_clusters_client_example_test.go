@@ -26,6 +26,11 @@ import (
 
 func ExampleNewAwsClustersClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewAwsClustersClient() {
 
 func ExampleAwsClustersClient_CreateAwsCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -63,6 +73,11 @@ func ExampleAwsClustersClient_CreateAwsCluster() {
 
 func ExampleAwsClustersClient_UpdateAwsCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -88,6 +103,11 @@ func ExampleAwsClustersClient_UpdateAwsCluster() {
 
 func ExampleAwsClustersClient_GetAwsCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -108,6 +128,11 @@ func ExampleAwsClustersClient_GetAwsCluster() {
 
 func ExampleAwsClustersClient_ListAwsClusters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +159,11 @@ func ExampleAwsClustersClient_ListAwsClusters() {
 
 func ExampleAwsClustersClient_DeleteAwsCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleAwsClustersClient_DeleteAwsCluster() {
 
 func ExampleAwsClustersClient_GenerateAwsAccessToken() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -177,6 +212,11 @@ func ExampleAwsClustersClient_GenerateAwsAccessToken() {
 
 func ExampleAwsClustersClient_CreateAwsNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +242,11 @@ func ExampleAwsClustersClient_CreateAwsNodePool() {
 
 func ExampleAwsClustersClient_UpdateAwsNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -227,6 +272,11 @@ func ExampleAwsClustersClient_UpdateAwsNodePool() {
 
 func ExampleAwsClustersClient_GetAwsNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -247,6 +297,11 @@ func ExampleAwsClustersClient_GetAwsNodePool() {
 
 func ExampleAwsClustersClient_ListAwsNodePools() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -273,6 +328,11 @@ func ExampleAwsClustersClient_ListAwsNodePools() {
 
 func ExampleAwsClustersClient_DeleteAwsNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -296,6 +356,11 @@ func ExampleAwsClustersClient_DeleteAwsNodePool() {
 
 func ExampleAwsClustersClient_GetAwsServerConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAwsClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

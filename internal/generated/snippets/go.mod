@@ -13,7 +13,7 @@ require (
 	cloud.google.com/go/appengine v1.3.0
 	cloud.google.com/go/area120 v0.4.0
 	cloud.google.com/go/artifactregistry v1.4.0
-	cloud.google.com/go/asset v1.4.0
+	cloud.google.com/go/asset v1.5.0
 	cloud.google.com/go/assuredworkloads v1.2.0
 	cloud.google.com/go/automl v1.4.0
 	cloud.google.com/go/baremetalsolution v0.2.0
@@ -95,7 +95,7 @@ require (
 	cloud.google.com/go/run v0.1.1
 	cloud.google.com/go/scheduler v1.3.0
 	cloud.google.com/go/secretmanager v1.5.0
-	cloud.google.com/go/security v1.4.1
+	cloud.google.com/go/security v1.5.0
 	cloud.google.com/go/securitycenter v1.10.0
 	cloud.google.com/go/servicecontrol v1.3.0
 	cloud.google.com/go/servicedirectory v1.3.0
@@ -119,8 +119,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.2.0
 	cloud.google.com/go/workflows v1.5.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.94.0
-	google.golang.org/genproto v0.0.0-20220829175752-36a9c930ecbf
+	google.golang.org/api v0.96.0
+	google.golang.org/genproto v0.0.0-20220915135415-7fd63a7952de
 )
 
 require (
@@ -134,8 +134,8 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.5.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
-	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
+	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

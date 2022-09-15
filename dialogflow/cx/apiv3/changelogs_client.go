@@ -137,7 +137,8 @@ func (c *ChangelogsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ChangelogsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -243,7 +244,8 @@ func NewChangelogsClient(ctx context.Context, opts ...option.ClientOption) (*Cha
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *changelogsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

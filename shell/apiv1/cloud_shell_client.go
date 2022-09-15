@@ -136,7 +136,8 @@ func (c *CloudShellClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudShellClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -285,7 +286,8 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudShellGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

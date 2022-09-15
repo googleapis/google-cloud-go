@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.4.0...artifactregistry/v1.5.0) (2022-09-15)
+
+
+### Features
+
+* **artifactregistry/apiv1beta2:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.3.0...artifactregistry/v1.4.0) (2022-07-26)
 
 
