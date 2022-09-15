@@ -23,7 +23,6 @@ import (
 
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -85,27 +84,21 @@ func (r *defaultRetryer) RetryAppend(err error, attemptCount int) (pause time.Du
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 			return 0, false
 		}
-		// The same errors that trigger fast reconnect are retryable, as they deal with transient problems
-		// with the network stream.
-		if shouldReconnect(err) {
+		// EOF can happen in the case of connection close before response received.
+		if errors.Is(err, io.EOF) {
 			return r.bo.Pause(), true
 		}
 		// Any other non-status based errors are not retried.
 		return 0, false
 	}
-	// Next, evaluate service-specific error details.
-	se := &storagepb.StorageError{}
-	if e := apiErr.Details().ExtractProtoMessage(se); e == nil {
-		if se.GetCode() == storagepb.StorageError_OFFSET_OUT_OF_RANGE {
-			return r.bo.Pause(), true
-		}
-		// No other service-specific errors should be retried.
-		return 0, false
-	}
-	// Finally, evaluate based on the more generic grpc error status:
+	// Evaluate based on the more generic grpc error status.
+	// TODO: Revisit whether we want to include some user-induced
+	// race conditions that map into FailedPrecondition once it's clearer whether that's
+	// safe to retry by default.
 	code := apiErr.GRPCStatus().Code()
 	switch code {
 	case codes.Aborted,
+		codes.Canceled,
 		codes.DeadlineExceeded,
 		codes.Internal,
 		codes.Unavailable:
