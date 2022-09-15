@@ -26,7 +26,29 @@ import (
 
 func ExampleNewCatalogClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCatalogRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommendationengine.NewCatalogRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewCatalogClient() {
 
 func ExampleCatalogClient_CreateCatalogItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +85,11 @@ func ExampleCatalogClient_CreateCatalogItem() {
 
 func ExampleCatalogClient_GetCatalogItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +110,11 @@ func ExampleCatalogClient_GetCatalogItem() {
 
 func ExampleCatalogClient_ListCatalogItems() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +141,11 @@ func ExampleCatalogClient_ListCatalogItems() {
 
 func ExampleCatalogClient_UpdateCatalogItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +166,11 @@ func ExampleCatalogClient_UpdateCatalogItem() {
 
 func ExampleCatalogClient_DeleteCatalogItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,6 +189,11 @@ func ExampleCatalogClient_DeleteCatalogItem() {
 
 func ExampleCatalogClient_ImportCatalogItems() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

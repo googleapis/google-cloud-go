@@ -1511,6 +1511,15 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/security/publicca/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/security/publicca/apiv1beta1",
+    "description": "Public Certificate Authority API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/security/latest/publicca/apiv1beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/securitycenter/apiv1": {
     "distribution_name": "cloud.google.com/go/securitycenter/apiv1",
     "description": "Security Command Center API",

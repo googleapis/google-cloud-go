@@ -9,7 +9,7 @@ require (
 	github.com/google/btree v1.1.2
 	github.com/google/go-cmp v0.5.8
 	github.com/googleapis/gax-go/v2 v2.4.0
-	google.golang.org/api v0.85.0
+	google.golang.org/api v0.95.0
 	google.golang.org/genproto v0.0.0-20220725144611-272f38e5d71b
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
@@ -25,12 +25,12 @@ require (
 	github.com/envoyproxy/go-control-plane v0.10.2-0.20220325020618-49ff273808a1 // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/google/uuid v1.1.2 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220617184016-355a448f1bc9 // indirect
-	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb // indirect
-	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
+	golang.org/x/sys v0.0.0-20220624220833-87e55d714810 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/appengine v1.6.7 // indirect

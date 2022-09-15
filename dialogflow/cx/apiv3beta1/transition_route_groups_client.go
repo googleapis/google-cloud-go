@@ -242,7 +242,8 @@ func (c *TransitionRouteGroupsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TransitionRouteGroupsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -375,7 +376,8 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *transitionRouteGroupsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -459,7 +461,7 @@ func (c *transitionRouteGroupsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *transitionRouteGroupsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -973,8 +975,12 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

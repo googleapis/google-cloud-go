@@ -26,6 +26,11 @@ import (
 
 func ExampleNewGroupClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewGroupClient() {
 
 func ExampleGroupClient_ListGroups() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleGroupClient_ListGroups() {
 
 func ExampleGroupClient_GetGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleGroupClient_GetGroup() {
 
 func ExampleGroupClient_CreateGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleGroupClient_CreateGroup() {
 
 func ExampleGroupClient_UpdateGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +149,11 @@ func ExampleGroupClient_UpdateGroup() {
 
 func ExampleGroupClient_DeleteGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,6 +172,11 @@ func ExampleGroupClient_DeleteGroup() {
 
 func ExampleGroupClient_ListGroupMembers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -266,7 +266,8 @@ func (c *CatalogClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CatalogClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -460,7 +461,8 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

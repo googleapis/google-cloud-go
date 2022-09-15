@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -43,6 +44,8 @@ var (
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
 	randomBytesToWrite  = []byte("abcdef")
+	randomBytes9MB      = generateRandomBytes(size9MB)
+	size9MB             = 9437184 // 9 MiB
 )
 
 type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions bool) error
@@ -199,8 +202,37 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			_, err = io.Copy(ioutil.Discard, r)
+			wr, err := io.Copy(ioutil.Discard, r)
+			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
 			return err
+		},
+	},
+	"storage.objects.download": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Before running the test method, populate a large test object of 9 MiB.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			}
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			data, err := ioutil.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := len(data), size9MB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
 		},
 	},
 	"storage.objects.list": {
@@ -404,11 +436,15 @@ func TestRetryConformance(t *testing.T) {
 		for _, retryTest := range testFile.RetryTests {
 			for _, instructions := range retryTest.Cases {
 				for _, method := range retryTest.Methods {
-					if len(methods[method.Name]) == 0 {
-						t.Logf("No tests for operation %v", method.Name)
+					methodName := method.Name
+					if method.Group != "" {
+						methodName = method.Group
 					}
-					for i, fn := range methods[method.Name] {
-						testName := fmt.Sprintf("%v-%v-%v-%v", retryTest.Id, instructions.Instructions, method.Name, i)
+					if len(methods[methodName]) == 0 {
+						t.Logf("No tests for operation %v", methodName)
+					}
+					for i, fn := range methods[methodName] {
+						testName := fmt.Sprintf("%v-%v-%v-%v", retryTest.Id, instructions.Instructions, methodName, i)
 						t.Run(testName, func(t *testing.T) {
 
 							// Create the retry subtest
@@ -509,6 +545,32 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 			et.resources.hmacKey = key
 		}
 	}
+}
+
+// Generates size random bytes.
+func generateRandomBytes(n int) []byte {
+	b := make([]byte, n)
+	_, _ = rand.Read(b)
+	return b
+}
+
+// Upload test object with given bytes.
+func uploadTestObject(bucketName, objName string, n []byte) error {
+	// Create non-wrapped client to create test object.
+	ctx := context.Background()
+	c, err := NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("storage.NewClient: %v", err)
+	}
+	obj := c.Bucket(bucketName).Object(objName)
+	w := obj.NewWriter(ctx)
+	if _, err := w.Write(n); err != nil {
+		return fmt.Errorf("writing test object: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("closing object: %v", err)
+	}
+	return nil
 }
 
 // Creates a retry test resource in the emulator

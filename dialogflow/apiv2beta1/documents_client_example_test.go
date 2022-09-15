@@ -28,7 +28,29 @@ import (
 
 func ExampleNewDocumentsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewDocumentsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewDocumentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +62,11 @@ func ExampleNewDocumentsClient() {
 
 func ExampleDocumentsClient_ListDocuments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,6 +93,11 @@ func ExampleDocumentsClient_ListDocuments() {
 
 func ExampleDocumentsClient_GetDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,6 +118,11 @@ func ExampleDocumentsClient_GetDocument() {
 
 func ExampleDocumentsClient_CreateDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -111,6 +148,11 @@ func ExampleDocumentsClient_CreateDocument() {
 
 func ExampleDocumentsClient_ImportDocuments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -136,6 +178,11 @@ func ExampleDocumentsClient_ImportDocuments() {
 
 func ExampleDocumentsClient_DeleteDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -159,6 +206,11 @@ func ExampleDocumentsClient_DeleteDocument() {
 
 func ExampleDocumentsClient_UpdateDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -184,6 +236,11 @@ func ExampleDocumentsClient_UpdateDocument() {
 
 func ExampleDocumentsClient_ReloadDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -209,6 +266,11 @@ func ExampleDocumentsClient_ReloadDocument() {
 
 func ExampleDocumentsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -229,6 +291,11 @@ func ExampleDocumentsClient_GetLocation() {
 
 func ExampleDocumentsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -255,6 +322,11 @@ func ExampleDocumentsClient_ListLocations() {
 
 func ExampleDocumentsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -273,6 +345,11 @@ func ExampleDocumentsClient_CancelOperation() {
 
 func ExampleDocumentsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -293,6 +370,11 @@ func ExampleDocumentsClient_GetOperation() {
 
 func ExampleDocumentsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

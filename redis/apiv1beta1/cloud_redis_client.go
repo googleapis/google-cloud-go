@@ -184,7 +184,8 @@ func (c *CloudRedisClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudRedisClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -428,7 +429,8 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudRedisGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -546,7 +548,7 @@ func (c *cloudRedisRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *cloudRedisRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1129,8 +1131,12 @@ func (c *cloudRedisRESTClient) UpdateInstance(ctx context.Context, req *redispb.
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetInstance().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

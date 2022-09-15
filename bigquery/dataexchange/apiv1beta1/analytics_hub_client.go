@@ -495,7 +495,8 @@ func (c *AnalyticsHubClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AnalyticsHubClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -659,7 +660,8 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *analyticsHubGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -748,7 +750,7 @@ func (c *analyticsHubRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *analyticsHubRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1514,8 +1516,12 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataExchange().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1821,8 +1827,12 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetListing().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

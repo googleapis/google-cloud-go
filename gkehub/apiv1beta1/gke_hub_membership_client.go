@@ -345,7 +345,8 @@ func (c *GkeHubMembershipClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *GkeHubMembershipClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -579,7 +580,8 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gkeHubMembershipGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -685,7 +687,7 @@ func (c *gkeHubMembershipRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *gkeHubMembershipRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1404,8 +1406,12 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

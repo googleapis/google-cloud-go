@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListApprovalRequests() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleClient_ListApprovalRequests() {
 
 func ExampleClient_GetApprovalRequest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleClient_GetApprovalRequest() {
 
 func ExampleClient_ApproveApprovalRequest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleClient_ApproveApprovalRequest() {
 
 func ExampleClient_DismissApprovalRequest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +149,11 @@ func ExampleClient_DismissApprovalRequest() {
 
 func ExampleClient_InvalidateApprovalRequest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,6 +174,11 @@ func ExampleClient_InvalidateApprovalRequest() {
 
 func ExampleClient_GetAccessApprovalSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,6 +199,11 @@ func ExampleClient_GetAccessApprovalSettings() {
 
 func ExampleClient_UpdateAccessApprovalSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -184,6 +224,11 @@ func ExampleClient_UpdateAccessApprovalSettings() {
 
 func ExampleClient_DeleteAccessApprovalSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +247,11 @@ func ExampleClient_DeleteAccessApprovalSettings() {
 
 func ExampleClient_GetAccessApprovalServiceAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

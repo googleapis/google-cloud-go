@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.4.0...dlp/v1.5.0) (2022-09-15)
+
+
+### Features
+
+* **dlp:** add Deidentify action ([6a0080a](https://github.com/googleapis/google-cloud-go/commit/6a0080ad69398c572d856886293e19c79cf0fc0e))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.3.0...dlp/v1.4.0) (2022-04-06)
 
 
