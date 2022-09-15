@@ -25,8 +25,8 @@ if [[ -z "${ENVIRONMENT:-}" ]]; then
   exit 1
 fi
 
-if [[ -z "${PROJECT_ROOT:-}"  ]]; then
-    PROJECT_ROOT="github/google-cloud-go"
+if [[ -z "${PROJECT_ROOT:-}" ]]; then
+  PROJECT_ROOT="github/google-cloud-go"
 fi
 
 # add kokoro labels for testgrid filtering
@@ -44,7 +44,7 @@ echo "using python version: $ENV_TEST_PY_VERSION"
 # run tests from git tag golang-envtest-pin when available
 TAG_ID="golang-envtest-pin"
 git fetch --tags
-if [ $(git tag -l "$TAG_ID")  ]; then
+if [ $(git tag -l "$TAG_ID") ]; then
   git -c advice.detachedHead=false checkout $TAG_ID
 else
   echo "WARNING: tag $TAG_ID not found in repo"
@@ -70,7 +70,7 @@ gcloud config set compute/zone us-central1-b
 gcloud auth configure-docker -q
 
 # create a unique id for this run
-UUID=$(python3  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
+UUID=$(python3 -c 'import uuid; print(uuid.uuid1())' | head -c 7)
 export ENVCTL_ID=ci-$UUID
 echo $ENVCTL_ID
 
