@@ -300,7 +300,46 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 	if ct := ms.fc.count(); ct != wantCount {
 		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
 	}
+}
 
+func TestManagedStream_ContextExpiry(t *testing.T) {
+	// Issue: retaining error from append as stream error
+	// https://github.com/googleapis/google-cloud-go/issues/6657
+	ctx := context.Background()
+
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(0, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append is intentionally slow.
+				return nil
+			}, nil),
+	}
+	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
+		Name: proto.String("testDescriptor"),
+	}
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	// Create a context and immediately cancel it.
+	cancelCtx, cancel := context.WithCancel(ctx)
+	cancel()
+
+	// First, append with an invalid context.
+	pw := newPendingWrite(cancelCtx, fakeData)
+	err := ms.appendWithRetry(pw)
+	if err != context.Canceled {
+		t.Errorf("expected cancelled context error, got: %v", err)
+	}
+
+	// a second append with a valid context should succeed
+	_, err = ms.AppendRows(ctx, fakeData)
+	if err != nil {
+		t.Errorf("expected second append to succeed, but failed: %v", err)
+	}
 }
 
 func TestManagedStream_AppendDeadlocks(t *testing.T) {
@@ -367,14 +406,14 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		}
 
 		// first append
-		pw := newPendingWrite([][]byte{[]byte("foo")})
-		gotErr := ms.appendWithRetry(tc.ctx, pw)
+		pw := newPendingWrite(tc.ctx, [][]byte{[]byte("foo")})
+		gotErr := ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
 		// second append
-		pw = newPendingWrite([][]byte{[]byte("bar")})
-		gotErr = ms.appendWithRetry(tc.ctx, pw)
+		pw = newPendingWrite(tc.ctx, [][]byte{[]byte("bar")})
+		gotErr = ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}

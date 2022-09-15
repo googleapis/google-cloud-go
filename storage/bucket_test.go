@@ -15,12 +15,14 @@
 package storage
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -117,6 +119,13 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				Condition: LifecycleCondition{
 					AgeInDays: 20,
 				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
 			}},
 		},
 	}
@@ -161,7 +170,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: []string{"STANDARD"},
@@ -197,7 +206,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age:              10,
+						Age:              googleapi.Int64(10),
 						MatchesPrefix:    []string{"testPrefix"},
 						MatchesSuffix:    []string{"testSuffix"},
 						NumNewerVersions: 3,
@@ -210,14 +219,25 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
 					},
-				}, {
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: AbortIncompleteMPUAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age: 20,
+						Age: googleapi.Int64(20),
 					},
-				}},
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:             googleapi.Int64(0),
+						ForceSendFields: []string{"Age"},
+					},
+				},
+			},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -403,11 +423,11 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			Rule: []*raw.BucketLifecycleRule{
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(30)},
 				},
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(13)},
 				},
 			},
 		},
@@ -558,23 +578,6 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 }
 
-func TestAgeConditionBackwardCompat(t *testing.T) {
-	var ti int64
-	var want int64 = 100
-	setAgeCondition(want, &ti)
-	if getAgeCondition(ti) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(ti), want)
-	}
-
-	var tp *int64
-	want = 10
-	setAgeCondition(want, &tp)
-	if getAgeCondition(tp) != want {
-		t.Fatalf("got %v, want %v", getAgeCondition(tp), want)
-	}
-
-}
-
 func TestNewBucket(t *testing.T) {
 	labels := map[string]string{"a": "b"}
 	matchClasses := []string{"STANDARD"}
@@ -597,7 +600,7 @@ func TestNewBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: matchClasses,
@@ -777,6 +780,99 @@ func TestBucketRetryer(t *testing.T) {
 				}),
 			); diff != "" {
 				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+func TestDetectDefaultGoogleAccessID(t *testing.T) {
+	testCases := []struct {
+		name           string
+		serviceAccount string
+		creds          func(string) string
+		expectSuccess  bool
+	}{
+		{
+			name:           "impersonated creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"delegates": [],
+					"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s:generateAccessToken",
+					"source_credentials": {
+					  "client_id": "id",
+					  "client_secret": "secret",
+					  "refresh_token": "token",
+					  "type": "authorized_user"
+					},
+					"type": "impersonated_service_account"
+				  }`, sa)
+			},
+			expectSuccess: true,
+		},
+		{
+			name:           "gcloud ADC creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprint(`{
+					"client_id": "my-id.apps.googleusercontent.com",
+					"client_secret": "secret",
+					"quota_project_id": "",
+					"refresh_token": "token",
+					"type": "authorized_user"
+				}`)
+			},
+			expectSuccess: false,
+		},
+		{
+			name:           "ADC private key",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "service_account",
+					"project_id": "my-project",
+					"private_key_id": "my1",
+					"private_key": "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+					"client_email": "%s",
+					"client_id": "01",
+					"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+					"token_uri": "https://oauth2.googleapis.com/token",
+					"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+					"client_x509_cert_url": "cert"
+				}`, sa)
+			},
+			expectSuccess: true,
+		},
+		{
+			name: "no creds",
+			creds: func(_ string) string {
+				return ""
+			},
+			expectSuccess: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			bucket := BucketHandle{
+				c: &Client{
+					creds: &google.Credentials{
+						JSON: []byte(tc.creds(tc.serviceAccount)),
+					},
+				},
+				name: "my-bucket",
+			}
+
+			id, err := bucket.detectDefaultGoogleAccessID()
+			if tc.expectSuccess {
+				if err != nil {
+					t.Fatal(err)
+				}
+				if id != tc.serviceAccount {
+					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
+				}
+			} else if err == nil {
+				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
 			}
 		})
 	}

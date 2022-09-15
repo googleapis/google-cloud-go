@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.4.0...videointelligence/v1.5.0) (2022-09-15)
+
+
+### Features
+
+* **videointelligence/apiv1p3beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.3.0...videointelligence/v1.4.0) (2022-06-29)
 
 

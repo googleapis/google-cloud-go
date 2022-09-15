@@ -1,5 +1,23 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.11.0...securitycenter/v1.12.0) (2022-09-15)
+
+
+### Features
+
+* **securitycenter/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter/apiv1p1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter/settings/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter:** Added parent display name i.e. source display name for a finding as one of the finding attributes ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.10.0...securitycenter/v1.11.0) (2022-09-06)
+
+
+### Features
+
+* **securitycenter:** Adding database access information, such as queries field to a finding. A database may be a sub-resource of an instance (as in the case of CloudSQL instances or Cloud Spanner instances), or the database instance itself ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+* **securitycenter:** serviceAccountKeyName, serviceAccountDelegationInfo, and principalSubject attributes added to the existing access attribute. These new attributes provide additional context about the principals that are associated with the finding ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.9.0...securitycenter/v1.10.0) (2022-07-26)
 
 

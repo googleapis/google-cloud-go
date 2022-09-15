@@ -188,13 +188,23 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateSavedQuery:             []gax.CallOption{},
-		GetSavedQuery:                []gax.CallOption{},
-		ListSavedQueries:             []gax.CallOption{},
-		UpdateSavedQuery:             []gax.CallOption{},
-		DeleteSavedQuery:             []gax.CallOption{},
-		BatchGetEffectiveIamPolicies: []gax.CallOption{},
-		GetOperation:                 []gax.CallOption{},
+		CreateSavedQuery: []gax.CallOption{},
+		GetSavedQuery:    []gax.CallOption{},
+		ListSavedQueries: []gax.CallOption{},
+		UpdateSavedQuery: []gax.CallOption{},
+		DeleteSavedQuery: []gax.CallOption{},
+		BatchGetEffectiveIamPolicies: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -262,7 +272,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -514,7 +525,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -1016,6 +1028,11 @@ func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 }
 
 func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.BatchGetEffectiveIamPoliciesRequest, opts ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

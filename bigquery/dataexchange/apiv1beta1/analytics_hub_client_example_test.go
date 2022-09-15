@@ -22,11 +22,17 @@ import (
 	dataexchange "cloud.google.com/go/bigquery/dataexchange/apiv1beta1"
 	"google.golang.org/api/iterator"
 	dataexchangepb "google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewAnalyticsHubClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +45,11 @@ func ExampleNewAnalyticsHubClient() {
 
 func ExampleNewAnalyticsHubRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -51,6 +62,11 @@ func ExampleNewAnalyticsHubRESTClient() {
 
 func ExampleAnalyticsHubClient_ListDataExchanges() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -77,6 +93,11 @@ func ExampleAnalyticsHubClient_ListDataExchanges() {
 
 func ExampleAnalyticsHubClient_ListOrgDataExchanges() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -103,6 +124,11 @@ func ExampleAnalyticsHubClient_ListOrgDataExchanges() {
 
 func ExampleAnalyticsHubClient_GetDataExchange() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -123,6 +149,11 @@ func ExampleAnalyticsHubClient_GetDataExchange() {
 
 func ExampleAnalyticsHubClient_CreateDataExchange() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,6 +174,11 @@ func ExampleAnalyticsHubClient_CreateDataExchange() {
 
 func ExampleAnalyticsHubClient_UpdateDataExchange() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,6 +199,11 @@ func ExampleAnalyticsHubClient_UpdateDataExchange() {
 
 func ExampleAnalyticsHubClient_DeleteDataExchange() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -181,6 +222,11 @@ func ExampleAnalyticsHubClient_DeleteDataExchange() {
 
 func ExampleAnalyticsHubClient_ListListings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,6 +253,11 @@ func ExampleAnalyticsHubClient_ListListings() {
 
 func ExampleAnalyticsHubClient_GetListing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -227,6 +278,11 @@ func ExampleAnalyticsHubClient_GetListing() {
 
 func ExampleAnalyticsHubClient_CreateListing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -247,6 +303,11 @@ func ExampleAnalyticsHubClient_CreateListing() {
 
 func ExampleAnalyticsHubClient_UpdateListing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -267,6 +328,11 @@ func ExampleAnalyticsHubClient_UpdateListing() {
 
 func ExampleAnalyticsHubClient_DeleteListing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -285,6 +351,11 @@ func ExampleAnalyticsHubClient_DeleteListing() {
 
 func ExampleAnalyticsHubClient_SubscribeListing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -305,6 +376,11 @@ func ExampleAnalyticsHubClient_SubscribeListing() {
 
 func ExampleAnalyticsHubClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -325,6 +401,11 @@ func ExampleAnalyticsHubClient_GetIamPolicy() {
 
 func ExampleAnalyticsHubClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -345,6 +426,11 @@ func ExampleAnalyticsHubClient_SetIamPolicy() {
 
 func ExampleAnalyticsHubClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataexchange.NewAnalyticsHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -361,4 +447,60 @@ func ExampleAnalyticsHubClient_TestIamPermissions() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleAnalyticsHubClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataexchange.NewAnalyticsHubClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsHubClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataexchange.NewAnalyticsHubClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

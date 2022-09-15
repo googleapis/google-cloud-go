@@ -705,12 +705,27 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 	time.Sleep(time.Second)
 
 	for _, tv := range testedViews {
-		metricData, err := view.RetrieveData(tv.Name)
+		// Attempt to further improve race failures by retrying metrics retrieval.
+		metricData, err := func() ([]*view.Row, error) {
+			attempt := 0
+			for {
+				data, err := view.RetrieveData(tv.Name)
+				attempt = attempt + 1
+				if attempt > 5 {
+					return data, err
+				}
+				if err == nil && len(data) == 1 {
+					return data, err
+				}
+				time.Sleep(time.Duration(attempt) * 500 * time.Millisecond)
+			}
+		}()
 		if err != nil {
 			t.Errorf("view %q RetrieveData: %v", tv.Name, err)
 		}
-		if len(metricData) > 1 {
-			t.Errorf("%q: only expected 1 row, got %d", tv.Name, len(metricData))
+		if mlen := len(metricData); mlen != 1 {
+			t.Errorf("%q: expected 1 row of metrics, got %d", tv.Name, mlen)
+			continue
 		}
 		if len(metricData[0].Tags) != 1 {
 			t.Errorf("%q: only expected 1 tag, got %d", tv.Name, len(metricData[0].Tags))

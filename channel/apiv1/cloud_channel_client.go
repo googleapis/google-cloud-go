@@ -622,7 +622,8 @@ func (c *CloudChannelClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudChannelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -1988,7 +1989,8 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudChannelGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

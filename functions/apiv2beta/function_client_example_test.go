@@ -29,6 +29,11 @@ import (
 
 func ExampleNewFunctionClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewFunctionClient() {
 
 func ExampleNewFunctionRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -53,6 +63,11 @@ func ExampleNewFunctionRESTClient() {
 
 func ExampleFunctionClient_GetFunction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,6 +88,11 @@ func ExampleFunctionClient_GetFunction() {
 
 func ExampleFunctionClient_ListFunctions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -99,6 +119,11 @@ func ExampleFunctionClient_ListFunctions() {
 
 func ExampleFunctionClient_CreateFunction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +149,11 @@ func ExampleFunctionClient_CreateFunction() {
 
 func ExampleFunctionClient_UpdateFunction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -149,6 +179,11 @@ func ExampleFunctionClient_UpdateFunction() {
 
 func ExampleFunctionClient_DeleteFunction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -172,6 +207,11 @@ func ExampleFunctionClient_DeleteFunction() {
 
 func ExampleFunctionClient_GenerateUploadUrl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -192,6 +232,11 @@ func ExampleFunctionClient_GenerateUploadUrl() {
 
 func ExampleFunctionClient_GenerateDownloadUrl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -212,6 +257,11 @@ func ExampleFunctionClient_GenerateDownloadUrl() {
 
 func ExampleFunctionClient_ListRuntimes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -232,6 +282,11 @@ func ExampleFunctionClient_ListRuntimes() {
 
 func ExampleFunctionClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -258,6 +313,11 @@ func ExampleFunctionClient_ListLocations() {
 
 func ExampleFunctionClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -278,6 +338,11 @@ func ExampleFunctionClient_GetIamPolicy() {
 
 func ExampleFunctionClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -298,6 +363,11 @@ func ExampleFunctionClient_SetIamPolicy() {
 
 func ExampleFunctionClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -318,6 +388,11 @@ func ExampleFunctionClient_TestIamPermissions() {
 
 func ExampleFunctionClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -338,6 +413,11 @@ func ExampleFunctionClient_GetOperation() {
 
 func ExampleFunctionClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

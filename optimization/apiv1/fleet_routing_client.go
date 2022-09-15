@@ -153,7 +153,8 @@ func (c *FleetRoutingClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FleetRoutingClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -298,7 +299,8 @@ func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*F
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *fleetRoutingGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

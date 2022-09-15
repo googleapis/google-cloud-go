@@ -6,8 +6,8 @@ require (
 	cloud.google.com/go v0.102.1
 	cloud.google.com/go/vision v1.2.0
 	github.com/googleapis/gax-go/v2 v2.4.0
-	google.golang.org/api v0.91.0
-	google.golang.org/genproto v0.0.0-20220805133916-01dd62135a58
+	google.golang.org/api v0.95.0
+	google.golang.org/genproto v0.0.0-20220914142337-ca0e39ece12f
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
 )
@@ -20,7 +20,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
-	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2 // indirect
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
 	golang.org/x/sys v0.0.0-20220624220833-87e55d714810 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

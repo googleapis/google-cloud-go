@@ -16,12 +16,32 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "StreamingVideoIntelligenceClient",
+          "rpcs": {
+            "StreamingAnnotateVideo": {
+              "methods": [
+                "StreamingAnnotateVideo"
+              ]
+            }
+          }
         }
       }
     },
     "VideoIntelligenceService": {
       "clients": {
         "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnnotateVideo": {
+              "methods": [
+                "AnnotateVideo"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "Client",
           "rpcs": {
             "AnnotateVideo": {

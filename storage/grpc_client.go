@@ -27,6 +27,7 @@ import (
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -88,6 +89,9 @@ func defaultGRPCOptions() []option.ClientOption {
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
 		)
+	} else {
+		// Only enable DirectPath when the emulator is not being targeted.
+		defaults = append(defaults, internaloption.EnableDirectPath(true))
 	}
 
 	return defaults
@@ -889,6 +893,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			}
 
 			msg, err = stream.Recv()
+			// These types of errors show up on the Recv call, rather than the
+			// initialization of the stream via ReadObject above.
+			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+				return ErrObjectNotExist
+			}
 
 			return err
 		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))

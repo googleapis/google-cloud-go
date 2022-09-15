@@ -339,7 +339,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -610,7 +611,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -695,7 +697,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1122,8 +1124,12 @@ func (c *restClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequ
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req.GetReadMask().GetPaths() != nil {
-			params.Add("readMask.paths", fmt.Sprintf("%v", req.GetReadMask().GetPaths()))
+		if req.GetReadMask() != nil {
+			readMask, err := protojson.Marshal(req.GetReadMask())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("readMask", string(readMask))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1193,8 +1199,12 @@ func (c *restClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest,
 	baseUrl.Path += fmt.Sprintf("/v2beta3/%v", req.GetName())
 
 	params := url.Values{}
-	if req.GetReadMask().GetPaths() != nil {
-		params.Add("readMask.paths", fmt.Sprintf("%v", req.GetReadMask().GetPaths()))
+	if req.GetReadMask() != nil {
+		readMask, err := protojson.Marshal(req.GetReadMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("readMask", string(readMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1345,8 +1355,12 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRe
 	baseUrl.Path += fmt.Sprintf("/v2beta3/%v", req.GetQueue().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

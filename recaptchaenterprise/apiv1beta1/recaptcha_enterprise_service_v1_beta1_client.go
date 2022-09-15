@@ -110,7 +110,8 @@ func (c *RecaptchaEnterpriseServiceV1Beta1Client) setGoogleClientInfo(keyval ...
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RecaptchaEnterpriseServiceV1Beta1Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -186,7 +187,8 @@ func NewRecaptchaEnterpriseServiceV1Beta1Client(ctx context.Context, opts ...opt
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -270,7 +272,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

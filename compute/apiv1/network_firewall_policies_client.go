@@ -133,7 +133,8 @@ func (c *NetworkFirewallPoliciesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *NetworkFirewallPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -298,7 +299,7 @@ func (c *networkFirewallPoliciesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *networkFirewallPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
