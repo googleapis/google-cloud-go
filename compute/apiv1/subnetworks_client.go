@@ -122,7 +122,8 @@ func (c *SubnetworksClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SubnetworksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -267,7 +268,7 @@ func (c *subnetworksRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *subnetworksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

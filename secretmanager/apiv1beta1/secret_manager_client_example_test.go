@@ -27,6 +27,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewClient() {
 
 func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -51,6 +61,11 @@ func ExampleNewRESTClient() {
 
 func ExampleClient_ListSecrets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -77,6 +92,11 @@ func ExampleClient_ListSecrets() {
 
 func ExampleClient_CreateSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -97,6 +117,11 @@ func ExampleClient_CreateSecret() {
 
 func ExampleClient_AddSecretVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,6 +142,11 @@ func ExampleClient_AddSecretVersion() {
 
 func ExampleClient_GetSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,6 +167,11 @@ func ExampleClient_GetSecret() {
 
 func ExampleClient_UpdateSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +192,11 @@ func ExampleClient_UpdateSecret() {
 
 func ExampleClient_DeleteSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -175,6 +215,11 @@ func ExampleClient_DeleteSecret() {
 
 func ExampleClient_ListSecretVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -201,6 +246,11 @@ func ExampleClient_ListSecretVersions() {
 
 func ExampleClient_GetSecretVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -221,6 +271,11 @@ func ExampleClient_GetSecretVersion() {
 
 func ExampleClient_AccessSecretVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -241,6 +296,11 @@ func ExampleClient_AccessSecretVersion() {
 
 func ExampleClient_DisableSecretVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -261,6 +321,11 @@ func ExampleClient_DisableSecretVersion() {
 
 func ExampleClient_EnableSecretVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -281,6 +346,11 @@ func ExampleClient_EnableSecretVersion() {
 
 func ExampleClient_DestroySecretVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -301,6 +371,11 @@ func ExampleClient_DestroySecretVersion() {
 
 func ExampleClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -321,6 +396,11 @@ func ExampleClient_SetIamPolicy() {
 
 func ExampleClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -341,6 +421,11 @@ func ExampleClient_GetIamPolicy() {
 
 func ExampleClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

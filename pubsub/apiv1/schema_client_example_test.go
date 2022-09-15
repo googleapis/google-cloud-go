@@ -27,6 +27,11 @@ import (
 
 func ExampleNewSchemaClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewSchemaClient() {
 
 func ExampleSchemaClient_CreateSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -59,6 +69,11 @@ func ExampleSchemaClient_CreateSchema() {
 
 func ExampleSchemaClient_GetSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -79,6 +94,11 @@ func ExampleSchemaClient_GetSchema() {
 
 func ExampleSchemaClient_ListSchemas() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,6 +125,11 @@ func ExampleSchemaClient_ListSchemas() {
 
 func ExampleSchemaClient_DeleteSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -123,6 +148,11 @@ func ExampleSchemaClient_DeleteSchema() {
 
 func ExampleSchemaClient_ValidateSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,6 +173,11 @@ func ExampleSchemaClient_ValidateSchema() {
 
 func ExampleSchemaClient_ValidateMessage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,6 +198,11 @@ func ExampleSchemaClient_ValidateMessage() {
 
 func ExampleSchemaClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,6 +223,11 @@ func ExampleSchemaClient_GetIamPolicy() {
 
 func ExampleSchemaClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +248,11 @@ func ExampleSchemaClient_SetIamPolicy() {
 
 func ExampleSchemaClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

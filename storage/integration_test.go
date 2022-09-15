@@ -63,6 +63,8 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+type skipTransportTestKey string
+
 const (
 	testPrefix     = "go-integration-test"
 	replayFilename = "storage.replay"
@@ -257,6 +259,10 @@ func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T,
 	for transport, client := range initTransportClients(ctx, t) {
 		t.Run(transport, func(t *testing.T) {
 			defer client.Close()
+
+			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
+				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
+			}
 
 			bucket := bucketName
 			var prefix string
@@ -470,50 +476,49 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(skipGRPC("b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	wantLifecycle := Lifecycle{
-		Rules: []LifecycleRule{
-			{
-				Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
-				Condition: LifecycleCondition{AgeInDays: 30},
+		wantLifecycle := Lifecycle{
+			Rules: []LifecycleRule{
+				{
+					Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+					Condition: LifecycleCondition{AgeInDays: 30},
+				},
+				{
+					Action:    LifecycleAction{Type: DeleteAction},
+					Condition: LifecycleCondition{AllObjects: true},
+				},
 			},
-			{
-				Action:    LifecycleAction{Type: DeleteAction},
-				Condition: LifecycleCondition{AllObjects: true},
-			},
-		},
-	}
+		}
 
-	bucket := client.Bucket(uidSpace.New())
+		bucket := client.Bucket(prefix + uidSpace.New())
 
-	// Create bucket with lifecycle rules
-	bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{
-		Lifecycle: wantLifecycle,
+		// Create bucket with lifecycle rules
+		h.mustCreate(bucket, testutil.ProjID(), &BucketAttrs{
+			Lifecycle: wantLifecycle,
+		})
+		defer h.mustDeleteBucket(bucket)
+
+		attrs := h.mustBucketAttrs(bucket)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
+
+		// Remove lifecycle rules
+		ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
+		}
+
+		// Update bucket with a lifecycle rule
+		ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
 	})
-	defer h.mustDeleteBucket(bucket)
-
-	attrs := h.mustBucketAttrs(bucket)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
-
-	// Remove lifecycle rules
-	ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
-	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
-	}
-
-	// Update bucket with a lifecycle rule
-	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
-	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
@@ -1330,64 +1335,54 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
-	ctx := context.Background()
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	// Create an HTTP client to read test data and a gRPC client to test write
-	// with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
+		name := uidSpace.New()
+		obj := client.Bucket(bucket).Object(name).Retryer(WithPolicy(RetryAlways))
+		defer h.mustDeleteObject(obj)
 
-	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	defer func() {
-		if err := hobj.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Use a larger blob to test multi-message logic. This is a little over 5MB.
+		content := bytes.Repeat([]byte("a"), 5<<20)
+
+		crc32c := crc32.Checksum(content, crc32cTable)
+		w := obj.NewWriter(ctx)
+		w.ProgressFunc = func(p int64) {
+			t.Logf("%s: committed %d\n", t.Name(), p)
 		}
-	}()
+		w.SendCRC32C = true
+		w.CRC32C = crc32c
+		got, err := w.Write(content)
+		if err != nil {
+			t.Fatalf("Writer.Write: %v", err)
+		}
+		// Flush the buffer to finish the upload.
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
 
-	// Use a larger blob to test multi-message logic. This is a little over 5MB.
-	content := bytes.Repeat([]byte("a"), 5<<20)
+		want := len(content)
+		if got != want {
+			t.Errorf("While writing got: %d want %d", got, want)
+		}
 
-	crc32c := crc32.Checksum(content, crc32cTable)
-	w := gobj.NewWriter(ctx)
-	w.ProgressFunc = func(p int64) {
-		t.Logf("%s: committed %d\n", t.Name(), p)
-	}
-	w.SendCRC32C = true
-	w.CRC32C = crc32c
-	got, err := w.Write(content)
-	if err != nil {
-		t.Fatalf("Writer.Write: %v", err)
-	}
-	// Flush the buffer to finish the upload.
-	if err := w.Close(); err != nil {
-		t.Fatalf("Writer.Close: %v", err)
-	}
+		// Read back the Object for verification.
+		reader, err := client.Bucket(bucket).Object(name).NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer reader.Close()
 
-	want := len(content)
-	if got != want {
-		t.Errorf("While writing got: %d want %d", got, want)
-	}
-
-	// Use HTTP client to read back the Object for verification.
-	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hr.Close()
-
-	buf := make([]byte, want+4<<10)
-	b := bytes.NewBuffer(buf)
-	gotr, err := io.Copy(b, hr)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if gotr != int64(want) {
-		t.Errorf("While reading got: %d want %d", gotr, want)
-	}
+		buf := make([]byte, want+4<<10)
+		b := bytes.NewBuffer(buf)
+		gotr, err := io.Copy(b, reader)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if gotr != int64(want) {
+			t.Errorf("While reading got: %d want %d", gotr, want)
+		}
+	})
 }
 
 func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
@@ -2694,6 +2689,16 @@ func TestIntegration_Encryption(t *testing.T) {
 	if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
 		t.Fatal("got nil, want error")
 	}
+}
+
+func TestIntegration_NonexistentObjectRead(t *testing.T) {
+	t.Parallel()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		_, err := client.Bucket(bucket).Object("object-does-not-exist").NewReader(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("Objects: got %v, want ErrObjectNotExist", err)
+		}
+	})
 }
 
 func TestIntegration_NonexistentBucket(t *testing.T) {
@@ -5037,4 +5042,12 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+}
+
+func skipGRPC(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("grpc"), reason)
+}
+
+func skipHTTP(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
 }

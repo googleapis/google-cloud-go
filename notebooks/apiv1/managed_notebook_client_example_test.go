@@ -26,6 +26,11 @@ import (
 
 func ExampleNewManagedNotebookClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewManagedNotebookClient() {
 
 func ExampleManagedNotebookClient_ListRuntimes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleManagedNotebookClient_ListRuntimes() {
 
 func ExampleManagedNotebookClient_GetRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleManagedNotebookClient_GetRuntime() {
 
 func ExampleManagedNotebookClient_CreateRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleManagedNotebookClient_CreateRuntime() {
 
 func ExampleManagedNotebookClient_DeleteRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,6 +157,11 @@ func ExampleManagedNotebookClient_DeleteRuntime() {
 
 func ExampleManagedNotebookClient_StartRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleManagedNotebookClient_StartRuntime() {
 
 func ExampleManagedNotebookClient_StopRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +217,11 @@ func ExampleManagedNotebookClient_StopRuntime() {
 
 func ExampleManagedNotebookClient_SwitchRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,6 +247,11 @@ func ExampleManagedNotebookClient_SwitchRuntime() {
 
 func ExampleManagedNotebookClient_ResetRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -232,6 +277,11 @@ func ExampleManagedNotebookClient_ResetRuntime() {
 
 func ExampleManagedNotebookClient_ReportRuntimeEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -257,6 +307,11 @@ func ExampleManagedNotebookClient_ReportRuntimeEvent() {
 
 func ExampleManagedNotebookClient_RefreshRuntimeTokenInternal() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

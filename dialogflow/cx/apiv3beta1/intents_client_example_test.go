@@ -28,6 +28,11 @@ import (
 
 func ExampleNewIntentsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewIntentsClient() {
 
 func ExampleNewIntentsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -52,6 +62,11 @@ func ExampleNewIntentsRESTClient() {
 
 func ExampleIntentsClient_ListIntents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleIntentsClient_ListIntents() {
 
 func ExampleIntentsClient_GetIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +118,11 @@ func ExampleIntentsClient_GetIntent() {
 
 func ExampleIntentsClient_CreateIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,6 +143,11 @@ func ExampleIntentsClient_CreateIntent() {
 
 func ExampleIntentsClient_UpdateIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,6 +168,11 @@ func ExampleIntentsClient_UpdateIntent() {
 
 func ExampleIntentsClient_DeleteIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,6 +191,11 @@ func ExampleIntentsClient_DeleteIntent() {
 
 func ExampleIntentsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +216,11 @@ func ExampleIntentsClient_GetLocation() {
 
 func ExampleIntentsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +247,11 @@ func ExampleIntentsClient_ListLocations() {
 
 func ExampleIntentsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -220,6 +270,11 @@ func ExampleIntentsClient_CancelOperation() {
 
 func ExampleIntentsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -240,6 +295,11 @@ func ExampleIntentsClient_GetOperation() {
 
 func ExampleIntentsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

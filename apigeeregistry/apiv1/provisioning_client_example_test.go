@@ -29,6 +29,11 @@ import (
 
 func ExampleNewProvisioningClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewProvisioningClient() {
 
 func ExampleProvisioningClient_CreateInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,6 +76,11 @@ func ExampleProvisioningClient_CreateInstance() {
 
 func ExampleProvisioningClient_DeleteInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,6 +104,11 @@ func ExampleProvisioningClient_DeleteInstance() {
 
 func ExampleProvisioningClient_GetInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleProvisioningClient_GetInstance() {
 
 func ExampleProvisioningClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -129,6 +154,11 @@ func ExampleProvisioningClient_GetLocation() {
 
 func ExampleProvisioningClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -155,6 +185,11 @@ func ExampleProvisioningClient_ListLocations() {
 
 func ExampleProvisioningClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -175,6 +210,11 @@ func ExampleProvisioningClient_GetIamPolicy() {
 
 func ExampleProvisioningClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -195,6 +235,11 @@ func ExampleProvisioningClient_SetIamPolicy() {
 
 func ExampleProvisioningClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -215,6 +260,11 @@ func ExampleProvisioningClient_TestIamPermissions() {
 
 func ExampleProvisioningClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -233,6 +283,11 @@ func ExampleProvisioningClient_CancelOperation() {
 
 func ExampleProvisioningClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -251,6 +306,11 @@ func ExampleProvisioningClient_DeleteOperation() {
 
 func ExampleProvisioningClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -271,6 +331,11 @@ func ExampleProvisioningClient_GetOperation() {
 
 func ExampleProvisioningClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewProvisioningClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

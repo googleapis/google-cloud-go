@@ -242,7 +242,8 @@ func (c *PagesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PagesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -363,7 +364,8 @@ func NewPagesClient(ctx context.Context, opts ...option.ClientOption) (*PagesCli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *pagesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -447,7 +449,7 @@ func (c *pagesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *pagesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -953,8 +955,12 @@ func (c *pagesRESTClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageRe
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

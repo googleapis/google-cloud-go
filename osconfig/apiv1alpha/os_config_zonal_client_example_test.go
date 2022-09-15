@@ -26,6 +26,11 @@ import (
 
 func ExampleNewOsConfigZonalClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewOsConfigZonalClient() {
 
 func ExampleNewOsConfigZonalRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -50,6 +60,11 @@ func ExampleNewOsConfigZonalRESTClient() {
 
 func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -75,6 +90,11 @@ func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 
 func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -100,6 +120,11 @@ func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
 
 func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -120,6 +145,11 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
 
 func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -146,6 +176,11 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
 
 func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -172,6 +207,11 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
 
 func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -195,6 +235,11 @@ func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
 
 func ExampleOsConfigZonalClient_GetInstanceOSPoliciesCompliance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -215,6 +260,11 @@ func ExampleOsConfigZonalClient_GetInstanceOSPoliciesCompliance() {
 
 func ExampleOsConfigZonalClient_ListInstanceOSPoliciesCompliances() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -241,6 +291,11 @@ func ExampleOsConfigZonalClient_ListInstanceOSPoliciesCompliances() {
 
 func ExampleOsConfigZonalClient_GetOSPolicyAssignmentReport() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -261,6 +316,11 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignmentReport() {
 
 func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -287,6 +347,11 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
 
 func ExampleOsConfigZonalClient_GetInventory() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -307,6 +372,11 @@ func ExampleOsConfigZonalClient_GetInventory() {
 
 func ExampleOsConfigZonalClient_ListInventories() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -333,6 +403,11 @@ func ExampleOsConfigZonalClient_ListInventories() {
 
 func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -353,6 +428,11 @@ func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
 
 func ExampleOsConfigZonalClient_ListVulnerabilityReports() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

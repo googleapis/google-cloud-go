@@ -127,7 +127,8 @@ func (c *ControlClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ControlClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -242,7 +243,8 @@ func NewControlClient(ctx context.Context, opts ...option.ClientOption) (*Contro
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *controlGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

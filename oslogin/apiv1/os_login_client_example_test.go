@@ -25,6 +25,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewClient() {
 
 func ExampleClient_DeletePosixAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -55,6 +65,11 @@ func ExampleClient_DeletePosixAccount() {
 
 func ExampleClient_DeleteSshPublicKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,6 +88,11 @@ func ExampleClient_DeleteSshPublicKey() {
 
 func ExampleClient_GetLoginProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,6 +113,11 @@ func ExampleClient_GetLoginProfile() {
 
 func ExampleClient_GetSshPublicKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -113,6 +138,11 @@ func ExampleClient_GetSshPublicKey() {
 
 func ExampleClient_ImportSshPublicKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -133,6 +163,11 @@ func ExampleClient_ImportSshPublicKey() {
 
 func ExampleClient_UpdateSshPublicKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

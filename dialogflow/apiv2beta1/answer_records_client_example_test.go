@@ -28,7 +28,29 @@ import (
 
 func ExampleNewAnswerRecordsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewAnswerRecordsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewAnswerRecordsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +62,11 @@ func ExampleNewAnswerRecordsClient() {
 
 func ExampleAnswerRecordsClient_GetAnswerRecord() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,6 +87,11 @@ func ExampleAnswerRecordsClient_GetAnswerRecord() {
 
 func ExampleAnswerRecordsClient_ListAnswerRecords() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,6 +118,11 @@ func ExampleAnswerRecordsClient_ListAnswerRecords() {
 
 func ExampleAnswerRecordsClient_UpdateAnswerRecord() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -106,6 +143,11 @@ func ExampleAnswerRecordsClient_UpdateAnswerRecord() {
 
 func ExampleAnswerRecordsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -126,6 +168,11 @@ func ExampleAnswerRecordsClient_GetLocation() {
 
 func ExampleAnswerRecordsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,6 +199,11 @@ func ExampleAnswerRecordsClient_ListLocations() {
 
 func ExampleAnswerRecordsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,6 +222,11 @@ func ExampleAnswerRecordsClient_CancelOperation() {
 
 func ExampleAnswerRecordsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,6 +247,11 @@ func ExampleAnswerRecordsClient_GetOperation() {
 
 func ExampleAnswerRecordsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
