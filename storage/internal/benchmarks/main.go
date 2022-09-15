@@ -35,7 +35,7 @@ import (
 const codeVersion = 3.2 // to keep track of which version of the code a benchmark ran on
 
 var opts = &benchmarkOptions{}
-var projectID, credentialsFile, outputFile string
+var projectID, credentialsFile, outputFile, bucket string
 
 var results chan benchmarkResult
 
@@ -86,6 +86,7 @@ func parseFlags() {
 
 	flag.StringVar(&projectID, "p", projectID, "projectID")
 	flag.StringVar(&credentialsFile, "creds", credentialsFile, "path to credentials file")
+	flag.StringVar(&bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
 
 	flag.Parse()
 
@@ -109,10 +110,13 @@ func main() {
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
 	defer cancel()
 
-	// Create bucket
-	bucketName := randomName(bucketPrefix)
-	cleanUp := createBenchmarkBucket(bucketName, opts)
-	defer cleanUp()
+	// Create bucket if necessary
+	bucketName := bucket
+	if len(bucketName) < 1 {
+		bucketName = randomName(bucketPrefix)
+		cleanUp := createBenchmarkBucket(bucketName, opts)
+		defer cleanUp()
+	}
 
 	// Create output file
 	file, err := os.Create(outputFile)
