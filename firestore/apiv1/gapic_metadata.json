@@ -90,6 +90,11 @@
                 "Rollback"
               ]
             },
+            "RunAggregationQuery": {
+              "methods": [
+                "RunAggregationQuery"
+              ]
+            },
             "RunQuery": {
               "methods": [
                 "RunQuery"
