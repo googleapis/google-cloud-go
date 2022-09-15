@@ -17,7 +17,9 @@ require (
 )
 
 require (
+	cloud.google.com/go/asset v1.5.0 // indirect
 	cloud.google.com/go/compute v1.7.0 // indirect
+	cloud.google.com/go/security v1.5.0 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/cncf/udpa/go v0.0.0-20210930031921-04548b0d99d4 // indirect
