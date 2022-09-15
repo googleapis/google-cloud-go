@@ -431,13 +431,13 @@ func TestSchemaToProtoConversion(t *testing.T) {
 							Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
 							Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
 						{
-							Name:    proto.String("unicode_field_2"),
+							Name:    proto.String("col_54Gr"),
 							Number:  proto.Int32(2),
 							Type:    descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
 							Options: &descriptorpb.FieldOptions{},
 							Label:   descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum()},
 						{
-							Name:    proto.String("unicode_field_3"),
+							Name:    proto.String("col_5rC0X2FkZGljdA"),
 							Number:  proto.Int32(3),
 							Type:    descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(),
 							Options: &descriptorpb.FieldOptions{},

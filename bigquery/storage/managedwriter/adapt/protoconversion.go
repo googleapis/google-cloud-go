@@ -332,9 +332,10 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		}
 	}
 	if nameRequiresAnnotation(name) {
-		// TODO: need agreement across implementations on how to normalize?
-		// Possibly use golang.org/x/text/unicode/norm for ascii-fying?
-		fdp.Name = proto.String(fmt.Sprintf("unicode_field_%d", fdp.GetNumber()))
+		// Use a prefix + base64 encoded name when annotations bear the actual name.
+		// We also redact trailing equals characters as they are not allowed for name identifiers.
+		encoded := strings.TrimRight(base64.StdEncoding.EncodeToString([]byte(name)), "=")
+		fdp.Name = proto.String(fmt.Sprintf("col_%s", encoded))
 		opts := fdp.GetOptions()
 		if opts == nil {
 			fdp.Options = &descriptorpb.FieldOptions{}
