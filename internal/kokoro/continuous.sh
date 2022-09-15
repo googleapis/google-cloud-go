@@ -99,6 +99,8 @@ runDirectoryTests() {
 runEmulatorTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
+  else
+    return
   fi
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
