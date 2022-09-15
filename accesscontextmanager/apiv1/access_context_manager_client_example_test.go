@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListAccessPolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleClient_ListAccessPolicies() {
 
 func ExampleClient_GetAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleClient_GetAccessPolicy() {
 
 func ExampleClient_CreateAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleClient_CreateAccessPolicy() {
 
 func ExampleClient_UpdateAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +159,11 @@ func ExampleClient_UpdateAccessPolicy() {
 
 func ExampleClient_DeleteAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleClient_DeleteAccessPolicy() {
 
 func ExampleClient_ListAccessLevels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,6 +218,11 @@ func ExampleClient_ListAccessLevels() {
 
 func ExampleClient_GetAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +243,11 @@ func ExampleClient_GetAccessLevel() {
 
 func ExampleClient_CreateAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +273,11 @@ func ExampleClient_CreateAccessLevel() {
 
 func ExampleClient_UpdateAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,6 +303,11 @@ func ExampleClient_UpdateAccessLevel() {
 
 func ExampleClient_DeleteAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,6 +331,11 @@ func ExampleClient_DeleteAccessLevel() {
 
 func ExampleClient_ReplaceAccessLevels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -301,6 +361,11 @@ func ExampleClient_ReplaceAccessLevels() {
 
 func ExampleClient_ListServicePerimeters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -327,6 +392,11 @@ func ExampleClient_ListServicePerimeters() {
 
 func ExampleClient_GetServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -347,6 +417,11 @@ func ExampleClient_GetServicePerimeter() {
 
 func ExampleClient_CreateServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -372,6 +447,11 @@ func ExampleClient_CreateServicePerimeter() {
 
 func ExampleClient_UpdateServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -397,6 +477,11 @@ func ExampleClient_UpdateServicePerimeter() {
 
 func ExampleClient_DeleteServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -420,6 +505,11 @@ func ExampleClient_DeleteServicePerimeter() {
 
 func ExampleClient_ReplaceServicePerimeters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -445,6 +535,11 @@ func ExampleClient_ReplaceServicePerimeters() {
 
 func ExampleClient_CommitServicePerimeters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -470,6 +565,11 @@ func ExampleClient_CommitServicePerimeters() {
 
 func ExampleClient_ListGcpUserAccessBindings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -496,6 +596,11 @@ func ExampleClient_ListGcpUserAccessBindings() {
 
 func ExampleClient_GetGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -516,6 +621,11 @@ func ExampleClient_GetGcpUserAccessBinding() {
 
 func ExampleClient_CreateGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -541,6 +651,11 @@ func ExampleClient_CreateGcpUserAccessBinding() {
 
 func ExampleClient_UpdateGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -566,6 +681,11 @@ func ExampleClient_UpdateGcpUserAccessBinding() {
 
 func ExampleClient_DeleteGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -141,7 +141,8 @@ func (c *MigrationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MigrationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -312,7 +313,8 @@ func NewMigrationClient(ctx context.Context, opts ...option.ClientOption) (*Migr
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *migrationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

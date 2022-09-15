@@ -88,7 +88,8 @@ func (c *LicenseCodesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *LicenseCodesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -167,7 +168,7 @@ func (c *licenseCodesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *licenseCodesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

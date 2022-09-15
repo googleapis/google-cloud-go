@@ -93,7 +93,8 @@ func (c *SqlTranslationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SqlTranslationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -163,7 +164,8 @@ func NewSqlTranslationClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *sqlTranslationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

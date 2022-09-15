@@ -29,7 +29,29 @@ import (
 
 func ExampleNewJobClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewJobRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewJobRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewJobClient() {
 
 func ExampleJobClient_CreateCustomJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +88,11 @@ func ExampleJobClient_CreateCustomJob() {
 
 func ExampleJobClient_GetCustomJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -81,6 +113,11 @@ func ExampleJobClient_GetCustomJob() {
 
 func ExampleJobClient_ListCustomJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,6 +144,11 @@ func ExampleJobClient_ListCustomJobs() {
 
 func ExampleJobClient_DeleteCustomJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,6 +172,11 @@ func ExampleJobClient_DeleteCustomJob() {
 
 func ExampleJobClient_CancelCustomJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -148,6 +195,11 @@ func ExampleJobClient_CancelCustomJob() {
 
 func ExampleJobClient_CreateDataLabelingJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -168,6 +220,11 @@ func ExampleJobClient_CreateDataLabelingJob() {
 
 func ExampleJobClient_GetDataLabelingJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -188,6 +245,11 @@ func ExampleJobClient_GetDataLabelingJob() {
 
 func ExampleJobClient_ListDataLabelingJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -214,6 +276,11 @@ func ExampleJobClient_ListDataLabelingJobs() {
 
 func ExampleJobClient_DeleteDataLabelingJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -237,6 +304,11 @@ func ExampleJobClient_DeleteDataLabelingJob() {
 
 func ExampleJobClient_CancelDataLabelingJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -255,6 +327,11 @@ func ExampleJobClient_CancelDataLabelingJob() {
 
 func ExampleJobClient_CreateHyperparameterTuningJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -275,6 +352,11 @@ func ExampleJobClient_CreateHyperparameterTuningJob() {
 
 func ExampleJobClient_GetHyperparameterTuningJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -295,6 +377,11 @@ func ExampleJobClient_GetHyperparameterTuningJob() {
 
 func ExampleJobClient_ListHyperparameterTuningJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -321,6 +408,11 @@ func ExampleJobClient_ListHyperparameterTuningJobs() {
 
 func ExampleJobClient_DeleteHyperparameterTuningJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -344,6 +436,11 @@ func ExampleJobClient_DeleteHyperparameterTuningJob() {
 
 func ExampleJobClient_CancelHyperparameterTuningJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -362,6 +459,11 @@ func ExampleJobClient_CancelHyperparameterTuningJob() {
 
 func ExampleJobClient_CreateBatchPredictionJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -382,6 +484,11 @@ func ExampleJobClient_CreateBatchPredictionJob() {
 
 func ExampleJobClient_GetBatchPredictionJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -402,6 +509,11 @@ func ExampleJobClient_GetBatchPredictionJob() {
 
 func ExampleJobClient_ListBatchPredictionJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -428,6 +540,11 @@ func ExampleJobClient_ListBatchPredictionJobs() {
 
 func ExampleJobClient_DeleteBatchPredictionJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -451,6 +568,11 @@ func ExampleJobClient_DeleteBatchPredictionJob() {
 
 func ExampleJobClient_CancelBatchPredictionJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -469,6 +591,11 @@ func ExampleJobClient_CancelBatchPredictionJob() {
 
 func ExampleJobClient_CreateModelDeploymentMonitoringJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -489,6 +616,11 @@ func ExampleJobClient_CreateModelDeploymentMonitoringJob() {
 
 func ExampleJobClient_SearchModelDeploymentMonitoringStatsAnomalies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -515,6 +647,11 @@ func ExampleJobClient_SearchModelDeploymentMonitoringStatsAnomalies() {
 
 func ExampleJobClient_GetModelDeploymentMonitoringJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -535,6 +672,11 @@ func ExampleJobClient_GetModelDeploymentMonitoringJob() {
 
 func ExampleJobClient_ListModelDeploymentMonitoringJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -561,6 +703,11 @@ func ExampleJobClient_ListModelDeploymentMonitoringJobs() {
 
 func ExampleJobClient_UpdateModelDeploymentMonitoringJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -586,6 +733,11 @@ func ExampleJobClient_UpdateModelDeploymentMonitoringJob() {
 
 func ExampleJobClient_DeleteModelDeploymentMonitoringJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -609,6 +761,11 @@ func ExampleJobClient_DeleteModelDeploymentMonitoringJob() {
 
 func ExampleJobClient_PauseModelDeploymentMonitoringJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -627,6 +784,11 @@ func ExampleJobClient_PauseModelDeploymentMonitoringJob() {
 
 func ExampleJobClient_ResumeModelDeploymentMonitoringJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -645,6 +807,11 @@ func ExampleJobClient_ResumeModelDeploymentMonitoringJob() {
 
 func ExampleJobClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -665,6 +832,11 @@ func ExampleJobClient_GetLocation() {
 
 func ExampleJobClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -691,6 +863,11 @@ func ExampleJobClient_ListLocations() {
 
 func ExampleJobClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -711,6 +888,11 @@ func ExampleJobClient_GetIamPolicy() {
 
 func ExampleJobClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -731,6 +913,11 @@ func ExampleJobClient_SetIamPolicy() {
 
 func ExampleJobClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -751,6 +938,11 @@ func ExampleJobClient_TestIamPermissions() {
 
 func ExampleJobClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -769,6 +961,11 @@ func ExampleJobClient_CancelOperation() {
 
 func ExampleJobClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -787,6 +984,11 @@ func ExampleJobClient_DeleteOperation() {
 
 func ExampleJobClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -807,6 +1009,11 @@ func ExampleJobClient_GetOperation() {
 
 func ExampleJobClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -833,6 +1040,11 @@ func ExampleJobClient_ListOperations() {
 
 func ExampleJobClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

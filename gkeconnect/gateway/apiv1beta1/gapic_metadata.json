@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "DeleteResource": {
+              "methods": [
+                "DeleteResource"
+              ]
+            },
+            "GetResource": {
+              "methods": [
+                "GetResource"
+              ]
+            },
+            "PatchResource": {
+              "methods": [
+                "PatchResource"
+              ]
+            },
+            "PostResource": {
+              "methods": [
+                "PostResource"
+              ]
+            },
+            "PutResource": {
+              "methods": [
+                "PutResource"
+              ]
+            }
+          }
         }
       }
     }

@@ -26,6 +26,11 @@ import (
 
 func ExampleNewAzureClustersClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewAzureClustersClient() {
 
 func ExampleAzureClustersClient_CreateAzureClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -63,6 +73,11 @@ func ExampleAzureClustersClient_CreateAzureClient() {
 
 func ExampleAzureClustersClient_GetAzureClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -83,6 +98,11 @@ func ExampleAzureClustersClient_GetAzureClient() {
 
 func ExampleAzureClustersClient_ListAzureClients() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleAzureClustersClient_ListAzureClients() {
 
 func ExampleAzureClustersClient_DeleteAzureClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,6 +157,11 @@ func ExampleAzureClustersClient_DeleteAzureClient() {
 
 func ExampleAzureClustersClient_CreateAzureCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleAzureClustersClient_CreateAzureCluster() {
 
 func ExampleAzureClustersClient_UpdateAzureCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +217,11 @@ func ExampleAzureClustersClient_UpdateAzureCluster() {
 
 func ExampleAzureClustersClient_GetAzureCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +242,11 @@ func ExampleAzureClustersClient_GetAzureCluster() {
 
 func ExampleAzureClustersClient_ListAzureClusters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +273,11 @@ func ExampleAzureClustersClient_ListAzureClusters() {
 
 func ExampleAzureClustersClient_DeleteAzureCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -251,6 +301,11 @@ func ExampleAzureClustersClient_DeleteAzureCluster() {
 
 func ExampleAzureClustersClient_GenerateAzureAccessToken() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -271,6 +326,11 @@ func ExampleAzureClustersClient_GenerateAzureAccessToken() {
 
 func ExampleAzureClustersClient_CreateAzureNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -296,6 +356,11 @@ func ExampleAzureClustersClient_CreateAzureNodePool() {
 
 func ExampleAzureClustersClient_UpdateAzureNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -321,6 +386,11 @@ func ExampleAzureClustersClient_UpdateAzureNodePool() {
 
 func ExampleAzureClustersClient_GetAzureNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -341,6 +411,11 @@ func ExampleAzureClustersClient_GetAzureNodePool() {
 
 func ExampleAzureClustersClient_ListAzureNodePools() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -367,6 +442,11 @@ func ExampleAzureClustersClient_ListAzureNodePools() {
 
 func ExampleAzureClustersClient_DeleteAzureNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -390,6 +470,11 @@ func ExampleAzureClustersClient_DeleteAzureNodePool() {
 
 func ExampleAzureClustersClient_GetAzureServerConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkemulticloud.NewAzureClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
