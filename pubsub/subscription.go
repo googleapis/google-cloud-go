@@ -54,9 +54,6 @@ type Subscription struct {
 	receiveActive bool
 
 	enableOrdering bool
-
-	// topicName is for creating spans for OpenTelemetry tracing.
-	topicName string
 }
 
 // Subscription creates a reference to a subscription.
@@ -1023,7 +1020,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	s.checkSubConfig()
+	s.checkOrdering(ctx)
 
 	// TODO(hongalex): move settings check to a helper function to make it more testable
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
@@ -1237,21 +1234,17 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	return group.Wait()
 }
 
-// checkSubConfig calls Config to check the subscription config fields.
-// For ordering, we check the EnableMessageOrdering field.
-// For OpenTelemetry, we check the topic name.
+// checkOrdering calls Config to check theEnableMessageOrdering field.
 // If this call fails (e.g. because the service account doesn't have
 // the roles/viewer or roles/pubsub.viewer role) we will assume
 // EnableMessageOrdering to be true.
 // See: https://github.com/googleapis/google-cloud-go/issues/3884
-func (s *Subscription) checkSubConfig() {
-	ctx := context.Background()
+func (s *Subscription) checkOrdering(ctx context.Context) {
 	cfg, err := s.Config(ctx)
 	if err != nil {
 		s.enableOrdering = true
 	} else {
 		s.enableOrdering = cfg.EnableMessageOrdering
-		s.topicName = cfg.Topic.name
 	}
 }
 
