@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	"encoding/csv"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -25,19 +24,39 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/sync/errgroup"
-	"google.golang.org/api/option"
 )
 
-const codeVersion = 3.2 // to keep track of which version of the code a benchmark ran on
+const codeVersion = 4.0 // to keep track of which version of the code a benchmark ran on
 
 var opts = &benchmarkOptions{}
 var projectID, credentialsFile, outputFile, bucket string
 
 var results chan benchmarkResult
+
+// we can share clients as long as the app buffer sizes are constant
+var httpClients, gRPCClients sync.Pool
+
+var nonBenchmarkingClients = sync.Pool{
+	New: func() any {
+		// we don't care if it's grpc or http, so we don't need mutex
+		client, err := storage.NewClient(context.Background())
+		if err != nil {
+			// try once more, if it doesn't work twice fail the program
+			client, err = storage.NewClient(context.Background())
+
+			if err != nil {
+				log.Fatalf("storage.NewClient: %v", err)
+			}
+		}
+
+		return client
+	},
+}
 
 type benchmarkOptions struct {
 	// all sizes are in bytes
@@ -99,6 +118,33 @@ func parseFlags() {
 		fmt.Println("Must set a project ID. Use flag -p to specify it.")
 		os.Exit(1)
 	}
+
+	// Set New functions
+	httpClients.New = func() any {
+		client, err := initializeHTTPClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.useDefaults)
+		if err != nil {
+			// try once more, if it doesn't work twice fail the program
+			client, err = initializeHTTPClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.useDefaults)
+			if err != nil {
+				log.Fatalf("initializeHTTPClient: %v", err)
+			}
+		}
+
+		return client
+	}
+
+	gRPCClients.New = func() any {
+		client, err := initializeGRPCClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.connPoolSize, opts.useDefaults)
+		if err != nil {
+			// try once more, if it doesn't work twice fail the program
+			client, err = initializeGRPCClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.connPoolSize, opts.useDefaults)
+			if err != nil {
+				log.Fatalf("initializeGRPCClient: %v", err)
+			}
+		}
+
+		return client
+	}
 }
 
 func main() {
@@ -140,8 +186,13 @@ func main() {
 	// Run benchmarks
 	for i := 0; i < opts.maxSamples && (i < opts.minSamples || time.Since(start) < opts.timeout); i++ {
 		benchGroup.Go(func() error {
-			if err := benchmarkRun(ctx, opts, bucketName); err != nil {
+			benchmark := w1r3{opts: opts, bucketName: bucketName}
+			if err := benchmark.setup(); err != nil {
 				// We don't want to stop benchmarking on a single run's error, so just log
+				log.Printf("run setup failed: %v", err)
+				return nil
+			}
+			if err := benchmark.run(ctx); err != nil {
 				log.Printf("run failed: %v", err)
 			}
 			return nil
@@ -155,175 +206,82 @@ func main() {
 	fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
 }
 
+type randomizedParams struct {
+	appBufferSize int
+	chunkSize     int64
+	crc32cEnabled bool
+	md5Enabled    bool
+	api           benchmarkAPI
+}
+
 type benchmarkResult struct {
 	objectSize    int64
-	appBufferSize int
-	chunkSize     int
-	crc32Enabled  bool
-	md5Enabled    bool
-	API           benchmarkAPI
-	elapsedTime   time.Duration
-	completed     bool
+	params        randomizedParams
 	isRead        bool
 	readIteration int
-	heapSys       uint64
-	heapAlloc     uint64
-	stackInUse    uint64
-	heapAllocDiff uint64
-	mallocsDiff   uint64
 	start         time.Time
+	elapsedTime   time.Duration
+	completed     bool
+	startMem      runtime.MemStats
+	endMem        runtime.MemStats
 }
 
-func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string) error {
-	var memStats *runtime.MemStats = &runtime.MemStats{}
-
-	// Select randomized parameters
-	_, doMD5, doCRC32C := randomOf3()
-	objectSize := randomInt64(opts.minObjectSize, opts.maxObjectSize)
-	appWriteBufferSize := opts.writeQuantum * randomInt(opts.minWriteSize/opts.writeQuantum, opts.maxWriteSize/opts.writeQuantum)
-	appReadBufferSize := opts.readQuantum * randomInt(opts.minReadSize/opts.readQuantum, opts.maxReadSize/opts.readQuantum)
-	writeChunkSize := randomInt64(opts.minChunkSize, opts.maxChunkSize)
-
-	// Select client
-	client, readAPI, writeAPI, err := initializeClient(ctx, opts.api, appWriteBufferSize, appReadBufferSize, opts.connPoolSize)
-	if err != nil {
-		return fmt.Errorf("NewClient: %w", err)
-	}
-
-	// Create contents
-	objectName, err := generateRandomFile(objectSize)
-	if err != nil {
-		return fmt.Errorf("generateRandomFile: %w", err)
-	}
-
-	o := client.Bucket(bucketName).Object(objectName)
-
-	// TODO: remove use of separate client once grpc is fully implemented
-	httpObjHandle := o
-	if writeAPI == grpcAPI {
-		clientMu.Lock()
-		httpClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
-		clientMu.Unlock()
-		if err != nil {
-			return fmt.Errorf("NewClient: %w", err)
+func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
+	api := opts.api
+	if api == mixedAPIs {
+		if randomBool() {
+			api = xmlAPI
+		} else {
+			api = grpcAPI
 		}
-		defer httpClient.Close()
-		httpObjHandle = httpClient.Bucket(o.BucketName()).Object(o.ObjectName())
-	}
-	defer httpObjHandle.Delete(context.Background())
-
-	// Upload
-
-	// If the option is specified, run a garbage collector before collecting
-	// memory statistics and starting the timer on the benchmark. This can be
-	// used to compare between running each benchmark "on a blank slate" vs organically.
-	forceGarbageCollection(opts.forceGC)
-
-	runtime.ReadMemStats(memStats)
-	prevHeapAlloc := memStats.HeapAlloc
-	prevMallocs := memStats.Mallocs
-
-	start := time.Now()
-	timeTaken, err := uploadBenchmark(ctx, uploadOpts{
-		o:         o,
-		fileName:  objectName,
-		chunkSize: int(writeChunkSize),
-		md5:       doMD5,
-		crc32c:    doCRC32C,
-	})
-	runtime.ReadMemStats(memStats)
-	results <- benchmarkResult{
-		objectSize:    objectSize,
-		appBufferSize: appWriteBufferSize,
-		chunkSize:     int(writeChunkSize),
-		crc32Enabled:  doCRC32C,
-		md5Enabled:    doMD5,
-		API:           writeAPI,
-		elapsedTime:   timeTaken,
-		completed:     err == nil,
-		isRead:        false,
-		heapSys:       memStats.HeapSys,
-		heapAlloc:     memStats.HeapAlloc,
-		stackInUse:    memStats.StackInuse,
-		heapAllocDiff: memStats.HeapAlloc - prevHeapAlloc,
-		mallocsDiff:   memStats.Mallocs - prevMallocs,
-		start:         start,
-	}
-	os.Remove(objectName)
-	// Do not attempt to read from a failed upload
-	if err != nil {
-		return fmt.Errorf("failed upload: %w", err)
 	}
 
-	// Wait for the object to be available.
-	timedCtx, cancelTimedCtx := context.WithTimeout(ctx, time.Second*3)
-	defer cancelTimedCtx()
-	if _, err := httpObjHandle.Retryer(storage.WithPolicy(storage.RetryAlways)).Attrs(timedCtx); err != nil {
-		return fmt.Errorf("object.Attrs: %w", err)
-	}
+	if br.isRead {
+		if api == jsonAPI {
+			api = xmlAPI
+		}
 
-	// Read.
-	for i := 0; i < 3; i++ {
-		forceGarbageCollection(opts.forceGC)
-		runtime.ReadMemStats(memStats)
-		prevHeapAlloc = memStats.HeapAlloc
-		prevMallocs = memStats.Mallocs
-
-		start := time.Now()
-		timeTaken, err := downloadBenchmark(ctx, downloadOpts{
-			o:          o,
-			objectSize: objectSize,
-		})
-		runtime.ReadMemStats(memStats)
-		results <- benchmarkResult{
-			objectSize:    objectSize,
-			appBufferSize: int(appReadBufferSize),
-			crc32Enabled:  true,  // internally verified for us
+		br.params = randomizedParams{
+			appBufferSize: opts.readQuantum * randomInt(opts.minReadSize/opts.readQuantum, opts.maxReadSize/opts.readQuantum),
+			chunkSize:     -1,    // not used for reads
+			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
 			md5Enabled:    false, // we only need one integrity validation
-			API:           readAPI,
-			elapsedTime:   timeTaken,
-			completed:     err == nil,
-			isRead:        true,
-			readIteration: i,
-			heapSys:       memStats.HeapSys,
-			heapAlloc:     memStats.HeapAlloc,
-			stackInUse:    memStats.StackInuse,
-			heapAllocDiff: memStats.HeapAlloc - prevHeapAlloc,
-			mallocsDiff:   memStats.Mallocs - prevMallocs,
-			start:         start,
+			api:           api,
 		}
-		// do not return error, continue to attempt to read
-		if err != nil {
-			if errors.Is(err, context.DeadlineExceeded) {
-				return err
-			}
-			log.Printf("read error: %v", err)
+
+		if opts.useDefaults {
+			br.params.appBufferSize = -1 // use -1 to indicate default; if we give it a value any change to defaults would not be reflected
 		}
+
+		return
 	}
 
-	return nil
-}
+	if api == xmlAPI {
+		api = jsonAPI
+	}
 
-type benchmarkAPI string
+	_, doMD5, doCRC32C := randomOf3()
+	br.params = randomizedParams{
+		appBufferSize: opts.writeQuantum * randomInt(opts.minWriteSize/opts.writeQuantum, opts.maxWriteSize/opts.writeQuantum),
+		chunkSize:     randomInt64(opts.minChunkSize, opts.maxChunkSize),
+		crc32cEnabled: doCRC32C,
+		md5Enabled:    doMD5,
+		api:           api,
+	}
 
-const (
-	jsonAPI   benchmarkAPI = "JSON"
-	xmlAPI    benchmarkAPI = "XML"
-	grpcAPI   benchmarkAPI = "GRPC"
-	mixedAPIs benchmarkAPI = "MIXED"
-)
+	if opts.useDefaults {
+		// get a writer on an object to check the default chunksize
+		// object does not need to exist
+		c, _ := storage.NewClient(context.Background())
+		ow := c.Bucket("").Object("").NewWriter(context.Background())
+		br.params.chunkSize = int64(ow.ChunkSize)
 
-var csvHeaders = []string{
-	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
-	"ElapsedTimeUs", "CpuTimeUs", "Status",
-	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion",
+		br.params.appBufferSize = -1 // use -1 to indicate default; if we give it a value any change to defaults would not be reflected
+	}
 }
 
 // converts result to csv writing format (ie. a slice of strings)
-func (br benchmarkResult) csv() []string {
+func (br *benchmarkResult) csv() []string {
 	op := "WRITE"
 	if br.isRead {
 		op = fmt.Sprintf("READ[%d]", br.readIteration)
@@ -336,25 +294,43 @@ func (br benchmarkResult) csv() []string {
 	return []string{
 		op,
 		strconv.FormatInt(br.objectSize, 10),
-		strconv.Itoa(br.appBufferSize),
-		strconv.Itoa(br.chunkSize),
-		strconv.FormatBool(br.crc32Enabled),
-		strconv.FormatBool(br.md5Enabled),
-		string(br.API),
+		strconv.Itoa(br.params.appBufferSize),
+		strconv.Itoa(br.params.appBufferSize),
+		strconv.FormatBool(br.params.crc32cEnabled),
+		strconv.FormatBool(br.params.md5Enabled),
+		string(br.params.api),
 		strconv.FormatInt(br.elapsedTime.Microseconds(), 10),
 		"-1", // TODO: record cpu time
 		status,
-		strconv.FormatUint(br.heapSys, 10),
-		strconv.FormatUint(br.heapAlloc, 10),
-		strconv.FormatUint(br.stackInUse, 10),
-		strconv.FormatUint(br.heapAllocDiff, 10),
-		strconv.FormatUint(br.mallocsDiff, 10),
-		strconv.FormatInt(br.start.UnixNano(), 10),
+		strconv.FormatUint(br.startMem.HeapSys, 10),
+		strconv.FormatUint(br.startMem.HeapAlloc, 10),
+		strconv.FormatUint(br.startMem.StackInuse, 10),
+		strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
+		strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10),
+		strconv.FormatInt(br.start.Unix(), 10),
 		strconv.FormatInt(br.start.Add(br.elapsedTime).UnixNano(), 10),
 		strconv.Itoa(opts.numWorkers),
 		fmt.Sprintf("%.2f", codeVersion),
 	}
 }
+
+var csvHeaders = []string{
+	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
+	"Crc32cEnabled", "MD5Enabled", "ApiName",
+	"ElapsedTimeUs", "CpuTimeUs", "Status",
+	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
+	"StartTime", "EndTime", "NumWorkers",
+	"CodeVersion",
+}
+
+type benchmarkAPI string
+
+const (
+	jsonAPI   benchmarkAPI = "JSON"
+	xmlAPI    benchmarkAPI = "XML"
+	grpcAPI   benchmarkAPI = "GRPC"
+	mixedAPIs benchmarkAPI = "MIXED"
+)
 
 func startRecordingResults(f *os.File, g *errgroup.Group) {
 	// buffer channel so we don't block on printing results

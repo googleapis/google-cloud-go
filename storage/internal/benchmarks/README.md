@@ -4,7 +4,7 @@
 ## Run example:
 This runs 1000 iterations on 512kib to 2Gib files in the background, sending output to `out.log`:
 
-`go run ./ -p {PROJECT_ID} -t 72h -max_samples 1000 -o {RESULTS_FILE_NAME}.csv &> out.log &`
+`go run main -p {PROJECT_ID} -t 72h -max_samples 1000 -o {RESULTS_FILE_NAME}.csv &> out.log &`
 
 
 ## CLI parameters

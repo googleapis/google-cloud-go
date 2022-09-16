@@ -106,17 +106,12 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 // mutex on starting a client so that we can set an env variable for GRPC clients
 var clientMu sync.Mutex
 
-func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, readBufferSize int, connPoolSize int) (*storage.Client, benchmarkAPI, benchmarkAPI, error) {
-	var readAPI, writeAPI benchmarkAPI
-	var client *storage.Client
-	var err error
-
-	if api == mixedAPIs {
-		if randomBool() {
-			api = xmlAPI
-		} else {
-			api = grpcAPI
-		}
+func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, useDefaults bool) (*storage.Client, error) {
+	if useDefaults {
+		clientMu.Lock()
+		c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+		clientMu.Unlock()
+		return c, err
 	}
 
 	dialer := &net.Dialer{
@@ -140,32 +135,36 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
 		option.WithCredentialsFile(credentialsFile))
 	if err != nil {
-		return nil, "", "", err
+		return nil, err
 	}
 
-	c := http.Client{Transport: trans}
+	clientMu.Lock()
+	client, err := storage.NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: trans}))
+	clientMu.Unlock()
 
-	switch api {
-	case xmlAPI, jsonAPI:
-		clientMu.Lock()
-		client, err = storage.NewClient(ctx, option.WithHTTPClient(&c))
-		clientMu.Unlock()
-		readAPI, writeAPI = xmlAPI, jsonAPI
-	case grpcAPI:
+	return client, err
+}
+
+func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int, connPoolSize int, useDefaults bool) (*storage.Client, error) {
+	if useDefaults {
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
-		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
-			option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
-			option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
-			option.WithGRPCConnectionPool(connPoolSize))
+		c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
 		os.Unsetenv("STORAGE_USE_GRPC")
 		clientMu.Unlock()
-		readAPI, writeAPI = grpcAPI, grpcAPI
-	default:
-		log.Fatalf("%s API not supported.\n", opts.api)
+		return c, err
 	}
 
-	return client, readAPI, writeAPI, err
+	clientMu.Lock()
+	os.Setenv("STORAGE_USE_GRPC", "true")
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
+		option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
+		option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
+		option.WithGRPCConnectionPool(connPoolSize))
+	os.Unsetenv("STORAGE_USE_GRPC")
+	clientMu.Unlock()
+
+	return client, err
 }
 
 // generateRandomFile creates a temp file on disk and fills it with size random bytes.
@@ -215,4 +214,31 @@ func (b benchmarkOptions) String() string {
 	}
 
 	return sb.String()
+}
+
+func canUseClientPool(opts *benchmarkOptions) bool {
+	return opts.useDefaults || (opts.maxReadSize == opts.minReadSize && opts.maxWriteSize == opts.minWriteSize)
+}
+
+func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, error) {
+	if canUseClientPool(opts) {
+		if br.params.api == grpcAPI {
+			return gRPCClients.Get().(*storage.Client), nil
+		}
+		return httpClients.Get().(*storage.Client), nil
+	}
+
+	// if necessary, create a client
+	if br.params.api == grpcAPI {
+		c, err := initializeGRPCClient(ctx, br.params.appBufferSize, br.params.appBufferSize, opts.connPoolSize, false)
+		if err != nil {
+			return nil, fmt.Errorf("initializeGRPCClient: %w", err)
+		}
+		return c, nil
+	}
+	c, err := initializeHTTPClient(ctx, br.params.appBufferSize, br.params.appBufferSize, false)
+	if err != nil {
+		return nil, fmt.Errorf("initializeHTTPClient: %w", err)
+	}
+	return c, nil
 }

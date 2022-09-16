@@ -29,30 +29,32 @@ import (
 )
 
 type uploadOpts struct {
-	o         *storage.ObjectHandle
-	fileName  string
-	chunkSize int
-	md5       bool
-	crc32c    bool
+	client              *storage.Client
+	params              randomizedParams
+	bucket              string
+	object              string
+	useDefaultChunkSize bool
 }
 
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
 	start := time.Now()
-	defer func() {
-		elapsedTime = time.Since(start)
-	}()
+	defer func() { elapsedTime = time.Since(start) }()
 
-	o := uopts.o.If(storage.Conditions{DoesNotExist: true})
-	objectWriter := o.NewWriter(ctx)
-	objectWriter.ChunkSize = uopts.chunkSize
+	o := uopts.client.Bucket(uopts.bucket).Object(uopts.object)
 
-	f, err := os.Open(uopts.fileName)
+	objectWriter := o.If(storage.Conditions{DoesNotExist: true}).NewWriter(ctx)
+
+	if !uopts.useDefaultChunkSize {
+		objectWriter.ChunkSize = int(uopts.params.chunkSize)
+	}
+
+	f, err := os.Open(uopts.object)
 	if err != nil {
 		return elapsedTime, fmt.Errorf("os.Open: %w", err)
 	}
 	defer f.Close()
 
-	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.md5, uopts.crc32c)
+	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.params.md5Enabled, uopts.params.crc32cEnabled)
 
 	if _, err = io.Copy(mw, f); err != nil {
 		return elapsedTime, fmt.Errorf("io.Copy: %w", err)
@@ -63,10 +65,10 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 		return elapsedTime, fmt.Errorf("writer.Close: %w", err)
 	}
 
-	if uopts.crc32c || uopts.md5 {
-		attrs, aerr := uopts.o.Attrs(ctx)
+	if uopts.params.crc32cEnabled || uopts.params.md5Enabled {
+		attrs, aerr := o.Attrs(ctx)
 		if aerr != nil {
-			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %w", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
+			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %w", o.BucketName(), o.ObjectName(), aerr)
 		}
 
 		rerr = verifyHash(md5Hash, crc32cHash, attrs.MD5, attrs.CRC32C)
@@ -108,42 +110,4 @@ func verifyHash(md5Hash hash.Hash, crc32cHash hash.Hash32, expectedMD5Hash []byt
 		}
 	}
 	return nil
-}
-
-func uploadBenchmarkDefaults(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
-	start := time.Now()
-	defer func() {
-		elapsedTime = time.Since(start)
-	}()
-
-	o := uopts.o.If(storage.Conditions{DoesNotExist: true})
-	objectWriter := o.NewWriter(ctx)
-
-	f, err := os.Open(uopts.fileName)
-	if err != nil {
-		return elapsedTime, fmt.Errorf("os.Open: %w", err)
-	}
-	defer f.Close()
-
-	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.md5, uopts.crc32c)
-
-	if _, err = io.Copy(mw, f); err != nil {
-		return elapsedTime, fmt.Errorf("io.Copy: %w", err)
-	}
-
-	err = objectWriter.Close()
-	if err != nil {
-		return elapsedTime, fmt.Errorf("writer.Close: %w", err)
-	}
-
-	if uopts.crc32c || uopts.md5 {
-		attrs, aerr := o.Attrs(ctx)
-		if aerr != nil {
-			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %w", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
-		}
-
-		rerr = verifyHash(md5Hash, crc32cHash, attrs.MD5, attrs.CRC32C)
-	}
-
-	return
 }
