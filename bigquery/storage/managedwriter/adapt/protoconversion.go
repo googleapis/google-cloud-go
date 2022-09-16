@@ -333,8 +333,9 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 	}
 	if nameRequiresAnnotation(name) {
 		// Use a prefix + base64 encoded name when annotations bear the actual name.
-		// We also redact trailing equals characters as they are not allowed for name identifiers.
-		encoded := strings.TrimRight(base64.StdEncoding.EncodeToString([]byte(name)), "=")
+		// Base 64 standard encoding may also contain certain characters (+,/,=) which
+		// we remove from the generated name.
+		encoded := strings.Trim(base64.StdEncoding.EncodeToString([]byte(name)), "+/=")
 		fdp.Name = proto.String(fmt.Sprintf("col_%s", encoded))
 		opts := fdp.GetOptions()
 		if opts == nil {
