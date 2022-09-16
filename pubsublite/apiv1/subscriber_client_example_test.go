@@ -28,6 +28,11 @@ import (
 
 func ExampleNewSubscriberClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewSubscriberClient() {
 
 func ExampleSubscriberClient_Subscribe() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -75,6 +85,11 @@ func ExampleSubscriberClient_Subscribe() {
 
 func ExampleSubscriberClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,6 +108,11 @@ func ExampleSubscriberClient_CancelOperation() {
 
 func ExampleSubscriberClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -111,6 +131,11 @@ func ExampleSubscriberClient_DeleteOperation() {
 
 func ExampleSubscriberClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -131,6 +156,11 @@ func ExampleSubscriberClient_GetOperation() {
 
 func ExampleSubscriberClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

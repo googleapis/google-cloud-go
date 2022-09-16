@@ -25,6 +25,11 @@ import (
 
 func ExampleNewApplicationsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewApplicationsClient() {
 
 func ExampleApplicationsClient_GetApplication() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,6 +67,11 @@ func ExampleApplicationsClient_GetApplication() {
 
 func ExampleApplicationsClient_CreateApplication() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -82,6 +97,11 @@ func ExampleApplicationsClient_CreateApplication() {
 
 func ExampleApplicationsClient_UpdateApplication() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,6 +127,11 @@ func ExampleApplicationsClient_UpdateApplication() {
 
 func ExampleApplicationsClient_RepairApplication() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

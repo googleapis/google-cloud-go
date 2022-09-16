@@ -228,7 +228,8 @@ func (c *DocumentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DocumentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -474,7 +475,8 @@ func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*Docu
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *documentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

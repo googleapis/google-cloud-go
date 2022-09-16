@@ -27,6 +27,11 @@ import (
 
 func ExampleNewDeviceManagerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewDeviceManagerClient() {
 
 func ExampleDeviceManagerClient_CreateDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -59,6 +69,11 @@ func ExampleDeviceManagerClient_CreateDeviceRegistry() {
 
 func ExampleDeviceManagerClient_GetDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -79,6 +94,11 @@ func ExampleDeviceManagerClient_GetDeviceRegistry() {
 
 func ExampleDeviceManagerClient_UpdateDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -99,6 +119,11 @@ func ExampleDeviceManagerClient_UpdateDeviceRegistry() {
 
 func ExampleDeviceManagerClient_DeleteDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,6 +142,11 @@ func ExampleDeviceManagerClient_DeleteDeviceRegistry() {
 
 func ExampleDeviceManagerClient_ListDeviceRegistries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,6 +173,11 @@ func ExampleDeviceManagerClient_ListDeviceRegistries() {
 
 func ExampleDeviceManagerClient_CreateDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,6 +198,11 @@ func ExampleDeviceManagerClient_CreateDevice() {
 
 func ExampleDeviceManagerClient_GetDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,6 +223,11 @@ func ExampleDeviceManagerClient_GetDevice() {
 
 func ExampleDeviceManagerClient_UpdateDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +248,11 @@ func ExampleDeviceManagerClient_UpdateDevice() {
 
 func ExampleDeviceManagerClient_DeleteDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -221,6 +271,11 @@ func ExampleDeviceManagerClient_DeleteDevice() {
 
 func ExampleDeviceManagerClient_ListDevices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -247,6 +302,11 @@ func ExampleDeviceManagerClient_ListDevices() {
 
 func ExampleDeviceManagerClient_ModifyCloudToDeviceConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -267,6 +327,11 @@ func ExampleDeviceManagerClient_ModifyCloudToDeviceConfig() {
 
 func ExampleDeviceManagerClient_ListDeviceConfigVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -287,6 +352,11 @@ func ExampleDeviceManagerClient_ListDeviceConfigVersions() {
 
 func ExampleDeviceManagerClient_ListDeviceStates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -307,6 +377,11 @@ func ExampleDeviceManagerClient_ListDeviceStates() {
 
 func ExampleDeviceManagerClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -327,6 +402,11 @@ func ExampleDeviceManagerClient_SetIamPolicy() {
 
 func ExampleDeviceManagerClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -347,6 +427,11 @@ func ExampleDeviceManagerClient_GetIamPolicy() {
 
 func ExampleDeviceManagerClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -367,6 +452,11 @@ func ExampleDeviceManagerClient_TestIamPermissions() {
 
 func ExampleDeviceManagerClient_SendCommandToDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -387,6 +477,11 @@ func ExampleDeviceManagerClient_SendCommandToDevice() {
 
 func ExampleDeviceManagerClient_BindDeviceToGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -407,6 +502,11 @@ func ExampleDeviceManagerClient_BindDeviceToGateway() {
 
 func ExampleDeviceManagerClient_UnbindDeviceFromGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

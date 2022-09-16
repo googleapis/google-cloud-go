@@ -26,6 +26,11 @@ import (
 
 func ExampleNewRegionAutoscalersRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionAutoscalersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewRegionAutoscalersRESTClient() {
 
 func ExampleRegionAutoscalersClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionAutoscalersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleRegionAutoscalersClient_Delete() {
 
 func ExampleRegionAutoscalersClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionAutoscalersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -81,6 +96,11 @@ func ExampleRegionAutoscalersClient_Get() {
 
 func ExampleRegionAutoscalersClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionAutoscalersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleRegionAutoscalersClient_Insert() {
 
 func ExampleRegionAutoscalersClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionAutoscalersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,6 +155,11 @@ func ExampleRegionAutoscalersClient_List() {
 
 func ExampleRegionAutoscalersClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionAutoscalersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -153,6 +183,11 @@ func ExampleRegionAutoscalersClient_Patch() {
 
 func ExampleRegionAutoscalersClient_Update() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionAutoscalersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

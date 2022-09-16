@@ -28,7 +28,29 @@ import (
 
 func ExampleNewDocumentProcessorClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewDocumentProcessorRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := documentai.NewDocumentProcessorRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +62,11 @@ func ExampleNewDocumentProcessorClient() {
 
 func ExampleDocumentProcessorClient_ProcessDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,6 +87,11 @@ func ExampleDocumentProcessorClient_ProcessDocument() {
 
 func ExampleDocumentProcessorClient_BatchProcessDocuments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,6 +117,11 @@ func ExampleDocumentProcessorClient_BatchProcessDocuments() {
 
 func ExampleDocumentProcessorClient_FetchProcessorTypes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,6 +142,11 @@ func ExampleDocumentProcessorClient_FetchProcessorTypes() {
 
 func ExampleDocumentProcessorClient_ListProcessorTypes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -131,6 +173,11 @@ func ExampleDocumentProcessorClient_ListProcessorTypes() {
 
 func ExampleDocumentProcessorClient_ListProcessors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +204,11 @@ func ExampleDocumentProcessorClient_ListProcessors() {
 
 func ExampleDocumentProcessorClient_GetProcessor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -177,6 +229,11 @@ func ExampleDocumentProcessorClient_GetProcessor() {
 
 func ExampleDocumentProcessorClient_GetProcessorVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -197,6 +254,11 @@ func ExampleDocumentProcessorClient_GetProcessorVersion() {
 
 func ExampleDocumentProcessorClient_ListProcessorVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -223,6 +285,11 @@ func ExampleDocumentProcessorClient_ListProcessorVersions() {
 
 func ExampleDocumentProcessorClient_DeleteProcessorVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -246,6 +313,11 @@ func ExampleDocumentProcessorClient_DeleteProcessorVersion() {
 
 func ExampleDocumentProcessorClient_DeployProcessorVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -271,6 +343,11 @@ func ExampleDocumentProcessorClient_DeployProcessorVersion() {
 
 func ExampleDocumentProcessorClient_UndeployProcessorVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -296,6 +373,11 @@ func ExampleDocumentProcessorClient_UndeployProcessorVersion() {
 
 func ExampleDocumentProcessorClient_CreateProcessor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -316,6 +398,11 @@ func ExampleDocumentProcessorClient_CreateProcessor() {
 
 func ExampleDocumentProcessorClient_DeleteProcessor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -339,6 +426,11 @@ func ExampleDocumentProcessorClient_DeleteProcessor() {
 
 func ExampleDocumentProcessorClient_EnableProcessor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -364,6 +456,11 @@ func ExampleDocumentProcessorClient_EnableProcessor() {
 
 func ExampleDocumentProcessorClient_DisableProcessor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -389,6 +486,11 @@ func ExampleDocumentProcessorClient_DisableProcessor() {
 
 func ExampleDocumentProcessorClient_SetDefaultProcessorVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -414,6 +516,11 @@ func ExampleDocumentProcessorClient_SetDefaultProcessorVersion() {
 
 func ExampleDocumentProcessorClient_ReviewDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -439,6 +546,11 @@ func ExampleDocumentProcessorClient_ReviewDocument() {
 
 func ExampleDocumentProcessorClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -459,6 +571,11 @@ func ExampleDocumentProcessorClient_GetLocation() {
 
 func ExampleDocumentProcessorClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -485,6 +602,11 @@ func ExampleDocumentProcessorClient_ListLocations() {
 
 func ExampleDocumentProcessorClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -503,6 +625,11 @@ func ExampleDocumentProcessorClient_CancelOperation() {
 
 func ExampleDocumentProcessorClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -523,6 +650,11 @@ func ExampleDocumentProcessorClient_GetOperation() {
 
 func ExampleDocumentProcessorClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

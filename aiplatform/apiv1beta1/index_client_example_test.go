@@ -29,7 +29,29 @@ import (
 
 func ExampleNewIndexClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewIndexRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewIndexRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewIndexClient() {
 
 func ExampleIndexClient_CreateIndex() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,6 +93,11 @@ func ExampleIndexClient_CreateIndex() {
 
 func ExampleIndexClient_GetIndex() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,6 +118,11 @@ func ExampleIndexClient_GetIndex() {
 
 func ExampleIndexClient_ListIndexes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,6 +149,11 @@ func ExampleIndexClient_ListIndexes() {
 
 func ExampleIndexClient_UpdateIndex() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,6 +179,11 @@ func ExampleIndexClient_UpdateIndex() {
 
 func ExampleIndexClient_DeleteIndex() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -160,6 +207,11 @@ func ExampleIndexClient_DeleteIndex() {
 
 func ExampleIndexClient_UpsertDatapoints() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,6 +232,11 @@ func ExampleIndexClient_UpsertDatapoints() {
 
 func ExampleIndexClient_RemoveDatapoints() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -200,6 +257,11 @@ func ExampleIndexClient_RemoveDatapoints() {
 
 func ExampleIndexClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -220,6 +282,11 @@ func ExampleIndexClient_GetLocation() {
 
 func ExampleIndexClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -246,6 +313,11 @@ func ExampleIndexClient_ListLocations() {
 
 func ExampleIndexClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -266,6 +338,11 @@ func ExampleIndexClient_GetIamPolicy() {
 
 func ExampleIndexClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -286,6 +363,11 @@ func ExampleIndexClient_SetIamPolicy() {
 
 func ExampleIndexClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -306,6 +388,11 @@ func ExampleIndexClient_TestIamPermissions() {
 
 func ExampleIndexClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -324,6 +411,11 @@ func ExampleIndexClient_CancelOperation() {
 
 func ExampleIndexClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -342,6 +434,11 @@ func ExampleIndexClient_DeleteOperation() {
 
 func ExampleIndexClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -362,6 +459,11 @@ func ExampleIndexClient_GetOperation() {
 
 func ExampleIndexClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -388,6 +490,11 @@ func ExampleIndexClient_ListOperations() {
 
 func ExampleIndexClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewIndexClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

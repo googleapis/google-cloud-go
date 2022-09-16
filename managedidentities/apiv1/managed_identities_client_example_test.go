@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateMicrosoftAdDomain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -63,6 +73,11 @@ func ExampleClient_CreateMicrosoftAdDomain() {
 
 func ExampleClient_ResetAdminPassword() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -83,6 +98,11 @@ func ExampleClient_ResetAdminPassword() {
 
 func ExampleClient_ListDomains() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleClient_ListDomains() {
 
 func ExampleClient_GetDomain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -129,6 +154,11 @@ func ExampleClient_GetDomain() {
 
 func ExampleClient_UpdateDomain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -154,6 +184,11 @@ func ExampleClient_UpdateDomain() {
 
 func ExampleClient_DeleteDomain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -177,6 +212,11 @@ func ExampleClient_DeleteDomain() {
 
 func ExampleClient_AttachTrust() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +242,11 @@ func ExampleClient_AttachTrust() {
 
 func ExampleClient_ReconfigureTrust() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -227,6 +272,11 @@ func ExampleClient_ReconfigureTrust() {
 
 func ExampleClient_DetachTrust() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -252,6 +302,11 @@ func ExampleClient_DetachTrust() {
 
 func ExampleClient_ValidateTrust() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

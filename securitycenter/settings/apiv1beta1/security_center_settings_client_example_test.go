@@ -26,7 +26,29 @@ import (
 
 func ExampleNewSecurityCenterSettingsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewSecurityCenterSettingsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := settings.NewSecurityCenterSettingsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewSecurityCenterSettingsClient() {
 
 func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +85,11 @@ func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
 
 func ExampleSecurityCenterSettingsClient_GetSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +110,11 @@ func ExampleSecurityCenterSettingsClient_GetSettings() {
 
 func ExampleSecurityCenterSettingsClient_UpdateSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +135,11 @@ func ExampleSecurityCenterSettingsClient_UpdateSettings() {
 
 func ExampleSecurityCenterSettingsClient_ResetSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -116,6 +158,11 @@ func ExampleSecurityCenterSettingsClient_ResetSettings() {
 
 func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -136,6 +183,11 @@ func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,6 +208,11 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
 
 func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +233,11 @@ func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
 
 func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,6 +258,11 @@ func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
 
 func ExampleSecurityCenterSettingsClient_UpdateComponentSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -216,6 +283,11 @@ func ExampleSecurityCenterSettingsClient_UpdateComponentSettings() {
 
 func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -234,6 +306,11 @@ func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -254,6 +331,11 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
 
 func ExampleSecurityCenterSettingsClient_ListDetectors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -280,6 +362,11 @@ func ExampleSecurityCenterSettingsClient_ListDetectors() {
 
 func ExampleSecurityCenterSettingsClient_ListComponents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

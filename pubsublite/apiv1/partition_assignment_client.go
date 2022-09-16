@@ -139,7 +139,8 @@ func (c *PartitionAssignmentClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PartitionAssignmentClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -239,7 +240,8 @@ func NewPartitionAssignmentClient(ctx context.Context, opts ...option.ClientOpti
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *partitionAssignmentGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

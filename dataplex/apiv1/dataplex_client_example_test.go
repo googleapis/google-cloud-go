@@ -28,6 +28,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,6 +75,11 @@ func ExampleClient_CreateLake() {
 
 func ExampleClient_UpdateLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -90,6 +105,11 @@ func ExampleClient_UpdateLake() {
 
 func ExampleClient_DeleteLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -113,6 +133,11 @@ func ExampleClient_DeleteLake() {
 
 func ExampleClient_ListLakes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -139,6 +164,11 @@ func ExampleClient_ListLakes() {
 
 func ExampleClient_GetLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -159,6 +189,11 @@ func ExampleClient_GetLake() {
 
 func ExampleClient_ListLakeActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -185,6 +220,11 @@ func ExampleClient_ListLakeActions() {
 
 func ExampleClient_CreateZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -210,6 +250,11 @@ func ExampleClient_CreateZone() {
 
 func ExampleClient_UpdateZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -235,6 +280,11 @@ func ExampleClient_UpdateZone() {
 
 func ExampleClient_DeleteZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -258,6 +308,11 @@ func ExampleClient_DeleteZone() {
 
 func ExampleClient_ListZones() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -284,6 +339,11 @@ func ExampleClient_ListZones() {
 
 func ExampleClient_GetZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -304,6 +364,11 @@ func ExampleClient_GetZone() {
 
 func ExampleClient_ListZoneActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -330,6 +395,11 @@ func ExampleClient_ListZoneActions() {
 
 func ExampleClient_CreateAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -355,6 +425,11 @@ func ExampleClient_CreateAsset() {
 
 func ExampleClient_UpdateAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -380,6 +455,11 @@ func ExampleClient_UpdateAsset() {
 
 func ExampleClient_DeleteAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -403,6 +483,11 @@ func ExampleClient_DeleteAsset() {
 
 func ExampleClient_ListAssets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -429,6 +514,11 @@ func ExampleClient_ListAssets() {
 
 func ExampleClient_GetAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -449,6 +539,11 @@ func ExampleClient_GetAsset() {
 
 func ExampleClient_ListAssetActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -475,6 +570,11 @@ func ExampleClient_ListAssetActions() {
 
 func ExampleClient_CreateTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -500,6 +600,11 @@ func ExampleClient_CreateTask() {
 
 func ExampleClient_UpdateTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -525,6 +630,11 @@ func ExampleClient_UpdateTask() {
 
 func ExampleClient_DeleteTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -548,6 +658,11 @@ func ExampleClient_DeleteTask() {
 
 func ExampleClient_ListTasks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -574,6 +689,11 @@ func ExampleClient_ListTasks() {
 
 func ExampleClient_GetTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -594,6 +714,11 @@ func ExampleClient_GetTask() {
 
 func ExampleClient_ListJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -620,6 +745,11 @@ func ExampleClient_ListJobs() {
 
 func ExampleClient_GetJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -640,6 +770,11 @@ func ExampleClient_GetJob() {
 
 func ExampleClient_CancelJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -658,6 +793,11 @@ func ExampleClient_CancelJob() {
 
 func ExampleClient_CreateEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -683,6 +823,11 @@ func ExampleClient_CreateEnvironment() {
 
 func ExampleClient_UpdateEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -708,6 +853,11 @@ func ExampleClient_UpdateEnvironment() {
 
 func ExampleClient_DeleteEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -731,6 +881,11 @@ func ExampleClient_DeleteEnvironment() {
 
 func ExampleClient_ListEnvironments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -757,6 +912,11 @@ func ExampleClient_ListEnvironments() {
 
 func ExampleClient_GetEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -777,6 +937,11 @@ func ExampleClient_GetEnvironment() {
 
 func ExampleClient_ListSessions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -803,6 +968,11 @@ func ExampleClient_ListSessions() {
 
 func ExampleClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -823,6 +993,11 @@ func ExampleClient_GetLocation() {
 
 func ExampleClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -849,6 +1024,11 @@ func ExampleClient_ListLocations() {
 
 func ExampleClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -867,6 +1047,11 @@ func ExampleClient_CancelOperation() {
 
 func ExampleClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -885,6 +1070,11 @@ func ExampleClient_DeleteOperation() {
 
 func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -905,6 +1095,11 @@ func ExampleClient_GetOperation() {
 
 func ExampleClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

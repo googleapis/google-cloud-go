@@ -27,6 +27,11 @@ import (
 
 func ExampleNewTopicStatsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewTopicStatsClient() {
 
 func ExampleTopicStatsClient_ComputeMessageStats() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -59,6 +69,11 @@ func ExampleTopicStatsClient_ComputeMessageStats() {
 
 func ExampleTopicStatsClient_ComputeHeadCursor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -79,6 +94,11 @@ func ExampleTopicStatsClient_ComputeHeadCursor() {
 
 func ExampleTopicStatsClient_ComputeTimeCursor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -99,6 +119,11 @@ func ExampleTopicStatsClient_ComputeTimeCursor() {
 
 func ExampleTopicStatsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,6 +142,11 @@ func ExampleTopicStatsClient_CancelOperation() {
 
 func ExampleTopicStatsClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -135,6 +165,11 @@ func ExampleTopicStatsClient_DeleteOperation() {
 
 func ExampleTopicStatsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -155,6 +190,11 @@ func ExampleTopicStatsClient_GetOperation() {
 
 func ExampleTopicStatsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

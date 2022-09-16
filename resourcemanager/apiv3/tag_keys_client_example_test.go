@@ -27,6 +27,11 @@ import (
 
 func ExampleNewTagKeysClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewTagKeysClient() {
 
 func ExampleTagKeysClient_ListTagKeys() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,6 +75,11 @@ func ExampleTagKeysClient_ListTagKeys() {
 
 func ExampleTagKeysClient_GetTagKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,6 +100,11 @@ func ExampleTagKeysClient_GetTagKey() {
 
 func ExampleTagKeysClient_CreateTagKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,6 +130,11 @@ func ExampleTagKeysClient_CreateTagKey() {
 
 func ExampleTagKeysClient_UpdateTagKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -135,6 +160,11 @@ func ExampleTagKeysClient_UpdateTagKey() {
 
 func ExampleTagKeysClient_DeleteTagKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -160,6 +190,11 @@ func ExampleTagKeysClient_DeleteTagKey() {
 
 func ExampleTagKeysClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,6 +215,11 @@ func ExampleTagKeysClient_GetIamPolicy() {
 
 func ExampleTagKeysClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -200,6 +240,11 @@ func ExampleTagKeysClient_SetIamPolicy() {
 
 func ExampleTagKeysClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

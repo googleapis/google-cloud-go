@@ -180,7 +180,8 @@ func (c *HubClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *HubClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -349,7 +350,8 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *hubGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
