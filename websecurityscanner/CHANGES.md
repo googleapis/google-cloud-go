@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.2.0...websecurityscanner/v1.2.1) (2022-09-08)
+
+
+### Documentation
+
+* **websecurityscanner:** Publish Scan Run logging proto for documentation ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.1.0...websecurityscanner/v1.2.0) (2022-02-23)
 
 

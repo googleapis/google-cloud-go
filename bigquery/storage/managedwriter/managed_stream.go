@@ -16,7 +16,6 @@ package managedwriter
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"sync"
@@ -263,12 +262,15 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 
 // lockingAppend handles a single append attempt.  When successful, it returns the number of rows
 // in the request for metrics tracking.
-func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWrite) (int64, error) {
+func (ms *ManagedStream) lockingAppend(pw *pendingWrite) error {
 
 	// Don't both calling/retrying if this append's context is already expired.
-	if err := requestCtx.Err(); err != nil {
-		return 0, err
+	if err := pw.reqCtx.Err(); err != nil {
+		return err
 	}
+
+	// we use this to record stats if needed after we unlock on defer.
+	var statsOnExit func()
 
 	// critical section:  Things that need to happen inside the critical section:
 	//
@@ -276,7 +278,12 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 	// * Issuing the append request
 	// * Adding the pending write to the channel to keep ordering correct on response
 	ms.mu.Lock()
-	defer ms.mu.Unlock()
+	defer func() {
+		ms.mu.Unlock()
+		if statsOnExit != nil {
+			statsOnExit()
+		}
+	}()
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 	var ch chan *pendingWrite
@@ -291,7 +298,7 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 	}
 	arc, ch, err = ms.getStream(arc, reconnect)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	// Resolve the special work for the first append on a stream.
@@ -316,24 +323,28 @@ func (ms *ManagedStream) lockingAppend(requestCtx context.Context, pw *pendingWr
 		err = (*arc).Send(pw.request)
 	}
 	if err != nil {
-		// Transient connection loss.  If we got io.EOF from a send, we want subsequent appends to
-		// reconnect the network connection for the stream.
-		if errors.Is(err, io.EOF) {
+		if shouldReconnect(err) {
 			ms.reconnect = true
 		}
-		return 0, err
+		return err
 	}
 	// Compute numRows, once we pass ownership to the channel the request may be
 	// cleared.
 	numRows := int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows()))
+	statsOnExit = func() {
+		// these will get recorded once we exit the critical section.
+		recordStat(ms.ctx, AppendRequestRows, numRows)
+		recordStat(ms.ctx, AppendRequests, 1)
+		recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
+	}
 	ch <- pw
-	return numRows, nil
+	return nil
 }
 
 // appendWithRetry handles the details of adding sending an append request on a stream.  Appends are sent on a long
 // lived bidirectional network stream, with it's own managed context (ms.ctx).  requestCtx is checked
 // for expiry to enable faster failures, it is not propagated more deeply.
-func (ms *ManagedStream) appendWithRetry(requestCtx context.Context, pw *pendingWrite, opts ...gax.CallOption) error {
+func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
 
 	// Resolve retry settings.
 	var settings gax.CallSettings
@@ -346,7 +357,7 @@ func (ms *ManagedStream) appendWithRetry(requestCtx context.Context, pw *pending
 	}
 
 	for {
-		numRows, appendErr := ms.lockingAppend(requestCtx, pw)
+		appendErr := ms.lockingAppend(pw)
 		if appendErr != nil {
 			// Append yielded an error.  Retry by continuing or return.
 			status := grpcstatus.Convert(appendErr)
@@ -361,16 +372,10 @@ func (ms *ManagedStream) appendWithRetry(requestCtx context.Context, pw *pending
 				}
 				continue
 			}
-			// We've got a non-retriable error, so propagate that up. and mark the write done.
-			ms.mu.Lock()
-			ms.err = appendErr
+			// Mark the pending write done.  This will not be returned to the user, they'll receive the returned error.
 			pw.markDone(nil, appendErr, ms.fc)
-			ms.mu.Unlock()
 			return appendErr
 		}
-		recordStat(ms.ctx, AppendRequests, 1)
-		recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
-		recordStat(ms.ctx, AppendRequestRows, numRows)
 		return nil
 	}
 }
@@ -420,7 +425,7 @@ func (ms *ManagedStream) Close() error {
 // The size of a single request must be less than 10 MB in size.
 // Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
-	pw := newPendingWrite(data)
+	pw := newPendingWrite(ctx, data)
 	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)
@@ -437,7 +442,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 	var appendErr error
 	go func() {
 		select {
-		case errCh <- ms.appendWithRetry(ctx, pw):
+		case errCh <- ms.appendWithRetry(pw):
 		case <-ctx.Done():
 		}
 		close(errCh)

@@ -8,8 +8,8 @@
 /bigquery/              @googleapis/api-bigquery @googleapis/yoshi-go-admins
 /datastore/             @enocom @telpirion @googleapis/yoshi-go-admins
 /firestore/             @enocom @telpirion @googleapis/yoshi-go-admins
-/pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins
-/pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
+/pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman
+/pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman
 /spanner/               @googleapis/api-spanner-go @googleapis/yoshi-go-admins
 /storage/               @googleapis/cloud-storage-dpe @googleapis/yoshi-go-admins
 /errorreporting/        @googleapis/api-logging @googleapis/yoshi-go-admins

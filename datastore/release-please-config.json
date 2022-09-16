@@ -7,5 +7,6 @@
         "datastore": {
             "component": "datastore"
         }
-    }
+    },
+    "plugins": ["sentence-case"]
 }

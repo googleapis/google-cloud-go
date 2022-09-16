@@ -305,12 +305,16 @@ func (c PubsubMessageCarrier) Keys() []string {
 }
 
 const (
-	subscriptionAttribute       = "messaging.pubsub.subscription"
-	orderingAttribute           = "messaging.pubsub.ordering_key"
-	deliveryAttemptAttribute    = "messaging.pubsub.delivery_attempt"
-	eosAttribute                = "messaging.pubsub.exactly_once_delivery"
-	ackAttribute                = "messaging.pubsub.is_acked"
+	// publish attributes
 	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_publish_batch"
+
+	// subscribe attributes
+	subscriptionAttribute    = "messaging.pubsub.subscription"
+	orderingAttribute        = "messaging.pubsub.ordering_key"
+	deliveryAttemptAttribute = "messaging.pubsub.delivery_attempt"
+	eosAttribute             = "messaging.pubsub.exactly_once_delivery"
+	ackIDAttribute           = "messaging.pubsub.ack_id"
+	ackAttribute             = "messaging.pubsub.is_acked"
 	// numRecvMessagesAttribute    = "messaging.pubsub.num_messages_in_receive_batch"
 )
 

@@ -101,8 +101,8 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	if msg.Attributes != nil {
 		ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 	}
-	ctx, ps := tracer().Start(ctx, fmt.Sprintf("%s receive", subName), opts...)
-	ps.SetAttributes(attribute.Bool(eosAttribute, eos))
+	ctx, rs := tracer().Start(ctx, fmt.Sprintf("%s receive", subName), opts...)
+	rs.SetAttributes(attribute.Bool(eosAttribute, eos), attribute.String(ackIDAttribute, resp.AckId))
 	// inject the new ctx into message for propagation across the other receive paths
 	// that cannot directly access this ctx. We do this to avoid storing context
 	// inside a message, which is bad practice.
@@ -114,8 +114,8 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc
 	ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-		ps.SetAttributes(attribute.Bool(ackAttribute, ack))
-		defer ps.End()
+		rs.SetAttributes(attribute.Bool(ackAttribute, ack))
+		defer rs.End()
 		doneFunc(ackID, ack, r, receiveTime)
 	}
 	ackh.ackResult = ipubsub.NewAckResult()

@@ -34,6 +34,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	dataexchangepb "google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -61,6 +62,8 @@ type AnalyticsHubCallOptions struct {
 	GetIamPolicy         []gax.CallOption
 	SetIamPolicy         []gax.CallOption
 	TestIamPermissions   []gax.CallOption
+	GetLocation          []gax.CallOption
+	ListLocations        []gax.CallOption
 }
 
 func defaultAnalyticsHubGRPCClientOptions() []option.ClientOption {
@@ -257,6 +260,8 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 				})
 			}),
 		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -427,6 +432,8 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -450,16 +457,19 @@ type internalAnalyticsHubClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
 
 // AnalyticsHubClient is a client for interacting with Analytics Hub API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AnalyticsHubService API facilitates data sharing within and across
-// organizations. It allows data providers to publish Listings — a
-// discoverable and searchable SKU representing a dataset. Data consumers can
-// subscribe to Listings. Upon subscription, AnalyticsHub provisions a “Linked
-// Datasets” surfacing the data in the consumer’s project.
+// organizations. It allows data providers to publish listings that reference
+// shared datasets. With Analytics Hub, users can discover and search for
+// listings that they have access to. Subscribers can view and subscribe to
+// listings. When you subscribe to a listing, Analytics Hub creates a linked
+// dataset in your project.
 type AnalyticsHubClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAnalyticsHubClient
@@ -485,90 +495,101 @@ func (c *AnalyticsHubClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AnalyticsHubClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListDataExchanges lists DataExchanges in a given project and location.
+// ListDataExchanges lists all data exchanges in a given project and location.
 func (c *AnalyticsHubClient) ListDataExchanges(ctx context.Context, req *dataexchangepb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	return c.internalClient.ListDataExchanges(ctx, req, opts...)
 }
 
-// ListOrgDataExchanges lists DataExchanges from projects in a given organization and location.
+// ListOrgDataExchanges lists all data exchanges from projects in a given organization and
+// location.
 func (c *AnalyticsHubClient) ListOrgDataExchanges(ctx context.Context, req *dataexchangepb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	return c.internalClient.ListOrgDataExchanges(ctx, req, opts...)
 }
 
-// GetDataExchange gets details of a single DataExchange.
+// GetDataExchange gets the details of a data exchange.
 func (c *AnalyticsHubClient) GetDataExchange(ctx context.Context, req *dataexchangepb.GetDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	return c.internalClient.GetDataExchange(ctx, req, opts...)
 }
 
-// CreateDataExchange creates a new DataExchange in a given project and location.
+// CreateDataExchange creates a new data exchange.
 func (c *AnalyticsHubClient) CreateDataExchange(ctx context.Context, req *dataexchangepb.CreateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	return c.internalClient.CreateDataExchange(ctx, req, opts...)
 }
 
-// UpdateDataExchange updates the parameters of a single DataExchange.
+// UpdateDataExchange updates an existing data exchange.
 func (c *AnalyticsHubClient) UpdateDataExchange(ctx context.Context, req *dataexchangepb.UpdateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	return c.internalClient.UpdateDataExchange(ctx, req, opts...)
 }
 
-// DeleteDataExchange deletes a single DataExchange.
+// DeleteDataExchange deletes an existing data exchange.
 func (c *AnalyticsHubClient) DeleteDataExchange(ctx context.Context, req *dataexchangepb.DeleteDataExchangeRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteDataExchange(ctx, req, opts...)
 }
 
-// ListListings lists Listings in a given project and location.
+// ListListings lists all listings in a given project and location.
 func (c *AnalyticsHubClient) ListListings(ctx context.Context, req *dataexchangepb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
 	return c.internalClient.ListListings(ctx, req, opts...)
 }
 
-// GetListing gets details of a single Listing.
+// GetListing gets the details of a listing.
 func (c *AnalyticsHubClient) GetListing(ctx context.Context, req *dataexchangepb.GetListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	return c.internalClient.GetListing(ctx, req, opts...)
 }
 
-// CreateListing creates a new Listing in a given project and location.
+// CreateListing creates a new listing.
 func (c *AnalyticsHubClient) CreateListing(ctx context.Context, req *dataexchangepb.CreateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	return c.internalClient.CreateListing(ctx, req, opts...)
 }
 
-// UpdateListing updates the parameters of a single Listing.
+// UpdateListing updates an existing listing.
 func (c *AnalyticsHubClient) UpdateListing(ctx context.Context, req *dataexchangepb.UpdateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	return c.internalClient.UpdateListing(ctx, req, opts...)
 }
 
-// DeleteListing deletes a single Listing, as long as there are no subscriptions
-// associated with the source of this Listing.
+// DeleteListing deletes a listing.
 func (c *AnalyticsHubClient) DeleteListing(ctx context.Context, req *dataexchangepb.DeleteListingRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteListing(ctx, req, opts...)
 }
 
-// SubscribeListing subscribes to a single Listing.
+// SubscribeListing subscribes to a listing.
 //
-// Data Exchange currently supports one type of Listing: a BigQuery dataset.
-// Upon subscription to a Listing for a BigQuery dataset, Data Exchange
+// Currently, with Analytics Hub, you can create listings that
+// reference only BigQuery datasets.
+// Upon subscription to a listing for a BigQuery dataset, Analytics Hub
 // creates a linked dataset in the subscriber’s project.
 func (c *AnalyticsHubClient) SubscribeListing(ctx context.Context, req *dataexchangepb.SubscribeListingRequest, opts ...gax.CallOption) (*dataexchangepb.SubscribeListingResponse, error) {
 	return c.internalClient.SubscribeListing(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the IAM policy for a dataExchange or a listing.
+// GetIamPolicy gets the IAM policy.
 func (c *AnalyticsHubClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the IAM policy for a dataExchange or a listing.
+// SetIamPolicy sets the IAM policy.
 func (c *AnalyticsHubClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// TestIamPermissions returns the permissions that a caller has on a specified dataExchange or
-// listing.
+// TestIamPermissions returns the permissions that a caller has.
 func (c *AnalyticsHubClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// GetLocation gets information about a location.
+func (c *AnalyticsHubClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *AnalyticsHubClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // analyticsHubGRPCClient is a client for interacting with Analytics Hub API over gRPC transport.
@@ -587,6 +608,8 @@ type analyticsHubGRPCClient struct {
 	// The gRPC API client.
 	analyticsHubClient dataexchangepb.AnalyticsHubServiceClient
 
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -595,10 +618,11 @@ type analyticsHubGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The AnalyticsHubService API facilitates data sharing within and across
-// organizations. It allows data providers to publish Listings — a
-// discoverable and searchable SKU representing a dataset. Data consumers can
-// subscribe to Listings. Upon subscription, AnalyticsHub provisions a “Linked
-// Datasets” surfacing the data in the consumer’s project.
+// organizations. It allows data providers to publish listings that reference
+// shared datasets. With Analytics Hub, users can discover and search for
+// listings that they have access to. Subscribers can view and subscribe to
+// listings. When you subscribe to a listing, Analytics Hub creates a linked
+// dataset in your project.
 func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsHubClient, error) {
 	clientOpts := defaultAnalyticsHubGRPCClientOptions()
 	if newAnalyticsHubClientHook != nil {
@@ -625,6 +649,7 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 		disableDeadlines:   disableDeadlines,
 		analyticsHubClient: dataexchangepb.NewAnalyticsHubServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -635,7 +660,8 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *analyticsHubGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -673,10 +699,11 @@ type analyticsHubRESTClient struct {
 // NewAnalyticsHubRESTClient creates a new analytics hub service rest client.
 //
 // The AnalyticsHubService API facilitates data sharing within and across
-// organizations. It allows data providers to publish Listings — a
-// discoverable and searchable SKU representing a dataset. Data consumers can
-// subscribe to Listings. Upon subscription, AnalyticsHub provisions a “Linked
-// Datasets” surfacing the data in the consumer’s project.
+// organizations. It allows data providers to publish listings that reference
+// shared datasets. With Analytics Hub, users can discover and search for
+// listings that they have access to. Subscribers can view and subscribe to
+// listings. When you subscribe to a listing, Analytics Hub creates a linked
+// dataset in your project.
 func NewAnalyticsHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsHubClient, error) {
 	clientOpts := append(defaultAnalyticsHubRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -723,7 +750,7 @@ func (c *analyticsHubRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *analyticsHubRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1118,7 +1145,69 @@ func (c *analyticsHubGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	return resp, nil
 }
 
-// ListDataExchanges lists DataExchanges in a given project and location.
+func (c *analyticsHubGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsHubGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListDataExchanges lists all data exchanges in a given project and location.
 func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dataexchangepb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListDataExchangesRequest)
@@ -1205,7 +1294,8 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 	return it
 }
 
-// ListOrgDataExchanges lists DataExchanges from projects in a given organization and location.
+// ListOrgDataExchanges lists all data exchanges from projects in a given organization and
+// location.
 func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *dataexchangepb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListOrgDataExchangesRequest)
@@ -1292,7 +1382,7 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 	return it
 }
 
-// GetDataExchange gets details of a single DataExchange.
+// GetDataExchange gets the details of a data exchange.
 func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *dataexchangepb.GetDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1345,7 +1435,7 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 	return resp, nil
 }
 
-// CreateDataExchange creates a new DataExchange in a given project and location.
+// CreateDataExchange creates a new data exchange.
 func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *dataexchangepb.CreateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataExchange()
@@ -1410,7 +1500,7 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 	return resp, nil
 }
 
-// UpdateDataExchange updates the parameters of a single DataExchange.
+// UpdateDataExchange updates an existing data exchange.
 func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *dataexchangepb.UpdateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataExchange()
@@ -1426,8 +1516,12 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataExchange().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1477,7 +1571,7 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 	return resp, nil
 }
 
-// DeleteDataExchange deletes a single DataExchange.
+// DeleteDataExchange deletes an existing data exchange.
 func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *dataexchangepb.DeleteDataExchangeRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1512,7 +1606,7 @@ func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *da
 	}, opts...)
 }
 
-// ListListings lists Listings in a given project and location.
+// ListListings lists all listings in a given project and location.
 func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexchangepb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
 	it := &ListingIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListListingsRequest)
@@ -1599,7 +1693,7 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 	return it
 }
 
-// GetListing gets details of a single Listing.
+// GetListing gets the details of a listing.
 func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchangepb.GetListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1652,7 +1746,7 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 	return resp, nil
 }
 
-// CreateListing creates a new Listing in a given project and location.
+// CreateListing creates a new listing.
 func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexchangepb.CreateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetListing()
@@ -1717,7 +1811,7 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 	return resp, nil
 }
 
-// UpdateListing updates the parameters of a single Listing.
+// UpdateListing updates an existing listing.
 func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexchangepb.UpdateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetListing()
@@ -1733,8 +1827,12 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetListing().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1784,8 +1882,7 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 	return resp, nil
 }
 
-// DeleteListing deletes a single Listing, as long as there are no subscriptions
-// associated with the source of this Listing.
+// DeleteListing deletes a listing.
 func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexchangepb.DeleteListingRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1820,10 +1917,11 @@ func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexc
 	}, opts...)
 }
 
-// SubscribeListing subscribes to a single Listing.
+// SubscribeListing subscribes to a listing.
 //
-// Data Exchange currently supports one type of Listing: a BigQuery dataset.
-// Upon subscription to a Listing for a BigQuery dataset, Data Exchange
+// Currently, with Analytics Hub, you can create listings that
+// reference only BigQuery datasets.
+// Upon subscription to a listing for a BigQuery dataset, Analytics Hub
 // creates a linked dataset in the subscriber’s project.
 func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *dataexchangepb.SubscribeListingRequest, opts ...gax.CallOption) (*dataexchangepb.SubscribeListingResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1883,7 +1981,7 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 	return resp, nil
 }
 
-// GetIamPolicy gets the IAM policy for a dataExchange or a listing.
+// GetIamPolicy gets the IAM policy.
 func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1942,7 +2040,7 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	return resp, nil
 }
 
-// SetIamPolicy sets the IAM policy for a dataExchange or a listing.
+// SetIamPolicy sets the IAM policy.
 func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2001,8 +2099,7 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	return resp, nil
 }
 
-// TestIamPermissions returns the permissions that a caller has on a specified dataExchange or
-// listing.
+// TestIamPermissions returns the permissions that a caller has.
 func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2059,6 +2156,149 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetLocation gets information about a location.
+func (c *analyticsHubRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *analyticsHubRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // DataExchangeIterator manages a stream of *dataexchangepb.DataExchange.
@@ -2150,6 +2390,53 @@ func (it *ListingIterator) bufLen() int {
 }
 
 func (it *ListingIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

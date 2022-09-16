@@ -569,7 +569,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	ctx, fcSpan := tracer().Start(ctx, "publisher flow control")
+	ctx2, fcSpan := tracer().Start(ctx, "publisher flow control")
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -579,7 +579,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	fcSpan.End()
 
-	ctx, batchSpan := tracer().Start(ctx, "publish batching")
+	_, batchSpan := tracer().Start(ctx2, "publish batching")
 
 	bmsg := &bundledMessage{
 		msg:       msg,
@@ -600,6 +600,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		if msg.Attributes == nil {
 			msg.Attributes = make(map[string]string)
 		}
+		// Inject the context from the first publish span rather than from flow control / batching.
 		otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
 	}
 

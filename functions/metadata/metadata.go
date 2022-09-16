@@ -43,12 +43,13 @@ type Resource struct {
 	Name string `json:"name"`
 	// Type is the type of event.
 	Type string `json:"type"`
-	// Path is the path to the resource type (deprecated).
-	// This is the case for some deprecated GCS
-	// notifications, which populate the resource field as a string containing the topic
+	// RawPath is the path to the resource type (deprecated).
+	// It is used by the GCS notifications shown in
+	// https://cloud.google.com/storage/docs/pubsub-notifications,
+	// which populate the resource field as a string containing the topic
 	// rather than as the expected dictionary.
-	// See the Attributes section of https://cloud.google.com/storage/docs/pubsub-notifications
-	// for more details.
+	// It is also used when triggering Cloud Functions by [Firebase Realtime Database
+	// Triggers](https://cloud.google.com/functions/docs/calling/realtime-data).
 	RawPath string `json:"-"`
 }
 

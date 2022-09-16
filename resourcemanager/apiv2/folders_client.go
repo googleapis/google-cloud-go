@@ -139,7 +139,8 @@ func (c *FoldersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FoldersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -391,7 +392,8 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *foldersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

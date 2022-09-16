@@ -101,7 +101,8 @@ func (c *NetworkEdgeSecurityServicesClient) setGoogleClientInfo(keyval ...string
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *NetworkEdgeSecurityServicesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -211,7 +212,7 @@ func (c *networkEdgeSecurityServicesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *networkEdgeSecurityServicesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

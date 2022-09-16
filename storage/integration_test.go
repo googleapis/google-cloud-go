@@ -52,6 +52,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -59,7 +60,10 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"google.golang.org/grpc/codes"
 )
+
+type skipTransportTestKey string
 
 const (
 	testPrefix     = "go-integration-test"
@@ -67,7 +71,7 @@ const (
 	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-	grpcTestPrefix         = "golang-grpc-test-"
+	grpcTestPrefix         = "golang-grpc-test"
 )
 
 var (
@@ -198,9 +202,9 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t})
+	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t, Short: true})
 	bucketName = uidSpace.New()
-	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t})
+	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t, Short: true})
 	grpcBucketName = uidSpaceGRPC.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
@@ -236,6 +240,40 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 	}
 
 	return
+}
+
+// initTransportClients initializes Storage clients for each supported transport.
+func initTransportClients(ctx context.Context, t *testing.T) map[string]*Client {
+	return map[string]*Client{
+		"http": testConfig(ctx, t),
+		"grpc": testConfigGRPC(ctx, t),
+	}
+}
+
+// multiTransportTest initializes fresh clients for each transport, then runs
+// given testing function using each transport-specific client, supplying the
+// test function with the sub-test instance, the context it was given, the name
+// of an existing bucket to use, a bucket name to use for bucket creation, and
+// the client to use.
+func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T, context.Context, string, string, *Client)) {
+	for transport, client := range initTransportClients(ctx, t) {
+		t.Run(transport, func(t *testing.T) {
+			defer client.Close()
+
+			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
+				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
+			}
+
+			bucket := bucketName
+			var prefix string
+			if transport == "grpc" {
+				bucket = grpcBucketName
+				prefix = grpcTestPrefix + "-"
+			}
+
+			test(t, ctx, bucket, prefix, client)
+		})
+	}
 }
 
 // config is like testConfig, but it doesn't need a *testing.T.
@@ -438,50 +476,49 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(skipGRPC("b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	wantLifecycle := Lifecycle{
-		Rules: []LifecycleRule{
-			{
-				Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
-				Condition: LifecycleCondition{AgeInDays: 30},
+		wantLifecycle := Lifecycle{
+			Rules: []LifecycleRule{
+				{
+					Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+					Condition: LifecycleCondition{AgeInDays: 30},
+				},
+				{
+					Action:    LifecycleAction{Type: DeleteAction},
+					Condition: LifecycleCondition{AllObjects: true},
+				},
 			},
-			{
-				Action:    LifecycleAction{Type: DeleteAction},
-				Condition: LifecycleCondition{AllObjects: true},
-			},
-		},
-	}
+		}
 
-	bucket := client.Bucket(uidSpace.New())
+		bucket := client.Bucket(prefix + uidSpace.New())
 
-	// Create bucket with lifecycle rules
-	bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{
-		Lifecycle: wantLifecycle,
+		// Create bucket with lifecycle rules
+		h.mustCreate(bucket, testutil.ProjID(), &BucketAttrs{
+			Lifecycle: wantLifecycle,
+		})
+		defer h.mustDeleteBucket(bucket)
+
+		attrs := h.mustBucketAttrs(bucket)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
+
+		// Remove lifecycle rules
+		ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
+		}
+
+		// Update bucket with a lifecycle rule
+		ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
 	})
-	defer h.mustDeleteBucket(bucket)
-
-	attrs := h.mustBucketAttrs(bucket)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
-
-	// Remove lifecycle rules
-	ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
-	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
-	}
-
-	// Update bucket with a lifecycle rule
-	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
-	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
@@ -617,13 +654,8 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	// Metadata updates may be delayed up to 10s. Since we expect an error from
 	// this call, we retry on a nil error until we get the non-retryable error
 	// that we are expecting.
-	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || ShouldRetry(err)
-	}
-
 	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-
-	b := bkt.Retryer(WithErrorFunc(idempotentOrNilRetry))
+	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
 	_, err = b.ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err == nil {
@@ -632,8 +664,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 
 	// Confirm ObjectAccessControl returns error, for same reason as above.
 	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-
-	_, err = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL().List(ctxWithTimeout)
+	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err == nil {
 		t.Errorf("ACL.List: expected object ACL list to fail")
@@ -647,8 +678,12 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
+
+	// Metadata updates may be delayed up to 10s. Before that, we can get a 400
+	// indicating that uniform bucket-level access is still enabled.
 	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	acls, err := o.Retryer(WithPolicy(RetryAlways)).ACL().List(ctxWithTimeout)
+	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+	acls, err := retryObj.ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err != nil {
 		t.Errorf("ACL.List: object ACL list failed: %v", err)
@@ -657,6 +692,17 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	if !containsACL(acls, aclEntity, RoleReader) {
 		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
 	}
+}
+
+func retryOnNilAndTransientErrs(err error) bool {
+	return err == nil || ShouldRetry(err)
+}
+func retryOnTransient400and403(err error) bool {
+	var e *googleapi.Error
+	var ae *apierror.APIError
+	return ShouldRetry(err) ||
+		/* http */ errors.As(err, &e) && (e.Code == 400 || e.Code == 403) ||
+		/* grpc */ errors.As(err, &ae) && (ae.GRPCStatus().Code() == codes.InvalidArgument || ae.GRPCStatus().Code() == codes.PermissionDenied)
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
@@ -697,13 +743,8 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 
 	// Confirm BucketAccessControl returns error.
 	// We retry on nil to account for propagation delay in metadata update.
-	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || ShouldRetry(err)
-	}
-
 	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-
-	b := bkt.Retryer(WithErrorFunc(idempotentOrNilRetry))
+	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
 	_, err = b.ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err == nil {
@@ -712,8 +753,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 
 	// Confirm ObjectAccessControl returns error.
 	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-
-	_, err = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL().List(ctxWithTimeout)
+	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err == nil {
 		t.Errorf("ACL.List: expected object ACL list to fail")
@@ -727,8 +767,10 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
+	// We retry on 400 to account for propagation delay in metadata update.
 	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	acls, err := o.Retryer(WithPolicy(RetryAlways)).ACL().List(ctxWithTimeout)
+	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+	acls, err := retryObj.ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err != nil {
 		t.Errorf("ACL.List: object ACL list failed: %v", err)
@@ -831,32 +873,31 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	o := client.Bucket(bucketName).Object("conddel")
+		o := client.Bucket(bucket).Object("conddel")
 
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("foo"))
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("foo"))
 
-	gen := wc.Attrs().Generation
-	metaGen := wc.Attrs().Metageneration
+		gen := wc.Attrs().Generation
+		metaGen := wc.Attrs().Metageneration
 
-	if err := o.Generation(gen - 1).Delete(ctx); err == nil {
-		t.Fatalf("Unexpected successful delete with Generation")
-	}
-	if err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).Delete(ctx); err == nil {
-		t.Fatalf("Unexpected successful delete with IfMetaGenerationMatch")
-	}
-	if err := o.If(Conditions{MetagenerationNotMatch: metaGen}).Delete(ctx); err == nil {
-		t.Fatalf("Unexpected successful delete with IfMetaGenerationNotMatch")
-	}
-	if err := o.Generation(gen).Delete(ctx); err != nil {
-		t.Fatalf("final delete failed: %v", err)
-	}
+		if err := o.Generation(gen - 1).Delete(ctx); err == nil {
+			t.Fatalf("Unexpected successful delete with Generation")
+		}
+		if err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).Delete(ctx); err == nil {
+			t.Fatalf("Unexpected successful delete with IfMetaGenerationMatch")
+		}
+		if err := o.If(Conditions{MetagenerationNotMatch: metaGen}).Delete(ctx); err == nil {
+			t.Fatalf("Unexpected successful delete with IfMetaGenerationNotMatch")
+		}
+		if err := o.Generation(gen).Delete(ctx); err != nil {
+			t.Fatalf("final delete failed: %v", err)
+		}
+	})
 }
 
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
@@ -1294,64 +1335,54 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
-	ctx := context.Background()
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	// Create an HTTP client to read test data and a gRPC client to test write
-	// with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
+		name := uidSpace.New()
+		obj := client.Bucket(bucket).Object(name).Retryer(WithPolicy(RetryAlways))
+		defer h.mustDeleteObject(obj)
 
-	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	defer func() {
-		if err := hobj.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Use a larger blob to test multi-message logic. This is a little over 5MB.
+		content := bytes.Repeat([]byte("a"), 5<<20)
+
+		crc32c := crc32.Checksum(content, crc32cTable)
+		w := obj.NewWriter(ctx)
+		w.ProgressFunc = func(p int64) {
+			t.Logf("%s: committed %d\n", t.Name(), p)
 		}
-	}()
+		w.SendCRC32C = true
+		w.CRC32C = crc32c
+		got, err := w.Write(content)
+		if err != nil {
+			t.Fatalf("Writer.Write: %v", err)
+		}
+		// Flush the buffer to finish the upload.
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
 
-	// Use a larger blob to test multi-message logic. This is a little over 5MB.
-	content := bytes.Repeat([]byte("a"), 5<<20)
+		want := len(content)
+		if got != want {
+			t.Errorf("While writing got: %d want %d", got, want)
+		}
 
-	crc32c := crc32.Checksum(content, crc32cTable)
-	w := gobj.NewWriter(ctx)
-	w.ProgressFunc = func(p int64) {
-		t.Logf("%s: committed %d\n", t.Name(), p)
-	}
-	w.SendCRC32C = true
-	w.CRC32C = crc32c
-	got, err := w.Write(content)
-	if err != nil {
-		t.Fatalf("Writer.Write: %v", err)
-	}
-	// Flush the buffer to finish the upload.
-	if err := w.Close(); err != nil {
-		t.Fatalf("Writer.Close: %v", err)
-	}
+		// Read back the Object for verification.
+		reader, err := client.Bucket(bucket).Object(name).NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer reader.Close()
 
-	want := len(content)
-	if got != want {
-		t.Errorf("While writing got: %d want %d", got, want)
-	}
-
-	// Use HTTP client to read back the Object for verification.
-	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hr.Close()
-
-	buf := make([]byte, want+4<<10)
-	b := bytes.NewBuffer(buf)
-	gotr, err := io.Copy(b, hr)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if gotr != int64(want) {
-		t.Errorf("While reading got: %d want %d", gotr, want)
-	}
+		buf := make([]byte, want+4<<10)
+		b := bytes.NewBuffer(buf)
+		gotr, err := io.Copy(b, reader)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if gotr != int64(want) {
+			t.Errorf("While reading got: %d want %d", gotr, want)
+		}
+	})
 }
 
 func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
@@ -1418,33 +1449,32 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_ConditionalDownload(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	o := client.Bucket(bucketName).Object("condread")
-	defer o.Delete(ctx)
+		o := client.Bucket(bucket).Object("condread")
+		defer o.Delete(ctx)
 
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("foo"))
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("foo"))
 
-	gen := wc.Attrs().Generation
-	metaGen := wc.Attrs().Metageneration
+		gen := wc.Attrs().Generation
+		metaGen := wc.Attrs().Metageneration
 
-	if _, err := o.Generation(gen + 1).NewReader(ctx); err == nil {
-		t.Fatalf("Unexpected successful download with nonexistent Generation")
-	}
-	if _, err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
-		t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
-	}
-	if _, err := o.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
-		t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
-	}
-	if _, err := o.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
-		t.Fatalf("Download failed: %v", err)
-	}
+		if _, err := o.Generation(gen + 1).NewReader(ctx); err == nil {
+			t.Fatalf("Unexpected successful download with nonexistent Generation")
+		}
+		if _, err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
+			t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
+		}
+		if _, err := o.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
+			t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
+		}
+		if _, err := o.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
+			t.Fatalf("Download failed: %v", err)
+		}
+	})
 }
 
 func TestIntegration_Objects(t *testing.T) {
@@ -1457,7 +1487,7 @@ func TestIntegration_Objects(t *testing.T) {
 	testTime = time.Now().UTC()
 	newBucketName := uidSpace.New()
 	h := testHelper{t}
-	bkt := client.Bucket(newBucketName)
+	bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
 
 	h.mustCreate(bkt, testutil.ProjID(), nil)
 	defer func() {
@@ -2350,27 +2380,25 @@ func TestIntegration_ACL(t *testing.T) {
 	} else if !hasRule(acl, rule) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
-	aclObjects := []string{"acl1", "acl2"}
-	name := aclObjects[0]
+	name := "acl1"
 	o := bkt.Object(name)
+	c := randomContents()
 
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj).If(Conditions{DoesNotExist: true}), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
+	// Retry to account for propagation delay in metadata update.
+	err = retry(ctx, func() error {
+		if err := writeObject(ctx, o, "", c); err != nil {
+			return fmt.Errorf("Write for %v failed with %v", name, err)
 		}
-	}
-
-	retryAllErrors := func(err error) bool { return err != nil }
-
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-	acl, err = o.Retryer(WithErrorFunc(retryAllErrors)).ACL().List(ctxWithTimeout)
-	cancelCtx()
+		acl, err = o.ACL().List(ctx)
+		return err
+	}, func() error {
+		if !hasRule(acl, rule) {
+			return fmt.Errorf("hasRule: object ACL missing %+v", rule)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("ACL.List: can't retrieve ACL of %v", name)
-	}
-	if !hasRule(acl, rule) {
-		t.Errorf("hasRule: object ACL missing %+v", rule)
+		t.Error(err)
 	}
 
 	if err := o.ACL().Delete(ctx, entity); err != nil {
@@ -2393,12 +2421,18 @@ func TestIntegration_ACL(t *testing.T) {
 	ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
 	defer cancel()
 
-	bACL, err = bkt.Retryer(WithErrorFunc(retryAllErrors)).ACL().List(ctxWithTimeout)
+	// Retry to account for propagation delay in metadata update.
+	err = retry(ctx, func() error {
+		bACL, err = bkt.ACL().List(ctxWithTimeout)
+		return err
+	}, func() error {
+		if !hasRule(bACL, rule2) {
+			return fmt.Errorf("hasRule: bucket ACL missing %+v", rule2)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("ACL.List: error while getting the ACL of the bucket: %v", err)
-	}
-	if !hasRule(bACL, rule2) {
-		t.Errorf("hasRule: bucket ACL missing %+v", rule2)
+		t.Error(err)
 	}
 
 	if err := bkt.ACL().Delete(ctx, entity2); err != nil {
@@ -2655,6 +2689,16 @@ func TestIntegration_Encryption(t *testing.T) {
 	if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
 		t.Fatal("got nil, want error")
 	}
+}
+
+func TestIntegration_NonexistentObjectRead(t *testing.T) {
+	t.Parallel()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		_, err := client.Bucket(bucket).Object("object-does-not-exist").NewReader(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Errorf("Objects: got %v, want ErrObjectNotExist", err)
+		}
+	})
 }
 
 func TestIntegration_NonexistentBucket(t *testing.T) {
@@ -3006,8 +3050,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 				} else if err == nil && !test.expectSuccess {
 					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
 				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
-					t.Errorf("%s: mismatched errors; %s\n\t\twant error code: %d\n\t\tgot error: %v\n",
-						desc, printTestCase(), test.wantErrorCode, err)
+					t.Errorf("%s: mismatched errors; want error code: %d, got error: %v \n\t\t%s\n",
+						desc, test.wantErrorCode, err, printTestCase())
 				}
 			}
 
@@ -3019,9 +3063,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
 				t.Fatalf("set ACL: %v", err)
 			}
-			t.Cleanup(func() {
-				h.mustDeleteBucket(requesterPaysBucket)
-			})
+			t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
 
 			// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
 			// The later write we perform may fail so we always write to the object as the user
@@ -3047,23 +3089,32 @@ func TestIntegration_RequesterPays(t *testing.T) {
 				}
 			}
 
-			// Object operations (except for delete)
-			checkforErrors("write object", writeObject(ctx, bucket.Object(objectName), "text/plain", []byte("hello")))
-			_, err = readObject(ctx, bucket.Object(objectName))
-			checkforErrors("read object", err)
-			_, err = bucket.Object(objectName).Attrs(ctx)
-			checkforErrors("get object attrs", err)
-			_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
-			checkforErrors("update object", err)
-
 			// Bucket ACL operations
-			// We interleave buckets to get around the rate limit
 			entity := ACLEntity("domain-google.com")
 
 			checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
 			_, err = bucket.ACL().List(ctx)
 			checkforErrors("bucket acl list", err)
 			checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
+
+			// Object operations (except for delete)
+			// Retry to account for propagation delay to objects in metadata update
+			// (we updated the metadata to add the otherUserEmail as owner on the bucket)
+			o := bucket.Object(objectName)
+			ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+			defer cancel()
+			// Only retry when we expect success to avoid retrying for 10 seconds
+			// when we know it will fail
+			if test.expectSuccess {
+				o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
+			}
+			checkforErrors("write object", writeObject(ctxWithTimeout, o, "text/plain", []byte("hello")))
+			_, err = readObject(ctx, bucket.Object(objectName))
+			checkforErrors("read object", err)
+			_, err = bucket.Object(objectName).Attrs(ctx)
+			checkforErrors("get object attrs", err)
+			_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+			checkforErrors("update object", err)
 
 			// Object ACL operations
 			checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
@@ -4969,12 +5020,12 @@ func hasRule(acl []ACLRule, rule ACLRule) bool {
 }
 
 // retry retries a function call as well as an (optional) correctness check for up
-// to 11 seconds. Both call and check must run without error in order to succeed.
+// to 60 seconds. Both call and check must run without error in order to succeed.
 // If the timeout is hit, the most recent error from call or check will be returned.
 // This function should be used to wrap calls that might cause integration test
 // flakes due to delays in propagation (for example, metadata updates).
 func retry(ctx context.Context, call func() error, check func() error) error {
-	timeout := time.After(11 * time.Second)
+	timeout := time.After(60 * time.Second)
 	var err error
 	for {
 		select {
@@ -4991,4 +5042,12 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+}
+
+func skipGRPC(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("grpc"), reason)
+}
+
+func skipHTTP(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
 }

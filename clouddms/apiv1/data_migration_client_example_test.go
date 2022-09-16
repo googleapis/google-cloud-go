@@ -26,6 +26,11 @@ import (
 
 func ExampleNewDataMigrationClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewDataMigrationClient() {
 
 func ExampleDataMigrationClient_ListMigrationJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleDataMigrationClient_ListMigrationJobs() {
 
 func ExampleDataMigrationClient_GetMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleDataMigrationClient_GetMigrationJob() {
 
 func ExampleDataMigrationClient_CreateMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleDataMigrationClient_CreateMigrationJob() {
 
 func ExampleDataMigrationClient_UpdateMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +159,11 @@ func ExampleDataMigrationClient_UpdateMigrationJob() {
 
 func ExampleDataMigrationClient_DeleteMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleDataMigrationClient_DeleteMigrationJob() {
 
 func ExampleDataMigrationClient_StartMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +217,11 @@ func ExampleDataMigrationClient_StartMigrationJob() {
 
 func ExampleDataMigrationClient_StopMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,6 +247,11 @@ func ExampleDataMigrationClient_StopMigrationJob() {
 
 func ExampleDataMigrationClient_ResumeMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -232,6 +277,11 @@ func ExampleDataMigrationClient_ResumeMigrationJob() {
 
 func ExampleDataMigrationClient_PromoteMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -257,6 +307,11 @@ func ExampleDataMigrationClient_PromoteMigrationJob() {
 
 func ExampleDataMigrationClient_VerifyMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -282,6 +337,11 @@ func ExampleDataMigrationClient_VerifyMigrationJob() {
 
 func ExampleDataMigrationClient_RestartMigrationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -307,6 +367,11 @@ func ExampleDataMigrationClient_RestartMigrationJob() {
 
 func ExampleDataMigrationClient_GenerateSshScript() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -327,6 +392,11 @@ func ExampleDataMigrationClient_GenerateSshScript() {
 
 func ExampleDataMigrationClient_ListConnectionProfiles() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -353,6 +423,11 @@ func ExampleDataMigrationClient_ListConnectionProfiles() {
 
 func ExampleDataMigrationClient_GetConnectionProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -373,6 +448,11 @@ func ExampleDataMigrationClient_GetConnectionProfile() {
 
 func ExampleDataMigrationClient_CreateConnectionProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -398,6 +478,11 @@ func ExampleDataMigrationClient_CreateConnectionProfile() {
 
 func ExampleDataMigrationClient_UpdateConnectionProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -423,6 +508,11 @@ func ExampleDataMigrationClient_UpdateConnectionProfile() {
 
 func ExampleDataMigrationClient_DeleteConnectionProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

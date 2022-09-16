@@ -97,9 +97,6 @@ type messageIterator struct {
 	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
-	// This stores pending AckResults for cleaner shutdown when sub.Receive's ctx is cancelled.
-	// If exactly once delivery is not enabled, this map should not be populated.
-	pendingAckResults map[string]*AckResult
 
 	pendingMessages map[string]*Message
 }
@@ -147,7 +144,6 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pendingAcks:        map[string]*AckResult{},
 		pendingNacks:       map[string]*AckResult{},
 		pendingModAcks:     map[string]*AckResult{},
-		pendingAckResults:  map[string]*AckResult{},
 		pendingMessages:    map[string]*Message{},
 	}
 	it.wg.Add(1)
@@ -202,7 +198,6 @@ func (it *messageIterator) done(ackID string, ack bool, r *AckResult, receiveTim
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	delete(it.keepAliveDeadlines, ackID)
-	delete(it.pendingAckResults, ackID)
 	if ack {
 		it.pendingAcks[ackID] = r
 	} else {
@@ -284,15 +279,6 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			// We can't use an empty AckResult here either since SetAckResult will try to
 			// close the channel without checking if it exists.
 			ackIDs[ackID] = newSuccessAckResult()
-		}
-		// If exactly once is enabled, keep track of all pending AckResults
-		// so we can cleanly close them all at shutdown.
-		if enableExactlyOnceDelivery {
-			ackh, ok := ipubsub.MessageAckHandler(m).(*psAckHandler)
-			if !ok {
-				it.fail(errors.New("failed to assert type as psAckHandler"))
-			}
-			it.pendingAckResults[ackID] = ackh.ackResult
 		}
 	}
 	deadline := it.ackDeadline()

@@ -53,6 +53,7 @@ func main() {
 	onlyGapics := flag.Bool("only-gapics", strToBool(os.Getenv("ONLY_GAPICS")), "Enabling stops regenerating genproto.")
 	regenOnly := flag.Bool("regen-only", strToBool(os.Getenv("REGEN_ONLY")), "Enabling means no vetting, manifest updates, or compilation.")
 	genModule := flag.Bool("generate-module", strToBool(os.Getenv("GENERATE_MODULE")), "Enabling means a new module will be generated for API being generated.")
+	genAlias := flag.Bool("generate-alias", strToBool(os.Getenv("GENERATE_ALIAS")), "Enabling means alias files will be generated.")
 
 	flag.Parse()
 
@@ -67,6 +68,7 @@ func main() {
 			regenOnly:       *regenOnly,
 			forceAll:        *forceAll,
 			genModule:       *genModule,
+			genAlias:        *genAlias,
 		}); err != nil {
 			log.Fatal(err)
 		}
