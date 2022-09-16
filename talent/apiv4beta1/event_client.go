@@ -111,7 +111,8 @@ func (c *EventClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *EventClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -195,7 +196,8 @@ func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventCli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *eventGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -279,7 +281,7 @@ func (c *eventRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *eventRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

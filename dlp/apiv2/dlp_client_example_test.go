@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_InspectContent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleClient_InspectContent() {
 
 func ExampleClient_RedactImage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleClient_RedactImage() {
 
 func ExampleClient_DeidentifyContent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +118,11 @@ func ExampleClient_DeidentifyContent() {
 
 func ExampleClient_ReidentifyContent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,6 +143,11 @@ func ExampleClient_ReidentifyContent() {
 
 func ExampleClient_ListInfoTypes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,6 +168,11 @@ func ExampleClient_ListInfoTypes() {
 
 func ExampleClient_CreateInspectTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,6 +193,11 @@ func ExampleClient_CreateInspectTemplate() {
 
 func ExampleClient_UpdateInspectTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -178,6 +218,11 @@ func ExampleClient_UpdateInspectTemplate() {
 
 func ExampleClient_GetInspectTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -198,6 +243,11 @@ func ExampleClient_GetInspectTemplate() {
 
 func ExampleClient_ListInspectTemplates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -224,6 +274,11 @@ func ExampleClient_ListInspectTemplates() {
 
 func ExampleClient_DeleteInspectTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -242,6 +297,11 @@ func ExampleClient_DeleteInspectTemplate() {
 
 func ExampleClient_CreateDeidentifyTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -262,6 +322,11 @@ func ExampleClient_CreateDeidentifyTemplate() {
 
 func ExampleClient_UpdateDeidentifyTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -282,6 +347,11 @@ func ExampleClient_UpdateDeidentifyTemplate() {
 
 func ExampleClient_GetDeidentifyTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -302,6 +372,11 @@ func ExampleClient_GetDeidentifyTemplate() {
 
 func ExampleClient_ListDeidentifyTemplates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -328,6 +403,11 @@ func ExampleClient_ListDeidentifyTemplates() {
 
 func ExampleClient_DeleteDeidentifyTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -346,6 +426,11 @@ func ExampleClient_DeleteDeidentifyTemplate() {
 
 func ExampleClient_CreateJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -366,6 +451,11 @@ func ExampleClient_CreateJobTrigger() {
 
 func ExampleClient_UpdateJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -386,6 +476,11 @@ func ExampleClient_UpdateJobTrigger() {
 
 func ExampleClient_HybridInspectJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -406,6 +501,11 @@ func ExampleClient_HybridInspectJobTrigger() {
 
 func ExampleClient_GetJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -426,6 +526,11 @@ func ExampleClient_GetJobTrigger() {
 
 func ExampleClient_ListJobTriggers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -452,6 +557,11 @@ func ExampleClient_ListJobTriggers() {
 
 func ExampleClient_DeleteJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -470,6 +580,11 @@ func ExampleClient_DeleteJobTrigger() {
 
 func ExampleClient_ActivateJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -490,6 +605,11 @@ func ExampleClient_ActivateJobTrigger() {
 
 func ExampleClient_CreateDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -510,6 +630,11 @@ func ExampleClient_CreateDlpJob() {
 
 func ExampleClient_ListDlpJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -536,6 +661,11 @@ func ExampleClient_ListDlpJobs() {
 
 func ExampleClient_GetDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -556,6 +686,11 @@ func ExampleClient_GetDlpJob() {
 
 func ExampleClient_DeleteDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -574,6 +709,11 @@ func ExampleClient_DeleteDlpJob() {
 
 func ExampleClient_CancelDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -592,6 +732,11 @@ func ExampleClient_CancelDlpJob() {
 
 func ExampleClient_CreateStoredInfoType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -612,6 +757,11 @@ func ExampleClient_CreateStoredInfoType() {
 
 func ExampleClient_UpdateStoredInfoType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -632,6 +782,11 @@ func ExampleClient_UpdateStoredInfoType() {
 
 func ExampleClient_GetStoredInfoType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -652,6 +807,11 @@ func ExampleClient_GetStoredInfoType() {
 
 func ExampleClient_ListStoredInfoTypes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -678,6 +838,11 @@ func ExampleClient_ListStoredInfoTypes() {
 
 func ExampleClient_DeleteStoredInfoType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -696,6 +861,11 @@ func ExampleClient_DeleteStoredInfoType() {
 
 func ExampleClient_HybridInspectDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -716,6 +886,11 @@ func ExampleClient_HybridInspectDlpJob() {
 
 func ExampleClient_FinishDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

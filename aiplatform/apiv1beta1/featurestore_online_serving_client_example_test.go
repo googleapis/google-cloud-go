@@ -29,7 +29,29 @@ import (
 
 func ExampleNewFeaturestoreOnlineServingClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewFeaturestoreOnlineServingRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeaturestoreOnlineServingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewFeaturestoreOnlineServingClient() {
 
 func ExampleFeaturestoreOnlineServingClient_ReadFeatureValues() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +88,11 @@ func ExampleFeaturestoreOnlineServingClient_ReadFeatureValues() {
 
 func ExampleFeaturestoreOnlineServingClient_WriteFeatureValues() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -81,6 +113,11 @@ func ExampleFeaturestoreOnlineServingClient_WriteFeatureValues() {
 
 func ExampleFeaturestoreOnlineServingClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -101,6 +138,11 @@ func ExampleFeaturestoreOnlineServingClient_GetLocation() {
 
 func ExampleFeaturestoreOnlineServingClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -127,6 +169,11 @@ func ExampleFeaturestoreOnlineServingClient_ListLocations() {
 
 func ExampleFeaturestoreOnlineServingClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -147,6 +194,11 @@ func ExampleFeaturestoreOnlineServingClient_GetIamPolicy() {
 
 func ExampleFeaturestoreOnlineServingClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -167,6 +219,11 @@ func ExampleFeaturestoreOnlineServingClient_SetIamPolicy() {
 
 func ExampleFeaturestoreOnlineServingClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -187,6 +244,11 @@ func ExampleFeaturestoreOnlineServingClient_TestIamPermissions() {
 
 func ExampleFeaturestoreOnlineServingClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -205,6 +267,11 @@ func ExampleFeaturestoreOnlineServingClient_CancelOperation() {
 
 func ExampleFeaturestoreOnlineServingClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -223,6 +290,11 @@ func ExampleFeaturestoreOnlineServingClient_DeleteOperation() {
 
 func ExampleFeaturestoreOnlineServingClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,6 +315,11 @@ func ExampleFeaturestoreOnlineServingClient_GetOperation() {
 
 func ExampleFeaturestoreOnlineServingClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -269,6 +346,11 @@ func ExampleFeaturestoreOnlineServingClient_ListOperations() {
 
 func ExampleFeaturestoreOnlineServingClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreOnlineServingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

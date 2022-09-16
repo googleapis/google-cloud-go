@@ -181,6 +181,181 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateAnnotationSpecSet": {
+              "methods": [
+                "CreateAnnotationSpecSet"
+              ]
+            },
+            "CreateDataset": {
+              "methods": [
+                "CreateDataset"
+              ]
+            },
+            "CreateEvaluationJob": {
+              "methods": [
+                "CreateEvaluationJob"
+              ]
+            },
+            "CreateInstruction": {
+              "methods": [
+                "CreateInstruction"
+              ]
+            },
+            "DeleteAnnotatedDataset": {
+              "methods": [
+                "DeleteAnnotatedDataset"
+              ]
+            },
+            "DeleteAnnotationSpecSet": {
+              "methods": [
+                "DeleteAnnotationSpecSet"
+              ]
+            },
+            "DeleteDataset": {
+              "methods": [
+                "DeleteDataset"
+              ]
+            },
+            "DeleteEvaluationJob": {
+              "methods": [
+                "DeleteEvaluationJob"
+              ]
+            },
+            "DeleteInstruction": {
+              "methods": [
+                "DeleteInstruction"
+              ]
+            },
+            "ExportData": {
+              "methods": [
+                "ExportData"
+              ]
+            },
+            "GetAnnotatedDataset": {
+              "methods": [
+                "GetAnnotatedDataset"
+              ]
+            },
+            "GetAnnotationSpecSet": {
+              "methods": [
+                "GetAnnotationSpecSet"
+              ]
+            },
+            "GetDataItem": {
+              "methods": [
+                "GetDataItem"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetEvaluationJob": {
+              "methods": [
+                "GetEvaluationJob"
+              ]
+            },
+            "GetExample": {
+              "methods": [
+                "GetExample"
+              ]
+            },
+            "GetInstruction": {
+              "methods": [
+                "GetInstruction"
+              ]
+            },
+            "ImportData": {
+              "methods": [
+                "ImportData"
+              ]
+            },
+            "LabelImage": {
+              "methods": [
+                "LabelImage"
+              ]
+            },
+            "LabelText": {
+              "methods": [
+                "LabelText"
+              ]
+            },
+            "LabelVideo": {
+              "methods": [
+                "LabelVideo"
+              ]
+            },
+            "ListAnnotatedDatasets": {
+              "methods": [
+                "ListAnnotatedDatasets"
+              ]
+            },
+            "ListAnnotationSpecSets": {
+              "methods": [
+                "ListAnnotationSpecSets"
+              ]
+            },
+            "ListDataItems": {
+              "methods": [
+                "ListDataItems"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "ListEvaluationJobs": {
+              "methods": [
+                "ListEvaluationJobs"
+              ]
+            },
+            "ListExamples": {
+              "methods": [
+                "ListExamples"
+              ]
+            },
+            "ListInstructions": {
+              "methods": [
+                "ListInstructions"
+              ]
+            },
+            "PauseEvaluationJob": {
+              "methods": [
+                "PauseEvaluationJob"
+              ]
+            },
+            "ResumeEvaluationJob": {
+              "methods": [
+                "ResumeEvaluationJob"
+              ]
+            },
+            "SearchEvaluations": {
+              "methods": [
+                "SearchEvaluations"
+              ]
+            },
+            "SearchExampleComparisons": {
+              "methods": [
+                "SearchExampleComparisons"
+              ]
+            },
+            "UpdateEvaluationJob": {
+              "methods": [
+                "UpdateEvaluationJob"
+              ]
+            }
+          }
         }
       }
     }

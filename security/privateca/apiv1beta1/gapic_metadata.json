@@ -111,6 +111,111 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CertificateAuthorityClient",
+          "rpcs": {
+            "ActivateCertificateAuthority": {
+              "methods": [
+                "ActivateCertificateAuthority"
+              ]
+            },
+            "CreateCertificate": {
+              "methods": [
+                "CreateCertificate"
+              ]
+            },
+            "CreateCertificateAuthority": {
+              "methods": [
+                "CreateCertificateAuthority"
+              ]
+            },
+            "DisableCertificateAuthority": {
+              "methods": [
+                "DisableCertificateAuthority"
+              ]
+            },
+            "EnableCertificateAuthority": {
+              "methods": [
+                "EnableCertificateAuthority"
+              ]
+            },
+            "FetchCertificateAuthorityCsr": {
+              "methods": [
+                "FetchCertificateAuthorityCsr"
+              ]
+            },
+            "GetCertificate": {
+              "methods": [
+                "GetCertificate"
+              ]
+            },
+            "GetCertificateAuthority": {
+              "methods": [
+                "GetCertificateAuthority"
+              ]
+            },
+            "GetCertificateRevocationList": {
+              "methods": [
+                "GetCertificateRevocationList"
+              ]
+            },
+            "GetReusableConfig": {
+              "methods": [
+                "GetReusableConfig"
+              ]
+            },
+            "ListCertificateAuthorities": {
+              "methods": [
+                "ListCertificateAuthorities"
+              ]
+            },
+            "ListCertificateRevocationLists": {
+              "methods": [
+                "ListCertificateRevocationLists"
+              ]
+            },
+            "ListCertificates": {
+              "methods": [
+                "ListCertificates"
+              ]
+            },
+            "ListReusableConfigs": {
+              "methods": [
+                "ListReusableConfigs"
+              ]
+            },
+            "RestoreCertificateAuthority": {
+              "methods": [
+                "RestoreCertificateAuthority"
+              ]
+            },
+            "RevokeCertificate": {
+              "methods": [
+                "RevokeCertificate"
+              ]
+            },
+            "ScheduleDeleteCertificateAuthority": {
+              "methods": [
+                "ScheduleDeleteCertificateAuthority"
+              ]
+            },
+            "UpdateCertificate": {
+              "methods": [
+                "UpdateCertificate"
+              ]
+            },
+            "UpdateCertificateAuthority": {
+              "methods": [
+                "UpdateCertificateAuthority"
+              ]
+            },
+            "UpdateCertificateRevocationList": {
+              "methods": [
+                "UpdateCertificateRevocationList"
+              ]
+            }
+          }
         }
       }
     }

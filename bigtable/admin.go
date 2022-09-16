@@ -83,7 +83,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
@@ -496,7 +496,7 @@ func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotI
 		for _, s := range resp.Snapshots {
 			snapshotInfo, err := newSnapshotInfo(s)
 			if err != nil {
-				return "", fmt.Errorf("failed to parse snapshot proto %v", err)
+				return "", fmt.Errorf("failed to parse snapshot proto %w", err)
 			}
 			it.items = append(it.items, snapshotInfo)
 		}
@@ -518,12 +518,12 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 
 	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid createTime: %v", err)
+		return nil, fmt.Errorf("invalid createTime: %w", err)
 	}
 
 	deleteTime, err := ptypes.Timestamp(snapshot.DeleteTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid deleteTime: %v", err)
+		return nil, fmt.Errorf("invalid deleteTime: %w", err)
 	}
 
 	return &SnapshotInfo{
@@ -722,7 +722,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
@@ -962,7 +962,7 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 		if clusterErr != nil {
 			if updatedInstance {
 				// We updated the instance, so note that in the error message.
-				return fmt.Errorf("UpdateCluster %q failed %v; however UpdateInstance succeeded",
+				return fmt.Errorf("UpdateCluster %q failed %w; however UpdateInstance succeeded",
 					cluster.ClusterID, clusterErr)
 			}
 			return err
@@ -1679,7 +1679,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 				cluster.NumNodes)
 		}
 		if updateErr != nil {
-			return results, fmt.Errorf("UpdateCluster %q failed %v; Progress: %v",
+			return results, fmt.Errorf("UpdateCluster %q failed %w; Progress: %v",
 				cluster.ClusterID, updateErr, results)
 		}
 		results.UpdatedClusters = append(results.UpdatedClusters, cluster.ClusterID)
@@ -1713,7 +1713,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 			clusterToDelete := nextDeletion.Value.(string)
 			err = iac.DeleteCluster(ctx, conf.InstanceID, clusterToDelete)
 			if err != nil {
-				return results, fmt.Errorf("DeleteCluster %q failed %v; Progress: %v",
+				return results, fmt.Errorf("DeleteCluster %q failed %w; Progress: %v",
 					clusterToDelete, err, results)
 			}
 			results.DeletedClusters = append(results.DeletedClusters, clusterToDelete)
@@ -1729,7 +1729,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 			clusterToCreate.InstanceID = conf.InstanceID
 			err = iac.CreateCluster(ctx, &clusterToCreate)
 			if err != nil {
-				return results, fmt.Errorf("CreateCluster %v failed %v; Progress: %v",
+				return results, fmt.Errorf("CreateCluster %v failed %w; Progress: %v",
 					clusterToCreate, err, results)
 			}
 			results.CreatedClusters = append(results.CreatedClusters, clusterToCreate.ClusterID)
@@ -1829,7 +1829,7 @@ func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupItera
 		for _, s := range resp.Backups {
 			backupInfo, err := newBackupInfo(s)
 			if err != nil {
-				return "", fmt.Errorf("failed to parse backup proto %v", err)
+				return "", fmt.Errorf("failed to parse backup proto %w", err)
 			}
 			it.items = append(it.items, backupInfo)
 		}
@@ -1852,17 +1852,17 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 
 	startTime, err := ptypes.Timestamp(backup.StartTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid startTime: %v", err)
+		return nil, fmt.Errorf("invalid startTime: %w", err)
 	}
 
 	endTime, err := ptypes.Timestamp(backup.EndTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid endTime: %v", err)
+		return nil, fmt.Errorf("invalid endTime: %w", err)
 	}
 
 	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid expireTime: %v", err)
+		return nil, fmt.Errorf("invalid expireTime: %w", err)
 	}
 	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{

@@ -175,7 +175,8 @@ func (c *QuestionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *QuestionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -280,7 +281,8 @@ func NewQuestionClient(ctx context.Context, opts ...option.ClientOption) (*Quest
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *questionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -378,7 +380,7 @@ func (c *questionRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *questionRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -501,8 +503,12 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
-	if req.GetReadMask().GetPaths() != nil {
-		params.Add("readMask.paths", fmt.Sprintf("%v", req.GetReadMask().GetPaths()))
+	if req.GetReadMask() != nil {
+		readMask, err := protojson.Marshal(req.GetReadMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("readMask", string(readMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -741,8 +747,12 @@ func (c *questionRESTClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetUserFeedback().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

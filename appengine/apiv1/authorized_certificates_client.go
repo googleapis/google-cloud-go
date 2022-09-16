@@ -108,7 +108,8 @@ func (c *AuthorizedCertificatesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AuthorizedCertificatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -203,7 +204,8 @@ func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientO
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *authorizedCertificatesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

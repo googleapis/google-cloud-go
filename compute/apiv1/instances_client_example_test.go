@@ -26,6 +26,11 @@ import (
 
 func ExampleNewInstancesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewInstancesRESTClient() {
 
 func ExampleInstancesClient_AddAccessConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleInstancesClient_AddAccessConfig() {
 
 func ExampleInstancesClient_AddResourcePolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleInstancesClient_AddResourcePolicies() {
 
 func ExampleInstancesClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,6 +130,11 @@ func ExampleInstancesClient_AggregatedList() {
 
 func ExampleInstancesClient_AttachDisk() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -133,6 +158,11 @@ func ExampleInstancesClient_AttachDisk() {
 
 func ExampleInstancesClient_BulkInsert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,6 +186,11 @@ func ExampleInstancesClient_BulkInsert() {
 
 func ExampleInstancesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -179,6 +214,11 @@ func ExampleInstancesClient_Delete() {
 
 func ExampleInstancesClient_DeleteAccessConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +242,11 @@ func ExampleInstancesClient_DeleteAccessConfig() {
 
 func ExampleInstancesClient_DetachDisk() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -225,6 +270,11 @@ func ExampleInstancesClient_DetachDisk() {
 
 func ExampleInstancesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -245,6 +295,11 @@ func ExampleInstancesClient_Get() {
 
 func ExampleInstancesClient_GetEffectiveFirewalls() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -265,6 +320,11 @@ func ExampleInstancesClient_GetEffectiveFirewalls() {
 
 func ExampleInstancesClient_GetGuestAttributes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -285,6 +345,11 @@ func ExampleInstancesClient_GetGuestAttributes() {
 
 func ExampleInstancesClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -305,6 +370,11 @@ func ExampleInstancesClient_GetIamPolicy() {
 
 func ExampleInstancesClient_GetScreenshot() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -325,6 +395,11 @@ func ExampleInstancesClient_GetScreenshot() {
 
 func ExampleInstancesClient_GetSerialPortOutput() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -345,6 +420,11 @@ func ExampleInstancesClient_GetSerialPortOutput() {
 
 func ExampleInstancesClient_GetShieldedInstanceIdentity() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -365,6 +445,11 @@ func ExampleInstancesClient_GetShieldedInstanceIdentity() {
 
 func ExampleInstancesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -388,6 +473,11 @@ func ExampleInstancesClient_Insert() {
 
 func ExampleInstancesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -414,6 +504,11 @@ func ExampleInstancesClient_List() {
 
 func ExampleInstancesClient_ListReferrers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -440,6 +535,11 @@ func ExampleInstancesClient_ListReferrers() {
 
 func ExampleInstancesClient_RemoveResourcePolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -463,6 +563,11 @@ func ExampleInstancesClient_RemoveResourcePolicies() {
 
 func ExampleInstancesClient_Reset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -486,6 +591,11 @@ func ExampleInstancesClient_Reset() {
 
 func ExampleInstancesClient_Resume() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -509,6 +619,11 @@ func ExampleInstancesClient_Resume() {
 
 func ExampleInstancesClient_SendDiagnosticInterrupt() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -529,6 +644,11 @@ func ExampleInstancesClient_SendDiagnosticInterrupt() {
 
 func ExampleInstancesClient_SetDeletionProtection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -552,6 +672,11 @@ func ExampleInstancesClient_SetDeletionProtection() {
 
 func ExampleInstancesClient_SetDiskAutoDelete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -575,6 +700,11 @@ func ExampleInstancesClient_SetDiskAutoDelete() {
 
 func ExampleInstancesClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -595,6 +725,11 @@ func ExampleInstancesClient_SetIamPolicy() {
 
 func ExampleInstancesClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -618,6 +753,11 @@ func ExampleInstancesClient_SetLabels() {
 
 func ExampleInstancesClient_SetMachineResources() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -641,6 +781,11 @@ func ExampleInstancesClient_SetMachineResources() {
 
 func ExampleInstancesClient_SetMachineType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -664,6 +809,11 @@ func ExampleInstancesClient_SetMachineType() {
 
 func ExampleInstancesClient_SetMetadata() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -687,6 +837,11 @@ func ExampleInstancesClient_SetMetadata() {
 
 func ExampleInstancesClient_SetMinCpuPlatform() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -710,6 +865,11 @@ func ExampleInstancesClient_SetMinCpuPlatform() {
 
 func ExampleInstancesClient_SetScheduling() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -733,6 +893,11 @@ func ExampleInstancesClient_SetScheduling() {
 
 func ExampleInstancesClient_SetServiceAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -756,6 +921,11 @@ func ExampleInstancesClient_SetServiceAccount() {
 
 func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -779,6 +949,11 @@ func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
 
 func ExampleInstancesClient_SetTags() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -802,6 +977,11 @@ func ExampleInstancesClient_SetTags() {
 
 func ExampleInstancesClient_SimulateMaintenanceEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -825,6 +1005,11 @@ func ExampleInstancesClient_SimulateMaintenanceEvent() {
 
 func ExampleInstancesClient_Start() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -848,6 +1033,11 @@ func ExampleInstancesClient_Start() {
 
 func ExampleInstancesClient_StartWithEncryptionKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -871,6 +1061,11 @@ func ExampleInstancesClient_StartWithEncryptionKey() {
 
 func ExampleInstancesClient_Stop() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -894,6 +1089,11 @@ func ExampleInstancesClient_Stop() {
 
 func ExampleInstancesClient_Suspend() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -917,6 +1117,11 @@ func ExampleInstancesClient_Suspend() {
 
 func ExampleInstancesClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -937,6 +1142,11 @@ func ExampleInstancesClient_TestIamPermissions() {
 
 func ExampleInstancesClient_Update() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -960,6 +1170,11 @@ func ExampleInstancesClient_Update() {
 
 func ExampleInstancesClient_UpdateAccessConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -983,6 +1198,11 @@ func ExampleInstancesClient_UpdateAccessConfig() {
 
 func ExampleInstancesClient_UpdateDisplayDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1006,6 +1226,11 @@ func ExampleInstancesClient_UpdateDisplayDevice() {
 
 func ExampleInstancesClient_UpdateNetworkInterface() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1029,6 +1254,11 @@ func ExampleInstancesClient_UpdateNetworkInterface() {
 
 func ExampleInstancesClient_UpdateShieldedInstanceConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

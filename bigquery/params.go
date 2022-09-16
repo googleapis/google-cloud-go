@@ -416,7 +416,15 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		if isNullScalar(qval) {
 			return NullTimestamp{Valid: false}, nil
 		}
-		return time.Parse(timestampFormat, qval.Value)
+		t, err := time.Parse(timestampFormat, qval.Value)
+		if err != nil {
+			t, err = time.Parse(time.RFC3339Nano, qval.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return t, nil
+
 	case "DATETIME":
 		if isNullScalar(qval) {
 			return NullDateTime{Valid: false}, nil

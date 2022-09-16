@@ -27,7 +27,29 @@ import (
 
 func ExampleNewProductClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewProductRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewProductRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +61,11 @@ func ExampleNewProductClient() {
 
 func ExampleProductClient_CreateProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -59,6 +86,11 @@ func ExampleProductClient_CreateProduct() {
 
 func ExampleProductClient_GetProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -79,6 +111,11 @@ func ExampleProductClient_GetProduct() {
 
 func ExampleProductClient_ListProducts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,6 +142,11 @@ func ExampleProductClient_ListProducts() {
 
 func ExampleProductClient_UpdateProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -125,6 +167,11 @@ func ExampleProductClient_UpdateProduct() {
 
 func ExampleProductClient_DeleteProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,6 +190,11 @@ func ExampleProductClient_DeleteProduct() {
 
 func ExampleProductClient_PurgeProducts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -168,6 +220,11 @@ func ExampleProductClient_PurgeProducts() {
 
 func ExampleProductClient_ImportProducts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -193,6 +250,11 @@ func ExampleProductClient_ImportProducts() {
 
 func ExampleProductClient_SetInventory() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -218,6 +280,11 @@ func ExampleProductClient_SetInventory() {
 
 func ExampleProductClient_AddFulfillmentPlaces() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,6 +310,11 @@ func ExampleProductClient_AddFulfillmentPlaces() {
 
 func ExampleProductClient_RemoveFulfillmentPlaces() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -268,6 +340,11 @@ func ExampleProductClient_RemoveFulfillmentPlaces() {
 
 func ExampleProductClient_AddLocalInventories() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -293,6 +370,11 @@ func ExampleProductClient_AddLocalInventories() {
 
 func ExampleProductClient_RemoveLocalInventories() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -318,6 +400,11 @@ func ExampleProductClient_RemoveLocalInventories() {
 
 func ExampleProductClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -338,6 +425,11 @@ func ExampleProductClient_GetOperation() {
 
 func ExampleProductClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

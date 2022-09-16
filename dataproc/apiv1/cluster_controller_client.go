@@ -197,7 +197,8 @@ func (c *ClusterControllerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ClusterControllerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -369,7 +370,8 @@ func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *clusterControllerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -234,7 +234,8 @@ func (c *MetadataClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MetadataClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -602,7 +603,8 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
