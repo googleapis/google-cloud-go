@@ -26,7 +26,29 @@ import (
 
 func ExampleNewHubClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewHubRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkconnectivity.NewHubRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewHubClient() {
 
 func ExampleHubClient_ListHubs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +91,11 @@ func ExampleHubClient_ListHubs() {
 
 func ExampleHubClient_GetHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +116,11 @@ func ExampleHubClient_GetHub() {
 
 func ExampleHubClient_CreateHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +146,11 @@ func ExampleHubClient_CreateHub() {
 
 func ExampleHubClient_UpdateHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +176,11 @@ func ExampleHubClient_UpdateHub() {
 
 func ExampleHubClient_DeleteHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +204,11 @@ func ExampleHubClient_DeleteHub() {
 
 func ExampleHubClient_ListSpokes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,6 +235,11 @@ func ExampleHubClient_ListSpokes() {
 
 func ExampleHubClient_GetSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +260,11 @@ func ExampleHubClient_GetSpoke() {
 
 func ExampleHubClient_CreateSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +290,11 @@ func ExampleHubClient_CreateSpoke() {
 
 func ExampleHubClient_UpdateSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,6 +320,11 @@ func ExampleHubClient_UpdateSpoke() {
 
 func ExampleHubClient_DeleteSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

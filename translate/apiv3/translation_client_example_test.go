@@ -26,6 +26,11 @@ import (
 
 func ExampleNewTranslationClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewTranslationClient() {
 
 func ExampleTranslationClient_TranslateText() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleTranslationClient_TranslateText() {
 
 func ExampleTranslationClient_DetectLanguage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleTranslationClient_DetectLanguage() {
 
 func ExampleTranslationClient_GetSupportedLanguages() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +118,11 @@ func ExampleTranslationClient_GetSupportedLanguages() {
 
 func ExampleTranslationClient_TranslateDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,6 +143,11 @@ func ExampleTranslationClient_TranslateDocument() {
 
 func ExampleTranslationClient_BatchTranslateText() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,6 +173,11 @@ func ExampleTranslationClient_BatchTranslateText() {
 
 func ExampleTranslationClient_BatchTranslateDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -168,6 +203,11 @@ func ExampleTranslationClient_BatchTranslateDocument() {
 
 func ExampleTranslationClient_CreateGlossary() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -193,6 +233,11 @@ func ExampleTranslationClient_CreateGlossary() {
 
 func ExampleTranslationClient_ListGlossaries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -219,6 +264,11 @@ func ExampleTranslationClient_ListGlossaries() {
 
 func ExampleTranslationClient_GetGlossary() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -239,6 +289,11 @@ func ExampleTranslationClient_GetGlossary() {
 
 func ExampleTranslationClient_DeleteGlossary() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

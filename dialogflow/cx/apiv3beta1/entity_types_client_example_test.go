@@ -28,6 +28,11 @@ import (
 
 func ExampleNewEntityTypesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewEntityTypesClient() {
 
 func ExampleNewEntityTypesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -52,6 +62,11 @@ func ExampleNewEntityTypesRESTClient() {
 
 func ExampleEntityTypesClient_ListEntityTypes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleEntityTypesClient_ListEntityTypes() {
 
 func ExampleEntityTypesClient_GetEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +118,11 @@ func ExampleEntityTypesClient_GetEntityType() {
 
 func ExampleEntityTypesClient_CreateEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,6 +143,11 @@ func ExampleEntityTypesClient_CreateEntityType() {
 
 func ExampleEntityTypesClient_UpdateEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,6 +168,11 @@ func ExampleEntityTypesClient_UpdateEntityType() {
 
 func ExampleEntityTypesClient_DeleteEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,6 +191,11 @@ func ExampleEntityTypesClient_DeleteEntityType() {
 
 func ExampleEntityTypesClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,6 +216,11 @@ func ExampleEntityTypesClient_GetLocation() {
 
 func ExampleEntityTypesClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,6 +247,11 @@ func ExampleEntityTypesClient_ListLocations() {
 
 func ExampleEntityTypesClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -220,6 +270,11 @@ func ExampleEntityTypesClient_CancelOperation() {
 
 func ExampleEntityTypesClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -240,6 +295,11 @@ func ExampleEntityTypesClient_GetOperation() {
 
 func ExampleEntityTypesClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

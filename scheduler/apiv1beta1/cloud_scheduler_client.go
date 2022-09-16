@@ -243,7 +243,8 @@ func (c *CloudSchedulerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudSchedulerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -371,7 +372,8 @@ func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudSchedulerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -456,7 +458,7 @@ func (c *cloudSchedulerRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *cloudSchedulerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -879,8 +881,12 @@ func (c *cloudSchedulerRESTClient) UpdateJob(ctx context.Context, req *scheduler
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetJob().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

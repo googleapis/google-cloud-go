@@ -28,6 +28,11 @@ import (
 
 func ExampleNewConversationsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewConversationsClient() {
 
 func ExampleConversationsClient_CreateConversation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,6 +70,11 @@ func ExampleConversationsClient_CreateConversation() {
 
 func ExampleConversationsClient_ListConversations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,6 +101,11 @@ func ExampleConversationsClient_ListConversations() {
 
 func ExampleConversationsClient_GetConversation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -106,6 +126,11 @@ func ExampleConversationsClient_GetConversation() {
 
 func ExampleConversationsClient_CompleteConversation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -126,6 +151,11 @@ func ExampleConversationsClient_CompleteConversation() {
 
 func ExampleConversationsClient_ListMessages() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,6 +182,11 @@ func ExampleConversationsClient_ListMessages() {
 
 func ExampleConversationsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -172,6 +207,11 @@ func ExampleConversationsClient_GetLocation() {
 
 func ExampleConversationsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -198,6 +238,11 @@ func ExampleConversationsClient_ListLocations() {
 
 func ExampleConversationsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -216,6 +261,11 @@ func ExampleConversationsClient_CancelOperation() {
 
 func ExampleConversationsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -236,6 +286,11 @@ func ExampleConversationsClient_GetOperation() {
 
 func ExampleConversationsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

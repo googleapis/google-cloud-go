@@ -26,6 +26,11 @@ import (
 
 func ExampleNewGrafeasV1Beta1Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewGrafeasV1Beta1Client() {
 
 func ExampleNewGrafeasV1Beta1RESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -50,6 +60,11 @@ func ExampleNewGrafeasV1Beta1RESTClient() {
 
 func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -70,6 +85,11 @@ func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_ListOccurrences() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -96,6 +116,11 @@ func ExampleGrafeasV1Beta1Client_ListOccurrences() {
 
 func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -114,6 +139,11 @@ func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +164,11 @@ func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -154,6 +189,11 @@ func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
 
 func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -174,6 +214,11 @@ func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -194,6 +239,11 @@ func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
 
 func ExampleGrafeasV1Beta1Client_GetNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -214,6 +264,11 @@ func ExampleGrafeasV1Beta1Client_GetNote() {
 
 func ExampleGrafeasV1Beta1Client_ListNotes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -240,6 +295,11 @@ func ExampleGrafeasV1Beta1Client_ListNotes() {
 
 func ExampleGrafeasV1Beta1Client_DeleteNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -258,6 +318,11 @@ func ExampleGrafeasV1Beta1Client_DeleteNote() {
 
 func ExampleGrafeasV1Beta1Client_CreateNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -278,6 +343,11 @@ func ExampleGrafeasV1Beta1Client_CreateNote() {
 
 func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -298,6 +368,11 @@ func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
 
 func ExampleGrafeasV1Beta1Client_UpdateNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -318,6 +393,11 @@ func ExampleGrafeasV1Beta1Client_UpdateNote() {
 
 func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -344,6 +424,11 @@ func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
 
 func ExampleGrafeasV1Beta1Client_GetVulnerabilityOccurrencesSummary() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.

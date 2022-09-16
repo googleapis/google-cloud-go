@@ -28,6 +28,11 @@ import (
 
 func ExampleNewTestCasesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewTestCasesClient() {
 
 func ExampleTestCasesClient_ListTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,6 +76,11 @@ func ExampleTestCasesClient_ListTestCases() {
 
 func ExampleTestCasesClient_BatchDeleteTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleTestCasesClient_BatchDeleteTestCases() {
 
 func ExampleTestCasesClient_GetTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleTestCasesClient_GetTestCase() {
 
 func ExampleTestCasesClient_CreateTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +149,11 @@ func ExampleTestCasesClient_CreateTestCase() {
 
 func ExampleTestCasesClient_UpdateTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,6 +174,11 @@ func ExampleTestCasesClient_UpdateTestCase() {
 
 func ExampleTestCasesClient_RunTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -169,6 +204,11 @@ func ExampleTestCasesClient_RunTestCase() {
 
 func ExampleTestCasesClient_BatchRunTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -194,6 +234,11 @@ func ExampleTestCasesClient_BatchRunTestCases() {
 
 func ExampleTestCasesClient_CalculateCoverage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -214,6 +259,11 @@ func ExampleTestCasesClient_CalculateCoverage() {
 
 func ExampleTestCasesClient_ImportTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -239,6 +289,11 @@ func ExampleTestCasesClient_ImportTestCases() {
 
 func ExampleTestCasesClient_ExportTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -264,6 +319,11 @@ func ExampleTestCasesClient_ExportTestCases() {
 
 func ExampleTestCasesClient_ListTestCaseResults() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -290,6 +350,11 @@ func ExampleTestCasesClient_ListTestCaseResults() {
 
 func ExampleTestCasesClient_GetTestCaseResult() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -310,6 +375,11 @@ func ExampleTestCasesClient_GetTestCaseResult() {
 
 func ExampleTestCasesClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -330,6 +400,11 @@ func ExampleTestCasesClient_GetLocation() {
 
 func ExampleTestCasesClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -356,6 +431,11 @@ func ExampleTestCasesClient_ListLocations() {
 
 func ExampleTestCasesClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -374,6 +454,11 @@ func ExampleTestCasesClient_CancelOperation() {
 
 func ExampleTestCasesClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -394,6 +479,11 @@ func ExampleTestCasesClient_GetOperation() {
 
 func ExampleTestCasesClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
