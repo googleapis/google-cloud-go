@@ -46,7 +46,8 @@ type defaultRetryer struct {
 }
 
 func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
-	// This predicate evaluates enqueuing.
+	// This predicate evaluates errors for both enqueuing and reconnection.
+	// See RetryAppend for retry that bounds attempts to a fixed number.
 	s, ok := status.FromError(err)
 	if !ok {
 		// Treat context errors as non-retriable.
