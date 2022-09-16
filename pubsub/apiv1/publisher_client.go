@@ -462,7 +462,6 @@ func (c *publisherGRPCClient) Publish(ctx context.Context, req *pubsubpb.Publish
 		defer cancel()
 		ctx = cctx
 	}
-
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
