@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.9.0...analytics/v0.10.0) (2022-09-15)
+
+
+### Features
+
+* **analytics/admin:** Enable REST transport support for Python analytics-admin, media-translation and dataflow clients ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.8.1...analytics/v0.9.0) (2022-08-09)
 
 

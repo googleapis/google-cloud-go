@@ -84,7 +84,7 @@ func DefaultClientOptions(endpoint, mtlsEndpoint, scope, userAgent string) ([]op
 	if addr := os.Getenv("BIGTABLE_EMULATOR_HOST"); addr != "" {
 		conn, err := grpc.Dial(addr, grpc.WithInsecure())
 		if err != nil {
-			return nil, fmt.Errorf("emulator grpc.Dial: %v", err)
+			return nil, fmt.Errorf("emulator grpc.Dial: %w", err)
 		}
 		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	} else {

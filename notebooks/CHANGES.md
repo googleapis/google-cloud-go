@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.0.0...notebooks/v1.1.0) (2022-09-15)
+
+
+### Features
+
+* **notebooks/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v0.4.0...notebooks/v1.0.0) (2022-06-29)
 
 
