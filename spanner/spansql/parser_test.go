@@ -659,6 +659,8 @@ func TestParseDDL(t *testing.T) {
 		ALTER TABLE DefaultCol ALTER COLUMN Age SET DEFAULT (0);
 		ALTER TABLE DefaultCol ALTER COLUMN Age STRING(MAX) DEFAULT ("0");
 
+		CREATE ROLE TestRole;
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -945,6 +947,10 @@ func TestParseDDL(t *testing.T) {
 				},
 				Position: line(83),
 			},
+			&CreateRole{
+				Name:     "TestRole",
+				Position: line(85),
+			},
 		}, Comments: []*Comment{
 			{
 				Marker: "#", Start: line(2), End: line(2),
@@ -980,7 +986,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(85), End: line(85), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(87), End: line(87), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -1119,6 +1125,17 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
+		{
+			"DROP ROLE `TestRole`",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&DropRole{
+						Name:     "TestRole",
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

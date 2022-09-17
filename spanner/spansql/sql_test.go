@@ -219,6 +219,22 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateRole{
+				Name:     "TestRole",
+				Position: line(1),
+			},
+			"CREATE ROLE TestRole",
+			reparseDDL,
+		},
+		{
+			&DropRole{
+				Name:     "TestRole",
+				Position: line(1),
+			},
+			"DROP ROLE TestRole",
+			reparseDDL,
+		},
+		{
 			&AlterTable{
 				Name:       "Ta",
 				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}, Position: line(1)}},

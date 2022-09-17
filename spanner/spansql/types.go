@@ -133,6 +133,19 @@ func (*CreateView) isDDLStmt()        {}
 func (cv *CreateView) Pos() Position  { return cv.Position }
 func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
 
+// CreateRole represents a CREATE Role statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create_role
+type CreateRole struct {
+	Name ID
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cr *CreateRole) String() string { return fmt.Sprintf("%#v", cr) }
+func (*CreateRole) isDDLStmt()        {}
+func (cr *CreateRole) Pos() Position  { return cr.Position }
+func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
+
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
@@ -171,6 +184,19 @@ func (dv *DropView) String() string { return fmt.Sprintf("%#v", dv) }
 func (*DropView) isDDLStmt()        {}
 func (dv *DropView) Pos() Position  { return dv.Position }
 func (dv *DropView) clearOffset()   { dv.Position.Offset = 0 }
+
+// DropRole represents a DROP ROLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop_role
+type DropRole struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dv *DropRole) String() string { return fmt.Sprintf("%#v", dv) }
+func (*DropRole) isDDLStmt()        {}
+func (dv *DropRole) Pos() Position  { return dv.Position }
+func (dv *DropRole) clearOffset()   { dv.Position.Offset = 0 }
 
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table

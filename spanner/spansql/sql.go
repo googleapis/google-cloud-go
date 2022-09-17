@@ -96,6 +96,10 @@ func (cv CreateView) SQL() string {
 	return str
 }
 
+func (cr CreateRole) SQL() string {
+	return "CREATE ROLE " + cr.Name.SQL()
+}
+
 func (dt DropTable) SQL() string {
 	return "DROP TABLE " + dt.Name.SQL()
 }
@@ -106,6 +110,10 @@ func (di DropIndex) SQL() string {
 
 func (dv DropView) SQL() string {
 	return "DROP VIEW " + dv.Name.SQL()
+}
+
+func (dr DropRole) SQL() string {
+	return "DROP ROLE " + dr.Name.SQL()
 }
 
 func (at AlterTable) SQL() string {
