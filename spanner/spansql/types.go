@@ -193,10 +193,10 @@ type DropRole struct {
 	Position Position // position of the "DROP" token
 }
 
-func (dv *DropRole) String() string { return fmt.Sprintf("%#v", dv) }
+func (dr *DropRole) String() string { return fmt.Sprintf("%#v", dr) }
 func (*DropRole) isDDLStmt()        {}
-func (dv *DropRole) Pos() Position  { return dv.Position }
-func (dv *DropRole) clearOffset()   { dv.Position.Offset = 0 }
+func (dr *DropRole) Pos() Position  { return dr.Position }
+func (dr *DropRole) clearOffset()   { dr.Position.Offset = 0 }
 
 // GrantRole represents a GRANT statement.
 // https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#grant_statement
