@@ -360,9 +360,8 @@ func TestBulkMutateRows(t *testing.T) {
 		t.Errorf("testproxy test: BulkMutateRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	t.SkipNow()
-	if len(resp.Entry) != 1 {
-		t.Errorf("testproxy test: BulkMutateRows() returned wrong number of results; got: %d", len(resp.Entry))
+	if len(resp.Entry) != 0 {
+		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entry)
 	}
 }
 

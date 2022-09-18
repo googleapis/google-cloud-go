@@ -745,6 +745,9 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 		muts[i] = m
 	}
 
+	log.Printf("keys: %v", keys)
+	log.Printf("mutations: %v", muts)
+
 	ctx = btc.addCancelFunction(ctx)
 
 	errs, err := t.ApplyBulk(ctx, keys, muts)
@@ -757,17 +760,21 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	// Iterate over any errors returned, matching indices with errors. If
 	// errs is nil, this block is skipped.
 	for i, e := range errs {
+		var me *btpb.MutateRowsResponse_Entry
 		if e != nil {
-			me := &btpb.MutateRowsResponse_Entry{
+			me = &btpb.MutateRowsResponse_Entry{
 				Index: int64(i),
 				Status: &status.Status{
 					Code:    int32(codes.Internal),
 					Message: e.Error(),
 				},
 			}
-			entries = append(entries, me)
+
 		}
+		entries = append(entries, me)
 	}
+
+	log.Printf("entries: %v", entries)
 
 	res := &pb.MutateRowsResult{
 		Status: &status.Status{
