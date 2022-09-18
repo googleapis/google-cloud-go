@@ -198,6 +198,44 @@ func (*DropRole) isDDLStmt()        {}
 func (dv *DropRole) Pos() Position  { return dv.Position }
 func (dv *DropRole) clearOffset()   { dv.Position.Offset = 0 }
 
+// GrantRole represents a GRANT statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#grant_statement
+type GrantRole struct {
+	ToRoleNames    []ID
+	GrantRoleNames []ID
+	Privileges     []Privilege
+	TableNames     []ID
+
+	Position Position // position of the "GRANT" token
+}
+
+func (gr *GrantRole) String() string { return fmt.Sprintf("%#v", gr) }
+func (*GrantRole) isDDLStmt()        {}
+func (gr *GrantRole) Pos() Position  { return gr.Position }
+func (gr *GrantRole) clearOffset()   { gr.Position.Offset = 0 }
+
+// RevokeRole represents a REVOKE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#revoke_statement
+type RevokeRole struct {
+	FromRoleNames   []ID
+	RevokeRoleNames []ID
+	Privileges      []Privilege
+	TableNames      []ID
+
+	Position Position // position of the "REVOKE" token
+}
+
+func (rr *RevokeRole) String() string { return fmt.Sprintf("%#v", rr) }
+func (*RevokeRole) isDDLStmt()        {}
+func (rr *RevokeRole) Pos() Position  { return rr.Position }
+func (rr *RevokeRole) clearOffset()   { rr.Position.Offset = 0 }
+
+// Privilege represents privilege to grant or revoke.
+type Privilege struct {
+	Type    PrivilegeType
+	Columns []ID
+}
+
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
 type AlterTable struct {
@@ -451,6 +489,15 @@ const (
 	Date
 	Timestamp
 	JSON
+)
+
+type PrivilegeType int
+
+const (
+	PrivilegeTypeSelect PrivilegeType = iota
+	PrivilegeTypeInsert
+	PrivilegeTypeUpdate
+	PrivilegeTypeDelete
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.

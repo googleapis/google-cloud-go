@@ -1044,6 +1044,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("ALTER", "DATABASE") {
 		a, err := p.parseAlterDatabase()
 		return a, err
+	} else if p.eat("GRANT") {
+		a, err := p.parseGrantRole()
+		return a, err
+	} else if p.eat("REVOKE") {
+		a, err := p.parseRevokeRole()
+		return a, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -1077,7 +1083,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	}
 
 	ct := &CreateTable{Name: tname, Position: pos}
-	err = p.parseCommaList("(", ")", func(p *parser) *parseError {
+	err = p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
 		if p.sniffTableConstraint() {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
@@ -1230,7 +1236,7 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	}
 
 	if p.eat("STORING") {
-		ci.Storing, err = p.parseColumnNameList()
+		ci.Storing, err = p.parseIDListWithBraket()
 		if err != nil {
 			return nil, err
 		}
@@ -1312,6 +1318,150 @@ func (p *parser) parseCreateRole() (*CreateRole, *parseError) {
 	return cr, nil
 }
 
+func (p *parser) parseGrantRole() (*GrantRole, *parseError) {
+	pos := p.Pos()
+	g := &GrantRole{
+		Position: pos,
+	}
+	if p.eat("ROLE") {
+		roleList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.GrantRoleNames = roleList
+	} else {
+		var privs []Privilege
+		privs, err := p.parsePrivileges()
+		if err != nil {
+			return nil, err
+		}
+		g.Privileges = privs
+		var tableList []ID
+		f := func(p *parser) *parseError {
+			table, err := p.parseTableOrIndexOrColumnOrRoleName()
+			if err != nil {
+				return err
+			}
+			tableList = append(tableList, table)
+			return nil
+		}
+		if err := p.parseCommaListWithEnds(f, "TO", "ROLE"); err != nil {
+			return nil, err
+		}
+		g.TableNames = tableList
+	}
+	list, err := p.parseIDList()
+	if err != nil {
+		return nil, err
+	}
+	g.ToRoleNames = list
+
+	return g, nil
+}
+
+func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
+	pos := p.Pos()
+	r := &RevokeRole{
+		Position: pos,
+	}
+	if p.eat("ROLE") {
+		roleList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.RevokeRoleNames = roleList
+	} else {
+		var privs []Privilege
+		privs, err := p.parsePrivileges()
+		if err != nil {
+			return nil, err
+		}
+		r.Privileges = privs
+		var tableList []ID
+		f := func(p *parser) *parseError {
+			table, err := p.parseTableOrIndexOrColumnOrRoleName()
+			if err != nil {
+				return err
+			}
+			tableList = append(tableList, table)
+			return nil
+		}
+		if err := p.parseCommaListWithEnds(f, "FROM", "ROLE"); err != nil {
+			return nil, err
+		}
+		r.TableNames = tableList
+	}
+	list, err := p.parseIDList()
+	if err != nil {
+		return nil, err
+	}
+	r.FromRoleNames = list
+
+	return r, nil
+}
+func (p *parser) parseGrantOrRevokeRoleList(end string) ([]ID, *parseError) {
+	var roleList []ID
+	f := func(p *parser) *parseError {
+		role, err := p.parseTableOrIndexOrColumnOrRoleName()
+		if err != nil {
+			return err
+		}
+		roleList = append(roleList, role)
+		return nil
+	}
+	err := p.parseCommaListWithEnds(f, end, "ROLE")
+	if err != nil {
+		return nil, err
+	}
+	return roleList, nil
+}
+
+func (p *parser) parsePrivileges() ([]Privilege, *parseError) {
+	var privs []Privilege
+	for {
+		tok := p.next()
+		if tok.err != nil {
+			return []Privilege{}, tok.err
+		}
+		if !(tok.caseEqual("SELECT") || tok.caseEqual("UPDATE") || tok.caseEqual("INSERT") || tok.caseEqual("DELETE")) {
+			return []Privilege{}, p.errorf("got %q, want SELECT or UPDATE or INSERT or DELETE", tok.value)
+		}
+
+		priv := Privilege{}
+		switch {
+		case tok.caseEqual("SELECT"):
+			priv.Type = PrivilegeTypeSelect
+		case tok.caseEqual("UPDATE"):
+			priv.Type = PrivilegeTypeUpdate
+		case tok.caseEqual("INSERT"):
+			priv.Type = PrivilegeTypeInsert
+		case tok.caseEqual("DELETE"):
+			priv.Type = PrivilegeTypeDelete
+		}
+		// can grant DELETE only at the table level.
+		// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#notes_and_restrictions
+		if p.sniff("(") && !tok.caseEqual("DELETE") {
+			list, err := p.parseIDListWithBraket()
+			if err != nil {
+				return nil, err
+			}
+			priv.Columns = list
+		}
+		privs = append(privs, priv)
+		tok = p.next()
+		if tok.err != nil {
+			return []Privilege{}, tok.err
+		}
+		if tok.value == "," {
+			continue
+		} else if tok.caseEqual("ON") && p.eat("TABLE") {
+			break
+		} else {
+			return []Privilege{}, p.errorf("got %q, want , or ON TABLE", tok.value)
+		}
+	}
+	return privs, nil
+}
 func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	debugf("parseAlterTable: %v", p)
 
@@ -1583,7 +1733,7 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 			return nil, err
 		}
 
-		columns, err := p.parseColumnNameList()
+		columns, err := p.parseIDListWithBraket()
 		if err != nil {
 			return nil, err
 		}
@@ -1883,7 +2033,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 
 func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
 	var list []KeyPart
-	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
+	err := p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
 		kp, err := p.parseKeyPart()
 		if err != nil {
 			return err
@@ -1981,7 +2131,7 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 		return ForeignKey{}, err
 	}
 	var err *parseError
-	fk.Columns, err = p.parseColumnNameList()
+	fk.Columns, err = p.parseIDListWithBraket()
 	if err != nil {
 		return ForeignKey{}, err
 	}
@@ -1992,7 +2142,7 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 	if err != nil {
 		return ForeignKey{}, err
 	}
-	fk.RefColumns, err = p.parseColumnNameList()
+	fk.RefColumns, err = p.parseIDListWithBraket()
 	if err != nil {
 		return ForeignKey{}, err
 	}
@@ -2025,9 +2175,9 @@ func (p *parser) parseCheck() (Check, *parseError) {
 	return c, nil
 }
 
-func (p *parser) parseColumnNameList() ([]ID, *parseError) {
+func (p *parser) parseIDListWithBraket() ([]ID, *parseError) {
 	var list []ID
-	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
+	err := p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnOrRoleName()
 		if err != nil {
 			return err
@@ -2036,6 +2186,23 @@ func (p *parser) parseColumnNameList() ([]ID, *parseError) {
 		return nil
 	})
 	return list, err
+}
+
+func (p *parser) parseIDList() ([]ID, *parseError) {
+	var list []ID
+	for {
+		n, err := p.parseTableOrIndexOrColumnOrRoleName()
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, n)
+
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+	return list, nil
 }
 
 var baseTypes = map[string]TypeBase{
@@ -2458,7 +2625,7 @@ func (p *parser) parseSelectFromJoin(lhs SelectFrom) (SelectFrom, *parseError) {
 		if sfj.On != nil {
 			return nil, p.errorf("join may not have both ON and USING clauses")
 		}
-		sfj.Using, err = p.parseColumnNameList()
+		sfj.Using, err = p.parseIDListWithBraket()
 		if err != nil {
 			return nil, err
 		}
@@ -2629,7 +2796,7 @@ func (p *parser) parseParenExprList() ([]Expr, *parseError) {
 
 func (p *parser) parseParenExprListWithParseFunc(f func(*parser) (Expr, *parseError)) ([]Expr, *parseError) {
 	var list []Expr
-	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
+	err := p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
 		e, err := f(p)
 		if err != nil {
 			return err
@@ -3294,7 +3461,7 @@ func (p *parser) parseArrayLit() (Array, *parseError) {
 	p.eat("ARRAY")
 
 	var arr Array
-	err := p.parseCommaList("[", "]", func(p *parser) *parseError {
+	err := p.parseCommaListWithBraket("[", "]", func(p *parser) *parseError {
 		e, err := p.parseLit()
 		if err != nil {
 			return err
@@ -3539,10 +3706,10 @@ func (p *parser) parseRowDeletionPolicy() (RowDeletionPolicy, *parseError) {
 	}, nil
 }
 
-// parseCommaList parses a comma-separated list enclosed by bra and ket,
+// parseCommaListWithBraket parses a comma-separated list enclosed by bra and ket,
 // delegating to f for the individual element parsing.
 // Only invoke this with symbols as bra/ket; they are matched literally, not case insensitively.
-func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *parseError {
+func (p *parser) parseCommaListWithBraket(bra, ket string, f func(*parser) *parseError) *parseError {
 	if err := p.expect(bra); err != nil {
 		return err
 	}
@@ -3567,6 +3734,34 @@ func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *p
 			continue
 		} else {
 			return p.errorf(`got %q, want %q or ","`, tok.value, ket)
+		}
+	}
+}
+
+// parseCommaListWithEnds parses a comma-separated list to expected ends,
+// delegating to f for the individual element parsing.
+// Only invoke this with symbols as end; they are matched case insensitively.
+func (p *parser) parseCommaListWithEnds(f func(*parser) *parseError, end ...string) *parseError {
+	if p.eat(end...) {
+		return nil
+	}
+	for {
+		err := f(p)
+		if err != nil {
+			return err
+		}
+		if p.eat(end...) {
+			return nil
+		}
+
+		tok := p.next()
+		if tok.err != nil {
+			return err
+		}
+		if tok.value == "," {
+			continue
+		} else if tok.value == ";" {
+			return nil
 		}
 	}
 }

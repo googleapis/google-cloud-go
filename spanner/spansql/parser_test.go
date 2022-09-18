@@ -661,6 +661,18 @@ func TestParseDDL(t *testing.T) {
 
 		CREATE ROLE TestRole;
 
+		GRANT SELECT ON TABLE employees TO ROLE hr_rep;
+		GRANT SELECT(name, address, phone) ON TABLE contractors TO ROLE hr_rep;
+		GRANT SELECT, UPDATE(location), DELETE ON TABLE employees TO ROLE hr_manager;
+		GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager;
+		GRANT ROLE pii_access, pii_update TO ROLE hr_manager, hr_director;
+
+		REVOKE SELECT ON TABLE employees FROM ROLE hr_rep;
+		REVOKE SELECT(name, address, phone) ON TABLE contractors FROM ROLE hr_rep;
+		REVOKE SELECT, UPDATE(location), DELETE ON TABLE employees FROM ROLE hr_manager;
+		REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager;
+		REVOKE ROLE pii_access, pii_update FROM ROLE hr_manager, hr_director;
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -951,6 +963,96 @@ func TestParseDDL(t *testing.T) {
 				Name:     "TestRole",
 				Position: line(85),
 			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(87),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+				},
+				TableNames: []ID{"contractors"},
+
+				Position: line(88),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect},
+					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					Privilege{Type: PrivilegeTypeDelete},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(89),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(90),
+			},
+			&GrantRole{
+				ToRoleNames:    []ID{"hr_manager", "hr_director"},
+				GrantRoleNames: []ID{"pii_access", "pii_update"},
+
+				Position: line(91),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(93),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+				},
+				TableNames: []ID{"contractors"},
+
+				Position: line(94),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect},
+					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					Privilege{Type: PrivilegeTypeDelete},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(95),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(96),
+			},
+			&RevokeRole{
+				FromRoleNames:   []ID{"hr_manager", "hr_director"},
+				RevokeRoleNames: []ID{"pii_access", "pii_update"},
+
+				Position: line(97),
+			},
 		}, Comments: []*Comment{
 			{
 				Marker: "#", Start: line(2), End: line(2),
@@ -986,7 +1088,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(87), End: line(87), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(99), End: line(99), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -1131,6 +1233,66 @@ func TestParseDDL(t *testing.T) {
 				Filename: "filename", List: []DDLStmt{
 					&DropRole{
 						Name:     "TestRole",
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"GRANT SELECT(`name`, `level`, `location`), UPDATE(`location`) ON TABLE `employees`, `contractors` TO ROLE `hr_manager`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&GrantRole{
+						ToRoleNames: []ID{"hr_manager"},
+						Privileges: []Privilege{
+							Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+						},
+						TableNames: []ID{"employees", "contractors"},
+
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"GRANT ROLE `pii_access`, `pii_update` TO ROLE `hr_manager`, `hr_director`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&GrantRole{
+						ToRoleNames:    []ID{"hr_manager", "hr_director"},
+						GrantRoleNames: []ID{"pii_access", "pii_update"},
+
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"REVOKE SELECT(`name`, `level`, `location`), UPDATE(`location`) ON TABLE `employees`, `contractors` FROM ROLE `hr_manager`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&RevokeRole{
+						FromRoleNames: []ID{"hr_manager"},
+						Privileges: []Privilege{
+							Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+						},
+						TableNames: []ID{"employees", "contractors"},
+
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"REVOKE ROLE `pii_access`, `pii_update` FROM ROLE `hr_manager`, `hr_director`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&RevokeRole{
+						FromRoleNames:   []ID{"hr_manager", "hr_director"},
+						RevokeRoleNames: []ID{"pii_access", "pii_update"},
+
 						Position: line(1),
 					},
 				},
