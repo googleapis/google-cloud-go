@@ -1439,12 +1439,11 @@ func (p *parser) parsePrivileges() ([]Privilege, *parseError) {
 		if tok.err != nil {
 			return []Privilege{}, tok.err
 		}
-		if !(tok.caseEqual("SELECT") || tok.caseEqual("UPDATE") || tok.caseEqual("INSERT") || tok.caseEqual("DELETE")) {
-			return []Privilege{}, p.errorf("got %q, want SELECT or UPDATE or INSERT or DELETE", tok.value)
-		}
 
 		priv := Privilege{}
 		switch {
+		default:
+			return []Privilege{}, p.errorf("got %q, want SELECT or UPDATE or INSERT or DELETE", tok.value)
 		case tok.caseEqual("SELECT"):
 			priv.Type = PrivilegeTypeSelect
 		case tok.caseEqual("UPDATE"):
