@@ -1745,6 +1745,24 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/10/10
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/edgecontainer/v1",
+		Pkg:                   "edgecontainer",
+		ImportPath:            "cloud.google.com/go/edgecontainer/apiv1",
+		GRPCServiceConfigPath: "edgecontainer_grpc_service_config.json",
+		ApiServiceConfigPath:  "edgecontainer_v1.yaml",
+		// GA after 2022/10/19
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/bigquery/datapolicies/v1beta1",
+		Pkg:                   "datapolicies",
+		ImportPath:            "cloud.google.com/go/bigquery/datapolicies/apiv1beta1",
+		GRPCServiceConfigPath: "datapolicies_v1beta1_grpc_service_config.json",
+		ApiServiceConfigPath:  "bigquerydatapolicy_v1beta1.yaml",
+		Transports:            []string{"grpc", "rest"},
+		ReleaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
