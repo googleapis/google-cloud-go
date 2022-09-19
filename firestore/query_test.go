@@ -940,12 +940,12 @@ func TestAggregationQuery(t *testing.T) {
 	})
 
 	q := c.Collection("coll1").Where("f", "==", 2)
-	aq, err := q.NewAggregationQuery().WithCount("testAlias").Get(ctx)
+	ar, err := q.NewAggregationQuery().WithCount("testAlias").Get(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, ok := (*aq)["testAlias"]
+	count, ok := ar["testAlias"]
 	if !ok {
 		t.Errorf("aggregation query key not found")
 	}

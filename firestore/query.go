@@ -1067,7 +1067,7 @@ func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
 }
 
 // Get retrieves the aggregation query results from the service.
-func (a *AggregationQuery) Get(ctx context.Context) (*AggregationResult, error) {
+func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 
 	client := a.query.c.c
 	q, err := a.query.toProto()
@@ -1086,6 +1086,7 @@ func (a *AggregationQuery) Get(ctx context.Context) (*AggregationResult, error) 
 			},
 		},
 	}
+	ctx = withResourceHeader(ctx, a.query.c.path())
 	stream, err := client.RunAggregationQuery(ctx, req)
 	if err != nil {
 		return nil, err
@@ -1108,7 +1109,7 @@ func (a *AggregationQuery) Get(ctx context.Context) (*AggregationResult, error) 
 			resp[k] = v
 		}
 	}
-	return &resp, nil
+	return resp, nil
 }
 
 // AggregationResult contains the results of an aggregation query.
