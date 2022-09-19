@@ -996,7 +996,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("CREATE", "VIEW") || p.sniff("CREATE", "OR", "REPLACE", "VIEW") {
 		cv, err := p.parseCreateView()
 		return cv, err
-	} else if p.sniff("CREATE", "Role") {
+	} else if p.sniff("CREATE", "ROLE") {
 		cr, err := p.parseCreateRole()
 		return cr, err
 	} else if p.sniff("ALTER", "TABLE") {
