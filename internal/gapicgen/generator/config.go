@@ -512,7 +512,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/cloud/recaptchaenterprise/v1beta1",
 		Pkg:                   "recaptchaenterprise",
-		ImportPath:            "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
+		ImportPath:            "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
 		GRPCServiceConfigPath: "recaptchaenterprise_grpc_service_config.json",
 		ApiServiceConfigPath:  "recaptchaenterprise_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
@@ -775,7 +775,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/cloud/vision/v1p1beta1",
 		Pkg:                   "vision",
-		ImportPath:            "cloud.google.com/go/vision/apiv1p1beta1",
+		ImportPath:            "cloud.google.com/go/vision/v2/apiv1p1beta1",
 		GRPCServiceConfigPath: "vision_grpc_service_config.json",
 		ApiServiceConfigPath:  "vision_v1p1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
