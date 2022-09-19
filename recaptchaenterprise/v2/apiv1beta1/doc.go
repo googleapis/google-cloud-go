@@ -57,7 +57,7 @@
 //
 //	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1#CreateAssessmentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb#CreateAssessmentRequest.
 //	}
 //	resp, err := c.CreateAssessment(ctx, req)
 //	if err != nil {

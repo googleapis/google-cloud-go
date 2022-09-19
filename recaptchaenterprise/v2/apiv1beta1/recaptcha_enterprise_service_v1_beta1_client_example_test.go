@@ -20,7 +20,7 @@ import (
 	"context"
 
 	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1"
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
+	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
 )
 
 func ExampleNewRecaptchaEnterpriseServiceV1Beta1Client() {
@@ -72,7 +72,7 @@ func ExampleRecaptchaEnterpriseServiceV1Beta1Client_CreateAssessment() {
 
 	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1#CreateAssessmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb#CreateAssessmentRequest.
 	}
 	resp, err := c.CreateAssessment(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExampleRecaptchaEnterpriseServiceV1Beta1Client_AnnotateAssessment() {
 
 	req := &recaptchaenterprisepb.AnnotateAssessmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1#AnnotateAssessmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb#AnnotateAssessmentRequest.
 	}
 	resp, err := c.AnnotateAssessment(ctx, req)
 	if err != nil {

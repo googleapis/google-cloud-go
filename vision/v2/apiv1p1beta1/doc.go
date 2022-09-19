@@ -61,7 +61,7 @@
 //
 //	req := &visionpb.BatchAnnotateImagesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1#BatchAnnotateImagesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb#BatchAnnotateImagesRequest.
 //	}
 //	resp, err := c.BatchAnnotateImages(ctx, req)
 //	if err != nil {

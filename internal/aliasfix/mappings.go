@@ -492,7 +492,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1": {
 		ImportPath: "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1": {
 		ImportPath: "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb",
@@ -664,7 +664,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1": {
 		ImportPath: "cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/vmmigration/v1": {
 		ImportPath: "cloud.google.com/go/vmmigration/apiv1/vmmigrationpb",
