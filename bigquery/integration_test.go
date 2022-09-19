@@ -1420,7 +1420,7 @@ func TestIntegration_LoadWithReferenceSchemaFile(t *testing.T) {
 		source := NewGCSReference(sourceURIs...)
 		source.SourceFormat = format
 		loader := table.LoaderFrom(source)
-		loader.ReferenceFileSchemaUri = referenceURI
+		loader.ReferenceFileSchemaURI = referenceURI
 		job, err := loader.Run(ctx)
 		if err != nil {
 			t.Fatalf("loader.Run: %v", err)
@@ -1469,7 +1469,7 @@ func TestIntegration_ExternalTableWithReferenceSchemaFile(t *testing.T) {
 			ExternalDataConfig: &ExternalDataConfig{
 				SourceFormat:           format,
 				SourceURIs:             sourceURIs,
-				ReferenceFileSchemaUri: referenceURI,
+				ReferenceFileSchemaURI: referenceURI,
 			},
 		})
 		if err != nil {

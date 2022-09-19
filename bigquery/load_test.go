@@ -396,7 +396,7 @@ func TestLoad(t *testing.T) {
 				return g
 			}(),
 			config: LoadConfig{
-				ReferenceFileSchemaUri: "schema.parquet",
+				ReferenceFileSchemaURI: "schema.parquet",
 			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()

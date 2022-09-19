@@ -91,7 +91,7 @@ type LoadConfig struct {
 
 	// When loading a table with external data, the user can provide a reference file with the table schema.
 	// This is enabled for the following formats: AVRO, PARQUET, ORC.
-	ReferenceFileSchemaUri string
+	ReferenceFileSchemaURI string
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -109,7 +109,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
 			ProjectionFields:                   l.ProjectionFields,
 			HivePartitioningOptions:            l.HivePartitioningOptions.toBQ(),
-			ReferenceFileSchemaUri:             l.ReferenceFileSchemaUri,
+			ReferenceFileSchemaUri:             l.ReferenceFileSchemaURI,
 		},
 		JobTimeoutMs: l.JobTimeout.Milliseconds(),
 	}
@@ -134,7 +134,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		UseAvroLogicalTypes:         q.Load.UseAvroLogicalTypes,
 		ProjectionFields:            q.Load.ProjectionFields,
 		HivePartitioningOptions:     bqToHivePartitioningOptions(q.Load.HivePartitioningOptions),
-		ReferenceFileSchemaUri:      q.Load.ReferenceFileSchemaUri,
+		ReferenceFileSchemaURI:      q.Load.ReferenceFileSchemaUri,
 	}
 	if q.JobTimeoutMs > 0 {
 		lc.JobTimeout = time.Duration(q.JobTimeoutMs) * time.Millisecond

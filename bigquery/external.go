@@ -112,7 +112,7 @@ type ExternalDataConfig struct {
 
 	// When creating an external table, the user can provide a reference file with the table schema.
 	// This is enabled for the following formats: AVRO, PARQUET, ORC.
-	ReferenceFileSchemaUri string
+	ReferenceFileSchemaURI string
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -125,7 +125,7 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		MaxBadRecords:           e.MaxBadRecords,
 		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 		ConnectionId:            e.ConnectionID,
-		ReferenceFileSchemaUri:  e.ReferenceFileSchemaUri,
+		ReferenceFileSchemaUri:  e.ReferenceFileSchemaURI,
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
@@ -150,7 +150,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		Schema:                  bqToSchema(q.Schema),
 		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
 		ConnectionID:            q.ConnectionId,
-		ReferenceFileSchemaUri:  q.ReferenceFileSchemaUri,
+		ReferenceFileSchemaURI:  q.ReferenceFileSchemaUri,
 	}
 	for _, v := range q.DecimalTargetTypes {
 		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
