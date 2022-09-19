@@ -925,5 +925,33 @@ func (b byQuery) Less(i, j int) bool {
 }
 
 func TestAggregationQuery(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
 
+	srv.addRPC(nil, []interface{}{
+		&pb.RunAggregationQueryResponse{
+			Result: &pb.AggregationResult{
+				AggregateFields: map[string]*pb.Value{
+					"testAlias": intval(1),
+				},
+			},
+		},
+	})
+
+	q := c.Collection("coll1").Where("f", "==", 2)
+	aq, err := q.NewAggregationQuery().WithCount("testAlias").Get(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, ok := (*aq)["testAlias"]
+	if !ok {
+		t.Errorf("aggregation query key not found")
+	}
+
+	cv := count.(*pb.Value)
+	if cv.GetIntegerValue() != 1 {
+		t.Errorf("got: %v\nwant: %v\n; result: %v\n", cv.GetIntegerValue(), 1, count)
+	}
 }
