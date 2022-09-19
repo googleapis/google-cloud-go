@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.4.0...datacatalog/v1.5.0) (2022-09-19)
+
+
+### Features
+
+* **datacatalog:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.3.1...datacatalog/v1.4.0) (2022-09-15)
 
 

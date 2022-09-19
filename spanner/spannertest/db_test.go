@@ -728,3 +728,44 @@ func TestAddBackQuoteForHypen(t *testing.T) {
 		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
 	}
 }
+
+func TestCreateAndManageChangeStream(t *testing.T) {
+	// Testing Create Change Stream
+	ddl, err := spansql.ParseDDL("filename", "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS( retention_period = '36h' )")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got := ddl.List[0].SQL()
+	want := "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS( retention_period='36h' )"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+
+	// Testing Alter Change Stream Options
+	ddl, err = spansql.ParseDDL("filename", "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS( retention_period = '20h' )")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got = ddl.List[0].SQL()
+	want = "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS( retention_period='20h' )"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+
+	// Testing Drop Change Stream Options
+	ddl, err = spansql.ParseDDL("filename", "DROP CHANGE STREAM SingerAlbumStream")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got = ddl.List[0].SQL()
+	want = "DROP CHANGE STREAM SingerAlbumStream"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+}
