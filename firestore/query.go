@@ -1066,7 +1066,7 @@ func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
 	return a
 }
 
-// Retrieves the aggregation query results from the service.
+// Get retrieves the aggregation query results from the service.
 func (a *AggregationQuery) Get(ctx context.Context) (*AggregationResult, error) {
 
 	client := a.query.c.c
@@ -1111,5 +1111,5 @@ func (a *AggregationQuery) Get(ctx context.Context) (*AggregationResult, error) 
 	return &resp, nil
 }
 
-// AggregationResult contains the result of an aggregation query.
+// AggregationResult contains the results of an aggregation query.
 type AggregationResult map[string]interface{}
