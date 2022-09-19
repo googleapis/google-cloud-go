@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.4.0...privatecatalog/v0.5.0) (2022-09-19)
+
+
+### Features
+
+* **privatecatalog:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.3.0...privatecatalog/v0.4.0) (2022-06-29)
 
 
