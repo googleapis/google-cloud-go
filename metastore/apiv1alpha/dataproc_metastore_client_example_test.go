@@ -20,8 +20,8 @@ import (
 	"context"
 
 	metastore "cloud.google.com/go/metastore/apiv1alpha"
+	metastorepb "cloud.google.com/go/metastore/apiv1alpha/metastorepb"
 	"google.golang.org/api/iterator"
-	metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1alpha"
 )
 
 func ExampleNewDataprocMetastoreClient() {
@@ -73,7 +73,7 @@ func ExampleDataprocMetastoreClient_ListServices() {
 
 	req := &metastorepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -104,7 +104,7 @@ func ExampleDataprocMetastoreClient_GetService() {
 
 	req := &metastorepb.GetServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -129,7 +129,7 @@ func ExampleDataprocMetastoreClient_CreateService() {
 
 	req := &metastorepb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#CreateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#CreateServiceRequest.
 	}
 	op, err := c.CreateService(ctx, req)
 	if err != nil {
@@ -159,7 +159,7 @@ func ExampleDataprocMetastoreClient_UpdateService() {
 
 	req := &metastorepb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#UpdateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#UpdateServiceRequest.
 	}
 	op, err := c.UpdateService(ctx, req)
 	if err != nil {
@@ -189,7 +189,7 @@ func ExampleDataprocMetastoreClient_DeleteService() {
 
 	req := &metastorepb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#DeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#DeleteServiceRequest.
 	}
 	op, err := c.DeleteService(ctx, req)
 	if err != nil {
@@ -217,7 +217,7 @@ func ExampleDataprocMetastoreClient_ListMetadataImports() {
 
 	req := &metastorepb.ListMetadataImportsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#ListMetadataImportsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#ListMetadataImportsRequest.
 	}
 	it := c.ListMetadataImports(ctx, req)
 	for {
@@ -248,7 +248,7 @@ func ExampleDataprocMetastoreClient_GetMetadataImport() {
 
 	req := &metastorepb.GetMetadataImportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#GetMetadataImportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#GetMetadataImportRequest.
 	}
 	resp, err := c.GetMetadataImport(ctx, req)
 	if err != nil {
@@ -273,7 +273,7 @@ func ExampleDataprocMetastoreClient_CreateMetadataImport() {
 
 	req := &metastorepb.CreateMetadataImportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#CreateMetadataImportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#CreateMetadataImportRequest.
 	}
 	op, err := c.CreateMetadataImport(ctx, req)
 	if err != nil {
@@ -303,7 +303,7 @@ func ExampleDataprocMetastoreClient_UpdateMetadataImport() {
 
 	req := &metastorepb.UpdateMetadataImportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#UpdateMetadataImportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#UpdateMetadataImportRequest.
 	}
 	op, err := c.UpdateMetadataImport(ctx, req)
 	if err != nil {
@@ -333,7 +333,7 @@ func ExampleDataprocMetastoreClient_ExportMetadata() {
 
 	req := &metastorepb.ExportMetadataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#ExportMetadataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#ExportMetadataRequest.
 	}
 	op, err := c.ExportMetadata(ctx, req)
 	if err != nil {
@@ -363,7 +363,7 @@ func ExampleDataprocMetastoreClient_RestoreService() {
 
 	req := &metastorepb.RestoreServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#RestoreServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#RestoreServiceRequest.
 	}
 	op, err := c.RestoreService(ctx, req)
 	if err != nil {
@@ -393,7 +393,7 @@ func ExampleDataprocMetastoreClient_ListBackups() {
 
 	req := &metastorepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#ListBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {
@@ -424,7 +424,7 @@ func ExampleDataprocMetastoreClient_GetBackup() {
 
 	req := &metastorepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#GetBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {
@@ -449,7 +449,7 @@ func ExampleDataprocMetastoreClient_CreateBackup() {
 
 	req := &metastorepb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#CreateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#CreateBackupRequest.
 	}
 	op, err := c.CreateBackup(ctx, req)
 	if err != nil {
@@ -479,7 +479,7 @@ func ExampleDataprocMetastoreClient_DeleteBackup() {
 
 	req := &metastorepb.DeleteBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#DeleteBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#DeleteBackupRequest.
 	}
 	op, err := c.DeleteBackup(ctx, req)
 	if err != nil {
