@@ -818,4 +818,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/security/publicca/apiv1beta1/publiccapb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/edgecontainer/v1": {
+		ImportPath: "cloud.google.com/go/edgecontainer/apiv1/edgecontainerpb",
+		Status:     StatusMigrated,
+	},
 }
