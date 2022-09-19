@@ -1091,7 +1091,7 @@ func (a *AggregationQuery) Get(ctx context.Context) (*AggregationResult, error) 
 		return nil, err
 	}
 
-	var resp AggregationResult
+	resp := make(AggregationResult)
 
 	for {
 		res, err := stream.Recv()
