@@ -17,8 +17,6 @@
 // Package certificatemanager is an auto-generated package for the
 // Certificate Manager API.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # Example usage
 //
 // To get started with this package, create a client.

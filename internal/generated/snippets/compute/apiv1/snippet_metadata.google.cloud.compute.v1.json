@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.9.0",
+    "version": "1.10.0",
     "language": "GO",
     "apis": [
       {
@@ -375,6 +375,52 @@
         {
           "start": 18,
           "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Addresses_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "AddressesClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.AddressesClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "AddressesClient",
+          "fullName": "google.cloud.compute.v1.AddressesClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.Addresses.SetLabels",
+          "service": {
+            "shortName": "Addresses",
+            "fullName": "google.cloud.compute.v1.Addresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -1392,6 +1438,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_BackendServices_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "BackendServicesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.BackendServicesClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "BackendServicesClient",
+          "fullName": "google.cloud.compute.v1.BackendServicesClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.BackendServices.GetIamPolicy",
+          "service": {
+            "shortName": "BackendServices",
+            "fullName": "google.cloud.compute.v1.BackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_BackendServices_Insert_sync",
       "title": "compute Insert Sample",
       "description": "Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview .",
@@ -1571,6 +1663,52 @@
         {
           "start": 18,
           "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_BackendServices_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "BackendServicesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.BackendServicesClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "BackendServicesClient",
+          "fullName": "google.cloud.compute.v1.BackendServicesClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.BackendServices.SetIamPolicy",
+          "service": {
+            "shortName": "BackendServices",
+            "fullName": "google.cloud.compute.v1.BackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4331,6 +4469,52 @@
         {
           "start": 18,
           "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_GlobalAddresses_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "GlobalAddressesClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.GlobalAddressesClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsGlobalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "GlobalAddressesClient",
+          "fullName": "google.cloud.compute.v1.GlobalAddressesClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.GlobalAddresses.SetLabels",
+          "service": {
+            "shortName": "GlobalAddresses",
+            "fullName": "google.cloud.compute.v1.GlobalAddresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -10454,6 +10638,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InterconnectAttachments_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "InterconnectAttachmentsClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.InterconnectAttachmentsClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsInterconnectAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "InterconnectAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachmentsClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.InterconnectAttachments.SetLabels",
+          "service": {
+            "shortName": "InterconnectAttachments",
+            "fullName": "google.cloud.compute.v1.InterconnectAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InterconnectLocations_Get_sync",
       "title": "compute Get Sample",
       "description": "Get returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.",
@@ -10806,6 +11036,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.Interconnects.Patch",
+          "service": {
+            "shortName": "Interconnects",
+            "fullName": "google.cloud.compute.v1.Interconnects"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Interconnects_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "InterconnectsClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.InterconnectsClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsInterconnectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "InterconnectsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectsClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.Interconnects.SetLabels",
           "service": {
             "shortName": "Interconnects",
             "fullName": "google.cloud.compute.v1.Interconnects"
@@ -16526,6 +16802,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionBackendServices_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "RegionBackendServicesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.RegionBackendServicesClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyRegionBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "RegionBackendServicesClient",
+          "fullName": "google.cloud.compute.v1.RegionBackendServicesClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.RegionBackendServices.GetIamPolicy",
+          "service": {
+            "shortName": "RegionBackendServices",
+            "fullName": "google.cloud.compute.v1.RegionBackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionBackendServices_Insert_sync",
       "title": "compute Insert Sample",
       "description": "Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview.",
@@ -16659,6 +16981,52 @@
         {
           "start": 18,
           "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionBackendServices_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "RegionBackendServicesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.RegionBackendServicesClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyRegionBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "RegionBackendServicesClient",
+          "fullName": "google.cloud.compute.v1.RegionBackendServicesClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.RegionBackendServices.SetIamPolicy",
+          "service": {
+            "shortName": "RegionBackendServices",
+            "fullName": "google.cloud.compute.v1.RegionBackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -20942,6 +21310,282 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionSslPolicies_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.",
+      "file": "RegionSslPoliciesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionSslPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionSslPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.RegionSslPolicies.Delete",
+          "service": {
+            "shortName": "RegionSslPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSslPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSslPolicies_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get lists all of the ordered rules present in a single specified policy.",
+      "file": "RegionSslPoliciesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionSslPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.SslPolicy",
+        "client": {
+          "shortName": "RegionSslPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.RegionSslPolicies.Get",
+          "service": {
+            "shortName": "RegionSslPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSslPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSslPolicies_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new policy in the specified project and region using the data included in the request.",
+      "file": "RegionSslPoliciesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionSslPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionSslPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.RegionSslPolicies.Insert",
+          "service": {
+            "shortName": "RegionSslPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSslPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSslPolicies_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists all the SSL policies that have been configured for the specified project and region.",
+      "file": "RegionSslPoliciesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionSslPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SslPolicyIterator",
+        "client": {
+          "shortName": "RegionSslPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionSslPolicies.List",
+          "service": {
+            "shortName": "RegionSslPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSslPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSslPolicies_ListAvailableFeatures_sync",
+      "title": "compute ListAvailableFeatures Sample",
+      "description": "ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.",
+      "file": "RegionSslPoliciesClient/ListAvailableFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAvailableFeatures",
+        "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient.ListAvailableFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListAvailableFeaturesRegionSslPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.SslPoliciesListAvailableFeaturesResponse",
+        "client": {
+          "shortName": "RegionSslPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient"
+        },
+        "method": {
+          "shortName": "ListAvailableFeatures",
+          "fullName": "google.cloud.compute.v1.RegionSslPolicies.ListAvailableFeatures",
+          "service": {
+            "shortName": "RegionSslPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSslPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSslPolicies_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patches the specified SSL policy with the data included in the request.",
+      "file": "RegionSslPoliciesClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRegionSslPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionSslPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSslPoliciesClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.RegionSslPolicies.Patch",
+          "service": {
+            "shortName": "RegionSslPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSslPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionTargetHttpProxies_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified TargetHttpProxy resource.",
@@ -21489,6 +22133,190 @@
         {
           "start": 18,
           "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionTargetTcpProxies_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified TargetTcpProxy resource.",
+      "file": "RegionTargetTcpProxiesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionTargetTcpProxyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionTargetTcpProxiesClient",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies.Delete",
+          "service": {
+            "shortName": "RegionTargetTcpProxies",
+            "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionTargetTcpProxies_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified TargetTcpProxy resource.",
+      "file": "RegionTargetTcpProxiesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionTargetTcpProxyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.TargetTcpProxy",
+        "client": {
+          "shortName": "RegionTargetTcpProxiesClient",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies.Get",
+          "service": {
+            "shortName": "RegionTargetTcpProxies",
+            "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionTargetTcpProxies_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a TargetTcpProxy resource in the specified project and region using the data included in the request.",
+      "file": "RegionTargetTcpProxiesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionTargetTcpProxyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionTargetTcpProxiesClient",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies.Insert",
+          "service": {
+            "shortName": "RegionTargetTcpProxies",
+            "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionTargetTcpProxies_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of TargetTcpProxy resources available to the specified project in a given region.",
+      "file": "RegionTargetTcpProxiesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionTargetTcpProxiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TargetTcpProxyIterator",
+        "client": {
+          "shortName": "RegionTargetTcpProxiesClient",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxiesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies.List",
+          "service": {
+            "shortName": "RegionTargetTcpProxies",
+            "fullName": "google.cloud.compute.v1.RegionTargetTcpProxies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -23886,6 +24714,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_SecurityPolicies_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "SecurityPoliciesClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.SecurityPoliciesClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "SecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.SecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.SecurityPolicies.SetLabels",
+          "service": {
+            "shortName": "SecurityPolicies",
+            "fullName": "google.cloud.compute.v1.SecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_ServiceAttachments_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.",
@@ -24885,6 +25759,52 @@
           "service": {
             "shortName": "SslCertificates",
             "fullName": "google.cloud.compute.v1.SslCertificates"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_SslPolicies_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project.",
+      "file": "SslPoliciesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.SslPoliciesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListSslPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SslPoliciesScopedListPairIterator",
+        "client": {
+          "shortName": "SslPoliciesClient",
+          "fullName": "google.cloud.compute.v1.SslPoliciesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.SslPolicies.AggregatedList",
+          "service": {
+            "shortName": "SslPolicies",
+            "fullName": "google.cloud.compute.v1.SslPolicies"
           }
         }
       },
@@ -28440,6 +29360,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_TargetVpnGateways_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "TargetVpnGatewaysClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.TargetVpnGatewaysClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsTargetVpnGatewayRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "TargetVpnGatewaysClient",
+          "fullName": "google.cloud.compute.v1.TargetVpnGatewaysClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.TargetVpnGateways.SetLabels",
+          "service": {
+            "shortName": "TargetVpnGateways",
+            "fullName": "google.cloud.compute.v1.TargetVpnGateways"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_UrlMaps_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project.",
@@ -29447,6 +30413,52 @@
         {
           "start": 18,
           "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_VpnTunnels_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "VpnTunnelsClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.VpnTunnelsClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsVpnTunnelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "VpnTunnelsClient",
+          "fullName": "google.cloud.compute.v1.VpnTunnelsClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.VpnTunnels.SetLabels",
+          "service": {
+            "shortName": "VpnTunnels",
+            "fullName": "google.cloud.compute.v1.VpnTunnels"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
           "type": "FULL"
         }
       ]

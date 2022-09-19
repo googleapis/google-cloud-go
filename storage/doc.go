@@ -214,8 +214,8 @@ since you read it. Here is how to express that:
 
 You can obtain a URL that lets anyone read or write an object for a limited time.
 Signing a URL requires credentials authorized to sign a URL. To use the same
-authentication that was used when instantiating the Storage client, use the
-BucketHandle.SignedURL method.
+authentication that was used when instantiating the Storage client, use
+[BucketHandle.SignedURL].
 
 	url, err := client.Bucket(bucketName).SignedURL(objectName, opts)
 	if err != nil {
@@ -224,7 +224,7 @@ BucketHandle.SignedURL method.
 	fmt.Println(url)
 
 You can also sign a URL wihout creating a client. See the documentation of
-SignedURL for details.
+[SignedURL] for details.
 
 	url, err := storage.SignedURL(bucketName, "shared-object", opts)
 	if err != nil {
@@ -246,6 +246,26 @@ as the documentation of BucketHandle.GenerateSignedPostPolicyV4.
 	    // TODO: Handle error.
 	}
 	fmt.Printf("URL: %s\nFields; %v\n", pv4.URL, pv4.Fields)
+
+# Credential requirements for [BucketHandle.SignedURL] and [BucketHandle.GenerateSignedPostPolicyV4]
+
+If the GoogleAccessID and PrivateKey option fields are not provided, they will
+be automatically detected if any of the following are true:
+  - you are authenticated to the Storage Client with a service account's
+    downloaded private key, either directly in code or by setting the
+    GOOGLE_APPLICATION_CREDENTIALS environment variable (see [Other Environments]),
+  - your application is running on Google Compute Engine (GCE), or
+  - you are logged into [gcloud using application default credentials]
+    with [impersonation enabled].
+
+Detecting GoogleAccessID may not be possible if you are authenticated using a
+token source or using [option.WithHTTPClient]. In this case, you can provide a
+service account email for GoogleAccessID and the client will attempt to sign
+the URL or Post Policy using that service account.
+
+To generate the signature, you must have:
+- iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account, and
+- the [IAM Service Account Credentials API] enabled (unless authenticating with a downloaded private key).
 
 # Errors
 
@@ -296,5 +316,10 @@ client (using Client.SetRetry). For example:
 	if err := o.Delete(ctx); err != nil {
 		// Handle err.
 	}
+
+[Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
+[gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
+[impersonation enabled]: https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account
+[IAM Service Account Credentials API]: https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview
 */
 package storage // import "cloud.google.com/go/storage"

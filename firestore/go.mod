@@ -9,7 +9,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.4.0
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
 	google.golang.org/api v0.95.0
-	google.golang.org/genproto v0.0.0-20220913154956-18f8339a66a5
+	google.golang.org/genproto v0.0.0-20220914142337-ca0e39ece12f
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
 )

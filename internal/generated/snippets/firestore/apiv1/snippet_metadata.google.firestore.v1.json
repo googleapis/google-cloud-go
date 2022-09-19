@@ -738,6 +738,51 @@
       ]
     },
     {
+      "regionTag": "firestore_v1_generated_Firestore_RunAggregationQuery_sync",
+      "title": "firestore RunAggregationQuery Sample",
+      "description": "RunAggregationQuery runs an aggregation query.\n\nRather than producing Document results like Firestore.RunQuery,\nthis API allows running an aggregation to produce a series of\nAggregationResult server-side.\n\nHigh-Level Example: ",
+      "file": "Client/RunAggregationQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunAggregationQuery",
+        "fullName": "google.firestore.v1.Client.RunAggregationQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.RunAggregationQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "RunAggregationQuery",
+          "fullName": "google.firestore.v1.Firestore.RunAggregationQuery",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 1,
+          "end": -1,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "firestore_v1_generated_Firestore_RunQuery_sync",
       "title": "firestore RunQuery Sample",
       "description": "RunQuery runs a query.",
