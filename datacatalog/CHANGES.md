@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.3.1...datacatalog/v1.4.0) (2022-09-15)
+
+
+### Features
+
+* **datacatalog/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.3.0...datacatalog/v1.3.1) (2022-07-12)
 
 
