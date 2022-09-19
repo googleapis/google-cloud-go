@@ -1393,6 +1393,100 @@ func TestIntegration_Load(t *testing.T) {
 
 }
 
+func TestIntegration_LoadWithReferenceSchemaFile(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	formats := []DataFormat{Avro, Parquet}
+	for _, format := range formats {
+		ctx := context.Background()
+		table := dataset.Table(tableIDs.New())
+		defer table.Delete(ctx)
+
+		expectedSchema := Schema{
+			{Name: "username", Type: StringFieldType, Required: false},
+			{Name: "tweet", Type: StringFieldType, Required: false},
+			{Name: "timestamp", Type: StringFieldType, Required: false},
+			{Name: "likes", Type: IntegerFieldType, Required: false},
+		}
+		ext := strings.ToLower(string(format))
+		sourceURIs := []string{
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/b-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/c-twitter." + ext,
+		}
+		referenceURI := "gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext
+		source := NewGCSReference(sourceURIs...)
+		source.SourceFormat = format
+		loader := table.LoaderFrom(source)
+		loader.ReferenceFileSchemaUri = referenceURI
+		job, err := loader.Run(ctx)
+		if err != nil {
+			t.Fatalf("loader.Run: %v", err)
+		}
+		err = wait(ctx, job)
+		if err != nil {
+			t.Fatalf("wait: %v", err)
+		}
+		metadata, err := table.Metadata(ctx)
+		if err != nil {
+			t.Fatalf("table.Metadata: %v", err)
+		}
+		diff := testutil.Diff(expectedSchema, metadata.Schema)
+		if diff != "" {
+			t.Errorf("got=-, want=+:\n%s", diff)
+		}
+	}
+}
+
+func TestIntegration_ExternalTableWithReferenceSchemaFile(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	formats := []DataFormat{Avro, Parquet}
+	for _, format := range formats {
+		ctx := context.Background()
+		externalTable := dataset.Table(tableIDs.New())
+		defer externalTable.Delete(ctx)
+
+		expectedSchema := Schema{
+			{Name: "username", Type: StringFieldType, Required: false},
+			{Name: "tweet", Type: StringFieldType, Required: false},
+			{Name: "timestamp", Type: StringFieldType, Required: false},
+			{Name: "likes", Type: IntegerFieldType, Required: false},
+		}
+		ext := strings.ToLower(string(format))
+		sourceURIs := []string{
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/b-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/c-twitter." + ext,
+		}
+		referenceURI := "gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext
+
+		err := externalTable.Create(ctx, &TableMetadata{
+			ExternalDataConfig: &ExternalDataConfig{
+				SourceFormat:           format,
+				SourceURIs:             sourceURIs,
+				ReferenceFileSchemaUri: referenceURI,
+			},
+		})
+		if err != nil {
+			t.Fatalf("table.Create: %v", err)
+		}
+
+		metadata, err := externalTable.Metadata(ctx)
+		if err != nil {
+			t.Fatalf("table.Metadata: %v", err)
+		}
+		diff := testutil.Diff(expectedSchema, metadata.Schema)
+		if diff != "" {
+			t.Errorf("got=-, want=+:\n%s", diff)
+		}
+	}
+}
+
 func TestIntegration_DML(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
