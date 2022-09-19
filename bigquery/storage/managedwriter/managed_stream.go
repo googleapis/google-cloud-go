@@ -76,6 +76,7 @@ type ManagedStream struct {
 	destinationTable string
 	c                *Client
 	fc               *flowController
+	retry            *defaultRetryer
 
 	// aspects of the stream client
 	ctx         context.Context // retained context for the stream
@@ -250,7 +251,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 				}
 			}
 			ch := make(chan *pendingWrite, depth)
-			go recvProcessor(ms.ctx, arc, ms.fc, ch)
+			go recvProcessor(ms, arc, ch)
 			// Also, replace the sync.Once for setting up a new stream, as we need to do "special" work
 			// for every new connection.
 			ms.streamSetup = new(sync.Once)
@@ -468,19 +469,19 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 //
 // The receive processor only deals with a single instance of a connection/channel, and thus should never interact
 // with the mutex lock.
-func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, fc *flowController, ch <-chan *pendingWrite) {
+func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
 	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
 	// ensure that pending writes get acknowledged with a terminal state.
 	for {
 		select {
-		case <-ctx.Done():
+		case <-ms.ctx.Done():
 			// Context is done, so we're not going to get further updates.  Mark all work failed with the context error.
 			for {
 				pw, ok := <-ch
 				if !ok {
 					return
 				}
-				pw.markDone(nil, ctx.Err(), fc)
+				pw.markDone(nil, ms.ctx.Err(), ms.fc)
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -491,19 +492,17 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
-				nextWrite.markDone(nil, err, fc)
+				nextWrite.markDone(nil, err, ms.fc)
 				continue
 			}
-			recordStat(ctx, AppendResponses, 1)
+			recordStat(ms.ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
-				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
-				if err != nil {
-					tagCtx = ctx
+				if tagCtx, tagErr := tag.New(ms.ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String())); tagErr == nil {
+					recordStat(tagCtx, AppendResponseErrors, 1)
 				}
-				recordStat(tagCtx, AppendResponseErrors, 1)
 			}
-			nextWrite.markDone(resp, nil, fc)
+			nextWrite.markDone(resp, nil, ms.fc)
 		}
 	}
 }

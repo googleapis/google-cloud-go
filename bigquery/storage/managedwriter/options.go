@@ -98,6 +98,14 @@ func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	}
 }
 
+// WithAppendRowsCallOption is used to supply additional call options to the ManagedStream when
+// it opens the underlying append stream.
+func WithExperimentalRetry(o gax.CallOption) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.retry = newDefaultRetryer()
+	}
+}
+
 // AppendOption are options that can be passed when appending data with a managed stream instance.
 type AppendOption func(*pendingWrite)
 
