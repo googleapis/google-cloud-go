@@ -3250,7 +3250,8 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	defer cancel()
 	sp.close(ctx)
 
-	if w, g := context.DeadlineExceeded, ctx.Err(); w != g {
-		t.Fatalf("context error mismatch\nWant: %v\nGot: %v", w, g)
+	// session pool close does not trigger any request to backend
+	if ctx.Err() != nil {
+		t.Fatalf("context error mismatch\nWant: nil\nGot: %v", ctx.Err())
 	}
 }
