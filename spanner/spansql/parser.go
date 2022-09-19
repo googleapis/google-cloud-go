@@ -982,7 +982,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 
 	/*
 		statement:
-			{ create_database | create_table | create_index | alter_table | drop_table | drop_index }
+			{ create_database | create_table | create_index | alter_table | drop_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
 	*/
 
 	// TODO: support create_database
@@ -1009,13 +1009,14 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		// DROP INDEX index_name
 		// DROP VIEW view_name
 		// DROP ROLE role_name
+		// DROP CHANGE STREAM change_stream_name
 		tok := p.next()
 		if tok.err != nil {
 			return nil, tok.err
 		}
 		switch {
 		default:
-			return nil, p.errorf("got %q, want TABLE, VIEW or INDEX", tok.value)
+			return nil, p.errorf("got %q, want TABLE, VIEW, INDEX or CHANGE", tok.value)
 		case tok.caseEqual("TABLE"):
 			name, err := p.parseTableOrIndexOrColumnOrRoleName()
 			if err != nil {
@@ -1040,6 +1041,15 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropRole{Name: name, Position: pos}, nil
+		case tok.caseEqual("CHANGE"):
+			if err := p.expect("STREAM"); err != nil {
+				return nil, err
+			}
+			name, err := p.parseTableOrIndexOrColumnOrRoleName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropChangeStream{Name: name, Position: pos}, nil
 		}
 	} else if p.sniff("ALTER", "DATABASE") {
 		a, err := p.parseAlterDatabase()
@@ -1050,6 +1060,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.eat("REVOKE") {
 		a, err := p.parseRevokeRole()
 		return a, err
+	} else if p.sniff("CREATE", "CHANGE", "STREAM") {
+		cs, err := p.parseCreateChangeStream()
+		return cs, err
+	} else if p.sniff("ALTER", "CHANGE", "STREAM") {
+		acs, err := p.parseAlterChangeStream()
+		return acs, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -2203,6 +2219,157 @@ func (p *parser) parseIDList() ([]ID, *parseError) {
 		break
 	}
 	return list, nil
+}
+
+func (p *parser) parseCreateChangeStream() (*CreateChangeStream, *parseError) {
+	debugf("parseCreateChangeStream: %v", p)
+
+	/*
+		CREATE CHANGE STREAM change_stream_name
+		    [FOR column_or_table_watching_definition[, ... ] ]
+		    [
+		        OPTIONS (
+		            retention_period = timespan,
+		            value_capture_type = type
+		        )
+		    ]
+	*/
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("CHANGE"); err != nil {
+		return nil, err
+	}
+	if err := p.expect("STREAM"); err != nil {
+		return nil, err
+	}
+	csname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := p.expect("FOR"); err != nil {
+		return nil, err
+	}
+
+	cs := &CreateChangeStream{Name: csname, Position: pos}
+
+	if p.eat("ALL") {
+		cs.WatchAllTables = true
+	} else {
+		for {
+			tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+			if err != nil {
+				return nil, err
+			}
+			pos := p.Pos()
+			wd := WatchDef{Table: tname, Position: pos}
+
+			if p.sniff("(") {
+				columns, err := p.parseIDListWithBraket()
+				if err != nil {
+					return nil, err
+				}
+				wd.Columns = columns
+			} else {
+				wd.WatchAllCols = true
+			}
+
+			cs.Watch = append(cs.Watch, wd)
+			if p.eat(",") {
+				continue
+			}
+			break
+		}
+	}
+
+	if p.sniff("OPTIONS") {
+		cs.Options, err = p.parseChangeStreamOptions()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return cs, nil
+}
+
+func (p *parser) parseAlterChangeStream() (*AlterChangeStream, *parseError) {
+	debugf("parseAlterChangeStream: %v", p)
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("CHANGE"); err != nil {
+		return nil, err
+	}
+	if err := p.expect("STREAM"); err != nil {
+		return nil, err
+	}
+	csname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	if err != nil {
+		return nil, err
+	}
+
+	acs := &AlterChangeStream{Name: csname, Position: pos}
+	if err := p.expect("SET"); err != nil {
+		return nil, err
+	}
+	// TODO: Support for altering watch
+	if p.sniff("OPTIONS") {
+		options, err := p.parseChangeStreamOptions()
+		if err != nil {
+			return nil, err
+		}
+		acs.Alteration = AlterChangeStreamOptions{Options: options}
+		return acs, nil
+	}
+	return nil, p.errorf("got %q, expected OPTIONS", p.next())
+}
+
+func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
+	debugf("parseChangeStreamOptions: %v", p)
+	/*
+		options_def:
+			OPTIONS (
+									retention_period = timespan,
+									value_capture_type = type
+							) 	*/
+
+	if err := p.expect("OPTIONS"); err != nil {
+		return ChangeStreamOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return ChangeStreamOptions{}, err
+	}
+
+	var cso ChangeStreamOptions
+	if p.eat("retention_period", "=") {
+		tok := p.next()
+		if tok.err != nil {
+			return ChangeStreamOptions{}, tok.err
+		}
+		retentionPeriod := new(string)
+		if tok.value == "null" {
+			*retentionPeriod = ""
+		} else {
+			if tok.typ != stringToken {
+				return ChangeStreamOptions{}, p.errorf("invalid retention_period: %v", tok.value)
+			}
+			*retentionPeriod = tok.string
+		}
+		cso.RetentionPeriod = retentionPeriod
+	} else {
+		tok := p.next()
+		return ChangeStreamOptions{}, p.errorf("unknown change stream option: %v", tok.value)
+	}
+
+	if err := p.expect(")"); err != nil {
+		return ChangeStreamOptions{}, err
+	}
+
+	return cso, nil
 }
 
 var baseTypes = map[string]TypeBase{
