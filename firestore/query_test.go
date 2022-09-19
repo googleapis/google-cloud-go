@@ -923,3 +923,7 @@ func (b byQuery) Less(i, j int) bool {
 	}
 	return c < 0
 }
+
+func TestAggregationQuery(t *testing.T) {
+
+}

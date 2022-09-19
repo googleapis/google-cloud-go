@@ -309,7 +309,7 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 func (q *Query) NewAggregationQuery() *AggregationQuery {
 	return &AggregationQuery{
 		query:            q,
-		aggregateQueries: make([]*pb.StructuredAggregationQuery, 0),
+		aggregateQueries: make([]*pb.StructuredAggregationQuery_Aggregation, 0),
 	}
 }
 
