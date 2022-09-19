@@ -57,7 +57,7 @@
 //
 //	req := &adminpb.GetAccountRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetAccountRequest.
 //	}
 //	resp, err := c.GetAccount(ctx, req)
 //	if err != nil {

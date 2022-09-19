@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"

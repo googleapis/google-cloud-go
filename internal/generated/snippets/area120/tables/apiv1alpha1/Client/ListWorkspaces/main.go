@@ -22,8 +22,8 @@ import (
 	"context"
 
 	tables "cloud.google.com/go/area120/tables/apiv1alpha1"
+	"cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	"google.golang.org/api/iterator"
-	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &tablespb.ListWorkspacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#ListWorkspacesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#ListWorkspacesRequest.
 	}
 	it := c.ListWorkspaces(ctx, req)
 	for {

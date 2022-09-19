@@ -20,8 +20,8 @@ import (
 	"context"
 
 	domains "cloud.google.com/go/domains/apiv1beta1"
+	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"google.golang.org/api/iterator"
-	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 )
 
 func ExampleNewClient() {
@@ -73,7 +73,7 @@ func ExampleClient_SearchDomains() {
 
 	req := &domainspb.SearchDomainsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#SearchDomainsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#SearchDomainsRequest.
 	}
 	resp, err := c.SearchDomains(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExampleClient_RetrieveRegisterParameters() {
 
 	req := &domainspb.RetrieveRegisterParametersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveRegisterParametersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RetrieveRegisterParametersRequest.
 	}
 	resp, err := c.RetrieveRegisterParameters(ctx, req)
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleClient_RegisterDomain() {
 
 	req := &domainspb.RegisterDomainRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RegisterDomainRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RegisterDomainRequest.
 	}
 	op, err := c.RegisterDomain(ctx, req)
 	if err != nil {
@@ -153,7 +153,7 @@ func ExampleClient_RetrieveTransferParameters() {
 
 	req := &domainspb.RetrieveTransferParametersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveTransferParametersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RetrieveTransferParametersRequest.
 	}
 	resp, err := c.RetrieveTransferParameters(ctx, req)
 	if err != nil {
@@ -178,7 +178,7 @@ func ExampleClient_TransferDomain() {
 
 	req := &domainspb.TransferDomainRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#TransferDomainRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#TransferDomainRequest.
 	}
 	op, err := c.TransferDomain(ctx, req)
 	if err != nil {
@@ -208,7 +208,7 @@ func ExampleClient_ListRegistrations() {
 
 	req := &domainspb.ListRegistrationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ListRegistrationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ListRegistrationsRequest.
 	}
 	it := c.ListRegistrations(ctx, req)
 	for {
@@ -239,7 +239,7 @@ func ExampleClient_GetRegistration() {
 
 	req := &domainspb.GetRegistrationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#GetRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#GetRegistrationRequest.
 	}
 	resp, err := c.GetRegistration(ctx, req)
 	if err != nil {
@@ -264,7 +264,7 @@ func ExampleClient_UpdateRegistration() {
 
 	req := &domainspb.UpdateRegistrationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#UpdateRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#UpdateRegistrationRequest.
 	}
 	op, err := c.UpdateRegistration(ctx, req)
 	if err != nil {
@@ -294,7 +294,7 @@ func ExampleClient_ConfigureManagementSettings() {
 
 	req := &domainspb.ConfigureManagementSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureManagementSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ConfigureManagementSettingsRequest.
 	}
 	op, err := c.ConfigureManagementSettings(ctx, req)
 	if err != nil {
@@ -324,7 +324,7 @@ func ExampleClient_ConfigureDnsSettings() {
 
 	req := &domainspb.ConfigureDnsSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureDnsSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ConfigureDnsSettingsRequest.
 	}
 	op, err := c.ConfigureDnsSettings(ctx, req)
 	if err != nil {
@@ -354,7 +354,7 @@ func ExampleClient_ConfigureContactSettings() {
 
 	req := &domainspb.ConfigureContactSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureContactSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ConfigureContactSettingsRequest.
 	}
 	op, err := c.ConfigureContactSettings(ctx, req)
 	if err != nil {
@@ -384,7 +384,7 @@ func ExampleClient_ExportRegistration() {
 
 	req := &domainspb.ExportRegistrationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ExportRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ExportRegistrationRequest.
 	}
 	op, err := c.ExportRegistration(ctx, req)
 	if err != nil {
@@ -414,7 +414,7 @@ func ExampleClient_DeleteRegistration() {
 
 	req := &domainspb.DeleteRegistrationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#DeleteRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#DeleteRegistrationRequest.
 	}
 	op, err := c.DeleteRegistration(ctx, req)
 	if err != nil {
@@ -442,7 +442,7 @@ func ExampleClient_RetrieveAuthorizationCode() {
 
 	req := &domainspb.RetrieveAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveAuthorizationCodeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RetrieveAuthorizationCodeRequest.
 	}
 	resp, err := c.RetrieveAuthorizationCode(ctx, req)
 	if err != nil {
@@ -467,7 +467,7 @@ func ExampleClient_ResetAuthorizationCode() {
 
 	req := &domainspb.ResetAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ResetAuthorizationCodeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ResetAuthorizationCodeRequest.
 	}
 	resp, err := c.ResetAuthorizationCode(ctx, req)
 	if err != nil {
