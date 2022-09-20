@@ -58,8 +58,8 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 		if errors.Is(err, io.EOF) {
 			return r.bo.Pause(), true
 		}
-		// Any other non-status based errors treated as retryable.
-		return r.bo.Pause(), true
+		// Any other non-status based errors are not retried.
+		return 0, false
 	}
 	switch s.Code() {
 	case codes.Aborted,

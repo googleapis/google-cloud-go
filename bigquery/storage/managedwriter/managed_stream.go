@@ -18,7 +18,9 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/bigquery/internal"
 	"github.com/googleapis/gax-go/v2"
@@ -488,21 +490,77 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 				// Channel closed, all elements processed.
 				return
 			}
-
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
-				nextWrite.markDone(nil, err, ms.fc)
+				// Evaluate and possibly retry based on the receive error.
+				ms.processRetry(nextWrite, err)
+				// We're done with the write regardless of outcome.
 				continue
 			}
+			// We received a response (it may contain an error).
 			recordStat(ms.ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
+				// Mark that we received an error in instrumentation.
 				if tagCtx, tagErr := tag.New(ms.ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String())); tagErr == nil {
 					recordStat(tagCtx, AppendResponseErrors, 1)
 				}
+				respErr := grpcstatus.ErrorProto(status)
+				if ms.shouldRetryAppend(respErr, nextWrite.attemptCount) {
+					// The response had an error attached and it should be retried.
+					log.Printf("checking based on resp status")
+					ms.processRetry(nextWrite, respErr)
+					// We're done with the write regardless of outcome.
+					continue
+				}
 			}
+			// We either had no error in the response, or should not have retried.
+			// mark the write done.
 			nextWrite.markDone(resp, nil, ms.fc)
 		}
 	}
+}
+
+// processRetry is responsible for evaluating and re-enqueing an append.
+// If the append is not retried, it is marked complete.
+func (ms *ManagedStream) processRetry(pw *pendingWrite, initialErr error) {
+	if ms.retry == nil {
+		log.Printf("no retries")
+		// No retries.  Mark the write done and return.
+		pw.markDone(nil, initialErr, ms.fc)
+		return
+	}
+	err := initialErr
+	for {
+		pause, shouldRetry := ms.retry.RetryAppend(err, pw.attemptCount)
+		if !shouldRetry {
+			// Should not attempt to re-append.
+			log.Printf("didn't pass shouldRetry")
+			pw.markDone(nil, err, ms.fc)
+			return
+		}
+		// we use the pause the slow the receiver loop as a whole.
+		time.Sleep(pause)
+		pw.attemptCount = pw.attemptCount + 1
+		log.Printf("appending")
+		err := ms.appendWithRetry(pw)
+		if err != nil {
+			log.Printf("append errored: %v", err)
+			// Got a failure, send it through the loop again.
+			continue
+		}
+		// Break out of the loop, we were successful and the write has been
+		// re-inserted.
+		break
+	}
+
+}
+
+func (ms *ManagedStream) shouldRetryAppend(err error, attemptCount int) bool {
+	if ms.retry == nil {
+		return false
+	}
+	_, shouldRetry := ms.retry.RetryAppend(err, attemptCount)
+	return shouldRetry
 }

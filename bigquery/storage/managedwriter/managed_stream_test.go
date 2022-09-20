@@ -18,6 +18,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"log"
 	"runtime"
 	"testing"
 	"time"
@@ -25,6 +27,7 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -116,6 +119,7 @@ func (tarc *testAppendRowsClient) CloseSend() error {
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
 func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	sF := func(req *storagepb.AppendRowsRequest) error {
+		log.Printf("test SF appending %v", req)
 		testARC.requests = append(testARC.requests, req)
 		return nil
 	}
@@ -482,4 +486,72 @@ func TestOpenCallOptionPropagation(t *testing.T) {
 		}),
 	}
 	ms.openWithRetry()
+}
+
+func TestManagedStream_Receiver(t *testing.T) {
+
+	testCases := []struct {
+		desc     string
+		recvResp *storagepb.AppendRowsResponse
+		recvErr  error
+
+		wantAppend bool
+	}{
+		{
+			desc:       "no errors",
+			recvResp:   &storagepb.AppendRowsResponse{},
+			wantAppend: false,
+		},
+		{
+			desc:       "recv EOF",
+			recvResp:   &storagepb.AppendRowsResponse{},
+			recvErr:    io.EOF,
+			wantAppend: true,
+		},
+		{
+			desc: "resp unavailable",
+			recvResp: &storagepb.AppendRowsResponse{
+				Response: &storagepb.AppendRowsResponse_Error{
+					Error: &statuspb.Status{
+						Code:    int32(codes.Unavailable),
+						Message: "foo",
+					},
+				},
+			},
+			wantAppend: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Logf("TESTCASE %s", tc.desc)
+		ctx, cancel := context.WithCancel(context.Background())
+
+		testArc := &testAppendRowsClient{}
+
+		ms := &ManagedStream{
+			ctx: ctx,
+			open: openTestArc(testArc, nil,
+				func() (*storagepb.AppendRowsResponse, error) {
+					if len(testArc.requests) == 0 {
+						t.Logf("emitting testcase response")
+						return tc.recvResp, tc.recvErr
+					}
+					t.Logf("emitting default response")
+					return &storagepb.AppendRowsResponse{}, nil
+				},
+			),
+			streamSettings: defaultStreamSettings(),
+			fc:             newFlowController(0, 0),
+			retry:          newDefaultRetryer(),
+		}
+		_, ch, _ := ms.openWithRetry()
+		ch <- newPendingWrite(ctx, [][]byte{[]byte("foo")})
+		time.Sleep(time.Second)
+
+		if gotAppend := len(testArc.requests) > 0; gotAppend != tc.wantAppend {
+			t.Errorf("%s: got %t, want %t", tc.desc, gotAppend, tc.wantAppend)
+		}
+		ms.Close()
+		cancel()
+	}
 }

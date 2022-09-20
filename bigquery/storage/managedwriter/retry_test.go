@@ -62,3 +62,46 @@ func TestManagedStream_ShouldReconnect(t *testing.T) {
 		}
 	}
 }
+
+func TestManagedStream_AppendErrorRetries(t *testing.T) {
+
+	testCases := []struct {
+		err          error
+		attemptCount int
+		want         bool
+	}{
+		{
+			err:  fmt.Errorf("random error"),
+			want: false,
+		},
+		{
+			err:  io.EOF,
+			want: true,
+		},
+		{
+			err:          io.EOF,
+			attemptCount: 4,
+			want:         false,
+		},
+		{
+			err:  status.Error(codes.Unavailable, "nope"),
+			want: true,
+		},
+		{
+			err:  status.Error(codes.ResourceExhausted, "out of gas"),
+			want: false,
+		},
+		{
+			err:  status.Error(codes.ResourceExhausted, "Exceeds 'AppendRows throughput' quota for some reason"),
+			want: true,
+		},
+	}
+
+	retry := newDefaultRetryer()
+
+	for _, tc := range testCases {
+		if _, got := retry.RetryAppend(tc.err, tc.attemptCount); got != tc.want {
+			t.Errorf("got %t, want %t for error: %+v", got, tc.want, tc.err)
+		}
+	}
+}
