@@ -291,188 +291,186 @@ func config(ctx context.Context, scopes ...string) *Client {
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(skipGRPC("with_attrs case fails due to b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		projectID := testutil.ProjID()
 
-	projectID := testutil.ProjID()
+		labels := map[string]string{
+			"l1":    "v1",
+			"empty": "",
+		}
 
-	labels := map[string]string{
-		"l1":    "v1",
-		"empty": "",
-	}
+		lifecycle := Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "NEARLINE",
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:             10,
+					Liveness:              Archived,
+					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses: []string{"STANDARD"},
+					NumNewerVersions:      3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "ARCHIVE",
+				},
+				Condition: LifecycleCondition{
+					CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+					DaysSinceCustomTime:   20,
+					Liveness:              Live,
+					MatchesStorageClasses: []string{"STANDARD"},
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					DaysSinceNoncurrentTime: 30,
+					Liveness:                Live,
+					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses:   []string{"NEARLINE"},
+					NumNewerVersions:        10,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:        10,
+					MatchesPrefix:    []string{"testPrefix"},
+					MatchesSuffix:    []string{"testSuffix"},
+					NumNewerVersions: 3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
+			}},
+		}
 
-	lifecycle := Lifecycle{
-		Rules: []LifecycleRule{{
-			Action: LifecycleAction{
-				Type:         SetStorageClassAction,
-				StorageClass: "NEARLINE",
-			},
-			Condition: LifecycleCondition{
-				AgeInDays:             10,
-				Liveness:              Archived,
-				CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-				MatchesStorageClasses: []string{"STANDARD"},
-				NumNewerVersions:      3,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type:         SetStorageClassAction,
-				StorageClass: "ARCHIVE",
-			},
-			Condition: LifecycleCondition{
-				CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
-				DaysSinceCustomTime:   20,
-				Liveness:              Live,
-				MatchesStorageClasses: []string{"STANDARD"},
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				DaysSinceNoncurrentTime: 30,
-				Liveness:                Live,
-				NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-				MatchesStorageClasses:   []string{"NEARLINE"},
-				NumNewerVersions:        10,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				AgeInDays:        10,
-				MatchesPrefix:    []string{"testPrefix"},
-				MatchesSuffix:    []string{"testSuffix"},
-				NumNewerVersions: 3,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				AllObjects: true,
-			},
-		}},
-	}
+		// testedAttrs are the bucket attrs directly compared in this test
+		type testedAttrs struct {
+			StorageClass          string
+			VersioningEnabled     bool
+			LocationType          string
+			Labels                map[string]string
+			Location              string
+			Lifecycle             Lifecycle
+			CustomPlacementConfig *CustomPlacementConfig
+		}
 
-	// testedAttrs are the bucket attrs directly compared in this test
-	type testedAttrs struct {
-		StorageClass          string
-		VersioningEnabled     bool
-		LocationType          string
-		Labels                map[string]string
-		Location              string
-		Lifecycle             Lifecycle
-		CustomPlacementConfig *CustomPlacementConfig
-	}
-
-	for _, test := range []struct {
-		name      string
-		attrs     *BucketAttrs
-		wantAttrs testedAttrs
-	}{
-		{
-			name:  "no attrs",
-			attrs: nil,
-			wantAttrs: testedAttrs{
-				StorageClass:      "STANDARD",
-				VersioningEnabled: false,
-				LocationType:      "multi-region",
-				Location:          "US",
-			},
-		},
-		{
-			name: "with attrs",
-			attrs: &BucketAttrs{
-				StorageClass:      "NEARLINE",
-				VersioningEnabled: true,
-				Labels:            labels,
-				Lifecycle:         lifecycle,
-				Location:          "SOUTHAMERICA-EAST1",
-			},
-			wantAttrs: testedAttrs{
-				StorageClass:      "NEARLINE",
-				VersioningEnabled: true,
-				Labels:            labels,
-				Location:          "SOUTHAMERICA-EAST1",
-				LocationType:      "region",
-				Lifecycle:         lifecycle,
-			},
-		},
-		{
-			name: "dual-region",
-			attrs: &BucketAttrs{
-				Location: "US",
-				CustomPlacementConfig: &CustomPlacementConfig{
-					DataLocations: []string{"US-EAST1", "US-WEST1"},
+		for _, test := range []struct {
+			name      string
+			attrs     *BucketAttrs
+			wantAttrs testedAttrs
+		}{
+			{
+				name:  "no attrs",
+				attrs: nil,
+				wantAttrs: testedAttrs{
+					StorageClass:      "STANDARD",
+					VersioningEnabled: false,
+					LocationType:      "multi-region",
+					Location:          "US",
 				},
 			},
-			wantAttrs: testedAttrs{
-				Location:     "US",
-				LocationType: "dual-region",
-				StorageClass: "STANDARD",
-				CustomPlacementConfig: &CustomPlacementConfig{
-					DataLocations: []string{"US-EAST1", "US-WEST1"},
+			{
+				name: "with attrs",
+				attrs: &BucketAttrs{
+					StorageClass:      "NEARLINE",
+					VersioningEnabled: true,
+					Labels:            labels,
+					Lifecycle:         lifecycle,
+					Location:          "SOUTHAMERICA-EAST1",
+				},
+				wantAttrs: testedAttrs{
+					StorageClass:      "NEARLINE",
+					VersioningEnabled: true,
+					Labels:            labels,
+					Location:          "SOUTHAMERICA-EAST1",
+					LocationType:      "region",
+					Lifecycle:         lifecycle,
 				},
 			},
-		},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			newBucketName := uidSpace.New()
-			b := client.Bucket(newBucketName)
+			{
+				name: "dual-region",
+				attrs: &BucketAttrs{
+					Location: "US",
+					CustomPlacementConfig: &CustomPlacementConfig{
+						DataLocations: []string{"US-EAST1", "US-WEST1"},
+					},
+				},
+				wantAttrs: testedAttrs{
+					Location:     "US",
+					LocationType: "dual-region",
+					StorageClass: "STANDARD",
+					CustomPlacementConfig: &CustomPlacementConfig{
+						DataLocations: []string{"US-EAST1", "US-WEST1"},
+					},
+				},
+			},
+		} {
+			t.Run(test.name, func(t *testing.T) {
+				newBucketName := prefix + uidSpace.New()
+				b := client.Bucket(newBucketName)
 
-			if err := b.Create(ctx, projectID, test.attrs); err != nil {
-				t.Fatalf("bucket create: %v", err)
-			}
+				if err := b.Create(ctx, projectID, test.attrs); err != nil {
+					t.Fatalf("bucket create: %v", err)
+				}
 
-			gotAttrs, err := b.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("bucket attrs: %v", err)
-			}
+				gotAttrs, err := b.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("bucket attrs: %v", err)
+				}
 
-			// All newly created buckets should conform to the following:
-			if gotAttrs.MetaGeneration != 1 {
-				t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
-			}
-			if gotAttrs.ProjectNumber == 0 {
-				t.Errorf("got a zero ProjectNumber")
-			}
+				// All newly created buckets should conform to the following:
+				if gotAttrs.MetaGeneration != 1 {
+					t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
+				}
+				if gotAttrs.ProjectNumber == 0 {
+					t.Errorf("got a zero ProjectNumber")
+				}
 
-			// Test specific wanted bucket attrs
-			if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
-				t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
-			}
-			if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
-				t.Errorf("labels: got %v, want %v", got, want)
-			}
-			if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
-				t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
-			}
-			if gotAttrs.LocationType != test.wantAttrs.LocationType {
-				t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
-			}
-			if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
-				t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
-			}
-			if gotAttrs.Location != test.wantAttrs.Location {
-				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
-			}
-			if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
-				t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
-			}
+				// Test specific wanted bucket attrs
+				if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
+					t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
+				}
+				if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
+					t.Errorf("labels: got %v, want %v", got, want)
+				}
+				if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
+					t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+				}
+				if gotAttrs.LocationType != test.wantAttrs.LocationType {
+					t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
+				}
+				if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
+					t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
+				}
+				if gotAttrs.Location != test.wantAttrs.Location {
+					t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+				}
+				if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
+					t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
+				}
 
-			// Delete the bucket and check that the deletion was succesful
-			if err := b.Delete(ctx); err != nil {
-				t.Fatalf("bucket delete: %v", err)
-			}
-			_, err = b.Attrs(ctx)
-			if err != ErrBucketNotExist {
-				t.Fatalf("expected ErrBucketNotExist, got %v", err)
-			}
-		})
-	}
+				// Delete the bucket and check that the deletion was succesful
+				if err := b.Delete(ctx); err != nil {
+					t.Fatalf("bucket delete: %v", err)
+				}
+				_, err = b.Attrs(ctx)
+				if err != ErrBucketNotExist {
+					t.Fatalf("expected ErrBucketNotExist, got %v", err)
+				}
+			})
+		}
+	})
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
