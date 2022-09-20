@@ -31,10 +31,10 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const codeVersion = 4.0 // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.4.0" // to keep track of which version of the code a benchmark ran on
 
 var opts = &benchmarkOptions{}
-var projectID, credentialsFile, outputFile, bucket string
+var projectID, credentialsFile, outputFile string
 
 var results chan benchmarkResult
 
@@ -61,6 +61,7 @@ var nonBenchmarkingClients = sync.Pool{
 type benchmarkOptions struct {
 	// all sizes are in bytes
 	api           benchmarkAPI
+	bucket        string
 	region        string
 	timeout       time.Duration
 	minObjectSize int64
@@ -85,16 +86,16 @@ func parseFlags() {
 	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
 	flag.StringVar(&opts.region, "r", "US-WEST1", "region")
 	flag.DurationVar(&opts.timeout, "t", time.Hour, "timeout")
-	minSize := flag.Int64("min_size", 512, "minimum object size in kib")
-	maxSize := flag.Int64("max_size", 2097152, "maximum object size in kib")
+	flag.Int64Var(&opts.minObjectSize, "min_size", 512*kib, "minimum object size in bytes")
+	flag.Int64Var(&opts.maxObjectSize, "max_size", 2097152*kib, "maximum object size in bytes")
 	flag.IntVar(&opts.minWriteSize, "min_w_size", 4000, "minimum write size in bytes")
 	flag.IntVar(&opts.maxWriteSize, "max_w_size", 4000, "maximum write size in bytes")
 	flag.IntVar(&opts.minReadSize, "min_r_size", 4000, "minimum read size in bytes")
 	flag.IntVar(&opts.maxReadSize, "max_r_size", 4000, "maximum read size in bytes")
 	flag.IntVar(&opts.readQuantum, "q_read", 1, "read quantum for app buffer size")
 	flag.IntVar(&opts.writeQuantum, "q_write", 1, "write quantum for app buffer size")
-	minChunkSize := flag.Int64("min_cs", 16*kib, "min chunksize in kib")
-	maxChunkSize := flag.Int64("max_cs", 16*kib, "max chunksize in kib")
+	flag.Int64Var(&opts.minChunkSize, "min_cs", 16*1024*1024, "min chunksize in bytes")
+	flag.Int64Var(&opts.maxChunkSize, "max_cs", 16*1024*1024, "max chunksize in bytes")
 	flag.IntVar(&opts.minSamples, "min_samples", 10, "minimum number of objects to upload")
 	flag.IntVar(&opts.maxSamples, "max_samples", 10000, "maximum number of objects to upload")
 	flag.StringVar(&outputFile, "o", "res.csv", "file to output results to")
@@ -105,14 +106,9 @@ func parseFlags() {
 
 	flag.StringVar(&projectID, "p", projectID, "projectID")
 	flag.StringVar(&credentialsFile, "creds", credentialsFile, "path to credentials file")
-	flag.StringVar(&bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
+	flag.StringVar(&opts.bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
 
 	flag.Parse()
-
-	opts.minObjectSize = (*minSize) * kib
-	opts.maxObjectSize = (*maxSize) * kib
-	opts.minChunkSize = *minChunkSize * kib
-	opts.maxChunkSize = *maxChunkSize * kib
 
 	if len(projectID) < 1 {
 		fmt.Println("Must set a project ID. Use flag -p to specify it.")
@@ -142,7 +138,6 @@ func parseFlags() {
 				log.Fatalf("initializeGRPCClient: %v", err)
 			}
 		}
-
 		return client
 	}
 }
@@ -157,10 +152,9 @@ func main() {
 	defer cancel()
 
 	// Create bucket if necessary
-	bucketName := bucket
-	if len(bucketName) < 1 {
-		bucketName = randomName(bucketPrefix)
-		cleanUp := createBenchmarkBucket(bucketName, opts)
+	if len(opts.bucket) < 1 {
+		opts.bucket = randomName(bucketPrefix)
+		cleanUp := createBenchmarkBucket(opts.bucket, opts)
 		defer cleanUp()
 	}
 
@@ -172,9 +166,9 @@ func main() {
 	defer file.Close()
 
 	// Print benchmarking options
-	fmt.Printf("Code version: %0.2f\n", codeVersion)
+	fmt.Printf("Code version: %s\n", codeVersion)
 	fmt.Printf("Results file: %s\n", outputFile)
-	fmt.Printf("Bucket:  %s\n", bucketName)
+	fmt.Printf("Bucket:  %s\n", opts.bucket)
 	fmt.Printf("Benchmarking options: %+v\n", opts)
 
 	recordResultGroup, _ := errgroup.WithContext(ctx)
@@ -186,7 +180,7 @@ func main() {
 	// Run benchmarks
 	for i := 0; i < opts.maxSamples && (i < opts.minSamples || time.Since(start) < opts.timeout); i++ {
 		benchGroup.Go(func() error {
-			benchmark := w1r3{opts: opts, bucketName: bucketName}
+			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
 			if err := benchmark.setup(); err != nil {
 				// We don't want to stop benchmarking on a single run's error, so just log
 				log.Printf("run setup failed: %v", err)
@@ -310,7 +304,8 @@ func (br *benchmarkResult) csv() []string {
 		strconv.FormatInt(br.start.Unix(), 10),
 		strconv.FormatInt(br.start.Add(br.elapsedTime).UnixNano(), 10),
 		strconv.Itoa(opts.numWorkers),
-		fmt.Sprintf("%.2f", codeVersion),
+		codeVersion,
+		opts.bucket,
 	}
 }
 
@@ -320,7 +315,7 @@ var csvHeaders = []string{
 	"ElapsedTimeUs", "CpuTimeUs", "Status",
 	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
 	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion",
+	"CodeVersion", "BucketName",
 }
 
 type benchmarkAPI string

@@ -59,9 +59,11 @@ func (r *w1r3) setup() error {
 func (r *w1r3) run(ctx context.Context) error {
 	var memStats *runtime.MemStats = &runtime.MemStats{}
 
-	client := nonBenchmarkingClients.Get().(*storage.Client)
-	defer client.Bucket(r.bucketName).Object(r.objectName).Delete(context.Background())
-
+	defer func() {
+		c := nonBenchmarkingClients.Get().(*storage.Client)
+		c.Bucket(r.bucketName).Object(r.objectName).Delete(context.Background())
+		nonBenchmarkingClients.Put(c)
+	}()
 	// Upload
 
 	// If the option is specified, run a garbage collector before collecting
@@ -91,6 +93,7 @@ func (r *w1r3) run(ctx context.Context) error {
 	r.writeResult.completed = err == nil
 	r.writeResult.elapsedTime = timeTaken
 
+	returnToPool(r.writeResult.params.api, client)
 	results <- *r.writeResult
 	os.Remove(r.objectName)
 
@@ -127,6 +130,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		r.readResults[i].completed = err == nil
 		r.readResults[i].elapsedTime = timeTaken
 
+		returnToPool(r.readResults[i].params.api, client)
 		results <- *r.readResults[i]
 		os.Remove(r.objectName)
 		// do not return error, continue to attempt to read
@@ -139,4 +143,12 @@ func (r *w1r3) run(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func returnToPool(api benchmarkAPI, client *storage.Client) {
+	if api == grpcAPI {
+		gRPCClients.Put(client)
+	} else {
+		httpClients.Put(client)
+	}
 }
