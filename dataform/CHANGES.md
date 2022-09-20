@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.2.0...dataform/v0.3.0) (2022-09-19)
+
+
+### Features
+
+* **dataform:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.1.0...dataform/v0.2.0) (2022-08-02)
 
 
