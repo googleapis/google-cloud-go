@@ -364,15 +364,15 @@ func (q *Query) End(c Cursor) *Query {
 	return q
 }
 
-// toProto converts the query to a protocol buffer.
-func (q *Query) toProto(req *pb.RunQueryRequest) error {
+// toRunQueryRequest converts the query to a protocol buffer.
+func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
 	if len(q.projection) != 0 && q.keysOnly {
 		return errors.New("datastore: query cannot both project and be keys-only")
 	}
 	if len(q.distinctOn) != 0 && q.distinct {
 		return errors.New("datastore: query cannot be both distinct and distinct-on")
 	}
-	dst := &pb.Query{}
+	dst := &pb.Query{} // TODO: Refactor this.
 	if q.kind != "" {
 		dst.Kind = []*pb.KindExpression{{Name: q.kind}}
 	}
@@ -473,12 +473,18 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	return nil
 }
 
+func (q *Query) toProto() (*pb.Query, error) {
+
+}
+
 // Count returns the number of results for the given query.
 //
 // The running time and number of API calls made by Count scale linearly with
 // the sum of the query's offset and limit. Unless the result count is
 // expected to be small, it is best to specify a limit; otherwise Count will
 // continue until it finishes counting or the provided context expires.
+//
+// Deprecated. Use Client.RunAggregationQuery() instead.
 func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Count")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -620,10 +626,14 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		}
 	}
 
-	if err := q.toProto(t.req); err != nil {
+	if err := q.toRunQueryRequest(t.req); err != nil {
 		t.err = err
 	}
 	return t
+}
+
+func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
+	return nil, nil
 }
 
 // Iterator is the result of running a query.
@@ -819,3 +829,35 @@ func DecodeCursor(s string) (Cursor, error) {
 	}
 	return Cursor{b}, nil
 }
+
+// NewAggregationQuery returns an AggregationQuery with this query as its
+// base query.
+func (q *Query) NewAggregationQuery() *AggregationQuery {
+	return &AggregationQuery{
+		query:              q,
+		aggregationQueries: make([]*pb.AggregationQuery, 0),
+	}
+}
+
+// AggregationQuery allows for generating aggregation results of an underlying
+// basic query. A single AggregationQuery can contain multiple aggregations.
+type AggregationQuery struct {
+	query              *Query                 // query contains a reference pointer to the underlying structured query.
+	aggregationQueries []*pb.AggregationQuery // aggregateQueries contains all of the queries for this request.
+}
+
+// WithCount specifies that the aggregation query provide a count of results
+// returned by the underlying Query.
+func (aq *AggregationQuery) WithCount(alias string) *AggregationQuery {
+
+	aqpb := &pb.AggregationQuery{
+		// TODO: rest of this
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// AggregationResult contains the results of an aggregation query.
+type AggregationResult map[string]interface{}

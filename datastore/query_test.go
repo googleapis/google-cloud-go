@@ -600,7 +600,7 @@ func TestReadOptions(t *testing.T) {
 		},
 	} {
 		req := &pb.RunQueryRequest{}
-		if err := test.q.toProto(req); err != nil {
+		if err := test.q.toRunQueryRequest(req); err != nil {
 			t.Fatalf("%+v: got %v, want no error", test.q, err)
 		}
 		if got := req.ReadOptions; !proto.Equal(got, test.want) {
@@ -613,7 +613,7 @@ func TestReadOptions(t *testing.T) {
 		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
 	} {
 		req := &pb.RunQueryRequest{}
-		if err := q.toProto(req); err == nil {
+		if err := q.toRunQueryRequest(req); err == nil {
 			t.Errorf("%+v: got nil, wanted error", q)
 		}
 	}
