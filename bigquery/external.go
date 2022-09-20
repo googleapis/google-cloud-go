@@ -109,6 +109,10 @@ type ExternalDataConfig struct {
 	// Connections are managed through the BigQuery Connection API:
 	// https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1
 	ConnectionID string
+
+	// When creating an external table, the user can provide a reference file with the table schema.
+	// This is enabled for the following formats: AVRO, PARQUET, ORC.
+	ReferenceFileSchemaURI string
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -121,6 +125,7 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		MaxBadRecords:           e.MaxBadRecords,
 		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 		ConnectionId:            e.ConnectionID,
+		ReferenceFileSchemaUri:  e.ReferenceFileSchemaURI,
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
@@ -145,6 +150,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		Schema:                  bqToSchema(q.Schema),
 		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
 		ConnectionID:            q.ConnectionId,
+		ReferenceFileSchemaURI:  q.ReferenceFileSchemaUri,
 	}
 	for _, v := range q.DecimalTargetTypes {
 		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
