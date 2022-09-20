@@ -1,5 +1,17 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.6.0...security/v1.7.0) (2022-09-19)
+
+
+### Features
+
+* **security:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+
+### Bug Fixes
+
+* **security/publicca:** Add proto options for Ruby, PHP and C# API client libraries ([bc7a5f6](https://github.com/googleapis/google-cloud-go/commit/bc7a5f609994f73e26f72a78f0ff14aa75c1c227))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.5.0...security/v1.6.0) (2022-09-15)
 
 

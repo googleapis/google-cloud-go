@@ -129,6 +129,9 @@
         "domains": {
             "component": "domains"
         },
+        "edgecontainer": {
+            "component": "edgecontainer"
+        },
         "essentialcontacts": {
             "component": "essentialcontacts"
         },

@@ -1,5 +1,17 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.5.0...functions/v1.6.0) (2022-09-19)
+
+
+### Features
+
+* **functions:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+
+### Documentation
+
+* **functions:** Update metadata.Resource docs ([#6660](https://github.com/googleapis/google-cloud-go/issues/6660)) ([ad01de9](https://github.com/googleapis/google-cloud-go/commit/ad01de9aa1fd2fcc087cab5e43ee2e2853c55bb3)), refs [#6612](https://github.com/googleapis/google-cloud-go/issues/6612)
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.4.0...functions/v1.5.0) (2022-07-12)
 
 
