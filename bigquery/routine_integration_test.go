@@ -17,7 +17,6 @@ package bigquery
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"testing"
 
@@ -98,20 +97,20 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	parentLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us-central1")
+	functionLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us-central1")
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
 
 	functionName := fmt.Sprintf("udf-func-%s", strings.ReplaceAll(routineID, "_", "-"))
-	cleanupFunction, uri, err := createCloudFunction(ctx, t, parentLocation, functionName)
+	cleanupFunction, uri, err := createCloudFunction(ctx, t, functionLocation, functionName)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanupFunction()
 
-	parentLocation = fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us")
+	connectionLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us")
 	connectionName := fmt.Sprintf("udf_conn%s", routineID)
-	cleanupConnection, connectionID, err := createConnection(ctx, t, parentLocation, connectionName)
+	cleanupConnection, connectionID, err := createConnection(ctx, t, connectionLocation, connectionName)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,9 +144,8 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 	}
 }
 
-func createCloudFunction(ctx context.Context, t *testing.T, parent, functionName string) (func(), string, error) {
+func createCloudFunction(ctx context.Context, t *testing.T, parent, functionName string) (cleanup func(), uri string, err error) {
 	fullname := fmt.Sprintf("%s/services/%s", parent, functionName)
-	cleanup := func() {}
 	createOps, err := functionsClient.CreateService(ctx, &run.CreateServiceRequest{
 		Parent:    parent,
 		ServiceId: functionName,
@@ -163,32 +161,32 @@ func createCloudFunction(ctx context.Context, t *testing.T, parent, functionName
 		},
 	})
 	if err != nil {
-		return cleanup, "", err
+		return
 	}
 	_, err = createOps.Wait(ctx)
 	if err != nil {
-		return cleanup, "", err
+		return
 	}
 	service, err := functionsClient.GetService(ctx, &run.GetServiceRequest{
 		Name: fullname,
 	})
 	if err != nil {
-		return cleanup, "", err
+		return
 	}
 	cleanup = func() {
 		_, err := functionsClient.DeleteService(ctx, &run.DeleteServiceRequest{
 			Name: fullname,
 		})
 		if err != nil {
-			log.Printf("could not delete %s", fullname)
+			t.Logf("could not delete cloud run service: %s", fullname)
 		}
 	}
-	return cleanup, service.GetUri(), nil
+	uri = service.GetUri()
+	return
 }
 
-func createConnection(ctx context.Context, t *testing.T, parent, name string) (func(), string, error) {
+func createConnection(ctx context.Context, t *testing.T, parent, name string) (cleanup func(), connectionID string, err error) {
 	fullname := fmt.Sprintf("%s/connections/%s", parent, name)
-	cleanup := func() {}
 	conn, err := connectionsClient.CreateConnection(ctx, &connection.CreateConnectionRequest{
 		Parent:       parent,
 		ConnectionId: name,
@@ -200,23 +198,24 @@ func createConnection(ctx context.Context, t *testing.T, parent, name string) (f
 		},
 	})
 	if err != nil {
-		return cleanup, "", err
+		return
 	}
 	conn, err = connectionsClient.GetConnection(ctx, &connection.GetConnectionRequest{
 		Name: fullname,
 	})
 	if err != nil {
-		return cleanup, "", err
+		return
 	}
 	cleanup = func() {
 		err := connectionsClient.DeleteConnection(ctx, &connection.DeleteConnectionRequest{
 			Name: fullname,
 		})
 		if err != nil {
-			log.Printf("could not delete %s", fullname)
+			t.Logf("could not delete connection: %s", fullname)
 		}
 	}
-	return cleanup, conn.Name, nil
+	connectionID = conn.Name
+	return
 }
 
 func TestIntegration_RoutineComplexTypes(t *testing.T) {

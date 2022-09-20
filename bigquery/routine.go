@@ -188,7 +188,7 @@ type RoutineMetadata struct {
 	// The list of arguments for the the routine.
 	Arguments []*RoutineArgument
 
-	// Information to for a remote user-defined function.
+	// Information for a remote user-defined function.
 	RemoteFunctionOptions *RemoteFunctionOptions
 
 	ReturnType *StandardSQLDataType
