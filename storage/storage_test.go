@@ -2341,6 +2341,24 @@ func TestSignedURLOptionsClone(t *testing.T) {
 	}
 }
 
+func TestParseProjectNumber(t *testing.T) {
+	for _, tst := range []struct {
+		input string
+		want  uint64
+	}{
+		{"projects/123", 123},
+		{"projects/123/foos/456", 123},
+		{"projects/abc-123/foos/456", 0},
+		{"projects/abc-123", 0},
+		{"projects/abc", 0},
+		{"projects/abc/foos", 0},
+	} {
+		if got := parseProjectNumber(tst.input); got != tst.want {
+			t.Errorf("For %q: got %v, expected %v", tst.input, got, tst.want)
+		}
+	}
+}
+
 // isZeroValue reports whether v is the zero value for its type
 // It errors if the argument is unknown
 func isZeroValue(v reflect.Value) (bool, error) {
