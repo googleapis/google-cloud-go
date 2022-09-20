@@ -1,8 +1,13 @@
 # Cloud Bigtable Go client library test proxy
 
-TODO
+The Bigtable test proxy is intended for use with the [Test Framework
+for Cloud Bigtable Client Libraries](https://github.com/googleapis/cloud-bigtable-clients-test).
 
-## Running the test suite
+See the section on
+[Test Execution](https://github.com/googleapis/cloud-bigtable-clients-test#test-execution)
+for the Test Frameworks to see usage steps.
+
+## Running the test proxy
 
 1. Open a command terminal at the root of the Bigtable client library.
 
@@ -10,4 +15,12 @@ TODO
 
 ```
 go run internal/testproxy/main.go
+```
+
+## Running the unit tests
+
+1. Run the following at the root of the test proxy folder:
+
+```
+go test -v .
 ```
