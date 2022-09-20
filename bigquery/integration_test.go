@@ -37,7 +37,6 @@ import (
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	run "cloud.google.com/go/run/apiv2"
 	"cloud.google.com/go/storage"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -56,7 +55,6 @@ var record = flag.Bool("record", false, "record RPCs")
 var (
 	client                 *Client
 	storageClient          *storage.Client
-	functionsClient        *run.ServicesClient
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
 	dataset                *Dataset
@@ -127,10 +125,6 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		functionsClient, err = run.NewServicesClient(ctx, option.WithHTTPClient(hc))
-		if err != nil {
-			log.Fatal(err)
-		}
 		connectionsClient, err = connection.NewClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
@@ -152,7 +146,6 @@ func initIntegrationTest() func() {
 		}
 		client = nil
 		storageClient = nil
-		functionsClient = nil
 		connectionsClient = nil
 		return func() {}
 
@@ -216,10 +209,6 @@ func initIntegrationTest() func() {
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
 		if err != nil {
 			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
-		}
-		functionsClient, err = run.NewServicesClient(ctx, sOpts...)
-		if err != nil {
-			log.Fatalf("run.NewService: %v", err)
 		}
 		connectionsClient, err = connection.NewClient(ctx, sOpts...)
 		if err != nil {

@@ -6,7 +6,6 @@ require (
 	cloud.google.com/go v0.104.0
 	cloud.google.com/go/datacatalog v1.5.0
 	cloud.google.com/go/iam v0.3.0
-	cloud.google.com/go/run v0.1.2
 	cloud.google.com/go/storage v1.23.0
 	github.com/google/go-cmp v0.5.8
 	github.com/googleapis/gax-go/v2 v2.5.1

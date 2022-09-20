@@ -17,13 +17,11 @@ package bigquery
 import (
 	"context"
 	"fmt"
-	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
-	"google.golang.org/genproto/googleapis/cloud/run/v2"
 )
 
 func TestIntegration_RoutineScalarUDF(t *testing.T) {
@@ -97,16 +95,9 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	functionLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us-central1")
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
-
-	functionName := fmt.Sprintf("udf-func-%s", strings.ReplaceAll(routineID, "_", "-"))
-	cleanupFunction, uri, err := createCloudFunction(ctx, t, functionLocation, functionName)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer cleanupFunction()
+	uri := "https://aaabbbccc-uc.a.run.app"
 
 	connectionLocation := fmt.Sprintf("projects/%s/locations/%s", dataset.ProjectID, "us")
 	connectionName := fmt.Sprintf("udf_conn%s", routineID)
@@ -142,47 +133,6 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 	if diff := testutil.Diff(gotMeta.RemoteFunctionOptions, remoteOpts); diff != "" {
 		t.Fatalf("RemoteFunctionOptions: -got, +want:\n%s", diff)
 	}
-}
-
-func createCloudFunction(ctx context.Context, t *testing.T, parent, functionName string) (cleanup func(), uri string, err error) {
-	fullname := fmt.Sprintf("%s/services/%s", parent, functionName)
-	createOps, err := functionsClient.CreateService(ctx, &run.CreateServiceRequest{
-		Parent:    parent,
-		ServiceId: functionName,
-		Service: &run.Service{
-			Template: &run.RevisionTemplate{
-				Containers: []*run.Container{
-					{
-						Name:  "hello",
-						Image: "gcr.io/cloudrun/hello",
-					},
-				},
-			},
-		},
-	})
-	if err != nil {
-		return
-	}
-	_, err = createOps.Wait(ctx)
-	if err != nil {
-		return
-	}
-	service, err := functionsClient.GetService(ctx, &run.GetServiceRequest{
-		Name: fullname,
-	})
-	if err != nil {
-		return
-	}
-	cleanup = func() {
-		_, err := functionsClient.DeleteService(ctx, &run.DeleteServiceRequest{
-			Name: fullname,
-		})
-		if err != nil {
-			t.Logf("could not delete cloud run service: %s", fullname)
-		}
-	}
-	uri = service.GetUri()
-	return
 }
 
 func createConnection(ctx context.Context, t *testing.T, parent, name string) (cleanup func(), connectionID string, err error) {
