@@ -487,12 +487,12 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		Status:     StatusNotMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1": {
-		ImportPath: "cloud.google.com/go/recaptchaenterprise/v2/apiv1/v2pb",
+		ImportPath: "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb",
 		Status:     StatusNotMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1": {
-		ImportPath: "cloud.google.com/go/recaptchaenterprise/apiv1beta1/recaptchaenterprisepb",
-		Status:     StatusInProgress,
+		ImportPath: "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb",
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1": {
 		ImportPath: "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb",
@@ -659,12 +659,12 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/vision/v1": {
-		ImportPath: "cloud.google.com/go/vision/v2/apiv1/v2pb",
+		ImportPath: "cloud.google.com/go/vision/v2/apiv1/visionpb",
 		Status:     StatusNotMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1": {
-		ImportPath: "cloud.google.com/go/vision/apiv1p1beta1/visionpb",
-		Status:     StatusInProgress,
+		ImportPath: "cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb",
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/vmmigration/v1": {
 		ImportPath: "cloud.google.com/go/vmmigration/apiv1/vmmigrationpb",
@@ -723,7 +723,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/devtools/cloudbuild/v1": {
-		ImportPath: "cloud.google.com/go/cloudbuild/apiv1/v2/apiv1pb",
+		ImportPath: "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb",
 		Status:     StatusNotMigrated,
 	},
 	"google.golang.org/genproto/googleapis/devtools/clouddebugger/v2": {
@@ -783,7 +783,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		Status:     StatusNotMigrated,
 	},
 	"google.golang.org/genproto/googleapis/monitoring/v3": {
-		ImportPath: "cloud.google.com/go/monitoring/apiv3/v2/apiv3pb",
+		ImportPath: "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb",
 		Status:     StatusNotMigrated,
 	},
 	"google.golang.org/genproto/googleapis/privacy/dlp/v2": {
