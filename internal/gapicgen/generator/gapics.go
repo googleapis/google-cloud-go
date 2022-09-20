@@ -245,6 +245,7 @@ func (g *GapicGenerator) addModReplaceGenproto(dir string) error {
 set -ex
 
 go mod edit -replace "google.golang.org/genproto=$GENPROTO_DIR"
+go mod tidy
 `)
 	c.Dir = dir
 	c.Env = []string{
@@ -262,7 +263,8 @@ func (g *GapicGenerator) dropModReplaceGenproto(dir string) error {
 	c := execv.Command("bash", "-c", `
 set -ex
 
-go mod edit -dropreplace "google.golang.org/genproto"
+git restore go.mod
+git restore go.sum 
 `)
 	c.Dir = dir
 	c.Env = []string{

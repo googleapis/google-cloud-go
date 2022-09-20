@@ -1,5 +1,12 @@
 # Changes
 
+## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.0.1...recaptchaenterprise/v2.1.0) (2022-09-20)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** start generating apiv1beta1 ([4aa2f48](https://github.com/googleapis/google-cloud-go/commit/4aa2f48eeb2b37124b207d3567f2b66f567797a8))
+
 ## [2.0.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.0.0...recaptchaenterprise/v2.0.1) (2022-06-16)
 
 
