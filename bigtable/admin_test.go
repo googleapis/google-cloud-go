@@ -89,12 +89,15 @@ func TestTableAdmin_UpdateTable(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.UpdateTable(context.Background(), "My-table")
+	err := c.UpdateTable(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: true})
 	if err != nil {
 		t.Fatalf("UpdateTable failed: %v", err)
 	}
 	updateTableReq := mock.updateTableReq
-	if createTableReq.TableId != "My-table" {
+	if updateTableReq.Table.Name != "My-table" {
+		t.Fatalf("UpdateTableRequest does not match: %v", err)
+	}
+	if updateTableReq.Table.DeletionProtection != true {
 		t.Fatalf("UpdateTableRequest does not match: %v", err)
 	}
 }
