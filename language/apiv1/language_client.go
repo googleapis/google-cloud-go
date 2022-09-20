@@ -193,8 +193,10 @@ func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEnt
 	return c.internalClient.AnalyzeEntities(ctx, req, opts...)
 }
 
-// AnalyzeEntitySentiment finds entities, similar to AnalyzeEntities in the text and analyzes
-// sentiment associated with each entity and its mentions.
+// AnalyzeEntitySentiment finds entities, similar to
+// AnalyzeEntities
+// in the text and analyzes sentiment associated with each entity and its
+// mentions.
 func (c *Client) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.AnalyzeEntitySentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitySentimentResponse, error) {
 	return c.internalClient.AnalyzeEntitySentiment(ctx, req, opts...)
 }

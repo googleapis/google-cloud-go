@@ -120,12 +120,13 @@ require (
 	cloud.google.com/go/workflows v1.5.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.96.0
-	google.golang.org/genproto v0.0.0-20220916172020-2692e8806bfa
+	google.golang.org/genproto v0.0.0-20220919141832-68c03719ef51
 )
 
 require (
 	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/edgecontainer v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -139,7 +140,7 @@ require (
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.48.0 // indirect
+	google.golang.org/grpc v1.49.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 )
 
@@ -388,3 +389,5 @@ replace cloud.google.com/go/beyondcorp => ../../../beyondcorp
 replace cloud.google.com/go/apigeeregistry => ../../../apigeeregistry
 
 replace cloud.google.com/go/apikeys => ../../../apikeys
+
+replace cloud.google.com/go/edgecontainer => ../../../edgecontainer
