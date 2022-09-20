@@ -217,21 +217,26 @@ type TableConf struct {
 	SplitKeys []string
 	// Families is a map from family name to GCPolicy
 	Families map[string]GCPolicy
+	// Set to true to make the table protected against data loss
+	// i.e. deleting the table, the column families in the table and the instance containing the table would be prohibited
+	DeletionProtection bool
 }
 
 // CreateTable creates a new table in the instance.
+// To enable deletion protection for a table use CreateTableFromConf function
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: false})
 }
 
 // CreatePresplitTable creates a new table in the instance.
+// To enable deletion protection for a table use CreateTableFromConf function
 // The list of row keys will be used to initially split the table into multiple tablets.
 // Given two split keys, "s1" and "s2", three tablets will be created,
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: false})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
@@ -242,6 +247,7 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		reqSplits = append(reqSplits, &btapb.CreateTableRequest_Split{Key: []byte(split)})
 	}
 	var tbl btapb.Table
+	tbl.DeletionProtection = conf.DeletionProtection
 	if conf.Families != nil {
 		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
 		for fam, policy := range conf.Families {
@@ -272,6 +278,28 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 		}},
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
+	return err
+}
+
+// UpdateTable updates a table in the instance from the given configuration.
+func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) error {
+	if conf.TableID == "" {
+		return errors.New("TableID is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	updateMask := &field_mask.FieldMask{}
+	updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+
+	req := &btapb.UpdateTableRequest{
+		Table: &btapb.Table{
+			Name:               conf.TableID,
+			DeletionProtection: conf.DeletionProtection,
+		},
+		UpdateMask: updateMask,
+	}
+	_, err := ac.tClient.UpdateTable(ctx, req)
 	return err
 }
 
@@ -306,6 +334,8 @@ type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
 	Families    []string
 	FamilyInfos []FamilyInfo
+	// When true: deleting the table, the column families in the table and the instance containing the table is prohibited
+	DeletionProtection bool
 }
 
 // FamilyInfo represents information about a column family.
