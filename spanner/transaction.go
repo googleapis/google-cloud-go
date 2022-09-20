@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -779,7 +780,7 @@ func (t *ReadOnlyTransaction) release(err error) {
 	sh := t.sh
 	t.mu.Unlock()
 	if sh != nil { // sh could be nil if t.acquire() fails.
-		if isSessionNotFoundError(err) {
+		if isSessionNotFoundError(err) || strings.Contains(err.Error(), "the client connection is closing") {
 			sh.destroy()
 		}
 		if t.singleUse {
