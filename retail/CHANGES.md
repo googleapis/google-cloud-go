@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.7.0...retail/v1.8.0) (2022-09-19)
+
+
+### Features
+
+* **retail:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.6.0...retail/v1.7.0) (2022-09-15)
 
 

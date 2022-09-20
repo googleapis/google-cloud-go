@@ -278,6 +278,15 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/bigquery/datapolicies/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/bigquery/datapolicies/apiv1beta1",
+    "description": "BigQuery Data Policy API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/datapolicies/apiv1beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/bigquery/datatransfer/apiv1": {
     "distribution_name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
     "description": "BigQuery Data Transfer API",
@@ -716,6 +725,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/domains/latest/apiv1beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/edgecontainer/apiv1": {
+    "distribution_name": "cloud.google.com/go/edgecontainer/apiv1",
+    "description": "Distributed Cloud Edge Container API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/edgecontainer/latest/apiv1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },

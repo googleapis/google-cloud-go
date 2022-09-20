@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.1.0...notebooks/v1.2.0) (2022-09-19)
+
+
+### Features
+
+* **notebooks:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.0.0...notebooks/v1.1.0) (2022-09-15)
 
 
