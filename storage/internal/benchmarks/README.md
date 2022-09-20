@@ -21,12 +21,12 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -min_samples | minimum number of objects to upload | any positive integer | `10` |
 | -max_samples | maximum number of objects to upload | any positive integer | `10 000` |
 | -gc_f | whether to force garbage collection <br> before every write or read benchmark |  `true` or `false` (present/not present) | `false` |
-| -min_size | minimum object size in kib | any positive integer | `512` |
-| -max_size | maximum object size in kib | any positive integer | `2 097 152` (2 GiB) |
+| -min_size | minimum object size in bytes | any positive integer | `512` |
+| -max_size | maximum object size in bytes | any positive integer | `2 097 152` (2 GiB) |
 | -defaults | use default settings for the client <br> (conn_pool, read, write and chunk size parameters will be ignored) | `true` or `false` | `false`
 | -conn_pool | GRPC connection pool size | any positive integer | 4 |
-| -min_cs | minimum ChunkSize in kib | any positive integer | `16 384` (16 MiB) |
-| -max_cs | maximum ChunkSize in kib | any positive integer | `16 384` (16 MiB) |
+| -min_cs | minimum ChunkSize in bytes | any positive integer | `16 384` (16 MiB) |
+| -max_cs | maximum ChunkSize in bytes | any positive integer | `16 384` (16 MiB) |
 | -q_read | download quantum | any positive integer | 1 |
 | -q_write | upload quantum | any positive integer | 1 |
 | -min_r_size | minimum read size in bytes | any positive integer | `4000` |
@@ -39,5 +39,5 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 Note: while the default read/write size for HTTP clients is 4Kb 
 (the default for this benchmarking), the default for GRPC is 32Kb.
 If you want to capture performance using the defaults for GRPC run the script 
-separately setting the read and write sizes to 32KB, or run with the `defaults`
+separately setting the read and write sizes to 32Kb, or run with the `defaults`
 parameter set.
