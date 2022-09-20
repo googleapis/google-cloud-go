@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.0.0...binaryauthorization/v1.1.0) (2022-09-19)
+
+
+### Features
+
+* **binaryauthorization:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.6.0...binaryauthorization/v1.0.0) (2022-06-29)
 
 

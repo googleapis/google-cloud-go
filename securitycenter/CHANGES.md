@@ -1,5 +1,22 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.12.0...securitycenter/v1.13.0) (2022-09-19)
+
+
+### Features
+
+* **securitycenter:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.11.0...securitycenter/v1.12.0) (2022-09-15)
+
+
+### Features
+
+* **securitycenter/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter/apiv1p1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter/settings/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter:** Added parent display name i.e. source display name for a finding as one of the finding attributes ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.10.0...securitycenter/v1.11.0) (2022-09-06)
 
 

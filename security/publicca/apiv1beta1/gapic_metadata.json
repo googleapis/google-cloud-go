@@ -16,6 +16,16 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "PublicCertificateAuthorityClient",
+          "rpcs": {
+            "CreateExternalAccountKey": {
+              "methods": [
+                "CreateExternalAccountKey"
+              ]
+            }
+          }
         }
       }
     }
