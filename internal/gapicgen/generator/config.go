@@ -1754,6 +1754,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Transports:            []string{"grpc", "rest"},
 		ReleaseLevel:          "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/bigquery/analyticshub/v1",
+		Pkg:                   "analyticshub",
+		ImportPath:            "cloud.google.com/go/bigquery/analyticshub/apiv1",
+		GRPCServiceConfigPath: "analyticshub_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "analyticshub_v1.yaml",
+		Transports:            []string{"grpc", "rest"},
+		// GA after 2022/10/20
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
