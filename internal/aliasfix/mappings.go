@@ -554,10 +554,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/secretmanager/apiv1/secretmanagerpb",
 		Status:     StatusNotMigrated,
 	},
-	"google.golang.org/genproto/googleapis/cloud/secrets/v1beta1": {
-		ImportPath: "cloud.google.com/go/secretmanager/apiv1beta1/secretmanagerpb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/cloud/security/privateca/v1": {
 		ImportPath: "cloud.google.com/go/security/privateca/apiv1/privatecapb",
 		Status:     StatusNotMigrated,
