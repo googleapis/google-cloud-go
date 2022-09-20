@@ -343,8 +343,6 @@ func (s *session) destroyWithContext(ctx context.Context, isExpire bool) bool {
 	}
 	// Unregister s from healthcheck queue.
 	s.pool.hc.unregister(s)
-	// Remove s from Cloud Spanner service.
-	s.delete(ctx)
 	return true
 }
 

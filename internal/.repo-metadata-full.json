@@ -278,6 +278,15 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/bigquery/datapolicies/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/bigquery/datapolicies/apiv1beta1",
+    "description": "BigQuery Data Policy API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/datapolicies/apiv1beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/bigquery/datatransfer/apiv1": {
     "distribution_name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
     "description": "BigQuery Data Transfer API",
@@ -716,6 +725,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/domains/latest/apiv1beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/edgecontainer/apiv1": {
+    "distribution_name": "cloud.google.com/go/edgecontainer/apiv1",
+    "description": "Distributed Cloud Edge Container API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/edgecontainer/latest/apiv1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
@@ -1322,15 +1340,6 @@
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/recaptchaenterprise/apiv1beta1": {
-    "distribution_name": "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
-    "description": "reCAPTCHA Enterprise API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/recaptchaenterprise/latest/apiv1beta1",
-    "release_level": "beta",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/recaptchaenterprise/v2/apiv1": {
     "distribution_name": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
     "description": "reCAPTCHA Enterprise API",
@@ -1338,6 +1347,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/recaptchaenterprise/v2/latest/apiv1",
     "release_level": "ga",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
+    "description": "reCAPTCHA Enterprise API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/recaptchaenterprise/v2/latest/apiv1beta1",
+    "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/recommendationengine/apiv1beta1": {
@@ -1808,15 +1826,6 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/vision/apiv1p1beta1": {
-    "distribution_name": "cloud.google.com/go/vision/apiv1p1beta1",
-    "description": "Cloud Vision API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/latest/apiv1p1beta1",
-    "release_level": "beta",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/vision/v2/apiv1": {
     "distribution_name": "cloud.google.com/go/vision/v2/apiv1",
     "description": "Cloud Vision API",
@@ -1824,6 +1833,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/v2/latest/apiv1",
     "release_level": "ga",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/vision/v2/apiv1p1beta1": {
+    "distribution_name": "cloud.google.com/go/vision/v2/apiv1p1beta1",
+    "description": "Cloud Vision API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/v2/latest/apiv1p1beta1",
+    "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/vmmigration/apiv1": {

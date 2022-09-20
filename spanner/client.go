@@ -359,11 +359,6 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		sh  *sessionHandle
 		err error
 	)
-	defer func() {
-		if err != nil && sh != nil {
-			s.delete(ctx)
-		}
-	}()
 
 	// Create session.
 	s, err = c.sc.createSession(ctx)
