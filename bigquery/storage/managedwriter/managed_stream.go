@@ -468,15 +468,16 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 
 // recvProcessor is used to propagate append responses back up with the originating write requests in a goroutine.
 //
-// The receive processor only deals with a single instance of a connection/channel, and thus should never interact
-// with the mutex lock.
+// The receive processor is only responsible for a single bidi channel/channel.  As new connections are established,
+// each gets it's own instance of a processor.
+//
+// The ManagedStream reference is used for performing re-enqueing of failed writes.
 func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
-	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
-	// ensure that pending writes get acknowledged with a terminal state.
 	for {
 		select {
 		case <-ms.ctx.Done():
-			// Context is done, so we're not going to get further updates.  Mark all work failed with the context error.
+			// Context is done, so we're not going to get further updates.  Mark all work left in the channel
+			// with the context error.  We don't attempt to re-enqueue in this case.
 			for {
 				pw, ok := <-ch
 				if !ok {
@@ -492,29 +493,31 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
-				// Evaluate and possibly retry based on the receive error.
-				ms.processRetry(nextWrite, err)
-				// We're done with the write regardless of outcome.
+				// Evaluate the error from the receive and possibly retry.
+				ms.processRetry(nextWrite, nil, err)
+				// We're done with the write regardless of outcome, continue onto the
+				// next element.
 				continue
 			}
-			// We received a response (it may contain an error).
+			// Record that we did in fact get a response from the backend.
 			recordStat(ms.ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
-				// Mark that we received an error in instrumentation.
+				// The response from the backend embedded a status error.  We record that the error
+				// occurred, and tag it based on the response code of the status.
 				if tagCtx, tagErr := tag.New(ms.ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String())); tagErr == nil {
 					recordStat(tagCtx, AppendResponseErrors, 1)
 				}
 				respErr := grpcstatus.ErrorProto(status)
 				if ms.shouldRetryAppend(respErr, nextWrite.attemptCount) {
-					// The response had an error attached and it should be retried.
-					ms.processRetry(nextWrite, respErr)
-					// We're done with the write regardless of outcome.
+					// We use the status error to evaluate and possible re-enqueue the write.
+					ms.processRetry(nextWrite, resp, respErr)
+					// We're done with the write regardless of outcome, continue on to the next
+					// element.
 					continue
 				}
 			}
-			// We either had no error in the response, or should not have retried.
-			// mark the write done.
+			// We had no error in the receive or in the response.  Mark the write done.
 			nextWrite.markDone(resp, nil, ms.fc)
 		}
 	}
@@ -522,10 +525,10 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 
 // processRetry is responsible for evaluating and re-enqueing an append.
 // If the append is not retried, it is marked complete.
-func (ms *ManagedStream) processRetry(pw *pendingWrite, initialErr error) {
+func (ms *ManagedStream) processRetry(pw *pendingWrite, initialResp *storagepb.AppendRowsResponse, initialErr error) {
 	if ms.retry == nil {
 		// No retries.  Mark the write done and return.
-		pw.markDone(nil, initialErr, ms.fc)
+		pw.markDone(initialResp, initialErr, ms.fc)
 		return
 	}
 	err := initialErr
@@ -533,15 +536,14 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, initialErr error) {
 		pause, shouldRetry := ms.retry.RetryAppend(err, pw.attemptCount)
 		if !shouldRetry {
 			// Should not attempt to re-append.
-			pw.markDone(nil, err, ms.fc)
+			pw.markDone(initialResp, err, ms.fc)
 			return
 		}
-		// we use the pause the slow the receiver loop as a whole.
 		time.Sleep(pause)
 		pw.attemptCount = pw.attemptCount + 1
 		err = ms.appendWithRetry(pw)
 		if err != nil {
-			// Got a failure, send it through the loop again.
+			// Re-enqueue failed, send it through the loop again.
 			continue
 		}
 		// Break out of the loop, we were successful and the write has been
@@ -549,7 +551,6 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, initialErr error) {
 		recordStat(ms.ctx, AppendRetryCount, 1)
 		break
 	}
-
 }
 
 func (ms *ManagedStream) shouldRetryAppend(err error, attemptCount int) bool {
