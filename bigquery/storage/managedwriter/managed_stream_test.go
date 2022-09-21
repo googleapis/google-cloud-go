@@ -492,15 +492,19 @@ func TestOpenCallOptionPropagation(t *testing.T) {
 	ms.openWithRetry()
 }
 
+// This test evaluates how the receiver deals with a pending write.
 func TestManagedStream_Receiver(t *testing.T) {
 
+	var customErr = fmt.Errorf("foo")
+
 	testCases := []struct {
-		desc             string
+		description      string
 		recvResp         []*testRecvResponse
+		wantFinalErr     error
 		wantRequestCount int
 	}{
 		{
-			desc: "no errors",
+			description: "no errors",
 			recvResp: []*testRecvResponse{
 				{
 					resp: &storagepb.AppendRowsResponse{},
@@ -510,7 +514,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 			wantRequestCount: 0,
 		},
 		{
-			desc: "recv err w/io.EOF",
+			description: "recv err w/io.EOF",
 			recvResp: []*testRecvResponse{
 				{
 					resp: nil,
@@ -524,7 +528,38 @@ func TestManagedStream_Receiver(t *testing.T) {
 			wantRequestCount: 1,
 		},
 		{
-			desc: "resp embeds Unavailable",
+			description: "recv err retried and then failed",
+			recvResp: []*testRecvResponse{
+				{
+					resp: nil,
+					err:  io.EOF,
+				},
+				{
+					resp: nil,
+					err:  customErr,
+				},
+			},
+			wantRequestCount: 1,
+			wantFinalErr:     customErr,
+		},
+		{
+			description: "recv err w/ custom error",
+			recvResp: []*testRecvResponse{
+				{
+					resp: nil,
+					err:  customErr,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantRequestCount: 0,
+			wantFinalErr:     customErr,
+		},
+
+		{
+			description: "resp embeds Unavailable",
 			recvResp: []*testRecvResponse{
 				{
 					resp: &storagepb.AppendRowsResponse{
@@ -545,7 +580,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 			wantRequestCount: 1,
 		},
 		{
-			desc: "resp embeds generic ResourceExhausted",
+			description: "resp embeds generic ResourceExhausted",
 			recvResp: []*testRecvResponse{
 				{
 					resp: &storagepb.AppendRowsResponse{
@@ -562,7 +597,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 			wantRequestCount: 0,
 		},
 		{
-			desc: "resp embeds throughput ResourceExhausted",
+			description: "resp embeds throughput ResourceExhausted",
 			recvResp: []*testRecvResponse{
 				{
 					resp: &storagepb.AppendRowsResponse{
@@ -581,6 +616,25 @@ func TestManagedStream_Receiver(t *testing.T) {
 				},
 			},
 			wantRequestCount: 1,
+		},
+		{
+			description: "retriable failures until max attempts",
+			recvResp: []*testRecvResponse{
+				{
+					err: io.EOF,
+				},
+				{
+					err: io.EOF,
+				},
+				{
+					err: io.EOF,
+				},
+				{
+					err: io.EOF,
+				},
+			},
+			wantRequestCount: 3,
+			wantFinalErr:     io.EOF,
 		},
 	}
 
@@ -607,14 +661,22 @@ func TestManagedStream_Receiver(t *testing.T) {
 			fc:             newFlowController(0, 0),
 			retry:          newTestRetryer(),
 		}
+		// use openWithRetry to get the reference to the channel and add our test pending write.
 		_, ch, _ := ms.openWithRetry()
-		ch <- newPendingWrite(ctx, [][]byte{[]byte("foo")})
-		// We sleep to allow the retries to be processed.  I'm not enamored of this, but there's not
-		// currently a way to check on the status of the goroutine.
-		time.Sleep(500 * time.Millisecond)
-		// We should be done.
+		pw := newPendingWrite(ctx, [][]byte{[]byte("foo")})
+		ch <- pw
+
+		// Wait until the write is marked done.
+		<-pw.result.Ready()
+
+		// Check retry count is as expected.
 		if gotRequestCount := len(testArc.requests); gotRequestCount != tc.wantRequestCount {
-			t.Errorf("%s: got %d appends, want %d appends", tc.desc, gotRequestCount, tc.wantRequestCount)
+			t.Errorf("%s: got %d retries, want %d retries", tc.description, gotRequestCount, tc.wantRequestCount)
+		}
+
+		// Check that the write got the expected final result.
+		if gotFinalErr := pw.result.err; !errors.Is(gotFinalErr, tc.wantFinalErr) {
+			t.Errorf("%s: got final error %v, wanted final error %v", tc.description, gotFinalErr, tc.wantFinalErr)
 		}
 		ms.Close()
 		cancel()
