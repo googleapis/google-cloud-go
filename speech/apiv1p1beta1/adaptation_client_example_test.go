@@ -20,8 +20,8 @@ import (
 	"context"
 
 	speech "cloud.google.com/go/speech/apiv1p1beta1"
+	speechpb "cloud.google.com/go/speech/apiv1p1beta1/speechpb"
 	"google.golang.org/api/iterator"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
 )
 
 func ExampleNewAdaptationClient() {
@@ -73,7 +73,7 @@ func ExampleAdaptationClient_CreatePhraseSet() {
 
 	req := &speechpb.CreatePhraseSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#CreatePhraseSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#CreatePhraseSetRequest.
 	}
 	resp, err := c.CreatePhraseSet(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExampleAdaptationClient_GetPhraseSet() {
 
 	req := &speechpb.GetPhraseSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#GetPhraseSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#GetPhraseSetRequest.
 	}
 	resp, err := c.GetPhraseSet(ctx, req)
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleAdaptationClient_ListPhraseSet() {
 
 	req := &speechpb.ListPhraseSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#ListPhraseSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#ListPhraseSetRequest.
 	}
 	it := c.ListPhraseSet(ctx, req)
 	for {
@@ -154,7 +154,7 @@ func ExampleAdaptationClient_UpdatePhraseSet() {
 
 	req := &speechpb.UpdatePhraseSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#UpdatePhraseSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#UpdatePhraseSetRequest.
 	}
 	resp, err := c.UpdatePhraseSet(ctx, req)
 	if err != nil {
@@ -179,7 +179,7 @@ func ExampleAdaptationClient_DeletePhraseSet() {
 
 	req := &speechpb.DeletePhraseSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#DeletePhraseSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#DeletePhraseSetRequest.
 	}
 	err = c.DeletePhraseSet(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleAdaptationClient_CreateCustomClass() {
 
 	req := &speechpb.CreateCustomClassRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#CreateCustomClassRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#CreateCustomClassRequest.
 	}
 	resp, err := c.CreateCustomClass(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleAdaptationClient_GetCustomClass() {
 
 	req := &speechpb.GetCustomClassRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#GetCustomClassRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#GetCustomClassRequest.
 	}
 	resp, err := c.GetCustomClass(ctx, req)
 	if err != nil {
@@ -252,7 +252,7 @@ func ExampleAdaptationClient_ListCustomClasses() {
 
 	req := &speechpb.ListCustomClassesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#ListCustomClassesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#ListCustomClassesRequest.
 	}
 	it := c.ListCustomClasses(ctx, req)
 	for {
@@ -283,7 +283,7 @@ func ExampleAdaptationClient_UpdateCustomClass() {
 
 	req := &speechpb.UpdateCustomClassRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#UpdateCustomClassRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#UpdateCustomClassRequest.
 	}
 	resp, err := c.UpdateCustomClass(ctx, req)
 	if err != nil {
@@ -308,7 +308,7 @@ func ExampleAdaptationClient_DeleteCustomClass() {
 
 	req := &speechpb.DeleteCustomClassRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#DeleteCustomClassRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#DeleteCustomClassRequest.
 	}
 	err = c.DeleteCustomClass(ctx, req)
 	if err != nil {

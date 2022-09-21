@@ -22,7 +22,7 @@ import (
 	"context"
 
 	domains "cloud.google.com/go/domains/apiv1beta1"
-	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
+	"cloud.google.com/go/domains/apiv1beta1/domainspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &domainspb.RetrieveTransferParametersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveTransferParametersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RetrieveTransferParametersRequest.
 	}
 	resp, err := c.RetrieveTransferParameters(ctx, req)
 	if err != nil {
