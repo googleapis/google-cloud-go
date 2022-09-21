@@ -18,10 +18,10 @@ import (
 	"context"
 	"errors"
 	"io"
+	"math/rand"
 	"strings"
 	"time"
 
-	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -32,34 +32,41 @@ var (
 
 func newDefaultRetryer() *defaultRetryer {
 	return &defaultRetryer{
-		bigBo: gax.Backoff{
-			Initial:    2 * time.Second,
-			Multiplier: 5,
-			Max:        5 * time.Minute,
-		},
+		r:          rand.New(rand.NewSource(time.Now().UnixNano())),
+		minBackoff: 50 * time.Millisecond,
+		jitter:     time.Second,
+		maxRetries: defaultAppendRetries,
 	}
 }
 
 // a retryer that doesn't back off realistically, useful for testing without a
 // bunch of extra wait time.
 func newTestRetryer() *defaultRetryer {
-	return &defaultRetryer{
-		bo: gax.Backoff{
-			Initial: time.Millisecond,
-			Max:     time.Millisecond,
-		},
-		bigBo: gax.Backoff{
-			Initial: time.Millisecond,
-			Max:     time.Millisecond,
-		},
-	}
+	r := newDefaultRetryer()
+	r.jitter = time.Nanosecond
+	return r
 }
 
-// TODO: define a more correct backoff heuristic for stream-based retries.  The default gax
-// is insufficient for this case.
+// defaultRetryer is a stateless retry, unlike a gax retryer which is designed
+// for a retrying a single unary operation.  This retryer is used for retrying
+// appends, which are messages enqueued into a bidi stream.
 type defaultRetryer struct {
-	bo    gax.Backoff
-	bigBo gax.Backoff // For more aggressive backoff, such as throughput quota
+	r          *rand.Rand
+	minBackoff time.Duration
+	jitter     time.Duration
+	maxRetries int
+}
+
+func (dr *defaultRetryer) Pause(severe bool) time.Duration {
+	jitter := dr.jitter.Nanoseconds()
+	if jitter > 0 {
+		jitter = dr.r.Int63n(jitter)
+	}
+	pause := dr.minBackoff.Nanoseconds() + jitter
+	if severe {
+		pause = 10 * pause
+	}
+	return time.Duration(pause)
 }
 
 func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
@@ -69,11 +76,11 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	if !ok {
 		// Treat context errors as non-retriable.
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return r.bo.Pause(), false
+			return r.Pause(false), false
 		}
 		// EOF can happen in the case of connection close.
 		if errors.Is(err, io.EOF) {
-			return r.bo.Pause(), true
+			return r.Pause(false), true
 		}
 		// Any other non-status based errors are not retried.
 		return 0, false
@@ -84,12 +91,12 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 		codes.DeadlineExceeded,
 		codes.Internal,
 		codes.Unavailable:
-		return r.bo.Pause(), true
+		return r.Pause(false), true
 	case codes.ResourceExhausted:
 		if strings.HasPrefix(s.Message(), "Exceeds 'AppendRows throughput' quota") {
 			// Note: internal b/246031522 opened to give this a structured error
 			// and avoid string parsing.  Should be a QuotaFailure or similar.
-			return r.bigBo.Pause(), true // more aggressive backoff
+			return r.Pause(true), true // more aggressive backoff
 		}
 	}
 	return 0, false
@@ -98,7 +105,7 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 // RetryAppend is a variation of the retry predicate that also bounds retries to a finite number of attempts.
 func (r *defaultRetryer) RetryAppend(err error, attemptCount int) (pause time.Duration, shouldRetry bool) {
 
-	if attemptCount > defaultAppendRetries {
+	if attemptCount > r.maxRetries {
 		return 0, false // exceeded maximum retries.
 	}
 	return r.Retry(err)

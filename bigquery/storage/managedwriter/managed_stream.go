@@ -225,7 +225,10 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 //
 // Only getStream() should call this.
 func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
-	r := defaultRetryer{}
+	r := ms.retry
+	if r == nil {
+		r = newDefaultRetryer()
+	}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
 		streamID := ""
@@ -354,10 +357,6 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 	for _, opt := range opts {
 		opt.Resolve(&settings)
 	}
-	var r gax.Retryer = &defaultRetryer{}
-	if settings.Retry != nil {
-		r = settings.Retry()
-	}
 
 	for {
 		appendErr := ms.lockingAppend(pw)
@@ -368,7 +367,7 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 				ctx, _ := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String()))
 				recordStat(ctx, AppendRequestErrors, 1)
 			}
-			bo, shouldRetry := r.Retry(appendErr)
+			bo, shouldRetry := ms.retry.Retry(appendErr)
 			if shouldRetry {
 				if err := gax.Sleep(ms.ctx, bo); err != nil {
 					return err

@@ -75,6 +75,7 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 				}
 				return nil, err
 			},
+			retry: newTestRetryer(),
 		}
 		arc, ch, err := ms.openWithRetry()
 		if tc.wantFail && err == nil {
