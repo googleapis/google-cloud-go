@@ -59,7 +59,7 @@
 //
 //	req := &speechpb.RecognizeRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#RecognizeRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1p1beta1/speechpb#RecognizeRequest.
 //	}
 //	resp, err := c.Recognize(ctx, req)
 //	if err != nil {

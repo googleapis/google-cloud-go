@@ -20,8 +20,8 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1beta3"
+	documentaipb "cloud.google.com/go/documentai/apiv1beta3/documentaipb"
 	"google.golang.org/api/iterator"
-	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1beta3"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -75,7 +75,7 @@ func ExampleDocumentProcessorClient_ProcessDocument() {
 
 	req := &documentaipb.ProcessRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#ProcessRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#ProcessRequest.
 	}
 	resp, err := c.ProcessDocument(ctx, req)
 	if err != nil {
@@ -100,7 +100,7 @@ func ExampleDocumentProcessorClient_BatchProcessDocuments() {
 
 	req := &documentaipb.BatchProcessRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#BatchProcessRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#BatchProcessRequest.
 	}
 	op, err := c.BatchProcessDocuments(ctx, req)
 	if err != nil {
@@ -130,7 +130,7 @@ func ExampleDocumentProcessorClient_FetchProcessorTypes() {
 
 	req := &documentaipb.FetchProcessorTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#FetchProcessorTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#FetchProcessorTypesRequest.
 	}
 	resp, err := c.FetchProcessorTypes(ctx, req)
 	if err != nil {
@@ -155,7 +155,7 @@ func ExampleDocumentProcessorClient_ListProcessorTypes() {
 
 	req := &documentaipb.ListProcessorTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#ListProcessorTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#ListProcessorTypesRequest.
 	}
 	it := c.ListProcessorTypes(ctx, req)
 	for {
@@ -186,7 +186,7 @@ func ExampleDocumentProcessorClient_ListProcessors() {
 
 	req := &documentaipb.ListProcessorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#ListProcessorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#ListProcessorsRequest.
 	}
 	it := c.ListProcessors(ctx, req)
 	for {
@@ -217,7 +217,7 @@ func ExampleDocumentProcessorClient_GetProcessor() {
 
 	req := &documentaipb.GetProcessorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#GetProcessorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#GetProcessorRequest.
 	}
 	resp, err := c.GetProcessor(ctx, req)
 	if err != nil {
@@ -242,7 +242,7 @@ func ExampleDocumentProcessorClient_GetProcessorVersion() {
 
 	req := &documentaipb.GetProcessorVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#GetProcessorVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#GetProcessorVersionRequest.
 	}
 	resp, err := c.GetProcessorVersion(ctx, req)
 	if err != nil {
@@ -267,7 +267,7 @@ func ExampleDocumentProcessorClient_ListProcessorVersions() {
 
 	req := &documentaipb.ListProcessorVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#ListProcessorVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#ListProcessorVersionsRequest.
 	}
 	it := c.ListProcessorVersions(ctx, req)
 	for {
@@ -298,7 +298,7 @@ func ExampleDocumentProcessorClient_DeleteProcessorVersion() {
 
 	req := &documentaipb.DeleteProcessorVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DeleteProcessorVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#DeleteProcessorVersionRequest.
 	}
 	op, err := c.DeleteProcessorVersion(ctx, req)
 	if err != nil {
@@ -326,7 +326,7 @@ func ExampleDocumentProcessorClient_DeployProcessorVersion() {
 
 	req := &documentaipb.DeployProcessorVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DeployProcessorVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#DeployProcessorVersionRequest.
 	}
 	op, err := c.DeployProcessorVersion(ctx, req)
 	if err != nil {
@@ -356,7 +356,7 @@ func ExampleDocumentProcessorClient_UndeployProcessorVersion() {
 
 	req := &documentaipb.UndeployProcessorVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#UndeployProcessorVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#UndeployProcessorVersionRequest.
 	}
 	op, err := c.UndeployProcessorVersion(ctx, req)
 	if err != nil {
@@ -386,7 +386,7 @@ func ExampleDocumentProcessorClient_CreateProcessor() {
 
 	req := &documentaipb.CreateProcessorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#CreateProcessorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#CreateProcessorRequest.
 	}
 	resp, err := c.CreateProcessor(ctx, req)
 	if err != nil {
@@ -411,7 +411,7 @@ func ExampleDocumentProcessorClient_DeleteProcessor() {
 
 	req := &documentaipb.DeleteProcessorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DeleteProcessorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#DeleteProcessorRequest.
 	}
 	op, err := c.DeleteProcessor(ctx, req)
 	if err != nil {
@@ -439,7 +439,7 @@ func ExampleDocumentProcessorClient_EnableProcessor() {
 
 	req := &documentaipb.EnableProcessorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#EnableProcessorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#EnableProcessorRequest.
 	}
 	op, err := c.EnableProcessor(ctx, req)
 	if err != nil {
@@ -469,7 +469,7 @@ func ExampleDocumentProcessorClient_DisableProcessor() {
 
 	req := &documentaipb.DisableProcessorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DisableProcessorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#DisableProcessorRequest.
 	}
 	op, err := c.DisableProcessor(ctx, req)
 	if err != nil {
@@ -499,7 +499,7 @@ func ExampleDocumentProcessorClient_SetDefaultProcessorVersion() {
 
 	req := &documentaipb.SetDefaultProcessorVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#SetDefaultProcessorVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#SetDefaultProcessorVersionRequest.
 	}
 	op, err := c.SetDefaultProcessorVersion(ctx, req)
 	if err != nil {
@@ -529,7 +529,7 @@ func ExampleDocumentProcessorClient_ReviewDocument() {
 
 	req := &documentaipb.ReviewDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#ReviewDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#ReviewDocumentRequest.
 	}
 	op, err := c.ReviewDocument(ctx, req)
 	if err != nil {

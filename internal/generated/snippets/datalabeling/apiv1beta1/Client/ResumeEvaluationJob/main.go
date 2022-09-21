@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
-	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
+	"cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datalabelingpb.ResumeEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ResumeEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ResumeEvaluationJobRequest.
 	}
 	err = c.ResumeEvaluationJob(ctx, req)
 	if err != nil {

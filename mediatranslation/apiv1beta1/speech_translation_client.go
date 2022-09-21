@@ -22,12 +22,12 @@ import (
 	"math"
 	"net/http"
 
+	mediatranslationpb "cloud.google.com/go/mediatranslation/apiv1beta1/mediatranslationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	mediatranslationpb "google.golang.org/genproto/googleapis/cloud/mediatranslation/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
