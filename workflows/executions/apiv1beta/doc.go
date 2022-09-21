@@ -59,7 +59,7 @@
 //
 //	req := &executionspb.ListExecutionsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#ListExecutionsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1beta/executionspb#ListExecutionsRequest.
 //	}
 //	it := c.ListExecutions(ctx, req)
 //	for {

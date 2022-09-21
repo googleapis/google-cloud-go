@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
-	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
+	"cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datalabelingpb.CreateAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateAnnotationSpecSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateAnnotationSpecSetRequest.
 	}
 	resp, err := c.CreateAnnotationSpecSet(ctx, req)
 	if err != nil {

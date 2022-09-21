@@ -20,8 +20,8 @@ import (
 	"context"
 
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
+	gkehubpb "cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
 	"google.golang.org/api/iterator"
-	gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -76,7 +76,7 @@ func ExampleGkeHubMembershipClient_ListMemberships() {
 
 	req := &gkehubpb.ListMembershipsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ListMembershipsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#ListMembershipsRequest.
 	}
 	it := c.ListMemberships(ctx, req)
 	for {
@@ -107,7 +107,7 @@ func ExampleGkeHubMembershipClient_GetMembership() {
 
 	req := &gkehubpb.GetMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GetMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#GetMembershipRequest.
 	}
 	resp, err := c.GetMembership(ctx, req)
 	if err != nil {
@@ -132,7 +132,7 @@ func ExampleGkeHubMembershipClient_CreateMembership() {
 
 	req := &gkehubpb.CreateMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#CreateMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#CreateMembershipRequest.
 	}
 	op, err := c.CreateMembership(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleGkeHubMembershipClient_DeleteMembership() {
 
 	req := &gkehubpb.DeleteMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#DeleteMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#DeleteMembershipRequest.
 	}
 	op, err := c.DeleteMembership(ctx, req)
 	if err != nil {
@@ -190,7 +190,7 @@ func ExampleGkeHubMembershipClient_UpdateMembership() {
 
 	req := &gkehubpb.UpdateMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#UpdateMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#UpdateMembershipRequest.
 	}
 	op, err := c.UpdateMembership(ctx, req)
 	if err != nil {
@@ -220,7 +220,7 @@ func ExampleGkeHubMembershipClient_GenerateConnectManifest() {
 
 	req := &gkehubpb.GenerateConnectManifestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GenerateConnectManifestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#GenerateConnectManifestRequest.
 	}
 	resp, err := c.GenerateConnectManifest(ctx, req)
 	if err != nil {
@@ -245,7 +245,7 @@ func ExampleGkeHubMembershipClient_ValidateExclusivity() {
 
 	req := &gkehubpb.ValidateExclusivityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ValidateExclusivityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#ValidateExclusivityRequest.
 	}
 	resp, err := c.ValidateExclusivity(ctx, req)
 	if err != nil {
@@ -270,7 +270,7 @@ func ExampleGkeHubMembershipClient_GenerateExclusivityManifest() {
 
 	req := &gkehubpb.GenerateExclusivityManifestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GenerateExclusivityManifestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#GenerateExclusivityManifestRequest.
 	}
 	resp, err := c.GenerateExclusivityManifest(ctx, req)
 	if err != nil {

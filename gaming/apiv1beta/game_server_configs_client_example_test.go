@@ -20,8 +20,8 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1beta"
+	gamingpb "cloud.google.com/go/gaming/apiv1beta/gamingpb"
 	"google.golang.org/api/iterator"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
 )
 
 func ExampleNewGameServerConfigsClient() {
@@ -73,7 +73,7 @@ func ExampleGameServerConfigsClient_ListGameServerConfigs() {
 
 	req := &gamingpb.ListGameServerConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#ListGameServerConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#ListGameServerConfigsRequest.
 	}
 	it := c.ListGameServerConfigs(ctx, req)
 	for {
@@ -104,7 +104,7 @@ func ExampleGameServerConfigsClient_GetGameServerConfig() {
 
 	req := &gamingpb.GetGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#GetGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#GetGameServerConfigRequest.
 	}
 	resp, err := c.GetGameServerConfig(ctx, req)
 	if err != nil {
@@ -129,7 +129,7 @@ func ExampleGameServerConfigsClient_CreateGameServerConfig() {
 
 	req := &gamingpb.CreateGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#CreateGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#CreateGameServerConfigRequest.
 	}
 	op, err := c.CreateGameServerConfig(ctx, req)
 	if err != nil {
@@ -159,7 +159,7 @@ func ExampleGameServerConfigsClient_DeleteGameServerConfig() {
 
 	req := &gamingpb.DeleteGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#DeleteGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#DeleteGameServerConfigRequest.
 	}
 	op, err := c.DeleteGameServerConfig(ctx, req)
 	if err != nil {

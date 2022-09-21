@@ -60,7 +60,7 @@
 //
 //	req := &networkconnectivitypb.ListHubsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#ListHubsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#ListHubsRequest.
 //	}
 //	it := c.ListHubs(ctx, req)
 //	for {

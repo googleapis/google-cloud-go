@@ -20,7 +20,7 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func ExampleNewSnapshotsV1Beta3Client() {
@@ -72,7 +72,7 @@ func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
 
 	req := &dataflowpb.GetSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetSnapshotRequest.
 	}
 	resp, err := c.GetSnapshot(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 
 	req := &dataflowpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#DeleteSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#DeleteSnapshotRequest.
 	}
 	resp, err := c.DeleteSnapshot(ctx, req)
 	if err != nil {
@@ -122,7 +122,7 @@ func ExampleSnapshotsV1Beta3Client_ListSnapshots() {
 
 	req := &dataflowpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#ListSnapshotsRequest.
 	}
 	resp, err := c.ListSnapshots(ctx, req)
 	if err != nil {
