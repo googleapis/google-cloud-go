@@ -55,6 +55,8 @@ func newTestRetryer() *defaultRetryer {
 	}
 }
 
+// TODO: define a more correct backoff heuristic for stream-based retries.  The default gax
+// is insufficient for this case.
 type defaultRetryer struct {
 	bo    gax.Backoff
 	bigBo gax.Backoff // For more aggressive backoff, such as throughput quota

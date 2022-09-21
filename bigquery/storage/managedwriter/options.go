@@ -98,11 +98,12 @@ func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	}
 }
 
-// WithAppendRowsCallOption is used to supply additional call options to the ManagedStream when
-// it opens the underlying append stream.
-func WithExperimentalRetry(o gax.CallOption) WriterOption {
+// DisableWriteRetries disables the logic for automatically re-enqueuing failed writes.
+func DisableWriteRetries(disable bool) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.retry = newDefaultRetryer()
+		if disable {
+			ms.retry = nil
+		}
 	}
 }
 
