@@ -22,8 +22,6 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/bigquery/storage/managedwriter/adapt"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
-	"github.com/googleapis/gax-go/v2/apierror"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -390,6 +388,8 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerArraySum("enum_repeated", 7, 1),
 			},
 		},
+		/* skipping this test case until all test projects have the feature enabled.
+		   Tracked internally via b/248113818
 		{
 			description: "proto2 w/column annotations",
 			tableSchema: testdata.ValidationColumnAnnotations,
@@ -405,6 +405,7 @@ func TestValidation_Values(t *testing.T) {
 				withStringValueCount("特別コラム", "second_val", 1),
 			},
 		},
+		*/
 	}
 
 	// Common setup.
@@ -460,17 +461,6 @@ func TestValidation_Values(t *testing.T) {
 		}
 		if _, err = result.GetResult(ctx); err != nil {
 			t.Errorf("%s append response error: %v", tc.description, err)
-			if apiErr, ok := apierror.FromError(err); ok {
-				t.Errorf("dbg: %+v", apiErr.Details().DebugInfo)
-				// We now have an instance of APIError, which directly exposes more specific
-				// details about multiple failure conditions include transport-level errors.
-				storageErr := &storagepb.StorageError{}
-				if e := apiErr.Details().ExtractProtoMessage(storageErr); e == nil {
-					// storageErr now contains service-specific information about the error.
-					t.Errorf("Received service-specific error code %s", storageErr.GetCode().String())
-					t.Errorf("Msg: %s", storageErr.GetErrorMessage())
-				}
-			}
 			continue
 		}
 		// Validate table.
