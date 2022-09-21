@@ -60,7 +60,7 @@
 //
 //	req := &securitycenterpb.CreateSourceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#CreateSourceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1beta1/securitycenterpb#CreateSourceRequest.
 //	}
 //	resp, err := c.CreateSource(ctx, req)
 //	if err != nil {

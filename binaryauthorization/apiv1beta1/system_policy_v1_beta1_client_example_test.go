@@ -20,7 +20,7 @@ import (
 	"context"
 
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1beta1"
-	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
+	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb"
 )
 
 func ExampleNewSystemPolicyV1Beta1Client() {
@@ -72,7 +72,7 @@ func ExampleSystemPolicyV1Beta1Client_GetSystemPolicy() {
 
 	req := &binaryauthorizationpb.GetSystemPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1#GetSystemPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#GetSystemPolicyRequest.
 	}
 	resp, err := c.GetSystemPolicy(ctx, req)
 	if err != nil {

@@ -22,8 +22,8 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
+	"cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 	"google.golang.org/api/iterator"
-	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &adminpb.ListDisplayVideo360AdvertiserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDisplayVideo360AdvertiserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListDisplayVideo360AdvertiserLinksRequest.
 	}
 	it := c.ListDisplayVideo360AdvertiserLinks(ctx, req)
 	for {

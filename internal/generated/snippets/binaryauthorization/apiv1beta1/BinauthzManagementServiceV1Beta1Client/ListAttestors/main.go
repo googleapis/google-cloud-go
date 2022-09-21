@@ -22,8 +22,8 @@ import (
 	"context"
 
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1beta1"
+	"cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb"
 	"google.golang.org/api/iterator"
-	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &binaryauthorizationpb.ListAttestorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1#ListAttestorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#ListAttestorsRequest.
 	}
 	it := c.ListAttestors(ctx, req)
 	for {
