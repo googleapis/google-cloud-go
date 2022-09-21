@@ -40,6 +40,21 @@ func newDefaultRetryer() *defaultRetryer {
 	}
 }
 
+// a retryer that doesn't back off realistically, useful for testing without a
+// bunch of extra wait time.
+func newTestRetryer() *defaultRetryer {
+	return &defaultRetryer{
+		bo: gax.Backoff{
+			Initial: time.Millisecond,
+			Max:     time.Millisecond,
+		},
+		bigBo: gax.Backoff{
+			Initial: time.Millisecond,
+			Max:     time.Millisecond,
+		},
+	}
+}
+
 type defaultRetryer struct {
 	bo    gax.Backoff
 	bigBo gax.Backoff // For more aggressive backoff, such as throughput quota

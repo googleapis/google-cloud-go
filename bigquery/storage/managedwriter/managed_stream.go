@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"sync"
 	"time"
 
@@ -509,7 +508,6 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 				respErr := grpcstatus.ErrorProto(status)
 				if ms.shouldRetryAppend(respErr, nextWrite.attemptCount) {
 					// The response had an error attached and it should be retried.
-					log.Printf("checking based on resp status")
 					ms.processRetry(nextWrite, respErr)
 					// We're done with the write regardless of outcome.
 					continue
@@ -526,7 +524,6 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 // If the append is not retried, it is marked complete.
 func (ms *ManagedStream) processRetry(pw *pendingWrite, initialErr error) {
 	if ms.retry == nil {
-		log.Printf("no retries")
 		// No retries.  Mark the write done and return.
 		pw.markDone(nil, initialErr, ms.fc)
 		return
@@ -536,17 +533,14 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, initialErr error) {
 		pause, shouldRetry := ms.retry.RetryAppend(err, pw.attemptCount)
 		if !shouldRetry {
 			// Should not attempt to re-append.
-			log.Printf("didn't pass shouldRetry")
 			pw.markDone(nil, err, ms.fc)
 			return
 		}
 		// we use the pause the slow the receiver loop as a whole.
 		time.Sleep(pause)
 		pw.attemptCount = pw.attemptCount + 1
-		log.Printf("appending")
-		err := ms.appendWithRetry(pw)
+		err = ms.appendWithRetry(pw)
 		if err != nil {
-			log.Printf("append errored: %v", err)
 			// Got a failure, send it through the loop again.
 			continue
 		}

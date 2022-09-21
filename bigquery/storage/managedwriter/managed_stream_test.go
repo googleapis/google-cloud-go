@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"runtime"
 	"testing"
 	"time"
@@ -95,10 +94,16 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	}
 }
 
+type testRecvResponse struct {
+	resp *storagepb.AppendRowsResponse
+	err  error
+}
+
 type testAppendRowsClient struct {
 	storagepb.BigQueryWrite_AppendRowsClient
 	openCount int
 	requests  []*storagepb.AppendRowsRequest
+	responses []*testRecvResponse
 	sendF     func(*storagepb.AppendRowsRequest) error
 	recvF     func() (*storagepb.AppendRowsResponse, error)
 	closeF    func() error
@@ -119,7 +124,6 @@ func (tarc *testAppendRowsClient) CloseSend() error {
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
 func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	sF := func(req *storagepb.AppendRowsRequest) error {
-		log.Printf("test SF appending %v", req)
 		testARC.requests = append(testARC.requests, req)
 		return nil
 	}
@@ -491,65 +495,126 @@ func TestOpenCallOptionPropagation(t *testing.T) {
 func TestManagedStream_Receiver(t *testing.T) {
 
 	testCases := []struct {
-		desc     string
-		recvResp *storagepb.AppendRowsResponse
-		recvErr  error
-
-		wantAppend bool
+		desc             string
+		recvResp         []*testRecvResponse
+		wantRequestCount int
 	}{
 		{
-			desc:       "no errors",
-			recvResp:   &storagepb.AppendRowsResponse{},
-			wantAppend: false,
-		},
-		{
-			desc:       "recv EOF",
-			recvResp:   &storagepb.AppendRowsResponse{},
-			recvErr:    io.EOF,
-			wantAppend: true,
-		},
-		{
-			desc: "resp unavailable",
-			recvResp: &storagepb.AppendRowsResponse{
-				Response: &storagepb.AppendRowsResponse_Error{
-					Error: &statuspb.Status{
-						Code:    int32(codes.Unavailable),
-						Message: "foo",
-					},
+			desc: "no errors",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
 				},
 			},
-			wantAppend: true,
+			wantRequestCount: 0,
+		},
+		{
+			desc: "recv err w/io.EOF",
+			recvResp: []*testRecvResponse{
+				{
+					resp: nil,
+					err:  io.EOF,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantRequestCount: 1,
+		},
+		{
+			desc: "resp embeds Unavailable",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{
+						Response: &storagepb.AppendRowsResponse_Error{
+							Error: &statuspb.Status{
+								Code:    int32(codes.Unavailable),
+								Message: "foo",
+							},
+						},
+					},
+					err: nil,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantRequestCount: 1,
+		},
+		{
+			desc: "resp embeds generic ResourceExhausted",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{
+						Response: &storagepb.AppendRowsResponse_Error{
+							Error: &statuspb.Status{
+								Code:    int32(codes.ResourceExhausted),
+								Message: "foo",
+							},
+						},
+					},
+					err: nil,
+				},
+			},
+			wantRequestCount: 0,
+		},
+		{
+			desc: "resp embeds throughput ResourceExhausted",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{
+						Response: &storagepb.AppendRowsResponse_Error{
+							Error: &statuspb.Status{
+								Code:    int32(codes.ResourceExhausted),
+								Message: "Exceeds 'AppendRows throughput' quota for stream blah",
+							},
+						},
+					},
+					err: nil,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantRequestCount: 1,
 		},
 	}
 
 	for _, tc := range testCases {
-		t.Logf("TESTCASE %s", tc.desc)
 		ctx, cancel := context.WithCancel(context.Background())
 
-		testArc := &testAppendRowsClient{}
+		testArc := &testAppendRowsClient{
+			responses: tc.recvResp,
+		}
 
 		ms := &ManagedStream{
 			ctx: ctx,
 			open: openTestArc(testArc, nil,
 				func() (*storagepb.AppendRowsResponse, error) {
-					if len(testArc.requests) == 0 {
-						t.Logf("emitting testcase response")
-						return tc.recvResp, tc.recvErr
+					if len(testArc.responses) == 0 {
+						panic("out of responses")
 					}
-					t.Logf("emitting default response")
-					return &storagepb.AppendRowsResponse{}, nil
+					curResp := testArc.responses[0]
+					testArc.responses = testArc.responses[1:]
+					return curResp.resp, curResp.err
 				},
 			),
 			streamSettings: defaultStreamSettings(),
 			fc:             newFlowController(0, 0),
-			retry:          newDefaultRetryer(),
+			retry:          newTestRetryer(),
 		}
 		_, ch, _ := ms.openWithRetry()
 		ch <- newPendingWrite(ctx, [][]byte{[]byte("foo")})
-		time.Sleep(time.Second)
-
-		if gotAppend := len(testArc.requests) > 0; gotAppend != tc.wantAppend {
-			t.Errorf("%s: got %t, want %t", tc.desc, gotAppend, tc.wantAppend)
+		// We sleep to allow the retries to be processed.  I'm not enamored of this, but there's not
+		// currently a way to check on the status of the goroutine.
+		time.Sleep(500 * time.Millisecond)
+		// We should be done.
+		if gotRequestCount := len(testArc.requests); gotRequestCount != tc.wantRequestCount {
+			t.Errorf("%s: got %d appends, want %d appends", tc.desc, gotRequestCount, tc.wantRequestCount)
 		}
 		ms.Close()
 		cancel()
