@@ -829,7 +829,9 @@ func (it *DocumentSnapshotIterator) Stop() {
 	it.ws.stop()
 }
 
-func (d *DocumentRef) ReadOption(opts ReadOptions) *DocumentRef {
+// ReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (d *DocumentRef) ReadOptions(opts ReadOptions) *DocumentRef {
 	d.readOption = &opts
 	return d
 }

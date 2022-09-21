@@ -318,7 +318,8 @@ func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 	return bw
 }
 
-// ReadOption sets a snapshot time at which to read the documents in the database.
+// ReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
 func (c *Client) ReadOptions(opts ReadOptions) *Client {
 	c.readOption = &opts
 	return c
@@ -400,7 +401,7 @@ func (ec emulatorCreds) RequireTransportSecurity() bool {
 	return false
 }
 
-// ReadOption provides specific instructions for how to access data in the database.
+// ReadOptions provides specific instructions for how to access documents in the database.
 // Currently, only ReadTime is supported.
 type ReadOptions struct {
 	ReadTime time.Time // ReadTime specifies the time at which to capture a "snapshot" of the documents in the database.

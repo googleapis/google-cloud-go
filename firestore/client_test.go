@@ -17,11 +17,13 @@ package firestore
 import (
 	"context"
 	"testing"
+	"time"
 
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var testClient = &Client{
@@ -307,5 +309,46 @@ func TestGetAllErrors(t *testing.T) {
 	)
 	if _, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")}); err == nil {
 		t.Error("got nil, want error")
+	}
+}
+
+func TestSetReadOption(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	const docPath = dbPath + "/documents/C/a"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+
+	dr := &DocumentRef{
+		Parent: &CollectionRef{
+			c: c,
+		},
+		ID:   "123",
+		Path: docPath,
+	}
+
+	srv.addRPC(&pb.BatchGetDocumentsRequest{
+		Database:  dbPath,
+		Documents: []string{docPath},
+		ConsistencySelector: &pb.BatchGetDocumentsRequest_ReadTime{
+			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+		},
+	}, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+			Result: &pb.BatchGetDocumentsResponse_Found{
+				Found: &pb.Document{},
+			},
+		},
+	})
+
+	_, err := c.ReadOptions(ReadOptions{ReadTime: tm}).GetAll(ctx, []*DocumentRef{
+		dr,
+	})
+
+	if err != nil {
+		t.Fatal(err)
 	}
 }

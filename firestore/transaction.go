@@ -289,7 +289,9 @@ func (t *Transaction) addWrites(ws []*pb.Write, err error) error {
 	return nil
 }
 
-func (t *Transaction) ReadOption(opts ReadOptions) *Transaction {
+// ReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (t *Transaction) ReadOptions(opts ReadOptions) *Transaction {
 	t.readOption = &opts
 	return t
 }

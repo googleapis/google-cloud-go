@@ -141,7 +141,9 @@ func uniqueID() string {
 	return string(b)
 }
 
-func (c *CollectionRef) ReadOption(opts ReadOptions) *CollectionRef {
+// ReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (c *CollectionRef) ReadOptions(opts ReadOptions) *CollectionRef {
 	c.readOptions = &opts
 	return c
 }

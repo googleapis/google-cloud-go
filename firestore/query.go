@@ -1049,7 +1049,9 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 
 func (*btreeDocumentIterator) stop() {}
 
-func (q *Query) ReadOption(opts ReadOptions) *Query {
+// ReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (q *Query) ReadOptions(opts ReadOptions) *Query {
 	q.readOptions = &opts
 	return q
 }
