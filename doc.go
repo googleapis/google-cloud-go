@@ -182,15 +182,16 @@ For HTTP logging, set the GODEBUG environment variable to "http2debug=1" or "htt
 # Inspecting errors
 
 Most of the errors returned by the generated clients are wrapped in an
-`apierror.APIError` (https://pkg.go.dev/github.com/googleapis/gax-go/v2/apierror)
-and can be further unwrapped into a `grpc.Status` or `googleapi.Error` depending
+[github.com/googleapis/gax-go/v2/apierror.APIError] and can be further unwrapped
+into a [google.golang.org/grpc/status.Status] or
+[google.golang.org/api/googleapi.Error] depending
 on the transport used to make the call (gRPC or REST). Converting your errors to
 these types can be a useful way to get more information about what went wrong
 while debugging.
 
-`apierror.APIError` gives access to specific details in the
-error. The transport-specific errors can still be unwrapped using the
-`apierror.APIError`.
+[github.com/googleapis/gax-go/v2/apierror.APIError] gives access to specific
+details in the error. The transport-specific errors can still be unwrapped using
+the [github.com/googleapis/gax-go/v2/apierror.APIError].
 
 	if err != nil {
 	   var ae *apierror.APIError
@@ -200,8 +201,8 @@ error. The transport-specific errors can still be unwrapped using the
 	   }
 	}
 
-If the gRPC transport was used, the `grpc.Status` can still be parsed using the
-`status.FromError` function.
+If the gRPC transport was used, the [google.golang.org/grpc/status.Status] can
+still be parsed using the [google.golang.org/grpc/status.FromError] function.
 
 	if err != nil {
 	   if s, ok := status.FromError(err); ok {
@@ -212,8 +213,9 @@ If the gRPC transport was used, the `grpc.Status` can still be parsed using the
 	   }
 	}
 
-If the REST transport was used, the `googleapi.Error` can be parsed in a similar
-way.
+If the REST transport was used, the [google.golang.org/api/googleapi.Error] can
+be parsed in a similar way, allowing access to details such as the HTTP response
+code.
 
 	if err != nil {
 	   var gerr *googleapi.Error
