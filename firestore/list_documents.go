@@ -21,6 +21,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DocumentRefIterator is an iterator over DocumentRefs.
@@ -33,7 +34,7 @@ type DocumentRefIterator struct {
 	err      error
 }
 
-func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte) *DocumentRefIterator {
+func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte, opts *ReadOptions) *DocumentRefIterator {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.ListDocuments")
 	defer func() { trace.EndSpan(ctx, nil) }()
 
@@ -46,6 +47,9 @@ func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte) 
 	}
 	if tid != nil {
 		req.ConsistencySelector = &pb.ListDocumentsRequest_Transaction{tid}
+	} else if opts != nil {
+		tpb := &timestamppb.Timestamp{Seconds: opts.ReadTime.Unix()}
+		req.ConsistencySelector = &pb.ListDocumentsRequest_ReadTime{ReadTime: tpb}
 	}
 	it := &DocumentRefIterator{
 		client: client,

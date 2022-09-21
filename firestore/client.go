@@ -36,6 +36,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // resourcePrefixHeader is the name of the metadata header used to indicate
@@ -55,7 +56,8 @@ const DetectProjectID = "*detect-project-id*"
 type Client struct {
 	c          *vkit.Client
 	projectID  string
-	databaseID string // A client is tied to a single database.
+	databaseID string       // A client is tied to a single database.
+	readOption *ReadOptions // readOption allows setting a snapshot time to read the database
 }
 
 // NewClient creates a new Firestore client that uses the given project.
@@ -199,10 +201,10 @@ func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*Docum
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.GetAll")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	return c.getAll(ctx, docRefs, nil)
+	return c.getAll(ctx, docRefs, nil, nil)
 }
 
-func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte) (_ []*DocumentSnapshot, err error) {
+func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, opts *ReadOptions) (_ []*DocumentSnapshot, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -219,8 +221,18 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte)
 		Database:  c.path(),
 		Documents: docNames,
 	}
+
+	// Note that transaction ID and other consistency selectors are mutually exclusive.
+	// We respect the transaction first, any read options passed by the caller second,
+	// and any read options stored in the client third.
 	if tid != nil {
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{tid}
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
+	} else if opts != nil { //
+		tpb := &timestamppb.Timestamp{Seconds: int64(c.readOption.ReadTime.Unix())}
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: tpb}
+	} else if c.readOption != nil { // TODO(developer): refactor this line when other ReadOptions are available.
+		tpb := &timestamppb.Timestamp{Seconds: int64(c.readOption.ReadTime.Unix())}
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: tpb}
 	}
 	streamClient, err := c.c.BatchGetDocuments(withResourceHeader(ctx, req.Database), req)
 	if err != nil {
@@ -306,6 +318,12 @@ func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 	return bw
 }
 
+// ReadOption sets a snapshot time at which to read the documents in the database.
+func (c *Client) ReadOptions(opts ReadOptions) *Client {
+	c.readOption = &opts
+	return c
+}
+
 // commit calls the Commit RPC outside of a transaction.
 func (c *Client) commit(ctx context.Context, ws []*pb.Write) (_ []*WriteResult, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.commit")
@@ -380,4 +398,10 @@ func (ec emulatorCreds) GetRequestMetadata(ctx context.Context, uri ...string) (
 }
 func (ec emulatorCreds) RequireTransportSecurity() bool {
 	return false
+}
+
+// ReadOption provides specific instructions for how to access data in the database.
+// Currently, only ReadTime is supported.
+type ReadOptions struct {
+	ReadTime time.Time // ReadTime specifies the time at which to capture a "snapshot" of the documents in the database.
 }

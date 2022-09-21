@@ -47,6 +47,9 @@ type DocumentRef struct {
 
 	// The ID of the document: the last component of the resource path.
 	ID string
+
+	// The options (only read time currently supported) for reading this document
+	readOption *ReadOptions
 }
 
 func newDocRef(parent *CollectionRef, id string) *DocumentRef {
@@ -77,7 +80,8 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 	if d == nil {
 		return nil, errNilDocRef
 	}
-	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil)
+
+	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d.readOption)
 	if err != nil {
 		return nil, err
 	}
@@ -823,4 +827,9 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 // concurrently with Next.
 func (it *DocumentSnapshotIterator) Stop() {
 	it.ws.stop()
+}
+
+func (d *DocumentRef) ReadOption(opts ReadOptions) *DocumentRef {
+	d.readOption = &opts
+	return d
 }

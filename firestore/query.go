@@ -29,6 +29,7 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Query represents a Firestore query.
@@ -54,6 +55,10 @@ type Query struct {
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
 	allDescendants bool
+
+	// readOptions specifies constraints for reading results from the query
+	// e.g. read time
+	readOptions *ReadOptions
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -779,7 +784,7 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil), q: &q,
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil, q.readOptions), q: &q,
 	}
 }
 
@@ -884,15 +889,17 @@ type queryDocumentIterator struct {
 	q            *Query
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
+	readOptions  *ReadOptions // readOptions, if any
 }
 
-func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryDocumentIterator {
+func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, opts *ReadOptions) *queryDocumentIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	return &queryDocumentIterator{
-		ctx:    ctx,
-		cancel: cancel,
-		q:      q,
-		tid:    tid,
+		ctx:         ctx,
+		cancel:      cancel,
+		q:           q,
+		tid:         tid,
+		readOptions: opts,
 	}
 }
 
@@ -908,10 +915,15 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 		}
 		req := &pb.RunQueryRequest{
 			Parent:    it.q.parentPath,
-			QueryType: &pb.RunQueryRequest_StructuredQuery{sq},
+			QueryType: &pb.RunQueryRequest_StructuredQuery{StructuredQuery: sq},
 		}
+
+		// Respect transactions first and read options (read time) second
 		if it.tid != nil {
-			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{it.tid}
+			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{Transaction: it.tid}
+		} else if it.readOptions != nil {
+			tpb := &timestamppb.Timestamp{Seconds: it.readOptions.ReadTime.Unix()}
+			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: tpb}
 		}
 		it.streamClient, err = client.c.RunQuery(it.ctx, req)
 		if err != nil {
@@ -1036,3 +1048,8 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 }
 
 func (*btreeDocumentIterator) stop() {}
+
+func (q *Query) ReadOption(opts ReadOptions) *Query {
+	q.readOptions = &opts
+	return q
+}

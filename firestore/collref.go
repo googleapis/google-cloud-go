@@ -49,6 +49,10 @@ type CollectionRef struct {
 
 	// Use the methods of Query on a CollectionRef to create and run queries.
 	Query
+
+	// readOptions specifies constraints for reading documents in the collection
+	// e.g. read time
+	readOptions *ReadOptions
 }
 
 func newTopLevelCollRef(c *Client, dbPath, id string) *CollectionRef {
@@ -121,7 +125,7 @@ func (c *CollectionRef) Add(ctx context.Context, data interface{}) (*DocumentRef
 // missing documents. A missing document is a document that does not exist but has
 // sub-documents.
 func (c *CollectionRef) DocumentRefs(ctx context.Context) *DocumentRefIterator {
-	return newDocumentRefIterator(ctx, c, nil)
+	return newDocumentRefIterator(ctx, c, nil, c.readOptions)
 }
 
 const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -135,4 +139,9 @@ func uniqueID() string {
 		b[i] = alphanum[int(byt)%len(alphanum)]
 	}
 	return string(b)
+}
+
+func (c *CollectionRef) ReadOption(opts ReadOptions) *CollectionRef {
+	c.readOptions = &opts
+	return c
 }

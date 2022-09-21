@@ -34,6 +34,7 @@ type Transaction struct {
 	maxAttempts    int
 	readOnly       bool
 	readAfterWrite bool
+	readOption     *ReadOptions
 }
 
 // A TransactionOption is an option passed to Client.Transaction.
@@ -220,7 +221,7 @@ func (t *Transaction) GetAll(drs []*DocumentRef) ([]*DocumentSnapshot, error) {
 		t.readAfterWrite = true
 		return nil, errReadAfterWrite
 	}
-	return t.c.getAll(t.ctx, drs, t.id)
+	return t.c.getAll(t.ctx, drs, t.id, t.readOption)
 }
 
 // A Queryer is a Query or a CollectionRef. CollectionRefs act as queries whose
@@ -238,7 +239,7 @@ func (t *Transaction) Documents(q Queryer) *DocumentIterator {
 	}
 	query := q.query()
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(t.ctx, query, t.id), q: query,
+		iter: newQueryDocumentIterator(t.ctx, query, t.id, t.readOption), q: query,
 	}
 }
 
@@ -250,7 +251,7 @@ func (t *Transaction) DocumentRefs(cr *CollectionRef) *DocumentRefIterator {
 		t.readAfterWrite = true
 		return &DocumentRefIterator{err: errReadAfterWrite}
 	}
-	return newDocumentRefIterator(t.ctx, cr, t.id)
+	return newDocumentRefIterator(t.ctx, cr, t.id, t.readOption)
 }
 
 // Create adds a Create operation to the Transaction.
@@ -286,4 +287,9 @@ func (t *Transaction) addWrites(ws []*pb.Write, err error) error {
 	}
 	t.writes = append(t.writes, ws...)
 	return nil
+}
+
+func (t *Transaction) ReadOption(opts ReadOptions) *Transaction {
+	t.readOption = &opts
+	return t
 }
