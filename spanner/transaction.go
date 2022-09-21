@@ -779,7 +779,7 @@ func (t *ReadOnlyTransaction) release(err error) {
 	sh := t.sh
 	t.mu.Unlock()
 	if sh != nil { // sh could be nil if t.acquire() fails.
-		if isSessionNotFoundError(err) {
+		if isSessionNotFoundError(err) || isClientClosing(err) {
 			sh.destroy()
 		}
 		if t.singleUse {
