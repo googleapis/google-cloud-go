@@ -18,7 +18,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"strings"
-	"unicode"
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
@@ -348,12 +347,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 
 // nameRequiresAnnotation determines whether a field name requires unicode-annotation.
 func nameRequiresAnnotation(in string) bool {
-	for i := 0; i < len(in); i++ {
-		if in[i] > unicode.MaxASCII {
-			return true
-		}
-	}
-	return false
+	return !protoreflect.Name(in).IsValid()
 }
 
 // NormalizeDescriptor builds a self-contained DescriptorProto suitable for communicating schema
