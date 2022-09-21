@@ -546,6 +546,7 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, initialErr error) {
 		}
 		// Break out of the loop, we were successful and the write has been
 		// re-inserted.
+		recordStat(ms.ctx, AppendRetryCount, 1)
 		break
 	}
 
