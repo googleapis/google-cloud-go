@@ -320,7 +320,6 @@ client (using [Client.SetRetry]). For example:
 [Cloud Storage IAM docs]: https://cloud.google.com/storage/docs/access-control/iam
 [XML POST Object docs]: https://cloud.google.com/storage/docs/xml-api/post-object
 [Cloud Storage retry docs]: https://cloud.google.com/storage/docs/retry-strategy
-
 [Other Environments]: https://cloud.google.com/storage/docs/authentication#libauth
 [gcloud using application default credentials]: https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login
 [impersonation enabled]: https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account
