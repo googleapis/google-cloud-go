@@ -388,6 +388,23 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				ReferenceFileSchemaURI: "schema.parquet",
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.ReferenceFileSchemaUri = "schema.parquet"
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {
