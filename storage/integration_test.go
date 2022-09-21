@@ -245,7 +245,7 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 // initTransportClients initializes Storage clients for each supported transport.
 func initTransportClients(ctx context.Context, t *testing.T) map[string]*Client {
 	return map[string]*Client{
-		"http": testConfig(ctx, t),
+		"http": testConfig(ctx, t, "https://www.googleapis.com/auth/cloud-platform"),
 		"grpc": testConfigGRPC(ctx, t),
 	}
 }
@@ -4181,173 +4181,170 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 }
 
 func TestIntegration_HMACKey(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	client.SetRetry(WithPolicy(RetryAlways))
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
+		client.SetRetry(WithPolicy(RetryAlways))
 
-	projectID := testutil.ProjID()
+		projectID := testutil.ProjID()
 
-	// Use the service account email from the user's credentials. Requires that the
-	// credentials are set via a JSON credentials file.
-	// Note that a service account may only have up to 5 active HMAC keys at once; if
-	// we see flakes because of this, we should consider switching to using a project
-	// pool.
-	credentials := testutil.CredentialsEnv(ctx, "GCLOUD_TESTS_GOLANG_KEY")
-	if credentials == nil {
-		t.Fatal("credentials could not be determined, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
-	}
-	if credentials.JSON == nil {
-		t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
-	}
-	conf, err := google.JWTConfigFromJSON(credentials.JSON)
-	if err != nil {
-		t.Fatal(err)
-	}
-	serviceAccountEmail := conf.Email
-
-	hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
-	if err != nil {
-		t.Fatalf("Failed to create HMACKey: %v", err)
-	}
-	if hmacKey == nil {
-		t.Fatal("Unexpectedly got back a nil HMAC key")
-	}
-
-	if hmacKey.State != Active {
-		t.Fatalf("Unexpected state %q, expected %q", hmacKey.State, Active)
-	}
-
-	hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
-	// 1. Ensure that we CANNOT delete an ACTIVE key.
-	if err := hkh.Delete(ctx); err == nil {
-		t.Fatal("Unexpectedly deleted key whose state is ACTIVE: No error from Delete.")
-	}
-
-	invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
-	for _, invalidState := range invalidStates {
-		t.Run("invalid-"+string(invalidState), func(t *testing.T) {
-			_, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
-				State: invalidState,
-			})
-			if err == nil {
-				t.Fatal("Unexpectedly succeeded")
-			}
-			invalidStateMsg := fmt.Sprintf(`storage: invalid state %q for update, must be either "ACTIVE" or "INACTIVE"`, invalidState)
-			if err.Error() != invalidStateMsg {
-				t.Fatalf("Mismatched error: got:  %q\nwant: %q", err, invalidStateMsg)
-			}
-		})
-	}
-
-	// 2.1. Setting the State to Inactive should succeed.
-	hu, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
-		State: Inactive,
-	})
-	if err != nil {
-		t.Fatalf("Unexpected Update failure: %v", err)
-	}
-	if got, want := hu.State, Inactive; got != want {
-		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
-	}
-
-	// 2.2. Setting the State back to Active should succeed.
-	hu, err = hkh.Update(ctx, HMACKeyAttrsToUpdate{
-		State: Active,
-	})
-	if err != nil {
-		t.Fatalf("Unexpected Update failure: %v", err)
-	}
-	if got, want := hu.State, Active; got != want {
-		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
-	}
-
-	// 3. Verify that keys are listed as expected.
-	iter := client.ListHMACKeys(ctx, projectID)
-	count := 0
-	for ; ; count++ {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
+		// Use the service account email from the user's credentials. Requires that the
+		// credentials are set via a JSON credentials file.
+		// Note that a service account may only have up to 5 active HMAC keys at once; if
+		// we see flakes because of this, we should consider switching to using a project
+		// pool.
+		credentials := testutil.CredentialsEnv(ctx, "GCLOUD_TESTS_GOLANG_KEY")
+		if credentials == nil {
+			t.Fatal("credentials could not be determined, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
 		}
+		if credentials.JSON == nil {
+			t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
+		}
+		conf, err := google.JWTConfigFromJSON(credentials.JSON)
 		if err != nil {
-			t.Fatalf("Failed to ListHMACKeys: %v", err)
+			t.Fatal(err)
 		}
-	}
-	if count == 0 {
-		t.Fatal("Failed to list any HMACKeys")
-	}
+		serviceAccountEmail := conf.Email
 
-	// 4. Finally set it to back to Inactive and
-	// then retry the deletion which should now succeed.
-	_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
-		State: Inactive,
+		hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+		if err != nil {
+			t.Fatalf("Failed to create HMACKey: %v", err)
+		}
+		if hmacKey == nil {
+			t.Fatal("Unexpectedly got back a nil HMAC key")
+		}
+
+		if hmacKey.State != Active {
+			t.Fatalf("Unexpected state %q, expected %q", hmacKey.State, Active)
+		}
+
+		hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
+		// 1. Ensure that we CANNOT delete an ACTIVE key.
+		if err := hkh.Delete(ctx); err == nil {
+			t.Fatal("Unexpectedly deleted key whose state is ACTIVE: No error from Delete.")
+		}
+
+		invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
+		for _, invalidState := range invalidStates {
+			t.Run("invalid-"+string(invalidState), func(t *testing.T) {
+				_, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+					State: invalidState,
+				})
+				if err == nil {
+					t.Fatal("Unexpectedly succeeded")
+				}
+				invalidStateMsg := fmt.Sprintf(`storage: invalid state %q for update, must be either "ACTIVE" or "INACTIVE"`, invalidState)
+				if err.Error() != invalidStateMsg {
+					t.Fatalf("Mismatched error: got:  %q\nwant: %q", err, invalidStateMsg)
+				}
+			})
+		}
+
+		// 2.1. Setting the State to Inactive should succeed.
+		hu, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+			State: Inactive,
+		})
+		if err != nil {
+			t.Fatalf("Unexpected Update failure: %v", err)
+		}
+		if got, want := hu.State, Inactive; got != want {
+			t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+		}
+
+		// 2.2. Setting the State back to Active should succeed.
+		hu, err = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+			State: Active,
+		})
+		if err != nil {
+			t.Fatalf("Unexpected Update failure: %v", err)
+		}
+		if got, want := hu.State, Active; got != want {
+			t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+		}
+
+		// 3. Verify that keys are listed as expected.
+		iter := client.ListHMACKeys(ctx, projectID)
+		count := 0
+		for ; ; count++ {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("Failed to ListHMACKeys: %v", err)
+			}
+		}
+		if count == 0 {
+			t.Fatal("Failed to list any HMACKeys")
+		}
+
+		// 4. Finally set it to back to Inactive and
+		// then retry the deletion which should now succeed.
+		_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+			State: Inactive,
+		})
+		if err := hkh.Delete(ctx); err != nil {
+			t.Fatalf("Unexpected deletion failure: %v", err)
+		}
+
+		_, err = hkh.Get(ctx)
+		if err != nil && !strings.Contains(err.Error(), "404") {
+			// If the deleted key has already been garbage collected, a 404 is expected.
+			// Other errors should cause a failure and are not expected.
+			t.Fatalf("Unexpected error: %v", err)
+		}
 	})
-	if err := hkh.Delete(ctx); err != nil {
-		t.Fatalf("Unexpected deletion failure: %v", err)
-	}
-
-	_, err = hkh.Get(ctx)
-	if err != nil && !strings.Contains(err.Error(), "404") {
-		// If the deleted key has already been garbage collected, a 404 is expected.
-		// Other errors should cause a failure and are not expected.
-		t.Fatalf("Unexpected error: %v", err)
-	}
 }
 
 func TestIntegration_PostPolicyV4(t *testing.T) {
-	jwtConf, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if jwtConf == nil {
-		t.Skip("JSON key file is not present")
-	}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		jwtConf, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if jwtConf == nil {
+			t.Skip("JSON key file is not present")
+		}
 
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+		projectID := testutil.ProjID()
+		newBucketName := prefix + uidSpace.New()
+		b := client.Bucket(newBucketName)
+		h := testHelper{t}
+		h.mustCreate(b, projectID, nil)
+		defer h.mustDeleteBucket(b)
 
-	projectID := testutil.ProjID()
-	newBucketName := uidSpace.New()
-	b := client.Bucket(newBucketName)
-	h := testHelper{t}
-	h.mustCreate(b, projectID, nil)
-	defer h.mustDeleteBucket(b)
+		statusCodeToRespond := 200
+		opts := &PostPolicyV4Options{
+			GoogleAccessID: jwtConf.Email,
+			PrivateKey:     jwtConf.PrivateKey,
 
-	statusCodeToRespond := 200
-	opts := &PostPolicyV4Options{
-		GoogleAccessID: jwtConf.Email,
-		PrivateKey:     jwtConf.PrivateKey,
+			Expires: time.Now().Add(30 * time.Minute),
 
-		Expires: time.Now().Add(30 * time.Minute),
+			Fields: &PolicyV4Fields{
+				StatusCodeOnSuccess: statusCodeToRespond,
+				ContentType:         "text/plain",
+				ACL:                 "public-read",
+			},
 
-		Fields: &PolicyV4Fields{
-			StatusCodeOnSuccess: statusCodeToRespond,
-			ContentType:         "text/plain",
-			ACL:                 "public-read",
-		},
+			// The conditions that the uploaded file will be expected to conform to.
+			Conditions: []PostPolicyV4Condition{
+				// Make the file a maximum of 10mB.
+				ConditionContentLengthRange(0, 10<<20),
+				ConditionStartsWith("$acl", "public"),
+			},
+		}
 
-		// The conditions that the uploaded file will be expected to conform to.
-		Conditions: []PostPolicyV4Condition{
-			// Make the file a maximum of 10mB.
-			ConditionContentLengthRange(0, 10<<20),
-			ConditionStartsWith("$acl", "public"),
-		},
-	}
+		objectName := uidSpace.New()
+		object := b.Object(objectName)
+		defer h.mustDeleteObject(object)
 
-	objectName := uidSpace.New()
-	object := b.Object(objectName)
-	defer h.mustDeleteObject(object)
+		pv4, err := b.GenerateSignedPostPolicyV4(objectName, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	pv4, err := b.GenerateSignedPostPolicyV4(objectName, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
-		t.Fatal(err)
-	}
+		if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
+			t.Fatal(err)
+		}
+	})
 }
 
 // Verify that custom scopes passed in by the user are applied correctly.
@@ -4447,157 +4444,148 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_Bucket(t *testing.T) {
-	h := testHelper{t}
-	ctx := context.Background()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
+		h := testHelper{t}
 
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
+		// We explicitly send the key to the client to sign with the private key
+		// TODO: This will only work with HTTP for now, change to enable using
+		// a gRPC client also?
+		clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
+		defer clientWithCredentials.Close()
 
-	// We explictly send the key to the client to sign with the private key
-	clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
-	defer clientWithCredentials.Close()
+		jwt, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatalf("unable to find test credentials: %v", err)
+		}
 
-	// Create another client to test the sign byte function as well
-	clientWithoutPrivateKey := testConfig(ctx, t, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
-	defer clientWithoutPrivateKey.Close()
+		statusCodeToRespond := 200
 
-	jwt, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatalf("unable to find test credentials: %v", err)
-	}
+		for _, test := range []struct {
+			desc   string
+			opts   PostPolicyV4Options
+			client *Client
+		}{
+			{
+				desc: "signing with the private key",
+				opts: PostPolicyV4Options{
+					Expires: time.Now().Add(30 * time.Minute),
 
-	statusCodeToRespond := 200
-
-	for _, test := range []struct {
-		desc   string
-		opts   PostPolicyV4Options
-		client *Client
-	}{
-		{
-			desc: "signing with the private key",
-			opts: PostPolicyV4Options{
-				Expires: time.Now().Add(30 * time.Minute),
-
-				Fields: &PolicyV4Fields{
-					StatusCodeOnSuccess: statusCodeToRespond,
-					ContentType:         "text/plain",
-					ACL:                 "public-read",
+					Fields: &PolicyV4Fields{
+						StatusCodeOnSuccess: statusCodeToRespond,
+						ContentType:         "text/plain",
+						ACL:                 "public-read",
+					},
 				},
+				client: clientWithCredentials,
 			},
-			client: clientWithCredentials,
-		},
-		{
-			desc: "signing with the default sign bytes func",
-			opts: PostPolicyV4Options{
-				Expires:        time.Now().Add(30 * time.Minute),
-				GoogleAccessID: jwt.Email,
-				Fields: &PolicyV4Fields{
-					StatusCodeOnSuccess: statusCodeToRespond,
-					ContentType:         "text/plain",
-					ACL:                 "public-read",
+			{
+				desc: "signing with the default sign bytes func",
+				opts: PostPolicyV4Options{
+					Expires:        time.Now().Add(30 * time.Minute),
+					GoogleAccessID: jwt.Email,
+					Fields: &PolicyV4Fields{
+						StatusCodeOnSuccess: statusCodeToRespond,
+						ContentType:         "text/plain",
+						ACL:                 "public-read",
+					},
 				},
+				client: clientWithoutPrivateKey,
 			},
-			client: clientWithoutPrivateKey,
-		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			objectName := uidSpace.New()
-			object := test.client.Bucket(bucketName).Object(objectName)
-			defer h.mustDeleteObject(object)
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				objectName := uidSpace.New()
+				object := test.client.Bucket(bucket).Object(objectName)
+				defer h.mustDeleteObject(object)
 
-			pv4, err := test.client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName, &test.opts)
-			if err != nil {
-				t.Fatal(err)
-			}
+				pv4, err := test.client.Bucket(bucket).GenerateSignedPostPolicyV4(objectName, &test.opts)
+				if err != nil {
+					t.Fatal(err)
+				}
 
-			if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
-				t.Fatal(err)
-			}
-		})
-	}
+				if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
+					t.Fatal(err)
+				}
+			})
+		}
+	})
+
 }
 
 // Tests that the same SignBytes function works for both
 // SignRawBytes on GeneratePostPolicyV4 and SignBytes on SignedURL
 func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
-	ctx := context.Background()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
+		h := testHelper{t}
+		projectID := testutil.ProjID()
+		bucketName := prefix + uidSpace.New()
+		objectName := uidSpace.New()
+		fileBody := bytes.Repeat([]byte("b"), 25)
+		bucket := client.Bucket(bucketName)
 
-	client := testConfig(ctx, t)
-	defer client.Close()
+		h.mustCreate(bucket, projectID, nil)
+		defer h.mustDeleteBucket(bucket)
 
-	h := testHelper{t}
-	projectID := testutil.ProjID()
-	bucketName := uidSpace.New()
-	objectName := uidSpace.New()
-	fileBody := bytes.Repeat([]byte("b"), 25)
-	bucket := client.Bucket(bucketName)
+		object := bucket.Object(objectName)
+		defer h.mustDeleteObject(object)
 
-	h.mustCreate(bucket, projectID, nil)
-	defer h.mustDeleteBucket(bucket)
-
-	object := bucket.Object(objectName)
-	defer h.mustDeleteObject(object)
-
-	jwtConf, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if jwtConf == nil {
-		t.Skip("JSON key file is not present")
-	}
-
-	signingFunc := func(b []byte) ([]byte, error) {
-		parsedRSAPrivKey, err := parseKey(jwtConf.PrivateKey)
+		jwtConf, err := testutil.JWTConfig()
 		if err != nil {
-			return nil, err
+			t.Fatal(err)
 		}
-		sum := sha256.Sum256(b)
-		return rsa.SignPKCS1v15(cryptorand.Reader, parsedRSAPrivKey, crypto.SHA256, sum[:])
-	}
+		if jwtConf == nil {
+			t.Skip("JSON key file is not present")
+		}
 
-	// Test Post Policy
-	successStatusCode := 200
-	ppv4Opts := &PostPolicyV4Options{
-		GoogleAccessID: jwtConf.Email,
-		SignRawBytes:   signingFunc,
-		Expires:        time.Now().Add(30 * time.Minute),
-		Fields: &PolicyV4Fields{
-			StatusCodeOnSuccess: successStatusCode,
-			ContentType:         "text/plain",
-			ACL:                 "public-read",
-		},
-	}
+		signingFunc := func(b []byte) ([]byte, error) {
+			parsedRSAPrivKey, err := parseKey(jwtConf.PrivateKey)
+			if err != nil {
+				return nil, err
+			}
+			sum := sha256.Sum256(b)
+			return rsa.SignPKCS1v15(cryptorand.Reader, parsedRSAPrivKey, crypto.SHA256, sum[:])
+		}
 
-	pv4, err := GenerateSignedPostPolicyV4(bucketName, objectName, ppv4Opts)
-	if err != nil {
-		t.Fatal(err)
-	}
+		// Test Post Policy
+		successStatusCode := 200
+		ppv4Opts := &PostPolicyV4Options{
+			GoogleAccessID: jwtConf.Email,
+			SignRawBytes:   signingFunc,
+			Expires:        time.Now().Add(30 * time.Minute),
+			Fields: &PolicyV4Fields{
+				StatusCodeOnSuccess: successStatusCode,
+				ContentType:         "text/plain",
+				ACL:                 "public-read",
+			},
+		}
 
-	if err := verifyPostPolicy(pv4, object, fileBody, successStatusCode); err != nil {
-		t.Fatal(err)
-	}
+		pv4, err := GenerateSignedPostPolicyV4(bucketName, objectName, ppv4Opts)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	// Test Signed URL
-	signURLOpts := &SignedURLOptions{
-		GoogleAccessID: jwtConf.Email,
-		SignBytes:      signingFunc,
-		Method:         "GET",
-		Expires:        time.Now().Add(30 * time.Second),
-	}
+		if err := verifyPostPolicy(pv4, object, fileBody, successStatusCode); err != nil {
+			t.Fatal(err)
+		}
 
-	url, err := bucket.SignedURL(objectName, signURLOpts)
-	if err != nil {
-		t.Fatalf("unable to create signed URL: %v", err)
-	}
+		// Test Signed URL
+		signURLOpts := &SignedURLOptions{
+			GoogleAccessID: jwtConf.Email,
+			SignBytes:      signingFunc,
+			Method:         "GET",
+			Expires:        time.Now().Add(30 * time.Second),
+		}
 
-	if err := verifySignedURL(url, nil, fileBody); err != nil {
-		t.Fatal(err)
-	}
+		url, err := bucket.SignedURL(objectName, signURLOpts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+
+		if err := verifySignedURL(url, nil, fileBody); err != nil {
+			t.Fatal(err)
+		}
+	})
+
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
