@@ -498,10 +498,10 @@ func TestManagedStream_Receiver(t *testing.T) {
 	var customErr = fmt.Errorf("foo")
 
 	testCases := []struct {
-		description      string
-		recvResp         []*testRecvResponse
-		wantFinalErr     error
-		wantRequestCount int
+		description       string
+		recvResp          []*testRecvResponse
+		wantFinalErr      error
+		wantTotalAttempts int
 	}{
 		{
 			description: "no errors",
@@ -511,7 +511,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err:  nil,
 				},
 			},
-			wantRequestCount: 0,
+			wantTotalAttempts: 1,
 		},
 		{
 			description: "recv err w/io.EOF",
@@ -525,7 +525,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err:  nil,
 				},
 			},
-			wantRequestCount: 1,
+			wantTotalAttempts: 2,
 		},
 		{
 			description: "recv err retried and then failed",
@@ -539,8 +539,8 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err:  customErr,
 				},
 			},
-			wantRequestCount: 1,
-			wantFinalErr:     customErr,
+			wantTotalAttempts: 2,
+			wantFinalErr:      customErr,
 		},
 		{
 			description: "recv err w/ custom error",
@@ -554,8 +554,8 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err:  nil,
 				},
 			},
-			wantRequestCount: 0,
-			wantFinalErr:     customErr,
+			wantTotalAttempts: 1,
+			wantFinalErr:      customErr,
 		},
 
 		{
@@ -577,7 +577,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err:  nil,
 				},
 			},
-			wantRequestCount: 1,
+			wantTotalAttempts: 2,
 		},
 		{
 			description: "resp embeds generic ResourceExhausted",
@@ -594,7 +594,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err: nil,
 				},
 			},
-			wantRequestCount: 0,
+			wantTotalAttempts: 1,
 		},
 		{
 			description: "resp embeds throughput ResourceExhausted",
@@ -615,7 +615,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err:  nil,
 				},
 			},
-			wantRequestCount: 1,
+			wantTotalAttempts: 2,
 		},
 		{
 			description: "retriable failures until max attempts",
@@ -633,8 +633,8 @@ func TestManagedStream_Receiver(t *testing.T) {
 					err: io.EOF,
 				},
 			},
-			wantRequestCount: 3,
-			wantFinalErr:     io.EOF,
+			wantTotalAttempts: 4,
+			wantFinalErr:      io.EOF,
 		},
 	}
 
@@ -664,14 +664,19 @@ func TestManagedStream_Receiver(t *testing.T) {
 		// use openWithRetry to get the reference to the channel and add our test pending write.
 		_, ch, _ := ms.openWithRetry()
 		pw := newPendingWrite(ctx, [][]byte{[]byte("foo")})
+		pw.attemptCount = 1 // we're injecting directly, but attribute this as a single attempt.
 		ch <- pw
 
 		// Wait until the write is marked done.
 		<-pw.result.Ready()
 
 		// Check retry count is as expected.
-		if gotRequestCount := len(testArc.requests); gotRequestCount != tc.wantRequestCount {
-			t.Errorf("%s: got %d retries, want %d retries", tc.description, gotRequestCount, tc.wantRequestCount)
+		gotTotalAttempts, err := pw.result.TotalAttempts(ctx)
+		if err != nil {
+			t.Errorf("failed to get total appends: %v", err)
+		}
+		if gotTotalAttempts != tc.wantTotalAttempts {
+			t.Errorf("%s: got %d total attempts, want %d attempts", tc.description, gotTotalAttempts, tc.wantTotalAttempts)
 		}
 
 		// Check that the write got the expected final result.

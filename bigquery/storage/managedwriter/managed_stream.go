@@ -317,6 +317,8 @@ func (ms *ManagedStream) lockingAppend(pw *pendingWrite) error {
 		req = reqCopy
 	})
 
+	// Increment the attempt count.
+	pw.attemptCount = pw.attemptCount + 1
 	if req != nil {
 		// First append in a new connection needs properties like schema and stream name set.
 		err = (*arc).Send(req)
@@ -347,7 +349,6 @@ func (ms *ManagedStream) lockingAppend(pw *pendingWrite) error {
 // lived bidirectional network stream, with it's own managed context (ms.ctx).  requestCtx is checked
 // for expiry to enable faster failures, it is not propagated more deeply.
 func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
-
 	// Resolve retry settings.
 	var settings gax.CallSettings
 	for _, opt := range opts {
@@ -540,7 +541,6 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, initialResp *storagepb.A
 			return
 		}
 		time.Sleep(pause)
-		pw.attemptCount = pw.attemptCount + 1
 		err = ms.appendWithRetry(pw)
 		if err != nil {
 			// Re-enqueue failed, send it through the loop again.

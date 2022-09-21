@@ -195,9 +195,8 @@ func newPendingWrite(ctx context.Context, appends [][]byte) *pendingWrite {
 				},
 			},
 		},
-		result:       newAppendResult(appends),
-		attemptCount: 1,
-		reqCtx:       ctx,
+		result: newAppendResult(appends),
+		reqCtx: ctx,
 	}
 	// We compute the size now for flow controller purposes, though
 	// the actual request size may be slightly larger (e.g. the first
