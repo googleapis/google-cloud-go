@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	osconfigpb "cloud.google.com/go/osconfig/apiv1beta/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

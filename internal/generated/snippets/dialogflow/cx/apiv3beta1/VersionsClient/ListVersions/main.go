@@ -22,8 +22,8 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	"cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &cxpb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListVersionsRequest.
 	}
 	it := c.ListVersions(ctx, req)
 	for {

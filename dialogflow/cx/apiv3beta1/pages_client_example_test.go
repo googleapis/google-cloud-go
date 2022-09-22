@@ -20,8 +20,8 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -75,7 +75,7 @@ func ExamplePagesClient_ListPages() {
 
 	req := &cxpb.ListPagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListPagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListPagesRequest.
 	}
 	it := c.ListPages(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExamplePagesClient_GetPage() {
 
 	req := &cxpb.GetPageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetPageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetPageRequest.
 	}
 	resp, err := c.GetPage(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExamplePagesClient_CreatePage() {
 
 	req := &cxpb.CreatePageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreatePageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CreatePageRequest.
 	}
 	resp, err := c.CreatePage(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExamplePagesClient_UpdatePage() {
 
 	req := &cxpb.UpdatePageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdatePageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#UpdatePageRequest.
 	}
 	resp, err := c.UpdatePage(ctx, req)
 	if err != nil {
@@ -181,7 +181,7 @@ func ExamplePagesClient_DeletePage() {
 
 	req := &cxpb.DeletePageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeletePageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#DeletePageRequest.
 	}
 	err = c.DeletePage(ctx, req)
 	if err != nil {

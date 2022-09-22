@@ -20,8 +20,8 @@ import (
 	"context"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta3"
+	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb"
 	"google.golang.org/api/iterator"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -72,9 +72,9 @@ func ExampleClient_ListQueues() {
 	}
 	defer c.Close()
 
-	req := &taskspb.ListQueuesRequest{
+	req := &cloudtaskspb.ListQueuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#ListQueuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ListQueuesRequest.
 	}
 	it := c.ListQueues(ctx, req)
 	for {
@@ -103,9 +103,9 @@ func ExampleClient_GetQueue() {
 	}
 	defer c.Close()
 
-	req := &taskspb.GetQueueRequest{
+	req := &cloudtaskspb.GetQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#GetQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#GetQueueRequest.
 	}
 	resp, err := c.GetQueue(ctx, req)
 	if err != nil {
@@ -128,9 +128,9 @@ func ExampleClient_CreateQueue() {
 	}
 	defer c.Close()
 
-	req := &taskspb.CreateQueueRequest{
+	req := &cloudtaskspb.CreateQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#CreateQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#CreateQueueRequest.
 	}
 	resp, err := c.CreateQueue(ctx, req)
 	if err != nil {
@@ -153,9 +153,9 @@ func ExampleClient_UpdateQueue() {
 	}
 	defer c.Close()
 
-	req := &taskspb.UpdateQueueRequest{
+	req := &cloudtaskspb.UpdateQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#UpdateQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#UpdateQueueRequest.
 	}
 	resp, err := c.UpdateQueue(ctx, req)
 	if err != nil {
@@ -178,9 +178,9 @@ func ExampleClient_DeleteQueue() {
 	}
 	defer c.Close()
 
-	req := &taskspb.DeleteQueueRequest{
+	req := &cloudtaskspb.DeleteQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#DeleteQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#DeleteQueueRequest.
 	}
 	err = c.DeleteQueue(ctx, req)
 	if err != nil {
@@ -201,9 +201,9 @@ func ExampleClient_PurgeQueue() {
 	}
 	defer c.Close()
 
-	req := &taskspb.PurgeQueueRequest{
+	req := &cloudtaskspb.PurgeQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#PurgeQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#PurgeQueueRequest.
 	}
 	resp, err := c.PurgeQueue(ctx, req)
 	if err != nil {
@@ -226,9 +226,9 @@ func ExampleClient_PauseQueue() {
 	}
 	defer c.Close()
 
-	req := &taskspb.PauseQueueRequest{
+	req := &cloudtaskspb.PauseQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#PauseQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#PauseQueueRequest.
 	}
 	resp, err := c.PauseQueue(ctx, req)
 	if err != nil {
@@ -251,9 +251,9 @@ func ExampleClient_ResumeQueue() {
 	}
 	defer c.Close()
 
-	req := &taskspb.ResumeQueueRequest{
+	req := &cloudtaskspb.ResumeQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#ResumeQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ResumeQueueRequest.
 	}
 	resp, err := c.ResumeQueue(ctx, req)
 	if err != nil {
@@ -351,9 +351,9 @@ func ExampleClient_ListTasks() {
 	}
 	defer c.Close()
 
-	req := &taskspb.ListTasksRequest{
+	req := &cloudtaskspb.ListTasksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#ListTasksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ListTasksRequest.
 	}
 	it := c.ListTasks(ctx, req)
 	for {
@@ -382,9 +382,9 @@ func ExampleClient_GetTask() {
 	}
 	defer c.Close()
 
-	req := &taskspb.GetTaskRequest{
+	req := &cloudtaskspb.GetTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#GetTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#GetTaskRequest.
 	}
 	resp, err := c.GetTask(ctx, req)
 	if err != nil {
@@ -407,9 +407,9 @@ func ExampleClient_CreateTask() {
 	}
 	defer c.Close()
 
-	req := &taskspb.CreateTaskRequest{
+	req := &cloudtaskspb.CreateTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#CreateTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#CreateTaskRequest.
 	}
 	resp, err := c.CreateTask(ctx, req)
 	if err != nil {
@@ -432,9 +432,9 @@ func ExampleClient_DeleteTask() {
 	}
 	defer c.Close()
 
-	req := &taskspb.DeleteTaskRequest{
+	req := &cloudtaskspb.DeleteTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#DeleteTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#DeleteTaskRequest.
 	}
 	err = c.DeleteTask(ctx, req)
 	if err != nil {
@@ -455,9 +455,9 @@ func ExampleClient_RunTask() {
 	}
 	defer c.Close()
 
-	req := &taskspb.RunTaskRequest{
+	req := &cloudtaskspb.RunTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#RunTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#RunTaskRequest.
 	}
 	resp, err := c.RunTask(ctx, req)
 	if err != nil {

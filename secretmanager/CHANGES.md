@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.6.0...secretmanager/v1.7.0) (2022-09-21)
+
+
+### Features
+
+* **secretmanager:** remove beta client that no longer has source protos ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.5.0...secretmanager/v1.6.0) (2022-09-19)
 
 

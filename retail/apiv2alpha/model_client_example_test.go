@@ -20,8 +20,8 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2alpha"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -74,7 +74,7 @@ func ExampleModelClient_CreateModel() {
 
 	req := &retailpb.CreateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CreateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#CreateModelRequest.
 	}
 	op, err := c.CreateModel(ctx, req)
 	if err != nil {
@@ -104,7 +104,7 @@ func ExampleModelClient_PauseModel() {
 
 	req := &retailpb.PauseModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#PauseModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#PauseModelRequest.
 	}
 	resp, err := c.PauseModel(ctx, req)
 	if err != nil {
@@ -129,7 +129,7 @@ func ExampleModelClient_ResumeModel() {
 
 	req := &retailpb.ResumeModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ResumeModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ResumeModelRequest.
 	}
 	resp, err := c.ResumeModel(ctx, req)
 	if err != nil {
@@ -154,7 +154,7 @@ func ExampleModelClient_DeleteModel() {
 
 	req := &retailpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#DeleteModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#DeleteModelRequest.
 	}
 	err = c.DeleteModel(ctx, req)
 	if err != nil {
@@ -177,7 +177,7 @@ func ExampleModelClient_ListModels() {
 
 	req := &retailpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ListModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {
@@ -208,7 +208,7 @@ func ExampleModelClient_UpdateModel() {
 
 	req := &retailpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#UpdateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#UpdateModelRequest.
 	}
 	resp, err := c.UpdateModel(ctx, req)
 	if err != nil {
@@ -233,7 +233,7 @@ func ExampleModelClient_TuneModel() {
 
 	req := &retailpb.TuneModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#TuneModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#TuneModelRequest.
 	}
 	op, err := c.TuneModel(ctx, req)
 	if err != nil {

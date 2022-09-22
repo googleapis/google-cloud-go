@@ -400,15 +400,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "ga",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/secrets/v1beta1",
-		Pkg:                   "secretmanager",
-		ImportPath:            "cloud.google.com/go/secretmanager/apiv1beta1",
-		GRPCServiceConfigPath: "secretmanager_grpc_service_config.json",
-		ApiServiceConfigPath:  "secretmanager_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/osconfig/v1",
 		Pkg:                   "osconfig",
 		ImportPath:            "cloud.google.com/go/osconfig/apiv1",

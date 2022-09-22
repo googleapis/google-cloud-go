@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
-	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
+	"cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datalabelingpb.GetExampleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetExampleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetExampleRequest.
 	}
 	resp, err := c.GetExample(ctx, req)
 	if err != nil {

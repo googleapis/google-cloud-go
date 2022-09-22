@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	"cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataflowpb.GetTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetTemplateRequest.
 	}
 	resp, err := c.GetTemplate(ctx, req)
 	if err != nil {

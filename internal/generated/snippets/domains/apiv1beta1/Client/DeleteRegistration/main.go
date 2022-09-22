@@ -22,7 +22,7 @@ import (
 	"context"
 
 	domains "cloud.google.com/go/domains/apiv1beta1"
-	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
+	"cloud.google.com/go/domains/apiv1beta1/domainspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &domainspb.DeleteRegistrationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#DeleteRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#DeleteRegistrationRequest.
 	}
 	op, err := c.DeleteRegistration(ctx, req)
 	if err != nil {

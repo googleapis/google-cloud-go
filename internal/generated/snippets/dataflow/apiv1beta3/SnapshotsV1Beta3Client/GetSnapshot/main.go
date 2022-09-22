@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	"cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataflowpb.GetSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetSnapshotRequest.
 	}
 	resp, err := c.GetSnapshot(ctx, req)
 	if err != nil {
