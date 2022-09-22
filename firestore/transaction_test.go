@@ -17,6 +17,7 @@ package firestore
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/iterator"
@@ -495,6 +496,45 @@ func TestRunTransaction_NonTransactionalOp(t *testing.T) {
 		if _, err := c.GetAll(ctx2, []*DocumentRef{docref}); err != nil {
 			t.Fatal(err)
 		}
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTransaction_WithReadOptions(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	tid := []byte{1}
+	beginReq := &pb.BeginTransactionRequest{Database: db}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: aTimestamp3},
+	)
+
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: aTimestamp3},
+	)
+
+	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		docref := c.Collection("C").Doc("a")
+		tx.WithReadOptions(ReadOptions{ReadTime: tm}).Get(docref)
 		return nil
 	}); err != nil {
 		t.Fatal(err)

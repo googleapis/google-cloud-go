@@ -81,7 +81,7 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 		return nil, errNilDocRef
 	}
 
-	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d.readOption)
+	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d)
 	if err != nil {
 		return nil, err
 	}
@@ -829,9 +829,14 @@ func (it *DocumentSnapshotIterator) Stop() {
 	it.ws.stop()
 }
 
-// ReadOptions specifies constraints for accessing documents from the database,
+// WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (d *DocumentRef) ReadOptions(opts ReadOptions) *DocumentRef {
+func (d *DocumentRef) WithReadOptions(opts ReadOptions) *DocumentRef {
 	d.readOption = &opts
 	return d
+}
+
+// getReadOptions gets the readOption field
+func (d *DocumentRef) getReadOptions() *ReadOptions {
+	return d.readOption
 }

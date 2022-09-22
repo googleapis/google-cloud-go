@@ -125,7 +125,7 @@ func (c *CollectionRef) Add(ctx context.Context, data interface{}) (*DocumentRef
 // missing documents. A missing document is a document that does not exist but has
 // sub-documents.
 func (c *CollectionRef) DocumentRefs(ctx context.Context) *DocumentRefIterator {
-	return newDocumentRefIterator(ctx, c, nil, c.readOptions)
+	return newDocumentRefIterator(ctx, c, nil, c)
 }
 
 const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -141,9 +141,14 @@ func uniqueID() string {
 	return string(b)
 }
 
-// ReadOptions specifies constraints for accessing documents from the database,
+// WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (c *CollectionRef) ReadOptions(opts ReadOptions) *CollectionRef {
+func (c *CollectionRef) WithReadOptions(opts ReadOptions) *CollectionRef {
 	c.readOptions = &opts
 	return c
+}
+
+// getReadOptions gets the readOption field
+func (c *CollectionRef) getReadOptions() *ReadOptions {
+	return c.readOptions
 }

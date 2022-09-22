@@ -17,9 +17,11 @@ package firestore
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestDoc(t *testing.T) {
@@ -96,5 +98,37 @@ func TestNilErrors(t *testing.T) {
 	}
 	if _, _, err := coll.Add(ctx, testData); err != errNilDocRef {
 		t.Fatalf("got <%v>, want <%v>", err, errNilDocRef)
+	}
+}
+
+func TestCollRef_WithReadOptions(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	const docPath = dbPath + "/documents/C/a"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+
+	srv.addRPC(&pb.ListDocumentsRequest{
+		Parent:       dbPath,
+		CollectionId: "myCollection",
+		ShowMissing:  true,
+		ConsistencySelector: &pb.ListDocumentsRequest_ReadTime{
+			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+		},
+	}, []interface{}{
+		&pb.ListDocumentsResponse{
+			Documents: []*pb.Document{
+				{
+					Name: docPath,
+				},
+			},
+		},
+	})
+
+	_, err := c.Collection("myCollection").WithReadOptions(ReadOptions{ReadTime: tm}).DocumentRefs(ctx).GetAll()
+	if err == nil {
+		t.Fatal(err)
 	}
 }

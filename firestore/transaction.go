@@ -221,7 +221,7 @@ func (t *Transaction) GetAll(drs []*DocumentRef) ([]*DocumentSnapshot, error) {
 		t.readAfterWrite = true
 		return nil, errReadAfterWrite
 	}
-	return t.c.getAll(t.ctx, drs, t.id, t.readOption)
+	return t.c.getAll(t.ctx, drs, t.id, t)
 }
 
 // A Queryer is a Query or a CollectionRef. CollectionRefs act as queries whose
@@ -251,7 +251,7 @@ func (t *Transaction) DocumentRefs(cr *CollectionRef) *DocumentRefIterator {
 		t.readAfterWrite = true
 		return &DocumentRefIterator{err: errReadAfterWrite}
 	}
-	return newDocumentRefIterator(t.ctx, cr, t.id, t.readOption)
+	return newDocumentRefIterator(t.ctx, cr, t.id, t)
 }
 
 // Create adds a Create operation to the Transaction.
@@ -289,9 +289,14 @@ func (t *Transaction) addWrites(ws []*pb.Write, err error) error {
 	return nil
 }
 
-// ReadOptions specifies constraints for accessing documents from the database,
+// WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (t *Transaction) ReadOptions(opts ReadOptions) *Transaction {
+func (t *Transaction) WithReadOptions(opts ReadOptions) *Transaction {
 	t.readOption = &opts
 	return t
+}
+
+// getReadOptions gets the readOption field
+func (t *Transaction) getReadOptions() *ReadOptions {
+	return t.readOption
 }

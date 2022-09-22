@@ -312,7 +312,7 @@ func TestGetAllErrors(t *testing.T) {
 	}
 }
 
-func TestSetReadOption(t *testing.T) {
+func TestClient_WithReadOptions(t *testing.T) {
 	ctx := context.Background()
 	c, srv, cleanup := newMock(t)
 	defer cleanup()
@@ -344,7 +344,7 @@ func TestSetReadOption(t *testing.T) {
 		},
 	})
 
-	_, err := c.ReadOptions(ReadOptions{ReadTime: tm}).GetAll(ctx, []*DocumentRef{
+	_, err := c.WithReadOptions(ReadOptions{ReadTime: tm}).GetAll(ctx, []*DocumentRef{
 		dr,
 	})
 

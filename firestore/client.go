@@ -204,7 +204,7 @@ func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*Docum
 	return c.getAll(ctx, docRefs, nil, nil)
 }
 
-func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, opts *ReadOptions) (_ []*DocumentSnapshot, err error) {
+func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, ro readOptionable) (_ []*DocumentSnapshot, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -225,15 +225,14 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	// Note that transaction ID and other consistency selectors are mutually exclusive.
 	// We respect the transaction first, any read options passed by the caller second,
 	// and any read options stored in the client third.
+	if rt, hasOpts := parseReadTime(c, ro); hasOpts {
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
+	}
+
 	if tid != nil {
 		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
-	} else if opts != nil { //
-		tpb := &timestamppb.Timestamp{Seconds: int64(c.readOption.ReadTime.Unix())}
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: tpb}
-	} else if c.readOption != nil { // TODO(developer): refactor this line when other ReadOptions are available.
-		tpb := &timestamppb.Timestamp{Seconds: int64(c.readOption.ReadTime.Unix())}
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: tpb}
 	}
+
 	streamClient, err := c.c.BatchGetDocuments(withResourceHeader(ctx, req.Database), req)
 	if err != nil {
 		return nil, err
@@ -318,9 +317,9 @@ func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 	return bw
 }
 
-// ReadOptions specifies constraints for accessing documents from the database,
+// WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (c *Client) ReadOptions(opts ReadOptions) *Client {
+func (c *Client) WithReadOptions(opts ReadOptions) *Client {
 	c.readOption = &opts
 	return c
 }
@@ -405,4 +404,20 @@ func (ec emulatorCreds) RequireTransportSecurity() bool {
 // Currently, only ReadTime is supported.
 type ReadOptions struct {
 	ReadTime time.Time // ReadTime specifies the time at which to capture a "snapshot" of the documents in the database.
+}
+
+// ReadOptionable interface allows for abstraction of computing read time settings.
+type readOptionable interface {
+	getReadOptions() *ReadOptions
+}
+
+// parseReadTime ensures that fallback order of read options is respected.
+// First, if a ReadOption is set on the readOptionable
+func parseReadTime(c *Client, ro readOptionable) (*timestamppb.Timestamp, bool) {
+	if ro != nil && ro.getReadOptions() != nil {
+		return &timestamppb.Timestamp{Seconds: int64(ro.getReadOptions().ReadTime.Unix())}, true
+	} else if c.readOption != nil {
+		return &timestamppb.Timestamp{Seconds: int64(c.readOption.ReadTime.Unix())}, true
+	}
+	return nil, false
 }

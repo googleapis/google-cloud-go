@@ -29,7 +29,6 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Query represents a Firestore query.
@@ -919,11 +918,11 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 		}
 
 		// Respect transactions first and read options (read time) second
+		if rt, hasOpts := parseReadTime(client, it); hasOpts {
+			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: rt}
+		}
 		if it.tid != nil {
 			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{Transaction: it.tid}
-		} else if it.readOptions != nil {
-			tpb := &timestamppb.Timestamp{Seconds: it.readOptions.ReadTime.Unix()}
-			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: tpb}
 		}
 		it.streamClient, err = client.c.RunQuery(it.ctx, req)
 		if err != nil {
@@ -1049,9 +1048,19 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 
 func (*btreeDocumentIterator) stop() {}
 
-// ReadOptions specifies constraints for accessing documents from the database,
+// WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (q *Query) ReadOptions(opts ReadOptions) *Query {
+func (q *Query) WithReadOptions(opts ReadOptions) *Query {
 	q.readOptions = &opts
 	return q
+}
+
+// getReadOptions gets the readOption field
+func (q *Query) getReadOptions() *ReadOptions {
+	return q.readOptions
+}
+
+// getReadOptions gets the readOption field
+func (q *queryDocumentIterator) getReadOptions() *ReadOptions {
+	return q.readOptions
 }
