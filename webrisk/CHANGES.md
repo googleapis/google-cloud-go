@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.4.0...webrisk/v1.5.0) (2022-09-21)
+
+
+### Features
+
+* **webrisk:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.3.0...webrisk/v1.4.0) (2022-09-19)
 
 
