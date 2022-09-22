@@ -61,7 +61,7 @@
 //
 //	req := &retailpb.ListCatalogsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ListCatalogsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ListCatalogsRequest.
 //	}
 //	it := c.ListCatalogs(ctx, req)
 //	for {

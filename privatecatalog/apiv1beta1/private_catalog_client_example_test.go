@@ -20,8 +20,8 @@ import (
 	"context"
 
 	privatecatalog "cloud.google.com/go/privatecatalog/apiv1beta1"
+	privatecatalogpb "cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb"
 	"google.golang.org/api/iterator"
-	privatecatalogpb "google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1"
 )
 
 func ExampleNewClient() {
@@ -73,7 +73,7 @@ func ExampleClient_SearchCatalogs() {
 
 	req := &privatecatalogpb.SearchCatalogsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchCatalogsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb#SearchCatalogsRequest.
 	}
 	it := c.SearchCatalogs(ctx, req)
 	for {
@@ -104,7 +104,7 @@ func ExampleClient_SearchProducts() {
 
 	req := &privatecatalogpb.SearchProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb#SearchProductsRequest.
 	}
 	it := c.SearchProducts(ctx, req)
 	for {
@@ -135,7 +135,7 @@ func ExampleClient_SearchVersions() {
 
 	req := &privatecatalogpb.SearchVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb#SearchVersionsRequest.
 	}
 	it := c.SearchVersions(ctx, req)
 	for {

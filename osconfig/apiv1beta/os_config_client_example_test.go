@@ -20,8 +20,8 @@ import (
 	"context"
 
 	osconfig "cloud.google.com/go/osconfig/apiv1beta"
+	osconfigpb "cloud.google.com/go/osconfig/apiv1beta/osconfigpb"
 	"google.golang.org/api/iterator"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
 )
 
 func ExampleNewClient() {
@@ -73,7 +73,7 @@ func ExampleClient_ExecutePatchJob() {
 
 	req := &osconfigpb.ExecutePatchJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#ExecutePatchJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ExecutePatchJobRequest.
 	}
 	resp, err := c.ExecutePatchJob(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExampleClient_GetPatchJob() {
 
 	req := &osconfigpb.GetPatchJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#GetPatchJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#GetPatchJobRequest.
 	}
 	resp, err := c.GetPatchJob(ctx, req)
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleClient_CancelPatchJob() {
 
 	req := &osconfigpb.CancelPatchJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#CancelPatchJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#CancelPatchJobRequest.
 	}
 	resp, err := c.CancelPatchJob(ctx, req)
 	if err != nil {
@@ -148,7 +148,7 @@ func ExampleClient_ListPatchJobs() {
 
 	req := &osconfigpb.ListPatchJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#ListPatchJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListPatchJobsRequest.
 	}
 	it := c.ListPatchJobs(ctx, req)
 	for {
@@ -179,7 +179,7 @@ func ExampleClient_ListPatchJobInstanceDetails() {
 
 	req := &osconfigpb.ListPatchJobInstanceDetailsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#ListPatchJobInstanceDetailsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListPatchJobInstanceDetailsRequest.
 	}
 	it := c.ListPatchJobInstanceDetails(ctx, req)
 	for {
@@ -210,7 +210,7 @@ func ExampleClient_CreatePatchDeployment() {
 
 	req := &osconfigpb.CreatePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#CreatePatchDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#CreatePatchDeploymentRequest.
 	}
 	resp, err := c.CreatePatchDeployment(ctx, req)
 	if err != nil {
@@ -235,7 +235,7 @@ func ExampleClient_GetPatchDeployment() {
 
 	req := &osconfigpb.GetPatchDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#GetPatchDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#GetPatchDeploymentRequest.
 	}
 	resp, err := c.GetPatchDeployment(ctx, req)
 	if err != nil {
@@ -260,7 +260,7 @@ func ExampleClient_ListPatchDeployments() {
 
 	req := &osconfigpb.ListPatchDeploymentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#ListPatchDeploymentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListPatchDeploymentsRequest.
 	}
 	it := c.ListPatchDeployments(ctx, req)
 	for {
@@ -291,7 +291,7 @@ func ExampleClient_DeletePatchDeployment() {
 
 	req := &osconfigpb.DeletePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#DeletePatchDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#DeletePatchDeploymentRequest.
 	}
 	err = c.DeletePatchDeployment(ctx, req)
 	if err != nil {
@@ -314,7 +314,7 @@ func ExampleClient_UpdatePatchDeployment() {
 
 	req := &osconfigpb.UpdatePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#UpdatePatchDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#UpdatePatchDeploymentRequest.
 	}
 	resp, err := c.UpdatePatchDeployment(ctx, req)
 	if err != nil {
@@ -339,7 +339,7 @@ func ExampleClient_PausePatchDeployment() {
 
 	req := &osconfigpb.PausePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#PausePatchDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#PausePatchDeploymentRequest.
 	}
 	resp, err := c.PausePatchDeployment(ctx, req)
 	if err != nil {
@@ -364,7 +364,7 @@ func ExampleClient_ResumePatchDeployment() {
 
 	req := &osconfigpb.ResumePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#ResumePatchDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ResumePatchDeploymentRequest.
 	}
 	resp, err := c.ResumePatchDeployment(ctx, req)
 	if err != nil {
@@ -389,7 +389,7 @@ func ExampleClient_CreateGuestPolicy() {
 
 	req := &osconfigpb.CreateGuestPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#CreateGuestPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#CreateGuestPolicyRequest.
 	}
 	resp, err := c.CreateGuestPolicy(ctx, req)
 	if err != nil {
@@ -414,7 +414,7 @@ func ExampleClient_GetGuestPolicy() {
 
 	req := &osconfigpb.GetGuestPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#GetGuestPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#GetGuestPolicyRequest.
 	}
 	resp, err := c.GetGuestPolicy(ctx, req)
 	if err != nil {
@@ -439,7 +439,7 @@ func ExampleClient_ListGuestPolicies() {
 
 	req := &osconfigpb.ListGuestPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#ListGuestPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListGuestPoliciesRequest.
 	}
 	it := c.ListGuestPolicies(ctx, req)
 	for {
@@ -470,7 +470,7 @@ func ExampleClient_UpdateGuestPolicy() {
 
 	req := &osconfigpb.UpdateGuestPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#UpdateGuestPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#UpdateGuestPolicyRequest.
 	}
 	resp, err := c.UpdateGuestPolicy(ctx, req)
 	if err != nil {
@@ -495,7 +495,7 @@ func ExampleClient_DeleteGuestPolicy() {
 
 	req := &osconfigpb.DeleteGuestPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#DeleteGuestPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#DeleteGuestPolicyRequest.
 	}
 	err = c.DeleteGuestPolicy(ctx, req)
 	if err != nil {
@@ -518,7 +518,7 @@ func ExampleClient_LookupEffectiveGuestPolicy() {
 
 	req := &osconfigpb.LookupEffectiveGuestPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#LookupEffectiveGuestPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#LookupEffectiveGuestPolicyRequest.
 	}
 	resp, err := c.LookupEffectiveGuestPolicy(ctx, req)
 	if err != nil {

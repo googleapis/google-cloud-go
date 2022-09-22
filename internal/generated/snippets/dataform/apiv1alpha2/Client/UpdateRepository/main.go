@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataform "cloud.google.com/go/dataform/apiv1alpha2"
-	dataformpb "google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2"
+	"cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataformpb.UpdateRepositoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2#UpdateRepositoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1alpha2/dataformpb#UpdateRepositoryRequest.
 	}
 	resp, err := c.UpdateRepository(ctx, req)
 	if err != nil {

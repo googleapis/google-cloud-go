@@ -57,7 +57,7 @@
 //
 //	req := &tablespb.GetTableRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#GetTableRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetTableRequest.
 //	}
 //	resp, err := c.GetTable(ctx, req)
 //	if err != nil {
