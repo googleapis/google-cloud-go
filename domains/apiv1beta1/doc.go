@@ -59,7 +59,7 @@
 //
 //	req := &domainspb.SearchDomainsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#SearchDomainsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#SearchDomainsRequest.
 //	}
 //	resp, err := c.SearchDomains(ctx, req)
 //	if err != nil {

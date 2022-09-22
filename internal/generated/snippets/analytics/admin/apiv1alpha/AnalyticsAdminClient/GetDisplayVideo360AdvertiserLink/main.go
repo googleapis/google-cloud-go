@@ -22,7 +22,7 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
-	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+	"cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &adminpb.GetDisplayVideo360AdvertiserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDisplayVideo360AdvertiserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetDisplayVideo360AdvertiserLinkRequest.
 	}
 	resp, err := c.GetDisplayVideo360AdvertiserLink(ctx, req)
 	if err != nil {

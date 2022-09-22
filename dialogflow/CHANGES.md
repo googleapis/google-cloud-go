@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.15.0...dialogflow/v1.16.0) (2022-09-21)
+
+
+### Features
+
+* **dialogflow:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.14.0...dialogflow/v1.15.0) (2022-09-19)
 
 

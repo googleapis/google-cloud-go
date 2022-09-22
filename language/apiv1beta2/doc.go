@@ -61,7 +61,7 @@
 //
 //	req := &languagepb.AnalyzeSentimentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeSentimentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeSentimentRequest.
 //	}
 //	resp, err := c.AnalyzeSentiment(ctx, req)
 //	if err != nil {

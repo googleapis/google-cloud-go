@@ -60,7 +60,7 @@
 //
 //	req := &osconfigpb.CreateOSPolicyAssignmentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#CreateOSPolicyAssignmentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1alpha/osconfigpb#CreateOSPolicyAssignmentRequest.
 //	}
 //	op, err := c.CreateOSPolicyAssignment(ctx, req)
 //	if err != nil {

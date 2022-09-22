@@ -60,7 +60,7 @@
 //
 //	req := &gamingpb.ListGameServerClustersRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#ListGameServerClustersRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#ListGameServerClustersRequest.
 //	}
 //	it := c.ListGameServerClusters(ctx, req)
 //	for {

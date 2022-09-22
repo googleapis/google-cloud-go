@@ -60,7 +60,7 @@
 //
 //	req := &metastorepb.ListServicesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#ListServicesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#ListServicesRequest.
 //	}
 //	it := c.ListServices(ctx, req)
 //	for {

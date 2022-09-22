@@ -20,7 +20,7 @@ import (
 	"context"
 
 	videointelligence "cloud.google.com/go/videointelligence/apiv1beta2"
-	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1beta2"
+	videointelligencepb "cloud.google.com/go/videointelligence/apiv1beta2/videointelligencepb"
 )
 
 func ExampleNewClient() {
@@ -72,7 +72,7 @@ func ExampleClient_AnnotateVideo() {
 
 	req := &videointelligencepb.AnnotateVideoRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/videointelligence/v1beta2#AnnotateVideoRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/videointelligence/apiv1beta2/videointelligencepb#AnnotateVideoRequest.
 	}
 	op, err := c.AnnotateVideo(ctx, req)
 	if err != nil {
