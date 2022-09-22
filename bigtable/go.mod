@@ -10,7 +10,7 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/googleapis/gax-go/v2 v2.4.0
 	google.golang.org/api v0.95.0
-	google.golang.org/genproto v0.0.0-20220920164045-a2a065f3c118
+	google.golang.org/genproto v0.0.0-20220921223823-23cae91e6737
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 	rsc.io/binaryregexp v0.2.0
