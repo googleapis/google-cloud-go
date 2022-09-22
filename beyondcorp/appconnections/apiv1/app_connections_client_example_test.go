@@ -29,6 +29,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListAppConnections() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,6 +77,11 @@ func ExampleClient_ListAppConnections() {
 
 func ExampleClient_GetAppConnection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,6 +102,11 @@ func ExampleClient_GetAppConnection() {
 
 func ExampleClient_CreateAppConnection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,6 +132,11 @@ func ExampleClient_CreateAppConnection() {
 
 func ExampleClient_UpdateAppConnection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,6 +162,11 @@ func ExampleClient_UpdateAppConnection() {
 
 func ExampleClient_DeleteAppConnection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -160,6 +190,11 @@ func ExampleClient_DeleteAppConnection() {
 
 func ExampleClient_ResolveAppConnections() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -186,6 +221,11 @@ func ExampleClient_ResolveAppConnections() {
 
 func ExampleClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -206,6 +246,11 @@ func ExampleClient_GetLocation() {
 
 func ExampleClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -232,6 +277,11 @@ func ExampleClient_ListLocations() {
 
 func ExampleClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -252,6 +302,11 @@ func ExampleClient_GetIamPolicy() {
 
 func ExampleClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -272,6 +327,11 @@ func ExampleClient_SetIamPolicy() {
 
 func ExampleClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -292,6 +352,11 @@ func ExampleClient_TestIamPermissions() {
 
 func ExampleClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -310,6 +375,11 @@ func ExampleClient_CancelOperation() {
 
 func ExampleClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -328,6 +398,11 @@ func ExampleClient_DeleteOperation() {
 
 func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -348,6 +423,11 @@ func ExampleClient_GetOperation() {
 
 func ExampleClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnections.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

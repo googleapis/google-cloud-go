@@ -1,5 +1,19 @@
 # Changes
 
+## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.1.1...vision/v2.2.0) (2022-09-20)
+
+
+### Features
+
+* **vision/v2:** start generating apiv1p1beta1 ([4aa2f48](https://github.com/googleapis/google-cloud-go/commit/4aa2f48eeb2b37124b207d3567f2b66f567797a8))
+
+## [2.1.1](https://github.com/googleapis/google-cloud-go/compare/vision/v2.1.0...vision/v2.1.1) (2022-09-15)
+
+
+### Documentation
+
+* **vision/v2:** update comments for image annotator OCR models ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+
 ## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.0.0...vision/v2.1.0) (2022-08-09)
 
 

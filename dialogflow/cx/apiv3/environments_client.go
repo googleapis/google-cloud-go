@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -38,6 +37,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newEnvironmentsClientHook clientHook
@@ -240,7 +240,8 @@ func (c *EnvironmentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -455,7 +456,8 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

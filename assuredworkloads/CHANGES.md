@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.4.0...assuredworkloads/v1.5.0) (2022-09-19)
+
+
+### Features
+
+* **assuredworkloads:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.3.0...assuredworkloads/v1.4.0) (2022-09-15)
+
+
+### Features
+
+* **assuredworkloads:** Add compliant_but_disallowed_services field to the v1beta1 Workload proto ([6a0080a](https://github.com/googleapis/google-cloud-go/commit/6a0080ad69398c572d856886293e19c79cf0fc0e))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.2.0...assuredworkloads/v1.3.0) (2022-09-06)
 
 

@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -264,7 +264,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -313,8 +314,8 @@ func (c *Client) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWor
 	return c.internalClient.GetWorkload(ctx, req, opts...)
 }
 
-// AnalyzeWorkloadMove a request to analyze a hypothetical move of a source project or
-// project-based workload to a target (destination) folder-based workload.
+// AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured
+// Workload
 func (c *Client) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
 	return c.internalClient.AnalyzeWorkloadMove(ctx, req, opts...)
 }
@@ -413,7 +414,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -512,7 +514,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -828,30 +830,40 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 	if req.GetWorkload().GetBillingAccount() != "" {
 		params.Add("workload.billingAccount", fmt.Sprintf("%v", req.GetWorkload().GetBillingAccount()))
 	}
-	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
-		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
 	}
-	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
-		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
-	}
-	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
-		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetNanos()))
-	}
-	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
-		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
 	}
 	params.Add("workload.complianceRegime", fmt.Sprintf("%v", req.GetWorkload().GetComplianceRegime()))
-	if req.GetWorkload().GetCreateTime().GetNanos() != 0 {
-		params.Add("workload.createTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetCreateTime().GetNanos()))
+	if req.GetWorkload().GetCompliantButDisallowedServices() != nil {
+		params.Add("workload.compliantButDisallowedServices", fmt.Sprintf("%v", req.GetWorkload().GetCompliantButDisallowedServices()))
 	}
-	if req.GetWorkload().GetCreateTime().GetSeconds() != 0 {
-		params.Add("workload.createTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetCreateTime().GetSeconds()))
+	if req.GetWorkload().GetCreateTime() != nil {
+		createTime, err := protojson.Marshal(req.GetWorkload().GetCreateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.createTime", string(createTime))
 	}
 	params.Add("workload.displayName", fmt.Sprintf("%v", req.GetWorkload().GetDisplayName()))
 	if req.GetWorkload().GetEnableSovereignControls() {
@@ -860,56 +872,64 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	if req.GetWorkload().GetEtag() != "" {
 		params.Add("workload.etag", fmt.Sprintf("%v", req.GetWorkload().GetEtag()))
 	}
-	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
-		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
 	}
-	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
-		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
 	}
-	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
-		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetNanos()))
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
 	}
-	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
-		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
 	}
-	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
-		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(nextRotationTime))
 	}
-	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
-		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
-	}
-	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
-		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetNanos()))
-	}
-	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
-		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
-	}
-	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
-		params.Add("workload.il4Settings.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetNanos()))
-	}
-	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
-		params.Add("workload.il4Settings.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime().GetSeconds()))
-	}
-	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
-		params.Add("workload.il4Settings.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetNanos()))
-	}
-	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
-		params.Add("workload.il4Settings.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(rotationPeriod))
 	}
 	if req.GetWorkload().GetKajEnrollmentState() != 0 {
 		params.Add("workload.kajEnrollmentState", fmt.Sprintf("%v", req.GetWorkload().GetKajEnrollmentState()))
 	}
-	if req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetNanos() != 0 {
-		params.Add("workload.kmsSettings.nextRotationTime.nanos", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetNanos()))
+	if req.GetWorkload().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.kmsSettings.nextRotationTime", string(nextRotationTime))
 	}
-	if req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetSeconds() != 0 {
-		params.Add("workload.kmsSettings.nextRotationTime.seconds", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetNextRotationTime().GetSeconds()))
-	}
-	if req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetNanos() != 0 {
-		params.Add("workload.kmsSettings.rotationPeriod.nanos", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetNanos()))
-	}
-	if req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetSeconds() != 0 {
-		params.Add("workload.kmsSettings.rotationPeriod.seconds", fmt.Sprintf("%v", req.GetWorkload().GetKmsSettings().GetRotationPeriod().GetSeconds()))
+	if req.GetWorkload().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.kmsSettings.rotationPeriod", string(rotationPeriod))
 	}
 	if req.GetWorkload().GetName() != "" {
 		params.Add("workload.name", fmt.Sprintf("%v", req.GetWorkload().GetName()))
@@ -1136,8 +1156,8 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 	return resp, nil
 }
 
-// AnalyzeWorkloadMove a request to analyze a hypothetical move of a source project or
-// project-based workload to a target (destination) folder-based workload.
+// AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured
+// Workload
 func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

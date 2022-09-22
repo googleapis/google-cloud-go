@@ -63,6 +63,8 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+type skipTransportTestKey string
+
 const (
 	testPrefix     = "go-integration-test"
 	replayFilename = "storage.replay"
@@ -258,6 +260,10 @@ func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T,
 		t.Run(transport, func(t *testing.T) {
 			defer client.Close()
 
+			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
+				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
+			}
+
 			bucket := bucketName
 			var prefix string
 			if transport == "grpc" {
@@ -285,235 +291,232 @@ func config(ctx context.Context, scopes ...string) *Client {
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(skipGRPC("with_attrs case fails due to b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		projectID := testutil.ProjID()
 
-	projectID := testutil.ProjID()
+		labels := map[string]string{
+			"l1":    "v1",
+			"empty": "",
+		}
 
-	labels := map[string]string{
-		"l1":    "v1",
-		"empty": "",
-	}
+		lifecycle := Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "NEARLINE",
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:             10,
+					Liveness:              Archived,
+					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses: []string{"STANDARD"},
+					NumNewerVersions:      3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "ARCHIVE",
+				},
+				Condition: LifecycleCondition{
+					CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+					DaysSinceCustomTime:   20,
+					Liveness:              Live,
+					MatchesStorageClasses: []string{"STANDARD"},
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					DaysSinceNoncurrentTime: 30,
+					Liveness:                Live,
+					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses:   []string{"NEARLINE"},
+					NumNewerVersions:        10,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:        10,
+					MatchesPrefix:    []string{"testPrefix"},
+					MatchesSuffix:    []string{"testSuffix"},
+					NumNewerVersions: 3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
+			}},
+		}
 
-	lifecycle := Lifecycle{
-		Rules: []LifecycleRule{{
-			Action: LifecycleAction{
-				Type:         SetStorageClassAction,
-				StorageClass: "NEARLINE",
-			},
-			Condition: LifecycleCondition{
-				AgeInDays:             10,
-				Liveness:              Archived,
-				CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-				MatchesStorageClasses: []string{"STANDARD"},
-				NumNewerVersions:      3,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type:         SetStorageClassAction,
-				StorageClass: "ARCHIVE",
-			},
-			Condition: LifecycleCondition{
-				CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
-				DaysSinceCustomTime:   20,
-				Liveness:              Live,
-				MatchesStorageClasses: []string{"STANDARD"},
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				DaysSinceNoncurrentTime: 30,
-				Liveness:                Live,
-				NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-				MatchesStorageClasses:   []string{"NEARLINE"},
-				NumNewerVersions:        10,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				AgeInDays:        10,
-				MatchesPrefix:    []string{"testPrefix"},
-				MatchesSuffix:    []string{"testSuffix"},
-				NumNewerVersions: 3,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				AllObjects: true,
-			},
-		}},
-	}
+		// testedAttrs are the bucket attrs directly compared in this test
+		type testedAttrs struct {
+			StorageClass          string
+			VersioningEnabled     bool
+			LocationType          string
+			Labels                map[string]string
+			Location              string
+			Lifecycle             Lifecycle
+			CustomPlacementConfig *CustomPlacementConfig
+		}
 
-	// testedAttrs are the bucket attrs directly compared in this test
-	type testedAttrs struct {
-		StorageClass          string
-		VersioningEnabled     bool
-		LocationType          string
-		Labels                map[string]string
-		Location              string
-		Lifecycle             Lifecycle
-		CustomPlacementConfig *CustomPlacementConfig
-	}
-
-	for _, test := range []struct {
-		name      string
-		attrs     *BucketAttrs
-		wantAttrs testedAttrs
-	}{
-		{
-			name:  "no attrs",
-			attrs: nil,
-			wantAttrs: testedAttrs{
-				StorageClass:      "STANDARD",
-				VersioningEnabled: false,
-				LocationType:      "multi-region",
-				Location:          "US",
-			},
-		},
-		{
-			name: "with attrs",
-			attrs: &BucketAttrs{
-				StorageClass:      "NEARLINE",
-				VersioningEnabled: true,
-				Labels:            labels,
-				Lifecycle:         lifecycle,
-				Location:          "SOUTHAMERICA-EAST1",
-			},
-			wantAttrs: testedAttrs{
-				StorageClass:      "NEARLINE",
-				VersioningEnabled: true,
-				Labels:            labels,
-				Location:          "SOUTHAMERICA-EAST1",
-				LocationType:      "region",
-				Lifecycle:         lifecycle,
-			},
-		},
-		{
-			name: "dual-region",
-			attrs: &BucketAttrs{
-				Location: "US",
-				CustomPlacementConfig: &CustomPlacementConfig{
-					DataLocations: []string{"US-EAST1", "US-WEST1"},
+		for _, test := range []struct {
+			name      string
+			attrs     *BucketAttrs
+			wantAttrs testedAttrs
+		}{
+			{
+				name:  "no attrs",
+				attrs: nil,
+				wantAttrs: testedAttrs{
+					StorageClass:      "STANDARD",
+					VersioningEnabled: false,
+					LocationType:      "multi-region",
+					Location:          "US",
 				},
 			},
-			wantAttrs: testedAttrs{
-				Location:     "US",
-				LocationType: "dual-region",
-				StorageClass: "STANDARD",
-				CustomPlacementConfig: &CustomPlacementConfig{
-					DataLocations: []string{"US-EAST1", "US-WEST1"},
+			{
+				name: "with attrs",
+				attrs: &BucketAttrs{
+					StorageClass:      "NEARLINE",
+					VersioningEnabled: true,
+					Labels:            labels,
+					Lifecycle:         lifecycle,
+					Location:          "SOUTHAMERICA-EAST1",
+				},
+				wantAttrs: testedAttrs{
+					StorageClass:      "NEARLINE",
+					VersioningEnabled: true,
+					Labels:            labels,
+					Location:          "SOUTHAMERICA-EAST1",
+					LocationType:      "region",
+					Lifecycle:         lifecycle,
 				},
 			},
-		},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			newBucketName := uidSpace.New()
-			b := client.Bucket(newBucketName)
+			{
+				name: "dual-region",
+				attrs: &BucketAttrs{
+					Location: "US",
+					CustomPlacementConfig: &CustomPlacementConfig{
+						DataLocations: []string{"US-EAST1", "US-WEST1"},
+					},
+				},
+				wantAttrs: testedAttrs{
+					Location:     "US",
+					LocationType: "dual-region",
+					StorageClass: "STANDARD",
+					CustomPlacementConfig: &CustomPlacementConfig{
+						DataLocations: []string{"US-EAST1", "US-WEST1"},
+					},
+				},
+			},
+		} {
+			t.Run(test.name, func(t *testing.T) {
+				newBucketName := prefix + uidSpace.New()
+				b := client.Bucket(newBucketName)
 
-			if err := b.Create(ctx, projectID, test.attrs); err != nil {
-				t.Fatalf("bucket create: %v", err)
-			}
+				if err := b.Create(ctx, projectID, test.attrs); err != nil {
+					t.Fatalf("bucket create: %v", err)
+				}
 
-			gotAttrs, err := b.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("bucket attrs: %v", err)
-			}
+				gotAttrs, err := b.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("bucket attrs: %v", err)
+				}
 
-			// All newly created buckets should conform to the following:
-			if gotAttrs.MetaGeneration != 1 {
-				t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
-			}
-			if gotAttrs.ProjectNumber == 0 {
-				t.Errorf("got a zero ProjectNumber")
-			}
+				// All newly created buckets should conform to the following:
+				if gotAttrs.MetaGeneration != 1 {
+					t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
+				}
+				if gotAttrs.ProjectNumber == 0 {
+					t.Errorf("got a zero ProjectNumber")
+				}
 
-			// Test specific wanted bucket attrs
-			if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
-				t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
-			}
-			if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
-				t.Errorf("labels: got %v, want %v", got, want)
-			}
-			if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
-				t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
-			}
-			if gotAttrs.LocationType != test.wantAttrs.LocationType {
-				t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
-			}
-			if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
-				t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
-			}
-			if gotAttrs.Location != test.wantAttrs.Location {
-				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
-			}
-			if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
-				t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
-			}
+				// Test specific wanted bucket attrs
+				if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
+					t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
+				}
+				if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
+					t.Errorf("labels: got %v, want %v", got, want)
+				}
+				if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
+					t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+				}
+				if gotAttrs.LocationType != test.wantAttrs.LocationType {
+					t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
+				}
+				if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
+					t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
+				}
+				if gotAttrs.Location != test.wantAttrs.Location {
+					t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+				}
+				if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
+					t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
+				}
 
-			// Delete the bucket and check that the deletion was succesful
-			if err := b.Delete(ctx); err != nil {
-				t.Fatalf("bucket delete: %v", err)
-			}
-			_, err = b.Attrs(ctx)
-			if err != ErrBucketNotExist {
-				t.Fatalf("expected ErrBucketNotExist, got %v", err)
-			}
-		})
-	}
+				// Delete the bucket and check that the deletion was succesful
+				if err := b.Delete(ctx); err != nil {
+					t.Fatalf("bucket delete: %v", err)
+				}
+				_, err = b.Attrs(ctx)
+				if err != ErrBucketNotExist {
+					t.Fatalf("expected ErrBucketNotExist, got %v", err)
+				}
+			})
+		}
+	})
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(skipGRPC("b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	wantLifecycle := Lifecycle{
-		Rules: []LifecycleRule{
-			{
-				Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
-				Condition: LifecycleCondition{AgeInDays: 30},
+		wantLifecycle := Lifecycle{
+			Rules: []LifecycleRule{
+				{
+					Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+					Condition: LifecycleCondition{AgeInDays: 30},
+				},
+				{
+					Action:    LifecycleAction{Type: DeleteAction},
+					Condition: LifecycleCondition{AllObjects: true},
+				},
 			},
-			{
-				Action:    LifecycleAction{Type: DeleteAction},
-				Condition: LifecycleCondition{AllObjects: true},
-			},
-		},
-	}
+		}
 
-	bucket := client.Bucket(uidSpace.New())
+		bucket := client.Bucket(prefix + uidSpace.New())
 
-	// Create bucket with lifecycle rules
-	bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{
-		Lifecycle: wantLifecycle,
+		// Create bucket with lifecycle rules
+		h.mustCreate(bucket, testutil.ProjID(), &BucketAttrs{
+			Lifecycle: wantLifecycle,
+		})
+		defer h.mustDeleteBucket(bucket)
+
+		attrs := h.mustBucketAttrs(bucket)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
+
+		// Remove lifecycle rules
+		ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
+		}
+
+		// Update bucket with a lifecycle rule
+		ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+		attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
 	})
-	defer h.mustDeleteBucket(bucket)
-
-	attrs := h.mustBucketAttrs(bucket)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
-
-	// Remove lifecycle rules
-	ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
-	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
-	}
-
-	// Update bucket with a lifecycle rule
-	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
-	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
@@ -1330,64 +1333,54 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
-	ctx := context.Background()
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	// Create an HTTP client to read test data and a gRPC client to test write
-	// with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
+		name := uidSpace.New()
+		obj := client.Bucket(bucket).Object(name).Retryer(WithPolicy(RetryAlways))
+		defer h.mustDeleteObject(obj)
 
-	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	defer func() {
-		if err := hobj.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Use a larger blob to test multi-message logic. This is a little over 5MB.
+		content := bytes.Repeat([]byte("a"), 5<<20)
+
+		crc32c := crc32.Checksum(content, crc32cTable)
+		w := obj.NewWriter(ctx)
+		w.ProgressFunc = func(p int64) {
+			t.Logf("%s: committed %d\n", t.Name(), p)
 		}
-	}()
+		w.SendCRC32C = true
+		w.CRC32C = crc32c
+		got, err := w.Write(content)
+		if err != nil {
+			t.Fatalf("Writer.Write: %v", err)
+		}
+		// Flush the buffer to finish the upload.
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
 
-	// Use a larger blob to test multi-message logic. This is a little over 5MB.
-	content := bytes.Repeat([]byte("a"), 5<<20)
+		want := len(content)
+		if got != want {
+			t.Errorf("While writing got: %d want %d", got, want)
+		}
 
-	crc32c := crc32.Checksum(content, crc32cTable)
-	w := gobj.NewWriter(ctx)
-	w.ProgressFunc = func(p int64) {
-		t.Logf("%s: committed %d\n", t.Name(), p)
-	}
-	w.SendCRC32C = true
-	w.CRC32C = crc32c
-	got, err := w.Write(content)
-	if err != nil {
-		t.Fatalf("Writer.Write: %v", err)
-	}
-	// Flush the buffer to finish the upload.
-	if err := w.Close(); err != nil {
-		t.Fatalf("Writer.Close: %v", err)
-	}
+		// Read back the Object for verification.
+		reader, err := client.Bucket(bucket).Object(name).NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer reader.Close()
 
-	want := len(content)
-	if got != want {
-		t.Errorf("While writing got: %d want %d", got, want)
-	}
-
-	// Use HTTP client to read back the Object for verification.
-	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hr.Close()
-
-	buf := make([]byte, want+4<<10)
-	b := bytes.NewBuffer(buf)
-	gotr, err := io.Copy(b, hr)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if gotr != int64(want) {
-		t.Errorf("While reading got: %d want %d", gotr, want)
-	}
+		buf := make([]byte, want+4<<10)
+		b := bytes.NewBuffer(buf)
+		gotr, err := io.Copy(b, reader)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if gotr != int64(want) {
+			t.Errorf("While reading got: %d want %d", gotr, want)
+		}
+	})
 }
 
 func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
@@ -5047,4 +5040,12 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+}
+
+func skipGRPC(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("grpc"), reason)
+}
+
+func skipHTTP(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
 }

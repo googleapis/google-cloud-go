@@ -20,11 +20,16 @@ import (
 	"context"
 
 	language "cloud.google.com/go/language/apiv1beta2"
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
+	languagepb "cloud.google.com/go/language/apiv1beta2/languagepb"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewClient() {
 
 func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +59,11 @@ func ExampleNewRESTClient() {
 
 func ExampleClient_AnalyzeSentiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,7 +72,7 @@ func ExampleClient_AnalyzeSentiment() {
 
 	req := &languagepb.AnalyzeSentimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeSentimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeSentimentRequest.
 	}
 	resp, err := c.AnalyzeSentiment(ctx, req)
 	if err != nil {
@@ -69,6 +84,11 @@ func ExampleClient_AnalyzeSentiment() {
 
 func ExampleClient_AnalyzeEntities() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -77,7 +97,7 @@ func ExampleClient_AnalyzeEntities() {
 
 	req := &languagepb.AnalyzeEntitiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeEntitiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeEntitiesRequest.
 	}
 	resp, err := c.AnalyzeEntities(ctx, req)
 	if err != nil {
@@ -89,6 +109,11 @@ func ExampleClient_AnalyzeEntities() {
 
 func ExampleClient_AnalyzeEntitySentiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -97,7 +122,7 @@ func ExampleClient_AnalyzeEntitySentiment() {
 
 	req := &languagepb.AnalyzeEntitySentimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeEntitySentimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeEntitySentimentRequest.
 	}
 	resp, err := c.AnalyzeEntitySentiment(ctx, req)
 	if err != nil {
@@ -109,6 +134,11 @@ func ExampleClient_AnalyzeEntitySentiment() {
 
 func ExampleClient_AnalyzeSyntax() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +147,7 @@ func ExampleClient_AnalyzeSyntax() {
 
 	req := &languagepb.AnalyzeSyntaxRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeSyntaxRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeSyntaxRequest.
 	}
 	resp, err := c.AnalyzeSyntax(ctx, req)
 	if err != nil {
@@ -129,6 +159,11 @@ func ExampleClient_AnalyzeSyntax() {
 
 func ExampleClient_ClassifyText() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,7 +172,7 @@ func ExampleClient_ClassifyText() {
 
 	req := &languagepb.ClassifyTextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#ClassifyTextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#ClassifyTextRequest.
 	}
 	resp, err := c.ClassifyText(ctx, req)
 	if err != nil {
@@ -149,6 +184,11 @@ func ExampleClient_ClassifyText() {
 
 func ExampleClient_AnnotateText() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,7 +197,7 @@ func ExampleClient_AnnotateText() {
 
 	req := &languagepb.AnnotateTextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnnotateTextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnnotateTextRequest.
 	}
 	resp, err := c.AnnotateText(ctx, req)
 	if err != nil {

@@ -22,11 +22,16 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
-	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+	"cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &adminpb.UpdateAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateAccountRequest.
 	}
 	resp, err := c.UpdateAccount(ctx, req)
 	if err != nil {

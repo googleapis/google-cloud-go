@@ -58,6 +58,11 @@
               "methods": [
                 "List"
               ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
+              ]
             }
           }
         }
@@ -196,6 +201,11 @@
                 "GetHealth"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "Insert": {
               "methods": [
                 "Insert"
@@ -214,6 +224,11 @@
             "SetEdgeSecurityPolicy": {
               "methods": [
                 "SetEdgeSecurityPolicy"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "SetSecurityPolicy": {
@@ -577,6 +592,11 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
               ]
             }
           }
@@ -1360,6 +1380,11 @@
               "methods": [
                 "Patch"
               ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
+              ]
             }
           }
         }
@@ -1417,6 +1442,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
               ]
             }
           }
@@ -2192,6 +2222,11 @@
                 "GetHealth"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "Insert": {
               "methods": [
                 "Insert"
@@ -2205,6 +2240,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "Update": {
@@ -2802,6 +2842,45 @@
         }
       }
     },
+    "RegionSslPolicies": {
+      "clients": {
+        "rest": {
+          "libraryClient": "RegionSslPoliciesClient",
+          "rpcs": {
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "ListAvailableFeatures": {
+              "methods": [
+                "ListAvailableFeatures"
+              ]
+            },
+            "Patch": {
+              "methods": [
+                "Patch"
+              ]
+            }
+          }
+        }
+      }
+    },
     "RegionTargetHttpProxies": {
       "clients": {
         "rest": {
@@ -2874,6 +2953,35 @@
             "SetUrlMap": {
               "methods": [
                 "SetUrlMap"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RegionTargetTcpProxies": {
+      "clients": {
+        "rest": {
+          "libraryClient": "RegionTargetTcpProxiesClient",
+          "rpcs": {
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
               ]
             }
           }
@@ -3198,6 +3306,11 @@
               "methods": [
                 "RemoveRule"
               ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
+              ]
             }
           }
         }
@@ -3345,6 +3458,11 @@
         "rest": {
           "libraryClient": "SslPoliciesClient",
           "rpcs": {
+            "AggregatedList": {
+              "methods": [
+                "AggregatedList"
+              ]
+            },
             "Delete": {
               "methods": [
                 "Delete"
@@ -3810,6 +3928,11 @@
               "methods": [
                 "List"
               ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
+              ]
             }
           }
         }
@@ -3946,6 +4069,11 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
               ]
             }
           }

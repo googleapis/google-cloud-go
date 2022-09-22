@@ -1,5 +1,19 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/gaming/v1.4.0...gaming/v1.5.0) (2022-09-19)
+
+
+### Features
+
+* **gaming:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/gaming/v1.3.1...gaming/v1.4.0) (2022-09-15)
+
+
+### Features
+
+* **gaming/apiv1beta:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/gaming/v1.3.0...gaming/v1.3.1) (2022-07-12)
 
 

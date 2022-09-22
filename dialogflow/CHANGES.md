@@ -1,5 +1,19 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.14.0...dialogflow/v1.15.0) (2022-09-19)
+
+
+### Features
+
+* **dialogflow:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.13.0...dialogflow/v1.14.0) (2022-09-15)
+
+
+### Features
+
+* **dialogflow/apiv2beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.12.1...dialogflow/v1.13.0) (2022-09-06)
 
 

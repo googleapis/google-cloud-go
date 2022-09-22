@@ -20,14 +20,36 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2alpha"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewCompletionClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCompletionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCompletionRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewCompletionRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +61,11 @@ func ExampleNewCompletionClient() {
 
 func ExampleCompletionClient_CompleteQuery() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCompletionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +74,7 @@ func ExampleCompletionClient_CompleteQuery() {
 
 	req := &retailpb.CompleteQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CompleteQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#CompleteQueryRequest.
 	}
 	resp, err := c.CompleteQuery(ctx, req)
 	if err != nil {
@@ -59,6 +86,11 @@ func ExampleCompletionClient_CompleteQuery() {
 
 func ExampleCompletionClient_ImportCompletionData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCompletionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +99,7 @@ func ExampleCompletionClient_ImportCompletionData() {
 
 	req := &retailpb.ImportCompletionDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ImportCompletionDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ImportCompletionDataRequest.
 	}
 	op, err := c.ImportCompletionData(ctx, req)
 	if err != nil {
@@ -84,6 +116,11 @@ func ExampleCompletionClient_ImportCompletionData() {
 
 func ExampleCompletionClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCompletionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +141,11 @@ func ExampleCompletionClient_GetOperation() {
 
 func ExampleCompletionClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCompletionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

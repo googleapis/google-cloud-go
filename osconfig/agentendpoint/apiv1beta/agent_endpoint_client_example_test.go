@@ -20,11 +20,16 @@ import (
 	"context"
 
 	agentendpoint "cloud.google.com/go/osconfig/agentendpoint/apiv1beta"
-	agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta"
+	agentendpointpb "cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewClient() {
 
 func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := agentendpoint.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +59,11 @@ func ExampleNewRESTClient() {
 
 func ExampleClient_StartNextTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,7 +72,7 @@ func ExampleClient_StartNextTask() {
 
 	req := &agentendpointpb.StartNextTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#StartNextTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#StartNextTaskRequest.
 	}
 	resp, err := c.StartNextTask(ctx, req)
 	if err != nil {
@@ -69,6 +84,11 @@ func ExampleClient_StartNextTask() {
 
 func ExampleClient_ReportTaskProgress() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -77,7 +97,7 @@ func ExampleClient_ReportTaskProgress() {
 
 	req := &agentendpointpb.ReportTaskProgressRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#ReportTaskProgressRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#ReportTaskProgressRequest.
 	}
 	resp, err := c.ReportTaskProgress(ctx, req)
 	if err != nil {
@@ -89,6 +109,11 @@ func ExampleClient_ReportTaskProgress() {
 
 func ExampleClient_ReportTaskComplete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -97,7 +122,7 @@ func ExampleClient_ReportTaskComplete() {
 
 	req := &agentendpointpb.ReportTaskCompleteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#ReportTaskCompleteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#ReportTaskCompleteRequest.
 	}
 	resp, err := c.ReportTaskComplete(ctx, req)
 	if err != nil {
@@ -109,6 +134,11 @@ func ExampleClient_ReportTaskComplete() {
 
 func ExampleClient_LookupEffectiveGuestPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +147,7 @@ func ExampleClient_LookupEffectiveGuestPolicy() {
 
 	req := &agentendpointpb.LookupEffectiveGuestPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#LookupEffectiveGuestPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#LookupEffectiveGuestPolicyRequest.
 	}
 	resp, err := c.LookupEffectiveGuestPolicy(ctx, req)
 	if err != nil {
@@ -129,6 +159,11 @@ func ExampleClient_LookupEffectiveGuestPolicy() {
 
 func ExampleClient_RegisterAgent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,7 +172,7 @@ func ExampleClient_RegisterAgent() {
 
 	req := &agentendpointpb.RegisterAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#RegisterAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#RegisterAgentRequest.
 	}
 	resp, err := c.RegisterAgent(ctx, req)
 	if err != nil {

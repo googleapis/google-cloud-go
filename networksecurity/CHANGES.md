@@ -1,5 +1,19 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.4.0...networksecurity/v0.5.0) (2022-09-19)
+
+
+### Features
+
+* **networksecurity:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.3.1...networksecurity/v0.4.0) (2022-09-15)
+
+
+### Features
+
+* **networksecurity/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.3.0...networksecurity/v0.3.1) (2022-07-26)
 
 

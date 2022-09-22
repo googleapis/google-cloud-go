@@ -20,14 +20,36 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2alpha"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewModelClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewModelRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewModelRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +61,11 @@ func ExampleNewModelClient() {
 
 func ExampleModelClient_CreateModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +74,7 @@ func ExampleModelClient_CreateModel() {
 
 	req := &retailpb.CreateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CreateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#CreateModelRequest.
 	}
 	op, err := c.CreateModel(ctx, req)
 	if err != nil {
@@ -64,6 +91,11 @@ func ExampleModelClient_CreateModel() {
 
 func ExampleModelClient_PauseModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +104,7 @@ func ExampleModelClient_PauseModel() {
 
 	req := &retailpb.PauseModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#PauseModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#PauseModelRequest.
 	}
 	resp, err := c.PauseModel(ctx, req)
 	if err != nil {
@@ -84,6 +116,11 @@ func ExampleModelClient_PauseModel() {
 
 func ExampleModelClient_ResumeModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleModelClient_ResumeModel() {
 
 	req := &retailpb.ResumeModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ResumeModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ResumeModelRequest.
 	}
 	resp, err := c.ResumeModel(ctx, req)
 	if err != nil {
@@ -104,6 +141,11 @@ func ExampleModelClient_ResumeModel() {
 
 func ExampleModelClient_DeleteModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +154,7 @@ func ExampleModelClient_DeleteModel() {
 
 	req := &retailpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#DeleteModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#DeleteModelRequest.
 	}
 	err = c.DeleteModel(ctx, req)
 	if err != nil {
@@ -122,6 +164,11 @@ func ExampleModelClient_DeleteModel() {
 
 func ExampleModelClient_ListModels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,7 +177,7 @@ func ExampleModelClient_ListModels() {
 
 	req := &retailpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ListModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {
@@ -148,6 +195,11 @@ func ExampleModelClient_ListModels() {
 
 func ExampleModelClient_UpdateModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,7 +208,7 @@ func ExampleModelClient_UpdateModel() {
 
 	req := &retailpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#UpdateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#UpdateModelRequest.
 	}
 	resp, err := c.UpdateModel(ctx, req)
 	if err != nil {
@@ -168,6 +220,11 @@ func ExampleModelClient_UpdateModel() {
 
 func ExampleModelClient_TuneModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,7 +233,7 @@ func ExampleModelClient_TuneModel() {
 
 	req := &retailpb.TuneModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#TuneModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#TuneModelRequest.
 	}
 	op, err := c.TuneModel(ctx, req)
 	if err != nil {
@@ -193,6 +250,11 @@ func ExampleModelClient_TuneModel() {
 
 func ExampleModelClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -213,6 +275,11 @@ func ExampleModelClient_GetOperation() {
 
 func ExampleModelClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

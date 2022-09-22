@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateScanConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleClient_CreateScanConfig() {
 
 func ExampleClient_DeleteScanConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -76,6 +91,11 @@ func ExampleClient_DeleteScanConfig() {
 
 func ExampleClient_GetScanConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -96,6 +116,11 @@ func ExampleClient_GetScanConfig() {
 
 func ExampleClient_ListScanConfigs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -122,6 +147,11 @@ func ExampleClient_ListScanConfigs() {
 
 func ExampleClient_UpdateScanConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,6 +172,11 @@ func ExampleClient_UpdateScanConfig() {
 
 func ExampleClient_StartScanRun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -162,6 +197,11 @@ func ExampleClient_StartScanRun() {
 
 func ExampleClient_GetScanRun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +222,11 @@ func ExampleClient_GetScanRun() {
 
 func ExampleClient_ListScanRuns() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -208,6 +253,11 @@ func ExampleClient_ListScanRuns() {
 
 func ExampleClient_StopScanRun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +278,11 @@ func ExampleClient_StopScanRun() {
 
 func ExampleClient_ListCrawledUrls() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -254,6 +309,11 @@ func ExampleClient_ListCrawledUrls() {
 
 func ExampleClient_GetFinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -274,6 +334,11 @@ func ExampleClient_GetFinding() {
 
 func ExampleClient_ListFindings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -300,6 +365,11 @@ func ExampleClient_ListFindings() {
 
 func ExampleClient_ListFindingTypeStats() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

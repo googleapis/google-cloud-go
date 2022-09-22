@@ -27,6 +27,11 @@
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := servicedirectory.NewLookupClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -42,6 +47,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := servicedirectory.NewLookupClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -50,7 +60,7 @@
 //
 //	req := &servicedirectorypb.ResolveServiceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1#ResolveServiceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#ResolveServiceRequest.
 //	}
 //	resp, err := c.ResolveService(ctx, req)
 //	if err != nil {

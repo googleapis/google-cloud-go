@@ -20,14 +20,36 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2alpha"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewUserEventClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewUserEventRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewUserEventRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +61,11 @@ func ExampleNewUserEventClient() {
 
 func ExampleUserEventClient_WriteUserEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +74,7 @@ func ExampleUserEventClient_WriteUserEvent() {
 
 	req := &retailpb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#WriteUserEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#WriteUserEventRequest.
 	}
 	resp, err := c.WriteUserEvent(ctx, req)
 	if err != nil {
@@ -59,6 +86,11 @@ func ExampleUserEventClient_WriteUserEvent() {
 
 func ExampleUserEventClient_CollectUserEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +99,7 @@ func ExampleUserEventClient_CollectUserEvent() {
 
 	req := &retailpb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CollectUserEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#CollectUserEventRequest.
 	}
 	resp, err := c.CollectUserEvent(ctx, req)
 	if err != nil {
@@ -79,6 +111,11 @@ func ExampleUserEventClient_CollectUserEvent() {
 
 func ExampleUserEventClient_PurgeUserEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,7 +124,7 @@ func ExampleUserEventClient_PurgeUserEvents() {
 
 	req := &retailpb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#PurgeUserEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#PurgeUserEventsRequest.
 	}
 	op, err := c.PurgeUserEvents(ctx, req)
 	if err != nil {
@@ -104,6 +141,11 @@ func ExampleUserEventClient_PurgeUserEvents() {
 
 func ExampleUserEventClient_ImportUserEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +154,7 @@ func ExampleUserEventClient_ImportUserEvents() {
 
 	req := &retailpb.ImportUserEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ImportUserEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ImportUserEventsRequest.
 	}
 	op, err := c.ImportUserEvents(ctx, req)
 	if err != nil {
@@ -129,6 +171,11 @@ func ExampleUserEventClient_ImportUserEvents() {
 
 func ExampleUserEventClient_RejoinUserEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,7 +184,7 @@ func ExampleUserEventClient_RejoinUserEvents() {
 
 	req := &retailpb.RejoinUserEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#RejoinUserEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#RejoinUserEventsRequest.
 	}
 	op, err := c.RejoinUserEvents(ctx, req)
 	if err != nil {
@@ -154,6 +201,11 @@ func ExampleUserEventClient_RejoinUserEvents() {
 
 func ExampleUserEventClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -174,6 +226,11 @@ func ExampleUserEventClient_GetOperation() {
 
 func ExampleUserEventClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
