@@ -59,7 +59,7 @@
 //
 //	req := &schedulerpb.ListJobsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1beta1#ListJobsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1beta1/schedulerpb#ListJobsRequest.
 //	}
 //	it := c.ListJobs(ctx, req)
 //	for {

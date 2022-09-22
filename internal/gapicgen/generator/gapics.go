@@ -285,6 +285,9 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 		return err
 	}
 	for _, entry := range entries {
+		// Ignore compute_small.proto which is just for testing and would cause a collision if used in generation.
+		//
+		// TODO(noahdietz): Remove this when it is no longer needed.
 		if strings.Contains(entry.Name(), ".proto") && !strings.Contains(entry.Name(), "compute_small.proto") {
 			protoFiles = append(protoFiles, filepath.Join(inputDir, entry.Name()))
 		}

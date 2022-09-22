@@ -22,8 +22,8 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
+	"cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	"google.golang.org/api/iterator"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &dataflowpb.ListJobMessagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListJobMessagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#ListJobMessagesRequest.
 	}
 	it := c.ListJobMessages(ctx, req)
 	for {

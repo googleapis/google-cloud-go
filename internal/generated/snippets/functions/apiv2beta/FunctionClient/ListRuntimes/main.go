@@ -22,7 +22,7 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2beta"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2beta"
+	"cloud.google.com/go/functions/apiv2beta/functionspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &functionspb.ListRuntimesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#ListRuntimesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#ListRuntimesRequest.
 	}
 	resp, err := c.ListRuntimes(ctx, req)
 	if err != nil {

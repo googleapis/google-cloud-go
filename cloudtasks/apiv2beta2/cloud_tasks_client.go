@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta2/cloudtaskspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -303,26 +303,26 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	ListQueues(context.Context, *taskspb.ListQueuesRequest, ...gax.CallOption) *QueueIterator
-	GetQueue(context.Context, *taskspb.GetQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
-	CreateQueue(context.Context, *taskspb.CreateQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
-	UpdateQueue(context.Context, *taskspb.UpdateQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
-	DeleteQueue(context.Context, *taskspb.DeleteQueueRequest, ...gax.CallOption) error
-	PurgeQueue(context.Context, *taskspb.PurgeQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
-	PauseQueue(context.Context, *taskspb.PauseQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
-	ResumeQueue(context.Context, *taskspb.ResumeQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
+	ListQueues(context.Context, *cloudtaskspb.ListQueuesRequest, ...gax.CallOption) *QueueIterator
+	GetQueue(context.Context, *cloudtaskspb.GetQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
+	CreateQueue(context.Context, *cloudtaskspb.CreateQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
+	UpdateQueue(context.Context, *cloudtaskspb.UpdateQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
+	DeleteQueue(context.Context, *cloudtaskspb.DeleteQueueRequest, ...gax.CallOption) error
+	PurgeQueue(context.Context, *cloudtaskspb.PurgeQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
+	PauseQueue(context.Context, *cloudtaskspb.PauseQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
+	ResumeQueue(context.Context, *cloudtaskspb.ResumeQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
-	ListTasks(context.Context, *taskspb.ListTasksRequest, ...gax.CallOption) *TaskIterator
-	GetTask(context.Context, *taskspb.GetTaskRequest, ...gax.CallOption) (*taskspb.Task, error)
-	CreateTask(context.Context, *taskspb.CreateTaskRequest, ...gax.CallOption) (*taskspb.Task, error)
-	DeleteTask(context.Context, *taskspb.DeleteTaskRequest, ...gax.CallOption) error
-	LeaseTasks(context.Context, *taskspb.LeaseTasksRequest, ...gax.CallOption) (*taskspb.LeaseTasksResponse, error)
-	AcknowledgeTask(context.Context, *taskspb.AcknowledgeTaskRequest, ...gax.CallOption) error
-	RenewLease(context.Context, *taskspb.RenewLeaseRequest, ...gax.CallOption) (*taskspb.Task, error)
-	CancelLease(context.Context, *taskspb.CancelLeaseRequest, ...gax.CallOption) (*taskspb.Task, error)
-	RunTask(context.Context, *taskspb.RunTaskRequest, ...gax.CallOption) (*taskspb.Task, error)
+	ListTasks(context.Context, *cloudtaskspb.ListTasksRequest, ...gax.CallOption) *TaskIterator
+	GetTask(context.Context, *cloudtaskspb.GetTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	CreateTask(context.Context, *cloudtaskspb.CreateTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	DeleteTask(context.Context, *cloudtaskspb.DeleteTaskRequest, ...gax.CallOption) error
+	LeaseTasks(context.Context, *cloudtaskspb.LeaseTasksRequest, ...gax.CallOption) (*cloudtaskspb.LeaseTasksResponse, error)
+	AcknowledgeTask(context.Context, *cloudtaskspb.AcknowledgeTaskRequest, ...gax.CallOption) error
+	RenewLease(context.Context, *cloudtaskspb.RenewLeaseRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	CancelLease(context.Context, *cloudtaskspb.CancelLeaseRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	RunTask(context.Context, *cloudtaskspb.RunTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
 }
 
 // Client is a client for interacting with Cloud Tasks API.
@@ -364,12 +364,12 @@ func (c *Client) Connection() *grpc.ClientConn {
 // ListQueues lists queues.
 //
 // Queues are returned in lexicographical order.
-func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
+func (c *Client) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
 	return c.internalClient.ListQueues(ctx, req, opts...)
 }
 
 // GetQueue gets a queue.
-func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *Client) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.GetQueue(ctx, req, opts...)
 }
 
@@ -385,7 +385,7 @@ func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opt
 // Overview of Queue Management and
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
-func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *Client) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.CreateQueue(ctx, req, opts...)
 }
 
@@ -404,7 +404,7 @@ func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueReques
 // Overview of Queue Management and
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
-func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *Client) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.UpdateQueue(ctx, req, opts...)
 }
 
@@ -421,7 +421,7 @@ func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueReques
 // Overview of Queue Management and
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
-func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
+func (c *Client) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteQueue(ctx, req, opts...)
 }
 
@@ -431,7 +431,7 @@ func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueReques
 //
 // Purge operations can take up to one minute to take effect. Tasks
 // might be dispatched before the purge takes effect. A purge is irreversible.
-func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *Client) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.PurgeQueue(ctx, req, opts...)
 }
 
@@ -442,7 +442,7 @@ func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest,
 // ResumeQueue. Tasks can still be added
 // when the queue is paused. A queue is paused if its
 // state is PAUSED.
-func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *Client) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.PauseQueue(ctx, req, opts...)
 }
 
@@ -459,7 +459,7 @@ func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest,
 // queues, follow the 500/50/5 pattern described in
 // Managing Cloud Tasks Scaling
 // Risks (at https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
-func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *Client) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.ResumeQueue(ctx, req, opts...)
 }
 
@@ -511,12 +511,12 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 //
 // The tasks may be returned in any order. The ordering may change at any
 // time.
-func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
+func (c *Client) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
 	return c.internalClient.ListTasks(ctx, req, opts...)
 }
 
 // GetTask gets a task.
-func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *Client) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.GetTask(ctx, req, opts...)
 }
 
@@ -528,7 +528,7 @@ func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts 
 //	100KB.
 //
 //	For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum task size is 1MB.
-func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *Client) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.CreateTask(ctx, req, opts...)
 }
 
@@ -537,7 +537,7 @@ func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest,
 // A task can be deleted if it is scheduled or dispatched. A task
 // cannot be deleted if it has completed successfully or permanently
 // failed.
-func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
+func (c *Client) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTask(ctx, req, opts...)
 }
 
@@ -563,7 +563,7 @@ func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest,
 // is also returned when
 // max_tasks_dispatched_per_second
 // is exceeded.
-func (c *Client) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequest, opts ...gax.CallOption) (*taskspb.LeaseTasksResponse, error) {
+func (c *Client) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTasksRequest, opts ...gax.CallOption) (*cloudtaskspb.LeaseTasksResponse, error) {
 	return c.internalClient.LeaseTasks(ctx, req, opts...)
 }
 
@@ -580,7 +580,7 @@ func (c *Client) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequest,
 // by a later LeaseTasks,
 // GetTask, or
 // ListTasks.
-func (c *Client) AcknowledgeTask(ctx context.Context, req *taskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
+func (c *Client) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
 	return c.internalClient.AcknowledgeTask(ctx, req, opts...)
 }
 
@@ -589,7 +589,7 @@ func (c *Client) AcknowledgeTask(ctx context.Context, req *taskspb.AcknowledgeTa
 // The worker can use this method to extend the lease by a new
 // duration, starting from now. The new task lease will be
 // returned in the task’s schedule_time.
-func (c *Client) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *Client) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.RenewLease(ctx, req, opts...)
 }
 
@@ -599,7 +599,7 @@ func (c *Client) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequest,
 // setting its schedule_time to now. This will
 // make the task available to be leased to the next caller of
 // LeaseTasks.
-func (c *Client) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *Client) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.CancelLease(ctx, req, opts...)
 }
 
@@ -630,7 +630,7 @@ func (c *Client) CancelLease(ctx context.Context, req *taskspb.CancelLeaseReques
 //
 // RunTask cannot be called on a
 // [pull task][google.cloud.tasks.v2beta2.PullMessage].
-func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *Client) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.RunTask(ctx, req, opts...)
 }
 
@@ -648,7 +648,7 @@ type gRPCClient struct {
 	CallOptions **CallOptions
 
 	// The gRPC API client.
-	client taskspb.CloudTasksClient
+	client cloudtaskspb.CloudTasksClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -683,7 +683,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		client:           taskspb.NewCloudTasksClient(connPool),
+		client:           cloudtaskspb.NewCloudTasksClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -785,15 +785,15 @@ func (c *restClient) Close() error {
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *gRPCClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
+func (c *gRPCClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListQueues[0:len((*c.CallOptions).ListQueues):len((*c.CallOptions).ListQueues)], opts...)
 	it := &QueueIterator{}
-	req = proto.Clone(req).(*taskspb.ListQueuesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Queue, string, error) {
-		resp := &taskspb.ListQueuesResponse{}
+	req = proto.Clone(req).(*cloudtaskspb.ListQueuesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Queue, string, error) {
+		resp := &cloudtaskspb.ListQueuesResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -830,7 +830,7 @@ func (c *gRPCClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequ
 	return it
 }
 
-func (c *gRPCClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -840,7 +840,7 @@ func (c *gRPCClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest,
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetQueue[0:len((*c.CallOptions).GetQueue):len((*c.CallOptions).GetQueue)], opts...)
-	var resp *taskspb.Queue
+	var resp *cloudtaskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetQueue(ctx, req, settings.GRPC...)
@@ -852,7 +852,7 @@ func (c *gRPCClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest,
 	return resp, nil
 }
 
-func (c *gRPCClient) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -862,7 +862,7 @@ func (c *gRPCClient) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRe
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateQueue[0:len((*c.CallOptions).CreateQueue):len((*c.CallOptions).CreateQueue)], opts...)
-	var resp *taskspb.Queue
+	var resp *cloudtaskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CreateQueue(ctx, req, settings.GRPC...)
@@ -874,7 +874,7 @@ func (c *gRPCClient) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRe
 	return resp, nil
 }
 
-func (c *gRPCClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -884,7 +884,7 @@ func (c *gRPCClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRe
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateQueue[0:len((*c.CallOptions).UpdateQueue):len((*c.CallOptions).UpdateQueue)], opts...)
-	var resp *taskspb.Queue
+	var resp *cloudtaskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateQueue(ctx, req, settings.GRPC...)
@@ -896,7 +896,7 @@ func (c *gRPCClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRe
 	return resp, nil
 }
 
-func (c *gRPCClient) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -914,7 +914,7 @@ func (c *gRPCClient) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRe
 	return err
 }
 
-func (c *gRPCClient) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -924,7 +924,7 @@ func (c *gRPCClient) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequ
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PurgeQueue[0:len((*c.CallOptions).PurgeQueue):len((*c.CallOptions).PurgeQueue)], opts...)
-	var resp *taskspb.Queue
+	var resp *cloudtaskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.PurgeQueue(ctx, req, settings.GRPC...)
@@ -936,7 +936,7 @@ func (c *gRPCClient) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequ
 	return resp, nil
 }
 
-func (c *gRPCClient) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -946,7 +946,7 @@ func (c *gRPCClient) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequ
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PauseQueue[0:len((*c.CallOptions).PauseQueue):len((*c.CallOptions).PauseQueue)], opts...)
-	var resp *taskspb.Queue
+	var resp *cloudtaskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.PauseQueue(ctx, req, settings.GRPC...)
@@ -958,7 +958,7 @@ func (c *gRPCClient) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequ
 	return resp, nil
 }
 
-func (c *gRPCClient) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -968,7 +968,7 @@ func (c *gRPCClient) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRe
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResumeQueue[0:len((*c.CallOptions).ResumeQueue):len((*c.CallOptions).ResumeQueue)], opts...)
-	var resp *taskspb.Queue
+	var resp *cloudtaskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.ResumeQueue(ctx, req, settings.GRPC...)
@@ -1046,15 +1046,15 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	return resp, nil
 }
 
-func (c *gRPCClient) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
+func (c *gRPCClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTasks[0:len((*c.CallOptions).ListTasks):len((*c.CallOptions).ListTasks)], opts...)
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*taskspb.ListTasksRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Task, string, error) {
-		resp := &taskspb.ListTasksResponse{}
+	req = proto.Clone(req).(*cloudtaskspb.ListTasksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Task, string, error) {
+		resp := &cloudtaskspb.ListTasksResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -1091,7 +1091,7 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *taskspb.ListTasksReques
 	return it
 }
 
-func (c *gRPCClient) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1101,7 +1101,7 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, o
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTask[0:len((*c.CallOptions).GetTask):len((*c.CallOptions).GetTask)], opts...)
-	var resp *taskspb.Task
+	var resp *cloudtaskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetTask(ctx, req, settings.GRPC...)
@@ -1113,7 +1113,7 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, o
 	return resp, nil
 }
 
-func (c *gRPCClient) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1123,7 +1123,7 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequ
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTask[0:len((*c.CallOptions).CreateTask):len((*c.CallOptions).CreateTask)], opts...)
-	var resp *taskspb.Task
+	var resp *cloudtaskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CreateTask(ctx, req, settings.GRPC...)
@@ -1135,7 +1135,7 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequ
 	return resp, nil
 }
 
-func (c *gRPCClient) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1153,7 +1153,7 @@ func (c *gRPCClient) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequ
 	return err
 }
 
-func (c *gRPCClient) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequest, opts ...gax.CallOption) (*taskspb.LeaseTasksResponse, error) {
+func (c *gRPCClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTasksRequest, opts ...gax.CallOption) (*cloudtaskspb.LeaseTasksResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1163,7 +1163,7 @@ func (c *gRPCClient) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequ
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LeaseTasks[0:len((*c.CallOptions).LeaseTasks):len((*c.CallOptions).LeaseTasks)], opts...)
-	var resp *taskspb.LeaseTasksResponse
+	var resp *cloudtaskspb.LeaseTasksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.LeaseTasks(ctx, req, settings.GRPC...)
@@ -1175,7 +1175,7 @@ func (c *gRPCClient) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequ
 	return resp, nil
 }
 
-func (c *gRPCClient) AcknowledgeTask(ctx context.Context, req *taskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1193,7 +1193,7 @@ func (c *gRPCClient) AcknowledgeTask(ctx context.Context, req *taskspb.Acknowled
 	return err
 }
 
-func (c *gRPCClient) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1203,7 +1203,7 @@ func (c *gRPCClient) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequ
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RenewLease[0:len((*c.CallOptions).RenewLease):len((*c.CallOptions).RenewLease)], opts...)
-	var resp *taskspb.Task
+	var resp *cloudtaskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.RenewLease(ctx, req, settings.GRPC...)
@@ -1215,7 +1215,7 @@ func (c *gRPCClient) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequ
 	return resp, nil
 }
 
-func (c *gRPCClient) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1225,7 +1225,7 @@ func (c *gRPCClient) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRe
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelLease[0:len((*c.CallOptions).CancelLease):len((*c.CallOptions).CancelLease)], opts...)
-	var resp *taskspb.Task
+	var resp *cloudtaskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CancelLease(ctx, req, settings.GRPC...)
@@ -1237,7 +1237,7 @@ func (c *gRPCClient) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRe
 	return resp, nil
 }
 
-func (c *gRPCClient) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -1247,7 +1247,7 @@ func (c *gRPCClient) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, o
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RunTask[0:len((*c.CallOptions).RunTask):len((*c.CallOptions).RunTask)], opts...)
-	var resp *taskspb.Task
+	var resp *cloudtaskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.RunTask(ctx, req, settings.GRPC...)
@@ -1262,12 +1262,12 @@ func (c *gRPCClient) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, o
 // ListQueues lists queues.
 //
 // Queues are returned in lexicographical order.
-func (c *restClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
+func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
 	it := &QueueIterator{}
-	req = proto.Clone(req).(*taskspb.ListQueuesRequest)
+	req = proto.Clone(req).(*cloudtaskspb.ListQueuesRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Queue, string, error) {
-		resp := &taskspb.ListQueuesResponse{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Queue, string, error) {
+		resp := &cloudtaskspb.ListQueuesResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -1359,7 +1359,7 @@ func (c *restClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequ
 }
 
 // GetQueue gets a queue.
-func (c *restClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1383,7 +1383,7 @@ func (c *restClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest,
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).GetQueue[0:len((*c.CallOptions).GetQueue):len((*c.CallOptions).GetQueue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Queue{}
+	resp := &cloudtaskspb.Queue{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1434,7 +1434,7 @@ func (c *restClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest,
 // Overview of Queue Management and
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
-func (c *restClient) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *restClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetQueue()
 	jsonReq, err := m.Marshal(body)
@@ -1454,7 +1454,7 @@ func (c *restClient) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRe
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).CreateQueue[0:len((*c.CallOptions).CreateQueue):len((*c.CallOptions).CreateQueue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Queue{}
+	resp := &cloudtaskspb.Queue{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1508,7 +1508,7 @@ func (c *restClient) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRe
 // Overview of Queue Management and
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
-func (c *restClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *restClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetQueue()
 	jsonReq, err := m.Marshal(body)
@@ -1539,7 +1539,7 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRe
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).UpdateQueue[0:len((*c.CallOptions).UpdateQueue):len((*c.CallOptions).UpdateQueue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Queue{}
+	resp := &cloudtaskspb.Queue{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1591,7 +1591,7 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRe
 // Overview of Queue Management and
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
-func (c *restClient) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
+func (c *restClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
@@ -1631,7 +1631,7 @@ func (c *restClient) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRe
 //
 // Purge operations can take up to one minute to take effect. Tasks
 // might be dispatched before the purge takes effect. A purge is irreversible.
-func (c *restClient) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *restClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1650,7 +1650,7 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequ
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).PurgeQueue[0:len((*c.CallOptions).PurgeQueue):len((*c.CallOptions).PurgeQueue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Queue{}
+	resp := &cloudtaskspb.Queue{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1696,7 +1696,7 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequ
 // ResumeQueue. Tasks can still be added
 // when the queue is paused. A queue is paused if its
 // state is PAUSED.
-func (c *restClient) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1715,7 +1715,7 @@ func (c *restClient) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequ
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).PauseQueue[0:len((*c.CallOptions).PauseQueue):len((*c.CallOptions).PauseQueue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Queue{}
+	resp := &cloudtaskspb.Queue{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1767,7 +1767,7 @@ func (c *restClient) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequ
 // queues, follow the 500/50/5 pattern described in
 // Managing Cloud Tasks Scaling
 // Risks (at https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
-func (c *restClient) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1786,7 +1786,7 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRe
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).ResumeQueue[0:len((*c.CallOptions).ResumeQueue):len((*c.CallOptions).ResumeQueue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Queue{}
+	resp := &cloudtaskspb.Queue{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2035,12 +2035,12 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 //
 // The tasks may be returned in any order. The ordering may change at any
 // time.
-func (c *restClient) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
+func (c *restClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*taskspb.ListTasksRequest)
+	req = proto.Clone(req).(*cloudtaskspb.ListTasksRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Task, string, error) {
-		resp := &taskspb.ListTasksResponse{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Task, string, error) {
+		resp := &cloudtaskspb.ListTasksResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -2125,7 +2125,7 @@ func (c *restClient) ListTasks(ctx context.Context, req *taskspb.ListTasksReques
 }
 
 // GetTask gets a task.
-func (c *restClient) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -2145,7 +2145,7 @@ func (c *restClient) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, o
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).GetTask[0:len((*c.CallOptions).GetTask):len((*c.CallOptions).GetTask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Task{}
+	resp := &cloudtaskspb.Task{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2192,7 +2192,7 @@ func (c *restClient) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, o
 //	100KB.
 //
 //	For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum task size is 1MB.
-func (c *restClient) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -2211,7 +2211,7 @@ func (c *restClient) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequ
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).CreateTask[0:len((*c.CallOptions).CreateTask):len((*c.CallOptions).CreateTask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Task{}
+	resp := &cloudtaskspb.Task{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2255,7 +2255,7 @@ func (c *restClient) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequ
 // A task can be deleted if it is scheduled or dispatched. A task
 // cannot be deleted if it has completed successfully or permanently
 // failed.
-func (c *restClient) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
+func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
@@ -2311,7 +2311,7 @@ func (c *restClient) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequ
 // is also returned when
 // max_tasks_dispatched_per_second
 // is exceeded.
-func (c *restClient) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequest, opts ...gax.CallOption) (*taskspb.LeaseTasksResponse, error) {
+func (c *restClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTasksRequest, opts ...gax.CallOption) (*cloudtaskspb.LeaseTasksResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -2330,7 +2330,7 @@ func (c *restClient) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequ
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).LeaseTasks[0:len((*c.CallOptions).LeaseTasks):len((*c.CallOptions).LeaseTasks)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.LeaseTasksResponse{}
+	resp := &cloudtaskspb.LeaseTasksResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2382,7 +2382,7 @@ func (c *restClient) LeaseTasks(ctx context.Context, req *taskspb.LeaseTasksRequ
 // by a later LeaseTasks,
 // GetTask, or
 // ListTasks.
-func (c *restClient) AcknowledgeTask(ctx context.Context, req *taskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
+func (c *restClient) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.AcknowledgeTaskRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -2427,7 +2427,7 @@ func (c *restClient) AcknowledgeTask(ctx context.Context, req *taskspb.Acknowled
 // The worker can use this method to extend the lease by a new
 // duration, starting from now. The new task lease will be
 // returned in the task’s schedule_time.
-func (c *restClient) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *restClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -2446,7 +2446,7 @@ func (c *restClient) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequ
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).RenewLease[0:len((*c.CallOptions).RenewLease):len((*c.CallOptions).RenewLease)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Task{}
+	resp := &cloudtaskspb.Task{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2491,7 +2491,7 @@ func (c *restClient) RenewLease(ctx context.Context, req *taskspb.RenewLeaseRequ
 // setting its schedule_time to now. This will
 // make the task available to be leased to the next caller of
 // LeaseTasks.
-func (c *restClient) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *restClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -2510,7 +2510,7 @@ func (c *restClient) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRe
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).CancelLease[0:len((*c.CallOptions).CancelLease):len((*c.CallOptions).CancelLease)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Task{}
+	resp := &cloudtaskspb.Task{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2576,7 +2576,7 @@ func (c *restClient) CancelLease(ctx context.Context, req *taskspb.CancelLeaseRe
 //
 // RunTask cannot be called on a
 // [pull task][google.cloud.tasks.v2beta2.PullMessage].
-func (c *restClient) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -2595,7 +2595,7 @@ func (c *restClient) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, o
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).RunTask[0:len((*c.CallOptions).RunTask):len((*c.CallOptions).RunTask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &taskspb.Task{}
+	resp := &cloudtaskspb.Task{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2634,9 +2634,9 @@ func (c *restClient) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, o
 	return resp, nil
 }
 
-// QueueIterator manages a stream of *taskspb.Queue.
+// QueueIterator manages a stream of *cloudtaskspb.Queue.
 type QueueIterator struct {
-	items    []*taskspb.Queue
+	items    []*cloudtaskspb.Queue
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -2651,7 +2651,7 @@ type QueueIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*taskspb.Queue, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*cloudtaskspb.Queue, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -2661,8 +2661,8 @@ func (it *QueueIterator) PageInfo() *iterator.PageInfo {
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *QueueIterator) Next() (*taskspb.Queue, error) {
-	var item *taskspb.Queue
+func (it *QueueIterator) Next() (*cloudtaskspb.Queue, error) {
+	var item *cloudtaskspb.Queue
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -2681,9 +2681,9 @@ func (it *QueueIterator) takeBuf() interface{} {
 	return b
 }
 
-// TaskIterator manages a stream of *taskspb.Task.
+// TaskIterator manages a stream of *cloudtaskspb.Task.
 type TaskIterator struct {
-	items    []*taskspb.Task
+	items    []*cloudtaskspb.Task
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -2698,7 +2698,7 @@ type TaskIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*taskspb.Task, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*cloudtaskspb.Task, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -2708,8 +2708,8 @@ func (it *TaskIterator) PageInfo() *iterator.PageInfo {
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TaskIterator) Next() (*taskspb.Task, error) {
-	var item *taskspb.Task
+func (it *TaskIterator) Next() (*cloudtaskspb.Task, error) {
+	var item *cloudtaskspb.Task
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
