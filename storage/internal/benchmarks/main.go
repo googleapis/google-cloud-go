@@ -24,11 +24,15 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/sync/errgroup"
+
+	// Install google-c2p resolver, which is required for direct path.
+	_ "google.golang.org/grpc/xds/googledirectpath"
 )
 
 const codeVersion = "0.4.0" // to keep track of which version of the code a benchmark ran on
@@ -80,6 +84,34 @@ type benchmarkOptions struct {
 	numWorkers    int
 	connPoolSize  int
 	useDefaults   bool
+	directPath    bool
+}
+
+func (b benchmarkOptions) String() string {
+	var sb strings.Builder
+
+	stringifiedOpts := []string{
+		fmt.Sprintf("api:\t\t\t%s", b.api),
+		fmt.Sprintf("region:\t\t\t%s", b.region),
+		fmt.Sprintf("timeout:\t\t%s", b.timeout),
+		fmt.Sprintf("number of samples:\tbetween %d - %d", b.minSamples, b.maxSamples),
+		fmt.Sprintf("object size:\t\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
+		fmt.Sprintf("write size:\t\t%d - %d bytes (app buffer for uploads)", b.minWriteSize, b.maxWriteSize),
+		fmt.Sprintf("read size:\t\t%d - %d bytes (app buffer for downloads)", b.minReadSize, b.maxReadSize),
+		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
+		fmt.Sprintf("connection pool size:\t%d (GRPC)", b.connPoolSize),
+		fmt.Sprintf("directpath:\t\t%t (GRPC)", b.directPath),
+		fmt.Sprintf("num workers:\t\t%d (max number of concurrent benchmark runs at a time)", b.numWorkers),
+		fmt.Sprintf("force garbage collection:%t", b.forceGC),
+	}
+
+	for _, s := range stringifiedOpts {
+		sb.WriteByte('\n')
+		sb.WriteByte('\t')
+		sb.WriteString(s)
+	}
+
+	return sb.String()
 }
 
 func parseFlags() {
@@ -103,6 +135,7 @@ func parseFlags() {
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.IntVar(&opts.connPoolSize, "conn_pool", 4, "GRPC connection pool size")
 	flag.BoolVar(&opts.useDefaults, "defaults", false, "use default client configuration")
+	flag.BoolVar(&opts.directPath, "directpath", false, "use direct path")
 
 	flag.StringVar(&projectID, "p", projectID, "projectID")
 	flag.StringVar(&credentialsFile, "creds", credentialsFile, "path to credentials file")
@@ -164,6 +197,13 @@ func main() {
 		log.Fatalf("Failed to create file %s: %v", outputFile, err)
 	}
 	defer file.Close()
+
+	// Enable direct path
+	if opts.directPath {
+		if err := os.Setenv("GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS", "true"); err != nil {
+			log.Fatalf("error setting direct path env var: %v", err)
+		}
+	}
 
 	// Print benchmarking options
 	fmt.Printf("Code version: %s\n", codeVersion)
@@ -289,7 +329,7 @@ func (br *benchmarkResult) csv() []string {
 		op,
 		strconv.FormatInt(br.objectSize, 10),
 		strconv.Itoa(br.params.appBufferSize),
-		strconv.Itoa(br.params.appBufferSize),
+		strconv.Itoa(int(br.params.chunkSize)),
 		strconv.FormatBool(br.params.crc32cEnabled),
 		strconv.FormatBool(br.params.md5Enabled),
 		string(br.params.api),

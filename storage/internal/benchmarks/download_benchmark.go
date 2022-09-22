@@ -37,14 +37,14 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 
 	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
 
-	f, err := os.Create(o.ObjectName())
+	f, err := os.CreateTemp("", objectPrefix)
 	if err != nil {
 		rerr = fmt.Errorf("os.Create: %w", err)
 		return
 	}
 	defer func() {
 		closeErr := f.Close()
-		removeErr := os.Remove(o.ObjectName())
+		removeErr := os.Remove(f.Name())
 		// if we don't have another error to return, return error for closing file
 		// if that error is also nil, return removeErr
 		if rerr == nil {

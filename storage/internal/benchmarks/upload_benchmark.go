@@ -34,6 +34,7 @@ type uploadOpts struct {
 	bucket              string
 	object              string
 	useDefaultChunkSize bool
+	objectPath          string
 }
 
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
@@ -48,7 +49,7 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 		objectWriter.ChunkSize = int(uopts.params.chunkSize)
 	}
 
-	f, err := os.Open(uopts.object)
+	f, err := os.Open(uopts.objectPath)
 	if err != nil {
 		return elapsedTime, fmt.Errorf("os.Open: %w", err)
 	}

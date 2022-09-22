@@ -190,32 +190,6 @@ func forceGarbageCollection(run bool) {
 	}
 }
 
-func (b benchmarkOptions) String() string {
-	var sb strings.Builder
-
-	stringifiedOpts := []string{
-		fmt.Sprintf("api:\t\t\t%s", b.api),
-		fmt.Sprintf("region:\t\t\t%s", b.region),
-		fmt.Sprintf("timeout:\t\t%s", b.timeout),
-		fmt.Sprintf("number of samples:\tbetween %d - %d", b.minSamples, b.maxSamples),
-		fmt.Sprintf("object size:\t\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
-		fmt.Sprintf("write size:\t\t%d - %d bytes (app buffer for uploads)", b.minWriteSize, b.maxWriteSize),
-		fmt.Sprintf("read size:\t\t%d - %d bytes (app buffer for downloads)", b.minReadSize, b.maxReadSize),
-		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize, b.maxChunkSize),
-		fmt.Sprintf("connection pool size:\t%d (GRPC)", b.connPoolSize),
-		fmt.Sprintf("num workers:\t\t%d (max number of concurrent benchmark runs at a time)", b.numWorkers),
-		fmt.Sprintf("force garbage collection:%t", b.forceGC),
-	}
-
-	for _, s := range stringifiedOpts {
-		sb.WriteByte('\n')
-		sb.WriteByte('\t')
-		sb.WriteString(s)
-	}
-
-	return sb.String()
-}
-
 func canUseClientPool(opts *benchmarkOptions) bool {
 	return opts.useDefaults || (opts.maxReadSize == opts.minReadSize && opts.maxWriteSize == opts.minWriteSize)
 }

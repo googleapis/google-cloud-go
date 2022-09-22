@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"runtime"
 	"time"
 
@@ -29,6 +30,7 @@ import (
 type w1r3 struct {
 	opts                   *benchmarkOptions
 	bucketName, objectName string
+	objectPath             string
 	writeResult            *benchmarkResult
 	readResults            []*benchmarkResult
 }
@@ -40,19 +42,20 @@ func (r *w1r3) setup() error {
 
 	r.writeResult.selectParams(*r.opts)
 	for i, res := range r.readResults {
-		res.selectParams(*r.opts)
-		res.objectSize = objectSize
 		res.isRead = true
 		res.readIteration = i
+		res.objectSize = objectSize
+		res.selectParams(*r.opts)
 	}
 
 	// Create contents
-	objectName, err := generateRandomFile(objectSize)
+	objectPath, err := generateRandomFile(objectSize)
 	if err != nil {
 		return fmt.Errorf("generateRandomFile: %w", err)
 	}
 
-	r.objectName = objectName
+	r.objectPath = objectPath
+	r.objectName = path.Base(objectPath)
 	return nil
 }
 
@@ -61,7 +64,8 @@ func (r *w1r3) run(ctx context.Context) error {
 
 	defer func() {
 		c := nonBenchmarkingClients.Get().(*storage.Client)
-		c.Bucket(r.bucketName).Object(r.objectName).Delete(context.Background())
+		o := c.Bucket(r.bucketName).Object(r.objectName).Retryer(storage.WithPolicy(storage.RetryAlways))
+		o.Delete(context.Background())
 		nonBenchmarkingClients.Put(c)
 	}()
 	// Upload
@@ -86,6 +90,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		bucket:              r.bucketName,
 		object:              r.objectName,
 		useDefaultChunkSize: opts.useDefaults,
+		objectPath:          r.objectPath,
 	})
 
 	runtime.ReadMemStats(memStats)
@@ -95,7 +100,7 @@ func (r *w1r3) run(ctx context.Context) error {
 
 	returnToPool(r.writeResult.params.api, client)
 	results <- *r.writeResult
-	os.Remove(r.objectName)
+	os.Remove(r.objectPath)
 
 	// Do not attempt to read from a failed upload
 	if err != nil {
@@ -132,7 +137,7 @@ func (r *w1r3) run(ctx context.Context) error {
 
 		returnToPool(r.readResults[i].params.api, client)
 		results <- *r.readResults[i]
-		os.Remove(r.objectName)
+
 		// do not return error, continue to attempt to read
 		if err != nil {
 			if errors.Is(err, context.DeadlineExceeded) {
