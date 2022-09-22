@@ -324,7 +324,6 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 				// Append is intentionally slow.
 				return nil
 			}, nil),
-		retry: &statelessRetryer{},
 	}
 	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
 		Name: proto.String("testDescriptor"),
@@ -412,7 +411,6 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 			streamSettings: &streamSettings{
 				streamID: "foo",
 			},
-			retry: &statelessRetryer{},
 		}
 
 		// first append
@@ -448,7 +446,6 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 				time.Sleep(40 * time.Millisecond)
 				return nil
 			}, nil),
-		retry: &statelessRetryer{},
 	}
 	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
 		Name: proto.String("testDescriptor"),
