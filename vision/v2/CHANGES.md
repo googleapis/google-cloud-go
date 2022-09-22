@@ -1,5 +1,12 @@
 # Changes
 
+## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.2.0...vision/v2.3.0) (2022-09-21)
+
+
+### Features
+
+* **vision:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
 ## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.1.1...vision/v2.2.0) (2022-09-20)
 
 
