@@ -75,7 +75,6 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 				}
 				return nil, err
 			},
-			retry: newTestRetryer(),
 		}
 		arc, ch, err := ms.openWithRetry()
 		if tc.wantFail && err == nil {
@@ -325,6 +324,7 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 				// Append is intentionally slow.
 				return nil
 			}, nil),
+		retry: &statelessRetryer{},
 	}
 	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
 		Name: proto.String("testDescriptor"),
@@ -412,6 +412,7 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 			streamSettings: &streamSettings{
 				streamID: "foo",
 			},
+			retry: &statelessRetryer{},
 		}
 
 		// first append
@@ -447,6 +448,7 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 				time.Sleep(40 * time.Millisecond)
 				return nil
 			}, nil),
+		retry: &statelessRetryer{},
 	}
 	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
 		Name: proto.String("testDescriptor"),
@@ -660,7 +662,7 @@ func TestManagedStream_Receiver(t *testing.T) {
 			),
 			streamSettings: defaultStreamSettings(),
 			fc:             newFlowController(0, 0),
-			retry:          newTestRetryer(),
+			retry:          newStatelessRetryer(),
 		}
 		// use openWithRetry to get the reference to the channel and add our test pending write.
 		_, ch, _ := ms.openWithRetry()

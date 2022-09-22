@@ -77,7 +77,7 @@ type ManagedStream struct {
 	destinationTable string
 	c                *Client
 	fc               *flowController
-	retry            *defaultRetryer
+	retry            *statelessRetryer
 
 	// aspects of the stream client
 	ctx         context.Context // retained context for the stream
@@ -225,10 +225,7 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 //
 // Only getStream() should call this.
 func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
-	r := ms.retry
-	if r == nil {
-		r = newDefaultRetryer()
-	}
+	r := &unaryRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
 		streamID := ""
@@ -331,6 +328,8 @@ func (ms *ManagedStream) lockingAppend(pw *pendingWrite) error {
 	}
 	if err != nil {
 		if shouldReconnect(err) {
+			// certain error responses are indicative that this connection is no longer healthy.
+			// if we encounter them, we force a reconnect so the next append has a healthy connection.
 			ms.reconnect = true
 		}
 		return err
@@ -367,7 +366,7 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 				ctx, _ := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String()))
 				recordStat(ctx, AppendRequestErrors, 1)
 			}
-			bo, shouldRetry := ms.retry.Retry(appendErr)
+			bo, shouldRetry := ms.statelessRetryer().Retry(appendErr, pw.attemptCount)
 			if shouldRetry {
 				if err := gax.Sleep(ms.ctx, bo); err != nil {
 					return err
@@ -509,7 +508,7 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 					recordStat(tagCtx, AppendResponseErrors, 1)
 				}
 				respErr := grpcstatus.ErrorProto(status)
-				if ms.shouldRetryAppend(respErr, nextWrite.attemptCount) {
+				if _, shouldRetry := ms.statelessRetryer().Retry(respErr, nextWrite.attemptCount); shouldRetry {
 					// We use the status error to evaluate and possible re-enqueue the write.
 					ms.processRetry(nextWrite, resp, respErr)
 					// We're done with the write regardless of outcome, continue on to the next
@@ -525,18 +524,13 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 
 // processRetry is responsible for evaluating and re-enqueing an append.
 // If the append is not retried, it is marked complete.
-func (ms *ManagedStream) processRetry(pw *pendingWrite, initialResp *storagepb.AppendRowsResponse, initialErr error) {
-	if ms.retry == nil {
-		// No retries.  Mark the write done and return.
-		pw.markDone(initialResp, initialErr, ms.fc)
-		return
-	}
+func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.AppendRowsResponse, initialErr error) {
 	err := initialErr
 	for {
-		pause, shouldRetry := ms.retry.RetryAppend(err, pw.attemptCount)
+		pause, shouldRetry := ms.retry.Retry(err, pw.attemptCount)
 		if !shouldRetry {
 			// Should not attempt to re-append.
-			pw.markDone(initialResp, err, ms.fc)
+			pw.markDone(appendResp, err, ms.fc)
 			return
 		}
 		time.Sleep(pause)
@@ -552,10 +546,13 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, initialResp *storagepb.A
 	}
 }
 
-func (ms *ManagedStream) shouldRetryAppend(err error, attemptCount int) bool {
-	if ms.retry == nil {
-		return false
+// returns the stateless retryer.  If one's not set (re-enqueue retries disabled),
+// it returns a retryer that only permits single attempts.
+func (ms *ManagedStream) statelessRetryer() *statelessRetryer {
+	if ms.retry != nil {
+		return ms.retry
 	}
-	_, shouldRetry := ms.retry.RetryAppend(err, attemptCount)
-	return shouldRetry
+	return &statelessRetryer{
+		maxAttempts: 1,
+	}
 }

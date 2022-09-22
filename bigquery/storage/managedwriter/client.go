@@ -118,7 +118,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		},
 		open: createOpenF(ctx, streamFunc),
 		// We add the new retryer by default, and add a new option to disable it.
-		retry: newDefaultRetryer(),
+		retry: newStatelessRetryer(),
 	}
 
 	// apply writer options

@@ -24,45 +24,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func TestManagedStream_ShouldReconnect(t *testing.T) {
-
-	testCases := []struct {
-		err  error
-		want bool
-	}{
-		{
-			err:  fmt.Errorf("random error"),
-			want: false,
-		},
-		{
-			err:  io.EOF,
-			want: true,
-		},
-		{
-			err:  status.Error(codes.Unavailable, "nope"),
-			want: false,
-		},
-		{
-			err:  status.Error(codes.Unavailable, "the connection is draining"),
-			want: true,
-		},
-		{
-			err: func() error {
-				// wrap the underlying error in a gax apierror
-				ai, _ := apierror.FromError(status.Error(codes.Unavailable, "the connection is draining"))
-				return ai
-			}(),
-			want: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		if got := shouldReconnect(tc.err); got != tc.want {
-			t.Errorf("got %t, want %t for error: %+v", got, tc.want, tc.err)
-		}
-	}
-}
-
 func TestManagedStream_AppendErrorRetries(t *testing.T) {
 
 	testCases := []struct {
@@ -97,10 +58,49 @@ func TestManagedStream_AppendErrorRetries(t *testing.T) {
 		},
 	}
 
-	retry := newDefaultRetryer()
+	retry := newStatelessRetryer()
 
 	for _, tc := range testCases {
-		if _, got := retry.RetryAppend(tc.err, tc.attemptCount); got != tc.want {
+		if _, got := retry.Retry(tc.err, tc.attemptCount); got != tc.want {
+			t.Errorf("got %t, want %t for error: %+v", got, tc.want, tc.err)
+		}
+	}
+}
+
+func TestManagedStream_ShouldReconnect(t *testing.T) {
+
+	testCases := []struct {
+		err  error
+		want bool
+	}{
+		{
+			err:  fmt.Errorf("random error"),
+			want: false,
+		},
+		{
+			err:  io.EOF,
+			want: true,
+		},
+		{
+			err:  status.Error(codes.Unavailable, "nope"),
+			want: false,
+		},
+		{
+			err:  status.Error(codes.Unavailable, "the connection is draining"),
+			want: true,
+		},
+		{
+			err: func() error {
+				// wrap the underlying error in a gax apierror
+				ai, _ := apierror.FromError(status.Error(codes.Unavailable, "the connection is draining"))
+				return ai
+			}(),
+			want: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		if got := shouldReconnect(tc.err); got != tc.want {
 			t.Errorf("got %t, want %t for error: %+v", got, tc.want, tc.err)
 		}
 	}
