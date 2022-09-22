@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.6.0...speech/v1.7.0) (2022-09-21)
+
+
+### Features
+
+* **speech:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.5.0...speech/v1.6.0) (2022-09-19)
 
 
