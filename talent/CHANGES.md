@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.1.0...talent/v1.2.0) (2022-09-21)
+
+
+### Features
+
+* **talent:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.0.0...talent/v1.1.0) (2022-09-19)
 
 
