@@ -57,7 +57,7 @@
 //
 //	req := &dataformpb.ListRepositoriesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2#ListRepositoriesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1alpha2/dataformpb#ListRepositoriesRequest.
 //	}
 //	it := c.ListRepositories(ctx, req)
 //	for {

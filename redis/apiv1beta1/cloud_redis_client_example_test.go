@@ -20,8 +20,8 @@ import (
 	"context"
 
 	redis "cloud.google.com/go/redis/apiv1beta1"
+	redispb "cloud.google.com/go/redis/apiv1beta1/redispb"
 	"google.golang.org/api/iterator"
-	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
 )
 
 func ExampleNewCloudRedisClient() {
@@ -73,7 +73,7 @@ func ExampleCloudRedisClient_ListInstances() {
 
 	req := &redispb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -104,7 +104,7 @@ func ExampleCloudRedisClient_GetInstance() {
 
 	req := &redispb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -129,7 +129,7 @@ func ExampleCloudRedisClient_GetInstanceAuthString() {
 
 	req := &redispb.GetInstanceAuthStringRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#GetInstanceAuthStringRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#GetInstanceAuthStringRequest.
 	}
 	resp, err := c.GetInstanceAuthString(ctx, req)
 	if err != nil {
@@ -154,7 +154,7 @@ func ExampleCloudRedisClient_CreateInstance() {
 
 	req := &redispb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#CreateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -184,7 +184,7 @@ func ExampleCloudRedisClient_UpdateInstance() {
 
 	req := &redispb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -214,7 +214,7 @@ func ExampleCloudRedisClient_UpgradeInstance() {
 
 	req := &redispb.UpgradeInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#UpgradeInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#UpgradeInstanceRequest.
 	}
 	op, err := c.UpgradeInstance(ctx, req)
 	if err != nil {
@@ -244,7 +244,7 @@ func ExampleCloudRedisClient_ImportInstance() {
 
 	req := &redispb.ImportInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ImportInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#ImportInstanceRequest.
 	}
 	op, err := c.ImportInstance(ctx, req)
 	if err != nil {
@@ -274,7 +274,7 @@ func ExampleCloudRedisClient_ExportInstance() {
 
 	req := &redispb.ExportInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ExportInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#ExportInstanceRequest.
 	}
 	op, err := c.ExportInstance(ctx, req)
 	if err != nil {
@@ -304,7 +304,7 @@ func ExampleCloudRedisClient_FailoverInstance() {
 
 	req := &redispb.FailoverInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#FailoverInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#FailoverInstanceRequest.
 	}
 	op, err := c.FailoverInstance(ctx, req)
 	if err != nil {
@@ -334,7 +334,7 @@ func ExampleCloudRedisClient_DeleteInstance() {
 
 	req := &redispb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -362,7 +362,7 @@ func ExampleCloudRedisClient_RescheduleMaintenance() {
 
 	req := &redispb.RescheduleMaintenanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#RescheduleMaintenanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#RescheduleMaintenanceRequest.
 	}
 	op, err := c.RescheduleMaintenance(ctx, req)
 	if err != nil {

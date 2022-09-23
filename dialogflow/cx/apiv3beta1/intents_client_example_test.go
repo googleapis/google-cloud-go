@@ -20,8 +20,8 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -75,7 +75,7 @@ func ExampleIntentsClient_ListIntents() {
 
 	req := &cxpb.ListIntentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListIntentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListIntentsRequest.
 	}
 	it := c.ListIntents(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleIntentsClient_GetIntent() {
 
 	req := &cxpb.GetIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetIntentRequest.
 	}
 	resp, err := c.GetIntent(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleIntentsClient_CreateIntent() {
 
 	req := &cxpb.CreateIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CreateIntentRequest.
 	}
 	resp, err := c.CreateIntent(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleIntentsClient_UpdateIntent() {
 
 	req := &cxpb.UpdateIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#UpdateIntentRequest.
 	}
 	resp, err := c.UpdateIntent(ctx, req)
 	if err != nil {
@@ -181,7 +181,7 @@ func ExampleIntentsClient_DeleteIntent() {
 
 	req := &cxpb.DeleteIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#DeleteIntentRequest.
 	}
 	err = c.DeleteIntent(ctx, req)
 	if err != nil {

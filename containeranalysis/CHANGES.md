@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.4.0...containeranalysis/v0.5.0) (2022-09-22)
+
+
+### Features
+
+* **containeranalysis:** Generate container stubs for betas ([#6722](https://github.com/googleapis/google-cloud-go/issues/6722)) ([3f1232b](https://github.com/googleapis/google-cloud-go/commit/3f1232b2aeaedfecfec3df0fa85c2f70227af2b1))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.3.0...containeranalysis/v0.4.0) (2022-06-29)
 
 

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	tables "cloud.google.com/go/area120/tables/apiv1alpha1"
-	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
+	"cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &tablespb.BatchCreateRowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#BatchCreateRowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchCreateRowsRequest.
 	}
 	resp, err := c.BatchCreateRows(ctx, req)
 	if err != nil {

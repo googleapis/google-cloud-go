@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 
+	dataformpb "cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -32,7 +33,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dataformpb "google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
