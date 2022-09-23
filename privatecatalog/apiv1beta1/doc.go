@@ -60,7 +60,7 @@
 //
 //	req := &privatecatalogpb.SearchCatalogsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchCatalogsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb#SearchCatalogsRequest.
 //	}
 //	it := c.SearchCatalogs(ctx, req)
 //	for {

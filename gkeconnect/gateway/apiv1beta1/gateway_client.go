@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 
+	gatewaypb "cloud.google.com/go/gkeconnect/gateway/apiv1beta1/gatewaypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -31,7 +32,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
-	gatewaypb "google.golang.org/genproto/googleapis/cloud/gkeconnect/gateway/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

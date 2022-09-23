@@ -245,6 +245,7 @@ func (g *GapicGenerator) addModReplaceGenproto(dir string) error {
 set -ex
 
 go mod edit -replace "google.golang.org/genproto=$GENPROTO_DIR"
+go mod tidy
 `)
 	c.Dir = dir
 	c.Env = []string{
@@ -262,7 +263,8 @@ func (g *GapicGenerator) dropModReplaceGenproto(dir string) error {
 	c := execv.Command("bash", "-c", `
 set -ex
 
-go mod edit -dropreplace "google.golang.org/genproto"
+git restore go.mod
+git restore go.sum 
 `)
 	c.Dir = dir
 	c.Env = []string{
@@ -277,19 +279,18 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	log.Println("microgen generating", conf.Pkg)
 
 	var protoFiles []string
-	if err := filepath.Walk(g.googleapisDir+"/"+conf.InputDirectoryPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	inputDir := filepath.Join(g.googleapisDir, conf.InputDirectoryPath)
+	entries, err := os.ReadDir(inputDir)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
 		// Ignore compute_small.proto which is just for testing and would cause a collision if used in generation.
 		//
 		// TODO(noahdietz): Remove this when it is no longer needed.
-		if strings.Contains(info.Name(), ".proto") && !strings.Contains(info.Name(), "compute_small.proto") {
-			protoFiles = append(protoFiles, path)
+		if strings.Contains(entry.Name(), ".proto") && !strings.Contains(entry.Name(), "compute_small.proto") {
+			protoFiles = append(protoFiles, filepath.Join(inputDir, entry.Name()))
 		}
-		return nil
-	}); err != nil {
-		return err
 	}
 
 	args := []string{"-I", g.googleapisDir,
