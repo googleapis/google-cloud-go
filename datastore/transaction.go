@@ -17,11 +17,13 @@ package datastore
 import (
 	"context"
 	"errors"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ErrConcurrentTransaction is returned when a transaction is rolled back due
@@ -34,6 +36,7 @@ type transactionSettings struct {
 	attempts int
 	readOnly bool
 	prevID   []byte // ID of the transaction to retry
+	readTime timestamppb.Timestamp
 }
 
 // newTransactionSettings creates a transactionSettings with a given TransactionOption slice.
@@ -68,16 +71,16 @@ func (w maxAttempts) apply(s *transactionSettings) {
 }
 
 // ReadOnly is a TransactionOption that marks the transaction as read-only.
-var ReadOnly TransactionOption
-
-func init() {
-	ReadOnly = readOnly{}
+type ReadOnly struct {
+	ReadTime time.Time // ReadTime specifies the snapshot of the database to read.
 }
 
-type readOnly struct{}
-
-func (readOnly) apply(s *transactionSettings) {
+func (ro *ReadOnly) apply(s *transactionSettings) {
 	s.readOnly = true
+
+	if !ro.ReadTime.IsZero() {
+		s.readTime = timestamppb.Timestamp{Seconds: ro.ReadTime.Unix()}
+	}
 }
 
 // Transaction represents a set of datastore operations to be committed atomically.
@@ -116,9 +119,15 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
 
-		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
+		var ro *pb.TransactionOptions_ReadOnly
+		if !s.readTime.AsTime().IsZero() {
+			ro.ReadTime = &s.readTime
 		}
+
+		req.TransactionOptions = &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: ro},
+		}
+
 	} else if s.prevID != nil {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
