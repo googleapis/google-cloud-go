@@ -18,7 +18,7 @@
 // 	protoc        v3.21.5
 // source: google/devtools/containeranalysis/v1beta1/grafeas/grafeas.proto
 
-package containeranalysispb
+package grafeaspb
 
 import (
 	context "context"

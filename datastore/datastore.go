@@ -118,7 +118,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	return &Client{
 		connPool: connPool,
@@ -130,7 +130,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
 	creds, err := transport.Creds(ctx, opts...)
 	if err != nil {
-		return "", fmt.Errorf("fetching creds: %v", err)
+		return "", fmt.Errorf("fetching creds: %w", err)
 	}
 	if creds.ProjectID == "" {
 		return "", errors.New("datastore: see the docs on DetectProjectID")
