@@ -35,7 +35,7 @@ import (
 	_ "google.golang.org/grpc/xds/googledirectpath"
 )
 
-const codeVersion = "0.4.0" // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.4.1" // to keep track of which version of the code a benchmark ran on
 
 var opts = &benchmarkOptions{}
 var projectID, credentialsFile, outputFile string
@@ -341,8 +341,8 @@ func (br *benchmarkResult) csv() []string {
 		strconv.FormatUint(br.startMem.StackInuse, 10),
 		strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
 		strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10),
-		strconv.FormatInt(br.start.Unix(), 10),
-		strconv.FormatInt(br.start.Add(br.elapsedTime).UnixNano(), 10),
+		br.start.Format(time.RFC3339),
+		br.start.Add(br.elapsedTime).Format(time.RFC3339),
 		strconv.Itoa(opts.numWorkers),
 		codeVersion,
 		opts.bucket,
