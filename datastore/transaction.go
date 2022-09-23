@@ -79,7 +79,7 @@ func (ro *ReadOnly) apply(s *transactionSettings) {
 	s.readOnly = true
 
 	if !ro.ReadTime.IsZero() {
-		s.readTime = timestamppb.Timestamp{Seconds: ro.ReadTime.Unix()}
+		s.readTime = *timestamppb.New(ro.ReadTime)
 	}
 }
 
