@@ -20,13 +20,35 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
+	adminpb "cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 	"google.golang.org/api/iterator"
-	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 )
 
 func ExampleNewAnalyticsAdminClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewAnalyticsAdminRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewAnalyticsAdminClient() {
 
 func ExampleAnalyticsAdminClient_GetAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleAnalyticsAdminClient_GetAccount() {
 
 	req := &adminpb.GetAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetAccountRequest.
 	}
 	resp, err := c.GetAccount(ctx, req)
 	if err != nil {
@@ -58,6 +85,11 @@ func ExampleAnalyticsAdminClient_GetAccount() {
 
 func ExampleAnalyticsAdminClient_ListAccounts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +98,7 @@ func ExampleAnalyticsAdminClient_ListAccounts() {
 
 	req := &adminpb.ListAccountsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListAccountsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListAccountsRequest.
 	}
 	it := c.ListAccounts(ctx, req)
 	for {
@@ -84,6 +116,11 @@ func ExampleAnalyticsAdminClient_ListAccounts() {
 
 func ExampleAnalyticsAdminClient_DeleteAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleAnalyticsAdminClient_DeleteAccount() {
 
 	req := &adminpb.DeleteAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteAccountRequest.
 	}
 	err = c.DeleteAccount(ctx, req)
 	if err != nil {
@@ -102,6 +139,11 @@ func ExampleAnalyticsAdminClient_DeleteAccount() {
 
 func ExampleAnalyticsAdminClient_UpdateAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,7 +152,7 @@ func ExampleAnalyticsAdminClient_UpdateAccount() {
 
 	req := &adminpb.UpdateAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateAccountRequest.
 	}
 	resp, err := c.UpdateAccount(ctx, req)
 	if err != nil {
@@ -122,6 +164,11 @@ func ExampleAnalyticsAdminClient_UpdateAccount() {
 
 func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,7 +177,7 @@ func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
 
 	req := &adminpb.ProvisionAccountTicketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ProvisionAccountTicketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ProvisionAccountTicketRequest.
 	}
 	resp, err := c.ProvisionAccountTicket(ctx, req)
 	if err != nil {
@@ -142,6 +189,11 @@ func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
 
 func ExampleAnalyticsAdminClient_ListAccountSummaries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,7 +202,7 @@ func ExampleAnalyticsAdminClient_ListAccountSummaries() {
 
 	req := &adminpb.ListAccountSummariesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListAccountSummariesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListAccountSummariesRequest.
 	}
 	it := c.ListAccountSummaries(ctx, req)
 	for {
@@ -168,6 +220,11 @@ func ExampleAnalyticsAdminClient_ListAccountSummaries() {
 
 func ExampleAnalyticsAdminClient_GetProperty() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,7 +233,7 @@ func ExampleAnalyticsAdminClient_GetProperty() {
 
 	req := &adminpb.GetPropertyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetPropertyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetPropertyRequest.
 	}
 	resp, err := c.GetProperty(ctx, req)
 	if err != nil {
@@ -188,6 +245,11 @@ func ExampleAnalyticsAdminClient_GetProperty() {
 
 func ExampleAnalyticsAdminClient_ListProperties() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,7 +258,7 @@ func ExampleAnalyticsAdminClient_ListProperties() {
 
 	req := &adminpb.ListPropertiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListPropertiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListPropertiesRequest.
 	}
 	it := c.ListProperties(ctx, req)
 	for {
@@ -214,6 +276,11 @@ func ExampleAnalyticsAdminClient_ListProperties() {
 
 func ExampleAnalyticsAdminClient_CreateProperty() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,7 +289,7 @@ func ExampleAnalyticsAdminClient_CreateProperty() {
 
 	req := &adminpb.CreatePropertyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreatePropertyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreatePropertyRequest.
 	}
 	resp, err := c.CreateProperty(ctx, req)
 	if err != nil {
@@ -234,6 +301,11 @@ func ExampleAnalyticsAdminClient_CreateProperty() {
 
 func ExampleAnalyticsAdminClient_DeleteProperty() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -242,7 +314,7 @@ func ExampleAnalyticsAdminClient_DeleteProperty() {
 
 	req := &adminpb.DeletePropertyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeletePropertyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeletePropertyRequest.
 	}
 	resp, err := c.DeleteProperty(ctx, req)
 	if err != nil {
@@ -254,6 +326,11 @@ func ExampleAnalyticsAdminClient_DeleteProperty() {
 
 func ExampleAnalyticsAdminClient_UpdateProperty() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -262,7 +339,7 @@ func ExampleAnalyticsAdminClient_UpdateProperty() {
 
 	req := &adminpb.UpdatePropertyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdatePropertyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdatePropertyRequest.
 	}
 	resp, err := c.UpdateProperty(ctx, req)
 	if err != nil {
@@ -274,6 +351,11 @@ func ExampleAnalyticsAdminClient_UpdateProperty() {
 
 func ExampleAnalyticsAdminClient_GetUserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -282,7 +364,7 @@ func ExampleAnalyticsAdminClient_GetUserLink() {
 
 	req := &adminpb.GetUserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetUserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetUserLinkRequest.
 	}
 	resp, err := c.GetUserLink(ctx, req)
 	if err != nil {
@@ -294,6 +376,11 @@ func ExampleAnalyticsAdminClient_GetUserLink() {
 
 func ExampleAnalyticsAdminClient_BatchGetUserLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -302,7 +389,7 @@ func ExampleAnalyticsAdminClient_BatchGetUserLinks() {
 
 	req := &adminpb.BatchGetUserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchGetUserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#BatchGetUserLinksRequest.
 	}
 	resp, err := c.BatchGetUserLinks(ctx, req)
 	if err != nil {
@@ -314,6 +401,11 @@ func ExampleAnalyticsAdminClient_BatchGetUserLinks() {
 
 func ExampleAnalyticsAdminClient_ListUserLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -322,7 +414,7 @@ func ExampleAnalyticsAdminClient_ListUserLinks() {
 
 	req := &adminpb.ListUserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListUserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListUserLinksRequest.
 	}
 	it := c.ListUserLinks(ctx, req)
 	for {
@@ -340,6 +432,11 @@ func ExampleAnalyticsAdminClient_ListUserLinks() {
 
 func ExampleAnalyticsAdminClient_AuditUserLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -348,7 +445,7 @@ func ExampleAnalyticsAdminClient_AuditUserLinks() {
 
 	req := &adminpb.AuditUserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#AuditUserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#AuditUserLinksRequest.
 	}
 	it := c.AuditUserLinks(ctx, req)
 	for {
@@ -366,6 +463,11 @@ func ExampleAnalyticsAdminClient_AuditUserLinks() {
 
 func ExampleAnalyticsAdminClient_CreateUserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -374,7 +476,7 @@ func ExampleAnalyticsAdminClient_CreateUserLink() {
 
 	req := &adminpb.CreateUserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateUserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateUserLinkRequest.
 	}
 	resp, err := c.CreateUserLink(ctx, req)
 	if err != nil {
@@ -386,6 +488,11 @@ func ExampleAnalyticsAdminClient_CreateUserLink() {
 
 func ExampleAnalyticsAdminClient_BatchCreateUserLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -394,7 +501,7 @@ func ExampleAnalyticsAdminClient_BatchCreateUserLinks() {
 
 	req := &adminpb.BatchCreateUserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchCreateUserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#BatchCreateUserLinksRequest.
 	}
 	resp, err := c.BatchCreateUserLinks(ctx, req)
 	if err != nil {
@@ -406,6 +513,11 @@ func ExampleAnalyticsAdminClient_BatchCreateUserLinks() {
 
 func ExampleAnalyticsAdminClient_UpdateUserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -414,7 +526,7 @@ func ExampleAnalyticsAdminClient_UpdateUserLink() {
 
 	req := &adminpb.UpdateUserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateUserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateUserLinkRequest.
 	}
 	resp, err := c.UpdateUserLink(ctx, req)
 	if err != nil {
@@ -426,6 +538,11 @@ func ExampleAnalyticsAdminClient_UpdateUserLink() {
 
 func ExampleAnalyticsAdminClient_BatchUpdateUserLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -434,7 +551,7 @@ func ExampleAnalyticsAdminClient_BatchUpdateUserLinks() {
 
 	req := &adminpb.BatchUpdateUserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchUpdateUserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#BatchUpdateUserLinksRequest.
 	}
 	resp, err := c.BatchUpdateUserLinks(ctx, req)
 	if err != nil {
@@ -446,6 +563,11 @@ func ExampleAnalyticsAdminClient_BatchUpdateUserLinks() {
 
 func ExampleAnalyticsAdminClient_DeleteUserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -454,7 +576,7 @@ func ExampleAnalyticsAdminClient_DeleteUserLink() {
 
 	req := &adminpb.DeleteUserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteUserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteUserLinkRequest.
 	}
 	err = c.DeleteUserLink(ctx, req)
 	if err != nil {
@@ -464,6 +586,11 @@ func ExampleAnalyticsAdminClient_DeleteUserLink() {
 
 func ExampleAnalyticsAdminClient_BatchDeleteUserLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -472,7 +599,7 @@ func ExampleAnalyticsAdminClient_BatchDeleteUserLinks() {
 
 	req := &adminpb.BatchDeleteUserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchDeleteUserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#BatchDeleteUserLinksRequest.
 	}
 	err = c.BatchDeleteUserLinks(ctx, req)
 	if err != nil {
@@ -482,6 +609,11 @@ func ExampleAnalyticsAdminClient_BatchDeleteUserLinks() {
 
 func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -490,7 +622,7 @@ func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
 
 	req := &adminpb.CreateFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateFirebaseLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateFirebaseLinkRequest.
 	}
 	resp, err := c.CreateFirebaseLink(ctx, req)
 	if err != nil {
@@ -502,6 +634,11 @@ func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
 
 func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -510,7 +647,7 @@ func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 
 	req := &adminpb.DeleteFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteFirebaseLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteFirebaseLinkRequest.
 	}
 	err = c.DeleteFirebaseLink(ctx, req)
 	if err != nil {
@@ -520,6 +657,11 @@ func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 
 func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -528,7 +670,7 @@ func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 
 	req := &adminpb.ListFirebaseLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListFirebaseLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListFirebaseLinksRequest.
 	}
 	it := c.ListFirebaseLinks(ctx, req)
 	for {
@@ -546,6 +688,11 @@ func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 
 func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -554,7 +701,7 @@ func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
 
 	req := &adminpb.GetGlobalSiteTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetGlobalSiteTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetGlobalSiteTagRequest.
 	}
 	resp, err := c.GetGlobalSiteTag(ctx, req)
 	if err != nil {
@@ -566,6 +713,11 @@ func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
 
 func ExampleAnalyticsAdminClient_CreateGoogleAdsLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -574,7 +726,7 @@ func ExampleAnalyticsAdminClient_CreateGoogleAdsLink() {
 
 	req := &adminpb.CreateGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateGoogleAdsLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateGoogleAdsLinkRequest.
 	}
 	resp, err := c.CreateGoogleAdsLink(ctx, req)
 	if err != nil {
@@ -586,6 +738,11 @@ func ExampleAnalyticsAdminClient_CreateGoogleAdsLink() {
 
 func ExampleAnalyticsAdminClient_UpdateGoogleAdsLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -594,7 +751,7 @@ func ExampleAnalyticsAdminClient_UpdateGoogleAdsLink() {
 
 	req := &adminpb.UpdateGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateGoogleAdsLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateGoogleAdsLinkRequest.
 	}
 	resp, err := c.UpdateGoogleAdsLink(ctx, req)
 	if err != nil {
@@ -606,6 +763,11 @@ func ExampleAnalyticsAdminClient_UpdateGoogleAdsLink() {
 
 func ExampleAnalyticsAdminClient_DeleteGoogleAdsLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -614,7 +776,7 @@ func ExampleAnalyticsAdminClient_DeleteGoogleAdsLink() {
 
 	req := &adminpb.DeleteGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteGoogleAdsLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteGoogleAdsLinkRequest.
 	}
 	err = c.DeleteGoogleAdsLink(ctx, req)
 	if err != nil {
@@ -624,6 +786,11 @@ func ExampleAnalyticsAdminClient_DeleteGoogleAdsLink() {
 
 func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -632,7 +799,7 @@ func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
 
 	req := &adminpb.ListGoogleAdsLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListGoogleAdsLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListGoogleAdsLinksRequest.
 	}
 	it := c.ListGoogleAdsLinks(ctx, req)
 	for {
@@ -650,6 +817,11 @@ func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
 
 func ExampleAnalyticsAdminClient_GetDataSharingSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -658,7 +830,7 @@ func ExampleAnalyticsAdminClient_GetDataSharingSettings() {
 
 	req := &adminpb.GetDataSharingSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataSharingSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetDataSharingSettingsRequest.
 	}
 	resp, err := c.GetDataSharingSettings(ctx, req)
 	if err != nil {
@@ -670,6 +842,11 @@ func ExampleAnalyticsAdminClient_GetDataSharingSettings() {
 
 func ExampleAnalyticsAdminClient_GetMeasurementProtocolSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -678,7 +855,7 @@ func ExampleAnalyticsAdminClient_GetMeasurementProtocolSecret() {
 
 	req := &adminpb.GetMeasurementProtocolSecretRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetMeasurementProtocolSecretRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetMeasurementProtocolSecretRequest.
 	}
 	resp, err := c.GetMeasurementProtocolSecret(ctx, req)
 	if err != nil {
@@ -690,6 +867,11 @@ func ExampleAnalyticsAdminClient_GetMeasurementProtocolSecret() {
 
 func ExampleAnalyticsAdminClient_ListMeasurementProtocolSecrets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -698,7 +880,7 @@ func ExampleAnalyticsAdminClient_ListMeasurementProtocolSecrets() {
 
 	req := &adminpb.ListMeasurementProtocolSecretsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListMeasurementProtocolSecretsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListMeasurementProtocolSecretsRequest.
 	}
 	it := c.ListMeasurementProtocolSecrets(ctx, req)
 	for {
@@ -716,6 +898,11 @@ func ExampleAnalyticsAdminClient_ListMeasurementProtocolSecrets() {
 
 func ExampleAnalyticsAdminClient_CreateMeasurementProtocolSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -724,7 +911,7 @@ func ExampleAnalyticsAdminClient_CreateMeasurementProtocolSecret() {
 
 	req := &adminpb.CreateMeasurementProtocolSecretRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateMeasurementProtocolSecretRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateMeasurementProtocolSecretRequest.
 	}
 	resp, err := c.CreateMeasurementProtocolSecret(ctx, req)
 	if err != nil {
@@ -736,6 +923,11 @@ func ExampleAnalyticsAdminClient_CreateMeasurementProtocolSecret() {
 
 func ExampleAnalyticsAdminClient_DeleteMeasurementProtocolSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -744,7 +936,7 @@ func ExampleAnalyticsAdminClient_DeleteMeasurementProtocolSecret() {
 
 	req := &adminpb.DeleteMeasurementProtocolSecretRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteMeasurementProtocolSecretRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteMeasurementProtocolSecretRequest.
 	}
 	err = c.DeleteMeasurementProtocolSecret(ctx, req)
 	if err != nil {
@@ -754,6 +946,11 @@ func ExampleAnalyticsAdminClient_DeleteMeasurementProtocolSecret() {
 
 func ExampleAnalyticsAdminClient_UpdateMeasurementProtocolSecret() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -762,7 +959,7 @@ func ExampleAnalyticsAdminClient_UpdateMeasurementProtocolSecret() {
 
 	req := &adminpb.UpdateMeasurementProtocolSecretRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateMeasurementProtocolSecretRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateMeasurementProtocolSecretRequest.
 	}
 	resp, err := c.UpdateMeasurementProtocolSecret(ctx, req)
 	if err != nil {
@@ -774,6 +971,11 @@ func ExampleAnalyticsAdminClient_UpdateMeasurementProtocolSecret() {
 
 func ExampleAnalyticsAdminClient_AcknowledgeUserDataCollection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -782,7 +984,7 @@ func ExampleAnalyticsAdminClient_AcknowledgeUserDataCollection() {
 
 	req := &adminpb.AcknowledgeUserDataCollectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#AcknowledgeUserDataCollectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#AcknowledgeUserDataCollectionRequest.
 	}
 	resp, err := c.AcknowledgeUserDataCollection(ctx, req)
 	if err != nil {
@@ -794,6 +996,11 @@ func ExampleAnalyticsAdminClient_AcknowledgeUserDataCollection() {
 
 func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -802,7 +1009,7 @@ func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
 
 	req := &adminpb.SearchChangeHistoryEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#SearchChangeHistoryEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#SearchChangeHistoryEventsRequest.
 	}
 	it := c.SearchChangeHistoryEvents(ctx, req)
 	for {
@@ -820,6 +1027,11 @@ func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
 
 func ExampleAnalyticsAdminClient_GetGoogleSignalsSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -828,7 +1040,7 @@ func ExampleAnalyticsAdminClient_GetGoogleSignalsSettings() {
 
 	req := &adminpb.GetGoogleSignalsSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetGoogleSignalsSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetGoogleSignalsSettingsRequest.
 	}
 	resp, err := c.GetGoogleSignalsSettings(ctx, req)
 	if err != nil {
@@ -840,6 +1052,11 @@ func ExampleAnalyticsAdminClient_GetGoogleSignalsSettings() {
 
 func ExampleAnalyticsAdminClient_UpdateGoogleSignalsSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -848,7 +1065,7 @@ func ExampleAnalyticsAdminClient_UpdateGoogleSignalsSettings() {
 
 	req := &adminpb.UpdateGoogleSignalsSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateGoogleSignalsSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateGoogleSignalsSettingsRequest.
 	}
 	resp, err := c.UpdateGoogleSignalsSettings(ctx, req)
 	if err != nil {
@@ -860,6 +1077,11 @@ func ExampleAnalyticsAdminClient_UpdateGoogleSignalsSettings() {
 
 func ExampleAnalyticsAdminClient_CreateConversionEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -868,7 +1090,7 @@ func ExampleAnalyticsAdminClient_CreateConversionEvent() {
 
 	req := &adminpb.CreateConversionEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateConversionEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateConversionEventRequest.
 	}
 	resp, err := c.CreateConversionEvent(ctx, req)
 	if err != nil {
@@ -880,6 +1102,11 @@ func ExampleAnalyticsAdminClient_CreateConversionEvent() {
 
 func ExampleAnalyticsAdminClient_GetConversionEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -888,7 +1115,7 @@ func ExampleAnalyticsAdminClient_GetConversionEvent() {
 
 	req := &adminpb.GetConversionEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetConversionEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetConversionEventRequest.
 	}
 	resp, err := c.GetConversionEvent(ctx, req)
 	if err != nil {
@@ -900,6 +1127,11 @@ func ExampleAnalyticsAdminClient_GetConversionEvent() {
 
 func ExampleAnalyticsAdminClient_DeleteConversionEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -908,7 +1140,7 @@ func ExampleAnalyticsAdminClient_DeleteConversionEvent() {
 
 	req := &adminpb.DeleteConversionEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteConversionEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteConversionEventRequest.
 	}
 	err = c.DeleteConversionEvent(ctx, req)
 	if err != nil {
@@ -918,6 +1150,11 @@ func ExampleAnalyticsAdminClient_DeleteConversionEvent() {
 
 func ExampleAnalyticsAdminClient_ListConversionEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -926,7 +1163,7 @@ func ExampleAnalyticsAdminClient_ListConversionEvents() {
 
 	req := &adminpb.ListConversionEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListConversionEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListConversionEventsRequest.
 	}
 	it := c.ListConversionEvents(ctx, req)
 	for {
@@ -944,6 +1181,11 @@ func ExampleAnalyticsAdminClient_ListConversionEvents() {
 
 func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -952,7 +1194,7 @@ func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLink() {
 
 	req := &adminpb.GetDisplayVideo360AdvertiserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDisplayVideo360AdvertiserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetDisplayVideo360AdvertiserLinkRequest.
 	}
 	resp, err := c.GetDisplayVideo360AdvertiserLink(ctx, req)
 	if err != nil {
@@ -964,6 +1206,11 @@ func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLink() {
 
 func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -972,7 +1219,7 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinks() {
 
 	req := &adminpb.ListDisplayVideo360AdvertiserLinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDisplayVideo360AdvertiserLinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListDisplayVideo360AdvertiserLinksRequest.
 	}
 	it := c.ListDisplayVideo360AdvertiserLinks(ctx, req)
 	for {
@@ -990,6 +1237,11 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinks() {
 
 func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -998,7 +1250,7 @@ func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLink() {
 
 	req := &adminpb.CreateDisplayVideo360AdvertiserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDisplayVideo360AdvertiserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateDisplayVideo360AdvertiserLinkRequest.
 	}
 	resp, err := c.CreateDisplayVideo360AdvertiserLink(ctx, req)
 	if err != nil {
@@ -1010,6 +1262,11 @@ func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLink() {
 
 func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1018,7 +1275,7 @@ func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLink() {
 
 	req := &adminpb.DeleteDisplayVideo360AdvertiserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDisplayVideo360AdvertiserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteDisplayVideo360AdvertiserLinkRequest.
 	}
 	err = c.DeleteDisplayVideo360AdvertiserLink(ctx, req)
 	if err != nil {
@@ -1028,6 +1285,11 @@ func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLink() {
 
 func ExampleAnalyticsAdminClient_UpdateDisplayVideo360AdvertiserLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1036,7 +1298,7 @@ func ExampleAnalyticsAdminClient_UpdateDisplayVideo360AdvertiserLink() {
 
 	req := &adminpb.UpdateDisplayVideo360AdvertiserLinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDisplayVideo360AdvertiserLinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateDisplayVideo360AdvertiserLinkRequest.
 	}
 	resp, err := c.UpdateDisplayVideo360AdvertiserLink(ctx, req)
 	if err != nil {
@@ -1048,6 +1310,11 @@ func ExampleAnalyticsAdminClient_UpdateDisplayVideo360AdvertiserLink() {
 
 func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLinkProposal() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1056,7 +1323,7 @@ func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLinkProposal() {
 
 	req := &adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDisplayVideo360AdvertiserLinkProposalRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetDisplayVideo360AdvertiserLinkProposalRequest.
 	}
 	resp, err := c.GetDisplayVideo360AdvertiserLinkProposal(ctx, req)
 	if err != nil {
@@ -1068,6 +1335,11 @@ func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLinkProposal() {
 
 func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinkProposals() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1076,7 +1348,7 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinkProposals() {
 
 	req := &adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDisplayVideo360AdvertiserLinkProposalsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListDisplayVideo360AdvertiserLinkProposalsRequest.
 	}
 	it := c.ListDisplayVideo360AdvertiserLinkProposals(ctx, req)
 	for {
@@ -1094,6 +1366,11 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinkProposals() {
 
 func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLinkProposal() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1102,7 +1379,7 @@ func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLinkProposal() {
 
 	req := &adminpb.CreateDisplayVideo360AdvertiserLinkProposalRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDisplayVideo360AdvertiserLinkProposalRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateDisplayVideo360AdvertiserLinkProposalRequest.
 	}
 	resp, err := c.CreateDisplayVideo360AdvertiserLinkProposal(ctx, req)
 	if err != nil {
@@ -1114,6 +1391,11 @@ func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLinkProposal() {
 
 func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLinkProposal() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1122,7 +1404,7 @@ func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLinkProposal() {
 
 	req := &adminpb.DeleteDisplayVideo360AdvertiserLinkProposalRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDisplayVideo360AdvertiserLinkProposalRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteDisplayVideo360AdvertiserLinkProposalRequest.
 	}
 	err = c.DeleteDisplayVideo360AdvertiserLinkProposal(ctx, req)
 	if err != nil {
@@ -1132,6 +1414,11 @@ func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLinkProposal() {
 
 func ExampleAnalyticsAdminClient_ApproveDisplayVideo360AdvertiserLinkProposal() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1140,7 +1427,7 @@ func ExampleAnalyticsAdminClient_ApproveDisplayVideo360AdvertiserLinkProposal() 
 
 	req := &adminpb.ApproveDisplayVideo360AdvertiserLinkProposalRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ApproveDisplayVideo360AdvertiserLinkProposalRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ApproveDisplayVideo360AdvertiserLinkProposalRequest.
 	}
 	resp, err := c.ApproveDisplayVideo360AdvertiserLinkProposal(ctx, req)
 	if err != nil {
@@ -1152,6 +1439,11 @@ func ExampleAnalyticsAdminClient_ApproveDisplayVideo360AdvertiserLinkProposal() 
 
 func ExampleAnalyticsAdminClient_CancelDisplayVideo360AdvertiserLinkProposal() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1160,7 +1452,7 @@ func ExampleAnalyticsAdminClient_CancelDisplayVideo360AdvertiserLinkProposal() {
 
 	req := &adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CancelDisplayVideo360AdvertiserLinkProposalRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CancelDisplayVideo360AdvertiserLinkProposalRequest.
 	}
 	resp, err := c.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req)
 	if err != nil {
@@ -1172,6 +1464,11 @@ func ExampleAnalyticsAdminClient_CancelDisplayVideo360AdvertiserLinkProposal() {
 
 func ExampleAnalyticsAdminClient_CreateCustomDimension() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1180,7 +1477,7 @@ func ExampleAnalyticsAdminClient_CreateCustomDimension() {
 
 	req := &adminpb.CreateCustomDimensionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateCustomDimensionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateCustomDimensionRequest.
 	}
 	resp, err := c.CreateCustomDimension(ctx, req)
 	if err != nil {
@@ -1192,6 +1489,11 @@ func ExampleAnalyticsAdminClient_CreateCustomDimension() {
 
 func ExampleAnalyticsAdminClient_UpdateCustomDimension() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1200,7 +1502,7 @@ func ExampleAnalyticsAdminClient_UpdateCustomDimension() {
 
 	req := &adminpb.UpdateCustomDimensionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateCustomDimensionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateCustomDimensionRequest.
 	}
 	resp, err := c.UpdateCustomDimension(ctx, req)
 	if err != nil {
@@ -1212,6 +1514,11 @@ func ExampleAnalyticsAdminClient_UpdateCustomDimension() {
 
 func ExampleAnalyticsAdminClient_ListCustomDimensions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1220,7 +1527,7 @@ func ExampleAnalyticsAdminClient_ListCustomDimensions() {
 
 	req := &adminpb.ListCustomDimensionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListCustomDimensionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListCustomDimensionsRequest.
 	}
 	it := c.ListCustomDimensions(ctx, req)
 	for {
@@ -1238,6 +1545,11 @@ func ExampleAnalyticsAdminClient_ListCustomDimensions() {
 
 func ExampleAnalyticsAdminClient_ArchiveCustomDimension() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1246,7 +1558,7 @@ func ExampleAnalyticsAdminClient_ArchiveCustomDimension() {
 
 	req := &adminpb.ArchiveCustomDimensionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ArchiveCustomDimensionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ArchiveCustomDimensionRequest.
 	}
 	err = c.ArchiveCustomDimension(ctx, req)
 	if err != nil {
@@ -1256,6 +1568,11 @@ func ExampleAnalyticsAdminClient_ArchiveCustomDimension() {
 
 func ExampleAnalyticsAdminClient_GetCustomDimension() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1264,7 +1581,7 @@ func ExampleAnalyticsAdminClient_GetCustomDimension() {
 
 	req := &adminpb.GetCustomDimensionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetCustomDimensionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetCustomDimensionRequest.
 	}
 	resp, err := c.GetCustomDimension(ctx, req)
 	if err != nil {
@@ -1276,6 +1593,11 @@ func ExampleAnalyticsAdminClient_GetCustomDimension() {
 
 func ExampleAnalyticsAdminClient_CreateCustomMetric() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1284,7 +1606,7 @@ func ExampleAnalyticsAdminClient_CreateCustomMetric() {
 
 	req := &adminpb.CreateCustomMetricRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateCustomMetricRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateCustomMetricRequest.
 	}
 	resp, err := c.CreateCustomMetric(ctx, req)
 	if err != nil {
@@ -1296,6 +1618,11 @@ func ExampleAnalyticsAdminClient_CreateCustomMetric() {
 
 func ExampleAnalyticsAdminClient_UpdateCustomMetric() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1304,7 +1631,7 @@ func ExampleAnalyticsAdminClient_UpdateCustomMetric() {
 
 	req := &adminpb.UpdateCustomMetricRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateCustomMetricRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateCustomMetricRequest.
 	}
 	resp, err := c.UpdateCustomMetric(ctx, req)
 	if err != nil {
@@ -1316,6 +1643,11 @@ func ExampleAnalyticsAdminClient_UpdateCustomMetric() {
 
 func ExampleAnalyticsAdminClient_ListCustomMetrics() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1324,7 +1656,7 @@ func ExampleAnalyticsAdminClient_ListCustomMetrics() {
 
 	req := &adminpb.ListCustomMetricsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListCustomMetricsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListCustomMetricsRequest.
 	}
 	it := c.ListCustomMetrics(ctx, req)
 	for {
@@ -1342,6 +1674,11 @@ func ExampleAnalyticsAdminClient_ListCustomMetrics() {
 
 func ExampleAnalyticsAdminClient_ArchiveCustomMetric() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1350,7 +1687,7 @@ func ExampleAnalyticsAdminClient_ArchiveCustomMetric() {
 
 	req := &adminpb.ArchiveCustomMetricRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ArchiveCustomMetricRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ArchiveCustomMetricRequest.
 	}
 	err = c.ArchiveCustomMetric(ctx, req)
 	if err != nil {
@@ -1360,6 +1697,11 @@ func ExampleAnalyticsAdminClient_ArchiveCustomMetric() {
 
 func ExampleAnalyticsAdminClient_GetCustomMetric() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1368,7 +1710,7 @@ func ExampleAnalyticsAdminClient_GetCustomMetric() {
 
 	req := &adminpb.GetCustomMetricRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetCustomMetricRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetCustomMetricRequest.
 	}
 	resp, err := c.GetCustomMetric(ctx, req)
 	if err != nil {
@@ -1380,6 +1722,11 @@ func ExampleAnalyticsAdminClient_GetCustomMetric() {
 
 func ExampleAnalyticsAdminClient_GetDataRetentionSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1388,7 +1735,7 @@ func ExampleAnalyticsAdminClient_GetDataRetentionSettings() {
 
 	req := &adminpb.GetDataRetentionSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataRetentionSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetDataRetentionSettingsRequest.
 	}
 	resp, err := c.GetDataRetentionSettings(ctx, req)
 	if err != nil {
@@ -1400,6 +1747,11 @@ func ExampleAnalyticsAdminClient_GetDataRetentionSettings() {
 
 func ExampleAnalyticsAdminClient_UpdateDataRetentionSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1408,7 +1760,7 @@ func ExampleAnalyticsAdminClient_UpdateDataRetentionSettings() {
 
 	req := &adminpb.UpdateDataRetentionSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDataRetentionSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateDataRetentionSettingsRequest.
 	}
 	resp, err := c.UpdateDataRetentionSettings(ctx, req)
 	if err != nil {
@@ -1420,6 +1772,11 @@ func ExampleAnalyticsAdminClient_UpdateDataRetentionSettings() {
 
 func ExampleAnalyticsAdminClient_CreateDataStream() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1428,7 +1785,7 @@ func ExampleAnalyticsAdminClient_CreateDataStream() {
 
 	req := &adminpb.CreateDataStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDataStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateDataStreamRequest.
 	}
 	resp, err := c.CreateDataStream(ctx, req)
 	if err != nil {
@@ -1440,6 +1797,11 @@ func ExampleAnalyticsAdminClient_CreateDataStream() {
 
 func ExampleAnalyticsAdminClient_DeleteDataStream() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1448,7 +1810,7 @@ func ExampleAnalyticsAdminClient_DeleteDataStream() {
 
 	req := &adminpb.DeleteDataStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDataStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteDataStreamRequest.
 	}
 	err = c.DeleteDataStream(ctx, req)
 	if err != nil {
@@ -1458,6 +1820,11 @@ func ExampleAnalyticsAdminClient_DeleteDataStream() {
 
 func ExampleAnalyticsAdminClient_UpdateDataStream() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1466,7 +1833,7 @@ func ExampleAnalyticsAdminClient_UpdateDataStream() {
 
 	req := &adminpb.UpdateDataStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDataStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateDataStreamRequest.
 	}
 	resp, err := c.UpdateDataStream(ctx, req)
 	if err != nil {
@@ -1478,6 +1845,11 @@ func ExampleAnalyticsAdminClient_UpdateDataStream() {
 
 func ExampleAnalyticsAdminClient_ListDataStreams() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1486,7 +1858,7 @@ func ExampleAnalyticsAdminClient_ListDataStreams() {
 
 	req := &adminpb.ListDataStreamsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDataStreamsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListDataStreamsRequest.
 	}
 	it := c.ListDataStreams(ctx, req)
 	for {
@@ -1504,6 +1876,11 @@ func ExampleAnalyticsAdminClient_ListDataStreams() {
 
 func ExampleAnalyticsAdminClient_GetDataStream() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1512,9 +1889,213 @@ func ExampleAnalyticsAdminClient_GetDataStream() {
 
 	req := &adminpb.GetDataStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetDataStreamRequest.
 	}
 	resp, err := c.GetDataStream(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetAudience() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetAudienceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetAudienceRequest.
+	}
+	resp, err := c.GetAudience(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListAudiences() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListAudiencesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListAudiencesRequest.
+	}
+	it := c.ListAudiences(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateAudience() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateAudienceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateAudienceRequest.
+	}
+	resp, err := c.CreateAudience(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateAudience() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateAudienceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateAudienceRequest.
+	}
+	resp, err := c.UpdateAudience(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ArchiveAudience() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ArchiveAudienceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ArchiveAudienceRequest.
+	}
+	err = c.ArchiveAudience(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetAttributionSettings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetAttributionSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetAttributionSettingsRequest.
+	}
+	resp, err := c.GetAttributionSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateAttributionSettings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateAttributionSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateAttributionSettingsRequest.
+	}
+	resp, err := c.UpdateAttributionSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_RunAccessReport() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.RunAccessReportRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#RunAccessReportRequest.
+	}
+	resp, err := c.RunAccessReport(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

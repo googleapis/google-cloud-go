@@ -49,12 +49,19 @@ exit_code=0
 # Run tests in the current directory and tee output to log file,
 # to be pushed to GCS as artifact.
 runPresubmitTests() {
+  if [[ $PWD != *"/internal/"* ]] ||
+    [[ $PWD != *"/third_party/"* ]] &&
+    [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
+    # internal tools only expected to work with latest go version
+    return
+  fi
+
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    go test -race -v -timeout 15m -short ./... 2>&1 \
-    | tee sponge_log.log
+    go test -race -v -timeout 15m -short ./... 2>&1 |
+      tee sponge_log.log
   else
-    go test -race -v -timeout 45m ./... 2>&1 \
-    | tee sponge_log.log
+    go test -race -v -timeout 45m ./... 2>&1 |
+      tee sponge_log.log
   fi
 
   # Run integration tests against an emulator.
@@ -63,25 +70,29 @@ runPresubmitTests() {
   fi
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
-  cat sponge_log.log \
-    | go-junit-report -set-exit-code > sponge_log.xml
+  cat sponge_log.log |
+    go-junit-report -set-exit-code >sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
+  exit_code=$(($exit_code + $?))
+  if [[ $PWD != *"/internal/"* ]]; then
+    go build ./...
+  fi
   exit_code=$(($exit_code + $?))
 }
 
-SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/main...$KOKORO_GIT_COMMIT_google_cloud_go \
-  | grep -Ev '(\.md$|^\.github)' || true)
+SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/main...$KOKORO_GIT_COMMIT_google_cloud_go |
+  grep -Ev '(\.md$|^\.github)' || true)
 # CHANGED_DIRS is the list of significant top-level directories that changed,
 # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
-CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u \
-  | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
+CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u |
+  tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
 
 echo "Running tests only in changed submodules: $CHANGED_DIRS"
 for d in $CHANGED_DIRS; do
-  for i in `find "$d" -name go.mod`; do
-    pushd `dirname $i`;
-      runPresubmitTests
-    popd;
+  for i in $(find "$d" -name go.mod); do
+    pushd $(dirname $i)
+    runPresubmitTests
+    popd
   done
 done
 

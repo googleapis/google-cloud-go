@@ -51,6 +51,8 @@ type CallOptions struct {
 	CreateChannel           []gax.CallOption
 	UpdateChannel           []gax.CallOption
 	DeleteChannel           []gax.CallOption
+	GetProvider             []gax.CallOption
+	ListProviders           []gax.CallOption
 	GetChannelConnection    []gax.CallOption
 	ListChannelConnections  []gax.CallOption
 	CreateChannelConnection []gax.CallOption
@@ -81,6 +83,8 @@ func defaultCallOptions() *CallOptions {
 		CreateChannel:           []gax.CallOption{},
 		UpdateChannel:           []gax.CallOption{},
 		DeleteChannel:           []gax.CallOption{},
+		GetProvider:             []gax.CallOption{},
+		ListProviders:           []gax.CallOption{},
 		GetChannelConnection:    []gax.CallOption{},
 		ListChannelConnections:  []gax.CallOption{},
 		CreateChannelConnection: []gax.CallOption{},
@@ -88,7 +92,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Eventarc API.
+// internalClient is an interface that defines the methods available from Eventarc API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,6 +113,8 @@ type internalClient interface {
 	UpdateChannelOperation(name string) *UpdateChannelOperation
 	DeleteChannel(context.Context, *eventarcpb.DeleteChannelRequest, ...gax.CallOption) (*DeleteChannelOperation, error)
 	DeleteChannelOperation(name string) *DeleteChannelOperation
+	GetProvider(context.Context, *eventarcpb.GetProviderRequest, ...gax.CallOption) (*eventarcpb.Provider, error)
+	ListProviders(context.Context, *eventarcpb.ListProvidersRequest, ...gax.CallOption) *ProviderIterator
 	GetChannelConnection(context.Context, *eventarcpb.GetChannelConnectionRequest, ...gax.CallOption) (*eventarcpb.ChannelConnection, error)
 	ListChannelConnections(context.Context, *eventarcpb.ListChannelConnectionsRequest, ...gax.CallOption) *ChannelConnectionIterator
 	CreateChannelConnection(context.Context, *eventarcpb.CreateChannelConnectionRequest, ...gax.CallOption) (*CreateChannelConnectionOperation, error)
@@ -152,7 +158,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -241,6 +248,16 @@ func (c *Client) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteChanne
 // The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
 func (c *Client) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	return c.internalClient.DeleteChannelOperation(name)
+}
+
+// GetProvider get a single Provider.
+func (c *Client) GetProvider(ctx context.Context, req *eventarcpb.GetProviderRequest, opts ...gax.CallOption) (*eventarcpb.Provider, error) {
+	return c.internalClient.GetProvider(ctx, req, opts...)
+}
+
+// ListProviders list providers.
+func (c *Client) ListProviders(ctx context.Context, req *eventarcpb.ListProvidersRequest, opts ...gax.CallOption) *ProviderIterator {
+	return c.internalClient.ListProviders(ctx, req, opts...)
 }
 
 // GetChannelConnection get a single ChannelConnection.
@@ -352,7 +369,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -608,6 +626,68 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	return &DeleteChannelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) GetProvider(ctx context.Context, req *eventarcpb.GetProviderRequest, opts ...gax.CallOption) (*eventarcpb.Provider, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetProvider[0:len((*c.CallOptions).GetProvider):len((*c.CallOptions).GetProvider)], opts...)
+	var resp *eventarcpb.Provider
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetProvider(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListProviders(ctx context.Context, req *eventarcpb.ListProvidersRequest, opts ...gax.CallOption) *ProviderIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListProviders[0:len((*c.CallOptions).ListProviders):len((*c.CallOptions).ListProviders)], opts...)
+	it := &ProviderIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListProvidersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Provider, string, error) {
+		resp := &eventarcpb.ListProvidersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListProviders(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetProviders(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetChannelConnection(ctx context.Context, req *eventarcpb.GetChannelConnectionRequest, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
@@ -1351,6 +1431,53 @@ func (it *ChannelIterator) bufLen() int {
 }
 
 func (it *ChannelIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ProviderIterator manages a stream of *eventarcpb.Provider.
+type ProviderIterator struct {
+	items    []*eventarcpb.Provider
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*eventarcpb.Provider, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ProviderIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ProviderIterator) Next() (*eventarcpb.Provider, error) {
+	var item *eventarcpb.Provider
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ProviderIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ProviderIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

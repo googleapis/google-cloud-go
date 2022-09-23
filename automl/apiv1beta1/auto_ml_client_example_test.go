@@ -20,13 +20,35 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1beta1"
+	automlpb "cloud.google.com/go/automl/apiv1beta1/automlpb"
 	"google.golang.org/api/iterator"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := automl.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleClient_CreateDataset() {
 
 	req := &automlpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#CreateDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#CreateDatasetRequest.
 	}
 	resp, err := c.CreateDataset(ctx, req)
 	if err != nil {
@@ -58,6 +85,11 @@ func ExampleClient_CreateDataset() {
 
 func ExampleClient_GetDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +98,7 @@ func ExampleClient_GetDataset() {
 
 	req := &automlpb.GetDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#GetDatasetRequest.
 	}
 	resp, err := c.GetDataset(ctx, req)
 	if err != nil {
@@ -78,6 +110,11 @@ func ExampleClient_GetDataset() {
 
 func ExampleClient_ListDatasets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +123,7 @@ func ExampleClient_ListDatasets() {
 
 	req := &automlpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {
@@ -104,6 +141,11 @@ func ExampleClient_ListDatasets() {
 
 func ExampleClient_UpdateDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +154,7 @@ func ExampleClient_UpdateDataset() {
 
 	req := &automlpb.UpdateDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#UpdateDatasetRequest.
 	}
 	resp, err := c.UpdateDataset(ctx, req)
 	if err != nil {
@@ -124,6 +166,11 @@ func ExampleClient_UpdateDataset() {
 
 func ExampleClient_DeleteDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +179,7 @@ func ExampleClient_DeleteDataset() {
 
 	req := &automlpb.DeleteDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#DeleteDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#DeleteDatasetRequest.
 	}
 	op, err := c.DeleteDataset(ctx, req)
 	if err != nil {
@@ -147,6 +194,11 @@ func ExampleClient_DeleteDataset() {
 
 func ExampleClient_ImportData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -155,7 +207,7 @@ func ExampleClient_ImportData() {
 
 	req := &automlpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ImportDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ImportDataRequest.
 	}
 	op, err := c.ImportData(ctx, req)
 	if err != nil {
@@ -170,6 +222,11 @@ func ExampleClient_ImportData() {
 
 func ExampleClient_ExportData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -178,7 +235,7 @@ func ExampleClient_ExportData() {
 
 	req := &automlpb.ExportDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ExportDataRequest.
 	}
 	op, err := c.ExportData(ctx, req)
 	if err != nil {
@@ -193,6 +250,11 @@ func ExampleClient_ExportData() {
 
 func ExampleClient_GetAnnotationSpec() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -201,7 +263,7 @@ func ExampleClient_GetAnnotationSpec() {
 
 	req := &automlpb.GetAnnotationSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetAnnotationSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#GetAnnotationSpecRequest.
 	}
 	resp, err := c.GetAnnotationSpec(ctx, req)
 	if err != nil {
@@ -213,6 +275,11 @@ func ExampleClient_GetAnnotationSpec() {
 
 func ExampleClient_GetTableSpec() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -221,7 +288,7 @@ func ExampleClient_GetTableSpec() {
 
 	req := &automlpb.GetTableSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetTableSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#GetTableSpecRequest.
 	}
 	resp, err := c.GetTableSpec(ctx, req)
 	if err != nil {
@@ -233,6 +300,11 @@ func ExampleClient_GetTableSpec() {
 
 func ExampleClient_ListTableSpecs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -241,7 +313,7 @@ func ExampleClient_ListTableSpecs() {
 
 	req := &automlpb.ListTableSpecsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListTableSpecsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ListTableSpecsRequest.
 	}
 	it := c.ListTableSpecs(ctx, req)
 	for {
@@ -259,6 +331,11 @@ func ExampleClient_ListTableSpecs() {
 
 func ExampleClient_UpdateTableSpec() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -267,7 +344,7 @@ func ExampleClient_UpdateTableSpec() {
 
 	req := &automlpb.UpdateTableSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateTableSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#UpdateTableSpecRequest.
 	}
 	resp, err := c.UpdateTableSpec(ctx, req)
 	if err != nil {
@@ -279,6 +356,11 @@ func ExampleClient_UpdateTableSpec() {
 
 func ExampleClient_GetColumnSpec() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -287,7 +369,7 @@ func ExampleClient_GetColumnSpec() {
 
 	req := &automlpb.GetColumnSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetColumnSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#GetColumnSpecRequest.
 	}
 	resp, err := c.GetColumnSpec(ctx, req)
 	if err != nil {
@@ -299,6 +381,11 @@ func ExampleClient_GetColumnSpec() {
 
 func ExampleClient_ListColumnSpecs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -307,7 +394,7 @@ func ExampleClient_ListColumnSpecs() {
 
 	req := &automlpb.ListColumnSpecsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListColumnSpecsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ListColumnSpecsRequest.
 	}
 	it := c.ListColumnSpecs(ctx, req)
 	for {
@@ -325,6 +412,11 @@ func ExampleClient_ListColumnSpecs() {
 
 func ExampleClient_UpdateColumnSpec() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -333,7 +425,7 @@ func ExampleClient_UpdateColumnSpec() {
 
 	req := &automlpb.UpdateColumnSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateColumnSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#UpdateColumnSpecRequest.
 	}
 	resp, err := c.UpdateColumnSpec(ctx, req)
 	if err != nil {
@@ -345,6 +437,11 @@ func ExampleClient_UpdateColumnSpec() {
 
 func ExampleClient_CreateModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -353,7 +450,7 @@ func ExampleClient_CreateModel() {
 
 	req := &automlpb.CreateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#CreateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#CreateModelRequest.
 	}
 	op, err := c.CreateModel(ctx, req)
 	if err != nil {
@@ -370,6 +467,11 @@ func ExampleClient_CreateModel() {
 
 func ExampleClient_GetModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -378,7 +480,7 @@ func ExampleClient_GetModel() {
 
 	req := &automlpb.GetModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#GetModelRequest.
 	}
 	resp, err := c.GetModel(ctx, req)
 	if err != nil {
@@ -390,6 +492,11 @@ func ExampleClient_GetModel() {
 
 func ExampleClient_ListModels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -398,7 +505,7 @@ func ExampleClient_ListModels() {
 
 	req := &automlpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {
@@ -416,6 +523,11 @@ func ExampleClient_ListModels() {
 
 func ExampleClient_DeleteModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -424,7 +536,7 @@ func ExampleClient_DeleteModel() {
 
 	req := &automlpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#DeleteModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#DeleteModelRequest.
 	}
 	op, err := c.DeleteModel(ctx, req)
 	if err != nil {
@@ -439,6 +551,11 @@ func ExampleClient_DeleteModel() {
 
 func ExampleClient_DeployModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -447,7 +564,7 @@ func ExampleClient_DeployModel() {
 
 	req := &automlpb.DeployModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#DeployModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#DeployModelRequest.
 	}
 	op, err := c.DeployModel(ctx, req)
 	if err != nil {
@@ -462,6 +579,11 @@ func ExampleClient_DeployModel() {
 
 func ExampleClient_UndeployModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -470,7 +592,7 @@ func ExampleClient_UndeployModel() {
 
 	req := &automlpb.UndeployModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UndeployModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#UndeployModelRequest.
 	}
 	op, err := c.UndeployModel(ctx, req)
 	if err != nil {
@@ -485,6 +607,11 @@ func ExampleClient_UndeployModel() {
 
 func ExampleClient_ExportModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -493,7 +620,7 @@ func ExampleClient_ExportModel() {
 
 	req := &automlpb.ExportModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ExportModelRequest.
 	}
 	op, err := c.ExportModel(ctx, req)
 	if err != nil {
@@ -508,6 +635,11 @@ func ExampleClient_ExportModel() {
 
 func ExampleClient_ExportEvaluatedExamples() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -516,7 +648,7 @@ func ExampleClient_ExportEvaluatedExamples() {
 
 	req := &automlpb.ExportEvaluatedExamplesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportEvaluatedExamplesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ExportEvaluatedExamplesRequest.
 	}
 	op, err := c.ExportEvaluatedExamples(ctx, req)
 	if err != nil {
@@ -531,6 +663,11 @@ func ExampleClient_ExportEvaluatedExamples() {
 
 func ExampleClient_GetModelEvaluation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -539,7 +676,7 @@ func ExampleClient_GetModelEvaluation() {
 
 	req := &automlpb.GetModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#GetModelEvaluationRequest.
 	}
 	resp, err := c.GetModelEvaluation(ctx, req)
 	if err != nil {
@@ -551,6 +688,11 @@ func ExampleClient_GetModelEvaluation() {
 
 func ExampleClient_ListModelEvaluations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -559,7 +701,7 @@ func ExampleClient_ListModelEvaluations() {
 
 	req := &automlpb.ListModelEvaluationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListModelEvaluationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ListModelEvaluationsRequest.
 	}
 	it := c.ListModelEvaluations(ctx, req)
 	for {

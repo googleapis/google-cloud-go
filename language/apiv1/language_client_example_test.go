@@ -25,6 +25,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewClient() {
 
 func ExampleClient_AnalyzeSentiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,6 +67,11 @@ func ExampleClient_AnalyzeSentiment() {
 
 func ExampleClient_AnalyzeEntities() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -77,6 +92,11 @@ func ExampleClient_AnalyzeEntities() {
 
 func ExampleClient_AnalyzeEntitySentiment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -97,6 +117,11 @@ func ExampleClient_AnalyzeEntitySentiment() {
 
 func ExampleClient_AnalyzeSyntax() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,6 +142,11 @@ func ExampleClient_AnalyzeSyntax() {
 
 func ExampleClient_ClassifyText() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,6 +167,11 @@ func ExampleClient_ClassifyText() {
 
 func ExampleClient_AnnotateText() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

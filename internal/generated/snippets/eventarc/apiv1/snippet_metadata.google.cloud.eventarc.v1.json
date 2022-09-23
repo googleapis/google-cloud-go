@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/eventarc/apiv1",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_GetProvider_sync",
+      "title": "eventarc GetProvider Sample",
+      "description": "GetProvider get a single Provider.",
+      "file": "Client/GetProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProvider",
+        "fullName": "google.cloud.eventarc.v1.Client.GetProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.GetProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "eventarcpb.Provider",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "GetProvider",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.GetProvider",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -420,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -466,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -512,7 +558,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_ListProviders_sync",
+      "title": "eventarc ListProviders Sample",
+      "description": "ListProviders list providers.",
+      "file": "Client/ListProviders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProviders",
+        "fullName": "google.cloud.eventarc.v1.Client.ListProviders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.ListProvidersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProviderIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "ListProviders",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.ListProviders",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -558,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -604,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -650,7 +742,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]

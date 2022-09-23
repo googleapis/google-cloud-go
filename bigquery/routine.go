@@ -97,7 +97,9 @@ func (r *Routine) Metadata(ctx context.Context) (rm *RoutineMetadata, err error)
 	setClientHeader(req.Header())
 	var routine *bq.Routine
 	err = runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.routines.get")
 		routine, err = req.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	if err != nil {
@@ -129,7 +131,9 @@ func (r *Routine) Update(ctx context.Context, upd *RoutineMetadataToUpdate, etag
 	}
 	var res *bq.Routine
 	if err := runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.routines.update")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	}); err != nil {
 		return nil, err
@@ -209,7 +213,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	if rm.ReturnTableType != nil {
 		tt, err := rm.ReturnTableType.toBQ()
 		if err != nil {
-			return nil, fmt.Errorf("couldn't convert return table type: %v", err)
+			return nil, fmt.Errorf("couldn't convert return table type: %w", err)
 		}
 		r.ReturnTableType = tt
 	}

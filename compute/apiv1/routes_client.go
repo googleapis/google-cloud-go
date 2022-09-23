@@ -48,7 +48,16 @@ type RoutesCallOptions struct {
 	List   []gax.CallOption
 }
 
-// internalRoutesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRoutesRESTCallOptions() *RoutesCallOptions {
+	return &RoutesCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+	}
+}
+
+// internalRoutesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRoutesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -88,7 +97,8 @@ func (c *RoutesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RoutesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -126,6 +136,9 @@ type routesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RoutesClient
+	CallOptions **RoutesCallOptions
 }
 
 // NewRoutesRESTClient creates a new routes rest client.
@@ -138,9 +151,11 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 		return nil, err
 	}
 
+	callOpts := defaultRoutesRESTCallOptions()
 	c := &routesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -154,7 +169,7 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 	}
 	c.operationClient = opC
 
-	return &RoutesClient{internalClient: c, CallOptions: &RoutesCallOptions{}}, nil
+	return &RoutesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRoutesRESTClientOptions() []option.ClientOption {
@@ -188,7 +203,7 @@ func (c *routesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *routesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -212,6 +227,7 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "route", url.QueryEscape(req.GetRoute())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -271,6 +287,7 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "route", url.QueryEscape(req.GetRoute())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Route{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -337,6 +354,7 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

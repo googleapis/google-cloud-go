@@ -86,7 +86,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	return &Client{
@@ -128,7 +128,7 @@ func (c *Client) fullTableName(table string) string {
 }
 
 func (c *Client) requestParamsHeaderValue(table string) string {
-	return fmt.Sprintf("table_name=%s&app_profile=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
+	return fmt.Sprintf("table_name=%s&app_profile_id=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
 }
 
 // mergeOutgoingMetadata returns a context populated by the existing outgoing

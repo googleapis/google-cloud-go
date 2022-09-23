@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,52 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_CancelOperation_sync",
+      "title": "firestore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.firestore.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.firestore.v1.Firestore.CancelOperation",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -189,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -235,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -280,7 +325,52 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_DeleteOperation_sync",
+      "title": "firestore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.firestore.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.firestore.v1.Firestore.DeleteOperation",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -326,7 +416,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_GetOperation_sync",
+      "title": "firestore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.firestore.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.firestore.v1.Firestore.GetOperation",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -372,7 +508,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -418,7 +554,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_ListOperations_sync",
+      "title": "firestore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.firestore.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.firestore.v1.Firestore.ListOperations",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -459,7 +641,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 63,
+          "end": 68,
           "type": "FULL"
         }
       ]
@@ -505,7 +687,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -550,7 +732,52 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_RunAggregationQuery_sync",
+      "title": "firestore RunAggregationQuery Sample",
+      "description": "RunAggregationQuery runs an aggregation query.\n\nRather than producing Document results like Firestore.RunQuery,\nthis API allows running an aggregation to produce a series of\nAggregationResult server-side.\n\nHigh-Level Example: ",
+      "file": "Client/RunAggregationQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunAggregationQuery",
+        "fullName": "google.firestore.v1.Client.RunAggregationQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.RunAggregationQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "RunAggregationQuery",
+          "fullName": "google.firestore.v1.Firestore.RunAggregationQuery",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 1,
+          "end": -1,
           "type": "FULL"
         }
       ]
@@ -641,7 +868,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -682,7 +909,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 63,
+          "end": 68,
           "type": "FULL"
         }
       ]

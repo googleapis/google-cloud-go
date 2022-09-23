@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "GkeHubMembershipClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateMembership": {
               "methods": [
                 "CreateMembership"
@@ -18,6 +23,11 @@
             "DeleteMembership": {
               "methods": [
                 "DeleteMembership"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "GenerateConnectManifest": {
@@ -30,14 +40,139 @@
                 "GenerateExclusivityManifest"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMembership": {
               "methods": [
                 "GetMembership"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMemberships": {
               "methods": [
                 "ListMemberships"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateMembership": {
+              "methods": [
+                "UpdateMembership"
+              ]
+            },
+            "ValidateExclusivity": {
+              "methods": [
+                "ValidateExclusivity"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GkeHubMembershipClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateMembership": {
+              "methods": [
+                "CreateMembership"
+              ]
+            },
+            "DeleteMembership": {
+              "methods": [
+                "DeleteMembership"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateConnectManifest": {
+              "methods": [
+                "GenerateConnectManifest"
+              ]
+            },
+            "GenerateExclusivityManifest": {
+              "methods": [
+                "GenerateExclusivityManifest"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMembership": {
+              "methods": [
+                "GetMembership"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMemberships": {
+              "methods": [
+                "ListMemberships"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateMembership": {

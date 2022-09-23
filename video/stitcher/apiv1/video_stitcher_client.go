@@ -97,7 +97,7 @@ func defaultVideoStitcherCallOptions() *VideoStitcherCallOptions {
 	}
 }
 
-// internalVideoStitcherClient is an interface that defines the methods availaible from Video Stitcher API.
+// internalVideoStitcherClient is an interface that defines the methods available from Video Stitcher API.
 type internalVideoStitcherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -157,7 +157,8 @@ func (c *VideoStitcherClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *VideoStitcherClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -330,7 +331,8 @@ func NewVideoStitcherClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *videoStitcherGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

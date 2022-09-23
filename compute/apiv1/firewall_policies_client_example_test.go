@@ -26,6 +26,11 @@ import (
 
 func ExampleNewFirewallPoliciesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewFirewallPoliciesRESTClient() {
 
 func ExampleFirewallPoliciesClient_AddAssociation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleFirewallPoliciesClient_AddAssociation() {
 
 func ExampleFirewallPoliciesClient_AddRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleFirewallPoliciesClient_AddRule() {
 
 func ExampleFirewallPoliciesClient_CloneRules() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,6 +127,11 @@ func ExampleFirewallPoliciesClient_CloneRules() {
 
 func ExampleFirewallPoliciesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,6 +155,11 @@ func ExampleFirewallPoliciesClient_Delete() {
 
 func ExampleFirewallPoliciesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,6 +180,11 @@ func ExampleFirewallPoliciesClient_Get() {
 
 func ExampleFirewallPoliciesClient_GetAssociation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,6 +205,11 @@ func ExampleFirewallPoliciesClient_GetAssociation() {
 
 func ExampleFirewallPoliciesClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,6 +230,11 @@ func ExampleFirewallPoliciesClient_GetIamPolicy() {
 
 func ExampleFirewallPoliciesClient_GetRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -210,6 +255,11 @@ func ExampleFirewallPoliciesClient_GetRule() {
 
 func ExampleFirewallPoliciesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -233,6 +283,11 @@ func ExampleFirewallPoliciesClient_Insert() {
 
 func ExampleFirewallPoliciesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -259,6 +314,11 @@ func ExampleFirewallPoliciesClient_List() {
 
 func ExampleFirewallPoliciesClient_ListAssociations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -279,6 +339,11 @@ func ExampleFirewallPoliciesClient_ListAssociations() {
 
 func ExampleFirewallPoliciesClient_Move() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -302,6 +367,11 @@ func ExampleFirewallPoliciesClient_Move() {
 
 func ExampleFirewallPoliciesClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -325,6 +395,11 @@ func ExampleFirewallPoliciesClient_Patch() {
 
 func ExampleFirewallPoliciesClient_PatchRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -348,6 +423,11 @@ func ExampleFirewallPoliciesClient_PatchRule() {
 
 func ExampleFirewallPoliciesClient_RemoveAssociation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -371,6 +451,11 @@ func ExampleFirewallPoliciesClient_RemoveAssociation() {
 
 func ExampleFirewallPoliciesClient_RemoveRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -394,6 +479,11 @@ func ExampleFirewallPoliciesClient_RemoveRule() {
 
 func ExampleFirewallPoliciesClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -414,6 +504,11 @@ func ExampleFirewallPoliciesClient_SetIamPolicy() {
 
 func ExampleFirewallPoliciesClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewFirewallPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

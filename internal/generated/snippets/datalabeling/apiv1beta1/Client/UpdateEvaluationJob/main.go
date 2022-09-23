@@ -22,11 +22,16 @@ import (
 	"context"
 
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
-	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
+	"cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &datalabelingpb.UpdateEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#UpdateEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#UpdateEvaluationJobRequest.
 	}
 	resp, err := c.UpdateEvaluationJob(ctx, req)
 	if err != nil {

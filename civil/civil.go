@@ -66,9 +66,13 @@ func (d Date) IsValid() bool {
 //
 // In is always consistent with time.Date, even when time.Date returns a time
 // on a different day. For example, if loc is America/Indiana/Vincennes, then both
-//     time.Date(1955, time.May, 1, 0, 0, 0, 0, loc)
+//
+//	time.Date(1955, time.May, 1, 0, 0, 0, 0, loc)
+//
 // and
-//     civil.Date{Year: 1955, Month: time.May, Day: 1}.In(loc)
+//
+//	civil.Date{Year: 1955, Month: time.May, Day: 1}.In(loc)
+//
 // return 23:00:00 on April 30, 1955.
 //
 // In panics if loc is nil.
@@ -91,20 +95,20 @@ func (d Date) DaysSince(s Date) (days int) {
 	return int(deltaUnix / 86400)
 }
 
-// Before reports whether d1 occurs before d2.
-func (d1 Date) Before(d2 Date) bool {
-	if d1.Year != d2.Year {
-		return d1.Year < d2.Year
+// Before reports whether d occurs before d2.
+func (d Date) Before(d2 Date) bool {
+	if d.Year != d2.Year {
+		return d.Year < d2.Year
 	}
-	if d1.Month != d2.Month {
-		return d1.Month < d2.Month
+	if d.Month != d2.Month {
+		return d.Month < d2.Month
 	}
-	return d1.Day < d2.Day
+	return d.Day < d2.Day
 }
 
-// After reports whether d1 occurs after d2.
-func (d1 Date) After(d2 Date) bool {
-	return d2.Before(d1)
+// After reports whether d occurs after d2.
+func (d Date) After(d2 Date) bool {
+	return d2.Before(d)
 }
 
 // IsZero reports whether date fields are set to their default value.
@@ -185,6 +189,26 @@ func (t Time) IsZero() bool {
 	return (t.Hour == 0) && (t.Minute == 0) && (t.Second == 0) && (t.Nanosecond == 0)
 }
 
+// Before reports whether t occurs before t2.
+func (t Time) Before(t2 Time) bool {
+	if t.Hour != t2.Hour {
+		return t.Hour < t2.Hour
+	}
+	if t.Minute != t2.Minute {
+		return t.Minute < t2.Minute
+	}
+	if t.Second != t2.Second {
+		return t.Second < t2.Second
+	}
+
+	return t.Nanosecond < t2.Nanosecond
+}
+
+// After reports whether t occurs after t2.
+func (t Time) After(t2 Time) bool {
+	return t2.Before(t)
+}
+
 // MarshalText implements the encoding.TextMarshaler interface.
 // The output is the result of t.String().
 func (t Time) MarshalText() ([]byte, error) {
@@ -222,7 +246,9 @@ func DateTimeOf(t time.Time) DateTime {
 // ParseDateTime accepts a variant of the RFC3339 date-time format that omits
 // the time offset but includes an optional fractional time, as described in
 // ParseTime. Informally, the accepted format is
-//     YYYY-MM-DDTHH:MM:SS[.FFFFFFFFF]
+//
+//	YYYY-MM-DDTHH:MM:SS[.FFFFFFFFF]
+//
 // where the 'T' may be a lower-case 't'.
 func ParseDateTime(s string) (DateTime, error) {
 	t, err := time.Parse("2006-01-02T15:04:05.999999999", s)
@@ -250,11 +276,15 @@ func (dt DateTime) IsValid() bool {
 // If the time is missing or ambigous at the location, In returns the same
 // result as time.Date. For example, if loc is America/Indiana/Vincennes, then
 // both
-//     time.Date(1955, time.May, 1, 0, 30, 0, 0, loc)
+//
+//	time.Date(1955, time.May, 1, 0, 30, 0, 0, loc)
+//
 // and
-//     civil.DateTime{
-//         civil.Date{Year: 1955, Month: time.May, Day: 1}},
-//         civil.Time{Minute: 30}}.In(loc)
+//
+//	civil.DateTime{
+//	    civil.Date{Year: 1955, Month: time.May, Day: 1}},
+//	    civil.Time{Minute: 30}}.In(loc)
+//
 // return 23:30:00 on April 30, 1955.
 //
 // In panics if loc is nil.
@@ -262,14 +292,14 @@ func (dt DateTime) In(loc *time.Location) time.Time {
 	return time.Date(dt.Date.Year, dt.Date.Month, dt.Date.Day, dt.Time.Hour, dt.Time.Minute, dt.Time.Second, dt.Time.Nanosecond, loc)
 }
 
-// Before reports whether dt1 occurs before dt2.
-func (dt1 DateTime) Before(dt2 DateTime) bool {
-	return dt1.In(time.UTC).Before(dt2.In(time.UTC))
+// Before reports whether dt occurs before dt2.
+func (dt DateTime) Before(dt2 DateTime) bool {
+	return dt.In(time.UTC).Before(dt2.In(time.UTC))
 }
 
-// After reports whether dt1 occurs after dt2.
-func (dt1 DateTime) After(dt2 DateTime) bool {
-	return dt2.Before(dt1)
+// After reports whether dt occurs after dt2.
+func (dt DateTime) After(dt2 DateTime) bool {
+	return dt2.Before(dt)
 }
 
 // IsZero reports whether datetime fields are set to their default value.

@@ -187,7 +187,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 	}
 }
 
-// internalCloudDeployClient is an interface that defines the methods availaible from Google Cloud Deploy API.
+// internalCloudDeployClient is an interface that defines the methods available from Google Cloud Deploy API.
 type internalCloudDeployClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -255,7 +255,8 @@ func (c *CloudDeployClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudDeployClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -475,7 +476,8 @@ func NewCloudDeployClient(ctx context.Context, opts ...option.ClientOption) (*Cl
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudDeployGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

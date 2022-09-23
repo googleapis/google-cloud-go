@@ -1,5 +1,19 @@
 # Changes
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v0.2.1...certificatemanager/v1.0.0) (2022-09-19)
+
+
+### Features
+
+* **certificatemanager:** Release 1.0.0 ([#6638](https://github.com/googleapis/google-cloud-go/issues/6638)) ([bb9ae62](https://github.com/googleapis/google-cloud-go/commit/bb9ae62eab152e9e1a3a01282ff68324f2fc9c20))
+
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v0.2.0...certificatemanager/v0.2.1) (2022-07-12)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Removed resource definition of Compute API resources and incorrect resource references that used them ([feefb9c](https://github.com/googleapis/google-cloud-go/commit/feefb9c16e84498329ab6fbbe311560cb9b65031))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v0.1.0...certificatemanager/v0.2.0) (2022-04-14)
 
 

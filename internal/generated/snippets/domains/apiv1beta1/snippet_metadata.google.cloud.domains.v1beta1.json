@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/domains/apiv1beta1",
-    "version": "0.4.0",
+    "version": "0.6.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_DeleteRegistration_sync",
       "title": "domains DeleteRegistration Sample",
-      "description": "DeleteRegistration deletes a Registration resource.\n\nThis method works on any Registration resource using Subscription or\nCommitment billing (at /domains/pricing#billing-models), provided that the\nresource was created at least 1 day in the past.\n\nFor Registration resources using\nMonthly billing (at /domains/pricing#billing-models), this method works if: \n\n  state is EXPORTED with expire_time in the past\n\n  state is REGISTRATION_FAILED\n\n  state is TRANSFER_FAILED\n\nWhen an active registration is successfully deleted, you can continue to\nuse the domain in Google Domains (at https: //domains.google/) until it\nexpires. The calling user becomes the domain’s sole owner in Google\nDomains, and permissions for the domain are subsequently managed there. The\ndomain does not renew automatically unless the new owner sets up billing in\nGoogle Domains.",
+      "description": "DeleteRegistration deletes a Registration resource.\n\nThis method works on any Registration resource using Subscription or\nCommitment billing (at /domains/pricing#billing-models), provided that the\nresource was created at least 1 day in the past.\n\nFor Registration resources using\nMonthly billing (at /domains/pricing#billing-models), this method works if: \n\n\tstate is EXPORTED with expire_time in the past\n\n\tstate is REGISTRATION_FAILED\n\n\tstate is TRANSFER_FAILED\n\nWhen an active registration is successfully deleted, you can continue to\nuse the domain in Google Domains (at https: //domains.google/) until it\nexpires. The calling user becomes the domain’s sole owner in Google\nDomains, and permissions for the domain are subsequently managed there. The\ndomain does not renew automatically unless the new owner sets up billing in\nGoogle Domains.",
       "file": "Client/DeleteRegistration/main.go",
       "language": "GO",
       "clientMethod": {
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -558,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -604,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -650,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -658,7 +658,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_UpdateRegistration_sync",
       "title": "domains UpdateRegistration Sample",
-      "description": "UpdateRegistration updates select fields of a Registration resource, notably labels. To\nupdate other fields, use the appropriate custom update method: \n\n  To update management settings, see ConfigureManagementSettings\n\n  To update DNS configuration, see ConfigureDnsSettings\n\n  To update contact information, see ConfigureContactSettings",
+      "description": "UpdateRegistration updates select fields of a Registration resource, notably labels. To\nupdate other fields, use the appropriate custom update method: \n\n\tTo update management settings, see ConfigureManagementSettings\n\n\tTo update DNS configuration, see ConfigureDnsSettings\n\n\tTo update contact information, see ConfigureContactSettings",
       "file": "Client/UpdateRegistration/main.go",
       "language": "GO",
       "clientMethod": {
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]

@@ -48,9 +48,21 @@ type TargetVpnGatewaysCallOptions struct {
 	Get            []gax.CallOption
 	Insert         []gax.CallOption
 	List           []gax.CallOption
+	SetLabels      []gax.CallOption
 }
 
-// internalTargetVpnGatewaysClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultTargetVpnGatewaysRESTCallOptions() *TargetVpnGatewaysCallOptions {
+	return &TargetVpnGatewaysCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+		SetLabels:      []gax.CallOption{},
+	}
+}
+
+// internalTargetVpnGatewaysClient is an interface that defines the methods available from Google Compute Engine API.
 type internalTargetVpnGatewaysClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -60,6 +72,7 @@ type internalTargetVpnGatewaysClient interface {
 	Get(context.Context, *computepb.GetTargetVpnGatewayRequest, ...gax.CallOption) (*computepb.TargetVpnGateway, error)
 	Insert(context.Context, *computepb.InsertTargetVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetVpnGatewaysRequest, ...gax.CallOption) *TargetVpnGatewayIterator
+	SetLabels(context.Context, *computepb.SetLabelsTargetVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // TargetVpnGatewaysClient is a client for interacting with Google Compute Engine API.
@@ -91,7 +104,8 @@ func (c *TargetVpnGatewaysClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TargetVpnGatewaysClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -121,6 +135,11 @@ func (c *TargetVpnGatewaysClient) List(ctx context.Context, req *computepb.ListT
 	return c.internalClient.List(ctx, req, opts...)
 }
 
+// SetLabels sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+func (c *TargetVpnGatewaysClient) SetLabels(ctx context.Context, req *computepb.SetLabelsTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetLabels(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type targetVpnGatewaysRESTClient struct {
 	// The http endpoint to connect to.
@@ -134,6 +153,9 @@ type targetVpnGatewaysRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing TargetVpnGatewaysClient
+	CallOptions **TargetVpnGatewaysCallOptions
 }
 
 // NewTargetVpnGatewaysRESTClient creates a new target vpn gateways rest client.
@@ -146,9 +168,11 @@ func NewTargetVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOp
 		return nil, err
 	}
 
+	callOpts := defaultTargetVpnGatewaysRESTCallOptions()
 	c := &targetVpnGatewaysRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -162,7 +186,7 @@ func NewTargetVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOp
 	}
 	c.operationClient = opC
 
-	return &TargetVpnGatewaysClient{internalClient: c, CallOptions: &TargetVpnGatewaysCallOptions{}}, nil
+	return &TargetVpnGatewaysClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultTargetVpnGatewaysRESTClientOptions() []option.ClientOption {
@@ -196,7 +220,7 @@ func (c *targetVpnGatewaysRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *targetVpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -326,6 +350,7 @@ func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "target_vpn_gateway", url.QueryEscape(req.GetTargetVpnGateway())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -386,6 +411,7 @@ func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.Ge
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "target_vpn_gateway", url.QueryEscape(req.GetTargetVpnGateway())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetVpnGateway{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -452,6 +478,7 @@ func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -594,6 +621,81 @@ func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.L
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// SetLabels sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+func (c *targetVpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionSetLabelsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetVpnGateways/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }
 
 // TargetVpnGatewayIterator manages a stream of *computepb.TargetVpnGateway.

@@ -20,13 +20,18 @@ import (
 	"context"
 
 	storage "cloud.google.com/go/storage/internal/apiv2"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"google.golang.org/api/iterator"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewClient() {
 
 func ExampleClient_DeleteBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExampleClient_DeleteBucket() {
 
 	req := &storagepb.DeleteBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteBucketRequest.
 	}
 	err = c.DeleteBucket(ctx, req)
 	if err != nil {
@@ -57,6 +67,11 @@ func ExampleClient_DeleteBucket() {
 
 func ExampleClient_GetBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +80,7 @@ func ExampleClient_GetBucket() {
 
 	req := &storagepb.GetBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetBucketRequest.
 	}
 	resp, err := c.GetBucket(ctx, req)
 	if err != nil {
@@ -77,6 +92,11 @@ func ExampleClient_GetBucket() {
 
 func ExampleClient_CreateBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +105,7 @@ func ExampleClient_CreateBucket() {
 
 	req := &storagepb.CreateBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#CreateBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateBucketRequest.
 	}
 	resp, err := c.CreateBucket(ctx, req)
 	if err != nil {
@@ -97,6 +117,11 @@ func ExampleClient_CreateBucket() {
 
 func ExampleClient_ListBuckets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,7 +130,7 @@ func ExampleClient_ListBuckets() {
 
 	req := &storagepb.ListBucketsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListBucketsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListBucketsRequest.
 	}
 	it := c.ListBuckets(ctx, req)
 	for {
@@ -123,6 +148,11 @@ func ExampleClient_ListBuckets() {
 
 func ExampleClient_LockBucketRetentionPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -131,7 +161,7 @@ func ExampleClient_LockBucketRetentionPolicy() {
 
 	req := &storagepb.LockBucketRetentionPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#LockBucketRetentionPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#LockBucketRetentionPolicyRequest.
 	}
 	resp, err := c.LockBucketRetentionPolicy(ctx, req)
 	if err != nil {
@@ -143,6 +173,11 @@ func ExampleClient_LockBucketRetentionPolicy() {
 
 func ExampleClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,6 +198,11 @@ func ExampleClient_GetIamPolicy() {
 
 func ExampleClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,6 +223,11 @@ func ExampleClient_SetIamPolicy() {
 
 func ExampleClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +248,11 @@ func ExampleClient_TestIamPermissions() {
 
 func ExampleClient_UpdateBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -211,7 +261,7 @@ func ExampleClient_UpdateBucket() {
 
 	req := &storagepb.UpdateBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#UpdateBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#UpdateBucketRequest.
 	}
 	resp, err := c.UpdateBucket(ctx, req)
 	if err != nil {
@@ -223,6 +273,11 @@ func ExampleClient_UpdateBucket() {
 
 func ExampleClient_DeleteNotification() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -231,7 +286,7 @@ func ExampleClient_DeleteNotification() {
 
 	req := &storagepb.DeleteNotificationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteNotificationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteNotificationRequest.
 	}
 	err = c.DeleteNotification(ctx, req)
 	if err != nil {
@@ -241,6 +296,11 @@ func ExampleClient_DeleteNotification() {
 
 func ExampleClient_GetNotification() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -249,7 +309,7 @@ func ExampleClient_GetNotification() {
 
 	req := &storagepb.GetNotificationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetNotificationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetNotificationRequest.
 	}
 	resp, err := c.GetNotification(ctx, req)
 	if err != nil {
@@ -261,6 +321,11 @@ func ExampleClient_GetNotification() {
 
 func ExampleClient_CreateNotification() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -269,7 +334,7 @@ func ExampleClient_CreateNotification() {
 
 	req := &storagepb.CreateNotificationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#CreateNotificationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateNotificationRequest.
 	}
 	resp, err := c.CreateNotification(ctx, req)
 	if err != nil {
@@ -281,6 +346,11 @@ func ExampleClient_CreateNotification() {
 
 func ExampleClient_ListNotifications() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -289,7 +359,7 @@ func ExampleClient_ListNotifications() {
 
 	req := &storagepb.ListNotificationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListNotificationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListNotificationsRequest.
 	}
 	it := c.ListNotifications(ctx, req)
 	for {
@@ -307,6 +377,11 @@ func ExampleClient_ListNotifications() {
 
 func ExampleClient_ComposeObject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -315,7 +390,7 @@ func ExampleClient_ComposeObject() {
 
 	req := &storagepb.ComposeObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ComposeObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ComposeObjectRequest.
 	}
 	resp, err := c.ComposeObject(ctx, req)
 	if err != nil {
@@ -327,6 +402,11 @@ func ExampleClient_ComposeObject() {
 
 func ExampleClient_DeleteObject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -335,7 +415,7 @@ func ExampleClient_DeleteObject() {
 
 	req := &storagepb.DeleteObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteObjectRequest.
 	}
 	err = c.DeleteObject(ctx, req)
 	if err != nil {
@@ -343,8 +423,38 @@ func ExampleClient_DeleteObject() {
 	}
 }
 
+func ExampleClient_CancelResumableWrite() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.CancelResumableWriteRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CancelResumableWriteRequest.
+	}
+	resp, err := c.CancelResumableWrite(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetObject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -353,7 +463,7 @@ func ExampleClient_GetObject() {
 
 	req := &storagepb.GetObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetObjectRequest.
 	}
 	resp, err := c.GetObject(ctx, req)
 	if err != nil {
@@ -365,6 +475,11 @@ func ExampleClient_GetObject() {
 
 func ExampleClient_UpdateObject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -373,7 +488,7 @@ func ExampleClient_UpdateObject() {
 
 	req := &storagepb.UpdateObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#UpdateObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#UpdateObjectRequest.
 	}
 	resp, err := c.UpdateObject(ctx, req)
 	if err != nil {
@@ -385,6 +500,11 @@ func ExampleClient_UpdateObject() {
 
 func ExampleClient_ListObjects() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -393,7 +513,7 @@ func ExampleClient_ListObjects() {
 
 	req := &storagepb.ListObjectsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListObjectsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListObjectsRequest.
 	}
 	it := c.ListObjects(ctx, req)
 	for {
@@ -411,6 +531,11 @@ func ExampleClient_ListObjects() {
 
 func ExampleClient_RewriteObject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -419,7 +544,7 @@ func ExampleClient_RewriteObject() {
 
 	req := &storagepb.RewriteObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#RewriteObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#RewriteObjectRequest.
 	}
 	resp, err := c.RewriteObject(ctx, req)
 	if err != nil {
@@ -431,6 +556,11 @@ func ExampleClient_RewriteObject() {
 
 func ExampleClient_StartResumableWrite() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -439,7 +569,7 @@ func ExampleClient_StartResumableWrite() {
 
 	req := &storagepb.StartResumableWriteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#StartResumableWriteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#StartResumableWriteRequest.
 	}
 	resp, err := c.StartResumableWrite(ctx, req)
 	if err != nil {
@@ -451,6 +581,11 @@ func ExampleClient_StartResumableWrite() {
 
 func ExampleClient_QueryWriteStatus() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -459,7 +594,7 @@ func ExampleClient_QueryWriteStatus() {
 
 	req := &storagepb.QueryWriteStatusRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#QueryWriteStatusRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#QueryWriteStatusRequest.
 	}
 	resp, err := c.QueryWriteStatus(ctx, req)
 	if err != nil {
@@ -471,6 +606,11 @@ func ExampleClient_QueryWriteStatus() {
 
 func ExampleClient_GetServiceAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -479,7 +619,7 @@ func ExampleClient_GetServiceAccount() {
 
 	req := &storagepb.GetServiceAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetServiceAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetServiceAccountRequest.
 	}
 	resp, err := c.GetServiceAccount(ctx, req)
 	if err != nil {
@@ -491,6 +631,11 @@ func ExampleClient_GetServiceAccount() {
 
 func ExampleClient_CreateHmacKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -499,7 +644,7 @@ func ExampleClient_CreateHmacKey() {
 
 	req := &storagepb.CreateHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#CreateHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateHmacKeyRequest.
 	}
 	resp, err := c.CreateHmacKey(ctx, req)
 	if err != nil {
@@ -511,6 +656,11 @@ func ExampleClient_CreateHmacKey() {
 
 func ExampleClient_DeleteHmacKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -519,7 +669,7 @@ func ExampleClient_DeleteHmacKey() {
 
 	req := &storagepb.DeleteHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteHmacKeyRequest.
 	}
 	err = c.DeleteHmacKey(ctx, req)
 	if err != nil {
@@ -529,6 +679,11 @@ func ExampleClient_DeleteHmacKey() {
 
 func ExampleClient_GetHmacKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -537,7 +692,7 @@ func ExampleClient_GetHmacKey() {
 
 	req := &storagepb.GetHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetHmacKeyRequest.
 	}
 	resp, err := c.GetHmacKey(ctx, req)
 	if err != nil {
@@ -549,6 +704,11 @@ func ExampleClient_GetHmacKey() {
 
 func ExampleClient_ListHmacKeys() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -557,7 +717,7 @@ func ExampleClient_ListHmacKeys() {
 
 	req := &storagepb.ListHmacKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListHmacKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListHmacKeysRequest.
 	}
 	it := c.ListHmacKeys(ctx, req)
 	for {
@@ -575,6 +735,11 @@ func ExampleClient_ListHmacKeys() {
 
 func ExampleClient_UpdateHmacKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -583,7 +748,7 @@ func ExampleClient_UpdateHmacKey() {
 
 	req := &storagepb.UpdateHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#UpdateHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#UpdateHmacKeyRequest.
 	}
 	resp, err := c.UpdateHmacKey(ctx, req)
 	if err != nil {

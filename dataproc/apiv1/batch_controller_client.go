@@ -68,7 +68,7 @@ func defaultBatchControllerCallOptions() *BatchControllerCallOptions {
 	}
 }
 
-// internalBatchControllerClient is an interface that defines the methods availaible from Cloud Dataproc API.
+// internalBatchControllerClient is an interface that defines the methods available from Cloud Dataproc API.
 type internalBatchControllerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -114,7 +114,8 @@ func (c *BatchControllerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BatchControllerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -222,7 +223,8 @@ func NewBatchControllerClient(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *batchControllerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -412,6 +412,15 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Marc", "Richards")`,
+			reparseDML,
+		},
+		{
 			&Delete{
 				Table: "Ta",
 				Where: ComparisonOp{
@@ -556,7 +565,7 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			TimestampLiteral(time.Date(2014, time.September, 27, 12, 34, 56, 123456e3, latz)),
-			`TIMESTAMP '2014-09-27 12:34:56.123456 -07:00'`,
+			`TIMESTAMP '2014-09-27 12:34:56.123456-07:00'`,
 			reparseExpr,
 		},
 		{
@@ -645,6 +654,66 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						If{
+							Expr:       ComparisonOp{LHS: IntegerLiteral(1), Op: Lt, RHS: IntegerLiteral(2)},
+							TrueResult: True,
+							ElseResult: False,
+						},
+					},
+				},
+			},
+			`SELECT IF(1 < 2, TRUE, FALSE)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						IfNull{
+							Expr:       IntegerLiteral(10),
+							NullResult: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT IFNULL(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						NullIf{
+							Expr:        IntegerLiteral(10),
+							ExprToMatch: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT NULLIF(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Coalesce{
+							ExprList: []Expr{
+								StringLiteral("A"),
+								Null,
+								StringLiteral("C"),
+							},
+						},
+					},
+				},
+			},
+			`SELECT COALESCE("A", NULL, "C")`,
 			reparseQuery,
 		},
 	}

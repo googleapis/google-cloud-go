@@ -112,7 +112,7 @@ func defaultBudgetCallOptions() *BudgetCallOptions {
 	}
 }
 
-// internalBudgetClient is an interface that defines the methods availaible from Cloud Billing Budget API.
+// internalBudgetClient is an interface that defines the methods available from Cloud Billing Budget API.
 type internalBudgetClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -154,7 +154,8 @@ func (c *BudgetClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BudgetClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -261,7 +262,8 @@ func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *budgetGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

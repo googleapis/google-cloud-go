@@ -35,17 +35,23 @@ func TestCreateBucketEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
 			Name: bucket,
+			Logging: &BucketLogging{
+				LogBucket: bucket,
+			},
 		}
-		got, err := client.CreateBucket(context.Background(), project, want)
+		got, err := client.CreateBucket(context.Background(), project, want.Name, want)
 		if err != nil {
 			t.Fatal(err)
 		}
 		want.Location = "US"
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Name got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Location, want.Location); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Location got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Logging.LogBucket, want.Logging.LogBucket); diff != "" {
+			t.Errorf("LogBucket got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -56,7 +62,7 @@ func TestDeleteBucketEmulated(t *testing.T) {
 			Name: bucket,
 		}
 		// Create the bucket that will be deleted.
-		_, err := client.CreateBucket(context.Background(), project, b)
+		_, err := client.CreateBucket(context.Background(), project, b.Name, b)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -74,7 +80,7 @@ func TestGetBucketEmulated(t *testing.T) {
 			Name: bucket,
 		}
 		// Create the bucket that will be retrieved.
-		_, err := client.CreateBucket(context.Background(), project, want)
+		_, err := client.CreateBucket(context.Background(), project, want.Name, want)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -94,7 +100,7 @@ func TestUpdateBucketEmulated(t *testing.T) {
 			Name: bucket,
 		}
 		// Create the bucket that will be updated.
-		_, err := client.CreateBucket(context.Background(), project, bkt)
+		_, err := client.CreateBucket(context.Background(), project, bkt.Name, bkt)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -142,34 +148,34 @@ func TestUpdateBucketEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Name: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.VersioningEnabled, want.VersioningEnabled); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("VersioningEnabled: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.RequesterPays, want.RequesterPays); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("RequesterPays: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.DefaultEventBasedHold, want.DefaultEventBasedHold); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("DefaultEventBasedHold: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Encryption, want.Encryption); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Encryption: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Lifecycle, want.Lifecycle); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Lifecycle: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Logging, want.Logging); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Logging: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Website, want.Website); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("Website: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.RPO, want.RPO); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("RPO: got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.StorageClass, want.StorageClass); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
+			t.Errorf("StorageClass: got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -185,7 +191,7 @@ func TestGetServiceAccountEmulated(t *testing.T) {
 
 func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		battrs, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		battrs, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -213,10 +219,179 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	})
 }
 
+func TestDeleteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object that will be deleted.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		err = client.DeleteObject(context.Background(), bucket, want.Name, defaultGen, nil)
+		if err != nil {
+			t.Fatalf("client.DeleteBucket: %v", err)
+		}
+	})
+}
+
+func TestGetObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		want := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestRewriteObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		src := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(src.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		req := &rewriteObjectRequest{
+			dstObject: destinationObject{
+				bucket: bucket,
+				name:   fmt.Sprintf("copy-of-%s", src.Name),
+				attrs:  &ObjectAttrs{},
+			},
+			srcObject: sourceObject{
+				bucket: bucket,
+				name:   src.Name,
+				gen:    defaultGen,
+			},
+		}
+		got, err := client.RewriteObject(context.Background(), req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !got.done {
+			t.Fatal("didn't finish writing!")
+		}
+		if want := int64(len(randomBytesToWrite)); got.written != want {
+			t.Errorf("Bytes written: got %d, want %d", got.written, want)
+		}
+	})
+}
+
+func TestUpdateObjectEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		ct := time.Date(2022, 5, 25, 12, 12, 12, 0, time.UTC)
+		o := ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+			CustomTime: ct,
+		}
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		want := &ObjectAttrsToUpdate{
+			EventBasedHold:     false,
+			TemporaryHold:      false,
+			ContentType:        "text/html",
+			ContentLanguage:    "en",
+			ContentEncoding:    "gzip",
+			ContentDisposition: "",
+			CacheControl:       "",
+			CustomTime:         ct.Add(10 * time.Hour),
+		}
+
+		got, err := client.UpdateObject(context.Background(), bucket, o.Name, want, defaultGen, nil, &Conditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatalf("client.UpdateObject: %v", err)
+		}
+		if diff := cmp.Diff(got.Name, o.Name); diff != "" {
+			t.Errorf("Name: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.EventBasedHold, want.EventBasedHold); diff != "" {
+			t.Errorf("EventBasedHold: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.TemporaryHold, want.TemporaryHold); diff != "" {
+			t.Errorf("TemporaryHold: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentType, want.ContentType); diff != "" {
+			t.Errorf("ContentType: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentLanguage, want.ContentLanguage); diff != "" {
+			t.Errorf("ContentLanguage: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentEncoding, want.ContentEncoding); diff != "" {
+			t.Errorf("ContentEncoding: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.ContentDisposition, want.ContentDisposition); diff != "" {
+			t.Errorf("ContentDisposition: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.CacheControl, want.CacheControl); diff != "" {
+			t.Errorf("CacheControl: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.CustomTime, want.CustomTime); diff != "" {
+			t.Errorf("CustomTime: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestListObjectsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -274,7 +449,7 @@ func TestListObjectsEmulated(t *testing.T) {
 func TestListObjectsWithPrefixEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
 		})
 		if err != nil {
@@ -340,7 +515,7 @@ func TestListBucketsEmulated(t *testing.T) {
 		}
 		// Create the buckets that will be listed.
 		for _, b := range want {
-			_, err := client.CreateBucket(context.Background(), project, b)
+			_, err := client.CreateBucket(context.Background(), project, b.Name, b)
 			if err != nil {
 				t.Fatalf("client.CreateBucket: %v", err)
 			}
@@ -381,7 +556,7 @@ func TestListBucketACLsEmulated(t *testing.T) {
 			PredefinedACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 
@@ -395,28 +570,6 @@ func TestListBucketACLsEmulated(t *testing.T) {
 	})
 }
 
-func TestListDefaultObjectACLsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
-		attrs := &BucketAttrs{
-			Name:                       bucket,
-			PredefinedDefaultObjectACL: "publicRead",
-		}
-		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
-		}
-
-		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
-		if err != nil {
-			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
-		}
-		if want, got := len(acls), 2; want != got {
-			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
-		}
-	})
-}
-
 func TestUpdateBucketACLEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
@@ -425,7 +578,7 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 			PredefinedACL: "authenticatedRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		var listAcls []ACLRule
@@ -439,16 +592,9 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 		}
 		entity := AllUsers
 		role := RoleReader
-		want := &ACLRule{Entity: entity, Role: role}
-		got, err := client.UpdateBucketACL(ctx, bucket, entity, role)
+		err = client.UpdateBucketACL(ctx, bucket, entity, role)
 		if err != nil {
 			t.Fatalf("client.UpdateBucketACL: %v", err)
-		}
-		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
-		}
-		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
-			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 		// Assert bucket now has three BucketACL entities, including existing ACLs.
 		if listAcls, err = client.ListBucketACLs(ctx, bucket); err != nil {
@@ -468,7 +614,7 @@ func TestDeleteBucketACLEmulated(t *testing.T) {
 			PredefinedACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		// Assert bucket has two BucketACL entities, including project owner and predefinedACL.
@@ -494,7 +640,7 @@ func TestDeleteBucketACLEmulated(t *testing.T) {
 	})
 }
 
-func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
+func TestDefaultObjectACLCRUDEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
 		attrs := &BucketAttrs{
@@ -502,10 +648,10 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 			PredefinedDefaultObjectACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs.Name, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
-		// Assert bucket has two DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
+		// Assert bucket has 2 DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
 		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
 		if err != nil {
 			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
@@ -513,17 +659,273 @@ func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
 		if got, want := len(acls), 2; got != want {
 			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
 		}
-		// Delete one DefaultObjectACL with AllUsers entity.
-		if err := client.DeleteDefaultObjectACL(ctx, bucket, AllUsers); err != nil {
-			t.Fatalf("client.DeleteDefaultObjectACL: %v", err)
+		entity := AllAuthenticatedUsers
+		role := RoleOwner
+		err = client.UpdateDefaultObjectACL(ctx, bucket, entity, role)
+		if err != nil {
+			t.Fatalf("UpdateDefaultObjectCL: %v", err)
 		}
-		// Assert bucket has one DefaultObjectACL entity.
+		// Assert there are now 3 DefaultObjectACL entities, including existing DefaultObjectACLs.
 		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
 		if err != nil {
 			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
 		}
-		if got, want := len(acls), 1; got != want {
+		if got, want := len(acls), 3; got != want {
 			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
+		}
+		// Delete 1 DefaultObjectACL with AllUsers entity.
+		if err := client.DeleteDefaultObjectACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteDefaultObjectACL: %v", err)
+		}
+		// Assert bucket has 2 DefaultObjectACL entities.
+		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
+			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
+		}
+	})
+}
+
+func TestObjectACLCRUDEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("CreateBucket: %v", err)
+		}
+		o := ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		var listAcls []ACLRule
+		// Assert there are 4 ObjectACL entities, including object owner and project owners/editors/viewers.
+		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+			t.Fatalf("ListObjectACLs: %v", err)
+		}
+		if got, want := len(listAcls), 4; got != want {
+			t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
+		}
+		entity := AllUsers
+		role := RoleReader
+		err = client.UpdateObjectACL(ctx, bucket, o.Name, entity, role)
+		if err != nil {
+			t.Fatalf("UpdateObjectCL: %v", err)
+		}
+		// Assert there are now 5 ObjectACL entities, including existing ACLs.
+		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+			t.Fatalf("ListObjectACLs: %v", err)
+		}
+		if got, want := len(listAcls), 5; got != want {
+			t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
+		}
+		if err = client.DeleteObjectACL(ctx, bucket, o.Name, AllUsers); err != nil {
+			t.Fatalf("client.DeleteObjectACL: %v", err)
+		}
+		// Assert there are now 4 ObjectACL entities after deletion.
+		if listAcls, err = client.ListObjectACLs(ctx, bucket, o.Name); err != nil {
+			t.Fatalf("ListObjectACLs: %v", err)
+		}
+		if got, want := len(listAcls), 4; got != want {
+			t.Errorf("ListObjectACLs: got %v, want %v items", listAcls, want)
+		}
+	})
+}
+
+func TestOpenReaderEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+
+		params := &newRangeReaderParams{
+			bucket: bucket,
+			object: want.Name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}
+		r, err := client.NewRangeReader(context.Background(), params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytesToWrite)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
+			t.Fatalf("Read: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestOpenWriterEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			Generation: defaultGen,
+		}
+
+		var gotAttrs *ObjectAttrs
+		params := &openWriterParams{
+			attrs:    want,
+			bucket:   bucket,
+			ctx:      context.Background(),
+			donec:    make(chan struct{}),
+			setError: func(_ error) {}, // no-op
+			progress: func(_ int64) {}, // no-op
+			setObj:   func(o *ObjectAttrs) { gotAttrs = o },
+		}
+		pw, err := client.OpenWriter(params)
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		if _, err := pw.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := pw.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		select {
+		case <-params.donec:
+		}
+		if gotAttrs == nil {
+			t.Fatalf("Writer finished, but resulting object wasn't set")
+		}
+		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
+			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
+		}
+
+		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(context.Background())
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytesToWrite)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
+			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestListNotificationsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		_, err = client.CreateNotification(ctx, bucket, &Notification{
+			TopicProjectID: project,
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  "JSON_API_V1",
+		})
+		if err != nil {
+			t.Fatalf("client.CreateNotification: %v", err)
+		}
+		n, err := client.ListNotifications(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListNotifications: %v", err)
+		}
+		if want, got := 1, len(n); want != got {
+			t.Errorf("ListNotifications: got %v, want %v items", n, want)
+		}
+	})
+}
+
+func TestCreateNotificationEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		want := &Notification{
+			TopicProjectID: project,
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  "JSON_API_V1",
+		}
+		got, err := client.CreateNotification(ctx, bucket, want)
+		if err != nil {
+			t.Fatalf("client.CreateNotification: %v", err)
+		}
+		if diff := cmp.Diff(got.TopicID, want.TopicID); diff != "" {
+			t.Errorf("CreateNotification topic: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestDeleteNotificationEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test object.
+		ctx := context.Background()
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		var n *Notification
+		n, err = client.CreateNotification(ctx, bucket, &Notification{
+			TopicProjectID: project,
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  "JSON_API_V1",
+		})
+		if err != nil {
+			t.Fatalf("client.CreateNotification: %v", err)
+		}
+		err = client.DeleteNotification(ctx, bucket, n.ID)
+		if err != nil {
+			t.Fatalf("client.DeleteNotification: %v", err)
 		}
 	})
 }
@@ -569,6 +971,153 @@ func initEmulatorClients() func() error {
 		}
 		return verr
 	}
+}
+
+func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		b := &BucketAttrs{
+			Name: bucket,
+			RetentionPolicy: &RetentionPolicy{
+				RetentionPeriod: time.Minute,
+			},
+		}
+		// Create the bucket that will be locked.
+		_, err := client.CreateBucket(context.Background(), project, b.Name, b)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Lock the bucket's retention policy.
+		err = client.LockBucketRetentionPolicy(context.Background(), b.Name, &BucketConditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatalf("client.LockBucketRetentionPolicy: %v", err)
+		}
+		got, err := client.GetBucket(context.Background(), bucket, nil)
+		if err != nil {
+			t.Fatalf("client.GetBucket: %v", err)
+		}
+		if !got.RetentionPolicy.IsLocked {
+			t.Error("Expected bucket retention policy to be locked, but was not.")
+		}
+	})
+}
+
+func TestComposeEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		srcNames := []string{
+			fmt.Sprintf("%d-object1", prefix),
+			fmt.Sprintf("%d-object2", prefix),
+		}
+
+		for _, n := range srcNames {
+			w := veneerClient.Bucket(bucket).Object(n).NewWriter(ctx)
+			if _, err := w.Write(randomBytesToWrite); err != nil {
+				t.Fatalf("failed to populate test data: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing object: %v", err)
+			}
+		}
+
+		dstName := fmt.Sprintf("%d-object3", prefix)
+		req := composeObjectRequest{
+			dstBucket: bucket,
+			dstObject: destinationObject{
+				name:  dstName,
+				attrs: &ObjectAttrs{StorageClass: "COLDLINE"},
+			},
+			srcs: []sourceObject{
+				{name: srcNames[0]},
+				{name: srcNames[1]},
+			},
+		}
+		attrs, err := client.ComposeObject(ctx, &req)
+		if err != nil {
+			t.Fatalf("client.ComposeObject(): %v", err)
+		}
+		if got := attrs.Name; got != dstName {
+			t.Errorf("attrs.Name: got %v, want %v", got, dstName)
+		}
+		// Check that the destination object size is equal to the sum of its
+		// sources.
+		if got, want := attrs.Size, 2*len(randomBytesToWrite); got != int64(want) {
+			t.Errorf("attrs.Size: got %v, want %v", got, want)
+		}
+		// Check that destination attrs set via object attrs are preserved.
+		if got, want := attrs.StorageClass, "COLDLINE"; got != want {
+			t.Errorf("attrs.StorageClass: got %v, want %v", got, want)
+		}
+	})
+}
+
+func TestHMACKeyCRUDEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		serviceAccountEmail := "test@test-project.iam.gserviceaccount.com"
+		want, err := client.CreateHMACKey(ctx, project, serviceAccountEmail)
+		if err != nil {
+			t.Fatalf("CreateHMACKey: %v", err)
+		}
+		if want == nil {
+			t.Fatal("CreateHMACKey: Unexpectedly got back a nil HMAC key")
+		}
+		if want.State != Active {
+			t.Fatalf("CreateHMACKey: Unexpected state %q, expected %q", want.State, Active)
+		}
+		got, err := client.GetHMACKey(ctx, project, want.AccessID)
+		if err != nil {
+			t.Fatalf("GetHMACKey: %v", err)
+		}
+		if diff := cmp.Diff(got.ID, want.ID); diff != "" {
+			t.Errorf("GetHMACKey ID:got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.UpdatedTime, want.UpdatedTime); diff != "" {
+			t.Errorf("GetHMACKey UpdatedTime: got(-),want(+):\n%s", diff)
+		}
+		attr := &HMACKeyAttrsToUpdate{
+			State: Inactive,
+		}
+		got, err = client.UpdateHMACKey(ctx, project, serviceAccountEmail, want.AccessID, attr)
+		if err != nil {
+			t.Fatalf("UpdateHMACKey: %v", err)
+		}
+		if got.State != attr.State {
+			t.Errorf("UpdateHMACKey State: got %v, want %v", got.State, attr.State)
+		}
+		showDeletedKeys := false
+		it := client.ListHMACKeys(ctx, project, serviceAccountEmail, showDeletedKeys)
+		var count int
+		var e error
+		for ; ; count++ {
+			_, e = it.Next()
+			if e != nil {
+				break
+			}
+		}
+		if e != iterator.Done {
+			t.Fatalf("ListHMACKeys: expected %q but got %q", iterator.Done, err)
+		}
+		if expected := 1; count != expected {
+			t.Errorf("ListHMACKeys: expected to get %d hmacKeys, but got %d", expected, count)
+		}
+		err = client.DeleteHMACKey(ctx, project, want.AccessID)
+		if err != nil {
+			t.Fatalf("DeleteHMACKey: %v", err)
+		}
+		got, err = client.GetHMACKey(ctx, project, want.AccessID)
+		if err == nil {
+			t.Fatalf("GetHMACKey unexcepted error: wanted 404")
+		}
+	})
 }
 
 // transportClienttest executes the given function with a sub-test, a project name

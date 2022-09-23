@@ -25,7 +25,29 @@ import (
 
 func ExampleNewBigQueryStorageClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryStorageClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewBigQueryStorageRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storage.NewBigQueryStorageRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,6 +59,11 @@ func ExampleNewBigQueryStorageClient() {
 
 func ExampleBigQueryStorageClient_CreateReadSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,6 +84,11 @@ func ExampleBigQueryStorageClient_CreateReadSession() {
 
 func ExampleBigQueryStorageClient_BatchCreateReadSessionStreams() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -77,6 +109,11 @@ func ExampleBigQueryStorageClient_BatchCreateReadSessionStreams() {
 
 func ExampleBigQueryStorageClient_FinalizeStream() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -95,6 +132,11 @@ func ExampleBigQueryStorageClient_FinalizeStream() {
 
 func ExampleBigQueryStorageClient_SplitReadStream() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

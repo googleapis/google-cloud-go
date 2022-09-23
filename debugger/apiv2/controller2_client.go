@@ -84,7 +84,7 @@ func defaultController2CallOptions() *Controller2CallOptions {
 	}
 }
 
-// internalController2Client is an interface that defines the methods availaible from Stackdriver Debugger API.
+// internalController2Client is an interface that defines the methods available from Stackdriver Debugger API.
 type internalController2Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -142,7 +142,8 @@ func (c *Controller2Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Controller2Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -269,7 +270,8 @@ func NewController2Client(ctx context.Context, opts ...option.ClientOption) (*Co
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *controller2GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

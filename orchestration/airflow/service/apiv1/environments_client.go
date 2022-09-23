@@ -70,7 +70,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	}
 }
 
-// internalEnvironmentsClient is an interface that defines the methods availaible from Cloud Composer API.
+// internalEnvironmentsClient is an interface that defines the methods available from Cloud Composer API.
 type internalEnvironmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -119,7 +119,8 @@ func (c *EnvironmentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -243,7 +244,8 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

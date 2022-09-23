@@ -25,6 +25,11 @@
                 "BeginTransaction"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "Commit": {
               "methods": [
                 "Commit"
@@ -40,9 +45,19 @@
                 "DeleteDocument"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetDocument": {
               "methods": [
                 "GetDocument"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListCollectionIds": {
@@ -53,6 +68,11 @@
             "ListDocuments": {
               "methods": [
                 "ListDocuments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "Listen": {
@@ -68,6 +88,11 @@
             "Rollback": {
               "methods": [
                 "Rollback"
+              ]
+            },
+            "RunAggregationQuery": {
+              "methods": [
+                "RunAggregationQuery"
               ]
             },
             "RunQuery": {

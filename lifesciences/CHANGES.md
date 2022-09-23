@@ -1,5 +1,26 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.5.0...lifesciences/v0.6.0) (2022-09-21)
+
+
+### Features
+
+* **lifesciences:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.4.0...lifesciences/v0.5.0) (2022-09-19)
+
+
+### Features
+
+* **lifesciences:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.3.0...lifesciences/v0.4.0) (2022-06-29)
+
+
+### Features
+
+* **lifesciences:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.2.0...lifesciences/v0.3.0) (2022-02-23)
 
 

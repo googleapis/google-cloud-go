@@ -87,7 +87,7 @@ func defaultServiceManagerCallOptions() *ServiceManagerCallOptions {
 	}
 }
 
-// internalServiceManagerClient is an interface that defines the methods availaible from Service Management API.
+// internalServiceManagerClient is an interface that defines the methods available from Service Management API.
 type internalServiceManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -147,7 +147,8 @@ func (c *ServiceManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ServiceManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -397,7 +398,8 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *serviceManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

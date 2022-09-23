@@ -1,0 +1,611 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/beyondcorp/appgateways/apiv1",
+    "version": "0.1.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.beyondcorp.appgateways.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_CancelOperation_sync",
+      "title": "beyondcorp CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.CancelOperation",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_CreateAppGateway_sync",
+      "title": "beyondcorp CreateAppGateway Sample",
+      "description": "CreateAppGateway creates a new AppGateway in a given project and location.",
+      "file": "Client/CreateAppGateway/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAppGateway",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.CreateAppGateway",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appgatewayspb.CreateAppGatewayRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAppGatewayOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAppGateway",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.CreateAppGateway",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_DeleteAppGateway_sync",
+      "title": "beyondcorp DeleteAppGateway Sample",
+      "description": "DeleteAppGateway deletes a single AppGateway.",
+      "file": "Client/DeleteAppGateway/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAppGateway",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.DeleteAppGateway",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appgatewayspb.DeleteAppGatewayRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAppGatewayOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAppGateway",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.DeleteAppGateway",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_DeleteOperation_sync",
+      "title": "beyondcorp DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.DeleteOperation",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_GetAppGateway_sync",
+      "title": "beyondcorp GetAppGateway Sample",
+      "description": "GetAppGateway gets details of a single AppGateway.",
+      "file": "Client/GetAppGateway/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAppGateway",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.GetAppGateway",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appgatewayspb.GetAppGatewayRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "appgatewayspb.AppGateway",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAppGateway",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.GetAppGateway",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_GetIamPolicy_sync",
+      "title": "beyondcorp GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.GetIamPolicy",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_GetLocation_sync",
+      "title": "beyondcorp GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.GetLocation",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_GetOperation_sync",
+      "title": "beyondcorp GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.GetOperation",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_ListAppGateways_sync",
+      "title": "beyondcorp ListAppGateways Sample",
+      "description": "ListAppGateways lists AppGateways in a given project and location.",
+      "file": "Client/ListAppGateways/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAppGateways",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.ListAppGateways",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appgatewayspb.ListAppGatewaysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AppGatewayIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAppGateways",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.ListAppGateways",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_ListLocations_sync",
+      "title": "beyondcorp ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.ListLocations",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_ListOperations_sync",
+      "title": "beyondcorp ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.ListOperations",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_SetIamPolicy_sync",
+      "title": "beyondcorp SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.SetIamPolicy",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppGatewaysService_TestIamPermissions_sync",
+      "title": "beyondcorp TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.beyondcorp.appgateways.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService.TestIamPermissions",
+          "service": {
+            "shortName": "AppGatewaysService",
+            "fullName": "google.cloud.beyondcorp.appgateways.v1.AppGatewaysService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

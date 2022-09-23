@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.beyondcorp.appconnections.v1",
+  "libraryPackage": "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+  "services": {
+    "AppConnectionsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAppConnection": {
+              "methods": [
+                "CreateAppConnection"
+              ]
+            },
+            "DeleteAppConnection": {
+              "methods": [
+                "DeleteAppConnection"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAppConnection": {
+              "methods": [
+                "GetAppConnection"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAppConnections": {
+              "methods": [
+                "ListAppConnections"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ResolveAppConnections": {
+              "methods": [
+                "ResolveAppConnections"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAppConnection": {
+              "methods": [
+                "UpdateAppConnection"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

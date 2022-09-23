@@ -1,5 +1,54 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.7.0...security/v1.8.0) (2022-09-21)
+
+
+### Features
+
+* **security:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.6.0...security/v1.7.0) (2022-09-19)
+
+
+### Features
+
+* **security:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+
+### Bug Fixes
+
+* **security/publicca:** Add proto options for Ruby, PHP and C# API client libraries ([bc7a5f6](https://github.com/googleapis/google-cloud-go/commit/bc7a5f609994f73e26f72a78f0ff14aa75c1c227))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.5.0...security/v1.6.0) (2022-09-15)
+
+
+### Features
+
+* **security/privateca/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **security/publicca/apiv1beta1/publiccapb:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **security/publicca/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.4.1...security/v1.5.0) (2022-09-09)
+
+
+### Features
+
+* **security/publicca:** Start generating apiv1beta1 ([#6642](https://github.com/googleapis/google-cloud-go/issues/6642)) ([778161b](https://github.com/googleapis/google-cloud-go/commit/778161b208819783618c5be8191960167bd67e1e))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.4.0...security/v1.4.1) (2022-07-12)
+
+
+### Bug Fixes
+
+* **security/privateca:** publish v1beta1 LRO HTTP rules ([963efe2](https://github.com/googleapis/google-cloud-go/commit/963efe22cf67bc04fed09b5fa8f9cb20b9edf1a3))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.3.0...security/v1.4.0) (2022-05-24)
+
+
+### Features
+
+* **security/privateca:** Provide interfaces for location and IAM policy calls ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.2.1...security/v1.3.0) (2022-02-23)
 
 

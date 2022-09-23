@@ -52,7 +52,19 @@ type HealthChecksCallOptions struct {
 	Update         []gax.CallOption
 }
 
-// internalHealthChecksClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultHealthChecksRESTCallOptions() *HealthChecksCallOptions {
+	return &HealthChecksCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+		Patch:          []gax.CallOption{},
+		Update:         []gax.CallOption{},
+	}
+}
+
+// internalHealthChecksClient is an interface that defines the methods available from Google Compute Engine API.
 type internalHealthChecksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -95,7 +107,8 @@ func (c *HealthChecksClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *HealthChecksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -148,6 +161,9 @@ type healthChecksRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing HealthChecksClient
+	CallOptions **HealthChecksCallOptions
 }
 
 // NewHealthChecksRESTClient creates a new health checks rest client.
@@ -160,9 +176,11 @@ func NewHealthChecksRESTClient(ctx context.Context, opts ...option.ClientOption)
 		return nil, err
 	}
 
+	callOpts := defaultHealthChecksRESTCallOptions()
 	c := &healthChecksRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -176,7 +194,7 @@ func NewHealthChecksRESTClient(ctx context.Context, opts ...option.ClientOption)
 	}
 	c.operationClient = opC
 
-	return &HealthChecksClient{internalClient: c, CallOptions: &HealthChecksCallOptions{}}, nil
+	return &HealthChecksClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultHealthChecksRESTClientOptions() []option.ClientOption {
@@ -210,7 +228,7 @@ func (c *healthChecksRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *healthChecksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -340,6 +358,7 @@ func (c *healthChecksRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "health_check", url.QueryEscape(req.GetHealthCheck())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -399,6 +418,7 @@ func (c *healthChecksRESTClient) Get(ctx context.Context, req *computepb.GetHeal
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "health_check", url.QueryEscape(req.GetHealthCheck())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.HealthCheck{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -465,6 +485,7 @@ func (c *healthChecksRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -634,6 +655,7 @@ func (c *healthChecksRESTClient) Patch(ctx context.Context, req *computepb.Patch
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "health_check", url.QueryEscape(req.GetHealthCheck())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -707,6 +729,7 @@ func (c *healthChecksRESTClient) Update(ctx context.Context, req *computepb.Upda
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "health_check", url.QueryEscape(req.GetHealthCheck())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

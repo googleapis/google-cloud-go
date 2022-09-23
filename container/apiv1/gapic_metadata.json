@@ -20,6 +20,11 @@
                 "CompleteIPRotation"
               ]
             },
+            "CompleteNodePoolUpgrade": {
+              "methods": [
+                "CompleteNodePoolUpgrade"
+              ]
+            },
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
