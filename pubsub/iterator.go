@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -454,7 +455,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 		if msg.Attributes != nil {
 			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 		}
-		_, ackSpan := tracer().Start(ctx, "send ack")
+		_, ackSpan := tracer().Start(ctx, ackSpanName)
 		defer ackSpan.End()
 	}
 	it.eoMu.RLock()
@@ -509,15 +510,19 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 		}
 		var spanName string
+		isNack := deadline == 0
 		if isReceipt {
-			spanName = "sending receipt modack"
-		} else if deadline > 0 {
-			spanName = "sending modack"
+			spanName = receiptModAckSpanName
+		} else if isNack {
+			spanName = nackSpanName
 		} else {
-			spanName = "sending nack"
+			spanName = modAckSpanName
 		}
-		_, modAckSpan := tracer().Start(ctx, spanName)
-		defer modAckSpan.End()
+		_, span := tracer().Start(ctx, spanName)
+		if !isNack {
+			span.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)))
+		}
+		defer span.End()
 	}
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery

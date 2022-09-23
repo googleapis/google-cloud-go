@@ -305,17 +305,31 @@ func (c PubsubMessageCarrier) Keys() []string {
 }
 
 const (
-	// publish attributes
-	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_publish_batch"
+	// span names
+	publisherSpanName          = "send"
+	publishFlowControlSpanName = "publisher flow control"
+	publishBatchSpanName       = "publish batch"
+	publishRPCSpanName         = "send Publish RPC"
 
-	// subscribe attributes
-	subscriptionAttribute    = "messaging.pubsub.subscription"
-	orderingAttribute        = "messaging.pubsub.ordering_key"
-	deliveryAttemptAttribute = "messaging.pubsub.delivery_attempt"
-	eosAttribute             = "messaging.pubsub.exactly_once_delivery"
-	ackIDAttribute           = "messaging.pubsub.ack_id"
-	ackAttribute             = "messaging.pubsub.is_acked"
-	// numRecvMessagesAttribute    = "messaging.pubsub.num_messages_in_receive_batch"
+	subscriberSpanName            = "receive"
+	subscriberFlowControlSpanName = "subscriber flow control"
+	processSpanName               = "process"
+	subscribeSchedulerSpanName    = "subscribe scheduler"
+	receiptModAckSpanName         = "send initial ModifyAckDeadline RPC"
+	modAckSpanName                = "send ModifyAckDeadline RPC"
+	ackSpanName                   = "send Acknowledge RPC"
+	nackSpanName                  = "send Nack RPC"
+
+	// custom pubsub specific attributes
+	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"
+	subscriptionAttribute       = "messaging.pubsub.subscription"
+	orderingAttribute           = "messaging.pubsub.ordering_key"
+	deliveryAttemptAttribute    = "messaging.pubsub.delivery_attempt"
+	eosAttribute                = "messaging.pubsub.exactly_once_delivery"
+	ackIDAttribute              = "messaging.pubsub.ack_id"
+	ackAttribute                = "messaging.pubsub.is_acked"
+
+	modackDeadlineSecondsAttribute = "messaging.pubsub.modack_deadline_seconds"
 )
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {

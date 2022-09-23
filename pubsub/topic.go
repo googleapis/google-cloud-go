@@ -537,7 +537,7 @@ type PublishResult = ipubsub.PublishResult
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	opts := getPublishSpanAttributes(t.String(), msg)
-	ctx, span := tracer().Start(ctx, t.String()+" send", opts...)
+	ctx, span := tracer().Start(ctx, fmt.Sprintf("%s %s", t.String(), publisherSpanName), opts...)
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -569,7 +569,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	ctx2, fcSpan := tracer().Start(ctx, "publisher flow control")
+	ctx2, fcSpan := tracer().Start(ctx, publishFlowControlSpanName)
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -579,7 +579,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	fcSpan.End()
 
-	_, batchSpan := tracer().Start(ctx2, "publish batching")
+	_, batchSpan := tracer().Start(ctx2, publishBatchSpanName)
 
 	bmsg := &bundledMessage{
 		msg:       msg,
@@ -736,7 +736,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		if bm.msg.Attributes != nil {
 			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(bm.msg))
 		}
-		_, pSpan := tracer().Start(ctx, "publish RPC")
+		_, pSpan := tracer().Start(ctx, publishRPCSpanName)
 		pSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, numMsgs))
 		defer bm.span.End()
 		defer pSpan.End()

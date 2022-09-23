@@ -65,7 +65,7 @@ type iterDoneFunc func(string, bool, *AckResult, time.Time)
 func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool) ([]*Message, error) {
 	msgs := make([]*Message, 0, len(rms))
 	for i, m := range rms {
-		msg, err := toMessage(m, receiveTime, doneFunc, subName, eos)
+		msg, err := toMessage(m, receiveTime, doneFunc, subName, eos, len(rms))
 		if err != nil {
 			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, message: %+v", i, m)
 		}
@@ -74,7 +74,7 @@ func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc 
 	return msgs, nil
 }
 
-func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool) (*Message, error) {
+func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool, numMsgs int) (*Message, error) {
 	ackh := &psAckHandler{ackID: resp.AckId}
 	msg := ipubsub.NewMessage(ackh)
 	if resp.Message == nil {
@@ -101,8 +101,13 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	if msg.Attributes != nil {
 		ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 	}
-	ctx, rs := tracer().Start(ctx, fmt.Sprintf("%s receive", subName), opts...)
-	rs.SetAttributes(attribute.Bool(eosAttribute, eos), attribute.String(ackIDAttribute, resp.AckId))
+	ctx, span := tracer().Start(ctx, fmt.Sprintf("%s %s", subName, subscriberSpanName), opts...)
+	span.SetAttributes(
+		attribute.Bool(eosAttribute, eos),
+		attribute.String(ackIDAttribute, resp.AckId),
+		attribute.Int(numBatchedMessagesAttribute, numMsgs),
+		attribute.Bool(ackAttribute, false),
+	)
 	// inject the new ctx into message for propagation across the other receive paths
 	// that cannot directly access this ctx. We do this to avoid storing context
 	// inside a message, which is bad practice.
@@ -114,8 +119,8 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc
 	ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-		rs.SetAttributes(attribute.Bool(ackAttribute, ack))
-		defer rs.End()
+		span.SetAttributes(attribute.Bool(ackAttribute, ack))
+		defer span.End()
 		doneFunc(ackID, ack, r, receiveTime)
 	}
 	ackh.ackResult = ipubsub.NewAckResult()

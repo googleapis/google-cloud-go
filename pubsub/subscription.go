@@ -1155,7 +1155,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					if msg.Attributes != nil {
 						ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
 					}
-					ctx, fcSpan := tracer().Start(ctx, "subscriber flow control")
+					ctx, fcSpan := tracer().Start(ctx, subscriberFlowControlSpanName)
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
@@ -1179,9 +1179,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					}
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
+					ctx, schedulerSpan := tracer().Start(ctx, subscribeSchedulerSpanName)
 					if err := sched.Add(key, msg, func(msg interface{}) {
+						m := msg.(*Message)
+						schedulerSpan.End()
 						defer wg.Done()
-						_, cSpan := tracer().Start(ctx, "calling user defined callback")
+						_, cSpan := tracer().Start(ctx, processSpanName)
 						defer cSpan.End()
 						old2 := ackh.doneFunc
 						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
@@ -1196,8 +1199,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 							defer cSpan.End()
 							old2(ackID, ack, r, receiveTime)
 						}
-
-						f(ctx2, msg.(*Message))
+						f(ctx2, m)
 					}); err != nil {
 						wg.Done()
 						// TODO(hongalex): propagate these errors to an otel span.
