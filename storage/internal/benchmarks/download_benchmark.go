@@ -32,11 +32,15 @@ type downloadOpts struct {
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
+	// Set timer
 	start := time.Now()
 	defer func() { elapsedTime = time.Since(start) }()
 
-	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
+	// Set additional timeout
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
 
+	// Create file to download to
 	f, err := os.CreateTemp("", objectPrefix)
 	if err != nil {
 		rerr = fmt.Errorf("os.Create: %w", err)
@@ -55,6 +59,8 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 		}
 	}()
 
+	// Get reader from object
+	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
 	objectReader, err := o.NewReader(ctx)
 	if err != nil {
 		rerr = fmt.Errorf("Object(%q).NewReader: %w", o.ObjectName(), err)
@@ -67,6 +73,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 		}
 	}()
 
+	// Download
 	written, err := io.Copy(f, objectReader)
 	if err != nil {
 		rerr = fmt.Errorf("io.Copy: %w", err)

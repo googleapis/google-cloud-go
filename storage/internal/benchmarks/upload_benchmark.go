@@ -38,25 +38,31 @@ type uploadOpts struct {
 }
 
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
+	// Set timer
 	start := time.Now()
 	defer func() { elapsedTime = time.Since(start) }()
 
-	o := uopts.client.Bucket(uopts.bucket).Object(uopts.object)
+	// Set additional timeout
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
 
-	objectWriter := o.If(storage.Conditions{DoesNotExist: true}).NewWriter(ctx)
-
-	if !uopts.useDefaultChunkSize {
-		objectWriter.ChunkSize = int(uopts.params.chunkSize)
-	}
-
+	// Open file
 	f, err := os.Open(uopts.objectPath)
 	if err != nil {
 		return elapsedTime, fmt.Errorf("os.Open: %w", err)
 	}
 	defer f.Close()
 
+	// Get writer to object
+	o := uopts.client.Bucket(uopts.bucket).Object(uopts.object)
+	objectWriter := o.If(storage.Conditions{DoesNotExist: true}).NewWriter(ctx)
+	if !uopts.useDefaultChunkSize {
+		objectWriter.ChunkSize = int(uopts.params.chunkSize)
+	}
+
 	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.params.md5Enabled, uopts.params.crc32cEnabled)
 
+	// Upload file
 	if _, err = io.Copy(mw, f); err != nil {
 		return elapsedTime, fmt.Errorf("io.Copy: %w", err)
 	}
@@ -66,6 +72,7 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 		return elapsedTime, fmt.Errorf("writer.Close: %w", err)
 	}
 
+	// Verify checksum
 	if uopts.params.crc32cEnabled || uopts.params.md5Enabled {
 		attrs, aerr := o.Attrs(ctx)
 		if aerr != nil {
