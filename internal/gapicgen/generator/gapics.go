@@ -524,7 +524,7 @@ var ManualEntries = []ManifestEntry{
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
-		ReleaseLevel:      "beta",
+		ReleaseLevel:      "ga",
 		LibraryType:       GapicManualLibraryType,
 	},
 }
