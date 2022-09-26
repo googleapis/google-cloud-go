@@ -279,9 +279,13 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 }
 
 // UpdateTable updates a table in the instance from the given configuration.
+// Only deletion protection can be updated at this moment
 func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) (updated bool, err error) {
 	if conf.TableID == "" {
 		return false, errors.New("TableID is required")
+	}
+	if conf.Families != nil || conf.SplitKeys != nil {
+		return false, errors.New("Only deletion protection field can be updated")
 	}
 
 	if conf.DeletionProtection != nil {
@@ -300,7 +304,7 @@ func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) (update
 		_, err := ac.tClient.UpdateTable(ctx, req)
 		return true, err
 	}
-	return false, errors.New("Only deletion protection can be updated")
+	return false, errors.New("Deletion protection is required")
 }
 
 // DeleteTable deletes a table and all of its data.
