@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 
 	"testing"
 
@@ -34,13 +35,13 @@ import (
 )
 
 const (
-	buf = 1024 * 1024
-	tbl = "table"
-	cf  = "cf"
-	tpc = "testProxyClient"
-	tpa = "localhost:9990"
-	bta = "localhost:9999"
-	rk  = "row"
+	buffer           = 1024 * 1024
+	tableName        = "table"
+	columnFamily     = "cf"
+	testProxyClient  = "testProxyClient"
+	testProxyAddress = "localhost:9990"
+	bigtableAddress  = "localhost:9999"
+	rowKey           = "row"
 )
 
 var (
@@ -69,15 +70,15 @@ func populateTable(bts *bttest.Server) error {
 	}
 	defer adminClient.Close()
 
-	if err := adminClient.CreateTable(ctx, tbl); err != nil {
+	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		return fmt.Errorf("testproxy setup: can't create table: %v", err)
 	}
 
 	// Create column families
 	count := 3
 	for i := 0; i < count; i++ {
-		cfName := fmt.Sprintf("%s%d", cf, i)
-		if err := adminClient.CreateColumnFamily(ctx, tbl, cfName); err != nil {
+		cfName := fmt.Sprintf("%s%d", columnFamily, i)
+		if err := adminClient.CreateColumnFamily(ctx, tableName, cfName); err != nil {
 			return fmt.Errorf("testproxy setup: can't create column family: %s", cfName)
 		}
 	}
@@ -89,15 +90,15 @@ func populateTable(bts *bttest.Server) error {
 	}
 	defer dataClient.Close()
 
-	t := dataClient.Open(tbl)
+	t := dataClient.Open(tableName)
 
 	for fc := 0; fc < count; fc++ {
 		for cc := count; cc > 0; cc-- {
 			for tc := 0; tc < count; tc++ {
 				rmw := bigtable.NewReadModifyWrite()
-				rmw.AppendValue(fmt.Sprintf("%s%d", cf, fc), fmt.Sprintf("coll%d", cc), []byte("test data"))
+				rmw.AppendValue(fmt.Sprintf("%s%d", columnFamily, fc), fmt.Sprintf("coll%d", cc), []byte("test data"))
 
-				_, err = t.ApplyReadModifyWrite(ctx, rk, rmw)
+				_, err = t.ApplyReadModifyWrite(ctx, rowKey, rmw)
 				if err != nil {
 					return fmt.Errorf("testproxy setup: failure populating row: %v", err)
 				}
@@ -123,7 +124,7 @@ func TestMain(m *testing.M) {
 
 	// 1) Start the mocked Bigtable service
 	// This requires creating a "table" in memory
-	bts, err := bttest.NewServer(bta)
+	bts, err := bttest.NewServer(bigtableAddress)
 	if err != nil {
 		log.Fatalf("testproxy setup: can't create inmem Bigtable server")
 	}
@@ -133,7 +134,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// 3) Start the test proxy server
-	lis = bufconn.Listen(buf)
+	lis = bufconn.Listen(buffer)
 	s := newProxyServer(lis)
 	go func() {
 		if err := s.Serve(lis); err != nil {
@@ -142,34 +143,35 @@ func TestMain(m *testing.M) {
 	}()
 
 	// 2) Create the test proxy client
-	conn2, err := grpc.DialContext(ctx, lis.Addr().String(), grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn2, err := grpc.DialContext(ctx, lis.Addr().String(),
+		grpc.WithContextDialer(bufDialer),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("testproxy setup: failed to dial testproxy: %v", err)
 	}
 	defer conn2.Close()
-	c := pb.NewCloudBigtableV2TestProxyClient(conn2)
-	client = &c
+	client := pb.NewCloudBigtableV2TestProxyClient(conn2)
 
 	// This could create a little bit of a race condition with the previous
 	// go routine ...
 	// However, we need to have the test proxy server running in order to create
 	// a reusable client stored in its memory
 	req := &pb.CreateClientRequest{
-		ClientId:   tpc,
+		ClientId:   testProxyClient,
 		ProjectId:  "client",
-		DataTarget: bta,
+		DataTarget: bigtableAddress,
 		InstanceId: "instance",
 	}
 
-	_, err = (*client).CreateClient(ctx, req)
+	_, err = client.CreateClient(ctx, req)
 	if err != nil {
 		log.Fatalf("testproxy setup:  CreateClient() failed: %v", err)
 	}
 
-	m.Run()
+	os.Exit(m.Run())
 }
 
-func TestCreateClient(t *testing.T) {
+func TestCreateAndRemoveClient(t *testing.T) {
 	// Test
 	cid := "testCreateClient"
 	ctx := context.Background()
@@ -177,7 +179,7 @@ func TestCreateClient(t *testing.T) {
 	req := &pb.CreateClientRequest{
 		ClientId:   cid,
 		ProjectId:  "client",
-		DataTarget: bta,
+		DataTarget: bigtableAddress,
 		InstanceId: "instance",
 	}
 
@@ -186,35 +188,8 @@ func TestCreateClient(t *testing.T) {
 		t.Fatalf("testproxy test: CreateClient() failed: %v", err)
 	}
 
-	// Teardown
-	_, err = (*client).RemoveClient(ctx, &pb.RemoveClientRequest{
-		ClientId:  cid,
-		CancelAll: true,
-	})
+	t.Log("testproxy test: client created successfully in test proxy")
 
-	if err != nil {
-		t.Errorf("testproxy test: CreateClient() teardown failed: %v", err)
-	}
-}
-
-func TestRemoveClient(t *testing.T) {
-	// Setup
-	cid := "testRemoveClient"
-	ctx := context.Background()
-
-	req := &pb.CreateClientRequest{
-		ClientId:   cid,
-		ProjectId:  "client",
-		DataTarget: bta,
-		InstanceId: "instance",
-	}
-
-	_, err := (*client).CreateClient(ctx, req)
-	if err != nil {
-		t.Fatalf("testproxy test: failed to create client: %v", err)
-	}
-
-	// Test
 	_, err = (*client).RemoveClient(ctx, &pb.RemoveClientRequest{
 		ClientId:  cid,
 		CancelAll: true,
@@ -228,9 +203,9 @@ func TestRemoveClient(t *testing.T) {
 func TestReadRow(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.ReadRowRequest{
-		TableName: tbl,
-		ClientId:  tpc,
-		RowKey:    rk,
+		TableName: tableName,
+		ClientId:  testProxyClient,
+		RowKey:    rowKey,
 	}
 
 	resp, err := (*client).ReadRow(ctx, req)
@@ -252,9 +227,9 @@ func TestReadRow(t *testing.T) {
 func TestSampleRowKeys(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.SampleRowKeysRequest{
-		ClientId: tpc,
+		ClientId: testProxyClient,
 		Request: &btpb.SampleRowKeysRequest{
-			TableName: tbl,
+			TableName: tableName,
 		},
 	}
 
@@ -275,9 +250,9 @@ func TestSampleRowKeys(t *testing.T) {
 func TestReadRows(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.ReadRowsRequest{
-		ClientId: tpc,
+		ClientId: testProxyClient,
 		Request: &btpb.ReadRowsRequest{
-			TableName: tbl,
+			TableName: tableName,
 		},
 	}
 
@@ -298,10 +273,10 @@ func TestReadRows(t *testing.T) {
 func TestMutateRow(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.MutateRowRequest{
-		ClientId: tpc,
+		ClientId: testProxyClient,
 		Request: &btpb.MutateRowRequest{
-			TableName: tbl,
-			RowKey:    []byte(rk),
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
 			Mutations: []*btpb.Mutation{
 				{
 					Mutation: &btpb.Mutation_SetCell_{
@@ -329,12 +304,12 @@ func TestMutateRow(t *testing.T) {
 func TestBulkMutateRows(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.MutateRowsRequest{
-		ClientId: tpc,
+		ClientId: testProxyClient,
 		Request: &btpb.MutateRowsRequest{
-			TableName: tbl,
+			TableName: tableName,
 			Entries: []*btpb.MutateRowsRequest_Entry{
 				{
-					RowKey: []byte(rk),
+					RowKey: []byte(rowKey),
 					Mutations: []*btpb.Mutation{
 						{
 							Mutation: &btpb.Mutation_SetCell_{
@@ -368,10 +343,10 @@ func TestBulkMutateRows(t *testing.T) {
 func TestCheckAndMutateRow(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.CheckAndMutateRowRequest{
-		ClientId: tpc,
+		ClientId: testProxyClient,
 		Request: &btpb.CheckAndMutateRowRequest{
-			TableName: tbl,
-			RowKey:    []byte(rk),
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
 			PredicateFilter: &btpb.RowFilter{
 				Filter: &btpb.RowFilter_PassAllFilter{},
 			},
@@ -417,10 +392,10 @@ func TestCheckAndMutateRow(t *testing.T) {
 func TestReadWriteRow(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.ReadModifyWriteRowRequest{
-		ClientId: tpc,
+		ClientId: testProxyClient,
 		Request: &btpb.ReadModifyWriteRowRequest{
-			TableName: tbl,
-			RowKey:    []byte(rk),
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
 			Rules: []*btpb.ReadModifyWriteRule{
 				{
 					Rule: &btpb.ReadModifyWriteRule_AppendValue{
@@ -442,7 +417,7 @@ func TestReadWriteRow(t *testing.T) {
 		t.Errorf("testproxy test: ReadModifyWriteRow() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if string(resp.Row.Key) != rk {
+	if string(resp.Row.Key) != rowKey {
 		t.Errorf("testproxy test: ReadModifyWriteRow() returned wrong results; got: %v", resp.Row.Key)
 	}
 }
