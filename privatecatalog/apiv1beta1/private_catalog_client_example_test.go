@@ -20,13 +20,35 @@ import (
 	"context"
 
 	privatecatalog "cloud.google.com/go/privatecatalog/apiv1beta1"
+	privatecatalogpb "cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb"
 	"google.golang.org/api/iterator"
-	privatecatalogpb "google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := privatecatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := privatecatalog.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewClient() {
 
 func ExampleClient_SearchCatalogs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := privatecatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleClient_SearchCatalogs() {
 
 	req := &privatecatalogpb.SearchCatalogsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchCatalogsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb#SearchCatalogsRequest.
 	}
 	it := c.SearchCatalogs(ctx, req)
 	for {
@@ -64,6 +91,11 @@ func ExampleClient_SearchCatalogs() {
 
 func ExampleClient_SearchProducts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := privatecatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +104,7 @@ func ExampleClient_SearchProducts() {
 
 	req := &privatecatalogpb.SearchProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb#SearchProductsRequest.
 	}
 	it := c.SearchProducts(ctx, req)
 	for {
@@ -90,6 +122,11 @@ func ExampleClient_SearchProducts() {
 
 func ExampleClient_SearchVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := privatecatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,7 +135,7 @@ func ExampleClient_SearchVersions() {
 
 	req := &privatecatalogpb.SearchVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb#SearchVersionsRequest.
 	}
 	it := c.SearchVersions(ctx, req)
 	for {

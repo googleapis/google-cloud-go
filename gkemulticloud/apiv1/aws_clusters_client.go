@@ -145,7 +145,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 	}
 }
 
-// internalAwsClustersClient is an interface that defines the methods availaible from Anthos Multi-Cloud API.
+// internalAwsClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
 type internalAwsClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -205,7 +205,8 @@ func (c *AwsClustersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AwsClustersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -405,7 +406,8 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *awsClustersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -229,7 +229,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 	}
 }
 
-// internalBackupForGKEClient is an interface that defines the methods availaible from Backup for GKE API.
+// internalBackupForGKEClient is an interface that defines the methods available from Backup for GKE API.
 type internalBackupForGKEClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -307,7 +307,8 @@ func (c *BackupForGKEClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BackupForGKEClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -581,7 +582,8 @@ func NewBackupForGKEClient(ctx context.Context, opts ...option.ClientOption) (*B
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *backupForGKEGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

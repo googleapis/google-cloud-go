@@ -68,7 +68,7 @@ func defaultInstancesCallOptions() *InstancesCallOptions {
 	}
 }
 
-// internalInstancesClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalInstancesClient is an interface that defines the methods available from App Engine Admin API.
 type internalInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -115,7 +115,8 @@ func (c *InstancesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *InstancesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -249,7 +250,8 @@ func NewInstancesClient(ctx context.Context, opts ...option.ClientOption) (*Inst
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *instancesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

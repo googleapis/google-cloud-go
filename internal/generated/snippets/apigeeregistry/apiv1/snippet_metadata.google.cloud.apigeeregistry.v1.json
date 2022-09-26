@@ -1,0 +1,2582 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/apigeeregistry/apiv1",
+    "version": "0.2.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.apigeeregistry.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_CancelOperation_sync",
+      "title": "apigeeregistry CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ProvisioningClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.CancelOperation",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_CreateInstance_sync",
+      "title": "apigeeregistry CreateInstance Sample",
+      "description": "CreateInstance provisions instance resources for the Registry.",
+      "file": "ProvisioningClient/CreateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstance",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.CreateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.CreateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "CreateInstance",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.CreateInstance",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_DeleteInstance_sync",
+      "title": "apigeeregistry DeleteInstance Sample",
+      "description": "DeleteInstance deletes the Registry instance.",
+      "file": "ProvisioningClient/DeleteInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstance",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.DeleteInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteInstanceOperation",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "DeleteInstance",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.DeleteInstance",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_DeleteOperation_sync",
+      "title": "apigeeregistry DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ProvisioningClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.DeleteOperation",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_GetIamPolicy_sync",
+      "title": "apigeeregistry GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ProvisioningClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.GetIamPolicy",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_GetInstance_sync",
+      "title": "apigeeregistry GetInstance Sample",
+      "description": "GetInstance gets details of a single Instance.",
+      "file": "ProvisioningClient/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.Instance",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.GetInstance",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_GetLocation_sync",
+      "title": "apigeeregistry GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ProvisioningClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.GetLocation",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_GetOperation_sync",
+      "title": "apigeeregistry GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ProvisioningClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.GetOperation",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_ListLocations_sync",
+      "title": "apigeeregistry ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ProvisioningClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.ListLocations",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_ListOperations_sync",
+      "title": "apigeeregistry ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ProvisioningClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.ListOperations",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_SetIamPolicy_sync",
+      "title": "apigeeregistry SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "file": "ProvisioningClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.SetIamPolicy",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Provisioning_TestIamPermissions_sync",
+      "title": "apigeeregistry TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "file": "ProvisioningClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ProvisioningClient",
+          "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.TestIamPermissions",
+          "service": {
+            "shortName": "Provisioning",
+            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_CancelOperation_sync",
+      "title": "apigeeregistry CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "RegistryClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.CancelOperation",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_CreateApi_sync",
+      "title": "apigeeregistry CreateApi Sample",
+      "description": "CreateApi creates a specified API.",
+      "file": "RegistryClient/CreateApi/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateApi",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.CreateApi",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.CreateApiRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.Api",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "CreateApi",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.CreateApi",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiDeployment_sync",
+      "title": "apigeeregistry CreateApiDeployment Sample",
+      "description": "CreateApiDeployment creates a specified deployment.",
+      "file": "RegistryClient/CreateApiDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateApiDeployment",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.CreateApiDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.CreateApiDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiDeployment",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "CreateApiDeployment",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.CreateApiDeployment",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiSpec_sync",
+      "title": "apigeeregistry CreateApiSpec Sample",
+      "description": "CreateApiSpec creates a specified spec.",
+      "file": "RegistryClient/CreateApiSpec/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateApiSpec",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.CreateApiSpec",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.CreateApiSpecRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiSpec",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "CreateApiSpec",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.CreateApiSpec",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiVersion_sync",
+      "title": "apigeeregistry CreateApiVersion Sample",
+      "description": "CreateApiVersion creates a specified version.",
+      "file": "RegistryClient/CreateApiVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateApiVersion",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.CreateApiVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.CreateApiVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiVersion",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "CreateApiVersion",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.CreateApiVersion",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_CreateArtifact_sync",
+      "title": "apigeeregistry CreateArtifact Sample",
+      "description": "CreateArtifact creates a specified artifact.",
+      "file": "RegistryClient/CreateArtifact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateArtifact",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.CreateArtifact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.CreateArtifactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.Artifact",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "CreateArtifact",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.CreateArtifact",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApi_sync",
+      "title": "apigeeregistry DeleteApi Sample",
+      "description": "DeleteApi removes a specified API and all of the resources that it\nowns.",
+      "file": "RegistryClient/DeleteApi/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApi",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteApi",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteApiRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteApi",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteApi",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiDeployment_sync",
+      "title": "apigeeregistry DeleteApiDeployment Sample",
+      "description": "DeleteApiDeployment removes a specified deployment, all revisions, and all\nchild resources (e.g., artifacts).",
+      "file": "RegistryClient/DeleteApiDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApiDeployment",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteApiDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteApiDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteApiDeployment",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteApiDeployment",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiDeploymentRevision_sync",
+      "title": "apigeeregistry DeleteApiDeploymentRevision Sample",
+      "description": "DeleteApiDeploymentRevision deletes a revision of a deployment.",
+      "file": "RegistryClient/DeleteApiDeploymentRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApiDeploymentRevision",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteApiDeploymentRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteApiDeploymentRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiDeployment",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteApiDeploymentRevision",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteApiDeploymentRevision",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiSpec_sync",
+      "title": "apigeeregistry DeleteApiSpec Sample",
+      "description": "DeleteApiSpec removes a specified spec, all revisions, and all child\nresources (e.g., artifacts).",
+      "file": "RegistryClient/DeleteApiSpec/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApiSpec",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteApiSpec",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteApiSpecRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteApiSpec",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteApiSpec",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiSpecRevision_sync",
+      "title": "apigeeregistry DeleteApiSpecRevision Sample",
+      "description": "DeleteApiSpecRevision deletes a revision of a spec.",
+      "file": "RegistryClient/DeleteApiSpecRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApiSpecRevision",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteApiSpecRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteApiSpecRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiSpec",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteApiSpecRevision",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteApiSpecRevision",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiVersion_sync",
+      "title": "apigeeregistry DeleteApiVersion Sample",
+      "description": "DeleteApiVersion removes a specified version and all of the resources that\nit owns.",
+      "file": "RegistryClient/DeleteApiVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteApiVersion",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteApiVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteApiVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteApiVersion",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteApiVersion",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteArtifact_sync",
+      "title": "apigeeregistry DeleteArtifact Sample",
+      "description": "DeleteArtifact removes a specified artifact.",
+      "file": "RegistryClient/DeleteArtifact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteArtifact",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteArtifact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.DeleteArtifactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteArtifact",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteArtifact",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_DeleteOperation_sync",
+      "title": "apigeeregistry DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "RegistryClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteOperation",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetApi_sync",
+      "title": "apigeeregistry GetApi Sample",
+      "description": "GetApi returns a specified API.",
+      "file": "RegistryClient/GetApi/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetApi",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetApi",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetApiRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.Api",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetApi",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetApi",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetApiDeployment_sync",
+      "title": "apigeeregistry GetApiDeployment Sample",
+      "description": "GetApiDeployment returns a specified deployment.",
+      "file": "RegistryClient/GetApiDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetApiDeployment",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetApiDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetApiDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiDeployment",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetApiDeployment",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetApiDeployment",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetApiSpec_sync",
+      "title": "apigeeregistry GetApiSpec Sample",
+      "description": "GetApiSpec returns a specified spec.",
+      "file": "RegistryClient/GetApiSpec/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetApiSpec",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetApiSpec",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetApiSpecRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiSpec",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetApiSpec",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetApiSpec",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetApiSpecContents_sync",
+      "title": "apigeeregistry GetApiSpecContents Sample",
+      "description": "GetApiSpecContents returns the contents of a specified spec.\nIf specs are stored with GZip compression, the default behavior\nis to return the spec uncompressed (the mime_type response field\nindicates the exact format returned).",
+      "file": "RegistryClient/GetApiSpecContents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetApiSpecContents",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetApiSpecContents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetApiSpecContentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "httpbodypb.HttpBody",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetApiSpecContents",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetApiSpecContents",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetApiVersion_sync",
+      "title": "apigeeregistry GetApiVersion Sample",
+      "description": "GetApiVersion returns a specified version.",
+      "file": "RegistryClient/GetApiVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetApiVersion",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetApiVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetApiVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiVersion",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetApiVersion",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetApiVersion",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetArtifact_sync",
+      "title": "apigeeregistry GetArtifact Sample",
+      "description": "GetArtifact returns a specified artifact.",
+      "file": "RegistryClient/GetArtifact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetArtifact",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetArtifact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetArtifactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.Artifact",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetArtifact",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetArtifact",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetArtifactContents_sync",
+      "title": "apigeeregistry GetArtifactContents Sample",
+      "description": "GetArtifactContents returns the contents of a specified artifact.\nIf artifacts are stored with GZip compression, the default behavior\nis to return the artifact uncompressed (the mime_type response field\nindicates the exact format returned).",
+      "file": "RegistryClient/GetArtifactContents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetArtifactContents",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetArtifactContents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.GetArtifactContentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "httpbodypb.HttpBody",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetArtifactContents",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetArtifactContents",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetIamPolicy_sync",
+      "title": "apigeeregistry GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "RegistryClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetIamPolicy",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetLocation_sync",
+      "title": "apigeeregistry GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "RegistryClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetLocation",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_GetOperation_sync",
+      "title": "apigeeregistry GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RegistryClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetOperation",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListApiDeploymentRevisions_sync",
+      "title": "apigeeregistry ListApiDeploymentRevisions Sample",
+      "description": "ListApiDeploymentRevisions lists all revisions of a deployment.\nRevisions are returned in descending order of revision creation time.",
+      "file": "RegistryClient/ListApiDeploymentRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListApiDeploymentRevisions",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListApiDeploymentRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ListApiDeploymentRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ApiDeploymentIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListApiDeploymentRevisions",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListApiDeploymentRevisions",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListApiDeployments_sync",
+      "title": "apigeeregistry ListApiDeployments Sample",
+      "description": "ListApiDeployments returns matching deployments.",
+      "file": "RegistryClient/ListApiDeployments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListApiDeployments",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListApiDeployments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ListApiDeploymentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ApiDeploymentIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListApiDeployments",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListApiDeployments",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListApiSpecRevisions_sync",
+      "title": "apigeeregistry ListApiSpecRevisions Sample",
+      "description": "ListApiSpecRevisions lists all revisions of a spec.\nRevisions are returned in descending order of revision creation time.",
+      "file": "RegistryClient/ListApiSpecRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListApiSpecRevisions",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListApiSpecRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ListApiSpecRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ApiSpecIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListApiSpecRevisions",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListApiSpecRevisions",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListApiSpecs_sync",
+      "title": "apigeeregistry ListApiSpecs Sample",
+      "description": "ListApiSpecs returns matching specs.",
+      "file": "RegistryClient/ListApiSpecs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListApiSpecs",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListApiSpecs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ListApiSpecsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ApiSpecIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListApiSpecs",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListApiSpecs",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListApiVersions_sync",
+      "title": "apigeeregistry ListApiVersions Sample",
+      "description": "ListApiVersions returns matching versions.",
+      "file": "RegistryClient/ListApiVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListApiVersions",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListApiVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ListApiVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ApiVersionIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListApiVersions",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListApiVersions",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListApis_sync",
+      "title": "apigeeregistry ListApis Sample",
+      "description": "ListApis returns matching APIs.",
+      "file": "RegistryClient/ListApis/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListApis",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListApis",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ListApisRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ApiIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListApis",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListApis",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListArtifacts_sync",
+      "title": "apigeeregistry ListArtifacts Sample",
+      "description": "ListArtifacts returns matching artifacts.",
+      "file": "RegistryClient/ListArtifacts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListArtifacts",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListArtifacts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ListArtifactsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ArtifactIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListArtifacts",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListArtifacts",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListLocations_sync",
+      "title": "apigeeregistry ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "RegistryClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListLocations",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ListOperations_sync",
+      "title": "apigeeregistry ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "RegistryClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListOperations",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_ReplaceArtifact_sync",
+      "title": "apigeeregistry ReplaceArtifact Sample",
+      "description": "ReplaceArtifact used to replace a specified artifact.",
+      "file": "RegistryClient/ReplaceArtifact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReplaceArtifact",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.ReplaceArtifact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.ReplaceArtifactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.Artifact",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "ReplaceArtifact",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.ReplaceArtifact",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_RollbackApiDeployment_sync",
+      "title": "apigeeregistry RollbackApiDeployment Sample",
+      "description": "RollbackApiDeployment sets the current revision to a specified prior\nrevision. Note that this creates a new revision with a new revision ID.",
+      "file": "RegistryClient/RollbackApiDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RollbackApiDeployment",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.RollbackApiDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.RollbackApiDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiDeployment",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "RollbackApiDeployment",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.RollbackApiDeployment",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_RollbackApiSpec_sync",
+      "title": "apigeeregistry RollbackApiSpec Sample",
+      "description": "RollbackApiSpec sets the current revision to a specified prior revision.\nNote that this creates a new revision with a new revision ID.",
+      "file": "RegistryClient/RollbackApiSpec/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RollbackApiSpec",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.RollbackApiSpec",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.RollbackApiSpecRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiSpec",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "RollbackApiSpec",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.RollbackApiSpec",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_SetIamPolicy_sync",
+      "title": "apigeeregistry SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "file": "RegistryClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.SetIamPolicy",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_TagApiDeploymentRevision_sync",
+      "title": "apigeeregistry TagApiDeploymentRevision Sample",
+      "description": "TagApiDeploymentRevision adds a tag to a specified revision of a\ndeployment.",
+      "file": "RegistryClient/TagApiDeploymentRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TagApiDeploymentRevision",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.TagApiDeploymentRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.TagApiDeploymentRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiDeployment",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "TagApiDeploymentRevision",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.TagApiDeploymentRevision",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_TagApiSpecRevision_sync",
+      "title": "apigeeregistry TagApiSpecRevision Sample",
+      "description": "TagApiSpecRevision adds a tag to a specified revision of a spec.",
+      "file": "RegistryClient/TagApiSpecRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TagApiSpecRevision",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.TagApiSpecRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.TagApiSpecRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiSpec",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "TagApiSpecRevision",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.TagApiSpecRevision",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_TestIamPermissions_sync",
+      "title": "apigeeregistry TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "file": "RegistryClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.TestIamPermissions",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApi_sync",
+      "title": "apigeeregistry UpdateApi Sample",
+      "description": "UpdateApi used to modify a specified API.",
+      "file": "RegistryClient/UpdateApi/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateApi",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.UpdateApi",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.UpdateApiRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.Api",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateApi",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.UpdateApi",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiDeployment_sync",
+      "title": "apigeeregistry UpdateApiDeployment Sample",
+      "description": "UpdateApiDeployment used to modify a specified deployment.",
+      "file": "RegistryClient/UpdateApiDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateApiDeployment",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.UpdateApiDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.UpdateApiDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiDeployment",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateApiDeployment",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.UpdateApiDeployment",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiSpec_sync",
+      "title": "apigeeregistry UpdateApiSpec Sample",
+      "description": "UpdateApiSpec used to modify a specified spec.",
+      "file": "RegistryClient/UpdateApiSpec/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateApiSpec",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.UpdateApiSpec",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.UpdateApiSpecRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiSpec",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateApiSpec",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.UpdateApiSpec",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiVersion_sync",
+      "title": "apigeeregistry UpdateApiVersion Sample",
+      "description": "UpdateApiVersion used to modify a specified version.",
+      "file": "RegistryClient/UpdateApiVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateApiVersion",
+        "fullName": "google.cloud.apigeeregistry.v1.RegistryClient.UpdateApiVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeregistrypb.UpdateApiVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "apigeeregistrypb.ApiVersion",
+        "client": {
+          "shortName": "RegistryClient",
+          "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateApiVersion",
+          "fullName": "google.cloud.apigeeregistry.v1.Registry.UpdateApiVersion",
+          "service": {
+            "shortName": "Registry",
+            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -50,7 +50,18 @@ type TargetTcpProxiesCallOptions struct {
 	SetProxyHeader    []gax.CallOption
 }
 
-// internalTargetTcpProxiesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultTargetTcpProxiesRESTCallOptions() *TargetTcpProxiesCallOptions {
+	return &TargetTcpProxiesCallOptions{
+		Delete:            []gax.CallOption{},
+		Get:               []gax.CallOption{},
+		Insert:            []gax.CallOption{},
+		List:              []gax.CallOption{},
+		SetBackendService: []gax.CallOption{},
+		SetProxyHeader:    []gax.CallOption{},
+	}
+}
+
+// internalTargetTcpProxiesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalTargetTcpProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -92,7 +103,8 @@ func (c *TargetTcpProxiesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TargetTcpProxiesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -140,6 +152,9 @@ type targetTcpProxiesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing TargetTcpProxiesClient
+	CallOptions **TargetTcpProxiesCallOptions
 }
 
 // NewTargetTcpProxiesRESTClient creates a new target tcp proxies rest client.
@@ -152,9 +167,11 @@ func NewTargetTcpProxiesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultTargetTcpProxiesRESTCallOptions()
 	c := &targetTcpProxiesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -168,7 +185,7 @@ func NewTargetTcpProxiesRESTClient(ctx context.Context, opts ...option.ClientOpt
 	}
 	c.operationClient = opC
 
-	return &TargetTcpProxiesClient{internalClient: c, CallOptions: &TargetTcpProxiesCallOptions{}}, nil
+	return &TargetTcpProxiesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultTargetTcpProxiesRESTClientOptions() []option.ClientOption {
@@ -202,7 +219,7 @@ func (c *targetTcpProxiesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *targetTcpProxiesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -226,6 +243,7 @@ func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_tcp_proxy", url.QueryEscape(req.GetTargetTcpProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -285,6 +303,7 @@ func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_tcp_proxy", url.QueryEscape(req.GetTargetTcpProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetTcpProxy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -351,6 +370,7 @@ func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -520,6 +540,7 @@ func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_tcp_proxy", url.QueryEscape(req.GetTargetTcpProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetBackendService[0:len((*c.CallOptions).SetBackendService):len((*c.CallOptions).SetBackendService)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -593,6 +614,7 @@ func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_tcp_proxy", url.QueryEscape(req.GetTargetTcpProxy())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetProxyHeader[0:len((*c.CallOptions).SetProxyHeader):len((*c.CallOptions).SetProxyHeader)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -638,51 +660,4 @@ func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 		},
 	}
 	return op, nil
-}
-
-// TargetTcpProxyIterator manages a stream of *computepb.TargetTcpProxy.
-type TargetTcpProxyIterator struct {
-	items    []*computepb.TargetTcpProxy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetTcpProxy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TargetTcpProxyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TargetTcpProxyIterator) Next() (*computepb.TargetTcpProxy, error) {
-	var item *computepb.TargetTcpProxy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TargetTcpProxyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TargetTcpProxyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

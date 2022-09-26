@@ -61,6 +61,7 @@ type ClusterManagerCallOptions struct {
 	GetNodePool             []gax.CallOption
 	CreateNodePool          []gax.CallOption
 	DeleteNodePool          []gax.CallOption
+	CompleteNodePoolUpgrade []gax.CallOption
 	RollbackNodePoolUpgrade []gax.CallOption
 	SetNodePoolManagement   []gax.CallOption
 	SetLabels               []gax.CallOption
@@ -208,6 +209,7 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 				})
 			}),
 		},
+		CompleteNodePoolUpgrade: []gax.CallOption{},
 		RollbackNodePoolUpgrade: []gax.CallOption{},
 		SetNodePoolManagement:   []gax.CallOption{},
 		SetLabels:               []gax.CallOption{},
@@ -221,7 +223,7 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 	}
 }
 
-// internalClusterManagerClient is an interface that defines the methods availaible from Kubernetes Engine API.
+// internalClusterManagerClient is an interface that defines the methods available from Kubernetes Engine API.
 type internalClusterManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -248,6 +250,7 @@ type internalClusterManagerClient interface {
 	GetNodePool(context.Context, *containerpb.GetNodePoolRequest, ...gax.CallOption) (*containerpb.NodePool, error)
 	CreateNodePool(context.Context, *containerpb.CreateNodePoolRequest, ...gax.CallOption) (*containerpb.Operation, error)
 	DeleteNodePool(context.Context, *containerpb.DeleteNodePoolRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	CompleteNodePoolUpgrade(context.Context, *containerpb.CompleteNodePoolUpgradeRequest, ...gax.CallOption) error
 	RollbackNodePoolUpgrade(context.Context, *containerpb.RollbackNodePoolUpgradeRequest, ...gax.CallOption) (*containerpb.Operation, error)
 	SetNodePoolManagement(context.Context, *containerpb.SetNodePoolManagementRequest, ...gax.CallOption) (*containerpb.Operation, error)
 	SetLabels(context.Context, *containerpb.SetLabelsRequest, ...gax.CallOption) (*containerpb.Operation, error)
@@ -289,7 +292,8 @@ func (c *ClusterManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ClusterManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -436,6 +440,12 @@ func (c *ClusterManagerClient) DeleteNodePool(ctx context.Context, req *containe
 	return c.internalClient.DeleteNodePool(ctx, req, opts...)
 }
 
+// CompleteNodePoolUpgrade completeNodePoolUpgrade will signal an on-going node pool upgrade to
+// complete.
+func (c *ClusterManagerClient) CompleteNodePoolUpgrade(ctx context.Context, req *containerpb.CompleteNodePoolUpgradeRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CompleteNodePoolUpgrade(ctx, req, opts...)
+}
+
 // RollbackNodePoolUpgrade rolls back a previously Aborted or Failed NodePool upgrade.
 // This makes no changes if the last upgrade successfully completed.
 func (c *ClusterManagerClient) RollbackNodePoolUpgrade(ctx context.Context, req *containerpb.RollbackNodePoolUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
@@ -549,7 +559,8 @@ func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *clusterManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -1042,6 +1053,19 @@ func (c *clusterManagerGRPCClient) DeleteNodePool(ctx context.Context, req *cont
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) CompleteNodePoolUpgrade(ctx context.Context, req *containerpb.CompleteNodePoolUpgradeRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CompleteNodePoolUpgrade[0:len((*c.CallOptions).CompleteNodePoolUpgrade):len((*c.CallOptions).CompleteNodePoolUpgrade)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.clusterManagerClient.CompleteNodePoolUpgrade(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *clusterManagerGRPCClient) RollbackNodePoolUpgrade(ctx context.Context, req *containerpb.RollbackNodePoolUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {

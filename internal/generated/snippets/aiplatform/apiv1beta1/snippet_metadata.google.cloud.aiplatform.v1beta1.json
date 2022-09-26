@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.11.0",
+    "version": "1.21.0",
     "language": "GO",
     "apis": [
       {
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -740,7 +740,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DatasetService_ListSavedQueries_sync",
+      "title": "aiplatform ListSavedQueries Sample",
+      "description": "ListSavedQueries lists SavedQueries in a Dataset.",
+      "file": "DatasetClient/ListSavedQueries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSavedQueries",
+        "fullName": "google.cloud.aiplatform.v1beta1.DatasetClient.ListSavedQueries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListSavedQueriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SavedQueryIterator",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DatasetClient"
+        },
+        "method": {
+          "shortName": "ListSavedQueries",
+          "fullName": "google.cloud.aiplatform.v1beta1.DatasetService.ListSavedQueries",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -786,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -832,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -878,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -924,7 +970,695 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentResourcePoolClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.CancelOperation",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_CreateDeploymentResourcePool_sync",
+      "title": "aiplatform CreateDeploymentResourcePool Sample",
+      "description": "CreateDeploymentResourcePool create a DeploymentResourcePool.",
+      "file": "DeploymentResourcePoolClient/CreateDeploymentResourcePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeploymentResourcePool",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.CreateDeploymentResourcePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateDeploymentResourcePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDeploymentResourcePoolOperation",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "CreateDeploymentResourcePool",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.CreateDeploymentResourcePool",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_DeleteDeploymentResourcePool_sync",
+      "title": "aiplatform DeleteDeploymentResourcePool Sample",
+      "description": "DeleteDeploymentResourcePool delete a DeploymentResourcePool.",
+      "file": "DeploymentResourcePoolClient/DeleteDeploymentResourcePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDeploymentResourcePool",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.DeleteDeploymentResourcePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteDeploymentResourcePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDeploymentResourcePoolOperation",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "DeleteDeploymentResourcePool",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.DeleteDeploymentResourcePool",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentResourcePoolClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.DeleteOperation",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_GetDeploymentResourcePool_sync",
+      "title": "aiplatform GetDeploymentResourcePool Sample",
+      "description": "GetDeploymentResourcePool get a DeploymentResourcePool.",
+      "file": "DeploymentResourcePoolClient/GetDeploymentResourcePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeploymentResourcePool",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.GetDeploymentResourcePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetDeploymentResourcePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.DeploymentResourcePool",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "GetDeploymentResourcePool",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.GetDeploymentResourcePool",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "DeploymentResourcePoolClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.GetIamPolicy",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DeploymentResourcePoolClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.GetLocation",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentResourcePoolClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.GetOperation",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_ListDeploymentResourcePools_sync",
+      "title": "aiplatform ListDeploymentResourcePools Sample",
+      "description": "ListDeploymentResourcePools list DeploymentResourcePools in a location.",
+      "file": "DeploymentResourcePoolClient/ListDeploymentResourcePools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeploymentResourcePools",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.ListDeploymentResourcePools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListDeploymentResourcePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeploymentResourcePoolIterator",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "ListDeploymentResourcePools",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.ListDeploymentResourcePools",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DeploymentResourcePoolClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.ListLocations",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentResourcePoolClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.ListOperations",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_QueryDeployedModels_sync",
+      "title": "aiplatform QueryDeployedModels Sample",
+      "description": "QueryDeployedModels list DeployedModels that have been deployed on this DeploymentResourcePool.",
+      "file": "DeploymentResourcePoolClient/QueryDeployedModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryDeployedModels",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.QueryDeployedModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.QueryDeployedModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeployedModelIterator",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "QueryDeployedModels",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.QueryDeployedModels",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "file": "DeploymentResourcePoolClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.SetIamPolicy",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "file": "DeploymentResourcePoolClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.TestIamPermissions",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "DeploymentResourcePoolClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService.WaitOperation",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -969,7 +1703,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1015,7 +1749,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1061,7 +1795,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -1106,7 +1840,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1152,7 +1886,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1198,7 +1932,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1244,7 +1978,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1290,7 +2024,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1336,7 +2070,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1382,7 +2116,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1428,7 +2162,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1474,7 +2208,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1520,7 +2254,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1566,7 +2300,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1612,7 +2346,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1658,7 +2392,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1704,7 +2438,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1750,7 +2484,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1796,7 +2530,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1841,7 +2575,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1887,7 +2621,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1933,7 +2667,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1979,7 +2713,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2025,7 +2759,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -2071,7 +2805,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeaturestoreService_DeleteFeatureValues_sync",
+      "title": "aiplatform DeleteFeatureValues Sample",
+      "description": "DeleteFeatureValues delete Feature values from Featurestore.\n\nThe progress of the deletion is tracked by the returned operation. The\ndeleted feature values are guaranteed to be invisible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf a delete feature values operation fails, the feature values\nreturned from reads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same delete request again and wait till\nthe new operation returned is marked as successfully done.",
+      "file": "FeaturestoreClient/DeleteFeatureValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFeatureValues",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreClient.DeleteFeatureValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteFeatureValuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFeatureValuesOperation",
+        "client": {
+          "shortName": "FeaturestoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreClient"
+        },
+        "method": {
+          "shortName": "DeleteFeatureValues",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreService.DeleteFeatureValues",
+          "service": {
+            "shortName": "FeaturestoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2117,7 +2897,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -2162,7 +2942,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -2208,7 +2988,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2254,7 +3034,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2300,7 +3080,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2346,7 +3126,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2392,7 +3172,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2438,7 +3218,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2484,7 +3264,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2492,7 +3272,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_FeaturestoreService_ImportFeatureValues_sync",
       "title": "aiplatform ImportFeatureValues Sample",
-      "description": "ImportFeatureValues imports Feature values into the Featurestore from a source storage.\n\nThe progress of the import is tracked by the returned operation. The\nimported features are guaranteed to be visible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf an import operation fails, the Feature values returned from\nreads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same import request again and wait till\nthe new operation returned is marked as successfully done.\n\nThere are also scenarios where the caller can cause inconsistency.\n\n  Source data for import contains multiple distinct Feature values for\n  the same entity ID and timestamp.\n\n  Source is modified during an import. This includes adding, updating, or\n  removing source data and/or metadata. Examples of updating metadata\n  include but are not limited to changing storage location, storage class,\n  or retention policy.\n\n  Online serving cluster is under-provisioned.",
+      "description": "ImportFeatureValues imports Feature values into the Featurestore from a source storage.\n\nThe progress of the import is tracked by the returned operation. The\nimported features are guaranteed to be visible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf an import operation fails, the Feature values returned from\nreads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same import request again and wait till\nthe new operation returned is marked as successfully done.\n\nThere are also scenarios where the caller can cause inconsistency.\n\n\tSource data for import contains multiple distinct Feature values for\n\tthe same entity ID and timestamp.\n\n\tSource is modified during an import. This includes adding, updating, or\n\tremoving source data and/or metadata. Examples of updating metadata\n\tinclude but are not limited to changing storage location, storage class,\n\tor retention policy.\n\n\tOnline serving cluster is under-provisioned.",
       "file": "FeaturestoreClient/ImportFeatureValues/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2530,7 +3310,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2576,7 +3356,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2622,7 +3402,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2668,7 +3448,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2714,7 +3494,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2760,7 +3540,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2806,7 +3586,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2852,7 +3632,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2898,7 +3678,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2944,7 +3724,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2990,7 +3770,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3036,7 +3816,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -3082,7 +3862,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3127,7 +3907,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -3172,7 +3952,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -3218,7 +3998,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3264,7 +4044,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3310,7 +4090,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3356,7 +4136,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3402,7 +4182,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3448,7 +4228,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3494,7 +4274,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3585,7 +4365,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3631,7 +4411,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeaturestoreOnlineServingService_WriteFeatureValues_sync",
+      "title": "aiplatform WriteFeatureValues Sample",
+      "description": "WriteFeatureValues writes Feature values of one or more entities of an EntityType.\n\nThe Feature values are merged into existing entities if any. The Feature\nvalues to be written must have timestamp within the online storage\nretention.",
+      "file": "FeaturestoreOnlineServingClient/WriteFeatureValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WriteFeatureValues",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingClient.WriteFeatureValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.WriteFeatureValuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.WriteFeatureValuesResponse",
+        "client": {
+          "shortName": "FeaturestoreOnlineServingClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingClient"
+        },
+        "method": {
+          "shortName": "WriteFeatureValues",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingService.WriteFeatureValues",
+          "service": {
+            "shortName": "FeaturestoreOnlineServingService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeaturestoreOnlineServingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3676,7 +4502,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -3722,7 +4548,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -3768,7 +4594,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -3813,7 +4639,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -3859,7 +4685,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3905,7 +4731,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3951,7 +4777,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3997,7 +4823,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4043,7 +4869,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4089,7 +4915,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4135,7 +4961,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_IndexService_RemoveDatapoints_sync",
+      "title": "aiplatform RemoveDatapoints Sample",
+      "description": "RemoveDatapoints remove Datapoints from an Index.",
+      "file": "IndexClient/RemoveDatapoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveDatapoints",
+        "fullName": "google.cloud.aiplatform.v1beta1.IndexClient.RemoveDatapoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RemoveDatapointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.RemoveDatapointsResponse",
+        "client": {
+          "shortName": "IndexClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.IndexClient"
+        },
+        "method": {
+          "shortName": "RemoveDatapoints",
+          "fullName": "google.cloud.aiplatform.v1beta1.IndexService.RemoveDatapoints",
+          "service": {
+            "shortName": "IndexService",
+            "fullName": "google.cloud.aiplatform.v1beta1.IndexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4181,7 +5053,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4227,7 +5099,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4263,6 +5135,52 @@
         "method": {
           "shortName": "UpdateIndex",
           "fullName": "google.cloud.aiplatform.v1beta1.IndexService.UpdateIndex",
+          "service": {
+            "shortName": "IndexService",
+            "fullName": "google.cloud.aiplatform.v1beta1.IndexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_IndexService_UpsertDatapoints_sync",
+      "title": "aiplatform UpsertDatapoints Sample",
+      "description": "UpsertDatapoints add/update Datapoints into an Index.",
+      "file": "IndexClient/UpsertDatapoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpsertDatapoints",
+        "fullName": "google.cloud.aiplatform.v1beta1.IndexClient.UpsertDatapoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpsertDatapointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.UpsertDatapointsResponse",
+        "client": {
+          "shortName": "IndexClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.IndexClient"
+        },
+        "method": {
+          "shortName": "UpsertDatapoints",
+          "fullName": "google.cloud.aiplatform.v1beta1.IndexService.UpsertDatapoints",
           "service": {
             "shortName": "IndexService",
             "fullName": "google.cloud.aiplatform.v1beta1.IndexService"
@@ -4319,7 +5237,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4364,7 +5282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -4410,7 +5328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -4456,7 +5374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -4501,7 +5419,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -4547,7 +5465,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -4593,7 +5511,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4639,7 +5557,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4685,7 +5603,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4731,7 +5649,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4777,7 +5695,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4823,7 +5741,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4869,7 +5787,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4915,7 +5833,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -4961,7 +5879,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5007,7 +5925,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5053,7 +5971,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -5099,7 +6017,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5145,7 +6063,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5190,7 +6108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5235,7 +6153,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5280,7 +6198,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5325,7 +6243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5370,7 +6288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5416,7 +6334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5462,7 +6380,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5508,7 +6426,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5554,7 +6472,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5600,7 +6518,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5646,7 +6564,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -5692,7 +6610,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -5738,7 +6656,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -5784,7 +6702,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -5830,7 +6748,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -5875,7 +6793,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5921,7 +6839,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5967,7 +6885,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6013,7 +6931,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6059,7 +6977,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6105,7 +7023,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6151,7 +7069,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6197,7 +7115,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6243,7 +7161,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6289,7 +7207,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6335,7 +7253,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6381,7 +7299,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6427,7 +7345,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6473,7 +7391,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6519,7 +7437,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6565,7 +7483,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6610,7 +7528,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -6655,7 +7573,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -6701,7 +7619,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6747,7 +7665,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6793,7 +7711,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6839,7 +7757,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -6885,7 +7803,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6931,7 +7849,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6977,7 +7895,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7023,7 +7941,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7068,7 +7986,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -7114,7 +8032,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7160,7 +8078,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7206,7 +8124,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7252,7 +8170,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7298,7 +8216,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -7344,7 +8262,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -7390,7 +8308,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -7436,7 +8354,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -7482,7 +8400,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -7527,7 +8445,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -7573,7 +8491,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7619,7 +8537,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7665,7 +8583,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7711,7 +8629,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7757,7 +8675,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7803,7 +8721,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7849,7 +8767,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7895,7 +8813,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7941,7 +8859,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7987,7 +8905,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8033,7 +8951,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8079,7 +8997,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8125,7 +9043,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8171,7 +9089,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8217,7 +9135,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8263,7 +9181,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -8309,7 +9227,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -8355,7 +9273,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -8401,7 +9319,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8447,7 +9365,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8493,7 +9411,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8539,7 +9457,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8585,7 +9503,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8631,7 +9549,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8677,7 +9595,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8723,7 +9641,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8769,7 +9687,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8815,7 +9733,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -8860,7 +9778,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -8905,7 +9823,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -8951,7 +9869,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8997,7 +9915,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9043,7 +9961,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9089,7 +10007,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -9135,7 +10053,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -9181,7 +10099,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -9227,7 +10145,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9273,7 +10191,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9319,7 +10237,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelService_BatchImportModelEvaluationSlices_sync",
+      "title": "aiplatform BatchImportModelEvaluationSlices Sample",
+      "description": "BatchImportModelEvaluationSlices imports a list of externally generated ModelEvaluationSlice.",
+      "file": "ModelClient/BatchImportModelEvaluationSlices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchImportModelEvaluationSlices",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelClient.BatchImportModelEvaluationSlices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchImportModelEvaluationSlicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.BatchImportModelEvaluationSlicesResponse",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelClient"
+        },
+        "method": {
+          "shortName": "BatchImportModelEvaluationSlices",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelService.BatchImportModelEvaluationSlices",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9364,7 +10328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -9410,7 +10374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -9456,7 +10420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -9501,7 +10465,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -9547,7 +10511,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -9593,7 +10557,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9639,7 +10603,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9685,7 +10649,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9731,7 +10695,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9777,7 +10741,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9823,7 +10787,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9869,7 +10833,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9915,7 +10879,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -9961,7 +10925,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -10007,7 +10971,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -10053,7 +11017,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -10099,7 +11063,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -10145,7 +11109,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -10191,7 +11155,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10237,7 +11201,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10283,7 +11247,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10329,7 +11293,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -10375,7 +11339,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10421,7 +11385,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -10467,7 +11431,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10512,7 +11476,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -10557,7 +11521,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -10602,7 +11566,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -10648,7 +11612,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10694,7 +11658,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10739,7 +11703,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -10785,7 +11749,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -10831,7 +11795,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -10877,7 +11841,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10923,7 +11887,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10969,7 +11933,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11015,7 +11979,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11061,7 +12025,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11107,7 +12071,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -11153,7 +12117,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -11199,7 +12163,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -11245,7 +12209,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -11291,7 +12255,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11337,7 +12301,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11383,7 +12347,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11428,7 +12392,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -11473,7 +12437,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -11519,7 +12483,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11565,7 +12529,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11611,7 +12575,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11657,7 +12621,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11703,7 +12667,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -11749,7 +12713,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -11795,7 +12759,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11803,7 +12767,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_RawPredict_sync",
       "title": "aiplatform RawPredict Sample",
-      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n  X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this\n  prediction.\n\n  X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel\n  that served this prediction.",
+      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n\tX-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this\n\tprediction.\n\n\tX-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel\n\tthat served this prediction.",
       "file": "PredictionClient/RawPredict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11841,7 +12805,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11887,7 +12851,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11933,7 +12897,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11979,7 +12943,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12024,7 +12988,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -12070,7 +13034,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -12115,7 +13079,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -12161,7 +13125,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -12207,7 +13171,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12253,7 +13217,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12299,7 +13263,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12345,7 +13309,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12391,7 +13355,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -12437,7 +13401,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -12483,7 +13447,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -12529,7 +13493,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12575,7 +13539,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12621,7 +13585,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -12667,7 +13631,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12713,7 +13677,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12759,7 +13723,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12805,7 +13769,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12850,7 +13814,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -12896,7 +13860,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -12942,7 +13906,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12988,7 +13952,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13034,7 +13998,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13079,7 +14043,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -13125,7 +14089,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -13171,7 +14135,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -13217,7 +14181,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -13263,7 +14227,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -13309,7 +14273,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -13355,7 +14319,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13401,7 +14365,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13447,7 +14411,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13493,7 +14457,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13539,7 +14503,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13585,7 +14549,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13631,7 +14595,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13677,7 +14641,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -13723,7 +14687,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -13769,7 +14733,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -13815,7 +14779,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -13861,7 +14825,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -13907,7 +14871,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -13998,7 +14962,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14044,7 +15008,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14090,7 +15054,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14136,7 +15100,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -14182,7 +15146,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14228,7 +15192,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14274,7 +15238,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14320,7 +15284,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14366,7 +15330,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14412,7 +15376,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14458,7 +15422,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14503,7 +15467,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -14549,7 +15513,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -14595,7 +15559,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14641,7 +15605,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14687,7 +15651,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14732,7 +15696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -14777,7 +15741,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -14822,7 +15786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -14868,7 +15832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14914,7 +15878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14960,7 +15924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15006,7 +15970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15052,7 +16016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15098,7 +16062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -15144,7 +16108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -15190,7 +16154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15236,7 +16200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -15282,7 +16246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -15328,7 +16292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15374,7 +16338,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15420,7 +16384,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15466,7 +16430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -15512,7 +16476,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -15558,7 +16522,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]

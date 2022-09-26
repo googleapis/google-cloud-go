@@ -1,5 +1,50 @@
 # Changes
 
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.1.0...talent/v1.2.0) (2022-09-21)
+
+
+### Features
+
+* **talent:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.0.0...talent/v1.1.0) (2022-09-19)
+
+
+### Features
+
+* **talent:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.9.0...talent/v1.0.0) (2022-07-12)
+
+
+### Features
+
+* **talent:** promote to GA ([#6293](https://github.com/googleapis/google-cloud-go/issues/6293)) ([c0a0c20](https://github.com/googleapis/google-cloud-go/commit/c0a0c2078c0cf0e7859130e1104d4fd8f04d8b01))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.8.0...talent/v0.9.0) (2022-06-29)
+
+
+### Features
+
+* **talent:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.7.0...talent/v0.8.0) (2022-06-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **talent:** remove Application and Profile services and and related protos, enums, and messages
+
+### Bug Fixes
+
+* **talent:** remove Application and Profile services and and related protos, enums, and messages ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
+
+### Miscellaneous Chores
+
+* **talent:** release v0.8.0 ([#6203](https://github.com/googleapis/google-cloud-go/issues/6203)) ([dee0ec2](https://github.com/googleapis/google-cloud-go/commit/dee0ec28c7d01bde3850fa0356ffd9fa9d595ddb))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.6.0...talent/v0.7.0) (2022-06-07)
 
 

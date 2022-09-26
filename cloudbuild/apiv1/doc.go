@@ -17,10 +17,9 @@
 // Package cloudbuild is an auto-generated package for the
 // Cloud Build API.
 
-//
 // Creates and manages builds on Google Cloud Platform.
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.

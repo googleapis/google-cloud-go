@@ -47,7 +47,15 @@ type AcceleratorTypesCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalAcceleratorTypesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultAcceleratorTypesRESTCallOptions() *AcceleratorTypesCallOptions {
+	return &AcceleratorTypesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalAcceleratorTypesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalAcceleratorTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -60,7 +68,7 @@ type internalAcceleratorTypesClient interface {
 // AcceleratorTypesClient is a client for interacting with Google Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 type AcceleratorTypesClient struct {
@@ -88,7 +96,8 @@ func (c *AcceleratorTypesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AcceleratorTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -118,11 +127,14 @@ type acceleratorTypesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing AcceleratorTypesClient
+	CallOptions **AcceleratorTypesCallOptions
 }
 
 // NewAcceleratorTypesRESTClient creates a new accelerator types rest client.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AcceleratorTypesClient, error) {
@@ -132,13 +144,15 @@ func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultAcceleratorTypesRESTCallOptions()
 	c := &acceleratorTypesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &AcceleratorTypesClient{internalClient: c, CallOptions: &AcceleratorTypesCallOptions{}}, nil
+	return &AcceleratorTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultAcceleratorTypesRESTClientOptions() []option.ClientOption {
@@ -169,7 +183,7 @@ func (c *acceleratorTypesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *acceleratorTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -292,6 +306,7 @@ func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "accelerator_type", url.QueryEscape(req.GetAcceleratorType())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.AcceleratorType{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

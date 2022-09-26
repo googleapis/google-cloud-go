@@ -52,7 +52,19 @@ type PacketMirroringsCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalPacketMirroringsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultPacketMirroringsRESTCallOptions() *PacketMirroringsCallOptions {
+	return &PacketMirroringsCallOptions{
+		AggregatedList:     []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		Patch:              []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalPacketMirroringsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalPacketMirroringsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -95,7 +107,8 @@ func (c *PacketMirroringsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PacketMirroringsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -148,6 +161,9 @@ type packetMirroringsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing PacketMirroringsClient
+	CallOptions **PacketMirroringsCallOptions
 }
 
 // NewPacketMirroringsRESTClient creates a new packet mirrorings rest client.
@@ -160,9 +176,11 @@ func NewPacketMirroringsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultPacketMirroringsRESTCallOptions()
 	c := &packetMirroringsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -176,7 +194,7 @@ func NewPacketMirroringsRESTClient(ctx context.Context, opts ...option.ClientOpt
 	}
 	c.operationClient = opC
 
-	return &PacketMirroringsClient{internalClient: c, CallOptions: &PacketMirroringsCallOptions{}}, nil
+	return &PacketMirroringsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultPacketMirroringsRESTClientOptions() []option.ClientOption {
@@ -210,7 +228,7 @@ func (c *packetMirroringsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *packetMirroringsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -340,6 +358,7 @@ func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "packet_mirroring", url.QueryEscape(req.GetPacketMirroring())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -400,6 +419,7 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "packet_mirroring", url.QueryEscape(req.GetPacketMirroring())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.PacketMirroring{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -466,6 +486,7 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -636,6 +657,7 @@ func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.P
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "packet_mirroring", url.QueryEscape(req.GetPacketMirroring())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -703,6 +725,7 @@ func (c *packetMirroringsRESTClient) TestIamPermissions(ctx context.Context, req
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

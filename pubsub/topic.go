@@ -512,11 +512,12 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // A PublishResult holds the result from a call to Publish.
 //
 // Call Get to obtain the result of the Publish call. Example:
-//   // Get blocks until Publish completes or ctx is done.
-//   id, err := r.Get(ctx)
-//   if err != nil {
-//       // TODO: Handle error.
-//   }
+//
+//	// Get blocks until Publish completes or ctx is done.
+//	id, err := r.Get(ctx)
+//	if err != nil {
+//	    // TODO: Handle error.
+//	}
 type PublishResult = ipubsub.PublishResult
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and
@@ -529,6 +530,11 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
+	if err != nil {
+		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
+	}
+
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
@@ -557,7 +563,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		return r
 	}
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
+	err = t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
 	if err != nil {
 		fmt.Printf("got err: %v\n", err)
 		t.scheduler.Pause(msg.OrderingKey)
@@ -651,7 +657,7 @@ func (t *Topic) initBundler() {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
 	}
 
-	t.flowController = newFlowController(fcs)
+	t.flowController = newTopicFlowController(fcs)
 
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {

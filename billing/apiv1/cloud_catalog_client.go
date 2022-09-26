@@ -60,7 +60,7 @@ func defaultCloudCatalogCallOptions() *CloudCatalogCallOptions {
 	}
 }
 
-// internalCloudCatalogClient is an interface that defines the methods availaible from Cloud Billing API.
+// internalCloudCatalogClient is an interface that defines the methods available from Cloud Billing API.
 type internalCloudCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -100,7 +100,8 @@ func (c *CloudCatalogClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudCatalogClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -177,7 +178,8 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudCatalogGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

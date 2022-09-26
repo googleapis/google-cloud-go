@@ -216,7 +216,7 @@ func defaultTestCasesCallOptions() *TestCasesCallOptions {
 	}
 }
 
-// internalTestCasesClient is an interface that defines the methods availaible from Dialogflow API.
+// internalTestCasesClient is an interface that defines the methods available from Dialogflow API.
 type internalTestCasesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -279,7 +279,8 @@ func (c *TestCasesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TestCasesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -315,9 +316,9 @@ func (c *TestCasesClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTe
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: RunTestCaseMetadata
+//	metadata: RunTestCaseMetadata
 //
-//   response: RunTestCaseResponse
+//	response: RunTestCaseResponse
 func (c *TestCasesClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
 	return c.internalClient.RunTestCase(ctx, req, opts...)
 }
@@ -334,9 +335,9 @@ func (c *TestCasesClient) RunTestCaseOperation(name string) *RunTestCaseOperatio
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: BatchRunTestCasesMetadata
+//	metadata: BatchRunTestCasesMetadata
 //
-//   response: BatchRunTestCasesResponse
+//	response: BatchRunTestCasesResponse
 func (c *TestCasesClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
 	return c.internalClient.BatchRunTestCases(ctx, req, opts...)
 }
@@ -360,9 +361,9 @@ func (c *TestCasesClient) CalculateCoverage(ctx context.Context, req *cxpb.Calcu
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: ImportTestCasesMetadata
+//	metadata: ImportTestCasesMetadata
 //
-//   response: ImportTestCasesResponse
+//	response: ImportTestCasesResponse
 func (c *TestCasesClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
 	return c.internalClient.ImportTestCases(ctx, req, opts...)
 }
@@ -380,9 +381,9 @@ func (c *TestCasesClient) ImportTestCasesOperation(name string) *ImportTestCases
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: ExportTestCasesMetadata
+//	metadata: ExportTestCasesMetadata
 //
-//   response: ExportTestCasesResponse
+//	response: ExportTestCasesResponse
 func (c *TestCasesClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
 	return c.internalClient.ExportTestCases(ctx, req, opts...)
 }
@@ -511,7 +512,8 @@ func NewTestCasesClient(ctx context.Context, opts ...option.ClientOption) (*Test
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *testCasesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -846,7 +848,9 @@ func (c *testCasesGRPCClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 }
 
 func (c *testCasesGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -861,7 +865,9 @@ func (c *testCasesGRPCClient) GetLocation(ctx context.Context, req *locationpb.G
 }
 
 func (c *testCasesGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -904,7 +910,9 @@ func (c *testCasesGRPCClient) ListLocations(ctx context.Context, req *locationpb
 }
 
 func (c *testCasesGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -915,7 +923,9 @@ func (c *testCasesGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 }
 
 func (c *testCasesGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -930,7 +940,9 @@ func (c *testCasesGRPCClient) GetOperation(ctx context.Context, req *longrunning
 }
 
 func (c *testCasesGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

@@ -73,7 +73,7 @@ func defaultIdentityAwareProxyOAuthCallOptions() *IdentityAwareProxyOAuthCallOpt
 	}
 }
 
-// internalIdentityAwareProxyOAuthClient is an interface that defines the methods availaible from Cloud Identity-Aware Proxy API.
+// internalIdentityAwareProxyOAuthClient is an interface that defines the methods available from Cloud Identity-Aware Proxy API.
 type internalIdentityAwareProxyOAuthClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -119,7 +119,8 @@ func (c *IdentityAwareProxyOAuthClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IdentityAwareProxyOAuthClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -239,7 +240,8 @@ func NewIdentityAwareProxyOAuthClient(ctx context.Context, opts ...option.Client
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *identityAwareProxyOAuthGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

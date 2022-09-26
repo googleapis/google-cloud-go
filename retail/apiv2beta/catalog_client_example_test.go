@@ -20,13 +20,36 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2beta"
+	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2beta"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewCatalogClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCatalogRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewCatalogRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +61,11 @@ func ExampleNewCatalogClient() {
 
 func ExampleCatalogClient_ListCatalogs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +74,7 @@ func ExampleCatalogClient_ListCatalogs() {
 
 	req := &retailpb.ListCatalogsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#ListCatalogsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#ListCatalogsRequest.
 	}
 	it := c.ListCatalogs(ctx, req)
 	for {
@@ -64,6 +92,11 @@ func ExampleCatalogClient_ListCatalogs() {
 
 func ExampleCatalogClient_UpdateCatalog() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +105,7 @@ func ExampleCatalogClient_UpdateCatalog() {
 
 	req := &retailpb.UpdateCatalogRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#UpdateCatalogRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#UpdateCatalogRequest.
 	}
 	resp, err := c.UpdateCatalog(ctx, req)
 	if err != nil {
@@ -84,6 +117,11 @@ func ExampleCatalogClient_UpdateCatalog() {
 
 func ExampleCatalogClient_SetDefaultBranch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +130,7 @@ func ExampleCatalogClient_SetDefaultBranch() {
 
 	req := &retailpb.SetDefaultBranchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#SetDefaultBranchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#SetDefaultBranchRequest.
 	}
 	err = c.SetDefaultBranch(ctx, req)
 	if err != nil {
@@ -102,6 +140,11 @@ func ExampleCatalogClient_SetDefaultBranch() {
 
 func ExampleCatalogClient_GetDefaultBranch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,7 +153,7 @@ func ExampleCatalogClient_GetDefaultBranch() {
 
 	req := &retailpb.GetDefaultBranchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#GetDefaultBranchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#GetDefaultBranchRequest.
 	}
 	resp, err := c.GetDefaultBranch(ctx, req)
 	if err != nil {
@@ -122,6 +165,11 @@ func ExampleCatalogClient_GetDefaultBranch() {
 
 func ExampleCatalogClient_GetCompletionConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,7 +178,7 @@ func ExampleCatalogClient_GetCompletionConfig() {
 
 	req := &retailpb.GetCompletionConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#GetCompletionConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#GetCompletionConfigRequest.
 	}
 	resp, err := c.GetCompletionConfig(ctx, req)
 	if err != nil {
@@ -142,6 +190,11 @@ func ExampleCatalogClient_GetCompletionConfig() {
 
 func ExampleCatalogClient_UpdateCompletionConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,7 +203,7 @@ func ExampleCatalogClient_UpdateCompletionConfig() {
 
 	req := &retailpb.UpdateCompletionConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#UpdateCompletionConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#UpdateCompletionConfigRequest.
 	}
 	resp, err := c.UpdateCompletionConfig(ctx, req)
 	if err != nil {
@@ -162,6 +215,11 @@ func ExampleCatalogClient_UpdateCompletionConfig() {
 
 func ExampleCatalogClient_GetAttributesConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,7 +228,7 @@ func ExampleCatalogClient_GetAttributesConfig() {
 
 	req := &retailpb.GetAttributesConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#GetAttributesConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#GetAttributesConfigRequest.
 	}
 	resp, err := c.GetAttributesConfig(ctx, req)
 	if err != nil {
@@ -182,6 +240,11 @@ func ExampleCatalogClient_GetAttributesConfig() {
 
 func ExampleCatalogClient_UpdateAttributesConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,7 +253,7 @@ func ExampleCatalogClient_UpdateAttributesConfig() {
 
 	req := &retailpb.UpdateAttributesConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#UpdateAttributesConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#UpdateAttributesConfigRequest.
 	}
 	resp, err := c.UpdateAttributesConfig(ctx, req)
 	if err != nil {
@@ -202,6 +265,11 @@ func ExampleCatalogClient_UpdateAttributesConfig() {
 
 func ExampleCatalogClient_AddCatalogAttribute() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -210,7 +278,7 @@ func ExampleCatalogClient_AddCatalogAttribute() {
 
 	req := &retailpb.AddCatalogAttributeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#AddCatalogAttributeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#AddCatalogAttributeRequest.
 	}
 	resp, err := c.AddCatalogAttribute(ctx, req)
 	if err != nil {
@@ -222,6 +290,11 @@ func ExampleCatalogClient_AddCatalogAttribute() {
 
 func ExampleCatalogClient_RemoveCatalogAttribute() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,7 +303,7 @@ func ExampleCatalogClient_RemoveCatalogAttribute() {
 
 	req := &retailpb.RemoveCatalogAttributeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#RemoveCatalogAttributeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#RemoveCatalogAttributeRequest.
 	}
 	resp, err := c.RemoveCatalogAttribute(ctx, req)
 	if err != nil {
@@ -240,8 +313,38 @@ func ExampleCatalogClient_RemoveCatalogAttribute() {
 	_ = resp
 }
 
+func ExampleCatalogClient_BatchRemoveCatalogAttributes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.BatchRemoveCatalogAttributesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#BatchRemoveCatalogAttributesRequest.
+	}
+	resp, err := c.BatchRemoveCatalogAttributes(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCatalogClient_ReplaceCatalogAttribute() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -250,7 +353,7 @@ func ExampleCatalogClient_ReplaceCatalogAttribute() {
 
 	req := &retailpb.ReplaceCatalogAttributeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#ReplaceCatalogAttributeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#ReplaceCatalogAttributeRequest.
 	}
 	resp, err := c.ReplaceCatalogAttribute(ctx, req)
 	if err != nil {
@@ -258,4 +361,60 @@ func ExampleCatalogClient_ReplaceCatalogAttribute() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleCatalogClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

@@ -70,7 +70,7 @@ func defaultDomainMappingsCallOptions() *DomainMappingsCallOptions {
 	}
 }
 
-// internalDomainMappingsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalDomainMappingsClient is an interface that defines the methods available from App Engine Admin API.
 type internalDomainMappingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -119,7 +119,8 @@ func (c *DomainMappingsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DomainMappingsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -250,7 +251,8 @@ func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *domainMappingsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

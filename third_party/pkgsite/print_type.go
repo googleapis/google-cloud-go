@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build go1.15
-// +build go1.15
+//go:build go1.16
+// +build go1.16
 
 // Package pkgsite is not for external use. May change at any time without
 // warning.
@@ -30,14 +30,14 @@ import (
 // PrintType returns a string representation of the decl.
 //
 // PrintType works by:
-//   1. Generate a map from every identifier to a URL for the identifier (or no
-//      URL if the identifier shouldn't link).
-//   2. ast.Inspect the decl to get an ordered slice of every identifier to the
-//      link for it, using the map from step 1.
-//   3. Print out the plain doc for the decl.
-//   4. Use scanner.Scanner to find every identifier (in the same order as step
-//      2). If there is a link for the identifier, insert it. Otherwise, print
-//      the plain doc.
+//  1. Generate a map from every identifier to a URL for the identifier (or no
+//     URL if the identifier shouldn't link).
+//  2. ast.Inspect the decl to get an ordered slice of every identifier to the
+//     link for it, using the map from step 1.
+//  3. Print out the plain doc for the decl.
+//  4. Use scanner.Scanner to find every identifier (in the same order as step
+//     2). If there is a link for the identifier, insert it. Otherwise, print
+//     the plain doc.
 func PrintType(fset *token.FileSet, decl ast.Decl, toURL func(string, string) string, topLevelDecls map[interface{}]bool) string {
 	anchorLinksMap := generateAnchorLinks(decl, toURL, topLevelDecls)
 	// Convert the map (keyed by *ast.Ident) to a slice of URLs (or no URL).

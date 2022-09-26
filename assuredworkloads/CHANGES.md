@@ -1,5 +1,62 @@
 # Changes
 
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.5.0...assuredworkloads/v1.6.0) (2022-09-21)
+
+
+### Features
+
+* **assuredworkloads:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.4.0...assuredworkloads/v1.5.0) (2022-09-19)
+
+
+### Features
+
+* **assuredworkloads:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.3.0...assuredworkloads/v1.4.0) (2022-09-15)
+
+
+### Features
+
+* **assuredworkloads:** Add compliant_but_disallowed_services field to the v1beta1 Workload proto ([6a0080a](https://github.com/googleapis/google-cloud-go/commit/6a0080ad69398c572d856886293e19c79cf0fc0e))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.2.0...assuredworkloads/v1.3.0) (2022-09-06)
+
+
+### Features
+
+* **assuredworkloads:** Updated v1beta1 analyzeWorkloadMove documentation ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.1.0...assuredworkloads/v1.2.0) (2022-07-19)
+
+
+### Features
+
+* **assuredworkloads:** Updated the method signature of analyzeWorkloadMove for v1beta API ([53246aa](https://github.com/googleapis/google-cloud-go/commit/53246aa18cb9c79471ecc84878b5e3f166086404))
+* **assuredworkloads:** Updated the method signature of analyzeWorkloadMove for v1beta API to accept project as source. AnalyzeWorkloadMove now also returns information about org policy differences between the project and target folder ([53246aa](https://github.com/googleapis/google-cloud-go/commit/53246aa18cb9c79471ecc84878b5e3f166086404))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.0.0...assuredworkloads/v1.1.0) (2022-07-12)
+
+
+### Features
+
+* **assuredworkloads:** ITAR June Preview Launch ([963efe2](https://github.com/googleapis/google-cloud-go/commit/963efe22cf67bc04fed09b5fa8f9cb20b9edf1a3))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v0.6.0...assuredworkloads/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **assuredworkloads:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+* **assuredworkloads:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+
+### Miscellaneous Chores
+
+* **assuredworkloads:** release 1.0.0 ([8147948](https://github.com/googleapis/google-cloud-go/commit/8147948584c148d389b19a93098323192dc30f19))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v0.5.0...assuredworkloads/v0.6.0) (2022-05-09)
 
 

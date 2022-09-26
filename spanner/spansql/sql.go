@@ -96,6 +96,38 @@ func (cv CreateView) SQL() string {
 	return str
 }
 
+func (cs CreateChangeStream) SQL() string {
+	str := "CREATE CHANGE STREAM "
+	str += cs.Name.SQL() + " FOR "
+	if cs.WatchAllTables {
+		str += "ALL"
+	} else {
+		for i, table := range cs.Watch {
+			if i > 0 {
+				str += ", "
+			}
+			str += table.Table.SQL()
+			if !table.WatchAllCols {
+				str += "("
+				for i, c := range table.Columns {
+					if i > 0 {
+						str += ", "
+					}
+					str += c.SQL()
+				}
+				str += ")"
+			}
+		}
+	}
+	if cs.Options.RetentionPeriod != nil {
+		str += " OPTIONS( "
+		str += fmt.Sprintf("retention_period='%s'", *cs.Options.RetentionPeriod)
+		str += " )"
+	}
+
+	return str
+}
+
 func (dt DropTable) SQL() string {
 	return "DROP TABLE " + dt.Name.SQL()
 }
@@ -106,6 +138,18 @@ func (di DropIndex) SQL() string {
 
 func (dv DropView) SQL() string {
 	return "DROP VIEW " + dv.Name.SQL()
+}
+
+func (dc DropChangeStream) SQL() string {
+	return "DROP CHANGE STREAM " + dc.Name.SQL()
+}
+
+func (acs AlterChangeStream) SQL() string {
+	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " SET " + acs.Alteration.SQL()
+}
+
+func (ao AlterChangeStreamOptions) SQL() string {
+	return "OPTIONS( " + fmt.Sprintf("retention_period='%s'", *ao.Options.RetentionPeriod) + " )"
 }
 
 func (at AlterTable) SQL() string {
@@ -157,6 +201,7 @@ func (rrdp ReplaceRowDeletionPolicy) SQL() string {
 func (drdp DropRowDeletionPolicy) SQL() string {
 	return "DROP ROW DELETION POLICY"
 }
+
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
@@ -261,7 +306,7 @@ func (u *Update) SQL() string {
 }
 
 func (i *Insert) SQL() string {
-	str := "INSERT " + i.Table.SQL() + " INTO ("
+	str := "INSERT INTO " + i.Table.SQL() + " ("
 	for i, column := range i.Columns {
 		if i > 0 {
 			str += ", "
@@ -700,7 +745,8 @@ func (id ID) addSQL(sb *strings.Builder) {
 
 	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
 
-	if IsKeyword(string(id)) {
+	// Naming Convention: Must be enclosed in backticks (`) if it's a reserved keyword or contains a hyphen.
+	if IsKeyword(string(id)) || strings.Contains(string(id), "-") {
 		// TODO: Escaping may be needed here.
 		sb.WriteString("`")
 		sb.WriteString(string(id))
@@ -730,6 +776,47 @@ func (c Case) addSQL(sb *strings.Builder) {
 		fmt.Fprintf(sb, "ELSE %s ", c.ElseResult.SQL())
 	}
 	sb.WriteString("END")
+}
+
+func (c Coalesce) SQL() string { return buildSQL(c) }
+func (c Coalesce) addSQL(sb *strings.Builder) {
+	sb.WriteString("COALESCE(")
+	for i, expr := range c.ExprList {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		expr.addSQL(sb)
+	}
+	sb.WriteString(")")
+}
+
+func (i If) SQL() string { return buildSQL(i) }
+func (i If) addSQL(sb *strings.Builder) {
+	sb.WriteString("IF(")
+	i.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	i.TrueResult.addSQL(sb)
+	sb.WriteString(", ")
+	i.ElseResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (in IfNull) SQL() string { return buildSQL(in) }
+func (in IfNull) addSQL(sb *strings.Builder) {
+	sb.WriteString("IFNULL(")
+	in.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	in.NullResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (ni NullIf) SQL() string { return buildSQL(ni) }
+func (ni NullIf) addSQL(sb *strings.Builder) {
+	sb.WriteString("NULLIF(")
+	ni.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	ni.ExprToMatch.addSQL(sb)
+	sb.WriteString(")")
 }
 
 func (b BoolLiteral) SQL() string { return buildSQL(b) }

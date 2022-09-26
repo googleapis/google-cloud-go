@@ -7,5 +7,6 @@
         "spanner": {
             "component": "spanner"
         }
-    }
+    },
+    "plugins": ["sentence-case"]
 }

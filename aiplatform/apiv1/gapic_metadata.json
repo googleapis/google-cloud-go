@@ -90,6 +90,11 @@
                 "ListOperations"
               ]
             },
+            "ListSavedQueries": {
+              "methods": [
+                "ListSavedQueries"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -595,6 +600,11 @@
                 "ListOperations"
               ]
             },
+            "RemoveDatapoints": {
+              "methods": [
+                "RemoveDatapoints"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -608,6 +618,11 @@
             "UpdateIndex": {
               "methods": [
                 "UpdateIndex"
+              ]
+            },
+            "UpsertDatapoints": {
+              "methods": [
+                "UpsertDatapoints"
               ]
             },
             "WaitOperation": {
@@ -1106,6 +1121,11 @@
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportModelEvaluationSlices": {
+              "methods": [
+                "BatchImportModelEvaluationSlices"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"

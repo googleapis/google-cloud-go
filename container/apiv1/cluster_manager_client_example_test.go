@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClusterManagerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClusterManagerClient() {
 
 func ExampleClusterManagerClient_ListClusters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleClusterManagerClient_ListClusters() {
 
 func ExampleClusterManagerClient_GetCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleClusterManagerClient_GetCluster() {
 
 func ExampleClusterManagerClient_CreateCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +118,11 @@ func ExampleClusterManagerClient_CreateCluster() {
 
 func ExampleClusterManagerClient_UpdateCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,6 +143,11 @@ func ExampleClusterManagerClient_UpdateCluster() {
 
 func ExampleClusterManagerClient_UpdateNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,6 +168,11 @@ func ExampleClusterManagerClient_UpdateNodePool() {
 
 func ExampleClusterManagerClient_SetNodePoolAutoscaling() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,6 +193,11 @@ func ExampleClusterManagerClient_SetNodePoolAutoscaling() {
 
 func ExampleClusterManagerClient_SetLoggingService() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -178,6 +218,11 @@ func ExampleClusterManagerClient_SetLoggingService() {
 
 func ExampleClusterManagerClient_SetMonitoringService() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -198,6 +243,11 @@ func ExampleClusterManagerClient_SetMonitoringService() {
 
 func ExampleClusterManagerClient_SetAddonsConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -218,6 +268,11 @@ func ExampleClusterManagerClient_SetAddonsConfig() {
 
 func ExampleClusterManagerClient_SetLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -238,6 +293,11 @@ func ExampleClusterManagerClient_SetLocations() {
 
 func ExampleClusterManagerClient_UpdateMaster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -258,6 +318,11 @@ func ExampleClusterManagerClient_UpdateMaster() {
 
 func ExampleClusterManagerClient_SetMasterAuth() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -278,6 +343,11 @@ func ExampleClusterManagerClient_SetMasterAuth() {
 
 func ExampleClusterManagerClient_DeleteCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -298,6 +368,11 @@ func ExampleClusterManagerClient_DeleteCluster() {
 
 func ExampleClusterManagerClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -318,6 +393,11 @@ func ExampleClusterManagerClient_ListOperations() {
 
 func ExampleClusterManagerClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -338,6 +418,11 @@ func ExampleClusterManagerClient_GetOperation() {
 
 func ExampleClusterManagerClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -356,6 +441,11 @@ func ExampleClusterManagerClient_CancelOperation() {
 
 func ExampleClusterManagerClient_GetServerConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -376,6 +466,11 @@ func ExampleClusterManagerClient_GetServerConfig() {
 
 func ExampleClusterManagerClient_GetJSONWebKeys() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -396,6 +491,11 @@ func ExampleClusterManagerClient_GetJSONWebKeys() {
 
 func ExampleClusterManagerClient_ListNodePools() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -416,6 +516,11 @@ func ExampleClusterManagerClient_ListNodePools() {
 
 func ExampleClusterManagerClient_GetNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -436,6 +541,11 @@ func ExampleClusterManagerClient_GetNodePool() {
 
 func ExampleClusterManagerClient_CreateNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -456,6 +566,11 @@ func ExampleClusterManagerClient_CreateNodePool() {
 
 func ExampleClusterManagerClient_DeleteNodePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -474,8 +589,36 @@ func ExampleClusterManagerClient_DeleteNodePool() {
 	_ = resp
 }
 
+func ExampleClusterManagerClient_CompleteNodePoolUpgrade() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := container.NewClusterManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &containerpb.CompleteNodePoolUpgradeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#CompleteNodePoolUpgradeRequest.
+	}
+	err = c.CompleteNodePoolUpgrade(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClusterManagerClient_RollbackNodePoolUpgrade() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -496,6 +639,11 @@ func ExampleClusterManagerClient_RollbackNodePoolUpgrade() {
 
 func ExampleClusterManagerClient_SetNodePoolManagement() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -516,6 +664,11 @@ func ExampleClusterManagerClient_SetNodePoolManagement() {
 
 func ExampleClusterManagerClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -536,6 +689,11 @@ func ExampleClusterManagerClient_SetLabels() {
 
 func ExampleClusterManagerClient_SetLegacyAbac() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -556,6 +714,11 @@ func ExampleClusterManagerClient_SetLegacyAbac() {
 
 func ExampleClusterManagerClient_StartIPRotation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -576,6 +739,11 @@ func ExampleClusterManagerClient_StartIPRotation() {
 
 func ExampleClusterManagerClient_CompleteIPRotation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -596,6 +764,11 @@ func ExampleClusterManagerClient_CompleteIPRotation() {
 
 func ExampleClusterManagerClient_SetNodePoolSize() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -616,6 +789,11 @@ func ExampleClusterManagerClient_SetNodePoolSize() {
 
 func ExampleClusterManagerClient_SetNetworkPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -636,6 +814,11 @@ func ExampleClusterManagerClient_SetNetworkPolicy() {
 
 func ExampleClusterManagerClient_SetMaintenancePolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -656,6 +839,11 @@ func ExampleClusterManagerClient_SetMaintenancePolicy() {
 
 func ExampleClusterManagerClient_ListUsableSubnetworks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

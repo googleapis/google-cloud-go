@@ -55,12 +55,14 @@ type CallOptions struct {
 	AnalyzeIamPolicy             []gax.CallOption
 	AnalyzeIamPolicyLongrunning  []gax.CallOption
 	AnalyzeMove                  []gax.CallOption
+	QueryAssets                  []gax.CallOption
 	CreateSavedQuery             []gax.CallOption
 	GetSavedQuery                []gax.CallOption
 	ListSavedQueries             []gax.CallOption
 	UpdateSavedQuery             []gax.CallOption
 	DeleteSavedQuery             []gax.CallOption
 	BatchGetEffectiveIamPolicies []gax.CallOption
+	GetOperation                 []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -173,18 +175,40 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		AnalyzeIamPolicyLongrunning:  []gax.CallOption{},
-		AnalyzeMove:                  []gax.CallOption{},
-		CreateSavedQuery:             []gax.CallOption{},
-		GetSavedQuery:                []gax.CallOption{},
-		ListSavedQueries:             []gax.CallOption{},
-		UpdateSavedQuery:             []gax.CallOption{},
-		DeleteSavedQuery:             []gax.CallOption{},
-		BatchGetEffectiveIamPolicies: []gax.CallOption{},
+		AnalyzeIamPolicyLongrunning: []gax.CallOption{},
+		AnalyzeMove:                 []gax.CallOption{},
+		QueryAssets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateSavedQuery: []gax.CallOption{},
+		GetSavedQuery:    []gax.CallOption{},
+		ListSavedQueries: []gax.CallOption{},
+		UpdateSavedQuery: []gax.CallOption{},
+		DeleteSavedQuery: []gax.CallOption{},
+		BatchGetEffectiveIamPolicies: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Asset API.
+// internalClient is an interface that defines the methods available from Cloud Asset API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -204,12 +228,14 @@ type internalClient interface {
 	AnalyzeIamPolicyLongrunning(context.Context, *assetpb.AnalyzeIamPolicyLongrunningRequest, ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error)
 	AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPolicyLongrunningOperation
 	AnalyzeMove(context.Context, *assetpb.AnalyzeMoveRequest, ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error)
+	QueryAssets(context.Context, *assetpb.QueryAssetsRequest, ...gax.CallOption) (*assetpb.QueryAssetsResponse, error)
 	CreateSavedQuery(context.Context, *assetpb.CreateSavedQueryRequest, ...gax.CallOption) (*assetpb.SavedQuery, error)
 	GetSavedQuery(context.Context, *assetpb.GetSavedQueryRequest, ...gax.CallOption) (*assetpb.SavedQuery, error)
 	ListSavedQueries(context.Context, *assetpb.ListSavedQueriesRequest, ...gax.CallOption) *SavedQueryIterator
 	UpdateSavedQuery(context.Context, *assetpb.UpdateSavedQueryRequest, ...gax.CallOption) (*assetpb.SavedQuery, error)
 	DeleteSavedQuery(context.Context, *assetpb.DeleteSavedQueryRequest, ...gax.CallOption) error
 	BatchGetEffectiveIamPolicies(context.Context, *assetpb.BatchGetEffectiveIamPoliciesRequest, ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // Client is a client for interacting with Cloud Asset API.
@@ -246,7 +272,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -366,6 +393,24 @@ func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveReques
 	return c.internalClient.AnalyzeMove(ctx, req, opts...)
 }
 
+// QueryAssets issue a job that queries assets using a SQL statement compatible with
+// BigQuery Standard
+// SQL (at http://cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql).
+//
+// If the query execution finishes within timeout and there’s no pagination,
+// the full query results will be returned in the QueryAssetsResponse.
+//
+// Otherwise, full query results can be obtained by issuing extra requests
+// with the job_reference from the a previous QueryAssets call.
+//
+// Note, the query result has approximately 10 GB limitation enforced by
+// BigQuery
+// https://cloud.google.com/bigquery/docs/best-practices-performance-output (at https://cloud.google.com/bigquery/docs/best-practices-performance-output),
+// queries return larger results will result in errors.
+func (c *Client) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRequest, opts ...gax.CallOption) (*assetpb.QueryAssetsResponse, error) {
+	return c.internalClient.QueryAssets(ctx, req, opts...)
+}
+
 // CreateSavedQuery creates a saved query in a parent project/folder/organization.
 func (c *Client) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
 	return c.internalClient.CreateSavedQuery(ctx, req, opts...)
@@ -396,6 +441,11 @@ func (c *Client) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.
 	return c.internalClient.BatchGetEffectiveIamPolicies(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Cloud Asset API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -416,6 +466,8 @@ type gRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -451,6 +503,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           assetpb.NewAssetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -472,7 +525,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -842,6 +896,28 @@ func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 	return resp, nil
 }
 
+func (c *gRPCClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRequest, opts ...gax.CallOption) (*assetpb.QueryAssetsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 200000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).QueryAssets[0:len((*c.CallOptions).QueryAssets):len((*c.CallOptions).QueryAssets)], opts...)
+	var resp *assetpb.QueryAssetsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.QueryAssets(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -952,6 +1028,11 @@ func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 }
 
 func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.BatchGetEffectiveIamPoliciesRequest, opts ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -960,6 +1041,23 @@ func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.BatchGetEffectiveIamPolicies(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

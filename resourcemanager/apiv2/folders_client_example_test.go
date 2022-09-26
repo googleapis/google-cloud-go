@@ -27,6 +27,11 @@ import (
 
 func ExampleNewFoldersClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewFoldersClient() {
 
 func ExampleFoldersClient_ListFolders() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,6 +75,11 @@ func ExampleFoldersClient_ListFolders() {
 
 func ExampleFoldersClient_SearchFolders() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,6 +106,11 @@ func ExampleFoldersClient_SearchFolders() {
 
 func ExampleFoldersClient_GetFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -111,6 +131,11 @@ func ExampleFoldersClient_GetFolder() {
 
 func ExampleFoldersClient_CreateFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -136,6 +161,11 @@ func ExampleFoldersClient_CreateFolder() {
 
 func ExampleFoldersClient_UpdateFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,6 +186,11 @@ func ExampleFoldersClient_UpdateFolder() {
 
 func ExampleFoldersClient_MoveFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -181,6 +216,11 @@ func ExampleFoldersClient_MoveFolder() {
 
 func ExampleFoldersClient_DeleteFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -201,6 +241,11 @@ func ExampleFoldersClient_DeleteFolder() {
 
 func ExampleFoldersClient_UndeleteFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -221,6 +266,11 @@ func ExampleFoldersClient_UndeleteFolder() {
 
 func ExampleFoldersClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -241,6 +291,11 @@ func ExampleFoldersClient_GetIamPolicy() {
 
 func ExampleFoldersClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -261,6 +316,11 @@ func ExampleFoldersClient_SetIamPolicy() {
 
 func ExampleFoldersClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -7,5 +7,6 @@
         "errorreporting": {
             "component": "errorreporting"
         }
-    }
+    },
+    "plugins": ["sentence-case"]
 }

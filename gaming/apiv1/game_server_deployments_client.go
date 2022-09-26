@@ -129,7 +129,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 	}
 }
 
-// internalGameServerDeploymentsClient is an interface that defines the methods availaible from Game Services API.
+// internalGameServerDeploymentsClient is an interface that defines the methods available from Game Services API.
 type internalGameServerDeploymentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -184,7 +184,8 @@ func (c *GameServerDeploymentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *GameServerDeploymentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -343,7 +344,8 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gameServerDeploymentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

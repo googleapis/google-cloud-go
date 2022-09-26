@@ -59,7 +59,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 	}
 }
 
-// internalPublisherClient is an interface that defines the methods availaible from Eventarc Publishing API.
+// internalPublisherClient is an interface that defines the methods available from Eventarc Publishing API.
 type internalPublisherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -120,7 +120,8 @@ func (c *PublisherClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PublisherClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -218,7 +219,8 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *publisherGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

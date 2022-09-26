@@ -16,12 +16,16 @@ package managedwriter
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"runtime"
 	"testing"
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -94,6 +98,7 @@ type testAppendRowsClient struct {
 	requests  []*storagepb.AppendRowsRequest
 	sendF     func(*storagepb.AppendRowsRequest) error
 	recvF     func() (*storagepb.AppendRowsResponse, error)
+	closeF    func() error
 }
 
 func (tarc *testAppendRowsClient) Send(req *storagepb.AppendRowsRequest) error {
@@ -102,6 +107,10 @@ func (tarc *testAppendRowsClient) Send(req *storagepb.AppendRowsRequest) error {
 
 func (tarc *testAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
 	return tarc.recvF()
+}
+
+func (tarc *testAppendRowsClient) CloseSend() error {
+	return tarc.closeF()
 }
 
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
@@ -123,6 +132,9 @@ func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.Append
 	}
 	testARC.sendF = sF
 	testARC.recvF = rF
+	testARC.closeF = func() error {
+		return nil
+	}
 	return func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 		testARC.openCount = testARC.openCount + 1
 		return testARC, nil
@@ -288,6 +300,128 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 	if ct := ms.fc.count(); ct != wantCount {
 		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
 	}
+}
+
+func TestManagedStream_ContextExpiry(t *testing.T) {
+	// Issue: retaining error from append as stream error
+	// https://github.com/googleapis/google-cloud-go/issues/6657
+	ctx := context.Background()
+
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(0, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append is intentionally slow.
+				return nil
+			}, nil),
+	}
+	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
+		Name: proto.String("testDescriptor"),
+	}
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	// Create a context and immediately cancel it.
+	cancelCtx, cancel := context.WithCancel(ctx)
+	cancel()
+
+	// First, append with an invalid context.
+	pw := newPendingWrite(cancelCtx, fakeData)
+	err := ms.appendWithRetry(pw)
+	if err != context.Canceled {
+		t.Errorf("expected cancelled context error, got: %v", err)
+	}
+
+	// a second append with a valid context should succeed
+	_, err = ms.AppendRows(ctx, fakeData)
+	if err != nil {
+		t.Errorf("expected second append to succeed, but failed: %v", err)
+	}
+}
+
+func TestManagedStream_AppendDeadlocks(t *testing.T) {
+	// Ensure we don't deadlock by issing two appends.
+	testCases := []struct {
+		desc       string
+		openErrors []error
+		ctx        context.Context
+		respErr    error
+	}{
+		{
+			desc:       "no errors",
+			openErrors: []error{nil, nil},
+			ctx:        context.Background(),
+			respErr:    nil,
+		},
+		{
+			desc:       "cancelled caller context",
+			openErrors: []error{nil, nil},
+			ctx: func() context.Context {
+				cctx, cancel := context.WithCancel(context.Background())
+				cancel()
+				return cctx
+			}(),
+			respErr: context.Canceled,
+		},
+		{
+			desc:       "expired caller context",
+			openErrors: []error{nil, nil},
+			ctx: func() context.Context {
+				cctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
+				defer cancel()
+				time.Sleep(2 * time.Millisecond)
+				return cctx
+			}(),
+			respErr: context.DeadlineExceeded,
+		},
+		{
+			desc:       "errored getstream",
+			openErrors: []error{status.Errorf(codes.ResourceExhausted, "some error"), status.Errorf(codes.ResourceExhausted, "some error")},
+			ctx:        context.Background(),
+			respErr:    status.Errorf(codes.ResourceExhausted, "some error"),
+		},
+	}
+
+	for _, tc := range testCases {
+		openF := openTestArc(&testAppendRowsClient{}, nil, nil)
+		ms := &ManagedStream{
+			ctx: context.Background(),
+			open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+				if len(tc.openErrors) == 0 {
+					panic("out of open errors")
+				}
+				curErr := tc.openErrors[0]
+				tc.openErrors = tc.openErrors[1:]
+				if curErr == nil {
+					return openF(s, opts...)
+				}
+				return nil, curErr
+			},
+			streamSettings: &streamSettings{
+				streamID: "foo",
+			},
+		}
+
+		// first append
+		pw := newPendingWrite(tc.ctx, [][]byte{[]byte("foo")})
+		gotErr := ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, tc.respErr) {
+			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
+		}
+		// second append
+		pw = newPendingWrite(tc.ctx, [][]byte{[]byte("bar")})
+		gotErr = ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, tc.respErr) {
+			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)
+		}
+
+		// Issue two closes, to ensure we're not deadlocking there either.
+		ms.Close()
+		ms.Close()
+	}
 
 }
 
@@ -327,4 +461,25 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 			}
 		}
 	}
+}
+
+// Ensures we're propagating call options as expected.
+// Background: https://github.com/googleapis/google-cloud-go/issues/6487
+func TestOpenCallOptionPropagation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	ms := &ManagedStream{
+		ctx: ctx,
+		callOptions: []gax.CallOption{
+			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+		},
+		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
+			if len(opts) == 0 {
+				t.Fatalf("no options were propagated")
+			}
+			return nil, fmt.Errorf("no real client")
+		}),
+	}
+	ms.openWithRetry()
 }
