@@ -25,6 +25,60 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
+type mockTableAdminClock struct {
+	btapb.BigtableTableAdminClient
+
+	getTableReq    *btapb.GetTableRequest
+	updateTableReq *btapb.UpdateTableRequest
+	getTableResp   *btapb.Table
+}
+
+func (c *mockTableAdminClock) GetTable(
+	ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.getTableReq = in
+	return c.getTableResp, nil
+}
+
+func (c *mockTableAdminClock) UpdateTable(
+	ctx context.Context, in *btapb.UpdateTableRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.updateTableReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.Table"},
+		},
+	}, nil
+}
+
+func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminClient {
+	ctx := context.Background()
+	c, err := NewAdminClient(ctx, "my-cool-project", "my-cool-instance")
+	if err != nil {
+		t.Fatalf("NewAdminClient failed: %v", err)
+	}
+	c.tClient = ac
+	return c
+}
+
+func TestTableAdmin_UpdateTable(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTable(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: true})
+	if err != nil {
+		t.Fatalf("UpdateTable failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if updateTableReq.Table.Name != "My-table" {
+		t.Fatalf("UpdateTableRequest does not match: %v", err)
+	}
+	if updateTableReq.Table.DeletionProtection != true {
+		t.Fatalf("UpdateTableRequest does not match: %v", err)
+	}
+}
+
 type mockAdminClock struct {
 	btapb.BigtableInstanceAdminClient
 
