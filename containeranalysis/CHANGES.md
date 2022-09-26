@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.5.0...containeranalysis/v0.5.1) (2022-09-23)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Move grafeas stubs to proper folder ([#6732](https://github.com/googleapis/google-cloud-go/issues/6732)) ([16b5fd7](https://github.com/googleapis/google-cloud-go/commit/16b5fd7c5e4ddd8028feca60c5780ca1d1af8532))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.4.0...containeranalysis/v0.5.0) (2022-09-22)
 
 
