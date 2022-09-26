@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.22.0...aiplatform/v1.23.0) (2022-09-26)
+
+
+### Features
+
+* **aiplatform:** Rewrite beta methods in terms of new stub location ([#6735](https://github.com/googleapis/google-cloud-go/issues/6735)) ([095cafd](https://github.com/googleapis/google-cloud-go/commit/095cafd432fc9e7d3f761e616fd20e732890d5e4))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.21.0...aiplatform/v1.22.0) (2022-09-22)
 
 

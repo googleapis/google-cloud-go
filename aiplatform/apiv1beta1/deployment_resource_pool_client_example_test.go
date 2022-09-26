@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -76,7 +76,7 @@ func ExampleDeploymentResourcePoolClient_CreateDeploymentResourcePool() {
 
 	req := &aiplatformpb.CreateDeploymentResourcePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateDeploymentResourcePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateDeploymentResourcePoolRequest.
 	}
 	op, err := c.CreateDeploymentResourcePool(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleDeploymentResourcePoolClient_GetDeploymentResourcePool() {
 
 	req := &aiplatformpb.GetDeploymentResourcePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetDeploymentResourcePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetDeploymentResourcePoolRequest.
 	}
 	resp, err := c.GetDeploymentResourcePool(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleDeploymentResourcePoolClient_ListDeploymentResourcePools() {
 
 	req := &aiplatformpb.ListDeploymentResourcePoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListDeploymentResourcePoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListDeploymentResourcePoolsRequest.
 	}
 	it := c.ListDeploymentResourcePools(ctx, req)
 	for {
@@ -162,7 +162,7 @@ func ExampleDeploymentResourcePoolClient_DeleteDeploymentResourcePool() {
 
 	req := &aiplatformpb.DeleteDeploymentResourcePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteDeploymentResourcePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteDeploymentResourcePoolRequest.
 	}
 	op, err := c.DeleteDeploymentResourcePool(ctx, req)
 	if err != nil {
@@ -190,7 +190,7 @@ func ExampleDeploymentResourcePoolClient_QueryDeployedModels() {
 
 	req := &aiplatformpb.QueryDeployedModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#QueryDeployedModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#QueryDeployedModelsRequest.
 	}
 	it := c.QueryDeployedModels(ctx, req)
 	for {
