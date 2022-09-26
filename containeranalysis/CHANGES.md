@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.5.1...containeranalysis/v0.6.0) (2022-09-26)
+
+
+### Features
+
+* **containeranalysis:** Rewrite beta methods in terms of new stub location ([#6738](https://github.com/googleapis/google-cloud-go/issues/6738)) ([85f3ae2](https://github.com/googleapis/google-cloud-go/commit/85f3ae20a18b0a85157d5aedd1ffc5cf2c5714ce))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.5.0...containeranalysis/v0.5.1) (2022-09-23)
 
 
