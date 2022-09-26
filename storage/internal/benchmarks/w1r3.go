@@ -68,6 +68,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		o.Delete(context.Background())
 		nonBenchmarkingClients.Put(c)
 	}()
+
 	// Upload
 
 	// If the option is specified, run a garbage collector before collecting

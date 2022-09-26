@@ -33,6 +33,8 @@ import (
 
 	// Install google-c2p resolver, which is required for direct path.
 	_ "google.golang.org/grpc/xds/googledirectpath"
+	// Install RLS load balancer policy, which is needed for gRPC RLS.
+	_ "google.golang.org/grpc/balancer/rls"
 )
 
 const codeVersion = "0.4.1" // to keep track of which version of the code a benchmark ran on
@@ -341,8 +343,8 @@ func (br *benchmarkResult) csv() []string {
 		strconv.FormatUint(br.startMem.StackInuse, 10),
 		strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
 		strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10),
-		br.start.Format(time.RFC3339),
-		br.start.Add(br.elapsedTime).Format(time.RFC3339),
+		strconv.FormatInt(br.start.Unix(), 10),
+		strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10),
 		strconv.Itoa(opts.numWorkers),
 		codeVersion,
 		opts.bucket,
