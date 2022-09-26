@@ -217,6 +217,9 @@ type TableConf struct {
 	SplitKeys []string
 	// Families is a map from family name to GCPolicy
 	Families map[string]GCPolicy
+	// Set to true to make the table protected against data loss
+	// i.e. deleting the table, the column families in the table and the instance containing the table would be prohibited
+	DeletionProtection bool
 }
 
 // CreateTable creates a new table in the instance.
@@ -275,6 +278,29 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
+// UpdateTable updates a table in the instance from the given configuration.
+func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) (updated bool, err error) {
+	if conf.TableID == "" {
+		return errors.New("TableID is required")
+	}
+
+	if val, ok := conf.DeletionProtection; ok {
+		ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+		updateMask := &field_mask.FieldMask{}
+		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+
+		req := &btapb.UpdateTableRequest{
+			Table: &btapb.Table{
+				Name:               conf.TableID,
+				DeletionProtection: val,
+			},
+			UpdateMask: updateMask,
+		}
+		_, err := ac.tClient.UpdateTable(ctx, req)
+		return true, err
+}
+
 // DeleteTable deletes a table and all of its data.
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -306,6 +332,8 @@ type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
 	Families    []string
 	FamilyInfos []FamilyInfo
+	// When true: deleting the table, the column families in the table and the instance containing the table is prohibited
+	DeletionProtection bool
 }
 
 // FamilyInfo represents information about a column family.
