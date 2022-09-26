@@ -150,7 +150,8 @@ func TestMain(m *testing.M) {
 		log.Fatalf("testproxy setup: failed to dial testproxy: %v", err)
 	}
 	defer conn2.Close()
-	client := pb.NewCloudBigtableV2TestProxyClient(conn2)
+	c := pb.NewCloudBigtableV2TestProxyClient(conn2)
+	client = &c
 
 	// This could create a little bit of a race condition with the previous
 	// go routine ...
@@ -163,7 +164,7 @@ func TestMain(m *testing.M) {
 		InstanceId: "instance",
 	}
 
-	_, err = client.CreateClient(ctx, req)
+	_, err = (*client).CreateClient(ctx, req)
 	if err != nil {
 		log.Fatalf("testproxy setup:  CreateClient() failed: %v", err)
 	}
