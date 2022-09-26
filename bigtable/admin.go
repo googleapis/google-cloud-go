@@ -219,7 +219,7 @@ type TableConf struct {
 	Families map[string]GCPolicy
 	// Set to true to make the table protected against data loss
 	// i.e. deleting the table, the column families in the table and the instance containing the table would be prohibited
-	DeletionProtection bool
+	DeletionProtection *bool
 }
 
 // CreateTable creates a new table in the instance.
@@ -281,10 +281,10 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 // UpdateTable updates a table in the instance from the given configuration.
 func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) (updated bool, err error) {
 	if conf.TableID == "" {
-		return errors.New("TableID is required")
+		return false, errors.New("TableID is required")
 	}
 
-	if val, ok := conf.DeletionProtection; ok {
+	if conf.DeletionProtection != nil {
 		ctx = mergeOutgoingMetadata(ctx, ac.md)
 
 		updateMask := &field_mask.FieldMask{}
@@ -293,12 +293,14 @@ func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) (update
 		req := &btapb.UpdateTableRequest{
 			Table: &btapb.Table{
 				Name:               conf.TableID,
-				DeletionProtection: val,
+				DeletionProtection: *conf.DeletionProtection,
 			},
 			UpdateMask: updateMask,
 		}
 		_, err := ac.tClient.UpdateTable(ctx, req)
 		return true, err
+	}
+	return false, errors.New("Only deletion protection can be updated")
 }
 
 // DeleteTable deletes a table and all of its data.
