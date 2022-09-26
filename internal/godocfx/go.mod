@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	cloud.google.com/go v0.104.0
-	cloud.google.com/go/bigquery v1.34.1
+	cloud.google.com/go/bigquery v1.42.0
 	cloud.google.com/go/datastore v1.8.0
 	cloud.google.com/go/storage v1.23.0
 	github.com/google/go-cmp v0.5.8
@@ -30,9 +30,9 @@ require (
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
-	google.golang.org/api v0.96.0 // indirect
+	google.golang.org/api v0.97.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006 // indirect
+	google.golang.org/genproto v0.0.0-20220926165614-551eb538f295 // indirect
 	google.golang.org/grpc v1.49.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 )
