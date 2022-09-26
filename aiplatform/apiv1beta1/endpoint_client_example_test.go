@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -76,7 +76,7 @@ func ExampleEndpointClient_CreateEndpoint() {
 
 	req := &aiplatformpb.CreateEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateEndpointRequest.
 	}
 	op, err := c.CreateEndpoint(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleEndpointClient_GetEndpoint() {
 
 	req := &aiplatformpb.GetEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetEndpointRequest.
 	}
 	resp, err := c.GetEndpoint(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleEndpointClient_ListEndpoints() {
 
 	req := &aiplatformpb.ListEndpointsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListEndpointsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListEndpointsRequest.
 	}
 	it := c.ListEndpoints(ctx, req)
 	for {
@@ -162,7 +162,7 @@ func ExampleEndpointClient_UpdateEndpoint() {
 
 	req := &aiplatformpb.UpdateEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateEndpointRequest.
 	}
 	resp, err := c.UpdateEndpoint(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleEndpointClient_DeleteEndpoint() {
 
 	req := &aiplatformpb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteEndpointRequest.
 	}
 	op, err := c.DeleteEndpoint(ctx, req)
 	if err != nil {
@@ -215,7 +215,7 @@ func ExampleEndpointClient_DeployModel() {
 
 	req := &aiplatformpb.DeployModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeployModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeployModelRequest.
 	}
 	op, err := c.DeployModel(ctx, req)
 	if err != nil {
@@ -245,7 +245,7 @@ func ExampleEndpointClient_UndeployModel() {
 
 	req := &aiplatformpb.UndeployModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UndeployModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UndeployModelRequest.
 	}
 	op, err := c.UndeployModel(ctx, req)
 	if err != nil {
