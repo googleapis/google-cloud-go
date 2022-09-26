@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.104.0
 	cloud.google.com/go/accessapproval v1.3.0
 	cloud.google.com/go/accesscontextmanager v1.2.0
-	cloud.google.com/go/aiplatform v1.17.0
+	cloud.google.com/go/aiplatform v1.22.0
 	cloud.google.com/go/analytics v0.11.0
 	cloud.google.com/go/apigateway v1.2.0
 	cloud.google.com/go/apigeeconnect v1.2.0
@@ -19,7 +19,7 @@ require (
 	cloud.google.com/go/baremetalsolution v0.2.0
 	cloud.google.com/go/batch v0.1.0
 	cloud.google.com/go/beyondcorp v0.1.0
-	cloud.google.com/go/bigquery v1.38.0
+	cloud.google.com/go/bigquery v1.42.0
 	cloud.google.com/go/billing v1.4.0
 	cloud.google.com/go/binaryauthorization v1.1.0
 	cloud.google.com/go/certificatemanager v0.2.1
@@ -30,7 +30,7 @@ require (
 	cloud.google.com/go/compute v1.9.0
 	cloud.google.com/go/contactcenterinsights v1.2.2
 	cloud.google.com/go/container v1.3.1
-	cloud.google.com/go/containeranalysis v0.4.0
+	cloud.google.com/go/containeranalysis v0.5.1
 	cloud.google.com/go/datacatalog v1.5.0
 	cloud.google.com/go/dataflow v0.6.0
 	cloud.google.com/go/dataform v0.3.0
@@ -120,12 +120,13 @@ require (
 	cloud.google.com/go/workflows v1.6.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.97.0
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
+	google.golang.org/genproto v0.0.0-20220926165614-551eb538f295
 )
 
 require (
 	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/edgecontainer v0.1.0
 )
 
 require (
@@ -390,3 +391,5 @@ replace cloud.google.com/go/beyondcorp => ../../../beyondcorp
 replace cloud.google.com/go/apigeeregistry => ../../../apigeeregistry
 
 replace cloud.google.com/go/apikeys => ../../../apikeys
+
+replace cloud.google.com/go/edgecontainer => ../../../edgecontainer
