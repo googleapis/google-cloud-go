@@ -57,7 +57,7 @@
 //
 //	req := &privatecapb.CreateCertificateRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#CreateCertificateRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/security/privateca/apiv1beta1/privatecapb#CreateCertificateRequest.
 //	}
 //	resp, err := c.CreateCertificate(ctx, req)
 //	if err != nil {

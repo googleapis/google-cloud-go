@@ -20,7 +20,7 @@ import (
 	"context"
 
 	agentendpoint "cloud.google.com/go/osconfig/agentendpoint/apiv1beta"
-	agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta"
+	agentendpointpb "cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb"
 )
 
 func ExampleNewClient() {
@@ -72,7 +72,7 @@ func ExampleClient_StartNextTask() {
 
 	req := &agentendpointpb.StartNextTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#StartNextTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#StartNextTaskRequest.
 	}
 	resp, err := c.StartNextTask(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExampleClient_ReportTaskProgress() {
 
 	req := &agentendpointpb.ReportTaskProgressRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#ReportTaskProgressRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#ReportTaskProgressRequest.
 	}
 	resp, err := c.ReportTaskProgress(ctx, req)
 	if err != nil {
@@ -122,7 +122,7 @@ func ExampleClient_ReportTaskComplete() {
 
 	req := &agentendpointpb.ReportTaskCompleteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#ReportTaskCompleteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#ReportTaskCompleteRequest.
 	}
 	resp, err := c.ReportTaskComplete(ctx, req)
 	if err != nil {
@@ -147,7 +147,7 @@ func ExampleClient_LookupEffectiveGuestPolicy() {
 
 	req := &agentendpointpb.LookupEffectiveGuestPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#LookupEffectiveGuestPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#LookupEffectiveGuestPolicyRequest.
 	}
 	resp, err := c.LookupEffectiveGuestPolicy(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleClient_RegisterAgent() {
 
 	req := &agentendpointpb.RegisterAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#RegisterAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb#RegisterAgentRequest.
 	}
 	resp, err := c.RegisterAgent(ctx, req)
 	if err != nil {

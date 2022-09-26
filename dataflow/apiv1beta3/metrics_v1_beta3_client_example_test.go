@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	"google.golang.org/api/iterator"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
 )
 
 func ExampleNewMetricsV1Beta3Client() {
@@ -73,7 +73,7 @@ func ExampleMetricsV1Beta3Client_GetJobMetrics() {
 
 	req := &dataflowpb.GetJobMetricsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobMetricsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetJobMetricsRequest.
 	}
 	resp, err := c.GetJobMetrics(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExampleMetricsV1Beta3Client_GetJobExecutionDetails() {
 
 	req := &dataflowpb.GetJobExecutionDetailsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobExecutionDetailsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetJobExecutionDetailsRequest.
 	}
 	it := c.GetJobExecutionDetails(ctx, req)
 	for {
@@ -129,7 +129,7 @@ func ExampleMetricsV1Beta3Client_GetStageExecutionDetails() {
 
 	req := &dataflowpb.GetStageExecutionDetailsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetStageExecutionDetailsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetStageExecutionDetailsRequest.
 	}
 	it := c.GetStageExecutionDetails(ctx, req)
 	for {

@@ -337,6 +337,25 @@ var methods = map[string][]retryFunc{
 			return nil
 		},
 	},
+	"storage.resumable.upload": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+			w := obj.NewWriter(ctx)
+			// Set Writer.ChunkSize to 2 MiB to perform resumable uploads.
+			w.ChunkSize = 2097152
+
+			if _, err := w.Write(randomBytes9MB); err != nil {
+				return fmt.Errorf("writing object: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("closing object: %v", err)
+			}
+			return nil
+		},
+	},
 	"storage.objects.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}

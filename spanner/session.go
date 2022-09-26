@@ -25,6 +25,7 @@ import (
 	"math"
 	"math/rand"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"time"
 
@@ -1722,4 +1723,13 @@ func isSessionNotFoundError(err error) bool {
 		}
 	}
 	return false
+}
+
+// isClientClosing returns true if the given error is a
+// `Connection is closing` error.
+func isClientClosing(err error) bool {
+	if err == nil {
+		return false
+	}
+	return ErrCode(err) == codes.Canceled && strings.Contains(err.Error(), "the client connection is closing")
 }
