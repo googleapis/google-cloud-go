@@ -29,6 +29,7 @@ import (
 	"testing"
 	"time"
 
+	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 	"cloud.google.com/go/httpreplay"
@@ -54,6 +55,7 @@ var record = flag.Bool("record", false, "record RPCs")
 var (
 	client                 *Client
 	storageClient          *storage.Client
+	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
 	dataset                *Dataset
 	otherDataset           *Dataset
@@ -123,6 +125,10 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		connectionsClient, err = connection.NewClient(ctx, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx)
 		if err != nil {
 			log.Fatal(err)
@@ -140,6 +146,7 @@ func initIntegrationTest() func() {
 		}
 		client = nil
 		storageClient = nil
+		connectionsClient = nil
 		return func() {}
 
 	default: // Run integration tests against a real backend.
@@ -202,6 +209,10 @@ func initIntegrationTest() func() {
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
 		if err != nil {
 			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
+		}
+		connectionsClient, err = connection.NewClient(ctx, sOpts...)
+		if err != nil {
+			log.Fatalf("connection.NewService: %v", err)
 		}
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }
