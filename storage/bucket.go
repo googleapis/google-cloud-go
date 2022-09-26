@@ -298,18 +298,18 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 		// circumventing the cost of recreating the auth/transport layer
 		svc, err := iamcredentials.NewService(ctx, option.WithHTTPClient(b.c.hc))
 		if err != nil {
-			return nil, fmt.Errorf("unable to create iamcredentials client: %v", err)
+			return nil, fmt.Errorf("unable to create iamcredentials client: %w", err)
 		}
 
 		resp, err := svc.Projects.ServiceAccounts.SignBlob(fmt.Sprintf("projects/-/serviceAccounts/%s", email), &iamcredentials.SignBlobRequest{
 			Payload: base64.StdEncoding.EncodeToString(in),
 		}).Do()
 		if err != nil {
-			return nil, fmt.Errorf("unable to sign bytes: %v", err)
+			return nil, fmt.Errorf("unable to sign bytes: %w", err)
 		}
 		out, err := base64.StdEncoding.DecodeString(resp.SignedBlob)
 		if err != nil {
-			return nil, fmt.Errorf("unable to base64 decode response: %v", err)
+			return nil, fmt.Errorf("unable to base64 decode response: %w", err)
 		}
 		return out, nil
 	}
