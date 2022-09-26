@@ -603,7 +603,12 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	}
 
 	if r == nil {
-		return nil, fmt.Errorf("%s: no error or row returned from ReadRow()", logLabel)
+		return &pb.RowResult{
+			Status: &status.Status{
+				Code: int32(codes.OK),
+			},
+			Row: &btpb.Row{},
+		}, nil
 	}
 
 	pbRow, err := rowToProto(r)
