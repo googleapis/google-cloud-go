@@ -36,7 +36,7 @@ type transactionSettings struct {
 	attempts int
 	readOnly bool
 	prevID   []byte // ID of the transaction to retry
-	readTime timestamppb.Timestamp
+	readTime *timestamppb.Timestamp
 }
 
 // newTransactionSettings creates a transactionSettings with a given TransactionOption slice.
@@ -70,17 +70,31 @@ func (w maxAttempts) apply(s *transactionSettings) {
 	}
 }
 
-// ReadOnly is a TransactionOption that marks the transaction as read-only.
-type ReadOnly struct {
-	ReadTime time.Time // ReadTime specifies the snapshot of the database to read.
+func WithReadTime(t time.Time) TransactionOption {
+	return readTime{t}
 }
 
-func (ro *ReadOnly) apply(s *transactionSettings) {
-	s.readOnly = true
+type readTime struct {
+	time.Time
+}
 
-	if !ro.ReadTime.IsZero() {
-		s.readTime = *timestamppb.New(ro.ReadTime)
+func (rt readTime) apply(s *transactionSettings) {
+	if !rt.Time.IsZero() {
+		s.readTime = timestamppb.New(rt.Time)
 	}
+}
+
+// ReadOnly is a TransactionOption that marks the transaction as read-only.
+var ReadOnly TransactionOption
+
+func init() {
+	ReadOnly = readOnly{}
+}
+
+type readOnly struct{}
+
+func (readOnly) apply(s *transactionSettings) {
+	s.readOnly = true
 }
 
 // Transaction represents a set of datastore operations to be committed atomically.
@@ -119,9 +133,9 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
 
-		var ro *pb.TransactionOptions_ReadOnly
+		ro := &pb.TransactionOptions_ReadOnly{}
 		if !s.readTime.AsTime().IsZero() {
-			ro.ReadTime = &s.readTime
+			ro.ReadTime = s.readTime
 		}
 
 		req.TransactionOptions = &pb.TransactionOptions{

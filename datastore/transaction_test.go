@@ -20,6 +20,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestNewTransaction(t *testing.T) {
@@ -62,6 +63,17 @@ func TestNewTransaction(t *testing.T) {
 						PreviousTransaction: []byte("tid"),
 					},
 					},
+				},
+			},
+		},
+		{
+			&transactionSettings{readOnly: true, readTime: timestamppb.Now()},
+			&pb.BeginTransactionRequest{
+				ProjectId: "project",
+				TransactionOptions: &pb.TransactionOptions{
+					Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{
+						ReadTime: timestamppb.Now(),
+					}},
 				},
 			},
 		},
