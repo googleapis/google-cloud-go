@@ -27,10 +27,12 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/spanner/testdata"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 var (
@@ -247,17 +249,27 @@ func TestEncodeValue(t *testing.T) {
 	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
 	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
 
+	bookProtoMsg := &pb.Book{
+		Isbn:   0,
+		Title:  "Harry Potter",
+		Author: "JK Rowling",
+		Genre:  pb.Genre_CLASSICAL,
+	}
+	bookProtoEnum := pb.Genre_COUNTRY
+
 	var (
-		tString    = stringType()
-		tInt       = intType()
-		tBool      = boolType()
-		tFloat     = floatType()
-		tBytes     = bytesType()
-		tTime      = timeType()
-		tDate      = dateType()
-		tNumeric   = numericType()
-		tJSON      = jsonType()
-		tPGNumeric = pgNumericType()
+		tString       = stringType()
+		tInt          = intType()
+		tBool         = boolType()
+		tFloat        = floatType()
+		tBytes        = bytesType()
+		tTime         = timeType()
+		tDate         = dateType()
+		tNumeric      = numericType()
+		tJSON         = jsonType()
+		tPGNumeric    = pgNumericType()
+		tProtoMessage = protoType()
+		tProtoEnum    = enumType()
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -459,6 +471,8 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
+		{bookProtoEnum, enumProto(bookProtoEnum), tProtoEnum, "Proto Enum"},
+		{bookProtoMsg, messageProto(bookProtoMsg), tProtoMessage, "Proto Message"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1393,6 +1407,14 @@ func TestDecodeValue(t *testing.T) {
 	var dNilPtr *civil.Date
 	d2Value := d2
 
+	enumValue := pb.Genre_COUNTRY
+	protoMessage := pb.Book{
+		Isbn:   0,
+		Title:  "Harry Potter",
+		Author: "JK Rowling",
+		Genre:  pb.Genre_CLASSICAL,
+	}
+
 	for _, test := range []struct {
 		desc      string
 		proto     *proto3.Value
@@ -1787,6 +1809,9 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of bool to CustomStructToNull", proto: nullProto(), protoType: listType(boolType()), want: customStructToNull{}},
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "decode PROTO to proto.Message", proto: messageProto(&protoMessage), protoType: protoType(), want: protoMessage},
+		{desc: "decode ENUM to *enum", proto: enumProto(pb.Genre_COUNTRY), protoType: enumType(), want: enumValue},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1820,8 +1845,26 @@ func TestDecodeValue(t *testing.T) {
 			continue
 		}
 		got := reflect.Indirect(gotp).Interface()
-		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
-			t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+		switch v.(type) {
+		case proto.Message:
+			got_, ok := got.(pb.Book)
+			if !ok {
+				t.Errorf("error converting interface to Book proto : %v", ok)
+			}
+			want_, ok1 := test.want.(pb.Book)
+			if !ok1 {
+				t.Errorf("error converting interface to Book proto : %v", ok1)
+			}
+			if !proto.Equal(&got_, &want_) {
+				t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got_, got_, want_, want_)
+			}
+			if diff := cmp.Diff(got, test.want, protocmp.Transform()); diff != "" {
+				t.Errorf("unexpected difference:\n%v", diff)
+			}
+		default:
+			if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
+				t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+			}
 		}
 	}
 }
