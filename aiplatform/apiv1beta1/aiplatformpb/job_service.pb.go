@@ -171,6 +171,9 @@ type ListCustomJobsRequest struct {
 	//   - `state` supports `=`, `!=` comparisons.
 	//   - `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons.
 	//     `create_time` must be in RFC 3339 format.
+	//   - `labels` supports general map functions that is:
+	//     `labels.key=value` - key:value equality
+	//     `labels.key:* - key existence
 	//
 	// Some examples of using the filter are:
 	//
@@ -178,6 +181,8 @@ type ListCustomJobsRequest struct {
 	//   - `state!="JOB_STATE_FAILED" OR display_name="my_job"`
 	//   - `NOT display_name="my_job"`
 	//   - `create_time>"2021-05-18T00:00:00Z"`
+	//   - `labels.keyA=valueA`
+	//   - `labels.keyB:*`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -545,6 +550,9 @@ type ListDataLabelingJobsRequest struct {
 	//   - `state` supports `=`, `!=` comparisons.
 	//   - `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons.
 	//     `create_time` must be in RFC 3339 format.
+	//   - `labels` supports general map functions that is:
+	//     `labels.key=value` - key:value equality
+	//     `labels.key:* - key existence
 	//
 	// Some examples of using the filter are:
 	//
@@ -552,6 +560,8 @@ type ListDataLabelingJobsRequest struct {
 	//   - `state!="JOB_STATE_FAILED" OR display_name="my_job"`
 	//   - `NOT display_name="my_job"`
 	//   - `create_time>"2021-05-18T00:00:00Z"`
+	//   - `labels.keyA=valueA`
+	//   - `labels.keyB:*`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -930,6 +940,9 @@ type ListHyperparameterTuningJobsRequest struct {
 	//   - `state` supports `=`, `!=` comparisons.
 	//   - `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons.
 	//     `create_time` must be in RFC 3339 format.
+	//   - `labels` supports general map functions that is:
+	//     `labels.key=value` - key:value equality
+	//     `labels.key:* - key existence
 	//
 	// Some examples of using the filter are:
 	//
@@ -937,6 +950,8 @@ type ListHyperparameterTuningJobsRequest struct {
 	//   - `state!="JOB_STATE_FAILED" OR display_name="my_job"`
 	//   - `NOT display_name="my_job"`
 	//   - `create_time>"2021-05-18T00:00:00Z"`
+	//   - `labels.keyA=valueA`
+	//   - `labels.keyB:*`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -1307,6 +1322,9 @@ type ListBatchPredictionJobsRequest struct {
 	//   - `state` supports `=`, `!=` comparisons.
 	//   - `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons.
 	//     `create_time` must be in RFC 3339 format.
+	//   - `labels` supports general map functions that is:
+	//     `labels.key=value` - key:value equality
+	//     `labels.key:* - key existence
 	//
 	// Some examples of using the filter are:
 	//
@@ -1314,6 +1332,8 @@ type ListBatchPredictionJobsRequest struct {
 	//   - `state!="JOB_STATE_FAILED" OR display_name="my_job"`
 	//   - `NOT display_name="my_job"`
 	//   - `create_time>"2021-05-18T00:00:00Z"`
+	//   - `labels.keyA=valueA`
+	//   - `labels.keyB:*`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -1872,6 +1892,9 @@ type ListModelDeploymentMonitoringJobsRequest struct {
 	//   - `state` supports `=`, `!=` comparisons.
 	//   - `create_time` supports `=`, `!=`,`<`, `<=`,`>`, `>=` comparisons.
 	//     `create_time` must be in RFC 3339 format.
+	//   - `labels` supports general map functions that is:
+	//     `labels.key=value` - key:value equality
+	//     `labels.key:* - key existence
 	//
 	// Some examples of using the filter are:
 	//
@@ -1879,6 +1902,8 @@ type ListModelDeploymentMonitoringJobsRequest struct {
 	//   - `state!="JOB_STATE_FAILED" OR display_name="my_job"`
 	//   - `NOT display_name="my_job"`
 	//   - `create_time>"2021-05-18T00:00:00Z"`
+	//   - `labels.keyA=valueA`
+	//   - `labels.keyB:*`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
