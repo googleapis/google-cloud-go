@@ -186,7 +186,10 @@ func initIntegrationTest() func() error {
 			cleanup = cleanupBuckets
 		}
 		ctx := context.Background()
-		client := config(ctx)
+		client, err := newTestClient(ctx)
+		if err != nil {
+			log.Fatalf("NewClient: %v", err)
+		}
 		if client == nil {
 			return func() error { return nil }
 		}
@@ -216,11 +219,14 @@ func initUIDsAndRand(t time.Time) {
 // testConfig returns the Client used to access GCS. testConfig skips
 // the current test if credentials are not available or when being run
 // in Short mode.
-func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
+func testConfig(ctx context.Context, t *testing.T, opts ...option.ClientOption) *Client {
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
-	client := config(ctx, scopes...)
+	client, err := newTestClient(ctx, opts...)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
@@ -229,12 +235,12 @@ func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
 
 // testConfigGPRC returns a gRPC-based client to access GCS. testConfigGRPC
 // skips the curent test when being run in Short mode.
-func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
+func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOption) (gc *Client) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newGRPCClient(ctx)
+	gc, err := newGRPCClient(ctx, opts...)
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
 	}
@@ -243,10 +249,10 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 }
 
 // initTransportClients initializes Storage clients for each supported transport.
-func initTransportClients(ctx context.Context, t *testing.T) map[string]*Client {
+func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	return map[string]*Client{
-		"http": testConfig(ctx, t, "https://www.googleapis.com/auth/cloud-platform"),
-		"grpc": testConfigGRPC(ctx, t),
+		"http": testConfig(ctx, t, opts...),
+		"grpc": testConfigGRPC(ctx, t, opts...),
 	}
 }
 
@@ -255,8 +261,10 @@ func initTransportClients(ctx context.Context, t *testing.T) map[string]*Client 
 // test function with the sub-test instance, the context it was given, the name
 // of an existing bucket to use, a bucket name to use for bucket creation, and
 // the client to use.
-func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T, context.Context, string, string, *Client)) {
-	for transport, client := range initTransportClients(ctx, t) {
+func multiTransportTest(ctx context.Context, t *testing.T,
+	test func(*testing.T, context.Context, string, string, *Client),
+	opts ...option.ClientOption) {
+	for transport, client := range initTransportClients(ctx, t, opts...) {
 		t.Run(transport, func(t *testing.T) {
 			defer client.Close()
 
@@ -274,20 +282,6 @@ func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T,
 			test(t, ctx, bucket, prefix, client)
 		})
 	}
-}
-
-// config is like testConfig, but it doesn't need a *testing.T.
-func config(ctx context.Context, scopes ...string) *Client {
-	scopes = append(scopes, ScopeFullControl)
-	ts := testutil.TokenSource(ctx, scopes...)
-	if ts == nil {
-		return nil
-	}
-	client, err := newTestClient(ctx, option.WithTokenSource(ts))
-	if err != nil {
-		log.Fatalf("NewClient: %v", err)
-	}
-	return client
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
@@ -4391,7 +4385,13 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 	defer clientWithCredentials.Close()
 
 	// Create another client to test the sign byte function as well
-	clientWithoutPrivateKey := testConfig(ctx, t, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+
+	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
+	ts := testutil.TokenSource(ctx, scopes...)
+	if ts == nil {
+		t.Fatalf("Cannot get token source to create client")
+	}
+	clientWithoutPrivateKey := testConfig(ctx, t, option.WithTokenSource(ts))
 	defer clientWithoutPrivateKey.Close()
 
 	jwt, err := testutil.JWTConfig()
@@ -4443,15 +4443,63 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 	}
 }
 
-func TestIntegration_PostPolicyV4_Bucket(t *testing.T) {
+func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
+	ctx := context.Background()
+	// By default we are authed with a token source, so don't have the context to
+	// read some of the fields from the keyfile.
+	// Here we explictly send the key to the client.
+	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+
+	multiTransportTest(skipGRPC("creds capture logic must be implemented for gRPC constructor"),
+		t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithCredentials *Client) {
+			h := testHelper{t}
+
+			statusCodeToRespond := 200
+
+			for _, test := range []struct {
+				desc   string
+				opts   PostPolicyV4Options
+				client *Client
+			}{
+				{
+					desc: "signing with the private key",
+					opts: PostPolicyV4Options{
+						Expires: time.Now().Add(30 * time.Minute),
+
+						Fields: &PolicyV4Fields{
+							StatusCodeOnSuccess: statusCodeToRespond,
+							ContentType:         "text/plain",
+							ACL:                 "public-read",
+						},
+					},
+					client: clientWithCredentials,
+				},
+			} {
+				t.Run(test.desc, func(t *testing.T) {
+					objectName := uidSpace.New()
+					object := test.client.Bucket(bucket).Object(objectName)
+					defer h.mustDeleteObject(object)
+
+					pv4, err := test.client.Bucket(bucket).GenerateSignedPostPolicyV4(objectName, &test.opts)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
+						t.Fatal(err)
+					}
+				})
+			}
+		}, option.WithCredentials(creds))
+
+}
+
+func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
 		h := testHelper{t}
-
-		// We explicitly send the key to the client to sign with the private key
-		// TODO: This will only work with HTTP for now, change to enable using
-		// a gRPC client also?
-		clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
-		defer clientWithCredentials.Close()
 
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
@@ -4465,19 +4513,6 @@ func TestIntegration_PostPolicyV4_Bucket(t *testing.T) {
 			opts   PostPolicyV4Options
 			client *Client
 		}{
-			{
-				desc: "signing with the private key",
-				opts: PostPolicyV4Options{
-					Expires: time.Now().Add(30 * time.Minute),
-
-					Fields: &PolicyV4Fields{
-						StatusCodeOnSuccess: statusCodeToRespond,
-						ContentType:         "text/plain",
-						ACL:                 "public-read",
-					},
-				},
-				client: clientWithCredentials,
-			},
 			{
 				desc: "signing with the default sign bytes func",
 				opts: PostPolicyV4Options{
@@ -4838,7 +4873,10 @@ func cleanupBuckets() error {
 		return nil // Don't clean up in short mode.
 	}
 	ctx := context.Background()
-	client := config(ctx)
+	client, err := newTestClient(ctx)
+	if err != nil {
+		log.Fatalf("NewClient: %v", err)
+	}
 	if client == nil {
 		return nil // Don't cleanup if we're not configured correctly.
 	}
