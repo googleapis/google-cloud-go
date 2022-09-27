@@ -57,7 +57,7 @@
 //
 //	req := &networksecuritypb.ListAuthorizationPoliciesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#ListAuthorizationPoliciesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#ListAuthorizationPoliciesRequest.
 //	}
 //	it := c.ListAuthorizationPolicies(ctx, req)
 //	for {

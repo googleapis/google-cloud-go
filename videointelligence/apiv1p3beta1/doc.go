@@ -61,7 +61,7 @@
 //
 //	req := &videointelligencepb.AnnotateVideoRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/videointelligence/v1p3beta1#AnnotateVideoRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/videointelligence/apiv1p3beta1/videointelligencepb#AnnotateVideoRequest.
 //	}
 //	op, err := c.AnnotateVideo(ctx, req)
 //	if err != nil {

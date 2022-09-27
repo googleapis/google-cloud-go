@@ -57,7 +57,7 @@
 //
 //	req := &gkehubpb.ListMembershipsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ListMembershipsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#ListMembershipsRequest.
 //	}
 //	it := c.ListMemberships(ctx, req)
 //	for {

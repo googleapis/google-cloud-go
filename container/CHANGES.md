@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.3.1...container/v1.4.0) (2022-09-19)
+
+
+### Features
+
+* **container:** added High Throughput Logging API for Google Kubernetes Engine docs: ReservationAffinity key field docs incorrect docs: missing period in description for min CPU platform ([bc7a5f6](https://github.com/googleapis/google-cloud-go/commit/bc7a5f609994f73e26f72a78f0ff14aa75c1c227))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.3.0...container/v1.3.1) (2022-08-02)
 
 

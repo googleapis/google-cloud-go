@@ -22,7 +22,7 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1beta1"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
+	"cloud.google.com/go/automl/apiv1beta1/automlpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &automlpb.UpdateTableSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateTableSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#UpdateTableSpecRequest.
 	}
 	resp, err := c.UpdateTableSpec(ctx, req)
 	if err != nil {

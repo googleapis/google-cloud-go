@@ -1997,6 +1997,11 @@
                 "QueryExecutionInputsAndOutputs"
               ]
             },
+            "RemoveContextChildren": {
+              "methods": [
+                "RemoveContextChildren"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -2205,6 +2210,11 @@
             "QueryExecutionInputsAndOutputs": {
               "methods": [
                 "QueryExecutionInputsAndOutputs"
+              ]
+            },
+            "RemoveContextChildren": {
+              "methods": [
+                "RemoveContextChildren"
               ]
             },
             "SetIamPolicy": {

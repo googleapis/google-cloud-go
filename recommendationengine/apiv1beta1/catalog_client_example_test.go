@@ -20,8 +20,8 @@ import (
 	"context"
 
 	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
+	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	"google.golang.org/api/iterator"
-	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )
 
 func ExampleNewCatalogClient() {
@@ -73,7 +73,7 @@ func ExampleCatalogClient_CreateCatalogItem() {
 
 	req := &recommendationenginepb.CreateCatalogItemRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#CreateCatalogItemRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#CreateCatalogItemRequest.
 	}
 	resp, err := c.CreateCatalogItem(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExampleCatalogClient_GetCatalogItem() {
 
 	req := &recommendationenginepb.GetCatalogItemRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#GetCatalogItemRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#GetCatalogItemRequest.
 	}
 	resp, err := c.GetCatalogItem(ctx, req)
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleCatalogClient_ListCatalogItems() {
 
 	req := &recommendationenginepb.ListCatalogItemsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#ListCatalogItemsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#ListCatalogItemsRequest.
 	}
 	it := c.ListCatalogItems(ctx, req)
 	for {
@@ -154,7 +154,7 @@ func ExampleCatalogClient_UpdateCatalogItem() {
 
 	req := &recommendationenginepb.UpdateCatalogItemRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#UpdateCatalogItemRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#UpdateCatalogItemRequest.
 	}
 	resp, err := c.UpdateCatalogItem(ctx, req)
 	if err != nil {
@@ -179,7 +179,7 @@ func ExampleCatalogClient_DeleteCatalogItem() {
 
 	req := &recommendationenginepb.DeleteCatalogItemRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#DeleteCatalogItemRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#DeleteCatalogItemRequest.
 	}
 	err = c.DeleteCatalogItem(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleCatalogClient_ImportCatalogItems() {
 
 	req := &recommendationenginepb.ImportCatalogItemsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#ImportCatalogItemsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#ImportCatalogItemsRequest.
 	}
 	op, err := c.ImportCatalogItems(ctx, req)
 	if err != nil {

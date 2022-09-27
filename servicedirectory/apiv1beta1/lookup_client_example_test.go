@@ -20,7 +20,7 @@ import (
 	"context"
 
 	servicedirectory "cloud.google.com/go/servicedirectory/apiv1beta1"
-	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
+	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb"
 )
 
 func ExampleNewLookupClient() {
@@ -72,7 +72,7 @@ func ExampleLookupClient_ResolveService() {
 
 	req := &servicedirectorypb.ResolveServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1#ResolveServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb#ResolveServiceRequest.
 	}
 	resp, err := c.ResolveService(ctx, req)
 	if err != nil {
