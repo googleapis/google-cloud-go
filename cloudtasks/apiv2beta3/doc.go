@@ -57,9 +57,9 @@
 //	}
 //	defer c.Close()
 //
-//	req := &taskspb.ListQueuesRequest{
+//	req := &cloudtaskspb.ListQueuesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta3#ListQueuesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ListQueuesRequest.
 //	}
 //	it := c.ListQueues(ctx, req)
 //	for {

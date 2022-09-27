@@ -20,7 +20,7 @@ import (
 	"context"
 
 	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
-	dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
+	dataqnapb "cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 )
 
 func ExampleNewQuestionClient() {
@@ -72,7 +72,7 @@ func ExampleQuestionClient_GetQuestion() {
 
 	req := &dataqnapb.GetQuestionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetQuestionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#GetQuestionRequest.
 	}
 	resp, err := c.GetQuestion(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExampleQuestionClient_CreateQuestion() {
 
 	req := &dataqnapb.CreateQuestionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#CreateQuestionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#CreateQuestionRequest.
 	}
 	resp, err := c.CreateQuestion(ctx, req)
 	if err != nil {
@@ -122,7 +122,7 @@ func ExampleQuestionClient_ExecuteQuestion() {
 
 	req := &dataqnapb.ExecuteQuestionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#ExecuteQuestionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#ExecuteQuestionRequest.
 	}
 	resp, err := c.ExecuteQuestion(ctx, req)
 	if err != nil {
@@ -147,7 +147,7 @@ func ExampleQuestionClient_GetUserFeedback() {
 
 	req := &dataqnapb.GetUserFeedbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetUserFeedbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#GetUserFeedbackRequest.
 	}
 	resp, err := c.GetUserFeedback(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleQuestionClient_UpdateUserFeedback() {
 
 	req := &dataqnapb.UpdateUserFeedbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#UpdateUserFeedbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#UpdateUserFeedbackRequest.
 	}
 	resp, err := c.UpdateUserFeedback(ctx, req)
 	if err != nil {

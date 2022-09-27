@@ -22,7 +22,7 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2beta"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2beta"
+	"cloud.google.com/go/functions/apiv2beta/functionspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &functionspb.GenerateDownloadUrlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#GenerateDownloadUrlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#GenerateDownloadUrlRequest.
 	}
 	resp, err := c.GenerateDownloadUrl(ctx, req)
 	if err != nil {

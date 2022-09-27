@@ -20,8 +20,8 @@ import (
 	"context"
 
 	tables "cloud.google.com/go/area120/tables/apiv1alpha1"
+	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	"google.golang.org/api/iterator"
-	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 )
 
 func ExampleNewClient() {
@@ -73,7 +73,7 @@ func ExampleClient_GetTable() {
 
 	req := &tablespb.GetTableRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#GetTableRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetTableRequest.
 	}
 	resp, err := c.GetTable(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExampleClient_ListTables() {
 
 	req := &tablespb.ListTablesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#ListTablesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#ListTablesRequest.
 	}
 	it := c.ListTables(ctx, req)
 	for {
@@ -129,7 +129,7 @@ func ExampleClient_GetWorkspace() {
 
 	req := &tablespb.GetWorkspaceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#GetWorkspaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetWorkspaceRequest.
 	}
 	resp, err := c.GetWorkspace(ctx, req)
 	if err != nil {
@@ -154,7 +154,7 @@ func ExampleClient_ListWorkspaces() {
 
 	req := &tablespb.ListWorkspacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#ListWorkspacesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#ListWorkspacesRequest.
 	}
 	it := c.ListWorkspaces(ctx, req)
 	for {
@@ -185,7 +185,7 @@ func ExampleClient_GetRow() {
 
 	req := &tablespb.GetRowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#GetRowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetRowRequest.
 	}
 	resp, err := c.GetRow(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleClient_ListRows() {
 
 	req := &tablespb.ListRowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#ListRowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#ListRowsRequest.
 	}
 	it := c.ListRows(ctx, req)
 	for {
@@ -241,7 +241,7 @@ func ExampleClient_CreateRow() {
 
 	req := &tablespb.CreateRowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#CreateRowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#CreateRowRequest.
 	}
 	resp, err := c.CreateRow(ctx, req)
 	if err != nil {
@@ -266,7 +266,7 @@ func ExampleClient_BatchCreateRows() {
 
 	req := &tablespb.BatchCreateRowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#BatchCreateRowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchCreateRowsRequest.
 	}
 	resp, err := c.BatchCreateRows(ctx, req)
 	if err != nil {
@@ -291,7 +291,7 @@ func ExampleClient_UpdateRow() {
 
 	req := &tablespb.UpdateRowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#UpdateRowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#UpdateRowRequest.
 	}
 	resp, err := c.UpdateRow(ctx, req)
 	if err != nil {
@@ -316,7 +316,7 @@ func ExampleClient_BatchUpdateRows() {
 
 	req := &tablespb.BatchUpdateRowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#BatchUpdateRowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchUpdateRowsRequest.
 	}
 	resp, err := c.BatchUpdateRows(ctx, req)
 	if err != nil {
@@ -341,7 +341,7 @@ func ExampleClient_DeleteRow() {
 
 	req := &tablespb.DeleteRowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#DeleteRowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#DeleteRowRequest.
 	}
 	err = c.DeleteRow(ctx, req)
 	if err != nil {
@@ -364,7 +364,7 @@ func ExampleClient_BatchDeleteRows() {
 
 	req := &tablespb.BatchDeleteRowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#BatchDeleteRowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchDeleteRowsRequest.
 	}
 	err = c.BatchDeleteRows(ctx, req)
 	if err != nil {

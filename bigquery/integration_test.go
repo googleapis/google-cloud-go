@@ -29,6 +29,7 @@ import (
 	"testing"
 	"time"
 
+	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 	"cloud.google.com/go/httpreplay"
@@ -54,6 +55,7 @@ var record = flag.Bool("record", false, "record RPCs")
 var (
 	client                 *Client
 	storageClient          *storage.Client
+	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
 	dataset                *Dataset
 	otherDataset           *Dataset
@@ -123,6 +125,10 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		connectionsClient, err = connection.NewClient(ctx, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx)
 		if err != nil {
 			log.Fatal(err)
@@ -140,6 +146,7 @@ func initIntegrationTest() func() {
 		}
 		client = nil
 		storageClient = nil
+		connectionsClient = nil
 		return func() {}
 
 	default: // Run integration tests against a real backend.
@@ -150,7 +157,8 @@ func initIntegrationTest() func() {
 		}
 		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
 		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
-		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform"))}
+		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, datacatalog.DefaultAuthScopes()...))}
+		connOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, connection.DefaultAuthScopes()...))}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -189,6 +197,7 @@ func initIntegrationTest() func() {
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
 			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
+			connOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
@@ -202,6 +211,10 @@ func initIntegrationTest() func() {
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
 		if err != nil {
 			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
+		}
+		connectionsClient, err = connection.NewClient(ctx, connOpts...)
+		if err != nil {
+			log.Fatalf("connection.NewService: %v", err)
 		}
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }

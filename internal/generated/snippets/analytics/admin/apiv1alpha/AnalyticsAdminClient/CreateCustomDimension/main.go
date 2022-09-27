@@ -22,7 +22,7 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
-	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+	"cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &adminpb.CreateCustomDimensionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateCustomDimensionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateCustomDimensionRequest.
 	}
 	resp, err := c.CreateCustomDimension(ctx, req)
 	if err != nil {
