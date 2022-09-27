@@ -341,7 +341,9 @@ func (br *benchmarkResult) csv() []string {
 		strconv.FormatUint(br.startMem.HeapSys, 10),
 		strconv.FormatUint(br.startMem.HeapAlloc, 10),
 		strconv.FormatUint(br.startMem.StackInuse, 10),
-		strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
+		// commented out to avoid large numbers messing up BigQuery imports
+		// TODO: revisit later
+		"-1", //strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
 		strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10),
 		strconv.FormatInt(br.start.Unix(), 10),
 		strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10),
