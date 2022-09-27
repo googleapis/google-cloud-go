@@ -214,7 +214,6 @@ func (x *CustomJob) GetWebAccessUris() map[string]string {
 }
 
 // Represents the spec of a CustomJob.
-// Next Id: 15
 type CustomJobSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
