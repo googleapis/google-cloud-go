@@ -109,7 +109,7 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("GetPartitions: %v", err)
+			return nil, fmt.Errorf("GetPartitions: %w", err)
 		}
 		cursorReferences = append(cursorReferences, cursor.GetValues()...)
 	}

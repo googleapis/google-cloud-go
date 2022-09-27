@@ -258,7 +258,7 @@ type tagOptions struct {
 func parseTag(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
 	name, keep, opts, err := fields.ParseStandardTag("firestore", t)
 	if err != nil {
-		return "", false, nil, fmt.Errorf("firestore: %v", err)
+		return "", false, nil, fmt.Errorf("firestore: %w", err)
 	}
 	tagOpts := tagOptions{}
 	for _, opt := range opts {
