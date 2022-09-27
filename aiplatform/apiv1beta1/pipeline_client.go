@@ -1471,6 +1471,13 @@ func (c *pipelineRESTClient) ListPipelineJobs(ctx context.Context, req *aiplatfo
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetReadMask() != nil {
+			readMask, err := protojson.Marshal(req.GetReadMask())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("readMask", string(readMask))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
