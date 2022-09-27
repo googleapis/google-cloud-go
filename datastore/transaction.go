@@ -36,7 +36,7 @@ type transactionSettings struct {
 	attempts int
 	readOnly bool
 	prevID   []byte // ID of the transaction to retry
-	readTime timestamppb.Timestamp
+	readTime *timestamppb.Timestamp
 }
 
 // newTransactionSettings creates a transactionSettings with a given TransactionOption slice.
@@ -94,7 +94,7 @@ type readTime struct {
 
 func (rt readTime) apply(s *transactionSettings) {
 	if !rt.IsZero() {
-		s.readTime = *timestamppb.New(rt.Time)
+		s.readTime = timestamppb.New(rt.Time)
 	}
 }
 
@@ -134,9 +134,9 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
 
-		var ro *pb.TransactionOptions_ReadOnly
-		if !s.readTime.AsTime().IsZero() {
-			ro.ReadTime = &s.readTime
+		ro := &pb.TransactionOptions_ReadOnly{}
+		if s.readTime != nil {
+			ro.ReadTime = s.readTime
 		}
 
 		req.TransactionOptions = &pb.TransactionOptions{
