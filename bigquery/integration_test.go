@@ -157,7 +157,7 @@ func initIntegrationTest() func() {
 		}
 		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
 		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
-		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform"))}
+		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, datacatalog.DefaultAuthScopes()...))}
 		connOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, connection.DefaultAuthScopes()...))}
 		cleanup := func() {}
 		now := time.Now().UTC()
