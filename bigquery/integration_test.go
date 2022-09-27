@@ -158,6 +158,7 @@ func initIntegrationTest() func() {
 		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
 		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
 		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform"))}
+		connOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, connection.DefaultAuthScopes()...))}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -196,6 +197,7 @@ func initIntegrationTest() func() {
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
 			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
+			connOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
@@ -210,7 +212,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
 		}
-		connectionsClient, err = connection.NewClient(ctx, sOpts...)
+		connectionsClient, err = connection.NewClient(ctx, connOpts...)
 		if err != nil {
 			log.Fatalf("connection.NewService: %v", err)
 		}
