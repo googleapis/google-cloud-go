@@ -23,8 +23,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // Helpers to generate protobuf values and Cloud Spanner types.
@@ -127,4 +129,21 @@ func structType(fields ...*sppb.StructType_Field) *sppb.Type {
 
 func nullProto() *proto3.Value {
 	return &proto3.Value{Kind: &proto3.Value_NullValue{NullValue: proto3.NullValue_NULL_VALUE}}
+}
+
+func protoType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_PROTO}
+}
+
+func enumType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_ENUM}
+}
+
+func enumProto(e protoreflect.Enum) *proto3.Value {
+	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: strconv.FormatInt(int64(e.Number()), 10)}}
+}
+
+func messageProto(m proto.Message) *proto3.Value {
+	var b, _ = proto.Marshal(m)
+	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: base64.StdEncoding.EncodeToString(b)}}
 }

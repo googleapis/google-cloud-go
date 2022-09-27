@@ -36,6 +36,7 @@ import (
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
@@ -1844,6 +1845,45 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		*p = y
 	case *GenericColumnValue:
 		*p = GenericColumnValue{Type: t, Value: v}
+	case protoreflect.Enum:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_ENUM {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := strconv.ParseInt(x, 10, 64)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		reflect.ValueOf(p).Elem().SetInt(y)
+	case proto.Message:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_PROTO {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := base64.StdEncoding.DecodeString(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		proto.Unmarshal(y, p)
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
@@ -3564,6 +3604,19 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = proto.Clone(v.Type).(*sppb.Type)
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
+	case protoreflect.Enum:
+		// TODO: here nil check not needed because a enum variable always has a default value. Recheck
+		pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
+		pt = enumType()
+	case proto.Message:
+		if v != nil {
+			bytes, err := proto.Marshal(v)
+			if err != nil {
+				return nil, nil, err
+			}
+			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
+		}
+		pt = protoType()
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
