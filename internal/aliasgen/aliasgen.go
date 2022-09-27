@@ -60,6 +60,9 @@ func cleanDir(dir string) error {
 		return err
 	}
 	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
 		if err := os.RemoveAll(filepath.Join(dir, entry.Name())); err != nil {
 			return err
 		}
