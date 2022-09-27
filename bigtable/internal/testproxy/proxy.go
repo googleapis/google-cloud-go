@@ -23,13 +23,13 @@ import (
 	"log"
 	"net"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable"
-	gauth "golang.org/x/oauth2/google"
-
 	"github.com/golang/protobuf/ptypes/duration"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
+	gauth "golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/genproto/googleapis/rpc/status"
@@ -38,7 +38,6 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	oauth "google.golang.org/grpc/credentials/oauth"
-
 	stat "google.golang.org/grpc/status"
 )
 
@@ -352,14 +351,12 @@ type testClient struct {
 // addCancelFunction appends a context.CancelFunc to testClient.cancels slice.
 // It returns a new context object composed from the original.
 func (tc *testClient) addCancelFunction(ctx context.Context) context.Context {
-	var cancel context.CancelFunc
+	ctx2, cancel := context.WithCancel(ctx)
 	if tc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
+		ctx2, cancel = context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
 	}
 	tc.cancels = append(tc.cancels, cancel)
-	return ctx
+	return ctx2
 }
 
 // cancelAll calls all of the context.CancelFuncs stored in this testClient.
@@ -488,7 +485,7 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 		creds = insecure.NewCredentials()
 	default:
 		ctx := context.Background()
-		c, err := gauth.FindDefaultCredentials(ctx, []string{"https://www.googleapis.com/auth/cloud-platform"}...)
+		c, err := gauth.FindDefaultCredentials(ctx, "https://www.googleapis.com/auth/cloud-platform")
 		if err != nil {
 			return nil, err
 		}
@@ -505,7 +502,8 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 // a reference to individual clients instances (stored in a testClient object).
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
-	clientIDs map[string]testClient // clientIDs has all of the bigtable.Client objects under test
+	clientIDs   map[string]testClient // clientIDs has all of the bigtable.Client objects under test
+	clientsLock sync.Mutex
 }
 
 // CreateClient responds to the CreateClient RPC. This method adds a new client
@@ -519,10 +517,12 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 			fmt.Sprintf("%s must provide ClientId, DataTarget, ProjectId, and InstanceId", logLabel))
 	}
 
+	s.clientsLock.Lock()
 	if _, exists := s.clientIDs[req.ClientId]; exists {
 		return nil, stat.Error(codes.AlreadyExists,
 			fmt.Sprintf("%s: ClientID already exists", logLabel))
 	}
+	s.clientsLock.Unlock()
 
 	opts, err := getCredentialsOptions(req)
 	if err != nil {
@@ -547,6 +547,7 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		s.clientIDs = make(map[string]testClient)
 	}
 
+	s.clientsLock.Lock()
 	s.clientIDs[req.ClientId] = testClient{
 		c: c,
 		cancels: []context.CancelFunc{
@@ -555,10 +556,9 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		appProfileID:        req.AppProfileId,
 		perOperationTimeout: req.PerOperationTimeout,
 	}
+	s.clientsLock.Unlock()
 
-	res := &pb.CreateClientResponse{}
-
-	return res, nil
+	return &pb.CreateClientResponse{}, nil
 }
 
 // RemoveClient responds to the RemoveClient RPC. This method removes an
@@ -567,11 +567,13 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	clientID := req.ClientId
 	doCancelAll := req.CancelAll
 
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[clientID]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
+	defer s.clientsLock.Unlock()
 
 	if doCancelAll {
 		btc.cancelAll()
@@ -586,6 +588,7 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // ReadRow responds to the ReadRow RPC. This method gets all of the column
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -601,6 +604,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	if err != nil {
 		return nil, err
 	}
+	s.clientsLock.Unlock()
 
 	if r == nil {
 		return &pb.RowResult{
@@ -629,6 +633,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // ReadRows responds to the ReadRows RPC. This method gets all of the column
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -673,6 +678,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rowsPb = append(rowsPb, rpb)
 		return true
 	})
+	s.clientsLock.Unlock()
 
 	res := &pb.RowsResult{
 		Status: &status.Status{
@@ -687,6 +693,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 // MutateRow responds to the MutateRow RPC. This methods applies a series of
 // changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -710,6 +717,7 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	if err != nil {
 		return nil, err
 	}
+	s.clientsLock.Unlock()
 
 	res := &pb.MutateRowResult{
 		Status: &status.Status{
@@ -722,6 +730,7 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 // BulkMutateRows responds to the BulkMutateRows RPC. This method applies a
 // series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -759,6 +768,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	if err != nil {
 		return nil, err
 	}
+	s.clientsLock.Unlock()
 
 	entries := make([]*btpb.MutateRowsResponse_Entry, 0)
 
@@ -794,6 +804,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 // CheckAndMutateRow responds to the CheckAndMutateRow RPC. This method applies
 // one mutation if a condition is true and another mutation if it is false.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -809,12 +820,10 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	falseMuts := mutationFromProto(rrq.FalseMutations)
 
 	rfPb := rrq.PredicateFilter
-	var f bigtable.Filter
+	f := bigtable.PassAllFilter()
 
 	if rfPb != nil {
 		f = *filterFromProto(rfPb)
-	} else {
-		f = bigtable.PassAllFilter()
 	}
 
 	c := bigtable.NewCondMutation(f, trueMuts, falseMuts)
@@ -831,6 +840,7 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	if err != nil {
 		return nil, err
 	}
+	s.clientsLock.Unlock()
 
 	res := &pb.CheckAndMutateRowResult{
 		Status: &status.Status{
@@ -846,6 +856,7 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 // SampleRowKeys responds to the SampleRowKeys RPC. This method gets a sampling
 // of the keys available in a table.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -865,6 +876,7 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 	if err != nil {
 		return nil, err
 	}
+	s.clientsLock.Unlock()
 
 	sk := make([]*btpb.SampleRowKeysResponse, 0)
 	for _, k := range keys {
@@ -886,6 +898,7 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 // ReadModifyWriteRow responds to the ReadModifyWriteRow RPC. This method
 // applies a non-idempotent change to a row.
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
+	s.clientsLock.Lock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -914,19 +927,12 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 		}
 	}
 
-	var cancel context.CancelFunc
-	if btc.perOperationTimeout.AsDuration() > 0 {
-		ctx, cancel = context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	btc.cancels = append(btc.cancels, cancel)
-
+	ctx = btc.addCancelFunction(ctx)
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
-
 	if err != nil {
 		return nil, err
 	}
+	s.clientsLock.Unlock()
 
 	rp, err := rowToProto(r)
 	if err != nil {
@@ -954,15 +960,17 @@ func newProxyServer(lis net.Listener) *grpc.Server {
 func main() {
 	flag.Parse()
 
-	log.Println(*port)
+	log.Printf("attempting to listen on port %d", *port)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	defer lis.Close()
 
 	s := newProxyServer(lis)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+	defer s.Stop()
 }
