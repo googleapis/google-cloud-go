@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.104.0
 	cloud.google.com/go/bigquery v1.42.0
 	cloud.google.com/go/datastore v1.8.0
-	cloud.google.com/go/storage v1.23.0
+	cloud.google.com/go/storage v1.27.0
 	github.com/google/go-cmp v0.5.8
 	github.com/yuin/goldmark v1.4.12
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
@@ -22,7 +22,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.5.1 // indirect
-	github.com/googleapis/go-type-adapters v1.0.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
