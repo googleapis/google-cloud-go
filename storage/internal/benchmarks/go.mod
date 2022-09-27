@@ -2,8 +2,6 @@ module main
 
 go 1.19
 
-replace cloud.google.com/go/storage => /Users/brennae/Desktop/google-cloud-go/storage
-
 require (
 	cloud.google.com/go/storage v1.26.0
 	github.com/google/uuid v1.3.0
