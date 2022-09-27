@@ -71,15 +71,30 @@ func (w maxAttempts) apply(s *transactionSettings) {
 }
 
 // ReadOnly is a TransactionOption that marks the transaction as read-only.
-type ReadOnly struct {
-	ReadTime time.Time // ReadTime specifies the snapshot of the database to read.
+var ReadOnly TransactionOption
+
+func init() {
+	ReadOnly = readOnly{}
 }
 
-func (ro *ReadOnly) apply(s *transactionSettings) {
-	s.readOnly = true
+type readOnly struct{}
 
-	if !ro.ReadTime.IsZero() {
-		s.readTime = *timestamppb.New(ro.ReadTime)
+func (readOnly) apply(s *transactionSettings) {
+	s.readOnly = true
+}
+
+// WithReadTime specifies the snapshot of the database to read.
+func WithReadTime(t time.Time) TransactionOption {
+	return readTime{t}
+}
+
+type readTime struct {
+	time.Time
+}
+
+func (rt readTime) apply(s *transactionSettings) {
+	if !rt.IsZero() {
+		s.readTime = *timestamppb.New(rt.Time)
 	}
 }
 
