@@ -308,17 +308,17 @@ const (
 	// span names
 	publisherSpanName          = "send"
 	publishFlowControlSpanName = "publisher flow control"
-	publishBatchSpanName       = "publish batch"
-	publishRPCSpanName         = "send Publish RPC"
+	publishSchedulerSpanName   = "publish scheduler"
+	publishRPCSpanName         = "send Publish"
 
 	subscriberSpanName            = "receive"
 	subscriberFlowControlSpanName = "subscriber flow control"
 	processSpanName               = "process"
 	subscribeSchedulerSpanName    = "subscribe scheduler"
-	receiptModAckSpanName         = "send initial ModifyAckDeadline RPC"
-	modAckSpanName                = "send ModifyAckDeadline RPC"
-	ackSpanName                   = "send Acknowledge RPC"
-	nackSpanName                  = "send Nack RPC"
+	receiptModAckSpanName         = "send initial ModifyAckDeadline"
+	modAckSpanName                = "send ModifyAckDeadline"
+	ackSpanName                   = "send Acknowledge"
+	nackSpanName                  = "send Negative Acknowledge"
 
 	// custom pubsub specific attributes
 	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"
@@ -330,6 +330,7 @@ const (
 	ackAttribute                = "messaging.pubsub.is_acked"
 
 	modackDeadlineSecondsAttribute = "messaging.pubsub.modack_deadline_seconds"
+	initialModackAttribute         = "messaging.pubsub.is_initial_modack"
 )
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {

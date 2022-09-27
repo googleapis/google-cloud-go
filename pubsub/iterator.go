@@ -511,16 +511,15 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 		}
 		var spanName string
 		isNack := deadline == 0
-		if isReceipt {
-			spanName = receiptModAckSpanName
-		} else if isNack {
+		if isNack {
 			spanName = nackSpanName
 		} else {
 			spanName = modAckSpanName
 		}
 		_, span := tracer().Start(ctx, spanName)
 		if !isNack {
-			span.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)))
+			span.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
+				attribute.Bool(initialModackAttribute, isReceipt))
 		}
 		defer span.End()
 	}

@@ -579,7 +579,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	fcSpan.End()
 
-	_, batchSpan := tracer().Start(ctx2, publishBatchSpanName)
+	_, batchSpan := tracer().Start(ctx2, publishSchedulerSpanName)
 
 	bmsg := &bundledMessage{
 		msg:       msg,
