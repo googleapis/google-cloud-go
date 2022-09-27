@@ -98,6 +98,15 @@ func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	}
 }
 
+// DisableWriteRetries disables the logic for automatically re-enqueuing failed writes.
+func DisableWriteRetries(disable bool) WriterOption {
+	return func(ms *ManagedStream) {
+		if disable {
+			ms.retry = nil
+		}
+	}
+}
+
 // AppendOption are options that can be passed when appending data with a managed stream instance.
 type AppendOption func(*pendingWrite)
 
