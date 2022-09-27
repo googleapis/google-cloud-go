@@ -25,7 +25,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -43,26 +42,6 @@ var opts = &benchmarkOptions{}
 var projectID, credentialsFile, outputFile string
 
 var results chan benchmarkResult
-
-// we can share clients as long as the app buffer sizes are constant
-var httpClients, gRPCClients sync.Pool
-
-var nonBenchmarkingClients = sync.Pool{
-	New: func() any {
-		// we don't care if it's grpc or http, so we don't need mutex
-		client, err := storage.NewClient(context.Background())
-		if err != nil {
-			// try once more, if it doesn't work twice fail the program
-			client, err = storage.NewClient(context.Background())
-
-			if err != nil {
-				log.Fatalf("storage.NewClient: %v", err)
-			}
-		}
-
-		return client
-	},
-}
 
 type benchmarkOptions struct {
 	// all sizes are in bytes
@@ -149,37 +128,12 @@ func parseFlags() {
 		fmt.Println("Must set a project ID. Use flag -p to specify it.")
 		os.Exit(1)
 	}
-
-	// Set New functions
-	httpClients.New = func() any {
-		client, err := initializeHTTPClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.useDefaults)
-		if err != nil {
-			// try once more, if it doesn't work twice fail the program
-			client, err = initializeHTTPClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.useDefaults)
-			if err != nil {
-				log.Fatalf("initializeHTTPClient: %v", err)
-			}
-		}
-
-		return client
-	}
-
-	gRPCClients.New = func() any {
-		client, err := initializeGRPCClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.connPoolSize, opts.useDefaults)
-		if err != nil {
-			// try once more, if it doesn't work twice fail the program
-			client, err = initializeGRPCClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.connPoolSize, opts.useDefaults)
-			if err != nil {
-				log.Fatalf("initializeGRPCClient: %v", err)
-			}
-		}
-		return client
-	}
 }
 
 func main() {
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
+	initializeClientPools(opts)
 
 	start := time.Now()
 	fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))
@@ -206,7 +160,12 @@ func main() {
 			log.Fatalf("error setting direct path env var: %v", err)
 		}
 	}
-
+	go func() {
+		for {
+			time.Sleep(time.Second * 5)
+			fmt.Printf("Num grpc clients: %d\n", numgrpc)
+		}
+	}()
 	// Print benchmarking options
 	fmt.Printf("Code version: %s\n", codeVersion)
 	fmt.Printf("Results file: %s\n", outputFile)
