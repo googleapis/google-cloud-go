@@ -813,10 +813,8 @@ func (x *ModelMonitoringObjectiveConfig_ExplanationConfig) GetExplanationBaselin
 	return nil
 }
 
-// Output from
-// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob]
-// for Model Monitoring baseline dataset, which can be used to generate
-// baseline attribution scores.
+// Output from [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob] for Model Monitoring baseline dataset,
+// which can be used to generate baseline attribution scores.
 type ModelMonitoringObjectiveConfig_ExplanationConfig_ExplanationBaseline struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
