@@ -13,9 +13,9 @@ for the Test Frameworks to see usage steps.
 
 1. Run the test proxy (this)
 
-```
-go run internal/testproxy/proxy.go
-```
+
+        go run internal/testproxy/proxy.go
+
 
 You can also specify a port to use for the test proxy by using the `--port`
 flag:
@@ -28,6 +28,4 @@ go run internal/testproxy/proxy.go --port 5000
 
 1. Run the following at the root of the test proxy folder:
 
-```
-go test -v .
-```
+        go test -v .
