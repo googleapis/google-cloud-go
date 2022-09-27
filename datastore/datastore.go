@@ -21,6 +21,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
@@ -28,6 +29,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -56,6 +58,7 @@ type Client struct {
 	connPool gtransport.ConnPool
 	client   pb.DatastoreClient
 	dataset  string // Called dataset by the datastore API, synonym for project ID.
+	readTime time.Time
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -348,7 +351,17 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	if dst == nil { // get catches nil interfaces; we need to catch nil ptr here
 		return ErrInvalidEntityType
 	}
-	err = c.get(ctx, []*Key{key}, []interface{}{dst}, nil)
+
+	var opts *pb.ReadOptions
+	if !c.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				ReadTime: timestamppb.New(c.readTime),
+			},
+		}
+	}
+
+	err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -371,7 +384,16 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	return c.get(ctx, keys, dst, nil)
+	var opts *pb.ReadOptions
+	if !c.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				ReadTime: timestamppb.New(c.readTime),
+			},
+		}
+	}
+
+	return c.get(ctx, keys, dst, opts)
 }
 
 func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
@@ -678,4 +700,17 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 		}
 	}
 	return ret, nil
+}
+
+// ReadOptions provides specific instructions for how to access documents in the database.
+// Currently, only ReadTime is supported.
+type ReadOptions struct {
+	ReadTime time.Time
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+// Once set, all subsequent reads from the client use these options.
+func (c *Client) WithReadOptions(ro ReadOptions) {
+	c.readTime = ro.ReadTime
 }
