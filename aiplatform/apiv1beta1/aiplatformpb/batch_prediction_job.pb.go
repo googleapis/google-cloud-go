@@ -52,7 +52,7 @@ type BatchPredictionJob struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The user-defined name of this BatchPredictionJob.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// The name of the Model resoure that produces the predictions via this job,
+	// The name of the Model resource that produces the predictions via this job,
 	// must share the same ancestor Location.
 	// Starting this job has no impact on any existing deployments of the Model
 	// and their resources.

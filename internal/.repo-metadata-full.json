@@ -1000,7 +1000,7 @@
   },
   "cloud.google.com/go/language/apiv1beta2": {
     "distribution_name": "cloud.google.com/go/language/apiv1beta2",
-    "description": "Google Cloud Natural Language API",
+    "description": "Cloud Natural Language API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/language/latest/apiv1beta2",
