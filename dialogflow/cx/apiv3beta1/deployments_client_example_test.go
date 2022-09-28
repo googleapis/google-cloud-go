@@ -20,8 +20,8 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -75,7 +75,7 @@ func ExampleDeploymentsClient_ListDeployments() {
 
 	req := &cxpb.ListDeploymentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListDeploymentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListDeploymentsRequest.
 	}
 	it := c.ListDeployments(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleDeploymentsClient_GetDeployment() {
 
 	req := &cxpb.GetDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetDeploymentRequest.
 	}
 	resp, err := c.GetDeployment(ctx, req)
 	if err != nil {

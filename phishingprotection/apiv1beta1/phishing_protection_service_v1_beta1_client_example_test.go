@@ -20,7 +20,7 @@ import (
 	"context"
 
 	phishingprotection "cloud.google.com/go/phishingprotection/apiv1beta1"
-	phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
+	phishingprotectionpb "cloud.google.com/go/phishingprotection/apiv1beta1/phishingprotectionpb"
 )
 
 func ExampleNewPhishingProtectionServiceV1Beta1Client() {
@@ -72,7 +72,7 @@ func ExamplePhishingProtectionServiceV1Beta1Client_ReportPhishing() {
 
 	req := &phishingprotectionpb.ReportPhishingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1#ReportPhishingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/phishingprotection/apiv1beta1/phishingprotectionpb#ReportPhishingRequest.
 	}
 	resp, err := c.ReportPhishing(ctx, req)
 	if err != nil {

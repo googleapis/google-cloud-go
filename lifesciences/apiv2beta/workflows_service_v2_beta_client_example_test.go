@@ -20,7 +20,7 @@ import (
 	"context"
 
 	lifesciences "cloud.google.com/go/lifesciences/apiv2beta"
-	lifesciencespb "google.golang.org/genproto/googleapis/cloud/lifesciences/v2beta"
+	lifesciencespb "cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb"
 )
 
 func ExampleNewWorkflowsServiceV2BetaClient() {
@@ -72,7 +72,7 @@ func ExampleWorkflowsServiceV2BetaClient_RunPipeline() {
 
 	req := &lifesciencespb.RunPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/lifesciences/v2beta#RunPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb#RunPipelineRequest.
 	}
 	op, err := c.RunPipeline(ctx, req)
 	if err != nil {

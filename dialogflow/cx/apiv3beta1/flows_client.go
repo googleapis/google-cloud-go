@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"

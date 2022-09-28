@@ -186,7 +186,10 @@ func initIntegrationTest() func() error {
 			cleanup = cleanupBuckets
 		}
 		ctx := context.Background()
-		client := config(ctx)
+		client, err := newTestClient(ctx)
+		if err != nil {
+			log.Fatalf("NewClient: %v", err)
+		}
 		if client == nil {
 			return func() error { return nil }
 		}
@@ -216,11 +219,14 @@ func initUIDsAndRand(t time.Time) {
 // testConfig returns the Client used to access GCS. testConfig skips
 // the current test if credentials are not available or when being run
 // in Short mode.
-func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
+func testConfig(ctx context.Context, t *testing.T, opts ...option.ClientOption) *Client {
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
-	client := config(ctx, scopes...)
+	client, err := newTestClient(ctx, opts...)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
@@ -229,12 +235,12 @@ func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
 
 // testConfigGPRC returns a gRPC-based client to access GCS. testConfigGRPC
 // skips the curent test when being run in Short mode.
-func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
+func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOption) (gc *Client) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newGRPCClient(ctx)
+	gc, err := newGRPCClient(ctx, opts...)
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
 	}
@@ -243,10 +249,10 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 }
 
 // initTransportClients initializes Storage clients for each supported transport.
-func initTransportClients(ctx context.Context, t *testing.T) map[string]*Client {
+func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	return map[string]*Client{
-		"http": testConfig(ctx, t),
-		"grpc": testConfigGRPC(ctx, t),
+		"http": testConfig(ctx, t, opts...),
+		"grpc": testConfigGRPC(ctx, t, opts...),
 	}
 }
 
@@ -255,8 +261,10 @@ func initTransportClients(ctx context.Context, t *testing.T) map[string]*Client 
 // test function with the sub-test instance, the context it was given, the name
 // of an existing bucket to use, a bucket name to use for bucket creation, and
 // the client to use.
-func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T, context.Context, string, string, *Client)) {
-	for transport, client := range initTransportClients(ctx, t) {
+func multiTransportTest(ctx context.Context, t *testing.T,
+	test func(*testing.T, context.Context, string, string, *Client),
+	opts ...option.ClientOption) {
+	for transport, client := range initTransportClients(ctx, t, opts...) {
 		t.Run(transport, func(t *testing.T) {
 			defer client.Close()
 
@@ -276,203 +284,187 @@ func multiTransportTest(ctx context.Context, t *testing.T, test func(*testing.T,
 	}
 }
 
-// config is like testConfig, but it doesn't need a *testing.T.
-func config(ctx context.Context, scopes ...string) *Client {
-	scopes = append(scopes, ScopeFullControl)
-	ts := testutil.TokenSource(ctx, scopes...)
-	if ts == nil {
-		return nil
-	}
-	client, err := newTestClient(ctx, option.WithTokenSource(ts))
-	if err != nil {
-		log.Fatalf("NewClient: %v", err)
-	}
-	return client
-}
-
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(skipGRPC("with_attrs case fails due to b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		projectID := testutil.ProjID()
 
-	projectID := testutil.ProjID()
+		labels := map[string]string{
+			"l1":    "v1",
+			"empty": "",
+		}
 
-	labels := map[string]string{
-		"l1":    "v1",
-		"empty": "",
-	}
+		lifecycle := Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "NEARLINE",
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:             10,
+					Liveness:              Archived,
+					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses: []string{"STANDARD"},
+					NumNewerVersions:      3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "ARCHIVE",
+				},
+				Condition: LifecycleCondition{
+					CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+					DaysSinceCustomTime:   20,
+					Liveness:              Live,
+					MatchesStorageClasses: []string{"STANDARD"},
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					DaysSinceNoncurrentTime: 30,
+					Liveness:                Live,
+					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses:   []string{"NEARLINE"},
+					NumNewerVersions:        10,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays:        10,
+					MatchesPrefix:    []string{"testPrefix"},
+					MatchesSuffix:    []string{"testSuffix"},
+					NumNewerVersions: 3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
+			}},
+		}
 
-	lifecycle := Lifecycle{
-		Rules: []LifecycleRule{{
-			Action: LifecycleAction{
-				Type:         SetStorageClassAction,
-				StorageClass: "NEARLINE",
-			},
-			Condition: LifecycleCondition{
-				AgeInDays:             10,
-				Liveness:              Archived,
-				CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-				MatchesStorageClasses: []string{"STANDARD"},
-				NumNewerVersions:      3,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type:         SetStorageClassAction,
-				StorageClass: "ARCHIVE",
-			},
-			Condition: LifecycleCondition{
-				CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
-				DaysSinceCustomTime:   20,
-				Liveness:              Live,
-				MatchesStorageClasses: []string{"STANDARD"},
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				DaysSinceNoncurrentTime: 30,
-				Liveness:                Live,
-				NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-				MatchesStorageClasses:   []string{"NEARLINE"},
-				NumNewerVersions:        10,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				AgeInDays:        10,
-				MatchesPrefix:    []string{"testPrefix"},
-				MatchesSuffix:    []string{"testSuffix"},
-				NumNewerVersions: 3,
-			},
-		}, {
-			Action: LifecycleAction{
-				Type: DeleteAction,
-			},
-			Condition: LifecycleCondition{
-				AllObjects: true,
-			},
-		}},
-	}
+		// testedAttrs are the bucket attrs directly compared in this test
+		type testedAttrs struct {
+			StorageClass          string
+			VersioningEnabled     bool
+			LocationType          string
+			Labels                map[string]string
+			Location              string
+			Lifecycle             Lifecycle
+			CustomPlacementConfig *CustomPlacementConfig
+		}
 
-	// testedAttrs are the bucket attrs directly compared in this test
-	type testedAttrs struct {
-		StorageClass          string
-		VersioningEnabled     bool
-		LocationType          string
-		Labels                map[string]string
-		Location              string
-		Lifecycle             Lifecycle
-		CustomPlacementConfig *CustomPlacementConfig
-	}
-
-	for _, test := range []struct {
-		name      string
-		attrs     *BucketAttrs
-		wantAttrs testedAttrs
-	}{
-		{
-			name:  "no attrs",
-			attrs: nil,
-			wantAttrs: testedAttrs{
-				StorageClass:      "STANDARD",
-				VersioningEnabled: false,
-				LocationType:      "multi-region",
-				Location:          "US",
-			},
-		},
-		{
-			name: "with attrs",
-			attrs: &BucketAttrs{
-				StorageClass:      "NEARLINE",
-				VersioningEnabled: true,
-				Labels:            labels,
-				Lifecycle:         lifecycle,
-				Location:          "SOUTHAMERICA-EAST1",
-			},
-			wantAttrs: testedAttrs{
-				StorageClass:      "NEARLINE",
-				VersioningEnabled: true,
-				Labels:            labels,
-				Location:          "SOUTHAMERICA-EAST1",
-				LocationType:      "region",
-				Lifecycle:         lifecycle,
-			},
-		},
-		{
-			name: "dual-region",
-			attrs: &BucketAttrs{
-				Location: "US",
-				CustomPlacementConfig: &CustomPlacementConfig{
-					DataLocations: []string{"US-EAST1", "US-WEST1"},
+		for _, test := range []struct {
+			name      string
+			attrs     *BucketAttrs
+			wantAttrs testedAttrs
+		}{
+			{
+				name:  "no attrs",
+				attrs: nil,
+				wantAttrs: testedAttrs{
+					StorageClass:      "STANDARD",
+					VersioningEnabled: false,
+					LocationType:      "multi-region",
+					Location:          "US",
 				},
 			},
-			wantAttrs: testedAttrs{
-				Location:     "US",
-				LocationType: "dual-region",
-				StorageClass: "STANDARD",
-				CustomPlacementConfig: &CustomPlacementConfig{
-					DataLocations: []string{"US-EAST1", "US-WEST1"},
+			{
+				name: "with attrs",
+				attrs: &BucketAttrs{
+					StorageClass:      "NEARLINE",
+					VersioningEnabled: true,
+					Labels:            labels,
+					Lifecycle:         lifecycle,
+					Location:          "SOUTHAMERICA-EAST1",
+				},
+				wantAttrs: testedAttrs{
+					StorageClass:      "NEARLINE",
+					VersioningEnabled: true,
+					Labels:            labels,
+					Location:          "SOUTHAMERICA-EAST1",
+					LocationType:      "region",
+					Lifecycle:         lifecycle,
 				},
 			},
-		},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			newBucketName := uidSpace.New()
-			b := client.Bucket(newBucketName)
+			{
+				name: "dual-region",
+				attrs: &BucketAttrs{
+					Location: "US",
+					CustomPlacementConfig: &CustomPlacementConfig{
+						DataLocations: []string{"US-EAST1", "US-WEST1"},
+					},
+				},
+				wantAttrs: testedAttrs{
+					Location:     "US",
+					LocationType: "dual-region",
+					StorageClass: "STANDARD",
+					CustomPlacementConfig: &CustomPlacementConfig{
+						DataLocations: []string{"US-EAST1", "US-WEST1"},
+					},
+				},
+			},
+		} {
+			t.Run(test.name, func(t *testing.T) {
+				newBucketName := prefix + uidSpace.New()
+				b := client.Bucket(newBucketName)
 
-			if err := b.Create(ctx, projectID, test.attrs); err != nil {
-				t.Fatalf("bucket create: %v", err)
-			}
+				if err := b.Create(ctx, projectID, test.attrs); err != nil {
+					t.Fatalf("bucket create: %v", err)
+				}
 
-			gotAttrs, err := b.Attrs(ctx)
-			if err != nil {
-				t.Fatalf("bucket attrs: %v", err)
-			}
+				gotAttrs, err := b.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("bucket attrs: %v", err)
+				}
 
-			// All newly created buckets should conform to the following:
-			if gotAttrs.MetaGeneration != 1 {
-				t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
-			}
-			if gotAttrs.ProjectNumber == 0 {
-				t.Errorf("got a zero ProjectNumber")
-			}
+				// All newly created buckets should conform to the following:
+				if gotAttrs.MetaGeneration != 1 {
+					t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
+				}
+				if gotAttrs.ProjectNumber == 0 {
+					t.Errorf("got a zero ProjectNumber")
+				}
 
-			// Test specific wanted bucket attrs
-			if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
-				t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
-			}
-			if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
-				t.Errorf("labels: got %v, want %v", got, want)
-			}
-			if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
-				t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
-			}
-			if gotAttrs.LocationType != test.wantAttrs.LocationType {
-				t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
-			}
-			if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
-				t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
-			}
-			if gotAttrs.Location != test.wantAttrs.Location {
-				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
-			}
-			if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
-				t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
-			}
+				// Test specific wanted bucket attrs
+				if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
+					t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
+				}
+				if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
+					t.Errorf("labels: got %v, want %v", got, want)
+				}
+				if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
+					t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+				}
+				if gotAttrs.LocationType != test.wantAttrs.LocationType {
+					t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
+				}
+				if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
+					t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
+				}
+				if gotAttrs.Location != test.wantAttrs.Location {
+					t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+				}
+				if got, want := gotAttrs.CustomPlacementConfig, test.wantAttrs.CustomPlacementConfig; !testutil.Equal(got, want) {
+					t.Errorf("customPlacementConfig: \ngot\t%v\nwant\t%v", got, want)
+				}
 
-			// Delete the bucket and check that the deletion was succesful
-			if err := b.Delete(ctx); err != nil {
-				t.Fatalf("bucket delete: %v", err)
-			}
-			_, err = b.Attrs(ctx)
-			if err != ErrBucketNotExist {
-				t.Fatalf("expected ErrBucketNotExist, got %v", err)
-			}
-		})
-	}
+				// Delete the bucket and check that the deletion was succesful
+				if err := b.Delete(ctx); err != nil {
+					t.Fatalf("bucket delete: %v", err)
+				}
+				_, err = b.Attrs(ctx)
+				if err != ErrBucketNotExist {
+					t.Fatalf("expected ErrBucketNotExist, got %v", err)
+				}
+			})
+		}
+	})
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
@@ -4183,173 +4175,170 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 }
 
 func TestIntegration_HMACKey(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	client.SetRetry(WithPolicy(RetryAlways))
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
+		client.SetRetry(WithPolicy(RetryAlways))
 
-	projectID := testutil.ProjID()
+		projectID := testutil.ProjID()
 
-	// Use the service account email from the user's credentials. Requires that the
-	// credentials are set via a JSON credentials file.
-	// Note that a service account may only have up to 5 active HMAC keys at once; if
-	// we see flakes because of this, we should consider switching to using a project
-	// pool.
-	credentials := testutil.CredentialsEnv(ctx, "GCLOUD_TESTS_GOLANG_KEY")
-	if credentials == nil {
-		t.Fatal("credentials could not be determined, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
-	}
-	if credentials.JSON == nil {
-		t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
-	}
-	conf, err := google.JWTConfigFromJSON(credentials.JSON)
-	if err != nil {
-		t.Fatal(err)
-	}
-	serviceAccountEmail := conf.Email
-
-	hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
-	if err != nil {
-		t.Fatalf("Failed to create HMACKey: %v", err)
-	}
-	if hmacKey == nil {
-		t.Fatal("Unexpectedly got back a nil HMAC key")
-	}
-
-	if hmacKey.State != Active {
-		t.Fatalf("Unexpected state %q, expected %q", hmacKey.State, Active)
-	}
-
-	hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
-	// 1. Ensure that we CANNOT delete an ACTIVE key.
-	if err := hkh.Delete(ctx); err == nil {
-		t.Fatal("Unexpectedly deleted key whose state is ACTIVE: No error from Delete.")
-	}
-
-	invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
-	for _, invalidState := range invalidStates {
-		t.Run("invalid-"+string(invalidState), func(t *testing.T) {
-			_, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
-				State: invalidState,
-			})
-			if err == nil {
-				t.Fatal("Unexpectedly succeeded")
-			}
-			invalidStateMsg := fmt.Sprintf(`storage: invalid state %q for update, must be either "ACTIVE" or "INACTIVE"`, invalidState)
-			if err.Error() != invalidStateMsg {
-				t.Fatalf("Mismatched error: got:  %q\nwant: %q", err, invalidStateMsg)
-			}
-		})
-	}
-
-	// 2.1. Setting the State to Inactive should succeed.
-	hu, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
-		State: Inactive,
-	})
-	if err != nil {
-		t.Fatalf("Unexpected Update failure: %v", err)
-	}
-	if got, want := hu.State, Inactive; got != want {
-		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
-	}
-
-	// 2.2. Setting the State back to Active should succeed.
-	hu, err = hkh.Update(ctx, HMACKeyAttrsToUpdate{
-		State: Active,
-	})
-	if err != nil {
-		t.Fatalf("Unexpected Update failure: %v", err)
-	}
-	if got, want := hu.State, Active; got != want {
-		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
-	}
-
-	// 3. Verify that keys are listed as expected.
-	iter := client.ListHMACKeys(ctx, projectID)
-	count := 0
-	for ; ; count++ {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
+		// Use the service account email from the user's credentials. Requires that the
+		// credentials are set via a JSON credentials file.
+		// Note that a service account may only have up to 5 active HMAC keys at once; if
+		// we see flakes because of this, we should consider switching to using a project
+		// pool.
+		credentials := testutil.CredentialsEnv(ctx, "GCLOUD_TESTS_GOLANG_KEY")
+		if credentials == nil {
+			t.Fatal("credentials could not be determined, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
 		}
+		if credentials.JSON == nil {
+			t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
+		}
+		conf, err := google.JWTConfigFromJSON(credentials.JSON)
 		if err != nil {
-			t.Fatalf("Failed to ListHMACKeys: %v", err)
+			t.Fatal(err)
 		}
-	}
-	if count == 0 {
-		t.Fatal("Failed to list any HMACKeys")
-	}
+		serviceAccountEmail := conf.Email
 
-	// 4. Finally set it to back to Inactive and
-	// then retry the deletion which should now succeed.
-	_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
-		State: Inactive,
+		hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+		if err != nil {
+			t.Fatalf("Failed to create HMACKey: %v", err)
+		}
+		if hmacKey == nil {
+			t.Fatal("Unexpectedly got back a nil HMAC key")
+		}
+
+		if hmacKey.State != Active {
+			t.Fatalf("Unexpected state %q, expected %q", hmacKey.State, Active)
+		}
+
+		hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
+		// 1. Ensure that we CANNOT delete an ACTIVE key.
+		if err := hkh.Delete(ctx); err == nil {
+			t.Fatal("Unexpectedly deleted key whose state is ACTIVE: No error from Delete.")
+		}
+
+		invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
+		for _, invalidState := range invalidStates {
+			t.Run("invalid-"+string(invalidState), func(t *testing.T) {
+				_, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+					State: invalidState,
+				})
+				if err == nil {
+					t.Fatal("Unexpectedly succeeded")
+				}
+				invalidStateMsg := fmt.Sprintf(`storage: invalid state %q for update, must be either "ACTIVE" or "INACTIVE"`, invalidState)
+				if err.Error() != invalidStateMsg {
+					t.Fatalf("Mismatched error: got:  %q\nwant: %q", err, invalidStateMsg)
+				}
+			})
+		}
+
+		// 2.1. Setting the State to Inactive should succeed.
+		hu, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+			State: Inactive,
+		})
+		if err != nil {
+			t.Fatalf("Unexpected Update failure: %v", err)
+		}
+		if got, want := hu.State, Inactive; got != want {
+			t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+		}
+
+		// 2.2. Setting the State back to Active should succeed.
+		hu, err = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+			State: Active,
+		})
+		if err != nil {
+			t.Fatalf("Unexpected Update failure: %v", err)
+		}
+		if got, want := hu.State, Active; got != want {
+			t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+		}
+
+		// 3. Verify that keys are listed as expected.
+		iter := client.ListHMACKeys(ctx, projectID)
+		count := 0
+		for ; ; count++ {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("Failed to ListHMACKeys: %v", err)
+			}
+		}
+		if count == 0 {
+			t.Fatal("Failed to list any HMACKeys")
+		}
+
+		// 4. Finally set it to back to Inactive and
+		// then retry the deletion which should now succeed.
+		_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+			State: Inactive,
+		})
+		if err := hkh.Delete(ctx); err != nil {
+			t.Fatalf("Unexpected deletion failure: %v", err)
+		}
+
+		_, err = hkh.Get(ctx)
+		if err != nil && !strings.Contains(err.Error(), "404") {
+			// If the deleted key has already been garbage collected, a 404 is expected.
+			// Other errors should cause a failure and are not expected.
+			t.Fatalf("Unexpected error: %v", err)
+		}
 	})
-	if err := hkh.Delete(ctx); err != nil {
-		t.Fatalf("Unexpected deletion failure: %v", err)
-	}
-
-	_, err = hkh.Get(ctx)
-	if err != nil && !strings.Contains(err.Error(), "404") {
-		// If the deleted key has already been garbage collected, a 404 is expected.
-		// Other errors should cause a failure and are not expected.
-		t.Fatalf("Unexpected error: %v", err)
-	}
 }
 
 func TestIntegration_PostPolicyV4(t *testing.T) {
-	jwtConf, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if jwtConf == nil {
-		t.Skip("JSON key file is not present")
-	}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		jwtConf, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if jwtConf == nil {
+			t.Skip("JSON key file is not present")
+		}
 
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+		projectID := testutil.ProjID()
+		newBucketName := prefix + uidSpace.New()
+		b := client.Bucket(newBucketName)
+		h := testHelper{t}
+		h.mustCreate(b, projectID, nil)
+		defer h.mustDeleteBucket(b)
 
-	projectID := testutil.ProjID()
-	newBucketName := uidSpace.New()
-	b := client.Bucket(newBucketName)
-	h := testHelper{t}
-	h.mustCreate(b, projectID, nil)
-	defer h.mustDeleteBucket(b)
+		statusCodeToRespond := 200
+		opts := &PostPolicyV4Options{
+			GoogleAccessID: jwtConf.Email,
+			PrivateKey:     jwtConf.PrivateKey,
 
-	statusCodeToRespond := 200
-	opts := &PostPolicyV4Options{
-		GoogleAccessID: jwtConf.Email,
-		PrivateKey:     jwtConf.PrivateKey,
+			Expires: time.Now().Add(30 * time.Minute),
 
-		Expires: time.Now().Add(30 * time.Minute),
+			Fields: &PolicyV4Fields{
+				StatusCodeOnSuccess: statusCodeToRespond,
+				ContentType:         "text/plain",
+				ACL:                 "public-read",
+			},
 
-		Fields: &PolicyV4Fields{
-			StatusCodeOnSuccess: statusCodeToRespond,
-			ContentType:         "text/plain",
-			ACL:                 "public-read",
-		},
+			// The conditions that the uploaded file will be expected to conform to.
+			Conditions: []PostPolicyV4Condition{
+				// Make the file a maximum of 10mB.
+				ConditionContentLengthRange(0, 10<<20),
+				ConditionStartsWith("$acl", "public"),
+			},
+		}
 
-		// The conditions that the uploaded file will be expected to conform to.
-		Conditions: []PostPolicyV4Condition{
-			// Make the file a maximum of 10mB.
-			ConditionContentLengthRange(0, 10<<20),
-			ConditionStartsWith("$acl", "public"),
-		},
-	}
+		objectName := uidSpace.New()
+		object := b.Object(objectName)
+		defer h.mustDeleteObject(object)
 
-	objectName := uidSpace.New()
-	object := b.Object(objectName)
-	defer h.mustDeleteObject(object)
+		pv4, err := b.GenerateSignedPostPolicyV4(objectName, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	pv4, err := b.GenerateSignedPostPolicyV4(objectName, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
-		t.Fatal(err)
-	}
+		if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
+			t.Fatal(err)
+		}
+	})
 }
 
 // Verify that custom scopes passed in by the user are applied correctly.
@@ -4396,7 +4385,13 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 	defer clientWithCredentials.Close()
 
 	// Create another client to test the sign byte function as well
-	clientWithoutPrivateKey := testConfig(ctx, t, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+
+	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
+	ts := testutil.TokenSource(ctx, scopes...)
+	if ts == nil {
+		t.Fatalf("Cannot get token source to create client")
+	}
+	clientWithoutPrivateKey := testConfig(ctx, t, option.WithTokenSource(ts))
 	defer clientWithoutPrivateKey.Close()
 
 	jwt, err := testutil.JWTConfig()
@@ -4448,158 +4443,184 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 	}
 }
 
-func TestIntegration_PostPolicyV4_Bucket(t *testing.T) {
-	h := testHelper{t}
+func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 	ctx := context.Background()
-
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
-	// We explictly send the key to the client to sign with the private key
-	clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
-	defer clientWithCredentials.Close()
-
-	// Create another client to test the sign byte function as well
-	clientWithoutPrivateKey := testConfig(ctx, t, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
-	defer clientWithoutPrivateKey.Close()
-
-	jwt, err := testutil.JWTConfig()
+	// By default we are authed with a token source, so don't have the context to
+	// read some of the fields from the keyfile.
+	// Here we explictly send the key to the client.
+	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
 	if err != nil {
 		t.Fatalf("unable to find test credentials: %v", err)
 	}
 
-	statusCodeToRespond := 200
+	multiTransportTest(skipGRPC("creds capture logic must be implemented for gRPC constructor"),
+		t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithCredentials *Client) {
+			h := testHelper{t}
 
-	for _, test := range []struct {
-		desc   string
-		opts   PostPolicyV4Options
-		client *Client
-	}{
-		{
-			desc: "signing with the private key",
-			opts: PostPolicyV4Options{
-				Expires: time.Now().Add(30 * time.Minute),
+			statusCodeToRespond := 200
 
-				Fields: &PolicyV4Fields{
-					StatusCodeOnSuccess: statusCodeToRespond,
-					ContentType:         "text/plain",
-					ACL:                 "public-read",
+			for _, test := range []struct {
+				desc   string
+				opts   PostPolicyV4Options
+				client *Client
+			}{
+				{
+					desc: "signing with the private key",
+					opts: PostPolicyV4Options{
+						Expires: time.Now().Add(30 * time.Minute),
+
+						Fields: &PolicyV4Fields{
+							StatusCodeOnSuccess: statusCodeToRespond,
+							ContentType:         "text/plain",
+							ACL:                 "public-read",
+						},
+					},
+					client: clientWithCredentials,
 				},
-			},
-			client: clientWithCredentials,
-		},
-		{
-			desc: "signing with the default sign bytes func",
-			opts: PostPolicyV4Options{
-				Expires:        time.Now().Add(30 * time.Minute),
-				GoogleAccessID: jwt.Email,
-				Fields: &PolicyV4Fields{
-					StatusCodeOnSuccess: statusCodeToRespond,
-					ContentType:         "text/plain",
-					ACL:                 "public-read",
+			} {
+				t.Run(test.desc, func(t *testing.T) {
+					objectName := uidSpace.New()
+					object := test.client.Bucket(bucket).Object(objectName)
+					defer h.mustDeleteObject(object)
+
+					pv4, err := test.client.Bucket(bucket).GenerateSignedPostPolicyV4(objectName, &test.opts)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
+						t.Fatal(err)
+					}
+				})
+			}
+		}, option.WithCredentials(creds))
+
+}
+
+func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
+		h := testHelper{t}
+
+		jwt, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatalf("unable to find test credentials: %v", err)
+		}
+
+		statusCodeToRespond := 200
+
+		for _, test := range []struct {
+			desc   string
+			opts   PostPolicyV4Options
+			client *Client
+		}{
+			{
+				desc: "signing with the default sign bytes func",
+				opts: PostPolicyV4Options{
+					Expires:        time.Now().Add(30 * time.Minute),
+					GoogleAccessID: jwt.Email,
+					Fields: &PolicyV4Fields{
+						StatusCodeOnSuccess: statusCodeToRespond,
+						ContentType:         "text/plain",
+						ACL:                 "public-read",
+					},
 				},
+				client: clientWithoutPrivateKey,
 			},
-			client: clientWithoutPrivateKey,
-		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			objectName := uidSpace.New()
-			object := test.client.Bucket(bucketName).Object(objectName)
-			defer h.mustDeleteObject(object)
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				objectName := uidSpace.New()
+				object := test.client.Bucket(bucket).Object(objectName)
+				defer h.mustDeleteObject(object)
 
-			pv4, err := test.client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName, &test.opts)
-			if err != nil {
-				t.Fatal(err)
-			}
+				pv4, err := test.client.Bucket(bucket).GenerateSignedPostPolicyV4(objectName, &test.opts)
+				if err != nil {
+					t.Fatal(err)
+				}
 
-			if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
-				t.Fatal(err)
-			}
-		})
-	}
+				if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
+					t.Fatal(err)
+				}
+			})
+		}
+	})
+
 }
 
 // Tests that the same SignBytes function works for both
 // SignRawBytes on GeneratePostPolicyV4 and SignBytes on SignedURL
 func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
-	ctx := context.Background()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
+		h := testHelper{t}
+		projectID := testutil.ProjID()
+		bucketName := prefix + uidSpace.New()
+		objectName := uidSpace.New()
+		fileBody := bytes.Repeat([]byte("b"), 25)
+		bucket := client.Bucket(bucketName)
 
-	client := testConfig(ctx, t)
-	defer client.Close()
+		h.mustCreate(bucket, projectID, nil)
+		defer h.mustDeleteBucket(bucket)
 
-	h := testHelper{t}
-	projectID := testutil.ProjID()
-	bucketName := uidSpace.New()
-	objectName := uidSpace.New()
-	fileBody := bytes.Repeat([]byte("b"), 25)
-	bucket := client.Bucket(bucketName)
+		object := bucket.Object(objectName)
+		defer h.mustDeleteObject(object)
 
-	h.mustCreate(bucket, projectID, nil)
-	defer h.mustDeleteBucket(bucket)
-
-	object := bucket.Object(objectName)
-	defer h.mustDeleteObject(object)
-
-	jwtConf, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if jwtConf == nil {
-		t.Skip("JSON key file is not present")
-	}
-
-	signingFunc := func(b []byte) ([]byte, error) {
-		parsedRSAPrivKey, err := parseKey(jwtConf.PrivateKey)
+		jwtConf, err := testutil.JWTConfig()
 		if err != nil {
-			return nil, err
+			t.Fatal(err)
 		}
-		sum := sha256.Sum256(b)
-		return rsa.SignPKCS1v15(cryptorand.Reader, parsedRSAPrivKey, crypto.SHA256, sum[:])
-	}
+		if jwtConf == nil {
+			t.Skip("JSON key file is not present")
+		}
 
-	// Test Post Policy
-	successStatusCode := 200
-	ppv4Opts := &PostPolicyV4Options{
-		GoogleAccessID: jwtConf.Email,
-		SignRawBytes:   signingFunc,
-		Expires:        time.Now().Add(30 * time.Minute),
-		Fields: &PolicyV4Fields{
-			StatusCodeOnSuccess: successStatusCode,
-			ContentType:         "text/plain",
-			ACL:                 "public-read",
-		},
-	}
+		signingFunc := func(b []byte) ([]byte, error) {
+			parsedRSAPrivKey, err := parseKey(jwtConf.PrivateKey)
+			if err != nil {
+				return nil, err
+			}
+			sum := sha256.Sum256(b)
+			return rsa.SignPKCS1v15(cryptorand.Reader, parsedRSAPrivKey, crypto.SHA256, sum[:])
+		}
 
-	pv4, err := GenerateSignedPostPolicyV4(bucketName, objectName, ppv4Opts)
-	if err != nil {
-		t.Fatal(err)
-	}
+		// Test Post Policy
+		successStatusCode := 200
+		ppv4Opts := &PostPolicyV4Options{
+			GoogleAccessID: jwtConf.Email,
+			SignRawBytes:   signingFunc,
+			Expires:        time.Now().Add(30 * time.Minute),
+			Fields: &PolicyV4Fields{
+				StatusCodeOnSuccess: successStatusCode,
+				ContentType:         "text/plain",
+				ACL:                 "public-read",
+			},
+		}
 
-	if err := verifyPostPolicy(pv4, object, fileBody, successStatusCode); err != nil {
-		t.Fatal(err)
-	}
+		pv4, err := GenerateSignedPostPolicyV4(bucketName, objectName, ppv4Opts)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	// Test Signed URL
-	signURLOpts := &SignedURLOptions{
-		GoogleAccessID: jwtConf.Email,
-		SignBytes:      signingFunc,
-		Method:         "GET",
-		Expires:        time.Now().Add(30 * time.Second),
-	}
+		if err := verifyPostPolicy(pv4, object, fileBody, successStatusCode); err != nil {
+			t.Fatal(err)
+		}
 
-	url, err := bucket.SignedURL(objectName, signURLOpts)
-	if err != nil {
-		t.Fatalf("unable to create signed URL: %v", err)
-	}
+		// Test Signed URL
+		signURLOpts := &SignedURLOptions{
+			GoogleAccessID: jwtConf.Email,
+			SignBytes:      signingFunc,
+			Method:         "GET",
+			Expires:        time.Now().Add(30 * time.Second),
+		}
 
-	if err := verifySignedURL(url, nil, fileBody); err != nil {
-		t.Fatal(err)
-	}
+		url, err := bucket.SignedURL(objectName, signURLOpts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+
+		if err := verifySignedURL(url, nil, fileBody); err != nil {
+			t.Fatal(err)
+		}
+	})
+
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
@@ -4852,7 +4873,10 @@ func cleanupBuckets() error {
 		return nil // Don't clean up in short mode.
 	}
 	ctx := context.Background()
-	client := config(ctx)
+	client, err := newTestClient(ctx)
+	if err != nil {
+		log.Fatalf("NewClient: %v", err)
+	}
 	if client == nil {
 		return nil // Don't cleanup if we're not configured correctly.
 	}

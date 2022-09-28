@@ -775,6 +775,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		LocationType:             b.GetLocationType(),
 		RPO:                      toRPOFromProto(b),
 		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
+		ProjectNumber:            parseProjectNumber(b.GetProject()), // this can return 0 the project resource name is ID based
 	}
 }
 
@@ -1346,7 +1347,8 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 		return nil
 	}
 	return &storagepb.Bucket_RetentionPolicy{
-		RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
+		// TODO(#6748): Fix this once it becomes *int64
+		// RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
 	}
 }
 

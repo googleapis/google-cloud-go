@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataform "cloud.google.com/go/dataform/apiv1alpha2"
-	dataformpb "google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2"
+	"cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataformpb.RemoveFileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2#RemoveFileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1alpha2/dataformpb#RemoveFileRequest.
 	}
 	err = c.RemoveFile(ctx, req)
 	if err != nil {

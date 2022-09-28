@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 
+	privatecatalogpb "cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -31,7 +32,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	privatecatalogpb "google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
