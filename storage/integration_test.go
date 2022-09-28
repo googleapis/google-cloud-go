@@ -167,7 +167,8 @@ func initIntegrationTest() func() error {
 				if err != nil {
 					return nil, err
 				}
-				return NewClient(ctx, option.WithHTTPClient(hc))
+				ts := testutil.TokenSource(ctx, ScopeFullControl)
+				return NewClient(ctx, option.WithHTTPClient(hc), option.WithTokenSource(ts))
 			}
 			cleanup = func() error {
 				err1 := cleanupBuckets()
@@ -182,7 +183,11 @@ func initIntegrationTest() func() error {
 			if *record {
 				log.Print("record not supported for Go versions before 1.8")
 			}
-			newTestClient = NewClient
+			newTestClient = func(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				ts := testutil.TokenSource(ctx, ScopeFullControl)
+				opts = append(opts, option.WithTokenSource(ts))
+				return NewClient(ctx, opts...)
+			}
 			cleanup = cleanupBuckets
 		}
 		ctx := context.Background()
@@ -223,6 +228,12 @@ func testConfig(ctx context.Context, t *testing.T, opts ...option.ClientOption) 
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	if ts == nil {
+		return nil
+	}
+	opts = append(opts, option.WithTokenSource(ts))
+
 	client, err := newTestClient(ctx, opts...)
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
@@ -240,6 +251,12 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 		t.Skip("Integration tests skipped in short mode")
 	}
 
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	if ts == nil {
+		return nil
+	}
+
+	opts = append(opts, option.WithTokenSource(ts))
 	gc, err := newGRPCClient(ctx, opts...)
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
@@ -3496,31 +3513,31 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 }
 
 func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
-	defer h.mustDeleteBucket(bkt)
-	attrs := h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != false {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
-	}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
+		defer h.mustDeleteBucket(bkt)
 
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{DefaultEventBasedHold: true}, attrs.MetaGeneration)
-	attrs = h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != true {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
-	}
+		attrs := h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != false {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
+		}
 
-	// Omitting it should leave the value unchanged.
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RequesterPays: true}, attrs.MetaGeneration)
-	attrs = h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != true {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
-	}
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{DefaultEventBasedHold: true}, attrs.MetaGeneration)
+		attrs = h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != true {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+		}
+
+		// Omitting it should leave the value unchanged.
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RequesterPays: true}, attrs.MetaGeneration)
+		attrs = h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != true {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+		}
+	})
 }
 
 func TestIntegration_UpdateEventBasedHold(t *testing.T) {
