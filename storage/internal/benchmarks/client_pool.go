@@ -160,10 +160,7 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 	return client, err
 }
 
-var numgrpc int
-
 func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int, connPoolSize int, useDefaults bool) (*storage.Client, error) {
-	numgrpc++
 	if useDefaults {
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")

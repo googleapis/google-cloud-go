@@ -160,12 +160,7 @@ func main() {
 			log.Fatalf("error setting direct path env var: %v", err)
 		}
 	}
-	go func() {
-		for {
-			time.Sleep(time.Second * 5)
-			fmt.Printf("Num grpc clients: %d\n", numgrpc)
-		}
-	}()
+
 	// Print benchmarking options
 	fmt.Printf("Code version: %s\n", codeVersion)
 	fmt.Printf("Results file: %s\n", outputFile)
