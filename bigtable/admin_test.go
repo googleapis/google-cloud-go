@@ -66,14 +66,14 @@ func TestTableAdmin_UpdateTable(t *testing.T) {
 	}
 	updateTableReq := mock.updateTableReq
 	if updateTableReq.Table.Name != "My-table" {
-		t.Errorf("UpdateTableRequest does not match: %v", err)
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
 	}
 	if updateTableReq.Table.DeletionProtection != true {
-		t.Errorf("UpdateTableRequest does not match: %v", err)
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
 	}
 }
 
-func TestTableAdmin_UpdateTable_TableID_Not_Provided(t *testing.T) {
+func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 	deletion_protection := true
@@ -85,7 +85,7 @@ func TestTableAdmin_UpdateTable_TableID_Not_Provided(t *testing.T) {
 	}
 }
 
-func TestTableAdmin_UpdateTable_DeletionProtection_Not_Provided(t *testing.T) {
+func TestTableAdmin_UpdateTable_DeletionProtection_NotProvided(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
