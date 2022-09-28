@@ -1033,9 +1033,8 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// there is no need to add retries here.
 
 			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
-			isIdempotent := params.conds != nil && (params.conds.GenerationMatch >= 0 || params.conds.DoesNotExist == true)
 			var useRetry bool
-			if (s.retry == nil || s.retry.policy == RetryIdempotent) && isIdempotent {
+			if (s.retry == nil || s.retry.policy == RetryIdempotent) && s.idempotent {
 				useRetry = true
 			} else if s.retry != nil && s.retry.policy == RetryAlways {
 				useRetry = true

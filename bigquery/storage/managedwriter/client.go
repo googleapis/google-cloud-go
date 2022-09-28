@@ -117,6 +117,8 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
 		},
 		open: createOpenF(ctx, streamFunc),
+		// We add the new retryer by default, and add a new option to disable it.
+		retry: newStatelessRetryer(),
 	}
 
 	// apply writer options
