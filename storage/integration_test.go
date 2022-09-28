@@ -167,8 +167,8 @@ func initIntegrationTest() func() error {
 				if err != nil {
 					return nil, err
 				}
-				ts := testutil.TokenSource(ctx, ScopeFullControl)
-				return NewClient(ctx, option.WithHTTPClient(hc), option.WithTokenSource(ts))
+				opts = append(opts, option.WithHTTPClient(hc))
+				return NewClient(ctx, opts...)
 			}
 			cleanup = func() error {
 				err1 := cleanupBuckets()
@@ -183,15 +183,12 @@ func initIntegrationTest() func() error {
 			if *record {
 				log.Print("record not supported for Go versions before 1.8")
 			}
-			newTestClient = func(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-				ts := testutil.TokenSource(ctx, ScopeFullControl)
-				opts = append(opts, option.WithTokenSource(ts))
-				return NewClient(ctx, opts...)
-			}
+			newTestClient = NewClient
 			cleanup = cleanupBuckets
 		}
 		ctx := context.Background()
-		client, err := newTestClient(ctx)
+		ts := testutil.TokenSource(ctx, ScopeFullControl)
+		client, err := newTestClient(ctx, option.WithTokenSource(ts))
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
@@ -3293,7 +3290,8 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		gzippedObject = "gzipped-text.txt"
 	)
 	ctx := context.Background()
-	client, err := newTestClient(ctx)
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	client, err := newTestClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -4890,7 +4888,8 @@ func cleanupBuckets() error {
 		return nil // Don't clean up in short mode.
 	}
 	ctx := context.Background()
-	client, err := newTestClient(ctx)
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	client, err := newTestClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
