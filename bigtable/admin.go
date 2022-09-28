@@ -278,14 +278,19 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
+// TableConf contains all of the information necessary to create a table with column families.
+type UpdateTableConf struct {
+	TableID string
+	// Set to true to make the table protected against data loss
+	// i.e. deleting the table, the column families in the table and the instance containing the table would be prohibited
+	DeletionProtection *bool
+}
+
 // UpdateTable updates a table in the instance from the given configuration.
-// Only deletion protection can be updated at this moment
-func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) (updated bool, err error) {
+// Only deletion protection can be updated at this period.
+func (ac *AdminClient) UpdateTable(ctx context.Context, conf *UpdateTableConf) (updated bool, err error) {
 	if conf.TableID == "" {
 		return false, errors.New("TableID is required")
-	}
-	if conf.Families != nil || conf.SplitKeys != nil {
-		return false, errors.New("Only deletion protection field can be updated")
 	}
 
 	if conf.DeletionProtection != nil {
@@ -301,10 +306,17 @@ func (ac *AdminClient) UpdateTable(ctx context.Context, conf *TableConf) (update
 			},
 			UpdateMask: updateMask,
 		}
-		_, err := ac.tClient.UpdateTable(ctx, req)
-		return true, err
+		lro, err := ac.tClient.UpdateTable(ctx, req)
+		if err != nil {
+			return false, err
+		}
+		err = longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
+		if err != nil {
+			return false, err
+		}
+		return true, nil
 	}
-	return false, errors.New("Deletion protection is required")
+	return false, errors.New("deletion protection is required")
 }
 
 // DeleteTable deletes a table and all of its data.
@@ -338,7 +350,7 @@ type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
 	Families    []string
 	FamilyInfos []FamilyInfo
-	// When true: deleting the table, the column families in the table and the instance containing the table is prohibited
+	// When set to true deleting the table, the column families in the table and the instance containing the table is prohibited
 	DeletionProtection bool
 }
 
