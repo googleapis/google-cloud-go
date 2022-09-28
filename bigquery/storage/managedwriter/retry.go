@@ -52,6 +52,7 @@ func retryPredicate(err error) (shouldRetry, aggressiveBackoff bool) {
 	case codes.Aborted,
 		codes.Canceled,
 		codes.DeadlineExceeded,
+		codes.FailedPrecondition,
 		codes.Internal,
 		codes.Unavailable:
 		shouldRetry = true

@@ -1399,7 +1399,7 @@ func (r *gRPCReader) Close() error {
 func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
 	var shouldRetry = ShouldRetry
-	if r.settings.retry != nil {
+	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
 		shouldRetry = r.settings.retry.shouldRetry
 	}
 	if err != nil && shouldRetry(err) {
@@ -1520,7 +1520,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 	var finishWrite bool
 	var sent, limit int = 0, maxPerMessageWriteSize
 	var shouldRetry = ShouldRetry
-	if w.settings.retry != nil {
+	if w.settings.retry != nil && w.settings.retry.shouldRetry != nil {
 		shouldRetry = w.settings.retry.shouldRetry
 	}
 	offset := start
