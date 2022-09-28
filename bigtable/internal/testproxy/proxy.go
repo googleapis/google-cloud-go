@@ -51,14 +51,12 @@ var (
 // (keys) and ReadItem slices (values) in the client Row struct
 func rowToProto(btRow bigtable.Row) (*btpb.Row, error) {
 	pbRow := &btpb.Row{
-		Key:      []byte(btRow.Key()),
-		Families: make([]*btpb.Family, 0),
+		Key: []byte(btRow.Key()),
 	}
 
 	for fam, ris := range btRow {
 		pbFam := &btpb.Family{
-			Name:    fam,
-			Columns: make([]*btpb.Column, 0),
+			Name: fam,
 		}
 
 		for _, col := range ris {
@@ -115,8 +113,6 @@ func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
 				start = string(rrs.GetStartKeyClosed())
 			case *btpb.RowRange_StartKeyOpen:
 				start = string(rrs.GetStartKeyOpen())
-			default:
-				start = ""
 			}
 
 			switch rrs.EndKey.(type) {
@@ -181,12 +177,12 @@ func mutationFromProto(mPbs []*btpb.Mutation) *bigtable.Mutation {
 
 // filterFromProto translates a Bigtable v2.RowFilter object into a Bigtable
 // Filter object.
-func filterFromProto(rfPb *btpb.RowFilter) (f *bigtable.Filter) {
-
+func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
+	var f *bigtable.Filter
 	switch fpb := rfPb.Filter; fpb.(type) {
 	case *btpb.RowFilter_Chain_:
 		c := fpb.(*btpb.RowFilter_Chain_)
-		fs := make([]bigtable.Filter, 0)
+		var fs []bigtable.Filter
 		for _, cfpb := range c.Chain.Filters {
 			cf := filterFromProto(cfpb)
 			fs = append(fs, *cf)
@@ -403,7 +399,7 @@ func (c credentialsBundle) NewWithMode(mode string) (credentials.Bundle, error) 
 // channel credentials, call credentials, or composite call credentials per
 // [gRPC documentation](https://grpc.io/docs/guides/auth/).
 func getCredentialsOptions(req *pb.CreateClientRequest) ([]grpc.DialOption, error) {
-	opts := make([]grpc.DialOption, 0)
+	var opts []grpc.DialOption
 
 	if req.CallCredential == nil &&
 		req.ChannelCredential == nil &&
@@ -522,7 +518,7 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		return nil, stat.Error(codes.AlreadyExists,
 			fmt.Sprintf("%s: ClientID already exists", logLabel))
 	}
-	s.clientsLock.Unlock()
+	defer s.clientsLock.Unlock()
 
 	opts, err := getCredentialsOptions(req)
 	if err != nil {
@@ -547,7 +543,6 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		s.clientIDs = make(map[string]testClient)
 	}
 
-	s.clientsLock.Lock()
 	s.clientIDs[req.ClientId] = testClient{
 		c: c,
 		cancels: []context.CancelFunc{
@@ -556,7 +551,6 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		appProfileID:        req.AppProfileId,
 		perOperationTimeout: req.PerOperationTimeout,
 	}
-	s.clientsLock.Unlock()
 
 	return &pb.CreateClientResponse{}, nil
 }
@@ -639,6 +633,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
+	defer s.clientsLock.Unlock()
 
 	rrq := req.GetRequest()
 	lim := req.GetCancelAfterRows()
@@ -678,7 +673,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rowsPb = append(rowsPb, rpb)
 		return true
 	})
-	s.clientsLock.Unlock()
 
 	res := &pb.RowsResult{
 		Status: &status.Status{
@@ -699,6 +693,7 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
+	defer s.clientsLock.Unlock()
 
 	rrq := req.GetRequest()
 	if rrq == nil {
@@ -717,7 +712,6 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	if err != nil {
 		return nil, err
 	}
-	s.clientsLock.Unlock()
 
 	res := &pb.MutateRowResult{
 		Status: &status.Status{
@@ -736,6 +730,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
+	defer s.clientsLock.Unlock()
 
 	rrq := req.GetRequest()
 	if rrq == nil {
@@ -770,7 +765,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	}
 	s.clientsLock.Unlock()
 
-	entries := make([]*btpb.MutateRowsResponse_Entry, 0)
+	var entries []*btpb.MutateRowsResponse_Entry
 
 	// Iterate over any errors returned, matching indices with errors. If
 	// errs is nil, this block is skipped.
@@ -784,9 +779,9 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 					Message: e.Error(),
 				},
 			}
-
+			entries = append(entries, me)
 		}
-		entries = append(entries, me)
+
 	}
 
 	log.Printf("entries: %v", entries)
