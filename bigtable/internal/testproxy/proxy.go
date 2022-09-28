@@ -772,12 +772,21 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	for i, e := range errs {
 		var me *btpb.MutateRowsResponse_Entry
 		if e != nil {
+
+			// Two different Status types :(
+			st := &status.Status{
+				Code:    int32(codes.Internal),
+				Message: e.Error(),
+			}
+
+			if s, ok := stat.FromError(e); ok {
+				st.Code = int32(s.Code())
+				st.Message = s.Message()
+			}
+
 			me = &btpb.MutateRowsResponse_Entry{
-				Index: int64(i),
-				Status: &status.Status{
-					Code:    int32(codes.Internal),
-					Message: e.Error(),
-				},
+				Index:  int64(i),
+				Status: st,
 			}
 			entries = append(entries, me)
 		}
