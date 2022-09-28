@@ -37,6 +37,7 @@ func TestNewTransaction(t *testing.T) {
 		},
 	}
 	ctx := context.Background()
+	rt := timestamppb.Now()
 	for _, test := range []struct {
 		settings *transactionSettings
 		want     *pb.BeginTransactionRequest
@@ -67,12 +68,12 @@ func TestNewTransaction(t *testing.T) {
 			},
 		},
 		{
-			&transactionSettings{readOnly: true, readTime: timestamppb.Now()},
+			&transactionSettings{readOnly: true, readTime: rt},
 			&pb.BeginTransactionRequest{
 				ProjectId: "project",
 				TransactionOptions: &pb.TransactionOptions{
 					Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{
-						ReadTime: timestamppb.Now(),
+						ReadTime: rt,
 					}},
 				},
 			},
