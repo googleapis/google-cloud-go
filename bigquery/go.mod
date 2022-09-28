@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/datacatalog v1.5.0
 	cloud.google.com/go/iam v0.3.0
 	cloud.google.com/go/storage v1.23.0
+	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.8
 	github.com/googleapis/gax-go/v2 v2.5.1
 	go.opencensus.io v0.23.0
@@ -21,7 +22,6 @@ require (
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/martian/v3 v3.2.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
