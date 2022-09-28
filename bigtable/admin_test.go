@@ -29,16 +29,7 @@ import (
 type mockTableAdminClock struct {
 	btapb.BigtableTableAdminClient
 
-	getTableReq    *btapb.GetTableRequest
 	updateTableReq *btapb.UpdateTableRequest
-	getTableResp   *btapb.Table
-}
-
-func (c *mockTableAdminClock) GetTable(
-	ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption,
-) (*btapb.Table, error) {
-	c.getTableReq = in
-	return c.getTableResp, nil
 }
 
 func (c *mockTableAdminClock) UpdateTable(
@@ -69,37 +60,40 @@ func TestTableAdmin_UpdateTable(t *testing.T) {
 
 	// Check if the deletion protection updates correctly
 	deletion_protection := true
-	_, err := c.UpdateTable(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: &deletion_protection})
-	if err != nil {
-		t.Fatalf("UpdateTable failed: %v", err)
+	updated, err := c.UpdateTable(context.Background(), &UpdateTableConf{TableID: "My-table", DeletionProtection: &deletion_protection})
+	if err != nil || !updated {
+		t.Errorf("UpdateTable failed: %v", err)
 	}
 	updateTableReq := mock.updateTableReq
 	if updateTableReq.Table.Name != "My-table" {
-		t.Fatalf("UpdateTableRequest does not match: %v", err)
+		t.Errorf("UpdateTableRequest does not match: %v", err)
 	}
 	if updateTableReq.Table.DeletionProtection != true {
-		t.Fatalf("UpdateTableRequest does not match: %v", err)
+		t.Errorf("UpdateTableRequest does not match: %v", err)
 	}
+}
+
+func TestTableAdmin_UpdateTable_TableID_Not_Provided(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletion_protection := true
 
 	// Check if the update fails when TableID is not provided
-	_, err = c.UpdateTable(context.Background(), &TableConf{DeletionProtection: &deletion_protection})
+	_, err := c.UpdateTable(context.Background(), &UpdateTableConf{DeletionProtection: &deletion_protection})
 	if fmt.Sprint(err) != "TableID is required" {
-		t.Fatalf("UpdateTable failed: %v", err)
+		t.Errorf("UpdateTable failed: %v", err)
 	}
+}
+
+func TestTableAdmin_UpdateTable_DeletionProtection_Not_Provided(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
 
 	// Check if the update fails when deletion protection is not provided
-	_, err = c.UpdateTable(context.Background(), &TableConf{TableID: "My-table"})
+	_, err := c.UpdateTable(context.Background(), &UpdateTableConf{TableID: "My-table"})
 
-	if fmt.Sprint(err) != "Deletion protection is required" {
-		t.Fatalf("UpdateTable failed: %v", err)
-	}
-
-	// Check if the update fails when split keys or column families are provided
-	split_keys := []string{"split_key_1", "split_key_2"}
-	_, err = c.UpdateTable(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: &deletion_protection, SplitKeys: split_keys})
-
-	if fmt.Sprint(err) != "Only deletion protection field can be updated" {
-		t.Fatalf("UpdateTable failed: %v", err)
+	if fmt.Sprint(err) != "deletion protection is required" {
+		t.Errorf("UpdateTable failed: %v", err)
 	}
 }
 
