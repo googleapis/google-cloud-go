@@ -527,7 +527,7 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.AppendRowsResponse, initialErr error) {
 	err := initialErr
 	for {
-		pause, shouldRetry := ms.retry.Retry(err, pw.attemptCount)
+		pause, shouldRetry := ms.statelessRetryer().Retry(err, pw.attemptCount)
 		if !shouldRetry {
 			// Should not attempt to re-append.
 			pw.markDone(appendResp, err, ms.fc)
