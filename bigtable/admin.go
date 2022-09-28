@@ -278,7 +278,7 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
-// TableConf contains all of the information necessary to create a table with column families.
+// UpdateTableConf contains all of the information necessary to update a table with column families.
 type UpdateTableConf struct {
 	TableID string
 	// Set to true to make the table protected against data loss
