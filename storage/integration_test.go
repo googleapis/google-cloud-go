@@ -3509,10 +3509,13 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 }
 
 func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
-		bkt := client.Bucket(bucket)
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
+		defer h.mustDeleteBucket(bkt)
+
 		attrs := h.mustBucketAttrs(bkt)
 		if attrs.DefaultEventBasedHold != false {
 			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
