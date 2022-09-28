@@ -329,6 +329,8 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		l := alf.ApplyLabelTransformer
 		al := bigtable.LabelFilter(l)
 		f = &al
+	default:
+		return nil
 	}
 
 	return f
