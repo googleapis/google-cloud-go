@@ -720,11 +720,11 @@ func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Clien
 	// The second append will succeed, but internally will show a retry.
 	result, err = ms.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Fatalf("third append expected to succeed, got error: %v", err)
+		t.Fatalf("second append expected to succeed, got error: %v", err)
 	}
 	_, err = result.GetResult(ctx)
 	if err != nil {
-		t.Errorf("failure result from third append: %v", err)
+		t.Errorf("failure result from second append: %v", err)
 	}
 	if attempts, _ := result.TotalAttempts(ctx); attempts != 2 {
 		t.Errorf("expected 2 attempts, got %d", attempts)
