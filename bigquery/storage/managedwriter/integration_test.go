@@ -159,8 +159,11 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
 		})
-		t.Run("TestLargeInsert", func(t *testing.T) {
-			testLargeInsert(ctx, t, mwClient, bqClient, dataset)
+		t.Run("TestLargeInsertNoRetry", func(t *testing.T) {
+			testLargeInsertNoRetry(ctx, t, mwClient, bqClient, dataset)
+		})
+		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
+			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})
 	})
 }
@@ -596,7 +599,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		withExactRowCount(int64(len(testSimpleData))))
 }
 
-func testLargeInsert(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+func testLargeInsertNoRetry(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
@@ -646,14 +649,85 @@ func testLargeInsert(ctx context.Context, t *testing.T, mwClient *Client, bqClie
 			t.Errorf("expected InvalidArgument status, got %v", status)
 		}
 	}
-	// send a subsequent append as verification we can proceed.
+	// our next append should fail (we don't have retries enabled).
+	if _, err = ms.AppendRows(ctx, [][]byte{b}); err == nil {
+		t.Fatalf("expected second append to fail, got success: %v", err)
+	}
+
+	// The send failure triggers reconnect, so an additional append will succeed.
 	result, err = ms.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Fatalf("subsequent append failed: %v", err)
+		t.Fatalf("third append expected to succeed, got error: %v", err)
+	}
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("failure result from third append: %v", err)
+	}
+}
+
+func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.SimpleMessageProto2{}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(CommittedStream),
+		WithSchemaDescriptor(descriptorProto),
+		EnableWriteRetries(true),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	// Construct a Very Large request.
+	var data [][]byte
+	targetSize := 11 * 1024 * 1024 // 11 MB
+	b, err := proto.Marshal(testSimpleData[0])
+	if err != nil {
+		t.Errorf("failed to marshal message: %v", err)
+	}
+
+	numRows := targetSize / len(b)
+	data = make([][]byte, numRows)
+
+	for i := 0; i < numRows; i++ {
+		data[i] = b
+	}
+
+	result, err := ms.AppendRows(ctx, data, WithOffset(0))
+	if err != nil {
+		t.Errorf("single append failed: %v", err)
+	}
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		apiErr, ok := apierror.FromError(err)
+		if !ok {
+			t.Errorf("GetResult error was not an instance of ApiError")
+		}
+		status := apiErr.GRPCStatus()
+		if status.Code() != codes.InvalidArgument {
+			t.Errorf("expected InvalidArgument status, got %v", status)
+		}
+	}
+
+	// The second append will succeed, but internally will show a retry.
+	result, err = ms.AppendRows(ctx, [][]byte{b})
+	if err != nil {
+		t.Fatalf("second append expected to succeed, got error: %v", err)
 	}
 	_, err = result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("failure result from second append: %v", err)
+	}
+	if attempts, _ := result.TotalAttempts(ctx); attempts != 2 {
+		t.Errorf("expected 2 attempts, got %d", attempts)
 	}
 }
 
