@@ -765,7 +765,6 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	if err != nil {
 		return nil, err
 	}
-	s.clientsLock.Unlock()
 
 	var entries []*btpb.MutateRowsResponse_Entry
 
