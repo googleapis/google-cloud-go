@@ -70,6 +70,8 @@ func (w maxAttempts) apply(s *transactionSettings) {
 	}
 }
 
+// WithReadTime returns a TransactionOption that specifies a snapshot of the
+// database to view.
 func WithReadTime(t time.Time) TransactionOption {
 	return readTime{t}
 }
