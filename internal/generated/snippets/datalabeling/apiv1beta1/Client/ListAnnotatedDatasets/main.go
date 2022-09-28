@@ -22,8 +22,8 @@ import (
 	"context"
 
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
+	"cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 	"google.golang.org/api/iterator"
-	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &datalabelingpb.ListAnnotatedDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListAnnotatedDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListAnnotatedDatasetsRequest.
 	}
 	it := c.ListAnnotatedDatasets(ctx, req)
 	for {

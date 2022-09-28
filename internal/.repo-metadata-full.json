@@ -1511,15 +1511,6 @@
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/secretmanager/apiv1beta1": {
-    "distribution_name": "cloud.google.com/go/secretmanager/apiv1beta1",
-    "description": "Secret Manager API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/secretmanager/latest/apiv1beta1",
-    "release_level": "beta",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/security/privateca/apiv1": {
     "distribution_name": "cloud.google.com/go/security/privateca/apiv1",
     "description": "Certificate Authority API",

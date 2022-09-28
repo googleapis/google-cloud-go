@@ -22,8 +22,8 @@ import (
 	"context"
 
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
+	"cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
 	"google.golang.org/api/iterator"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &assuredworkloadspb.ListWorkloadsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#ListWorkloadsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#ListWorkloadsRequest.
 	}
 	it := c.ListWorkloads(ctx, req)
 	for {

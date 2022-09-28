@@ -20,8 +20,8 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2alpha"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -74,7 +74,7 @@ func ExampleUserEventClient_WriteUserEvent() {
 
 	req := &retailpb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#WriteUserEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#WriteUserEventRequest.
 	}
 	resp, err := c.WriteUserEvent(ctx, req)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExampleUserEventClient_CollectUserEvent() {
 
 	req := &retailpb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CollectUserEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#CollectUserEventRequest.
 	}
 	resp, err := c.CollectUserEvent(ctx, req)
 	if err != nil {
@@ -124,7 +124,7 @@ func ExampleUserEventClient_PurgeUserEvents() {
 
 	req := &retailpb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#PurgeUserEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#PurgeUserEventsRequest.
 	}
 	op, err := c.PurgeUserEvents(ctx, req)
 	if err != nil {
@@ -154,7 +154,7 @@ func ExampleUserEventClient_ImportUserEvents() {
 
 	req := &retailpb.ImportUserEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ImportUserEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ImportUserEventsRequest.
 	}
 	op, err := c.ImportUserEvents(ctx, req)
 	if err != nil {
@@ -184,7 +184,7 @@ func ExampleUserEventClient_RejoinUserEvents() {
 
 	req := &retailpb.RejoinUserEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#RejoinUserEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#RejoinUserEventsRequest.
 	}
 	op, err := c.RejoinUserEvents(ctx, req)
 	if err != nil {

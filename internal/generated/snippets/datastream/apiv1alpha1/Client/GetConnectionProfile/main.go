@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datastream "cloud.google.com/go/datastream/apiv1alpha1"
-	datastreampb "google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1"
+	"cloud.google.com/go/datastream/apiv1alpha1/datastreampb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datastreampb.GetConnectionProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#GetConnectionProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#GetConnectionProfileRequest.
 	}
 	resp, err := c.GetConnectionProfile(ctx, req)
 	if err != nil {

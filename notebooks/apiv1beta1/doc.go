@@ -60,7 +60,7 @@
 //
 //	req := &notebookspb.ListInstancesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#ListInstancesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1beta1/notebookspb#ListInstancesRequest.
 //	}
 //	it := c.ListInstances(ctx, req)
 //	for {

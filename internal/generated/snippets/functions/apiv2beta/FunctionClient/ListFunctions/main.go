@@ -22,8 +22,8 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2beta"
+	"cloud.google.com/go/functions/apiv2beta/functionspb"
 	"google.golang.org/api/iterator"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2beta"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#ListFunctionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#ListFunctionsRequest.
 	}
 	it := c.ListFunctions(ctx, req)
 	for {

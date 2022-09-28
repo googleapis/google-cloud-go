@@ -3,11 +3,11 @@ module cloud.google.com/go/aiplatform
 go 1.17
 
 require (
-	cloud.google.com/go v0.102.1
-	github.com/googleapis/gax-go/v2 v2.4.0
-	google.golang.org/api v0.96.0
-	google.golang.org/genproto v0.0.0-20220916172020-2692e8806bfa
-	google.golang.org/grpc v1.48.0
+	cloud.google.com/go v0.104.0
+	github.com/googleapis/gax-go/v2 v2.5.1
+	google.golang.org/api v0.97.0
+	google.golang.org/genproto v0.0.0-20220926220553-6981cbe3cfce
+	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
 
