@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -76,7 +76,7 @@ func ExampleFeaturestoreOnlineServingClient_ReadFeatureValues() {
 
 	req := &aiplatformpb.ReadFeatureValuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ReadFeatureValuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ReadFeatureValuesRequest.
 	}
 	resp, err := c.ReadFeatureValues(ctx, req)
 	if err != nil {
@@ -101,7 +101,7 @@ func ExampleFeaturestoreOnlineServingClient_WriteFeatureValues() {
 
 	req := &aiplatformpb.WriteFeatureValuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#WriteFeatureValuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#WriteFeatureValuesRequest.
 	}
 	resp, err := c.WriteFeatureValues(ctx, req)
 	if err != nil {

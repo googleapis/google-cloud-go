@@ -22,7 +22,7 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+	"cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &cxpb.GetTestCaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetTestCaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetTestCaseRequest.
 	}
 	resp, err := c.GetTestCase(ctx, req)
 	if err != nil {

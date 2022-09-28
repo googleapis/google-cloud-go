@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1beta"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
+	"cloud.google.com/go/gaming/apiv1beta/gamingpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &gamingpb.DeleteRealmRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#DeleteRealmRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#DeleteRealmRequest.
 	}
 	op, err := c.DeleteRealm(ctx, req)
 	if err != nil {

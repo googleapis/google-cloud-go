@@ -20,8 +20,8 @@ import (
 	"context"
 
 	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
+	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	"google.golang.org/api/iterator"
-	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )
 
 func ExampleNewPredictionApiKeyRegistryClient() {
@@ -73,7 +73,7 @@ func ExamplePredictionApiKeyRegistryClient_CreatePredictionApiKeyRegistration() 
 
 	req := &recommendationenginepb.CreatePredictionApiKeyRegistrationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#CreatePredictionApiKeyRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#CreatePredictionApiKeyRegistrationRequest.
 	}
 	resp, err := c.CreatePredictionApiKeyRegistration(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExamplePredictionApiKeyRegistryClient_ListPredictionApiKeyRegistrations() {
 
 	req := &recommendationenginepb.ListPredictionApiKeyRegistrationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#ListPredictionApiKeyRegistrationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#ListPredictionApiKeyRegistrationsRequest.
 	}
 	it := c.ListPredictionApiKeyRegistrations(ctx, req)
 	for {
@@ -129,7 +129,7 @@ func ExamplePredictionApiKeyRegistryClient_DeletePredictionApiKeyRegistration() 
 
 	req := &recommendationenginepb.DeletePredictionApiKeyRegistrationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#DeletePredictionApiKeyRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#DeletePredictionApiKeyRegistrationRequest.
 	}
 	err = c.DeletePredictionApiKeyRegistration(ctx, req)
 	if err != nil {

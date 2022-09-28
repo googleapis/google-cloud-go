@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
-	gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
+	"cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &gkehubpb.DeleteMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#DeleteMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#DeleteMembershipRequest.
 	}
 	op, err := c.DeleteMembership(ctx, req)
 	if err != nil {
