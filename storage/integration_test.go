@@ -167,7 +167,8 @@ func initIntegrationTest() func() error {
 				if err != nil {
 					return nil, err
 				}
-				return NewClient(ctx, option.WithHTTPClient(hc))
+				ts := testutil.TokenSource(ctx, ScopeFullControl)
+				return NewClient(ctx, option.WithHTTPClient(hc), option.WithTokenSource(ts))
 			}
 			cleanup = func() error {
 				err1 := cleanupBuckets()
@@ -182,7 +183,11 @@ func initIntegrationTest() func() error {
 			if *record {
 				log.Print("record not supported for Go versions before 1.8")
 			}
-			newTestClient = NewClient
+			newTestClient = func(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				ts := testutil.TokenSource(ctx, ScopeFullControl)
+				opts = append(opts, option.WithTokenSource(ts))
+				return NewClient(ctx, opts...)
+			}
 			cleanup = cleanupBuckets
 		}
 		ctx := context.Background()
@@ -223,6 +228,12 @@ func testConfig(ctx context.Context, t *testing.T, opts ...option.ClientOption) 
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	if ts == nil {
+		return nil
+	}
+	opts = append(opts, option.WithTokenSource(ts))
+
 	client, err := newTestClient(ctx, opts...)
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
