@@ -98,7 +98,7 @@ func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	}
 }
 
-// EnableWriteRetry enables ManagedStream to automatically retry failed appends.
+// EnableWriteRetries enables ManagedStream to automatically retry failed appends.
 //
 // Enabling retries is best suited for cases where users want to achieve at-least-once
 // append semantics.  Use of automatic retries may complicate patterns where the user
