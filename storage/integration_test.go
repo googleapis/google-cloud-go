@@ -234,7 +234,12 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newGRPCClient(ctx)
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	if ts == nil {
+		return nil
+	}
+
+	gc, err := newGRPCClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
 	}
@@ -3504,31 +3509,28 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 }
 
 func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
-	defer h.mustDeleteBucket(bkt)
-	attrs := h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != false {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
-	}
+		bkt := client.Bucket(bucket)
+		attrs := h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != false {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
+		}
 
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{DefaultEventBasedHold: true}, attrs.MetaGeneration)
-	attrs = h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != true {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
-	}
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{DefaultEventBasedHold: true}, attrs.MetaGeneration)
+		attrs = h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != true {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+		}
 
-	// Omitting it should leave the value unchanged.
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RequesterPays: true}, attrs.MetaGeneration)
-	attrs = h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != true {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
-	}
+		// Omitting it should leave the value unchanged.
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RequesterPays: true}, attrs.MetaGeneration)
+		attrs = h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != true {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+		}
+	})
 }
 
 func TestIntegration_UpdateEventBasedHold(t *testing.T) {
