@@ -98,11 +98,15 @@ func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	}
 }
 
-// DisableWriteRetries disables the logic for automatically re-enqueuing failed writes.
-func DisableWriteRetries(disable bool) WriterOption {
+// EnableWriteRetry enables ManagedStream to automatically retry failed appends.
+//
+// Enabling retries is best suited for cases where users want to achieve at-least-once
+// append semantics.  Use of automatic retries may complicate patterns where the user
+// is designing for exactly-once append semantics.
+func EnableWriteRetries(enable bool) WriterOption {
 	return func(ms *ManagedStream) {
-		if disable {
-			ms.retry = nil
+		if enable {
+			ms.retry = newStatelessRetryer()
 		}
 	}
 }
