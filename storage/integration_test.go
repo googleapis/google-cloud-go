@@ -225,11 +225,14 @@ func testConfig(ctx context.Context, t *testing.T, opts ...option.ClientOption) 
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
-	ts := testutil.TokenSource(ctx, ScopeFullControl)
-	if ts == nil {
-		return nil
+
+	if len(opts) < 1 {
+		ts := testutil.TokenSource(ctx, ScopeFullControl)
+		if ts == nil {
+			return nil
+		}
+		opts = []option.ClientOption{option.WithTokenSource(ts)}
 	}
-	opts = append(opts, option.WithTokenSource(ts))
 
 	client, err := newTestClient(ctx, opts...)
 	if err != nil {
@@ -248,12 +251,14 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	ts := testutil.TokenSource(ctx, ScopeFullControl)
-	if ts == nil {
-		return nil
+	if len(opts) < 1 {
+		ts := testutil.TokenSource(ctx, ScopeFullControl)
+		if ts == nil {
+			return nil
+		}
+		opts = []option.ClientOption{option.WithTokenSource(ts)}
 	}
 
-	opts = append(opts, option.WithTokenSource(ts))
 	gc, err := newGRPCClient(ctx, opts...)
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
@@ -4513,7 +4518,10 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
+	ctx := context.Background()
+	ts := testutil.TokenSource(ctx, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
 		jwt, err := testutil.JWTConfig()
@@ -4539,7 +4547,7 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 						ACL:                 "public-read",
 					},
 				},
-				client: clientWithoutPrivateKey,
+				client: client,
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
@@ -4557,8 +4565,7 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 				}
 			})
 		}
-	})
-
+	}, option.WithTokenSource(ts))
 }
 
 // Tests that the same SignBytes function works for both
