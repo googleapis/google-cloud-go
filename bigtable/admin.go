@@ -307,8 +307,8 @@ func (ac *AdminClient) UpdateTable(ctx context.Context, conf *UpdateTableConf) e
 		if err != nil {
 			return err
 		}
-		err = longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
-		return err
+		// ignore the response table proto by passing in nil
+		return longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
 	}
 	return errors.New("deletion protection is required")
 }
@@ -344,8 +344,6 @@ type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
 	Families    []string
 	FamilyInfos []FamilyInfo
-	// When set to true deleting the table, the column families in the table and the instance containing the table is prohibited
-	DeletionProtection bool
 }
 
 // FamilyInfo represents information about a column family.
@@ -393,7 +391,6 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			GCPolicy:     GCRuleToString(fam.GcRule),
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
-		ti.DeletionProtection = res.DeletionProtection
 	}
 	return ti, nil
 }
