@@ -308,10 +308,7 @@ func (ac *AdminClient) UpdateTable(ctx context.Context, conf *UpdateTableConf) e
 			return err
 		}
 		err = longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
-		if err != nil {
-			return err
-		}
-		return nil
+		return err
 	}
 	return errors.New("deletion protection is required")
 }
