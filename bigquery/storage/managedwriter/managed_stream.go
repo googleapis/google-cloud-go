@@ -205,15 +205,12 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 	if arc != ms.arc && !forceReconnect {
 		return ms.arc, ms.pending, nil
 	}
-	if arc != ms.arc && forceReconnect && ms.arc != nil {
-		// In this case, we're forcing a close on the existing stream.
-		// This is due to either needing to reconnect to satisfy the needs of
-		// the current request (e.g. to signal a schema change), or because
-		// a previous request on the stream yielded a transient error and we
-		// want to reconnect before issuing a subsequent request.
-		//
-		// TODO: clean this up once internal issue 205756033 is resolved.
+	// We need to (re)open a connection.  Cleanup previous connection and channel if they are present.
+	if ms.arc != nil {
 		(*ms.arc).CloseSend()
+	}
+	if ms.pending != nil {
+		close(ms.pending)
 	}
 
 	ms.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
