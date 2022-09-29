@@ -1687,6 +1687,11 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 	spec := &storagepb.WriteObjectSpec{
 		Resource: attrs.toProtoObject(w.bucket),
 	}
+	// Object.checksums is OUTPUT_ONLY and should never be sent.
+	// WriteObjectRequest.object_checksums should be used instead.
+	if checksums := spec.GetResource().GetChecksums(); checksums != nil {
+		checksums.Crc32C = nil
+	}
 	// WriteObject doesn't support the generation condition, so use default.
 	if err := applyCondsProto("WriteObject", defaultGen, w.conds, spec); err != nil {
 		return nil, err
