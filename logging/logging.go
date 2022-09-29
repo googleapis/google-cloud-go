@@ -231,7 +231,7 @@ func (c *Client) extractErrorInfo() error {
 	var err error
 	c.mu.Lock()
 	if c.lastErr != nil {
-		err = fmt.Errorf("saw %d errors; last: %v", c.nErrs, c.lastErr)
+		err = fmt.Errorf("saw %d errors; last: %w", c.nErrs, c.lastErr)
 		c.nErrs = 0
 		c.lastErr = nil
 	}
@@ -584,13 +584,13 @@ func toProtoStruct(v interface{}) (*structpb.Struct, error) {
 	} else {
 		jb, err = json.Marshal(v)
 		if err != nil {
-			return nil, fmt.Errorf("logging: json.Marshal: %v", err)
+			return nil, fmt.Errorf("logging: json.Marshal: %w", err)
 		}
 	}
 	var m map[string]interface{}
 	err = json.Unmarshal(jb, &m)
 	if err != nil {
-		return nil, fmt.Errorf("logging: json.Unmarshal: %v", err)
+		return nil, fmt.Errorf("logging: json.Unmarshal: %w", err)
 	}
 	return jsonMapToProtoStruct(m), nil
 }
