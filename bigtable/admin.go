@@ -288,9 +288,9 @@ type UpdateTableConf struct {
 
 // UpdateTable updates a table in the instance from the given configuration.
 // Only deletion protection can be updated at this period.
-func (ac *AdminClient) UpdateTable(ctx context.Context, conf *UpdateTableConf) (updated bool, err error) {
+func (ac *AdminClient) UpdateTable(ctx context.Context, conf *UpdateTableConf) error {
 	if conf.TableID == "" {
-		return false, errors.New("TableID is required")
+		return errors.New("TableID is required")
 	}
 
 	if conf.DeletionProtection != nil {
@@ -308,15 +308,15 @@ func (ac *AdminClient) UpdateTable(ctx context.Context, conf *UpdateTableConf) (
 		}
 		lro, err := ac.tClient.UpdateTable(ctx, req)
 		if err != nil {
-			return false, err
+			return err
 		}
 		err = longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
 		if err != nil {
-			return false, err
+			return err
 		}
-		return true, nil
+		return nil
 	}
-	return false, errors.New("deletion protection is required")
+	return errors.New("deletion protection is required")
 }
 
 // DeleteTable deletes a table and all of its data.
