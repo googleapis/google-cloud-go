@@ -516,11 +516,12 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	}
 
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
 	if _, exists := s.clientIDs[req.ClientId]; exists {
 		return nil, stat.Error(codes.AlreadyExists,
 			fmt.Sprintf("%s: ClientID already exists", logLabel))
 	}
-	defer s.clientsLock.Unlock()
 
 	opts, err := getCredentialsOptions(req)
 	if err != nil {
@@ -564,12 +565,13 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	doCancelAll := req.CancelAll
 
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
 	btc, exists := s.clientIDs[clientID]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-	defer s.clientsLock.Unlock()
 
 	if doCancelAll {
 		btc.cancelAll()
@@ -585,6 +587,8 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -600,7 +604,6 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	if err != nil {
 		return nil, err
 	}
-	s.clientsLock.Unlock()
 
 	if r == nil {
 		return &pb.RowResult{
@@ -630,12 +633,13 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-	defer s.clientsLock.Unlock()
 
 	rrq := req.GetRequest()
 	lim := req.GetCancelAfterRows()
@@ -690,12 +694,13 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 // changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-	defer s.clientsLock.Unlock()
 
 	rrq := req.GetRequest()
 	if rrq == nil {
@@ -727,12 +732,13 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 // series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-	defer s.clientsLock.Unlock()
 
 	rrq := req.GetRequest()
 	if rrq == nil {
@@ -810,6 +816,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 // one mutation if a condition is true and another mutation if it is false.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -845,7 +852,6 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	if err != nil {
 		return nil, err
 	}
-	s.clientsLock.Unlock()
 
 	res := &pb.CheckAndMutateRowResult{
 		Status: &status.Status{
@@ -862,6 +868,8 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 // of the keys available in a table.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -881,7 +889,6 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 	if err != nil {
 		return nil, err
 	}
-	s.clientsLock.Unlock()
 
 	sk := make([]*btpb.SampleRowKeysResponse, 0)
 	for _, k := range keys {
@@ -904,6 +911,7 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 // applies a non-idempotent change to a row.
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
 	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -937,7 +945,6 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 	if err != nil {
 		return nil, err
 	}
-	s.clientsLock.Unlock()
 
 	rp, err := rowToProto(r)
 	if err != nil {
