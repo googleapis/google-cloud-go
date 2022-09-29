@@ -825,10 +825,11 @@ type SecuritySettings_AudioExportSettings struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Cloud Storage bucket to export audio record to. You need to grant
-	// `service-<Conversation Project
-	// Number>@gcp-sa-dialogflow.iam.gserviceaccount.com` the `Storage Object
-	// Admin` role in this bucket.
+	// Cloud Storage bucket to export audio record to.
+	// Setting this field would grant the Storage Object Creator role to
+	// the Dialogflow Service Agent.
+	// API caller that tries to modify this field should have the permission of
+	// storage.buckets.setIamPolicy.
 	GcsBucket string `protobuf:"bytes,1,opt,name=gcs_bucket,json=gcsBucket,proto3" json:"gcs_bucket,omitempty"`
 	// Filename pattern for exported audio.
 	AudioExportPattern string `protobuf:"bytes,2,opt,name=audio_export_pattern,json=audioExportPattern,proto3" json:"audio_export_pattern,omitempty"`
