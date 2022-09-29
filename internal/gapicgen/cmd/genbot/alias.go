@@ -99,8 +99,8 @@ func genAliasMode(ctx context.Context, c aliasConfig) error {
 	if err := grp.Wait(); err != nil {
 		return err
 	}
-	genprotoDir := deafultDir(filepath.Join(tmpDir, "genproto"), c.genprotoDir)
-	gocloudDir := deafultDir(filepath.Join(tmpDir, "gocloud"), c.gocloudDir)
+	genprotoDir := defaultDir(filepath.Join(tmpDir, "genproto"), c.genprotoDir)
+	gocloudDir := defaultDir(filepath.Join(tmpDir, "gocloud"), c.gocloudDir)
 
 	// Generate aliases
 	if err := generateAliases(ctx, gocloudDir, genprotoDir); err != nil {
