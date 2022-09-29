@@ -1346,9 +1346,14 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 	if rp == nil {
 		return nil
 	}
+	// RetentionPeriod must be greater than 0, so if it is 0, the user left it
+	// unset, and so we should not send it in the request i.e. nil is sent.
+	var period *int64
+	if rp.RetentionPeriod != 0 {
+		period = proto.Int64(int64(rp.RetentionPeriod / time.Second))
+	}
 	return &storagepb.Bucket_RetentionPolicy{
-		// TODO(#6748): Fix this once it becomes *int64
-		// RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
+		RetentionPeriod: period,
 	}
 }
 
