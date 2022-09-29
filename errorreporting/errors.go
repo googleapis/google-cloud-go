@@ -101,7 +101,7 @@ func NewClient(ctx context.Context, projectID string, cfg Config, opts ...option
 	}
 	c, err := newClient(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("creating client: %v", err)
+		return nil, fmt.Errorf("creating client: %w", err)
 	}
 
 	client := &Client{
