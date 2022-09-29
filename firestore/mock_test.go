@@ -202,7 +202,7 @@ func (s *mockServer) RunAggregationQuery(req *pb.RunAggregationQueryRequest, qs 
 		case error:
 			return res
 		default:
-			panic(fmt.Sprintf("bad response type in RunAggregationQuery: %+v", res))
+			return fmt.Errorf("bad response type in RunAggregationQuery: %+v", res)
 		}
 	}
 	return nil

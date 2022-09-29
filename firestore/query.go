@@ -308,8 +308,7 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 // base query.
 func (q *Query) NewAggregationQuery() *AggregationQuery {
 	return &AggregationQuery{
-		query:            q,
-		aggregateQueries: make([]*pb.StructuredAggregationQuery_Aggregation, 0),
+		query: q,
 	}
 }
 
@@ -1049,8 +1048,10 @@ func (*btreeDocumentIterator) stop() {}
 // AggregationQuery allows for generating aggregation results of an underlying
 // basic query. A single AggregationQuery can contain multiple aggregations.
 type AggregationQuery struct {
-	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation // aggregateQueries contains all of the queries for this request.
-	query            *Query                                       // query contains a reference pointer to the underlying structured query.
+	// aggregateQueries contains all of the queries for this request.
+	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation
+	// query contains a reference pointer to the underlying structured query.
+	query *Query
 }
 
 // WithCount specifies that the aggregation query provide a count of results
