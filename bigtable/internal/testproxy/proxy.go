@@ -342,6 +342,7 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 type testClient struct {
 	c                   *bigtable.Client     // c stores the Bigtable client under test
 	cancels             []context.CancelFunc // cancels stores a cancel() for each call to this client
+	cancelsLock         sync.Mutex           // cancelsLock ensures that adding cancels to a client is thread safe
 	appProfileID        string               // appProfileID is currently unused
 	perOperationTimeout *duration.Duration   // perOperationTimeout sets a custom timeout for methods calls on this client
 }
@@ -349,6 +350,8 @@ type testClient struct {
 // addCancelFunction appends a context.CancelFunc to testClient.cancels slice.
 // It returns a new context object composed from the original.
 func (tc *testClient) addCancelFunction(ctx context.Context) context.Context {
+	tc.cancelsLock.Lock()
+	defer tc.cancelsLock.Unlock()
 	ctx2, cancel := context.WithCancel(ctx)
 	if tc.perOperationTimeout.AsDuration() > 0 {
 		ctx2, cancel = context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
@@ -359,6 +362,8 @@ func (tc *testClient) addCancelFunction(ctx context.Context) context.Context {
 
 // cancelAll calls all of the context.CancelFuncs stored in this testClient.
 func (tc *testClient) cancelAll() {
+	tc.cancelsLock.Lock()
+	defer tc.cancelsLock.Unlock()
 	for _, c := range tc.cancels {
 		c()
 	}
@@ -500,7 +505,7 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 // a reference to individual clients instances (stored in a testClient object).
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
-	clientIDs   map[string]testClient // clientIDs has all of the bigtable.Client objects under test
+	clientIDs   map[string]*testClient // clientIDs has all of the bigtable.Client objects under test
 	clientsLock sync.Mutex
 }
 
@@ -543,10 +548,10 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	}
 
 	if s.clientIDs == nil {
-		s.clientIDs = make(map[string]testClient)
+		s.clientIDs = make(map[string]*testClient)
 	}
 
-	s.clientIDs[req.ClientId] = testClient{
+	s.clientIDs[req.ClientId] = &testClient{
 		c: c,
 		cancels: []context.CancelFunc{
 			cancel,

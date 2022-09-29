@@ -136,6 +136,7 @@ func TestMain(m *testing.M) {
 	// 3) Start the test proxy server
 	lis = bufconn.Listen(buffer)
 	s := newProxyServer(lis)
+	defer s.Stop()
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("failed to serve: %v", err)
