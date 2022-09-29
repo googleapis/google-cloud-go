@@ -68,7 +68,7 @@ var nonBenchmarkingClients = clientPool{
 	},
 }
 
-func initializeClientPools(opts *benchmarkOptions) {
+func initializeClientPools(opts *benchmarkOptions) func() {
 	httpClients = &clientPool{
 		New: func() *storage.Client {
 			client, err := initializeHTTPClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.useDefaults)
@@ -89,33 +89,43 @@ func initializeClientPools(opts *benchmarkOptions) {
 			return client
 		},
 	}
+
+	return func() {
+		for _, c := range httpClients.clients {
+			c.Close()
+		}
+		for _, c := range gRPCClients.clients {
+			c.Close()
+		}
+	}
 }
 
 func canUseClientPool(opts *benchmarkOptions) bool {
 	return opts.useDefaults || (opts.maxReadSize == opts.minReadSize && opts.maxWriteSize == opts.minWriteSize)
 }
 
-func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, error) {
+func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, func() error, error) {
+	noOp := func() error { return nil }
 	if canUseClientPool(opts) {
 		if br.params.api == grpcAPI {
-			return gRPCClients.Get(), nil
+			return gRPCClients.Get(), noOp, nil
 		}
-		return httpClients.Get(), nil
+		return httpClients.Get(), noOp, nil
 	}
 
 	// if necessary, create a client
 	if br.params.api == grpcAPI {
 		c, err := initializeGRPCClient(ctx, br.params.appBufferSize, br.params.appBufferSize, opts.connPoolSize, false)
 		if err != nil {
-			return nil, fmt.Errorf("initializeGRPCClient: %w", err)
+			return nil, noOp, fmt.Errorf("initializeGRPCClient: %w", err)
 		}
-		return c, nil
+		return c, c.Close, nil
 	}
 	c, err := initializeHTTPClient(ctx, br.params.appBufferSize, br.params.appBufferSize, false)
 	if err != nil {
-		return nil, fmt.Errorf("initializeHTTPClient: %w", err)
+		return nil, noOp, fmt.Errorf("initializeHTTPClient: %w", err)
 	}
-	return c, nil
+	return c, c.Close, nil
 }
 
 // mutex on starting a client so that we can set an env variable for GRPC clients

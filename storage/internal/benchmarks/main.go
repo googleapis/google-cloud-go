@@ -133,7 +133,8 @@ func parseFlags() {
 func main() {
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
-	initializeClientPools(opts)
+	closePools := initializeClientPools(opts)
+	defer closePools()
 
 	start := time.Now()
 	fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))

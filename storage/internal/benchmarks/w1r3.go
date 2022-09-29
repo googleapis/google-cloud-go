@@ -76,10 +76,15 @@ func (r *w1r3) run(ctx context.Context) error {
 	// used to compare between running each benchmark "on a blank slate" vs organically.
 	forceGarbageCollection(opts.forceGC)
 
-	client, err := getClient(ctx, opts, *r.writeResult)
+	client, close, err := getClient(ctx, opts, *r.writeResult)
 	if err != nil {
 		return fmt.Errorf("getClient: %w", err)
 	}
+	defer func() {
+		if err := close(); err != nil {
+			log.Printf("close client: %v", err)
+		}
+	}()
 
 	runtime.ReadMemStats(memStats)
 	r.writeResult.startMem = *memStats
@@ -115,10 +120,15 @@ func (r *w1r3) run(ctx context.Context) error {
 		// used to compare between running each benchmark "on a blank slate" vs organically.
 		forceGarbageCollection(opts.forceGC)
 
-		client, err := getClient(ctx, opts, *r.readResults[i])
+		client, close, err := getClient(ctx, opts, *r.readResults[i])
 		if err != nil {
 			return fmt.Errorf("getClient: %w", err)
 		}
+		defer func() {
+			if err := close(); err != nil {
+				log.Printf("close client: %v", err)
+			}
+		}()
 
 		runtime.ReadMemStats(memStats)
 		r.readResults[i].startMem = *memStats
