@@ -20,7 +20,7 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func ExampleNewFlexTemplatesClient() {
@@ -72,7 +72,7 @@ func ExampleFlexTemplatesClient_LaunchFlexTemplate() {
 
 	req := &dataflowpb.LaunchFlexTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#LaunchFlexTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#LaunchFlexTemplateRequest.
 	}
 	resp, err := c.LaunchFlexTemplate(ctx, req)
 	if err != nil {

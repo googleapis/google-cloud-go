@@ -22,8 +22,8 @@ import (
 	"context"
 
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
+	"cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
 	"google.golang.org/api/iterator"
-	gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &gkehubpb.ListMembershipsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ListMembershipsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#ListMembershipsRequest.
 	}
 	it := c.ListMemberships(ctx, req)
 	for {

@@ -36,9 +36,7 @@ RUN mkdir /root/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" 
 RUN echo -e '#!/bin/bash\n\
     set -ex\n\
     cd internal/gapicgen\n\
-    go run cloud.google.com/go/internal/gapicgen/cmd/genbot\n\
-    go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
-    ' >> /run.sh
+    go run cloud.google.com/go/internal/gapicgen/cmd/genbot' >> /run.sh
 RUN chmod a+x /run.sh
 
 WORKDIR /google-cloud-go

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/area120/v0.5.0...area120/v0.6.0) (2022-09-21)
+
+
+### Features
+
+* **area120:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/area120/v0.4.0...area120/v0.5.0) (2022-09-19)
 
 

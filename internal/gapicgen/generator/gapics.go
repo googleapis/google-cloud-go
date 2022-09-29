@@ -279,19 +279,18 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	log.Println("microgen generating", conf.Pkg)
 
 	var protoFiles []string
-	if err := filepath.Walk(g.googleapisDir+"/"+conf.InputDirectoryPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	inputDir := filepath.Join(g.googleapisDir, conf.InputDirectoryPath)
+	entries, err := os.ReadDir(inputDir)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
 		// Ignore compute_small.proto which is just for testing and would cause a collision if used in generation.
 		//
 		// TODO(noahdietz): Remove this when it is no longer needed.
-		if strings.Contains(info.Name(), ".proto") && !strings.Contains(info.Name(), "compute_small.proto") {
-			protoFiles = append(protoFiles, path)
+		if strings.Contains(entry.Name(), ".proto") && !strings.Contains(entry.Name(), "compute_small.proto") {
+			protoFiles = append(protoFiles, filepath.Join(inputDir, entry.Name()))
 		}
-		return nil
-	}); err != nil {
-		return err
 	}
 
 	args := []string{"-I", g.googleapisDir,
@@ -328,19 +327,28 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 		// override the go_package option. Applied to both the protobuf/gRPC
 		// generated code, and to notify the GAPIC generator of the new
 		// import path used to reference those stubs.
-		stubPkg := filepath.Join(conf.ImportPath, stubsDir)
+		stubPkgPath := filepath.Join(conf.ImportPath, stubsDir)
 		for _, f := range protoFiles {
 			f = strings.TrimPrefix(f, g.googleapisDir+"/")
 			// Storage is a special case because it is generating a hidden beta
 			// proto surface.
 			if conf.ImportPath == "cloud.google.com/go/storage/internal/apiv2" {
-				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkgPath, conf.Pkg)
 				args = append(args,
 					"--go_opt="+rerouteGoPkg,
 					"--go_gapic_opt="+rerouteGoPkg,
 				)
 			} else {
-				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg+"pb")
+				var stubPkg string
+				// grafeas is a special case since protos are not at the root of
+				// client definition
+				if conf.InputDirectoryPath == "google/devtools/containeranalysis/v1beta1/grafeas" {
+					stubPkgPath = "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
+					stubPkg = "grafeaspb"
+				} else {
+					stubPkg = conf.Pkg + "pb"
+				}
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkgPath, stubPkg)
 				args = append(args, "--go_opt="+rerouteGoPkg)
 				if conf.isMigrated() {
 					args = append(args, "--go_gapic_opt="+rerouteGoPkg)
@@ -565,7 +573,7 @@ var ManualEntries = []ManifestEntry{
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
-		ReleaseLevel:      "beta",
+		ReleaseLevel:      "ga",
 		LibraryType:       GapicManualLibraryType,
 	},
 }

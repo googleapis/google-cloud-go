@@ -58,7 +58,7 @@
 //
 //	req := &artifactregistrypb.ImportAptArtifactsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ImportAptArtifactsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb#ImportAptArtifactsRequest.
 //	}
 //	op, err := c.ImportAptArtifacts(ctx, req)
 //	if err != nil {

@@ -23,12 +23,12 @@ import (
 	"net/http"
 	"time"
 
+	videointelligencepb "cloud.google.com/go/videointelligence/apiv1p3beta1/videointelligencepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1p3beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
