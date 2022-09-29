@@ -399,6 +399,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			GCPolicy:     GCRuleToString(fam.GcRule),
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
+		ti.DeletionProtection = res.DeletionProtection
 	}
 	return ti, nil
 }
