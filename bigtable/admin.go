@@ -217,9 +217,6 @@ type TableConf struct {
 	SplitKeys []string
 	// Families is a map from family name to GCPolicy
 	Families map[string]GCPolicy
-	// Set to true to make the table protected against data loss
-	// i.e. deleting the table, the column families in the table and the instance containing the table would be prohibited
-	DeletionProtection *bool
 }
 
 // CreateTable creates a new table in the instance.
