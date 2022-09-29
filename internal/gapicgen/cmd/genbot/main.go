@@ -76,7 +76,11 @@ func main() {
 		}
 		return
 	} else if *aliasMode {
-		if err := generateAliases(ctx, aliasConfig{
+		if err := genAliasMode(ctx, aliasConfig{
+			githubAccessToken: *githubAccessToken,
+			githubUsername:    *githubUsername,
+			githubName:        *githubName,
+			githubEmail:       *githubEmail,
 			gocloudDir:  *gocloudDir,
 			genprotoDir: *genprotoDir,
 		}); err != nil {

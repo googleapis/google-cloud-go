@@ -19,36 +19,111 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal/aliasfix"
 	"cloud.google.com/go/internal/aliasgen"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
 	"cloud.google.com/go/internal/gapicgen/git"
+	"golang.org/x/sync/errgroup"
 )
 
 type aliasConfig struct {
-	gocloudDir  string
-	genprotoDir string
+	githubAccessToken string
+	githubUsername    string
+	githubName        string
+	githubEmail       string
+	gocloudDir        string
+	genprotoDir       string
 }
 
-func generateAliases(ctx context.Context, c aliasConfig) error {
+func genAliasMode(ctx context.Context, c aliasConfig) error {
+	for k, v := range map[string]string{
+		"githubAccessToken": c.githubAccessToken,
+		"githubUsername":    c.githubUsername,
+		"githubName":        c.githubName,
+		"githubEmail":       c.githubEmail,
+	} {
+		if v == "" {
+			log.Printf("missing or empty value for required flag --%s\n", k)
+			flag.PrintDefaults()
+		}
+	}
+
+	// Setup the client and git environment.
+	githubClient, err := git.NewGithubClient(ctx, c.githubUsername, c.githubName, c.githubEmail, c.githubAccessToken)
+	if err != nil {
+		return err
+	}
+
+	// Check current alias regen status.
+	if pr, err := githubClient.GetPRWithTitle(ctx, "go-genproto", "", "auto-regenerate alias files"); err != nil {
+		return err
+	} else if pr != nil && pr.IsOpen {
+		log.Println("there is already an alias re-generation in progress")
+		return nil
+	} else if pr != nil && !pr.IsOpen {
+		lastWeek := time.Now().Add(-7 * 24 * time.Hour)
+		if pr.Created.After(lastWeek) {
+			log.Println("there is already an alias re-generation already this week")
+			return nil
+		}
+	}
+
+	// Clone repositories if needed.
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("temp dir created at %s\n", tmpDir)
-	// Clone repositories if needed.
-	git.DeepClone("https://github.com/googleapis/go-genproto", filepath.Join(tmpDir, "genproto"))
-	git.DeepClone("https://github.com/googleapis/google-cloud-go", filepath.Join(tmpDir, "gocloud"))
-
+	grp, _ := errgroup.WithContext(ctx)
+	grp.Go(func() error {
+		if c.genprotoDir != "" {
+			return nil
+		}
+		return git.DeepClone("https://github.com/googleapis/go-genproto", filepath.Join(tmpDir, "genproto"))
+	})
+	grp.Go(func() error {
+		if c.gocloudDir != "" {
+			return nil
+		}
+		return git.DeepClone("https://github.com/googleapis/google-cloud-go", filepath.Join(tmpDir, "gocloud"))
+	})
+	if err := grp.Wait(); err != nil {
+		return err
+	}
 	genprotoDir := deafultDir(filepath.Join(tmpDir, "genproto"), c.genprotoDir)
 	gocloudDir := deafultDir(filepath.Join(tmpDir, "gocloud"), c.gocloudDir)
+
+	// Generate aliases
+	if err := generateAliases(ctx, gocloudDir, genprotoDir); err != nil {
+		return err
+	}
+
+	// Create PR if needed
+	genprotoHasChanges, err := git.HasChanges(genprotoDir)
+	if err != nil {
+		return err
+	}
+	if !genprotoHasChanges {
+		log.Println("no files needed updating this week")
+		return nil
+	}
+	if err := githubClient.CreateAliasPR(ctx, genprotoDir); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func generateAliases(ctx context.Context, gocloudDir, genprotoDir string) error {
 	for k, v := range aliasfix.GenprotoPkgMigration {
 		if v.Status != aliasfix.StatusMigrated {
 			continue
@@ -81,7 +156,6 @@ func generateAliases(ctx context.Context, c aliasConfig) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
