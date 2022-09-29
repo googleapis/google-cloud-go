@@ -318,14 +318,10 @@ git push origin $BRANCH_NAME
 	if err := c.Run(); err != nil {
 		return err
 	}
-
-	head := fmt.Sprintf("googleapis:" + genprotoBranchName)
-	base := "main"
-	t := genprotoCommitTitle // Because we have to take the address.
 	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
-		Title: &t,
-		Head:  &head,
-		Base:  &base,
+		Title: github.String(aliasCommitTitle),
+		Head:  github.String(fmt.Sprintf("googleapis:" + aliasBranchName)),
+		Base:  github.String("main"),
 	})
 	if err != nil {
 		return err
