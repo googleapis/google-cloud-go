@@ -81,8 +81,8 @@ func main() {
 			githubUsername:    *githubUsername,
 			githubName:        *githubName,
 			githubEmail:       *githubEmail,
-			gocloudDir:  *gocloudDir,
-			genprotoDir: *genprotoDir,
+			gocloudDir:        *gocloudDir,
+			genprotoDir:       *genprotoDir,
 		}); err != nil {
 			log.Fatal(err)
 		}
