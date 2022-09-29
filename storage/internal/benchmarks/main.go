@@ -290,6 +290,7 @@ func (br *benchmarkResult) csv() []string {
 		strconv.FormatBool(br.params.crc32cEnabled),
 		strconv.FormatBool(br.params.md5Enabled),
 		string(br.params.api),
+		strconv.FormatBool(opts.directPath),
 		strconv.FormatInt(br.elapsedTime.Microseconds(), 10),
 		"-1", // TODO: record cpu time
 		status,
@@ -310,7 +311,7 @@ func (br *benchmarkResult) csv() []string {
 
 var csvHeaders = []string{
 	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
+	"Crc32cEnabled", "MD5Enabled", "ApiName", "DirectPath",
 	"ElapsedTimeUs", "CpuTimeUs", "Status",
 	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
 	"StartTime", "EndTime", "NumWorkers",
