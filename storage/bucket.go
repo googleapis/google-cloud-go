@@ -1347,8 +1347,7 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 		return nil
 	}
 	return &storagepb.Bucket_RetentionPolicy{
-		// TODO(#6748): Fix this once it becomes *int64
-		// RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
+		RetentionPeriod: proto.Int64(int64(rp.RetentionPeriod / time.Second)),
 	}
 }
 
