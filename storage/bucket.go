@@ -170,7 +170,7 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 // for this method.
 //
 // [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
-// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return SignedURL(b.name, object, opts)
@@ -212,7 +212,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 // to be non-nil. You may need to set the GoogleAccessID and PrivateKey fields
 // in some cases. Read more on the [automatic detection of credentials] for this method.
 //
-// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return GenerateSignedPostPolicyV4(b.name, object, opts)
@@ -1346,9 +1346,14 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 	if rp == nil {
 		return nil
 	}
+	// RetentionPeriod must be greater than 0, so if it is 0, the user left it
+	// unset, and so we should not send it in the request i.e. nil is sent.
+	var period *int64
+	if rp.RetentionPeriod != 0 {
+		period = proto.Int64(int64(rp.RetentionPeriod / time.Second))
+	}
 	return &storagepb.Bucket_RetentionPolicy{
-		// TODO(#6748): Fix this once it becomes *int64
-		// RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
+		RetentionPeriod: period,
 	}
 }
 
