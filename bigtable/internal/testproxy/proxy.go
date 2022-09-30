@@ -567,18 +567,31 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	tName := req.TableName
 	t := btc.c.Open(tName)
 
+	res := &pb.RowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+		Row: &btpb.Row{},
+	}
+
+	if btc.perOperationTimeout != nil {
+		ct, _ := context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+		ctx = ct
+	}
+
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
-		return nil, err
+		if st, ok := stat.FromError(err); ok {
+			res.Status = &statpb.Status{
+				Code:    st.Proto().Code,
+				Message: st.Message(),
+			}
+		}
+		return res, nil
 	}
 
 	if r == nil {
-		return &pb.RowResult{
-			Status: &statpb.Status{
-				Code: int32(codes.OK),
-			},
-			Row: &btpb.Row{},
-		}, nil
+		return res, nil
 	}
 
 	pbRow, err := rowToProto(r)
@@ -586,13 +599,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 		return nil, err
 	}
 
-	res := &pb.RowResult{
-		Status: &statpb.Status{
-			Code: int32(codes.OK),
-		},
-		Row: pbRow,
-	}
-
+	res.Row = pbRow
 	return res, nil
 }
 
