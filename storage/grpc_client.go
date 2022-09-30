@@ -1576,8 +1576,16 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// on the *last* message of the stream (instead of the first).
 			if w.sendCRC32C {
 				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C:  proto.Uint32(w.attrs.CRC32C),
-					Md5Hash: w.attrs.MD5,
+					Crc32C: proto.Uint32(w.attrs.CRC32C),
+				}
+			}
+			if len(w.attrs.MD5) != 0 {
+				if cs := req.GetObjectChecksums(); cs == nil {
+					req.ObjectChecksums = &storagepb.ObjectChecksums{
+						Md5Hash: w.attrs.MD5,
+					}
+				} else {
+					cs.Md5Hash = w.attrs.MD5
 				}
 			}
 		}
@@ -1686,11 +1694,6 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 
 	spec := &storagepb.WriteObjectSpec{
 		Resource: attrs.toProtoObject(w.bucket),
-	}
-	// Object.checksums is OUTPUT_ONLY and should never be sent.
-	// WriteObjectRequest.object_checksums should be used instead.
-	if checksums := spec.GetResource().GetChecksums(); checksums != nil {
-		checksums.Crc32C = nil
 	}
 	// WriteObject doesn't support the generation condition, so use default.
 	if err := applyCondsProto("WriteObject", defaultGen, w.conds, spec); err != nil {

@@ -1089,11 +1089,6 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 
 // toProtoObject copies the editable attributes from o to the proto library's Object type.
 func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
-	checksums := &storagepb.ObjectChecksums{Md5Hash: o.MD5}
-	if o.CRC32C > 0 {
-		checksums.Crc32C = proto.Uint32(o.CRC32C)
-	}
-
 	// For now, there are only globally unique buckets, and "_" is the alias
 	// project ID for such buckets. If the bucket is not provided, like in the
 	// destination ObjectAttrs of a Copy, do not attempt to format it.
@@ -1122,7 +1117,6 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		KmsKey:              o.KMSKeyName,
 		Generation:          o.Generation,
 		Size:                o.Size,
-		Checksums:           checksums,
 	}
 }
 
