@@ -555,8 +555,8 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // ReadRow responds to the ReadRow RPC. This method gets all of the column
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
-	s.clientsLock.Lock()
-	defer s.clientsLock.Unlock()
+	s.clientsLock.RLock()
+	defer s.clientsLock.RUnlock()
 
 	btc, exists := s.clientIDs[req.ClientId]
 	if !exists {
@@ -565,7 +565,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	}
 
 	tName := req.TableName
-	t := btc.c.Open(tName)
+	t := btc.c.Open(tName)````
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
