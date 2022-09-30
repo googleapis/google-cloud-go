@@ -565,7 +565,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	}
 
 	tName := req.TableName
-	t := btc.c.Open(tName)````
+	t := btc.c.Open(tName)
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
