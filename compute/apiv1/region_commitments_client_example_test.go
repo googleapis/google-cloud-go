@@ -26,6 +26,11 @@ import (
 
 func ExampleNewRegionCommitmentsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionCommitmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewRegionCommitmentsRESTClient() {
 
 func ExampleRegionCommitmentsClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionCommitmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleRegionCommitmentsClient_AggregatedList() {
 
 func ExampleRegionCommitmentsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionCommitmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleRegionCommitmentsClient_Get() {
 
 func ExampleRegionCommitmentsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionCommitmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,6 +127,11 @@ func ExampleRegionCommitmentsClient_Insert() {
 
 func ExampleRegionCommitmentsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionCommitmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -128,5 +153,33 @@ func ExampleRegionCommitmentsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+	}
+}
+
+func ExampleRegionCommitmentsClient_Update() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRegionCommitmentsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.UpdateRegionCommitmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRegionCommitmentRequest.
+	}
+	op, err := c.Update(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }

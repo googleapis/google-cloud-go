@@ -1,0 +1,337 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/datafusion/apiv1",
+    "version": "1.3.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.datafusion.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "datafusion_v1_generated_DataFusion_CreateInstance_sync",
+      "title": "datafusion CreateInstance Sample",
+      "description": "CreateInstance creates a new Data Fusion instance in the specified project and location.",
+      "file": "Client/CreateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstance",
+        "fullName": "google.cloud.datafusion.v1.Client.CreateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datafusionpb.CreateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datafusion.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateInstance",
+          "fullName": "google.cloud.datafusion.v1.DataFusion.CreateInstance",
+          "service": {
+            "shortName": "DataFusion",
+            "fullName": "google.cloud.datafusion.v1.DataFusion"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datafusion_v1_generated_DataFusion_DeleteInstance_sync",
+      "title": "datafusion DeleteInstance Sample",
+      "description": "DeleteInstance deletes a single Date Fusion instance.",
+      "file": "Client/DeleteInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstance",
+        "fullName": "google.cloud.datafusion.v1.Client.DeleteInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datafusionpb.DeleteInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datafusion.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteInstance",
+          "fullName": "google.cloud.datafusion.v1.DataFusion.DeleteInstance",
+          "service": {
+            "shortName": "DataFusion",
+            "fullName": "google.cloud.datafusion.v1.DataFusion"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datafusion_v1_generated_DataFusion_GetInstance_sync",
+      "title": "datafusion GetInstance Sample",
+      "description": "GetInstance gets details of a single Data Fusion instance.",
+      "file": "Client/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.datafusion.v1.Client.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datafusionpb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "datafusionpb.Instance",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datafusion.v1.Client"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.datafusion.v1.DataFusion.GetInstance",
+          "service": {
+            "shortName": "DataFusion",
+            "fullName": "google.cloud.datafusion.v1.DataFusion"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datafusion_v1_generated_DataFusion_ListAvailableVersions_sync",
+      "title": "datafusion ListAvailableVersions Sample",
+      "description": "ListAvailableVersions lists possible versions for Data Fusion instances in the specified project\nand location.",
+      "file": "Client/ListAvailableVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAvailableVersions",
+        "fullName": "google.cloud.datafusion.v1.Client.ListAvailableVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datafusionpb.ListAvailableVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datafusion.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAvailableVersions",
+          "fullName": "google.cloud.datafusion.v1.DataFusion.ListAvailableVersions",
+          "service": {
+            "shortName": "DataFusion",
+            "fullName": "google.cloud.datafusion.v1.DataFusion"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datafusion_v1_generated_DataFusion_ListInstances_sync",
+      "title": "datafusion ListInstances Sample",
+      "description": "ListInstances lists Data Fusion instances in the specified project and location.",
+      "file": "Client/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.cloud.datafusion.v1.Client.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datafusionpb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datafusion.v1.Client"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.cloud.datafusion.v1.DataFusion.ListInstances",
+          "service": {
+            "shortName": "DataFusion",
+            "fullName": "google.cloud.datafusion.v1.DataFusion"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datafusion_v1_generated_DataFusion_RestartInstance_sync",
+      "title": "datafusion RestartInstance Sample",
+      "description": "RestartInstance restart a single Data Fusion instance.\nAt the end of an operation instance is fully restarted.",
+      "file": "Client/RestartInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestartInstance",
+        "fullName": "google.cloud.datafusion.v1.Client.RestartInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datafusionpb.RestartInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestartInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datafusion.v1.Client"
+        },
+        "method": {
+          "shortName": "RestartInstance",
+          "fullName": "google.cloud.datafusion.v1.DataFusion.RestartInstance",
+          "service": {
+            "shortName": "DataFusion",
+            "fullName": "google.cloud.datafusion.v1.DataFusion"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datafusion_v1_generated_DataFusion_UpdateInstance_sync",
+      "title": "datafusion UpdateInstance Sample",
+      "description": "UpdateInstance updates a single Data Fusion instance.",
+      "file": "Client/UpdateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstance",
+        "fullName": "google.cloud.datafusion.v1.Client.UpdateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datafusionpb.UpdateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datafusion.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateInstance",
+          "fullName": "google.cloud.datafusion.v1.DataFusion.UpdateInstance",
+          "service": {
+            "shortName": "DataFusion",
+            "fullName": "google.cloud.datafusion.v1.DataFusion"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

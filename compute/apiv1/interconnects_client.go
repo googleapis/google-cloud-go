@@ -48,9 +48,22 @@ type InterconnectsCallOptions struct {
 	Insert         []gax.CallOption
 	List           []gax.CallOption
 	Patch          []gax.CallOption
+	SetLabels      []gax.CallOption
 }
 
-// internalInterconnectsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultInterconnectsRESTCallOptions() *InterconnectsCallOptions {
+	return &InterconnectsCallOptions{
+		Delete:         []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		GetDiagnostics: []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+		Patch:          []gax.CallOption{},
+		SetLabels:      []gax.CallOption{},
+	}
+}
+
+// internalInterconnectsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalInterconnectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -61,6 +74,7 @@ type internalInterconnectsClient interface {
 	Insert(context.Context, *computepb.InsertInterconnectRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInterconnectsRequest, ...gax.CallOption) *InterconnectIterator
 	Patch(context.Context, *computepb.PatchInterconnectRequest, ...gax.CallOption) (*Operation, error)
+	SetLabels(context.Context, *computepb.SetLabelsInterconnectRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // InterconnectsClient is a client for interacting with Google Compute Engine API.
@@ -92,7 +106,8 @@ func (c *InterconnectsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *InterconnectsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -127,6 +142,11 @@ func (c *InterconnectsClient) Patch(ctx context.Context, req *computepb.PatchInt
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
+// SetLabels sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+func (c *InterconnectsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetLabels(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type interconnectsRESTClient struct {
 	// The http endpoint to connect to.
@@ -140,6 +160,9 @@ type interconnectsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing InterconnectsClient
+	CallOptions **InterconnectsCallOptions
 }
 
 // NewInterconnectsRESTClient creates a new interconnects rest client.
@@ -152,9 +175,11 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 		return nil, err
 	}
 
+	callOpts := defaultInterconnectsRESTCallOptions()
 	c := &interconnectsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -168,7 +193,7 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 	}
 	c.operationClient = opC
 
-	return &InterconnectsClient{internalClient: c, CallOptions: &InterconnectsCallOptions{}}, nil
+	return &InterconnectsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultInterconnectsRESTClientOptions() []option.ClientOption {
@@ -185,7 +210,7 @@ func defaultInterconnectsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *interconnectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -202,14 +227,17 @@ func (c *interconnectsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *interconnectsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
 // Delete deletes the specified interconnect.
 func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
@@ -220,10 +248,16 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -267,14 +301,23 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 
 // Get returns the specified interconnect. Get a list of available interconnects by making a list() request.
 func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Interconnect{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -311,14 +354,23 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 
 // GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.
 func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/getDiagnostics", req.GetProject(), req.GetInterconnect())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetDiagnostics[0:len((*c.CallOptions).GetDiagnostics):len((*c.CallOptions).GetDiagnostics)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InterconnectsGetDiagnosticsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -362,7 +414,10 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
 
 	params := url.Values{}
@@ -373,10 +428,16 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -433,7 +494,10 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
 
 		params := url.Values{}
@@ -458,6 +522,9 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -517,7 +584,10 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
@@ -528,11 +598,84 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// SetLabels sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalSetLabelsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/setLabels", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}

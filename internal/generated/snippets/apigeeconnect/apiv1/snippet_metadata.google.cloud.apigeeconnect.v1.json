@@ -1,0 +1,102 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/apigeeconnect/apiv1",
+    "version": "1.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.apigeeconnect.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "apigeeconnect_v1_generated_ConnectionService_ListConnections_sync",
+      "title": "apigeeconnect ListConnections Sample",
+      "description": "ListConnections lists connections that are currently active for the given Apigee Connect\nendpoint.",
+      "file": "ConnectionClient/ListConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnections",
+        "fullName": "google.cloud.apigeeconnect.v1.ConnectionClient.ListConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "apigeeconnectpb.ListConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "client": {
+          "shortName": "ConnectionClient",
+          "fullName": "google.cloud.apigeeconnect.v1.ConnectionClient"
+        },
+        "method": {
+          "shortName": "ListConnections",
+          "fullName": "google.cloud.apigeeconnect.v1.ConnectionService.ListConnections",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.apigeeconnect.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "apigeeconnect_v1_generated_Tether_Egress_sync",
+      "title": "apigeeconnect Egress Sample",
+      "description": "Egress egress streams egress requests and responses. Logically, this is not\nactually a streaming request, but uses streaming as a mechanism to flip\nthe client-server relationship of gRPC so that the server can act as a\nclient.\nThe listener, the RPC server, accepts connections from the dialer,\nthe RPC client.\nThe listener streams http requests and the dialer streams http responses.",
+      "file": "TetherClient/Egress/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Egress",
+        "fullName": "google.cloud.apigeeconnect.v1.TetherClient.Egress",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TetherClient",
+          "fullName": "google.cloud.apigeeconnect.v1.TetherClient"
+        },
+        "method": {
+          "shortName": "Egress",
+          "fullName": "google.cloud.apigeeconnect.v1.Tether.Egress",
+          "service": {
+            "shortName": "Tether",
+            "fullName": "google.cloud.apigeeconnect.v1.Tether"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 68,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

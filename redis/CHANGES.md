@@ -1,5 +1,56 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.7.0...redis/v1.8.0) (2022-09-21)
+
+
+### Features
+
+* **redis:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.6.0...redis/v1.7.0) (2022-09-19)
+
+
+### Features
+
+* **redis:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.5.0...redis/v1.6.0) (2022-06-29)
+
+
+### Features
+
+* **redis:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.4.0...redis/v1.5.0) (2022-03-28)
+
+
+### Features
+
+* **redis:** [Cloud Memorystore for Redis] Support Maintenance Window ([58ee787](https://github.com/googleapis/google-cloud-go/commit/58ee7873f4dc7953980eeae889a8758336064a35))
+* **redis:** add support for AUTH functionality feat: add support for TLS functionality feat: add secondary_ip_range field ([58ee787](https://github.com/googleapis/google-cloud-go/commit/58ee7873f4dc7953980eeae889a8758336064a35))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.3.0...redis/v1.4.0) (2022-02-23)
+
+
+### Features
+
+* **redis:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.2.0...redis/v1.3.0) (2022-02-14)
+
+
+### Features
+
+* **redis:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **redis:** add secondary_ip_range field ([61f23b2](https://github.com/googleapis/google-cloud-go/commit/61f23b2167dbe9e3e031db12ccf46b7eac639fa3))
+
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/redis/v1.1.1...redis/v1.2.0) (2022-02-03)
+
+
+### Features
+
+* **redis:** Add automated RDB (AKA persistence) ([6e56077](https://www.github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+
 ### [1.1.1](https://www.github.com/googleapis/google-cloud-go/compare/redis/v1.1.0...redis/v1.1.1) (2022-01-19)
 
 

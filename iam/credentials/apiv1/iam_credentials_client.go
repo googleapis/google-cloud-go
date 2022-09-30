@@ -108,7 +108,7 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 	}
 }
 
-// internalIamCredentialsClient is an interface that defines the methods availaible from IAM Service Account Credentials API.
+// internalIamCredentialsClient is an interface that defines the methods available from IAM Service Account Credentials API.
 type internalIamCredentialsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -156,7 +156,8 @@ func (c *IamCredentialsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IamCredentialsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -249,7 +250,8 @@ func NewIamCredentialsClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *iamCredentialsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -259,7 +261,7 @@ func (c *iamCredentialsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *iamCredentialsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -276,6 +278,7 @@ func (c *iamCredentialsGRPCClient) GenerateAccessToken(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GenerateAccessToken[0:len((*c.CallOptions).GenerateAccessToken):len((*c.CallOptions).GenerateAccessToken)], opts...)
 	var resp *credentialspb.GenerateAccessTokenResponse
@@ -297,6 +300,7 @@ func (c *iamCredentialsGRPCClient) GenerateIdToken(ctx context.Context, req *cre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GenerateIdToken[0:len((*c.CallOptions).GenerateIdToken):len((*c.CallOptions).GenerateIdToken)], opts...)
 	var resp *credentialspb.GenerateIdTokenResponse
@@ -318,6 +322,7 @@ func (c *iamCredentialsGRPCClient) SignBlob(ctx context.Context, req *credential
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SignBlob[0:len((*c.CallOptions).SignBlob):len((*c.CallOptions).SignBlob)], opts...)
 	var resp *credentialspb.SignBlobResponse
@@ -339,6 +344,7 @@ func (c *iamCredentialsGRPCClient) SignJwt(ctx context.Context, req *credentials
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SignJwt[0:len((*c.CallOptions).SignJwt):len((*c.CallOptions).SignJwt)], opts...)
 	var resp *credentialspb.SignJwtResponse

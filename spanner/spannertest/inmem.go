@@ -20,10 +20,11 @@ Package spannertest contains test helpers for working with Cloud Spanner.
 This package is EXPERIMENTAL, and is lacking several features. See the README.md
 file in this directory for more details.
 
-In-memory fake
+# In-memory fake
 
 This package has an in-memory fake implementation of spanner. To use it,
 create a Server, and then connect to it with no security:
+
 	srv, err := spannertest.NewServer("localhost:0")
 	...
 	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
@@ -33,6 +34,7 @@ create a Server, and then connect to it with no security:
 
 Alternatively, create a Server, then set the SPANNER_EMULATOR_HOST environment
 variable and use the regular spanner.NewClient:
+
 	srv, err := spannertest.NewServer("localhost:0")
 	...
 	os.Setenv("SPANNER_EMULATOR_HOST", srv.Addr)
@@ -162,10 +164,14 @@ func newLRO(initState *lropb.Operation) *lro {
 	}
 }
 
-func (l *lro) noWait() {
+// noWait causes the LRO to stop the artificial delay when applying the operation.
+// It returns whether this was the first invocation of this method.
+func (l *lro) noWait() bool {
 	if atomic.CompareAndSwapInt32(&l.waitatom, 0, 1) {
 		close(l.waitc)
+		return true
 	}
+	return false
 }
 
 func (l *lro) State() *lropb.Operation {
@@ -247,7 +253,11 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 	}
 
 	// Someone is waiting on this LRO. Disable sleeping in its Run method.
-	lro.noWait()
+	if lro.noWait() {
+		// The sleeping has been canceled for the first time.
+		// Have a slight pause to give the LRO a chance to complete.
+		time.Sleep(50 * time.Millisecond)
+	}
 
 	return lro.State(), nil
 }

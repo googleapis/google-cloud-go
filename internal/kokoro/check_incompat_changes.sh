@@ -17,8 +17,8 @@
 set -x
 
 # Only run apidiff checks on latest (we only need it once).
-if [[ `go version` != *"go1.17"* ]]; then
+if [[ `go version` != *"go1.19"* ]]; then
     exit 0
 fi
 
-go run ./internal/apidiff -verbose -repo-metadata=./internal/.repo-metadata-full.json
+go run ./internal/apidiff -verbose

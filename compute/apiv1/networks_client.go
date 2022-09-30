@@ -55,7 +55,23 @@ type NetworksCallOptions struct {
 	UpdatePeering         []gax.CallOption
 }
 
-// internalNetworksClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultNetworksRESTCallOptions() *NetworksCallOptions {
+	return &NetworksCallOptions{
+		AddPeering:            []gax.CallOption{},
+		Delete:                []gax.CallOption{},
+		Get:                   []gax.CallOption{},
+		GetEffectiveFirewalls: []gax.CallOption{},
+		Insert:                []gax.CallOption{},
+		List:                  []gax.CallOption{},
+		ListPeeringRoutes:     []gax.CallOption{},
+		Patch:                 []gax.CallOption{},
+		RemovePeering:         []gax.CallOption{},
+		SwitchToCustomMode:    []gax.CallOption{},
+		UpdatePeering:         []gax.CallOption{},
+	}
+}
+
+// internalNetworksClient is an interface that defines the methods available from Google Compute Engine API.
 type internalNetworksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -102,7 +118,8 @@ func (c *NetworksClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *NetworksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -175,6 +192,9 @@ type networksRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing NetworksClient
+	CallOptions **NetworksCallOptions
 }
 
 // NewNetworksRESTClient creates a new networks rest client.
@@ -187,9 +207,11 @@ func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 		return nil, err
 	}
 
+	callOpts := defaultNetworksRESTCallOptions()
 	c := &networksRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -203,7 +225,7 @@ func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 	}
 	c.operationClient = opC
 
-	return &NetworksClient{internalClient: c, CallOptions: &NetworksCallOptions{}}, nil
+	return &NetworksClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultNetworksRESTClientOptions() []option.ClientOption {
@@ -220,7 +242,7 @@ func defaultNetworksRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *networksRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -237,7 +259,7 @@ func (c *networksRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *networksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -251,7 +273,10 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/addPeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -262,10 +287,16 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).AddPeering[0:len((*c.CallOptions).AddPeering):len((*c.CallOptions).AddPeering)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -309,7 +340,10 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 
 // Delete deletes the specified network.
 func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -320,10 +354,16 @@ func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNe
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -367,14 +407,23 @@ func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNe
 
 // Get returns the specified network. Gets a list of available networks by making a list() request.
 func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkRequest, opts ...gax.CallOption) (*computepb.Network, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Network{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -411,14 +460,23 @@ func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkR
 
 // GetEffectiveFirewalls returns the effective firewalls on a given network.
 func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *computepb.GetEffectiveFirewallsNetworkRequest, opts ...gax.CallOption) (*computepb.NetworksGetEffectiveFirewallsResponse, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/getEffectiveFirewalls", req.GetProject(), req.GetNetwork())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetEffectiveFirewalls[0:len((*c.CallOptions).GetEffectiveFirewalls):len((*c.CallOptions).GetEffectiveFirewalls)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworksGetEffectiveFirewallsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -462,7 +520,10 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks", req.GetProject())
 
 	params := url.Values{}
@@ -473,10 +534,16 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -533,7 +600,10 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks", req.GetProject())
 
 		params := url.Values{}
@@ -558,6 +628,9 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -623,7 +696,10 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/listPeeringRoutes", req.GetProject(), req.GetNetwork())
 
 		params := url.Values{}
@@ -657,6 +733,9 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -716,7 +795,10 @@ func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetw
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -727,10 +809,16 @@ func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetw
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -781,7 +869,10 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/removePeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -792,10 +883,16 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RemovePeering[0:len((*c.CallOptions).RemovePeering):len((*c.CallOptions).RemovePeering)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -839,7 +936,10 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 
 // SwitchToCustomMode switches the network mode from auto subnet mode to custom subnet mode.
 func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *computepb.SwitchToCustomModeNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/switchToCustomMode", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -850,10 +950,16 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SwitchToCustomMode[0:len((*c.CallOptions).SwitchToCustomMode):len((*c.CallOptions).SwitchToCustomMode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -904,7 +1010,10 @@ func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.U
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/updatePeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
@@ -915,10 +1024,16 @@ func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.U
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdatePeering[0:len((*c.CallOptions).UpdatePeering):len((*c.CallOptions).UpdatePeering)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err

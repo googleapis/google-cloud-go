@@ -17,45 +17,56 @@
 // Package tables is an auto-generated package for the
 // Area120 Tables API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//	NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
-// Example usage
+// # Example usage
 //
 // To get started with this package, create a client.
-//  ctx := context.Background()
-//  c, err := tables.NewClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := tables.NewClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// Using the Client
+// # Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//  ctx := context.Background()
-//  c, err := tables.NewClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := tables.NewClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
-//  req := &tablespb.GetTableRequest{
-//  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#GetTableRequest.
-//  }
-//  resp, err := c.GetTable(ctx, req)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  // TODO: Use resp.
-//  _ = resp
+//	req := &tablespb.GetTableRequest{
+//		// TODO: Fill request struct fields.
+//		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetTableRequest.
+//	}
+//	resp, err := c.GetTable(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
@@ -69,6 +80,8 @@ package tables // import "cloud.google.com/go/area120/tables/apiv1alpha1"
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -84,7 +97,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220114"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -154,4 +174,23 @@ func versionGo() string {
 		return s
 	}
 	return "UNKNOWN"
+}
+
+// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
+// of receiving an unknown enum value.
+func maybeUnknownEnum(err error) error {
+	if strings.Contains(err.Error(), "invalid value for enum type") {
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+	}
+	return err
+}
+
+// buildHeaders extracts metadata from the outgoing context, joins it with any other
+// given metadata, and converts them into a http.Header.
+func buildHeaders(ctx context.Context, mds ...metadata.MD) http.Header {
+	if cmd, ok := metadata.FromOutgoingContext(ctx); ok {
+		mds = append(mds, cmd)
+	}
+	md := metadata.Join(mds...)
+	return http.Header(md)
 }

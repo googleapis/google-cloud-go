@@ -1,0 +1,918 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/firestore/apiv1",
+    "version": "1.6.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.firestore.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "firestore_v1_generated_Firestore_BatchGetDocuments_sync",
+      "title": "firestore BatchGetDocuments Sample",
+      "description": "BatchGetDocuments gets multiple documents.\n\nDocuments returned by this method are not guaranteed to be returned in the\nsame order that they were requested.",
+      "file": "Client/BatchGetDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchGetDocuments",
+        "fullName": "google.firestore.v1.Client.BatchGetDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.BatchGetDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchGetDocuments",
+          "fullName": "google.firestore.v1.Firestore.BatchGetDocuments",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 1,
+          "end": -1,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_BatchWrite_sync",
+      "title": "firestore BatchWrite Sample",
+      "description": "BatchWrite applies a batch of write operations.\n\nThe BatchWrite method does not apply the write operations atomically\nand can apply them out of order. Method does not allow more than one write\nper document. Each write succeeds or fails independently. See the\nBatchWriteResponse for the success status of each write.\n\nIf you require an atomically applied set of writes, use\nCommit instead.",
+      "file": "Client/BatchWrite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchWrite",
+        "fullName": "google.firestore.v1.Client.BatchWrite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.BatchWriteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "firestorepb.BatchWriteResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchWrite",
+          "fullName": "google.firestore.v1.Firestore.BatchWrite",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_BeginTransaction_sync",
+      "title": "firestore BeginTransaction Sample",
+      "description": "BeginTransaction starts a new transaction.",
+      "file": "Client/BeginTransaction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BeginTransaction",
+        "fullName": "google.firestore.v1.Client.BeginTransaction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.BeginTransactionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "firestorepb.BeginTransactionResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "BeginTransaction",
+          "fullName": "google.firestore.v1.Firestore.BeginTransaction",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_CancelOperation_sync",
+      "title": "firestore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.firestore.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.firestore.v1.Firestore.CancelOperation",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_Commit_sync",
+      "title": "firestore Commit Sample",
+      "description": "Commit commits a transaction, while optionally updating documents.",
+      "file": "Client/Commit/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Commit",
+        "fullName": "google.firestore.v1.Client.Commit",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.CommitRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "firestorepb.CommitResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "Commit",
+          "fullName": "google.firestore.v1.Firestore.Commit",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_CreateDocument_sync",
+      "title": "firestore CreateDocument Sample",
+      "description": "CreateDocument creates a new document.",
+      "file": "Client/CreateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDocument",
+        "fullName": "google.firestore.v1.Client.CreateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.CreateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "firestorepb.Document",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDocument",
+          "fullName": "google.firestore.v1.Firestore.CreateDocument",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_DeleteDocument_sync",
+      "title": "firestore DeleteDocument Sample",
+      "description": "DeleteDocument deletes a document.",
+      "file": "Client/DeleteDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDocument",
+        "fullName": "google.firestore.v1.Client.DeleteDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.DeleteDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDocument",
+          "fullName": "google.firestore.v1.Firestore.DeleteDocument",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_DeleteOperation_sync",
+      "title": "firestore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.firestore.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.firestore.v1.Firestore.DeleteOperation",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_GetDocument_sync",
+      "title": "firestore GetDocument Sample",
+      "description": "GetDocument gets a single document.",
+      "file": "Client/GetDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDocument",
+        "fullName": "google.firestore.v1.Client.GetDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.GetDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "firestorepb.Document",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDocument",
+          "fullName": "google.firestore.v1.Firestore.GetDocument",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_GetOperation_sync",
+      "title": "firestore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.firestore.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.firestore.v1.Firestore.GetOperation",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_ListCollectionIds_sync",
+      "title": "firestore ListCollectionIds Sample",
+      "description": "ListCollectionIds lists all the collection IDs underneath a document.",
+      "file": "Client/ListCollectionIds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCollectionIds",
+        "fullName": "google.firestore.v1.Client.ListCollectionIds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.ListCollectionIdsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListCollectionIds",
+          "fullName": "google.firestore.v1.Firestore.ListCollectionIds",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_ListDocuments_sync",
+      "title": "firestore ListDocuments Sample",
+      "description": "ListDocuments lists documents.",
+      "file": "Client/ListDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDocuments",
+        "fullName": "google.firestore.v1.Client.ListDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.ListDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DocumentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDocuments",
+          "fullName": "google.firestore.v1.Firestore.ListDocuments",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_ListOperations_sync",
+      "title": "firestore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.firestore.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.firestore.v1.Firestore.ListOperations",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_Listen_sync",
+      "title": "firestore Listen Sample",
+      "description": "Listen listens to changes.",
+      "file": "Client/Listen/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Listen",
+        "fullName": "google.firestore.v1.Client.Listen",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "Listen",
+          "fullName": "google.firestore.v1.Firestore.Listen",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 68,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_PartitionQuery_sync",
+      "title": "firestore PartitionQuery Sample",
+      "description": "PartitionQuery partitions a query by returning partition cursors that can be used to run\nthe query in parallel. The returned partition cursors are split points that\ncan be used by RunQuery as starting/end points for the query results.",
+      "file": "Client/PartitionQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PartitionQuery",
+        "fullName": "google.firestore.v1.Client.PartitionQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.PartitionQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CursorIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "PartitionQuery",
+          "fullName": "google.firestore.v1.Firestore.PartitionQuery",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_Rollback_sync",
+      "title": "firestore Rollback Sample",
+      "description": "Rollback rolls back a transaction.",
+      "file": "Client/Rollback/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Rollback",
+        "fullName": "google.firestore.v1.Client.Rollback",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.RollbackRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "Rollback",
+          "fullName": "google.firestore.v1.Firestore.Rollback",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_RunAggregationQuery_sync",
+      "title": "firestore RunAggregationQuery Sample",
+      "description": "RunAggregationQuery runs an aggregation query.\n\nRather than producing Document results like Firestore.RunQuery,\nthis API allows running an aggregation to produce a series of\nAggregationResult server-side.\n\nHigh-Level Example: ",
+      "file": "Client/RunAggregationQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunAggregationQuery",
+        "fullName": "google.firestore.v1.Client.RunAggregationQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.RunAggregationQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "RunAggregationQuery",
+          "fullName": "google.firestore.v1.Firestore.RunAggregationQuery",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 1,
+          "end": -1,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_RunQuery_sync",
+      "title": "firestore RunQuery Sample",
+      "description": "RunQuery runs a query.",
+      "file": "Client/RunQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunQuery",
+        "fullName": "google.firestore.v1.Client.RunQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.RunQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "RunQuery",
+          "fullName": "google.firestore.v1.Firestore.RunQuery",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 1,
+          "end": -1,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_UpdateDocument_sync",
+      "title": "firestore UpdateDocument Sample",
+      "description": "UpdateDocument updates or inserts a document.",
+      "file": "Client/UpdateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDocument",
+        "fullName": "google.firestore.v1.Client.UpdateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "firestorepb.UpdateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "firestorepb.Document",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDocument",
+          "fullName": "google.firestore.v1.Firestore.UpdateDocument",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_Firestore_Write_sync",
+      "title": "firestore Write Sample",
+      "description": "Write streams batches of document updates and deletes, in order.",
+      "file": "Client/Write/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Write",
+        "fullName": "google.firestore.v1.Client.Write",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.firestore.v1.Client"
+        },
+        "method": {
+          "shortName": "Write",
+          "fullName": "google.firestore.v1.Firestore.Write",
+          "service": {
+            "shortName": "Firestore",
+            "fullName": "google.firestore.v1.Firestore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 68,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

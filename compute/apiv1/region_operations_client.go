@@ -47,7 +47,16 @@ type RegionOperationsCallOptions struct {
 	Wait   []gax.CallOption
 }
 
-// internalRegionOperationsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionOperationsRESTCallOptions() *RegionOperationsCallOptions {
+	return &RegionOperationsCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Wait:   []gax.CallOption{},
+	}
+}
+
+// internalRegionOperationsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionOperationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -87,7 +96,8 @@ func (c *RegionOperationsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionOperationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -122,6 +132,9 @@ type regionOperationsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionOperationsClient
+	CallOptions **RegionOperationsCallOptions
 }
 
 // NewRegionOperationsRESTClient creates a new region operations rest client.
@@ -134,13 +147,15 @@ func NewRegionOperationsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultRegionOperationsRESTCallOptions()
 	c := &regionOperationsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &RegionOperationsClient{internalClient: c, CallOptions: &RegionOperationsCallOptions{}}, nil
+	return &RegionOperationsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionOperationsRESTClientOptions() []option.ClientOption {
@@ -157,7 +172,7 @@ func defaultRegionOperationsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *regionOperationsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -171,21 +186,30 @@ func (c *regionOperationsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionOperationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
 // Delete deletes the specified region-specific Operations resource.
 func (c *regionOperationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionOperationRequest, opts ...gax.CallOption) (*computepb.DeleteRegionOperationResponse, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/operations/%v", req.GetProject(), req.GetRegion(), req.GetOperation())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "operation", url.QueryEscape(req.GetOperation())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.DeleteRegionOperationResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -222,14 +246,23 @@ func (c *regionOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get retrieves the specified region-specific Operations resource.
 func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.GetRegionOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/operations/%v", req.GetProject(), req.GetRegion(), req.GetOperation())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "operation", url.QueryEscape(req.GetOperation())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -279,7 +312,10 @@ func (c *regionOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/operations", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -304,6 +340,9 @@ func (c *regionOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -356,14 +395,23 @@ func (c *regionOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 
 // Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
 func (c *regionOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitRegionOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/operations/%v/wait", req.GetProject(), req.GetRegion(), req.GetOperation())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "operation", url.QueryEscape(req.GetOperation())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Wait[0:len((*c.CallOptions).Wait):len((*c.CallOptions).Wait)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err

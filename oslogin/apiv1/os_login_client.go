@@ -135,7 +135,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud OS Login API.
+// internalClient is an interface that defines the methods available from Cloud OS Login API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -151,7 +151,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud OS Login API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud OS Login API
+// # Cloud OS Login API
 //
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
@@ -180,7 +180,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -242,7 +243,7 @@ type gRPCClient struct {
 // NewClient creates a new os login service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud OS Login API
+// # Cloud OS Login API
 //
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
@@ -282,7 +283,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -292,7 +294,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -309,6 +311,7 @@ func (c *gRPCClient) DeletePosixAccount(ctx context.Context, req *osloginpb.Dele
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeletePosixAccount[0:len((*c.CallOptions).DeletePosixAccount):len((*c.CallOptions).DeletePosixAccount)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -326,6 +329,7 @@ func (c *gRPCClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.Dele
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSshPublicKey[0:len((*c.CallOptions).DeleteSshPublicKey):len((*c.CallOptions).DeleteSshPublicKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -343,6 +347,7 @@ func (c *gRPCClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetLoginProfile[0:len((*c.CallOptions).GetLoginProfile):len((*c.CallOptions).GetLoginProfile)], opts...)
 	var resp *osloginpb.LoginProfile
@@ -364,6 +369,7 @@ func (c *gRPCClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSshPublicKey[0:len((*c.CallOptions).GetSshPublicKey):len((*c.CallOptions).GetSshPublicKey)], opts...)
 	var resp *commonpb.SshPublicKey
@@ -385,6 +391,7 @@ func (c *gRPCClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportSshPublicKey[0:len((*c.CallOptions).ImportSshPublicKey):len((*c.CallOptions).ImportSshPublicKey)], opts...)
 	var resp *osloginpb.ImportSshPublicKeyResponse
@@ -406,6 +413,7 @@ func (c *gRPCClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSshPublicKey[0:len((*c.CallOptions).UpdateSshPublicKey):len((*c.CallOptions).UpdateSshPublicKey)], opts...)
 	var resp *commonpb.SshPublicKey

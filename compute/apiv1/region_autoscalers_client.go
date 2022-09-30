@@ -50,7 +50,18 @@ type RegionAutoscalersCallOptions struct {
 	Update []gax.CallOption
 }
 
-// internalRegionAutoscalersClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionAutoscalersRESTCallOptions() *RegionAutoscalersCallOptions {
+	return &RegionAutoscalersCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Patch:  []gax.CallOption{},
+		Update: []gax.CallOption{},
+	}
+}
+
+// internalRegionAutoscalersClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionAutoscalersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -92,7 +103,8 @@ func (c *RegionAutoscalersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionAutoscalersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -140,6 +152,9 @@ type regionAutoscalersRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionAutoscalersClient
+	CallOptions **RegionAutoscalersCallOptions
 }
 
 // NewRegionAutoscalersRESTClient creates a new region autoscalers rest client.
@@ -152,9 +167,11 @@ func NewRegionAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOp
 		return nil, err
 	}
 
+	callOpts := defaultRegionAutoscalersRESTCallOptions()
 	c := &regionAutoscalersRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -168,7 +185,7 @@ func NewRegionAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOp
 	}
 	c.operationClient = opC
 
-	return &RegionAutoscalersClient{internalClient: c, CallOptions: &RegionAutoscalersCallOptions{}}, nil
+	return &RegionAutoscalersClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionAutoscalersRESTClientOptions() []option.ClientOption {
@@ -185,7 +202,7 @@ func defaultRegionAutoscalersRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *regionAutoscalersRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -202,14 +219,17 @@ func (c *regionAutoscalersRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionAutoscalersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
 // Delete deletes the specified autoscaler.
 func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v", req.GetProject(), req.GetRegion(), req.GetAutoscaler())
 
 	params := url.Values{}
@@ -220,10 +240,16 @@ func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "autoscaler", url.QueryEscape(req.GetAutoscaler())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -268,14 +294,23 @@ func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb
 
 // Get returns the specified autoscaler.
 func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.GetRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Autoscaler, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v", req.GetProject(), req.GetRegion(), req.GetAutoscaler())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "autoscaler", url.QueryEscape(req.GetAutoscaler())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Autoscaler{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -319,7 +354,10 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -330,10 +368,16 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -391,7 +435,10 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -416,6 +463,9 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -475,7 +525,10 @@ func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -489,10 +542,16 @@ func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -544,7 +603,10 @@ func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -558,10 +620,16 @@ func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PUT", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err

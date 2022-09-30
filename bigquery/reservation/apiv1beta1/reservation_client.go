@@ -17,21 +17,27 @@
 package reservation
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -206,7 +212,131 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from BigQuery Reservation API.
+func defaultRESTCallOptions() *CallOptions {
+	return &CallOptions{
+		CreateReservation: []gax.CallOption{},
+		ListReservations: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateReservation:        []gax.CallOption{},
+		CreateCapacityCommitment: []gax.CallOption{},
+		ListCapacityCommitments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetCapacityCommitment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteCapacityCommitment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateCapacityCommitment: []gax.CallOption{},
+		SplitCapacityCommitment:  []gax.CallOption{},
+		MergeCapacityCommitments: []gax.CallOption{},
+		CreateAssignment:         []gax.CallOption{},
+		ListAssignments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		SearchAssignments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MoveAssignment: []gax.CallOption{},
+		GetBiReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateBiReservation: []gax.CallOption{},
+	}
+}
+
+// internalClient is an interface that defines the methods available from BigQuery Reservation API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -235,6 +365,7 @@ type internalClient interface {
 // Client is a client for interacting with BigQuery Reservation API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
+// Deprecated: Please use the v1 api instead.
 // This API allows users to manage their flat-rate BigQuery reservations.
 //
 // A reservation provides computational resource guarantees, in the form of
@@ -250,6 +381,8 @@ type internalClient interface {
 // commitment resource exists as a child resource of the admin project and
 // location, e.g.:
 // projects/myproject/locations/US/capacityCommitments/id.
+//
+// Deprecated: ReservationService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -275,7 +408,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -381,12 +515,12 @@ func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationp
 //
 // Example:
 //
-//   The organization organizationA contains two projects, project1
-//   and project2.
+//	The organization organizationA contains two projects, project1
+//	and project2.
 //
-//   Assignments for all three entities (organizationA, project1, and
-//   project2) could all be created and mapped to the same or different
-//   reservations.
+//	Assignments for all three entities (organizationA, project1, and
+//	project2) could all be created and mapped to the same or different
+//	reservations.
 //
 // Returns google.rpc.Code.PERMISSION_DENIED if user does not have
 // ‘bigquery.admin’ permissions on the project using the reservation
@@ -404,14 +538,14 @@ func (c *Client) CreateAssignment(ctx context.Context, req *reservationpb.Create
 //
 // Example:
 //
-//   Organization organizationA contains two projects, project1 and
-//   project2.
+//	Organization organizationA contains two projects, project1 and
+//	project2.
 //
-//   Reservation res1 exists and was created previously.
+//	Reservation res1 exists and was created previously.
 //
-//   CreateAssignment was used previously to define the following
-//   associations between entities and reservations: <organizationA, res1>
-//   and <project1, res1>
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
 //
 // In this example, ListAssignments will just return the above two assignments
 // for reservation res1, and no expansion/merge will happen.
@@ -429,14 +563,14 @@ func (c *Client) ListAssignments(ctx context.Context, req *reservationpb.ListAss
 //
 // Example:
 //
-//   Organization organizationA contains two projects, project1 and
-//   project2.
+//	Organization organizationA contains two projects, project1 and
+//	project2.
 //
-//   Reservation res1 exists and was created previously.
+//	Reservation res1 exists and was created previously.
 //
-//   CreateAssignment was used previously to define the following
-//   associations between entities and reservations: <organizationA, res1>
-//   and <project1, res1>
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
 //
 // In this example, deletion of the <organizationA, res1> assignment won’t
 // affect the other assignment <project1, res1>. After said deletion,
@@ -526,6 +660,7 @@ type gRPCClient struct {
 // NewClient creates a new reservation service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
+// Deprecated: Please use the v1 api instead.
 // This API allows users to manage their flat-rate BigQuery reservations.
 //
 // A reservation provides computational resource guarantees, in the form of
@@ -541,6 +676,8 @@ type gRPCClient struct {
 // commitment resource exists as a child resource of the admin project and
 // location, e.g.:
 // projects/myproject/locations/US/capacityCommitments/id.
+//
+// Deprecated: ReservationService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -577,7 +714,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -587,7 +725,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -597,6 +735,91 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type restClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+}
+
+// NewRESTClient creates a new reservation service rest client.
+//
+// Deprecated: Please use the v1 api instead.
+// This API allows users to manage their flat-rate BigQuery reservations.
+//
+// A reservation provides computational resource guarantees, in the form of
+// slots (at https://cloud.google.com/bigquery/docs/slots), to users. A slot is a
+// unit of computational power in BigQuery, and serves as the basic unit of
+// parallelism. In a scan of a multi-partitioned table, a single slot operates
+// on a single partition of the table. A reservation resource exists as a child
+// resource of the admin project and location, e.g.:
+// projects/myproject/locations/US/reservations/reservationName.
+//
+// A capacity commitment is a way to purchase compute capacity for BigQuery jobs
+// (in the form of slots) with some committed period of usage. A capacity
+// commitment resource exists as a child resource of the admin project and
+// location, e.g.:
+// projects/myproject/locations/US/capacityCommitments/id.
+//
+// Deprecated: ReservationService may be removed in a future version.
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := append(defaultRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultRESTCallOptions()
+	c := &restClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://bigqueryreservation.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://bigqueryreservation.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *restClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *restClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *restClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.CreateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -604,6 +827,7 @@ func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
 	var resp *reservationpb.Reservation
@@ -620,6 +844,7 @@ func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.C
 
 func (c *gRPCClient) ListReservations(ctx context.Context, req *reservationpb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
 	it := &ReservationIterator{}
@@ -669,6 +894,7 @@ func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
 	var resp *reservationpb.Reservation
@@ -690,6 +916,7 @@ func (c *gRPCClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -707,6 +934,7 @@ func (c *gRPCClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
 	var resp *reservationpb.Reservation
@@ -728,6 +956,7 @@ func (c *gRPCClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCapacityCommitment[0:len((*c.CallOptions).CreateCapacityCommitment):len((*c.CallOptions).CreateCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -744,6 +973,7 @@ func (c *gRPCClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 
 func (c *gRPCClient) ListCapacityCommitments(ctx context.Context, req *reservationpb.ListCapacityCommitmentsRequest, opts ...gax.CallOption) *CapacityCommitmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCapacityCommitments[0:len((*c.CallOptions).ListCapacityCommitments):len((*c.CallOptions).ListCapacityCommitments)], opts...)
 	it := &CapacityCommitmentIterator{}
@@ -793,6 +1023,7 @@ func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservation
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCapacityCommitment[0:len((*c.CallOptions).GetCapacityCommitment):len((*c.CallOptions).GetCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -814,6 +1045,7 @@ func (c *gRPCClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCapacityCommitment[0:len((*c.CallOptions).DeleteCapacityCommitment):len((*c.CallOptions).DeleteCapacityCommitment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,6 +1063,7 @@ func (c *gRPCClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "capacity_commitment.name", url.QueryEscape(req.GetCapacityCommitment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCapacityCommitment[0:len((*c.CallOptions).UpdateCapacityCommitment):len((*c.CallOptions).UpdateCapacityCommitment)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -852,6 +1085,7 @@ func (c *gRPCClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SplitCapacityCommitment[0:len((*c.CallOptions).SplitCapacityCommitment):len((*c.CallOptions).SplitCapacityCommitment)], opts...)
 	var resp *reservationpb.SplitCapacityCommitmentResponse
@@ -873,6 +1107,7 @@ func (c *gRPCClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).MergeCapacityCommitments[0:len((*c.CallOptions).MergeCapacityCommitments):len((*c.CallOptions).MergeCapacityCommitments)], opts...)
 	var resp *reservationpb.CapacityCommitment
@@ -894,6 +1129,7 @@ func (c *gRPCClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAssignment[0:len((*c.CallOptions).CreateAssignment):len((*c.CallOptions).CreateAssignment)], opts...)
 	var resp *reservationpb.Assignment
@@ -910,6 +1146,7 @@ func (c *gRPCClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 
 func (c *gRPCClient) ListAssignments(ctx context.Context, req *reservationpb.ListAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAssignments[0:len((*c.CallOptions).ListAssignments):len((*c.CallOptions).ListAssignments)], opts...)
 	it := &AssignmentIterator{}
@@ -959,6 +1196,7 @@ func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAssignment[0:len((*c.CallOptions).DeleteAssignment):len((*c.CallOptions).DeleteAssignment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -971,6 +1209,7 @@ func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 
 func (c *gRPCClient) SearchAssignments(ctx context.Context, req *reservationpb.SearchAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchAssignments[0:len((*c.CallOptions).SearchAssignments):len((*c.CallOptions).SearchAssignments)], opts...)
 	it := &AssignmentIterator{}
@@ -1020,6 +1259,7 @@ func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).MoveAssignment[0:len((*c.CallOptions).MoveAssignment):len((*c.CallOptions).MoveAssignment)], opts...)
 	var resp *reservationpb.Assignment
@@ -1041,6 +1281,7 @@ func (c *gRPCClient) GetBiReservation(ctx context.Context, req *reservationpb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBiReservation[0:len((*c.CallOptions).GetBiReservation):len((*c.CallOptions).GetBiReservation)], opts...)
 	var resp *reservationpb.BiReservation
@@ -1062,6 +1303,7 @@ func (c *gRPCClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateBiReservation[0:len((*c.CallOptions).UpdateBiReservation):len((*c.CallOptions).UpdateBiReservation)], opts...)
 	var resp *reservationpb.BiReservation
@@ -1072,6 +1314,1336 @@ func (c *gRPCClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 	}, opts...)
 	if err != nil {
 		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateReservation creates a new reservation resource.
+func (c *restClient) CreateReservation(ctx context.Context, req *reservationpb.CreateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReservation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/reservations", req.GetParent())
+
+	params := url.Values{}
+	if req.GetReservationId() != "" {
+		params.Add("reservationId", fmt.Sprintf("%v", req.GetReservationId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.Reservation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListReservations lists all the reservations for the project in the specified location.
+func (c *restClient) ListReservations(ctx context.Context, req *reservationpb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
+	it := &ReservationIterator{}
+	req = proto.Clone(req).(*reservationpb.ListReservationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Reservation, string, error) {
+		resp := &reservationpb.ListReservationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/reservations", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetReservations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetReservation returns information about the reservation.
+func (c *restClient) GetReservation(ctx context.Context, req *reservationpb.GetReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.Reservation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteReservation deletes a reservation.
+// Returns google.rpc.Code.FAILED_PRECONDITION when reservation has
+// assignments.
+func (c *restClient) DeleteReservation(ctx context.Context, req *reservationpb.DeleteReservationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UpdateReservation updates an existing reservation resource.
+func (c *restClient) UpdateReservation(ctx context.Context, req *reservationpb.UpdateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReservation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetReservation().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.Reservation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateCapacityCommitment creates a new capacity commitment resource.
+func (c *restClient) CreateCapacityCommitment(ctx context.Context, req *reservationpb.CreateCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCapacityCommitment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/capacityCommitments", req.GetParent())
+
+	params := url.Values{}
+	if req.GetEnforceSingleAdminProjectPerOrg() {
+		params.Add("enforceSingleAdminProjectPerOrg", fmt.Sprintf("%v", req.GetEnforceSingleAdminProjectPerOrg()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateCapacityCommitment[0:len((*c.CallOptions).CreateCapacityCommitment):len((*c.CallOptions).CreateCapacityCommitment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.CapacityCommitment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListCapacityCommitments lists all the capacity commitments for the admin project.
+func (c *restClient) ListCapacityCommitments(ctx context.Context, req *reservationpb.ListCapacityCommitmentsRequest, opts ...gax.CallOption) *CapacityCommitmentIterator {
+	it := &CapacityCommitmentIterator{}
+	req = proto.Clone(req).(*reservationpb.ListCapacityCommitmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.CapacityCommitment, string, error) {
+		resp := &reservationpb.ListCapacityCommitmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/capacityCommitments", req.GetParent())
+
+		params := url.Values{}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCapacityCommitments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetCapacityCommitment returns information about the capacity commitment.
+func (c *restClient) GetCapacityCommitment(ctx context.Context, req *reservationpb.GetCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetCapacityCommitment[0:len((*c.CallOptions).GetCapacityCommitment):len((*c.CallOptions).GetCapacityCommitment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.CapacityCommitment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteCapacityCommitment deletes a capacity commitment. Attempting to delete capacity commitment
+// before its commitment_end_time will fail with the error code
+// google.rpc.Code.FAILED_PRECONDITION.
+func (c *restClient) DeleteCapacityCommitment(ctx context.Context, req *reservationpb.DeleteCapacityCommitmentRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UpdateCapacityCommitment updates an existing capacity commitment.
+//
+// Only plan and renewal_plan fields can be updated.
+//
+// Plan can only be changed to a plan of a longer commitment period.
+// Attempting to change to a plan with shorter commitment period will fail
+// with the error code google.rpc.Code.FAILED_PRECONDITION.
+func (c *restClient) UpdateCapacityCommitment(ctx context.Context, req *reservationpb.UpdateCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCapacityCommitment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetCapacityCommitment().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "capacity_commitment.name", url.QueryEscape(req.GetCapacityCommitment().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateCapacityCommitment[0:len((*c.CallOptions).UpdateCapacityCommitment):len((*c.CallOptions).UpdateCapacityCommitment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.CapacityCommitment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SplitCapacityCommitment splits capacity commitment to two commitments of the same plan and
+// commitment_end_time.
+//
+// A common use case is to enable downgrading commitments.
+//
+// For example, in order to downgrade from 10000 slots to 8000, you might
+// split a 10000 capacity commitment into commitments of 2000 and 8000. Then,
+// you would change the plan of the first one to FLEX and then delete it.
+func (c *restClient) SplitCapacityCommitment(ctx context.Context, req *reservationpb.SplitCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.SplitCapacityCommitmentResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:split", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SplitCapacityCommitment[0:len((*c.CallOptions).SplitCapacityCommitment):len((*c.CallOptions).SplitCapacityCommitment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.SplitCapacityCommitmentResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MergeCapacityCommitments merges capacity commitments of the same plan into a single commitment.
+//
+// The resulting capacity commitment has the greater commitment_end_time
+// out of the to-be-merged capacity commitments.
+//
+// Attempting to merge capacity commitments of different plan will fail
+// with the error code google.rpc.Code.FAILED_PRECONDITION.
+func (c *restClient) MergeCapacityCommitments(ctx context.Context, req *reservationpb.MergeCapacityCommitmentsRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/capacityCommitments:merge", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).MergeCapacityCommitments[0:len((*c.CallOptions).MergeCapacityCommitments):len((*c.CallOptions).MergeCapacityCommitments)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.CapacityCommitment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAssignment creates an assignment object which allows the given project to submit jobs
+// of a certain type using slots from the specified reservation.
+//
+// Currently a
+// resource (project, folder, organization) can only have one assignment per
+// each (job_type, location) combination, and that reservation will be used
+// for all jobs of the matching type.
+//
+// Different assignments can be created on different levels of the
+// projects, folders or organization hierarchy.  During query execution,
+// the assignment is looked up at the project, folder and organization levels
+// in that order. The first assignment found is applied to the query.
+//
+// When creating assignments, it does not matter if other assignments exist at
+// higher levels.
+//
+// Example:
+//
+//	The organization organizationA contains two projects, project1
+//	and project2.
+//
+//	Assignments for all three entities (organizationA, project1, and
+//	project2) could all be created and mapped to the same or different
+//	reservations.
+//
+// Returns google.rpc.Code.PERMISSION_DENIED if user does not have
+// ‘bigquery.admin’ permissions on the project using the reservation
+// and the project that owns this reservation.
+//
+// Returns google.rpc.Code.INVALID_ARGUMENT when location of the assignment
+// does not match location of the reservation.
+func (c *restClient) CreateAssignment(ctx context.Context, req *reservationpb.CreateAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAssignment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assignments", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateAssignment[0:len((*c.CallOptions).CreateAssignment):len((*c.CallOptions).CreateAssignment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.Assignment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAssignments lists assignments.
+//
+// Only explicitly created assignments will be returned.
+//
+// Example:
+//
+//	Organization organizationA contains two projects, project1 and
+//	project2.
+//
+//	Reservation res1 exists and was created previously.
+//
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
+//
+// In this example, ListAssignments will just return the above two assignments
+// for reservation res1, and no expansion/merge will happen.
+//
+// The wildcard “-” can be used for
+// reservations in the request. In that case all assignments belongs to the
+// specified project and location will be listed.
+//
+// Note "-" cannot be used for projects nor locations.
+func (c *restClient) ListAssignments(ctx context.Context, req *reservationpb.ListAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
+	it := &AssignmentIterator{}
+	req = proto.Clone(req).(*reservationpb.ListAssignmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
+		resp := &reservationpb.ListAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assignments", req.GetParent())
+
+		params := url.Values{}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAssignments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteAssignment deletes a assignment. No expansion will happen.
+//
+// Example:
+//
+//	Organization organizationA contains two projects, project1 and
+//	project2.
+//
+//	Reservation res1 exists and was created previously.
+//
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
+//
+// In this example, deletion of the <organizationA, res1> assignment won’t
+// affect the other assignment <project1, res1>. After said deletion,
+// queries from project1 will still use res1 while queries from
+// project2 will switch to use on-demand mode.
+func (c *restClient) DeleteAssignment(ctx context.Context, req *reservationpb.DeleteAssignmentRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// SearchAssignments looks up assignments for a specified resource for a particular region.
+// If the request is about a project:
+//
+// Assignments created on the project will be returned if they exist.
+//
+// Otherwise assignments created on the closest ancestor will be
+// returned.
+//
+// Assignments for different JobTypes will all be returned.
+//
+// The same logic applies if the request is about a folder.
+//
+// If the request is about an organization, then assignments created on the
+// organization will be returned (organization doesn’t have ancestors).
+//
+// Comparing to ListAssignments, there are some behavior
+// differences:
+//
+// permission on the assignee will be verified in this API.
+//
+// Hierarchy lookup (project->folder->organization) happens in this API.
+//
+// Parent here is projects/*/locations/*, instead of
+// projects/*/locations/*reservations/*.
+//
+// Note "-" cannot be used for projects
+// nor locations.
+func (c *restClient) SearchAssignments(ctx context.Context, req *reservationpb.SearchAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
+	it := &AssignmentIterator{}
+	req = proto.Clone(req).(*reservationpb.SearchAssignmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
+		resp := &reservationpb.SearchAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchAssignments", req.GetParent())
+
+		params := url.Values{}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetQuery() != "" {
+			params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAssignments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// MoveAssignment moves an assignment under a new reservation.
+//
+// This differs from removing an existing assignment and recreating a new one
+// by providing a transactional change that ensures an assignee always has an
+// associated reservation.
+func (c *restClient) MoveAssignment(ctx context.Context, req *reservationpb.MoveAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:move", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).MoveAssignment[0:len((*c.CallOptions).MoveAssignment):len((*c.CallOptions).MoveAssignment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.Assignment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetBiReservation retrieves a BI reservation.
+func (c *restClient) GetBiReservation(ctx context.Context, req *reservationpb.GetBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetBiReservation[0:len((*c.CallOptions).GetBiReservation):len((*c.CallOptions).GetBiReservation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.BiReservation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateBiReservation updates a BI reservation.
+//
+// Only fields specified in the field_mask are updated.
+//
+// A singleton BI reservation always exists with default size 0.
+// In order to reserve BI capacity it needs to be updated to an amount
+// greater than 0. In order to release BI capacity reservation size
+// must be set to 0.
+func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb.UpdateBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReservation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetReservation().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateBiReservation[0:len((*c.CallOptions).UpdateBiReservation):len((*c.CallOptions).UpdateBiReservation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.BiReservation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
 	return resp, nil
 }

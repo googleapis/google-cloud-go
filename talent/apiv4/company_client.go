@@ -29,6 +29,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -44,6 +45,7 @@ type CompanyCallOptions struct {
 	UpdateCompany []gax.CallOption
 	DeleteCompany []gax.CallOption
 	ListCompanies []gax.CallOption
+	GetOperation  []gax.CallOption
 }
 
 func defaultCompanyGRPCClientOptions() []option.ClientOption {
@@ -98,10 +100,11 @@ func defaultCompanyCallOptions() *CompanyCallOptions {
 				})
 			}),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
-// internalCompanyClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+// internalCompanyClient is an interface that defines the methods available from Cloud Talent Solution API.
 type internalCompanyClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -111,6 +114,7 @@ type internalCompanyClient interface {
 	UpdateCompany(context.Context, *talentpb.UpdateCompanyRequest, ...gax.CallOption) (*talentpb.Company, error)
 	DeleteCompany(context.Context, *talentpb.DeleteCompanyRequest, ...gax.CallOption) error
 	ListCompanies(context.Context, *talentpb.ListCompaniesRequest, ...gax.CallOption) *CompanyIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // CompanyClient is a client for interacting with Cloud Talent Solution API.
@@ -142,7 +146,8 @@ func (c *CompanyClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CompanyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -173,6 +178,11 @@ func (c *CompanyClient) ListCompanies(ctx context.Context, req *talentpb.ListCom
 	return c.internalClient.ListCompanies(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *CompanyClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // companyGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -188,6 +198,8 @@ type companyGRPCClient struct {
 
 	// The gRPC API client.
 	companyClient talentpb.CompanyServiceClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -223,6 +235,7 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 		disableDeadlines: disableDeadlines,
 		companyClient:    talentpb.NewCompanyServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -233,7 +246,8 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *companyGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -243,7 +257,7 @@ func (c *companyGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *companyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -260,6 +274,7 @@ func (c *companyGRPCClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCompany[0:len((*c.CallOptions).CreateCompany):len((*c.CallOptions).CreateCompany)], opts...)
 	var resp *talentpb.Company
@@ -281,6 +296,7 @@ func (c *companyGRPCClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCompany[0:len((*c.CallOptions).GetCompany):len((*c.CallOptions).GetCompany)], opts...)
 	var resp *talentpb.Company
@@ -302,6 +318,7 @@ func (c *companyGRPCClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "company.name", url.QueryEscape(req.GetCompany().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCompany[0:len((*c.CallOptions).UpdateCompany):len((*c.CallOptions).UpdateCompany)], opts...)
 	var resp *talentpb.Company
@@ -323,6 +340,7 @@ func (c *companyGRPCClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCompany[0:len((*c.CallOptions).DeleteCompany):len((*c.CallOptions).DeleteCompany)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -335,6 +353,7 @@ func (c *companyGRPCClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 
 func (c *companyGRPCClient) ListCompanies(ctx context.Context, req *talentpb.ListCompaniesRequest, opts ...gax.CallOption) *CompanyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCompanies[0:len((*c.CallOptions).ListCompanies):len((*c.CallOptions).ListCompanies)], opts...)
 	it := &CompanyIterator{}
@@ -375,6 +394,23 @@ func (c *companyGRPCClient) ListCompanies(ctx context.Context, req *talentpb.Lis
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *companyGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CompanyIterator manages a stream of *talentpb.Company.

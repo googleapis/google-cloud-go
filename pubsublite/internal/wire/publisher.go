@@ -36,17 +36,17 @@ var (
 // singlePartitionPublisher publishes messages to a single topic partition.
 //
 // Life of a successfully published message:
-// - Publish() receives the message from the user.
-// - It is added to `batcher.msgBundler`, which performs batching in accordance
-//   with user-configured PublishSettings.
-// - onNewBatch() receives new message batches from the bundler. The batch is
-//   added to `batcher.publishQueue` (in-flight batches) and sent to the publish
-//   stream, if connected. If the stream is currently reconnecting, the entire
-//   queue is resent to the stream immediately after it has reconnected, in
-//   onStreamStatusChange().
-// - onResponse() receives the first cursor offset for the first batch in
-//   `batcher.publishQueue`. It assigns the cursor offsets for each message and
-//   releases the publish results to the user.
+//   - Publish() receives the message from the user.
+//   - It is added to `batcher.msgBundler`, which performs batching in accordance
+//     with user-configured PublishSettings.
+//   - onNewBatch() receives new message batches from the bundler. The batch is
+//     added to `batcher.publishQueue` (in-flight batches) and sent to the publish
+//     stream, if connected. If the stream is currently reconnecting, the entire
+//     queue is resent to the stream immediately after it has reconnected, in
+//     onStreamStatusChange().
+//   - onResponse() receives the first cursor offset for the first batch in
+//     `batcher.publishQueue`. It assigns the cursor offsets for each message and
+//     releases the publish results to the user.
 //
 // See comments for unsafeInitiateShutdown() for error scenarios.
 type singlePartitionPublisher struct {
@@ -88,7 +88,7 @@ func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPub
 		metadata: newPubsubMetadata(),
 	}
 	pp.batcher = newPublishMessageBatcher(&f.settings, partition, pp.onNewBatch)
-	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, reflect.TypeOf(pb.PublishResponse{}))
+	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, streamIdleTimeout(f.settings.Timeout), reflect.TypeOf(pb.PublishResponse{}))
 	pp.metadata.AddTopicRoutingMetadata(pp.topic)
 	pp.metadata.AddClientInfo(f.settings.Framework)
 	return pp
@@ -221,14 +221,14 @@ func (pp *singlePartitionPublisher) onResponse(response interface{}) {
 
 // unsafeInitiateShutdown must be provided a target serviceStatus, which must be
 // one of:
-// * serviceTerminating: attempts to successfully publish all pending messages
-//   before terminating the publisher. Occurs when:
+//   - serviceTerminating: attempts to successfully publish all pending messages
+//     before terminating the publisher. Occurs when:
 //   - The user calls Stop().
 //   - A new message fails preconditions. This should block the publish of
 //     subsequent messages to ensure ordering, but all pending messages should
 //     be flushed.
-// * serviceTerminated: immediately terminates the publisher and errors all
-//   in-flight batches and pending messages in the bundler. Occurs when:
+//   - serviceTerminated: immediately terminates the publisher and errors all
+//     in-flight batches and pending messages in the bundler. Occurs when:
 //   - The publish stream terminates with a non-retryable error.
 //   - An inconsistency is detected in the server's publish responses. Assume
 //     there is a bug on the server and terminate the publisher, as correct

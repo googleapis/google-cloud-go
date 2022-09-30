@@ -22,10 +22,16 @@ import (
 	channel "cloud.google.com/go/channel/apiv1"
 	"google.golang.org/api/iterator"
 	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewCloudChannelClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +44,11 @@ func ExampleNewCloudChannelClient() {
 
 func ExampleCloudChannelClient_ListCustomers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +75,11 @@ func ExampleCloudChannelClient_ListCustomers() {
 
 func ExampleCloudChannelClient_GetCustomer() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +100,11 @@ func ExampleCloudChannelClient_GetCustomer() {
 
 func ExampleCloudChannelClient_CheckCloudIdentityAccountsExist() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +125,11 @@ func ExampleCloudChannelClient_CheckCloudIdentityAccountsExist() {
 
 func ExampleCloudChannelClient_CreateCustomer() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +150,11 @@ func ExampleCloudChannelClient_CreateCustomer() {
 
 func ExampleCloudChannelClient_UpdateCustomer() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,6 +175,11 @@ func ExampleCloudChannelClient_UpdateCustomer() {
 
 func ExampleCloudChannelClient_DeleteCustomer() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -162,6 +198,11 @@ func ExampleCloudChannelClient_DeleteCustomer() {
 
 func ExampleCloudChannelClient_ImportCustomer() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,6 +223,11 @@ func ExampleCloudChannelClient_ImportCustomer() {
 
 func ExampleCloudChannelClient_ProvisionCloudIdentity() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,6 +253,11 @@ func ExampleCloudChannelClient_ProvisionCloudIdentity() {
 
 func ExampleCloudChannelClient_ListEntitlements() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -233,6 +284,11 @@ func ExampleCloudChannelClient_ListEntitlements() {
 
 func ExampleCloudChannelClient_ListTransferableSkus() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -259,6 +315,11 @@ func ExampleCloudChannelClient_ListTransferableSkus() {
 
 func ExampleCloudChannelClient_ListTransferableOffers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -285,6 +346,11 @@ func ExampleCloudChannelClient_ListTransferableOffers() {
 
 func ExampleCloudChannelClient_GetEntitlement() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -305,6 +371,11 @@ func ExampleCloudChannelClient_GetEntitlement() {
 
 func ExampleCloudChannelClient_CreateEntitlement() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -330,6 +401,11 @@ func ExampleCloudChannelClient_CreateEntitlement() {
 
 func ExampleCloudChannelClient_ChangeParameters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -355,6 +431,11 @@ func ExampleCloudChannelClient_ChangeParameters() {
 
 func ExampleCloudChannelClient_ChangeRenewalSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -380,6 +461,11 @@ func ExampleCloudChannelClient_ChangeRenewalSettings() {
 
 func ExampleCloudChannelClient_ChangeOffer() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -405,6 +491,11 @@ func ExampleCloudChannelClient_ChangeOffer() {
 
 func ExampleCloudChannelClient_StartPaidService() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -430,6 +521,11 @@ func ExampleCloudChannelClient_StartPaidService() {
 
 func ExampleCloudChannelClient_SuspendEntitlement() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -455,6 +551,11 @@ func ExampleCloudChannelClient_SuspendEntitlement() {
 
 func ExampleCloudChannelClient_CancelEntitlement() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -478,6 +579,11 @@ func ExampleCloudChannelClient_CancelEntitlement() {
 
 func ExampleCloudChannelClient_ActivateEntitlement() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -503,6 +609,11 @@ func ExampleCloudChannelClient_ActivateEntitlement() {
 
 func ExampleCloudChannelClient_TransferEntitlements() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -528,6 +639,11 @@ func ExampleCloudChannelClient_TransferEntitlements() {
 
 func ExampleCloudChannelClient_TransferEntitlementsToGoogle() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -551,6 +667,11 @@ func ExampleCloudChannelClient_TransferEntitlementsToGoogle() {
 
 func ExampleCloudChannelClient_ListChannelPartnerLinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -577,6 +698,11 @@ func ExampleCloudChannelClient_ListChannelPartnerLinks() {
 
 func ExampleCloudChannelClient_GetChannelPartnerLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -597,6 +723,11 @@ func ExampleCloudChannelClient_GetChannelPartnerLink() {
 
 func ExampleCloudChannelClient_CreateChannelPartnerLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -617,6 +748,11 @@ func ExampleCloudChannelClient_CreateChannelPartnerLink() {
 
 func ExampleCloudChannelClient_UpdateChannelPartnerLink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -635,8 +771,271 @@ func ExampleCloudChannelClient_UpdateChannelPartnerLink() {
 	_ = resp
 }
 
+func ExampleCloudChannelClient_GetCustomerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.GetCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#GetCustomerRepricingConfigRequest.
+	}
+	resp, err := c.GetCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_ListCustomerRepricingConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.ListCustomerRepricingConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListCustomerRepricingConfigsRequest.
+	}
+	it := c.ListCustomerRepricingConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudChannelClient_CreateCustomerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.CreateCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#CreateCustomerRepricingConfigRequest.
+	}
+	resp, err := c.CreateCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_UpdateCustomerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.UpdateCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#UpdateCustomerRepricingConfigRequest.
+	}
+	resp, err := c.UpdateCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_DeleteCustomerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.DeleteCustomerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#DeleteCustomerRepricingConfigRequest.
+	}
+	err = c.DeleteCustomerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleCloudChannelClient_GetChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.GetChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#GetChannelPartnerRepricingConfigRequest.
+	}
+	resp, err := c.GetChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_ListChannelPartnerRepricingConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.ListChannelPartnerRepricingConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListChannelPartnerRepricingConfigsRequest.
+	}
+	it := c.ListChannelPartnerRepricingConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudChannelClient_CreateChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.CreateChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#CreateChannelPartnerRepricingConfigRequest.
+	}
+	resp, err := c.CreateChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_UpdateChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.UpdateChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#UpdateChannelPartnerRepricingConfigRequest.
+	}
+	resp, err := c.UpdateChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_DeleteChannelPartnerRepricingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.DeleteChannelPartnerRepricingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#DeleteChannelPartnerRepricingConfigRequest.
+	}
+	err = c.DeleteChannelPartnerRepricingConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleCloudChannelClient_LookupOffer() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -657,6 +1056,11 @@ func ExampleCloudChannelClient_LookupOffer() {
 
 func ExampleCloudChannelClient_ListProducts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -683,6 +1087,11 @@ func ExampleCloudChannelClient_ListProducts() {
 
 func ExampleCloudChannelClient_ListSkus() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -709,6 +1118,11 @@ func ExampleCloudChannelClient_ListSkus() {
 
 func ExampleCloudChannelClient_ListOffers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -735,6 +1149,11 @@ func ExampleCloudChannelClient_ListOffers() {
 
 func ExampleCloudChannelClient_ListPurchasableSkus() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -761,6 +1180,11 @@ func ExampleCloudChannelClient_ListPurchasableSkus() {
 
 func ExampleCloudChannelClient_ListPurchasableOffers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -787,6 +1211,11 @@ func ExampleCloudChannelClient_ListPurchasableOffers() {
 
 func ExampleCloudChannelClient_RegisterSubscriber() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -807,6 +1236,11 @@ func ExampleCloudChannelClient_RegisterSubscriber() {
 
 func ExampleCloudChannelClient_UnregisterSubscriber() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -827,6 +1261,11 @@ func ExampleCloudChannelClient_UnregisterSubscriber() {
 
 func ExampleCloudChannelClient_ListSubscribers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -838,6 +1277,108 @@ func ExampleCloudChannelClient_ListSubscribers() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListSubscribersRequest.
 	}
 	it := c.ListSubscribers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudChannelClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleCloudChannelClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleCloudChannelClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

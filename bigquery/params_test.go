@@ -116,8 +116,17 @@ var scalarTests = []struct {
 		dateTimeParamType,
 		NullDateTime{Valid: false}},
 	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
+	{&QueryParameterValue{
+		Type: StandardSQLDataType{
+			TypeKind: "BIGNUMERIC",
+		},
+		Value: BigNumericString(big.NewRat(12345, 10e10)),
+	}, false, "0.00000012345000000000000000000000000000", bigNumericParamType, big.NewRat(12345, 10e10)},
+	{&IntervalValue{Years: 1, Months: 2, Days: 3}, false, "1-2 3 0:0:0", intervalParamType, &IntervalValue{Years: 1, Months: 2, Days: 3}},
 	{NullGeography{GeographyVal: "POINT(-122.335503 47.625536)", Valid: true}, false, "POINT(-122.335503 47.625536)", geographyParamType, "POINT(-122.335503 47.625536)"},
 	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
+	{NullJSON{Valid: true, JSONVal: "{\"alpha\":\"beta\"}"}, false, "{\"alpha\":\"beta\"}", jsonParamType, "{\"alpha\":\"beta\"}"},
+	{NullJSON{Valid: false}, true, "", jsonParamType, NullJSON{Valid: false}},
 }
 
 type (
@@ -176,7 +185,6 @@ func sval(s string) bq.QueryParameterValue {
 }
 
 func TestParamValueScalar(t *testing.T) {
-
 	nilValue := &bq.QueryParameterValue{
 		NullFields: []string{"Value"},
 	}
@@ -247,7 +255,7 @@ func TestParamValueErrors(t *testing.T) {
 
 func TestParamType(t *testing.T) {
 	for _, test := range scalarTests {
-		got, err := paramType(reflect.TypeOf(test.val))
+		got, err := paramType(reflect.TypeOf(test.val), reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -265,7 +273,7 @@ func TestParamType(t *testing.T) {
 		{[3]bool{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: boolParamType}},
 		{S1{}, s1ParamType},
 	} {
-		got, err := paramType(reflect.TypeOf(test.val))
+		got, err := paramType(reflect.TypeOf(test.val), reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -279,7 +287,7 @@ func TestParamTypeErrors(t *testing.T) {
 	for _, val := range []interface{}{
 		nil, uint(0), new([]int), make(chan int),
 	} {
-		_, err := paramType(reflect.TypeOf(val))
+		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
 		if err == nil {
 			t.Errorf("%v (%T): got nil, want error", val, val)
 		}
@@ -293,7 +301,7 @@ func TestConvertParamValue(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		ptype, err := paramType(reflect.TypeOf(test.val))
+		ptype, err := paramType(reflect.TypeOf(test.val), reflect.ValueOf(test.val))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -304,7 +312,6 @@ func TestConvertParamValue(t *testing.T) {
 		if !testutil.Equal(got, test.wantStat) {
 			t.Errorf("%#v: wanted stat as %#v, got %#v", test.val, test.wantStat, got)
 		}
-
 	}
 	// Arrays.
 	for _, test := range []struct {

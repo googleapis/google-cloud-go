@@ -77,7 +77,7 @@ func defaultTagBindingsCallOptions() *TagBindingsCallOptions {
 	}
 }
 
-// internalTagBindingsClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalTagBindingsClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalTagBindingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -124,7 +124,8 @@ func (c *TagBindingsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TagBindingsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -238,7 +239,8 @@ func NewTagBindingsClient(ctx context.Context, opts ...option.ClientOption) (*Ta
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *tagBindingsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -248,7 +250,7 @@ func (c *tagBindingsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *tagBindingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -330,6 +332,7 @@ func (c *tagBindingsGRPCClient) DeleteTagBinding(ctx context.Context, req *resou
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTagBinding[0:len((*c.CallOptions).DeleteTagBinding):len((*c.CallOptions).DeleteTagBinding)], opts...)
 	var resp *longrunningpb.Operation

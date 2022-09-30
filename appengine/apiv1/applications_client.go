@@ -66,7 +66,7 @@ func defaultApplicationsCallOptions() *ApplicationsCallOptions {
 	}
 }
 
-// internalApplicationsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalApplicationsClient is an interface that defines the methods available from App Engine Admin API.
 type internalApplicationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -114,7 +114,8 @@ func (c *ApplicationsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ApplicationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -127,9 +128,9 @@ func (c *ApplicationsClient) GetApplication(ctx context.Context, req *appenginep
 // CreateApplication creates an App Engine application for a Google Cloud Platform project.
 // Required fields:
 //
-//   id - The ID of the target Cloud Platform project.
+//	id - The ID of the target Cloud Platform project.
 //
-//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 //
 // For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
 func (c *ApplicationsClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
@@ -145,9 +146,11 @@ func (c *ApplicationsClient) CreateApplicationOperation(name string) *CreateAppl
 // UpdateApplication updates the specified Application resource.
 // You can update the following fields:
 //
-//   auth_domain - Google authentication domain for controlling user access to the application.
+//	auth_domain - Google authentication domain for controlling user access to the application.
 //
-//   default_cookie_expiration - Cookie expiration policy for the application.
+//	default_cookie_expiration - Cookie expiration policy for the application.
+//
+//	iap - Identity-Aware Proxy properties for the application.
 func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	return c.internalClient.UpdateApplication(ctx, req, opts...)
 }
@@ -254,7 +257,8 @@ func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*A
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *applicationsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -264,7 +268,7 @@ func (c *applicationsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *applicationsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -276,6 +280,7 @@ func (c *applicationsGRPCClient) Close() error {
 
 func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appenginepb.GetApplicationRequest, opts ...gax.CallOption) (*appenginepb.Application, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetApplication[0:len((*c.CallOptions).GetApplication):len((*c.CallOptions).GetApplication)], opts...)
 	var resp *appenginepb.Application
@@ -309,6 +314,7 @@ func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *app
 
 func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateApplication[0:len((*c.CallOptions).UpdateApplication):len((*c.CallOptions).UpdateApplication)], opts...)
 	var resp *longrunningpb.Operation
@@ -327,6 +333,7 @@ func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *app
 
 func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *appenginepb.RepairApplicationRequest, opts ...gax.CallOption) (*RepairApplicationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RepairApplication[0:len((*c.CallOptions).RepairApplication):len((*c.CallOptions).RepairApplication)], opts...)
 	var resp *longrunningpb.Operation

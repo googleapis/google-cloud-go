@@ -1,0 +1,703 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+    "version": "0.1.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.beyondcorp.appconnections.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_CancelOperation_sync",
+      "title": "beyondcorp CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.CancelOperation",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_CreateAppConnection_sync",
+      "title": "beyondcorp CreateAppConnection Sample",
+      "description": "CreateAppConnection creates a new AppConnection in a given project and location.",
+      "file": "Client/CreateAppConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAppConnection",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.CreateAppConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appconnectionspb.CreateAppConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAppConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAppConnection",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.CreateAppConnection",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_DeleteAppConnection_sync",
+      "title": "beyondcorp DeleteAppConnection Sample",
+      "description": "DeleteAppConnection deletes a single AppConnection.",
+      "file": "Client/DeleteAppConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAppConnection",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.DeleteAppConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appconnectionspb.DeleteAppConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAppConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAppConnection",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.DeleteAppConnection",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_DeleteOperation_sync",
+      "title": "beyondcorp DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.DeleteOperation",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_GetAppConnection_sync",
+      "title": "beyondcorp GetAppConnection Sample",
+      "description": "GetAppConnection gets details of a single AppConnection.",
+      "file": "Client/GetAppConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAppConnection",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.GetAppConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appconnectionspb.GetAppConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "appconnectionspb.AppConnection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAppConnection",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.GetAppConnection",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_GetIamPolicy_sync",
+      "title": "beyondcorp GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.GetIamPolicy",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_GetLocation_sync",
+      "title": "beyondcorp GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.GetLocation",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_GetOperation_sync",
+      "title": "beyondcorp GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.GetOperation",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_ListAppConnections_sync",
+      "title": "beyondcorp ListAppConnections Sample",
+      "description": "ListAppConnections lists AppConnections in a given project and location.",
+      "file": "Client/ListAppConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAppConnections",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.ListAppConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appconnectionspb.ListAppConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AppConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAppConnections",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.ListAppConnections",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_ListLocations_sync",
+      "title": "beyondcorp ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.ListLocations",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_ListOperations_sync",
+      "title": "beyondcorp ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.ListOperations",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_ResolveAppConnections_sync",
+      "title": "beyondcorp ResolveAppConnections Sample",
+      "description": "ResolveAppConnections resolves AppConnections details for a given AppConnector.\nAn internal method called by a connector to find AppConnections to connect\nto.",
+      "file": "Client/ResolveAppConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResolveAppConnections",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.ResolveAppConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appconnectionspb.ResolveAppConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResolveAppConnectionsResponse_AppConnectionDetailsIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "ResolveAppConnections",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.ResolveAppConnections",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_SetIamPolicy_sync",
+      "title": "beyondcorp SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.SetIamPolicy",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_TestIamPermissions_sync",
+      "title": "beyondcorp TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.TestIamPermissions",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "beyondcorp_v1_generated_AppConnectionsService_UpdateAppConnection_sync",
+      "title": "beyondcorp UpdateAppConnection Sample",
+      "description": "UpdateAppConnection updates the parameters of a single AppConnection.",
+      "file": "Client/UpdateAppConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAppConnection",
+        "fullName": "google.cloud.beyondcorp.appconnections.v1.Client.UpdateAppConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "appconnectionspb.UpdateAppConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAppConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAppConnection",
+          "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService.UpdateAppConnection",
+          "service": {
+            "shortName": "AppConnectionsService",
+            "fullName": "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

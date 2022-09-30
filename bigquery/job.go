@@ -63,7 +63,7 @@ func (c *Client) JobFromProject(ctx context.Context, projectID, jobID, location 
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.JobFromProject")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	bqjob, err := c.getJobInternal(ctx, jobID, location, projectID, "configuration", "jobReference", "status", "statistics")
+	bqjob, err := c.getJobInternal(ctx, jobID, location, projectID, "user_email", "configuration", "jobReference", "status", "statistics")
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +240,9 @@ func (j *Job) Cancel(ctx context.Context) error {
 		Context(ctx)
 	setClientHeader(call.Header())
 	return runWithRetry(ctx, func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.cancel")
 		_, err := call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 }
@@ -257,7 +259,9 @@ func (j *Job) Delete(ctx context.Context) (err error) {
 	setClientHeader(call.Header())
 
 	return runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.delete")
 		err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 }
@@ -343,7 +347,9 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint6
 	}
 	var res *bq.GetQueryResultsResponse
 	err := internal.Retry(ctx, backoff, func() (stop bool, err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.getQueryResults")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		if err != nil {
 			return !retryableError(err, jobRetryReasons), err
 		}
@@ -694,18 +700,18 @@ func bqToScriptStatistics(bs *bq.ScriptStatistics) *ScriptStatistics {
 //
 // Line and column numbers are defined as follows:
 //
-// - Line and column numbers start with one.  That is, line 1 column 1 denotes
-//   the start of the script.
-// - When inside a stored procedure, all line/column numbers are relative
-//   to the procedure body, not the script in which the procedure was defined.
-// - Start/end positions exclude leading/trailing comments and whitespace.
-//   The end position always ends with a ";", when present.
-// - Multi-byte Unicode characters are treated as just one column.
-// - If the original script (or procedure definition) contains TAB characters,
-//   a tab "snaps" the indentation forward to the nearest multiple of 8
-//   characters, plus 1. For example, a TAB on column 1, 2, 3, 4, 5, 6 , or 8
-//   will advance the next character to column 9.  A TAB on column 9, 10, 11,
-//   12, 13, 14, 15, or 16 will advance the next character to column 17.
+//   - Line and column numbers start with one.  That is, line 1 column 1 denotes
+//     the start of the script.
+//   - When inside a stored procedure, all line/column numbers are relative
+//     to the procedure body, not the script in which the procedure was defined.
+//   - Start/end positions exclude leading/trailing comments and whitespace.
+//     The end position always ends with a ";", when present.
+//   - Multi-byte Unicode characters are treated as just one column.
+//   - If the original script (or procedure definition) contains TAB characters,
+//     a tab "snaps" the indentation forward to the nearest multiple of 8
+//     characters, plus 1. For example, a TAB on column 1, 2, 3, 4, 5, 6 , or 8
+//     will advance the next character to column 9.  A TAB on column 9, 10, 11,
+//     12, 13, 14, 15, or 16 will advance the next character to column 17.
 type ScriptStackFrame struct {
 	StartLine   int64
 	StartColumn int64
@@ -837,7 +843,14 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 	if it.ParentJobID != "" {
 		req.ParentJobId(it.ParentJobID)
 	}
-	res, err := req.Do()
+	var res *bq.JobList
+	err := runWithRetry(it.ctx, func() (err error) {
+		sCtx := trace.StartSpan(it.ctx, "bigquery.jobs.list")
+		res, err = req.Do()
+		trace.EndSpan(sCtx, err)
+		return err
+	})
+
 	if err != nil {
 		return "", err
 	}
@@ -870,7 +883,9 @@ func (c *Client) getJobInternal(ctx context.Context, jobID, location, projectID 
 	}
 	setClientHeader(call.Header())
 	err := runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.get")
 		job, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	if err != nil {
@@ -918,7 +933,7 @@ func (j *Job) setStatus(qs *bq.JobStatus) error {
 	}
 	state, ok := stateMap[qs.State]
 	if !ok {
-		return fmt.Errorf("unexpected job state: %v", qs.State)
+		return fmt.Errorf("unexpected job state: %s", qs.State)
 	}
 	j.lastStatus = &JobStatus{
 		State: state,

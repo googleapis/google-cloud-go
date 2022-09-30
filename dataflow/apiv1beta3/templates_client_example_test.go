@@ -20,12 +20,34 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func ExampleNewTemplatesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewTemplatesRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataflow.NewTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,6 +59,11 @@ func ExampleNewTemplatesClient() {
 
 func ExampleTemplatesClient_CreateJobFromTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +72,7 @@ func ExampleTemplatesClient_CreateJobFromTemplate() {
 
 	req := &dataflowpb.CreateJobFromTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#CreateJobFromTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#CreateJobFromTemplateRequest.
 	}
 	resp, err := c.CreateJobFromTemplate(ctx, req)
 	if err != nil {
@@ -57,6 +84,11 @@ func ExampleTemplatesClient_CreateJobFromTemplate() {
 
 func ExampleTemplatesClient_LaunchTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +97,7 @@ func ExampleTemplatesClient_LaunchTemplate() {
 
 	req := &dataflowpb.LaunchTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#LaunchTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#LaunchTemplateRequest.
 	}
 	resp, err := c.LaunchTemplate(ctx, req)
 	if err != nil {
@@ -77,6 +109,11 @@ func ExampleTemplatesClient_LaunchTemplate() {
 
 func ExampleTemplatesClient_GetTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewTemplatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +122,7 @@ func ExampleTemplatesClient_GetTemplate() {
 
 	req := &dataflowpb.GetTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetTemplateRequest.
 	}
 	resp, err := c.GetTemplate(ctx, req)
 	if err != nil {

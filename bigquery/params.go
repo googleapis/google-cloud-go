@@ -77,14 +77,18 @@ var (
 	numericParamType    = &bq.QueryParameterType{Type: "NUMERIC"}
 	bigNumericParamType = &bq.QueryParameterType{Type: "BIGNUMERIC"}
 	geographyParamType  = &bq.QueryParameterType{Type: "GEOGRAPHY"}
+	intervalParamType   = &bq.QueryParameterType{Type: "INTERVAL"}
+	jsonParamType       = &bq.QueryParameterType{Type: "JSON"}
 )
 
 var (
-	typeOfDate     = reflect.TypeOf(civil.Date{})
-	typeOfTime     = reflect.TypeOf(civil.Time{})
-	typeOfDateTime = reflect.TypeOf(civil.DateTime{})
-	typeOfGoTime   = reflect.TypeOf(time.Time{})
-	typeOfRat      = reflect.TypeOf(&big.Rat{})
+	typeOfDate                = reflect.TypeOf(civil.Date{})
+	typeOfTime                = reflect.TypeOf(civil.Time{})
+	typeOfDateTime            = reflect.TypeOf(civil.DateTime{})
+	typeOfGoTime              = reflect.TypeOf(time.Time{})
+	typeOfRat                 = reflect.TypeOf(&big.Rat{})
+	typeOfIntervalValue       = reflect.TypeOf(&IntervalValue{})
+	typeOfQueryParameterValue = reflect.TypeOf(&QueryParameterValue{})
 )
 
 // A QueryParameter is a parameter to a query.
@@ -106,11 +110,21 @@ type QueryParameter struct {
 	// []byte: BYTES
 	// time.Time: TIMESTAMP
 	// *big.Rat: NUMERIC
+	// *IntervalValue: INTERVAL
 	// Arrays and slices of the above.
 	// Structs of the above. Only the exported fields are used.
 	//
 	// For scalar values, you can supply the Null types within this library
 	// to send the appropriate NULL values (e.g. NullInt64, NullString, etc).
+	//
+	// To specify query parameters explicitly rather by inference, *QueryParameterValue can be used.
+	// For example, a BIGNUMERIC can be specified like this:
+	// &QueryParameterValue{
+	//		Type: StandardSQLDataType{
+	//			TypeKind: "BIGNUMERIC",
+	//		},
+	//		Value: BigNumericString(*big.Rat),
+	//	}
 	//
 	// When a QueryParameter is returned inside a QueryConfig from a call to
 	// Job.Config:
@@ -125,12 +139,165 @@ type QueryParameter struct {
 	Value interface{}
 }
 
-func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
+// QueryParameterValue is a go type for representing a explicit typed QueryParameter.
+type QueryParameterValue struct {
+	// Type specifies the parameter type. See StandardSQLDataType for more.
+	// Scalar parameters and more complex types can be defined within this field.
+	// See examples on the value fields.
+	Type StandardSQLDataType
+
+	// Value is the value of the parameter, if a simple scalar type.
+	// The default behavior for scalar values is to do type inference
+	// and format it accordingly.
+	// Because of that, depending on the parameter type, is recommended
+	// to send value as a String.
+	// We provide some formatter functions for some types:
+	//   CivilTimeString(civil.Time)
+	//   CivilDateTimeString(civil.DateTime)
+	//   NumericString(*big.Rat)
+	//   BigNumericString(*big.Rat)
+	//   IntervalString(*IntervalValue)
+	//
+	// Example:
+	//
+	// &QueryParameterValue{
+	// 		Type: StandardSQLDataType{
+	//			TypeKind: "BIGNUMERIC",
+	//		},
+	//		Value: BigNumericString(*big.Rat),
+	//	}
+	Value interface{}
+
+	// ArrayValue is the array of values for the parameter.
+	//
+	// Must be used with QueryParameterValue.Type being a StandardSQLDataType
+	// with ArrayElementType filled with the given element type.
+	//
+	// Example of an array of strings :
+	// &QueryParameterValue{
+	//		Type: &StandardSQLDataType{
+	// 			ArrayElementType: &StandardSQLDataType{
+	//				TypeKind: "STRING",
+	//			},
+	//		},
+	//		ArrayValue: []QueryParameterValue{
+	//			{Value: "a"},
+	//			{Value: "b"},
+	//		},
+	//	}
+	//
+	// Example of an array of structs :
+	// &QueryParameterValue{
+	//		Type: &StandardSQLDataType{
+	// 			ArrayElementType: &StandardSQLDataType{
+	//	 			StructType: &StandardSQLDataType{
+	//					Fields: []*StandardSQLField{
+	//						{
+	//							Name: "NumberField",
+	//							Type: &StandardSQLDataType{
+	//								TypeKind: "INT64",
+	//							},
+	//						},
+	//					},
+	//				},
+	//			},
+	// 		},
+	//		ArrayValue: []QueryParameterValue{
+	//			{StructValue: map[string]QueryParameterValue{
+	//				"NumberField": {
+	//					Value: int64(42),
+	//				},
+	// 			}},
+	// 			{StructValue: map[string]QueryParameterValue{
+	//				"NumberField": {
+	//					Value: int64(43),
+	//				},
+	// 			}},
+	//		},
+	//	}
+	ArrayValue []QueryParameterValue
+
+	// StructValue is the struct field values for the parameter.
+	//
+	// Must be used with QueryParameterValue.Type being a StandardSQLDataType
+	// with StructType filled with the given field types.
+	//
+	// Example:
+	//
+	// &QueryParameterValue{
+	//		Type: &StandardSQLDataType{
+	// 			StructType{
+	//				Fields: []*StandardSQLField{
+	//					{
+	//						Name: "StringField",
+	//						Type: &StandardSQLDataType{
+	//							TypeKind: "STRING",
+	//						},
+	//					},
+	//					{
+	//						Name: "NumberField",
+	//						Type: &StandardSQLDataType{
+	//							TypeKind: "INT64",
+	//						},
+	//					},
+	//				},
+	//			},
+	//		},
+	//		StructValue: []map[string]QueryParameterValue{
+	//			"NumberField": {
+	//				Value: int64(42),
+	//			},
+	//			"StringField": {
+	//				Value: "Value",
+	//			},
+	//		},
+	//	}
+	StructValue map[string]QueryParameterValue
+}
+
+func (p QueryParameterValue) toBQParamType() *bq.QueryParameterType {
+	return p.Type.toBQParamType()
+}
+
+func (p QueryParameterValue) toBQParamValue() (*bq.QueryParameterValue, error) {
+	if len(p.ArrayValue) > 0 {
+		pv := &bq.QueryParameterValue{}
+		pv.ArrayValues = []*bq.QueryParameterValue{}
+		for _, v := range p.ArrayValue {
+			val, err := v.toBQParamValue()
+			if err != nil {
+				return nil, err
+			}
+			pv.ArrayValues = append(pv.ArrayValues, val)
+		}
+		return pv, nil
+	}
+	if len(p.StructValue) > 0 {
+		pv := &bq.QueryParameterValue{}
+		pv.StructValues = map[string]bq.QueryParameterValue{}
+		for name, param := range p.StructValue {
+			v, err := param.toBQParamValue()
+			if err != nil {
+				return nil, err
+			}
+			pv.StructValues[name] = *v
+		}
+		return pv, nil
+	}
 	pv, err := paramValue(reflect.ValueOf(p.Value))
 	if err != nil {
 		return nil, err
 	}
-	pt, err := paramType(reflect.TypeOf(p.Value))
+	return pv, nil
+}
+
+func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
+	v := reflect.ValueOf(p.Value)
+	pv, err := paramValue(v)
+	if err != nil {
+		return nil, err
+	}
+	pt, err := paramType(reflect.TypeOf(p.Value), v)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +308,7 @@ func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	}, nil
 }
 
-func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
+func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) {
 	if t == nil {
 		return nil, errors.New("bigquery: nil parameter")
 	}
@@ -156,6 +323,8 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		return timestampParamType, nil
 	case typeOfRat:
 		return numericParamType, nil
+	case typeOfIntervalValue:
+		return intervalParamType, nil
 	case typeOfNullBool:
 		return boolParamType, nil
 	case typeOfNullFloat64:
@@ -166,6 +335,10 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		return stringParamType, nil
 	case typeOfNullGeography:
 		return geographyParamType, nil
+	case typeOfNullJSON:
+		return jsonParamType, nil
+	case typeOfQueryParameterValue:
+		return v.Interface().(*QueryParameterValue).toBQParamType(), nil
 	}
 	switch t.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint8, reflect.Uint16, reflect.Uint32:
@@ -187,7 +360,7 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		fallthrough
 
 	case reflect.Array:
-		et, err := paramType(t.Elem())
+		et, err := paramType(t.Elem(), v)
 		if err != nil {
 			return nil, err
 		}
@@ -207,7 +380,7 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 			return nil, err
 		}
 		for _, f := range fields {
-			pt, err := paramType(f.Type)
+			pt, err := paramType(f.Type, v)
 			if err != nil {
 				return nil, err
 			}
@@ -238,7 +411,8 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		typeOfNullTimestamp,
 		typeOfNullDate,
 		typeOfNullTime,
-		typeOfNullDateTime:
+		typeOfNullDateTime,
+		typeOfNullJSON:
 		// Shared:  If the Null type isn't valid, we have no value to send.
 		// However, the backend requires us to send the QueryParameterValue with
 		// the fields empty.
@@ -256,6 +430,8 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 			res.Value = fmt.Sprint(v.FieldByName("StringVal").Interface())
 		case typeOfNullGeography:
 			res.Value = fmt.Sprint(v.FieldByName("GeographyVal").Interface())
+		case typeOfNullJSON:
+			res.Value = fmt.Sprint(v.FieldByName("JSONVal").Interface())
 		case typeOfNullFloat64:
 			res.Value = fmt.Sprint(v.FieldByName("Float64").Interface())
 		case typeOfNullBool:
@@ -300,6 +476,11 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		// to honor previous behavior and send as Numeric type.
 		res.Value = NumericString(v.Interface().(*big.Rat))
 		return res, nil
+	case typeOfIntervalValue:
+		res.Value = IntervalString(v.Interface().(*IntervalValue))
+		return res, nil
+	case typeOfQueryParameterValue:
+		return v.Interface().(*QueryParameterValue).toBQParamValue()
 	}
 	switch t.Kind() {
 	case reflect.Slice:
@@ -379,6 +560,8 @@ var paramTypeToFieldType = map[string]FieldType{
 	numericParamType.Type:    NumericFieldType,
 	bigNumericParamType.Type: BigNumericFieldType,
 	geographyParamType.Type:  GeographyFieldType,
+	intervalParamType.Type:   IntervalFieldType,
+	jsonParamType.Type:       JSONFieldType,
 }
 
 // Convert a parameter value from the service to a Go value. This is similar to, but
@@ -400,7 +583,15 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		if isNullScalar(qval) {
 			return NullTimestamp{Valid: false}, nil
 		}
-		return time.Parse(timestampFormat, qval.Value)
+		t, err := time.Parse(timestampFormat, qval.Value)
+		if err != nil {
+			t, err = time.Parse(time.RFC3339Nano, qval.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return t, nil
+
 	case "DATETIME":
 		if isNullScalar(qval) {
 			return NullDateTime{Valid: false}, nil
@@ -423,6 +614,8 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 				return NullTime{Valid: false}, nil
 			case "GEOGRAPHY":
 				return NullGeography{Valid: false}, nil
+			case "JSON":
+				return NullJSON{Valid: false}, nil
 			}
 
 		}

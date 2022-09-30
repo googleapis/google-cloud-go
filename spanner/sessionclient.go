@@ -21,12 +21,13 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/option"
@@ -90,6 +91,7 @@ type sessionClient struct {
 	connPool      gtransport.ConnPool
 	database      string
 	id            string
+	userAgent     string
 	sessionLabels map[string]string
 	md            metadata.MD
 	batchTimeout  time.Duration
@@ -98,10 +100,11 @@ type sessionClient struct {
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
 		connPool:      connPool,
 		database:      database,
+		userAgent:     userAgent,
 		id:            cidGen.nextID(database),
 		sessionLabels: sessionLabels,
 		md:            md,
@@ -147,7 +150,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 			tag.Upsert(tagKeyClientID, sc.id),
 			tag.Upsert(tagKeyDatabase, database),
 			tag.Upsert(tagKeyInstance, instance),
-			tag.Upsert(tagKeyLibVersion, version.Repo),
+			tag.Upsert(tagKeyLibVersion, internal.Version),
 		)
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
@@ -270,7 +273,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 				tag.Upsert(tagKeyClientID, sc.id),
 				tag.Upsert(tagKeyDatabase, database),
 				tag.Upsert(tagKeyInstance, instance),
-				tag.Upsert(tagKeyLibVersion, version.Repo),
+				tag.Upsert(tagKeyLibVersion, internal.Version),
 			)
 			if err != nil {
 				trace.TracePrintf(ctx, nil, "Error in adding tags in BatchCreateSessions for GFE Latency: %v", err)
@@ -322,7 +325,14 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client.SetGoogleClientInfo("gccl", version.Repo)
+	clientInfo := []string{"gccl", internal.Version}
+	if sc.userAgent != "" {
+		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
+		if len(agentWithVersion) == 2 {
+			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
+		}
+	}
+	client.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		client.CallOptions = mergeCallOptions(client.CallOptions, sc.callOptions)
 	}

@@ -20,6 +20,7 @@ import (
 	"runtime"
 	"strings"
 
+	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/internal/detect"
 	"github.com/googleapis/gax-go/v2"
@@ -59,6 +60,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, err
 	}
+	rawClient.SetGoogleClientInfo("gccl", internal.Version)
 
 	// Handle project autodetection.
 	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
@@ -90,6 +92,19 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 	return c.buildManagedStream(ctx, c.rawClient.AppendRows, false, opts...)
 }
 
+// createOpenF builds the opener function we need to access the AppendRows bidi stream.
+func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		arc, err := streamFunc(
+			// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
+			metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)), opts...)
+		if err != nil {
+			return nil, err
+		}
+		return arc, nil
+	}
+}
+
 func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -101,15 +116,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		callOptions: []gax.CallOption{
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
 		},
-		open: func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-			arc, err := streamFunc(
-				// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
-				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)))
-			if err != nil {
-				return nil, err
-			}
-			return arc, nil
-		},
+		open: createOpenF(ctx, streamFunc),
 	}
 
 	// apply writer options
@@ -125,7 +132,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 
 		if ms.streamSettings.streamID == "" {
 			// not instantiated with a stream, construct one.
-			streamName := fmt.Sprintf("%s/_default", ms.destinationTable)
+			streamName := fmt.Sprintf("%s/streams/_default", ms.destinationTable)
 			if ms.streamSettings.streamType != DefaultStream {
 				// For everything but a default stream, we create a new stream on behalf of the user.
 				req := &storagepb.CreateWriteStreamRequest{
@@ -135,7 +142,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 					}}
 				resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
 				if err != nil {
-					return nil, fmt.Errorf("couldn't create write stream: %v", err)
+					return nil, fmt.Errorf("couldn't create write stream: %w", err)
 				}
 				streamName = resp.GetName()
 			}
@@ -221,4 +228,10 @@ func TableParentFromStreamName(streamName string) string {
 		return streamName
 	}
 	return strings.Join(parts[:6], "/")
+}
+
+// TableParentFromParts constructs a table identifier using individual identifiers and
+// returns a string in the form "projects/{project}/datasets/{dataset}/tables/{table}".
+func TableParentFromParts(projectID, datasetID, tableID string) string {
+	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, datasetID, tableID)
 }

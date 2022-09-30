@@ -50,9 +50,35 @@ type DatasetMetadata struct {
 	LastModifiedTime time.Time // When the dataset or any of its tables were modified.
 	FullID           string    // The full dataset ID in the form projectID:datasetID.
 
+	// The tags associated with this dataset. Tag keys are
+	// globally unique, and managed via the resource manager API.
+	// More information: https://cloud.google.com/resource-manager/docs/tags/tags-overview
+	Tags []*DatasetTag
+
 	// ETag is the ETag obtained when reading metadata. Pass it to Dataset.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
+}
+
+// DatasetTag is a representation of a single tag key/value.
+type DatasetTag struct {
+	// TagKey is the namespaced friendly name of the tag key, e.g.
+	// "12345/environment" where 12345 is org id.
+	TagKey string
+
+	// TagValue is the friendly short name of the tag value, e.g.
+	// "production".
+	TagValue string
+}
+
+func bqToDatasetTag(in *bq.DatasetTags) *DatasetTag {
+	if in == nil {
+		return nil
+	}
+	return &DatasetTag{
+		TagKey:   in.TagKey,
+		TagValue: in.TagValue,
+	}
 }
 
 // DatasetMetadataToUpdate is used when updating a dataset's metadata.
@@ -190,7 +216,12 @@ func (d *Dataset) deleteInternal(ctx context.Context, deleteContents bool) (err 
 
 	call := d.c.bqs.Datasets.Delete(d.ProjectID, d.DatasetID).Context(ctx).DeleteContents(deleteContents)
 	setClientHeader(call.Header())
-	return call.Do()
+	return runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.datasets.delete")
+		err = call.Do()
+		trace.EndSpan(sCtx, err)
+		return err
+	})
 }
 
 // Metadata fetches the metadata for the dataset.
@@ -202,15 +233,17 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 	setClientHeader(call.Header())
 	var ds *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.datasets.get")
 		ds, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
 		return nil, err
 	}
-	return bqToDatasetMetadata(ds)
+	return bqToDatasetMetadata(ds, d.c)
 }
 
-func bqToDatasetMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
+func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 	dm := &DatasetMetadata{
 		CreationTime:            unixMillisToTime(d.CreationTime),
 		LastModifiedTime:        unixMillisToTime(d.LastModifiedTime),
@@ -224,11 +257,17 @@ func bqToDatasetMetadata(d *bq.Dataset) (*DatasetMetadata, error) {
 		ETag:                    d.Etag,
 	}
 	for _, a := range d.Access {
-		e, err := bqToAccessEntry(a, nil)
+		e, err := bqToAccessEntry(a, c)
 		if err != nil {
 			return nil, err
 		}
 		dm.Access = append(dm.Access, e)
+	}
+	for _, bqTag := range d.Tags {
+		tag := bqToDatasetTag(bqTag)
+		if tag != nil {
+			dm.Tags = append(dm.Tags, tag)
+		}
 	}
 	return dm, nil
 }
@@ -252,12 +291,14 @@ func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag s
 	}
 	var ds2 *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.datasets.patch")
 		ds2, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
 		return nil, err
 	}
-	return bqToDatasetMetadata(ds2)
+	return bqToDatasetMetadata(ds2, d.c)
 }
 
 func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
@@ -359,7 +400,9 @@ var listTables = func(it *TableIterator, pageSize int, pageToken string) (*bq.Ta
 	}
 	var res *bq.TableList
 	err := runWithRetry(it.ctx, func() (err error) {
+		sCtx := trace.StartSpan(it.ctx, "bigquery.tables.list")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	return res, err
@@ -444,7 +487,9 @@ var listModels = func(it *ModelIterator, pageSize int, pageToken string) (*bq.Li
 	}
 	var res *bq.ListModelsResponse
 	err := runWithRetry(it.ctx, func() (err error) {
+		sCtx := trace.StartSpan(it.ctx, "bigquery.models.list")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	return res, err
@@ -531,7 +576,9 @@ var listRoutines = func(it *RoutineIterator, pageSize int, pageToken string) (*b
 	}
 	var res *bq.ListRoutinesResponse
 	err := runWithRetry(it.ctx, func() (err error) {
+		sCtx := trace.StartSpan(it.ctx, "bigquery.routines.list")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	return res, err
@@ -635,7 +682,9 @@ var listDatasets = func(it *DatasetIterator, pageSize int, pageToken string) (*b
 	}
 	var res *bq.DatasetList
 	err := runWithRetry(it.ctx, func() (err error) {
+		sCtx := trace.StartSpan(it.ctx, "bigquery.datasets.list")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	return res, err
@@ -658,11 +707,12 @@ func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error)
 
 // An AccessEntry describes the permissions that an entity has on a dataset.
 type AccessEntry struct {
-	Role       AccessRole // The role of the entity
-	EntityType EntityType // The type of entity
-	Entity     string     // The entity (individual or group) granted access
-	View       *Table     // The view granted access (EntityType must be ViewEntity)
-	Routine    *Routine   // The routine granted access (only UDF currently supported)
+	Role       AccessRole          // The role of the entity
+	EntityType EntityType          // The type of entity
+	Entity     string              // The entity (individual or group) granted access
+	View       *Table              // The view granted access (EntityType must be ViewEntity)
+	Routine    *Routine            // The routine granted access (only UDF currently supported)
+	Dataset    *DatasetAccessEntry // The resources within a dataset granted access.
 }
 
 // AccessRole is the level of access to grant to a dataset.
@@ -703,6 +753,9 @@ const (
 
 	// RoutineEntity is a BigQuery routine, referencing a User Defined Function (UDF).
 	RoutineEntity
+
+	// DatasetEntity is BigQuery dataset, present in the access list.
+	DatasetEntity
 )
 
 func (e *AccessEntry) toBQ() (*bq.DatasetAccess, error) {
@@ -722,6 +775,8 @@ func (e *AccessEntry) toBQ() (*bq.DatasetAccess, error) {
 		q.IamMember = e.Entity
 	case RoutineEntity:
 		q.Routine = e.Routine.toBQ()
+	case DatasetEntity:
+		q.Dataset = e.Dataset.toBQ()
 	default:
 		return nil, fmt.Errorf("bigquery: unknown entity type %d", e.EntityType)
 	}
@@ -752,8 +807,48 @@ func bqToAccessEntry(q *bq.DatasetAccess, c *Client) (*AccessEntry, error) {
 	case q.Routine != nil:
 		e.Routine = c.DatasetInProject(q.Routine.ProjectId, q.Routine.DatasetId).Routine(q.Routine.RoutineId)
 		e.EntityType = RoutineEntity
+	case q.Dataset != nil:
+		e.Dataset = bqToDatasetAccessEntry(q.Dataset, c)
+		e.EntityType = DatasetEntity
 	default:
 		return nil, errors.New("bigquery: invalid access value")
 	}
 	return e, nil
+}
+
+// DatasetAccessEntry is an access entry that refers to resources within
+// another dataset.
+type DatasetAccessEntry struct {
+	// The dataset to which this entry applies.
+	Dataset *Dataset
+	// The list of target types within the dataset
+	// to which this entry applies.
+	//
+	// Current supported values:
+	//
+	// VIEWS - This entry applies to views in the dataset.
+	TargetTypes []string
+}
+
+func (dae *DatasetAccessEntry) toBQ() *bq.DatasetAccessEntry {
+	if dae == nil {
+		return nil
+	}
+	return &bq.DatasetAccessEntry{
+		Dataset: &bq.DatasetReference{
+			ProjectId: dae.Dataset.ProjectID,
+			DatasetId: dae.Dataset.DatasetID,
+		},
+		TargetTypes: dae.TargetTypes,
+	}
+}
+
+func bqToDatasetAccessEntry(entry *bq.DatasetAccessEntry, c *Client) *DatasetAccessEntry {
+	if entry == nil {
+		return nil
+	}
+	return &DatasetAccessEntry{
+		Dataset:     c.DatasetInProject(entry.Dataset.ProjectId, entry.Dataset.DatasetId),
+		TargetTypes: entry.TargetTypes,
+	}
 }

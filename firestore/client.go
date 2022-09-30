@@ -24,8 +24,8 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	"cloud.google.com/go/firestore/internal"
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -92,7 +92,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, err
 	}
-	vc.SetGoogleClientInfo("gccl", version.Repo)
+	vc.SetGoogleClientInfo("gccl", internal.Version)
 	c := &Client{
 		c:          vc,
 		projectID:  projectID,
@@ -104,7 +104,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
 	creds, err := transport.Creds(ctx, opts...)
 	if err != nil {
-		return "", fmt.Errorf("fetching creds: %v", err)
+		return "", fmt.Errorf("fetching creds: %w", err)
 	}
 	if creds.ProjectID == "" {
 		return "", errors.New("firestore: see the docs on DetectProjectID")
@@ -290,8 +290,20 @@ func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 }
 
 // Batch returns a WriteBatch.
+//
+// Deprecated: The WriteBatch API has been replaced with the transaction and
+// the bulk writer API. For atomic transaction operations, use `Transaction`.
+// For bulk read and write operations, use `BulkWriter`.
 func (c *Client) Batch() *WriteBatch {
 	return &WriteBatch{c: c}
+}
+
+// BulkWriter returns a BulkWriter instance.
+// The context passed to the BulkWriter remains stored through the lifecycle
+// of the object. This context allows callers to cancel BulkWriter operations.
+func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
+	bw := newBulkWriter(ctx, c, c.path())
+	return bw
 }
 
 // commit calls the Commit RPC outside of a transaction.

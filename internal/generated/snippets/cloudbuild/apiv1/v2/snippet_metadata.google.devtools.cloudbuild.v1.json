@@ -1,0 +1,842 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/cloudbuild/apiv1/v2",
+    "version": "1.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.cloudbuild.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_ApproveBuild_sync",
+      "title": "cloudbuild ApproveBuild Sample",
+      "description": "ApproveBuild approves or rejects a pending build.\n\nIf approved, the returned LRO will be analogous to the LRO returned from\na CreateBuild call.\n\nIf rejected, the returned LRO will be immediately done.",
+      "file": "Client/ApproveBuild/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ApproveBuild",
+        "fullName": "google.devtools.cloudbuild.v1.Client.ApproveBuild",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.ApproveBuildRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ApproveBuildOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "ApproveBuild",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.ApproveBuild",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_CancelBuild_sync",
+      "title": "cloudbuild CancelBuild Sample",
+      "description": "CancelBuild cancels a build in progress.",
+      "file": "Client/CancelBuild/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelBuild",
+        "fullName": "google.devtools.cloudbuild.v1.Client.CancelBuild",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.CancelBuildRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cloudbuildpb.Build",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelBuild",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.CancelBuild",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_CreateBuild_sync",
+      "title": "cloudbuild CreateBuild Sample",
+      "description": "CreateBuild starts a build with the specified configuration.\n\nThis method returns a long-running Operation, which includes the build\nID. Pass the build ID to GetBuild to determine the build status (such as\nSUCCESS or FAILURE).",
+      "file": "Client/CreateBuild/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBuild",
+        "fullName": "google.devtools.cloudbuild.v1.Client.CreateBuild",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.CreateBuildRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBuildOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateBuild",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.CreateBuild",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_CreateBuildTrigger_sync",
+      "title": "cloudbuild CreateBuildTrigger Sample",
+      "description": "CreateBuildTrigger creates a new BuildTrigger.\n\nThis API is experimental.",
+      "file": "Client/CreateBuildTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBuildTrigger",
+        "fullName": "google.devtools.cloudbuild.v1.Client.CreateBuildTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.CreateBuildTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cloudbuildpb.BuildTrigger",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateBuildTrigger",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.CreateBuildTrigger",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_CreateWorkerPool_sync",
+      "title": "cloudbuild CreateWorkerPool Sample",
+      "description": "CreateWorkerPool creates a WorkerPool.",
+      "file": "Client/CreateWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkerPool",
+        "fullName": "google.devtools.cloudbuild.v1.Client.CreateWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.CreateWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkerPoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkerPool",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.CreateWorkerPool",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_DeleteBuildTrigger_sync",
+      "title": "cloudbuild DeleteBuildTrigger Sample",
+      "description": "DeleteBuildTrigger deletes a BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental.",
+      "file": "Client/DeleteBuildTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBuildTrigger",
+        "fullName": "google.devtools.cloudbuild.v1.Client.DeleteBuildTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.DeleteBuildTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteBuildTrigger",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.DeleteBuildTrigger",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_DeleteWorkerPool_sync",
+      "title": "cloudbuild DeleteWorkerPool Sample",
+      "description": "DeleteWorkerPool deletes a WorkerPool.",
+      "file": "Client/DeleteWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkerPool",
+        "fullName": "google.devtools.cloudbuild.v1.Client.DeleteWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.DeleteWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkerPoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkerPool",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.DeleteWorkerPool",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_GetBuild_sync",
+      "title": "cloudbuild GetBuild Sample",
+      "description": "GetBuild returns information about a previously requested build.\n\nThe Build that is returned includes its status (such as SUCCESS,\nFAILURE, or WORKING), and timing information.",
+      "file": "Client/GetBuild/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBuild",
+        "fullName": "google.devtools.cloudbuild.v1.Client.GetBuild",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.GetBuildRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cloudbuildpb.Build",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "GetBuild",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.GetBuild",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_GetBuildTrigger_sync",
+      "title": "cloudbuild GetBuildTrigger Sample",
+      "description": "GetBuildTrigger returns information about a BuildTrigger.\n\nThis API is experimental.",
+      "file": "Client/GetBuildTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBuildTrigger",
+        "fullName": "google.devtools.cloudbuild.v1.Client.GetBuildTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.GetBuildTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cloudbuildpb.BuildTrigger",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "GetBuildTrigger",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.GetBuildTrigger",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_GetWorkerPool_sync",
+      "title": "cloudbuild GetWorkerPool Sample",
+      "description": "GetWorkerPool returns details of a WorkerPool.",
+      "file": "Client/GetWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkerPool",
+        "fullName": "google.devtools.cloudbuild.v1.Client.GetWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.GetWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cloudbuildpb.WorkerPool",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "GetWorkerPool",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.GetWorkerPool",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_ListBuildTriggers_sync",
+      "title": "cloudbuild ListBuildTriggers Sample",
+      "description": "ListBuildTriggers lists existing BuildTriggers.\n\nThis API is experimental.",
+      "file": "Client/ListBuildTriggers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBuildTriggers",
+        "fullName": "google.devtools.cloudbuild.v1.Client.ListBuildTriggers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.ListBuildTriggersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BuildTriggerIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "ListBuildTriggers",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.ListBuildTriggers",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_ListBuilds_sync",
+      "title": "cloudbuild ListBuilds Sample",
+      "description": "ListBuilds lists previously requested builds.\n\nPreviously requested builds may still be in-progress, or may have finished\nsuccessfully or unsuccessfully.",
+      "file": "Client/ListBuilds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBuilds",
+        "fullName": "google.devtools.cloudbuild.v1.Client.ListBuilds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.ListBuildsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BuildIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "ListBuilds",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.ListBuilds",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_ListWorkerPools_sync",
+      "title": "cloudbuild ListWorkerPools Sample",
+      "description": "ListWorkerPools lists WorkerPools.",
+      "file": "Client/ListWorkerPools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkerPools",
+        "fullName": "google.devtools.cloudbuild.v1.Client.ListWorkerPools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.ListWorkerPoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkerPoolIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "ListWorkerPools",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.ListWorkerPools",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_ReceiveTriggerWebhook_sync",
+      "title": "cloudbuild ReceiveTriggerWebhook Sample",
+      "description": "ReceiveTriggerWebhook receiveTriggerWebhook [Experimental] is called when the API receives a\nwebhook request targeted at a specific trigger.",
+      "file": "Client/ReceiveTriggerWebhook/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReceiveTriggerWebhook",
+        "fullName": "google.devtools.cloudbuild.v1.Client.ReceiveTriggerWebhook",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.ReceiveTriggerWebhookRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cloudbuildpb.ReceiveTriggerWebhookResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "ReceiveTriggerWebhook",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.ReceiveTriggerWebhook",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_RetryBuild_sync",
+      "title": "cloudbuild RetryBuild Sample",
+      "description": "RetryBuild creates a new build based on the specified build.\n\nThis method creates a new build using the original build request, which may\nor may not result in an identical build.\n\nFor triggered builds: \n\n\tTriggered builds resolve to a precise revision; therefore a retry of a\n\ttriggered build will result in a build that uses the same revision.\n\nFor non-triggered builds that specify RepoSource: \n\n\tIf the original build built from the tip of a branch, the retried build\n\twill build from the tip of that branch, which may not be the same revision\n\tas the original build.\n\n\tIf the original build specified a commit sha or revision ID, the retried\n\tbuild will use the identical source.\n\nFor builds that specify StorageSource: \n\n\tIf the original build pulled source from Google Cloud Storage without\n\tspecifying the generation of the object, the new build will use the current\n\tobject, which may be different from the original build source.\n\n\tIf the original build pulled source from Cloud Storage and specified the\n\tgeneration of the object, the new build will attempt to use the same\n\tobject, which may or may not be available depending on the bucket’s\n\tlifecycle management settings.",
+      "file": "Client/RetryBuild/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetryBuild",
+        "fullName": "google.devtools.cloudbuild.v1.Client.RetryBuild",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.RetryBuildRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RetryBuildOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "RetryBuild",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.RetryBuild",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_RunBuildTrigger_sync",
+      "title": "cloudbuild RunBuildTrigger Sample",
+      "description": "RunBuildTrigger runs a BuildTrigger at a particular source revision.",
+      "file": "Client/RunBuildTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunBuildTrigger",
+        "fullName": "google.devtools.cloudbuild.v1.Client.RunBuildTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.RunBuildTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunBuildTriggerOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "RunBuildTrigger",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.RunBuildTrigger",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_UpdateBuildTrigger_sync",
+      "title": "cloudbuild UpdateBuildTrigger Sample",
+      "description": "UpdateBuildTrigger updates a BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental.",
+      "file": "Client/UpdateBuildTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBuildTrigger",
+        "fullName": "google.devtools.cloudbuild.v1.Client.UpdateBuildTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.UpdateBuildTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "cloudbuildpb.BuildTrigger",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateBuildTrigger",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.UpdateBuildTrigger",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v1_generated_CloudBuild_UpdateWorkerPool_sync",
+      "title": "cloudbuild UpdateWorkerPool Sample",
+      "description": "UpdateWorkerPool updates a WorkerPool.",
+      "file": "Client/UpdateWorkerPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkerPool",
+        "fullName": "google.devtools.cloudbuild.v1.Client.UpdateWorkerPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.UpdateWorkerPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkerPoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudbuild.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateWorkerPool",
+          "fullName": "google.devtools.cloudbuild.v1.CloudBuild.UpdateWorkerPool",
+          "service": {
+            "shortName": "CloudBuild",
+            "fullName": "google.devtools.cloudbuild.v1.CloudBuild"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1712 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/contactcenterinsights/apiv1",
+    "version": "1.2.3",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.contactcenterinsights.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CalculateIssueModelStats_sync",
+      "title": "contactcenterinsights CalculateIssueModelStats Sample",
+      "description": "CalculateIssueModelStats gets an issue model’s statistics.",
+      "file": "Client/CalculateIssueModelStats/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CalculateIssueModelStats",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CalculateIssueModelStats",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CalculateIssueModelStatsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.CalculateIssueModelStatsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CalculateIssueModelStats",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CalculateIssueModelStats",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CalculateStats_sync",
+      "title": "contactcenterinsights CalculateStats Sample",
+      "description": "CalculateStats gets conversation statistics.",
+      "file": "Client/CalculateStats/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CalculateStats",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CalculateStats",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CalculateStatsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.CalculateStatsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CalculateStats",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CalculateStats",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CancelOperation_sync",
+      "title": "contactcenterinsights CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CancelOperation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateAnalysis_sync",
+      "title": "contactcenterinsights CreateAnalysis Sample",
+      "description": "CreateAnalysis creates an analysis. The long running operation is done when the analysis\nhas completed.",
+      "file": "Client/CreateAnalysis/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAnalysis",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateAnalysis",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateAnalysisRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAnalysisOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAnalysis",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateAnalysis",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateConversation_sync",
+      "title": "contactcenterinsights CreateConversation Sample",
+      "description": "CreateConversation creates a conversation.",
+      "file": "Client/CreateConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConversation",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Conversation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateConversation",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateIssueModel_sync",
+      "title": "contactcenterinsights CreateIssueModel Sample",
+      "description": "CreateIssueModel creates an issue model.",
+      "file": "Client/CreateIssueModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateIssueModel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateIssueModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateIssueModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateIssueModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateIssueModel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateIssueModel",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreatePhraseMatcher_sync",
+      "title": "contactcenterinsights CreatePhraseMatcher Sample",
+      "description": "CreatePhraseMatcher creates a phrase matcher.",
+      "file": "Client/CreatePhraseMatcher/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePhraseMatcher",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreatePhraseMatcher",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreatePhraseMatcherRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.PhraseMatcher",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePhraseMatcher",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreatePhraseMatcher",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CreateView_sync",
+      "title": "contactcenterinsights CreateView Sample",
+      "description": "CreateView creates a view.",
+      "file": "Client/CreateView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateView",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.CreateView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.CreateViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.View",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateView",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CreateView",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteAnalysis_sync",
+      "title": "contactcenterinsights DeleteAnalysis Sample",
+      "description": "DeleteAnalysis deletes an analysis.",
+      "file": "Client/DeleteAnalysis/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAnalysis",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteAnalysis",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteAnalysisRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAnalysis",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteAnalysis",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteConversation_sync",
+      "title": "contactcenterinsights DeleteConversation Sample",
+      "description": "DeleteConversation deletes a conversation.",
+      "file": "Client/DeleteConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversation",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteConversation",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteIssueModel_sync",
+      "title": "contactcenterinsights DeleteIssueModel Sample",
+      "description": "DeleteIssueModel deletes an issue model.",
+      "file": "Client/DeleteIssueModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteIssueModel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteIssueModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteIssueModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteIssueModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteIssueModel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteIssueModel",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeletePhraseMatcher_sync",
+      "title": "contactcenterinsights DeletePhraseMatcher Sample",
+      "description": "DeletePhraseMatcher deletes a phrase matcher.",
+      "file": "Client/DeletePhraseMatcher/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePhraseMatcher",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeletePhraseMatcher",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeletePhraseMatcherRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePhraseMatcher",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeletePhraseMatcher",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteView_sync",
+      "title": "contactcenterinsights DeleteView Sample",
+      "description": "DeleteView deletes a view.",
+      "file": "Client/DeleteView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteView",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteView",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteView",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeployIssueModel_sync",
+      "title": "contactcenterinsights DeployIssueModel Sample",
+      "description": "DeployIssueModel deploys an issue model. Returns an error if a model is already deployed.\nAn issue model can only be used in analysis after it has been deployed.",
+      "file": "Client/DeployIssueModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeployIssueModel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeployIssueModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeployIssueModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeployIssueModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeployIssueModel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeployIssueModel",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ExportInsightsData_sync",
+      "title": "contactcenterinsights ExportInsightsData Sample",
+      "description": "ExportInsightsData export insights data to a destination defined in the request body.",
+      "file": "Client/ExportInsightsData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportInsightsData",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ExportInsightsData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ExportInsightsDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportInsightsDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportInsightsData",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ExportInsightsData",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetAnalysis_sync",
+      "title": "contactcenterinsights GetAnalysis Sample",
+      "description": "GetAnalysis gets an analysis.",
+      "file": "Client/GetAnalysis/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAnalysis",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetAnalysis",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetAnalysisRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Analysis",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAnalysis",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetAnalysis",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetConversation_sync",
+      "title": "contactcenterinsights GetConversation Sample",
+      "description": "GetConversation gets a conversation.",
+      "file": "Client/GetConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversation",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Conversation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetConversation",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetIssue_sync",
+      "title": "contactcenterinsights GetIssue Sample",
+      "description": "GetIssue gets an issue.",
+      "file": "Client/GetIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIssue",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Issue",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIssue",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetIssue",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetIssueModel_sync",
+      "title": "contactcenterinsights GetIssueModel Sample",
+      "description": "GetIssueModel gets an issue model.",
+      "file": "Client/GetIssueModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIssueModel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetIssueModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetIssueModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.IssueModel",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIssueModel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetIssueModel",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetOperation_sync",
+      "title": "contactcenterinsights GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetOperation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetPhraseMatcher_sync",
+      "title": "contactcenterinsights GetPhraseMatcher Sample",
+      "description": "GetPhraseMatcher gets a phrase matcher.",
+      "file": "Client/GetPhraseMatcher/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPhraseMatcher",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetPhraseMatcher",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetPhraseMatcherRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.PhraseMatcher",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPhraseMatcher",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetPhraseMatcher",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetSettings_sync",
+      "title": "contactcenterinsights GetSettings Sample",
+      "description": "GetSettings gets project-level settings.",
+      "file": "Client/GetSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSettings",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Settings",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSettings",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetSettings",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_GetView_sync",
+      "title": "contactcenterinsights GetView Sample",
+      "description": "GetView gets a view.",
+      "file": "Client/GetView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetView",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.GetView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.GetViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.View",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "GetView",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetView",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListAnalyses_sync",
+      "title": "contactcenterinsights ListAnalyses Sample",
+      "description": "ListAnalyses lists analyses.",
+      "file": "Client/ListAnalyses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAnalyses",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListAnalyses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListAnalysesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnalysisIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAnalyses",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListAnalyses",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListConversations_sync",
+      "title": "contactcenterinsights ListConversations Sample",
+      "description": "ListConversations lists conversations.",
+      "file": "Client/ListConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversations",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListConversations",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListConversations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListIssueModels_sync",
+      "title": "contactcenterinsights ListIssueModels Sample",
+      "description": "ListIssueModels lists issue models.",
+      "file": "Client/ListIssueModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIssueModels",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListIssueModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListIssueModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.ListIssueModelsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListIssueModels",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListIssueModels",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListIssues_sync",
+      "title": "contactcenterinsights ListIssues Sample",
+      "description": "ListIssues lists issues.",
+      "file": "Client/ListIssues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIssues",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListIssues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListIssuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.ListIssuesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListIssues",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListIssues",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListOperations_sync",
+      "title": "contactcenterinsights ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListOperations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListPhraseMatchers_sync",
+      "title": "contactcenterinsights ListPhraseMatchers Sample",
+      "description": "ListPhraseMatchers lists phrase matchers.",
+      "file": "Client/ListPhraseMatchers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPhraseMatchers",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListPhraseMatchers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListPhraseMatchersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PhraseMatcherIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPhraseMatchers",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListPhraseMatchers",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_ListViews_sync",
+      "title": "contactcenterinsights ListViews Sample",
+      "description": "ListViews lists views.",
+      "file": "Client/ListViews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListViews",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.ListViews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.ListViewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ViewIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "ListViews",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListViews",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UndeployIssueModel_sync",
+      "title": "contactcenterinsights UndeployIssueModel Sample",
+      "description": "UndeployIssueModel undeploys an issue model.\nAn issue model can not be used in analysis after it has been undeployed.",
+      "file": "Client/UndeployIssueModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeployIssueModel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UndeployIssueModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UndeployIssueModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeployIssueModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UndeployIssueModel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UndeployIssueModel",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateConversation_sync",
+      "title": "contactcenterinsights UpdateConversation Sample",
+      "description": "UpdateConversation updates a conversation.",
+      "file": "Client/UpdateConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConversation",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Conversation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateConversation",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateIssue_sync",
+      "title": "contactcenterinsights UpdateIssue Sample",
+      "description": "UpdateIssue updates an issue.",
+      "file": "Client/UpdateIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateIssue",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Issue",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateIssue",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateIssue",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateIssueModel_sync",
+      "title": "contactcenterinsights UpdateIssueModel Sample",
+      "description": "UpdateIssueModel updates an issue model.",
+      "file": "Client/UpdateIssueModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateIssueModel",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateIssueModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateIssueModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.IssueModel",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateIssueModel",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateIssueModel",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdatePhraseMatcher_sync",
+      "title": "contactcenterinsights UpdatePhraseMatcher Sample",
+      "description": "UpdatePhraseMatcher updates a phrase matcher.",
+      "file": "Client/UpdatePhraseMatcher/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePhraseMatcher",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdatePhraseMatcher",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdatePhraseMatcherRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.PhraseMatcher",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePhraseMatcher",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdatePhraseMatcher",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateSettings_sync",
+      "title": "contactcenterinsights UpdateSettings Sample",
+      "description": "UpdateSettings updates project-level settings.",
+      "file": "Client/UpdateSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSettings",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.Settings",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSettings",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateSettings",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UpdateView_sync",
+      "title": "contactcenterinsights UpdateView Sample",
+      "description": "UpdateView updates a view.",
+      "file": "Client/UpdateView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateView",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UpdateView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UpdateViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "contactcenterinsightspb.View",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateView",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UpdateView",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

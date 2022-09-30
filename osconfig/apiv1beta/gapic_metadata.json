@@ -80,9 +80,119 @@
                 "LookupEffectiveGuestPolicy"
               ]
             },
+            "PausePatchDeployment": {
+              "methods": [
+                "PausePatchDeployment"
+              ]
+            },
+            "ResumePatchDeployment": {
+              "methods": [
+                "ResumePatchDeployment"
+              ]
+            },
             "UpdateGuestPolicy": {
               "methods": [
                 "UpdateGuestPolicy"
+              ]
+            },
+            "UpdatePatchDeployment": {
+              "methods": [
+                "UpdatePatchDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelPatchJob": {
+              "methods": [
+                "CancelPatchJob"
+              ]
+            },
+            "CreateGuestPolicy": {
+              "methods": [
+                "CreateGuestPolicy"
+              ]
+            },
+            "CreatePatchDeployment": {
+              "methods": [
+                "CreatePatchDeployment"
+              ]
+            },
+            "DeleteGuestPolicy": {
+              "methods": [
+                "DeleteGuestPolicy"
+              ]
+            },
+            "DeletePatchDeployment": {
+              "methods": [
+                "DeletePatchDeployment"
+              ]
+            },
+            "ExecutePatchJob": {
+              "methods": [
+                "ExecutePatchJob"
+              ]
+            },
+            "GetGuestPolicy": {
+              "methods": [
+                "GetGuestPolicy"
+              ]
+            },
+            "GetPatchDeployment": {
+              "methods": [
+                "GetPatchDeployment"
+              ]
+            },
+            "GetPatchJob": {
+              "methods": [
+                "GetPatchJob"
+              ]
+            },
+            "ListGuestPolicies": {
+              "methods": [
+                "ListGuestPolicies"
+              ]
+            },
+            "ListPatchDeployments": {
+              "methods": [
+                "ListPatchDeployments"
+              ]
+            },
+            "ListPatchJobInstanceDetails": {
+              "methods": [
+                "ListPatchJobInstanceDetails"
+              ]
+            },
+            "ListPatchJobs": {
+              "methods": [
+                "ListPatchJobs"
+              ]
+            },
+            "LookupEffectiveGuestPolicy": {
+              "methods": [
+                "LookupEffectiveGuestPolicy"
+              ]
+            },
+            "PausePatchDeployment": {
+              "methods": [
+                "PausePatchDeployment"
+              ]
+            },
+            "ResumePatchDeployment": {
+              "methods": [
+                "ResumePatchDeployment"
+              ]
+            },
+            "UpdateGuestPolicy": {
+              "methods": [
+                "UpdateGuestPolicy"
+              ]
+            },
+            "UpdatePatchDeployment": {
+              "methods": [
+                "UpdatePatchDeployment"
               ]
             }
           }

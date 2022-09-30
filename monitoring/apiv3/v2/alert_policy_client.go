@@ -98,7 +98,7 @@ func defaultAlertPolicyCallOptions() *AlertPolicyCallOptions {
 	}
 }
 
-// internalAlertPolicyClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalAlertPolicyClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalAlertPolicyClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -114,14 +114,14 @@ type internalAlertPolicyClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AlertPolicyService API is used to manage (list, create, delete,
-// edit) alert policies in Stackdriver Monitoring. An alerting policy is
+// edit) alert policies in Cloud Monitoring. An alerting policy is
 // a description of the conditions under which some aspect of your
 // system is considered to be “unhealthy” and the ways to notify
 // people or services about this state. In addition to using this API, alert
 // policies can also be managed through
-// Stackdriver Monitoring (at https://cloud.google.com/monitoring/docs/),
+// Cloud Monitoring (at https://cloud.google.com/monitoring/docs/),
 // which can be reached by clicking the “Monitoring” tab in
-// Cloud Console (at https://console.cloud.google.com/).
+// Cloud console (at https://console.cloud.google.com/).
 type AlertPolicyClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAlertPolicyClient
@@ -147,7 +147,8 @@ func (c *AlertPolicyClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AlertPolicyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -204,14 +205,14 @@ type alertPolicyGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The AlertPolicyService API is used to manage (list, create, delete,
-// edit) alert policies in Stackdriver Monitoring. An alerting policy is
+// edit) alert policies in Cloud Monitoring. An alerting policy is
 // a description of the conditions under which some aspect of your
 // system is considered to be “unhealthy” and the ways to notify
 // people or services about this state. In addition to using this API, alert
 // policies can also be managed through
-// Stackdriver Monitoring (at https://cloud.google.com/monitoring/docs/),
+// Cloud Monitoring (at https://cloud.google.com/monitoring/docs/),
 // which can be reached by clicking the “Monitoring” tab in
-// Cloud Console (at https://console.cloud.google.com/).
+// Cloud console (at https://console.cloud.google.com/).
 func NewAlertPolicyClient(ctx context.Context, opts ...option.ClientOption) (*AlertPolicyClient, error) {
 	clientOpts := defaultAlertPolicyGRPCClientOptions()
 	if newAlertPolicyClientHook != nil {
@@ -248,7 +249,8 @@ func NewAlertPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Al
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *alertPolicyGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -258,7 +260,7 @@ func (c *alertPolicyGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *alertPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -270,6 +272,7 @@ func (c *alertPolicyGRPCClient) Close() error {
 
 func (c *alertPolicyGRPCClient) ListAlertPolicies(ctx context.Context, req *monitoringpb.ListAlertPoliciesRequest, opts ...gax.CallOption) *AlertPolicyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAlertPolicies[0:len((*c.CallOptions).ListAlertPolicies):len((*c.CallOptions).ListAlertPolicies)], opts...)
 	it := &AlertPolicyIterator{}
@@ -319,6 +322,7 @@ func (c *alertPolicyGRPCClient) GetAlertPolicy(ctx context.Context, req *monitor
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAlertPolicy[0:len((*c.CallOptions).GetAlertPolicy):len((*c.CallOptions).GetAlertPolicy)], opts...)
 	var resp *monitoringpb.AlertPolicy
@@ -340,6 +344,7 @@ func (c *alertPolicyGRPCClient) CreateAlertPolicy(ctx context.Context, req *moni
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAlertPolicy[0:len((*c.CallOptions).CreateAlertPolicy):len((*c.CallOptions).CreateAlertPolicy)], opts...)
 	var resp *monitoringpb.AlertPolicy
@@ -361,6 +366,7 @@ func (c *alertPolicyGRPCClient) DeleteAlertPolicy(ctx context.Context, req *moni
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAlertPolicy[0:len((*c.CallOptions).DeleteAlertPolicy):len((*c.CallOptions).DeleteAlertPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -378,6 +384,7 @@ func (c *alertPolicyGRPCClient) UpdateAlertPolicy(ctx context.Context, req *moni
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "alert_policy.name", url.QueryEscape(req.GetAlertPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAlertPolicy[0:len((*c.CallOptions).UpdateAlertPolicy):len((*c.CallOptions).UpdateAlertPolicy)], opts...)
 	var resp *monitoringpb.AlertPolicy

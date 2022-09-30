@@ -17,13 +17,13 @@
 // Package admin is an auto-generated package for the
 // Google Identity and Access Management (IAM) API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//	NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
 // Manages identity and access control for Google Cloud Platform resources,
 // including the creation of service accounts, which you can use to
 // authenticate to Google and make API calls.
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
@@ -100,4 +100,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20220114"
+const versionClient = "20220222"

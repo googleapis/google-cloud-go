@@ -103,7 +103,7 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 	}
 }
 
-// internalRealmsClient is an interface that defines the methods availaible from Game Services API.
+// internalRealmsClient is an interface that defines the methods available from Game Services API.
 type internalRealmsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -154,7 +154,8 @@ func (c *RealmsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RealmsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -284,7 +285,8 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *realmsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -294,7 +296,7 @@ func (c *realmsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *realmsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -306,6 +308,7 @@ func (c *realmsGRPCClient) Close() error {
 
 func (c *realmsGRPCClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListRealms[0:len((*c.CallOptions).ListRealms):len((*c.CallOptions).ListRealms)], opts...)
 	it := &RealmIterator{}
@@ -355,6 +358,7 @@ func (c *realmsGRPCClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetRealm[0:len((*c.CallOptions).GetRealm):len((*c.CallOptions).GetRealm)], opts...)
 	var resp *gamingpb.Realm
@@ -376,6 +380,7 @@ func (c *realmsGRPCClient) CreateRealm(ctx context.Context, req *gamingpb.Create
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateRealm[0:len((*c.CallOptions).CreateRealm):len((*c.CallOptions).CreateRealm)], opts...)
 	var resp *longrunningpb.Operation
@@ -399,6 +404,7 @@ func (c *realmsGRPCClient) DeleteRealm(ctx context.Context, req *gamingpb.Delete
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteRealm[0:len((*c.CallOptions).DeleteRealm):len((*c.CallOptions).DeleteRealm)], opts...)
 	var resp *longrunningpb.Operation
@@ -422,6 +428,7 @@ func (c *realmsGRPCClient) UpdateRealm(ctx context.Context, req *gamingpb.Update
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateRealm[0:len((*c.CallOptions).UpdateRealm):len((*c.CallOptions).UpdateRealm)], opts...)
 	var resp *longrunningpb.Operation
@@ -445,6 +452,7 @@ func (c *realmsGRPCClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PreviewRealmUpdate[0:len((*c.CallOptions).PreviewRealmUpdate):len((*c.CallOptions).PreviewRealmUpdate)], opts...)
 	var resp *gamingpb.PreviewRealmUpdateResponse

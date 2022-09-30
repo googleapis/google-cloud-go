@@ -1,0 +1,1027 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/baremetalsolution/apiv2",
+    "version": "0.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.baremetalsolution.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_DetachLun_sync",
+      "title": "baremetalsolution DetachLun Sample",
+      "description": "DetachLun detach LUN from Instance.",
+      "file": "Client/DetachLun/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DetachLun",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.DetachLun",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.DetachLunRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DetachLunOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "DetachLun",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.DetachLun",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetInstance_sync",
+      "title": "baremetalsolution GetInstance Sample",
+      "description": "GetInstance get details about a single server.",
+      "file": "Client/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "baremetalsolutionpb.Instance",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.GetInstance",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetLocation_sync",
+      "title": "baremetalsolution GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.GetLocation",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetLun_sync",
+      "title": "baremetalsolution GetLun Sample",
+      "description": "GetLun get details of a single storage logical unit number(LUN).",
+      "file": "Client/GetLun/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLun",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.GetLun",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.GetLunRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "baremetalsolutionpb.Lun",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "GetLun",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.GetLun",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetNetwork_sync",
+      "title": "baremetalsolution GetNetwork Sample",
+      "description": "GetNetwork get details of a single network.",
+      "file": "Client/GetNetwork/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNetwork",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.GetNetwork",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.GetNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "baremetalsolutionpb.Network",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "GetNetwork",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.GetNetwork",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetNfsShare_sync",
+      "title": "baremetalsolution GetNfsShare Sample",
+      "description": "GetNfsShare get details of a single NFS share.",
+      "file": "Client/GetNfsShare/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNfsShare",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.GetNfsShare",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.GetNfsShareRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "baremetalsolutionpb.NfsShare",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "GetNfsShare",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.GetNfsShare",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetVolume_sync",
+      "title": "baremetalsolution GetVolume Sample",
+      "description": "GetVolume get details of a single storage volume.",
+      "file": "Client/GetVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVolume",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.GetVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.GetVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "baremetalsolutionpb.Volume",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "GetVolume",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.GetVolume",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListInstances_sync",
+      "title": "baremetalsolution ListInstances Sample",
+      "description": "ListInstances list servers in a given project and location.",
+      "file": "Client/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListInstances",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListLocations_sync",
+      "title": "baremetalsolution ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListLocations",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListLuns_sync",
+      "title": "baremetalsolution ListLuns Sample",
+      "description": "ListLuns list storage volume luns for given storage volume.",
+      "file": "Client/ListLuns/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLuns",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ListLuns",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ListLunsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LunIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ListLuns",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListLuns",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListNetworkUsage_sync",
+      "title": "baremetalsolution ListNetworkUsage Sample",
+      "description": "ListNetworkUsage list all Networks (and used IPs for each Network) in the vendor account\nassociated with the specified project.",
+      "file": "Client/ListNetworkUsage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNetworkUsage",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ListNetworkUsage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ListNetworkUsageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "baremetalsolutionpb.ListNetworkUsageResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ListNetworkUsage",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListNetworkUsage",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListNetworks_sync",
+      "title": "baremetalsolution ListNetworks Sample",
+      "description": "ListNetworks list network in a given project and location.",
+      "file": "Client/ListNetworks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNetworks",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ListNetworks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ListNetworksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ListNetworks",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListNetworks",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListNfsShares_sync",
+      "title": "baremetalsolution ListNfsShares Sample",
+      "description": "ListNfsShares list NFS shares.",
+      "file": "Client/ListNfsShares/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNfsShares",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ListNfsShares",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ListNfsSharesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NfsShareIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ListNfsShares",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListNfsShares",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListVolumes_sync",
+      "title": "baremetalsolution ListVolumes Sample",
+      "description": "ListVolumes list storage volumes in a given project and location.",
+      "file": "Client/ListVolumes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVolumes",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ListVolumes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ListVolumesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VolumeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ListVolumes",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListVolumes",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ResetInstance_sync",
+      "title": "baremetalsolution ResetInstance Sample",
+      "description": "ResetInstance perform an ungraceful, hard reset on a server. Equivalent to shutting the\npower off and then turning it back on.",
+      "file": "Client/ResetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResetInstance",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ResetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ResetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResetInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ResetInstance",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ResetInstance",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ResizeVolume_sync",
+      "title": "baremetalsolution ResizeVolume Sample",
+      "description": "ResizeVolume emergency Volume resize.",
+      "file": "Client/ResizeVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResizeVolume",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.ResizeVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.ResizeVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResizeVolumeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "ResizeVolume",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ResizeVolume",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_StartInstance_sync",
+      "title": "baremetalsolution StartInstance Sample",
+      "description": "StartInstance starts a server that was shutdown.",
+      "file": "Client/StartInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartInstance",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.StartInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.StartInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "StartInstance",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.StartInstance",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_StopInstance_sync",
+      "title": "baremetalsolution StopInstance Sample",
+      "description": "StopInstance stop a running server.",
+      "file": "Client/StopInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopInstance",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.StopInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.StopInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "StopInstance",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.StopInstance",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateInstance_sync",
+      "title": "baremetalsolution UpdateInstance Sample",
+      "description": "UpdateInstance update details of a single server.",
+      "file": "Client/UpdateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstance",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.UpdateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.UpdateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateInstance",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.UpdateInstance",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateNetwork_sync",
+      "title": "baremetalsolution UpdateNetwork Sample",
+      "description": "UpdateNetwork update details of a single network.",
+      "file": "Client/UpdateNetwork/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNetwork",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.UpdateNetwork",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.UpdateNetworkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateNetworkOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateNetwork",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.UpdateNetwork",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateNfsShare_sync",
+      "title": "baremetalsolution UpdateNfsShare Sample",
+      "description": "UpdateNfsShare update details of a single NFS share.",
+      "file": "Client/UpdateNfsShare/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNfsShare",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.UpdateNfsShare",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.UpdateNfsShareRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateNfsShareOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateNfsShare",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.UpdateNfsShare",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateVolume_sync",
+      "title": "baremetalsolution UpdateVolume Sample",
+      "description": "UpdateVolume update details of a single storage volume.",
+      "file": "Client/UpdateVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVolume",
+        "fullName": "google.cloud.baremetalsolution.v2.Client.UpdateVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "baremetalsolutionpb.UpdateVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateVolumeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.baremetalsolution.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateVolume",
+          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.UpdateVolume",
+          "service": {
+            "shortName": "BareMetalSolution",
+            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

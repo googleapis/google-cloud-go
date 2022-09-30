@@ -59,7 +59,15 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 				if i := strings.Index(titleParts[0], "("); i > 0 {
 					titleParts[0] = titleParts[0][:i]
 				}
-				titleParts[0] = fmt.Sprintf("%s(%s)", titleParts[0], c.Package)
+
+				var breakChangeIndicator string
+				if strings.HasSuffix(titleParts[0], "!") {
+					// If the change is marked as breaking we need to move the
+					// bang to after the added scope.
+					titleParts[0] = titleParts[0][:len(titleParts[0])-1]
+					breakChangeIndicator = "!"
+				}
+				titleParts[0] = fmt.Sprintf("%s(%s)%s", titleParts[0], c.Package, breakChangeIndicator)
 			}
 			title = strings.Join(titleParts, ":")
 		}
@@ -234,6 +242,13 @@ func FileDiff(dir, filename string) (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(string(out)), nil
+}
+
+// CheckoutRef checks out the ref in the provided git project directory.
+func CheckoutRef(dir, ref string) error {
+	cmd := execv.Command("git", "checkout", ref)
+	cmd.Dir = dir
+	return cmd.Run()
 }
 
 // filesChanged returns a list of files changed in a commit for the provdied

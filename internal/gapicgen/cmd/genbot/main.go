@@ -44,6 +44,8 @@ func main() {
 	localMode := flag.Bool("local", strToBool(os.Getenv("GENBOT_LOCAL_MODE")), "Enables generating sources locally. This mode will not open any pull requests.")
 	forceAll := flag.Bool("forceAll", strToBool(os.Getenv("GENBOT_FORCE_ALL")), "Enables regenerating everything regardless of changes in googleapis.")
 
+	aliasMode := flag.Bool("alias-mode", strToBool(os.Getenv("GENBOT_ALIAS_MODE")), "Enables updating aliases.")
+
 	// flags for local mode
 	googleapisDir := flag.String("googleapis-dir", os.Getenv("GOOGLEAPIS_DIR"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	gocloudDir := flag.String("gocloud-dir", os.Getenv("GOCLOUD_DIR"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
@@ -53,6 +55,7 @@ func main() {
 	onlyGapics := flag.Bool("only-gapics", strToBool(os.Getenv("ONLY_GAPICS")), "Enabling stops regenerating genproto.")
 	regenOnly := flag.Bool("regen-only", strToBool(os.Getenv("REGEN_ONLY")), "Enabling means no vetting, manifest updates, or compilation.")
 	genModule := flag.Bool("generate-module", strToBool(os.Getenv("GENERATE_MODULE")), "Enabling means a new module will be generated for API being generated.")
+	genAlias := flag.Bool("generate-alias", strToBool(os.Getenv("GENERATE_ALIAS")), "Enabling means alias files will be generated.")
 
 	flag.Parse()
 
@@ -67,10 +70,22 @@ func main() {
 			regenOnly:       *regenOnly,
 			forceAll:        *forceAll,
 			genModule:       *genModule,
+			genAlias:        *genAlias,
 		}); err != nil {
 			log.Fatal(err)
 		}
 		return
+	} else if *aliasMode {
+		if err := genAliasMode(ctx, aliasConfig{
+			githubAccessToken: *githubAccessToken,
+			githubUsername:    *githubUsername,
+			githubName:        *githubName,
+			githubEmail:       *githubEmail,
+			gocloudDir:        *gocloudDir,
+			genprotoDir:       *genprotoDir,
+		}); err != nil {
+			log.Fatal(err)
+		}
 	}
 	if err := genBot(ctx, botConfig{
 		githubAccessToken: *githubAccessToken,

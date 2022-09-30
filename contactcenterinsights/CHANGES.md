@@ -1,5 +1,40 @@
 # Changes
 
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.2...contactcenterinsights/v1.2.3) (2022-08-23)
+
+
+### Documentation
+
+* **contactcenterinsights:** Updating comments chore: added LRO to API list ([7b01462](https://github.com/googleapis/google-cloud-go/commit/7b014626f07dd2974d6f72f926c2df1d25fa1f4a))
+
+## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.1...contactcenterinsights/v1.2.2) (2022-08-02)
+
+
+### Documentation
+
+* **contactcenterinsights:** Updating comments chore:remove LRO to API list ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.0...contactcenterinsights/v1.2.1) (2022-07-12)
+
+
+### Documentation
+
+* **contactcenterinsights:** Updating comments ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.1.0...contactcenterinsights/v1.2.0) (2022-02-23)
+
+
+### Features
+
+* **contactcenterinsights:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.0.0...contactcenterinsights/v1.1.0) (2022-02-14)
+
+
+### Features
+
+* **contactcenterinsights:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
 ## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v0.4.0...contactcenterinsights/v1.0.0) (2022-01-25)
 
 

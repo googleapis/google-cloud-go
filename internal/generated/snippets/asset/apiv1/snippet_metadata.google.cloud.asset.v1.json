@@ -1,0 +1,979 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/asset/apiv1",
+    "version": "1.6.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.asset.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeIamPolicy_sync",
+      "title": "cloudasset AnalyzeIamPolicy Sample",
+      "description": "AnalyzeIamPolicy analyzes IAM policies to answer which identities have what accesses on\nwhich resources.",
+      "file": "Client/AnalyzeIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeIamPolicy",
+        "fullName": "google.cloud.asset.v1.Client.AnalyzeIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.AnalyzeIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.AnalyzeIamPolicyResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeIamPolicy",
+          "fullName": "google.cloud.asset.v1.AssetService.AnalyzeIamPolicy",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeIamPolicyLongrunning_sync",
+      "title": "cloudasset AnalyzeIamPolicyLongrunning Sample",
+      "description": "AnalyzeIamPolicyLongrunning analyzes IAM policies asynchronously to answer which identities have what\naccesses on which resources, and writes the analysis results to a Google\nCloud Storage or a BigQuery destination. For Cloud Storage destination, the\noutput format is the JSON format that represents a\nAnalyzeIamPolicyResponse.\nThis method implements the\ngoogle.longrunning.Operation, which allows\nyou to track the operation status. We recommend intervals of at least 2\nseconds with exponential backoff retry to poll the operation result. The\nmetadata contains the metadata for the long-running operation.",
+      "file": "Client/AnalyzeIamPolicyLongrunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeIamPolicyLongrunning",
+        "fullName": "google.cloud.asset.v1.Client.AnalyzeIamPolicyLongrunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.AnalyzeIamPolicyLongrunningRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnalyzeIamPolicyLongrunningOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeIamPolicyLongrunning",
+          "fullName": "google.cloud.asset.v1.AssetService.AnalyzeIamPolicyLongrunning",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeMove_sync",
+      "title": "cloudasset AnalyzeMove Sample",
+      "description": "AnalyzeMove analyze moving a resource to a specified destination without kicking off\nthe actual move. The analysis is best effort depending on the user’s\npermissions of viewing different hierarchical policies and configurations.\nThe policies and configuration are subject to change before the actual\nresource migration takes place.",
+      "file": "Client/AnalyzeMove/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeMove",
+        "fullName": "google.cloud.asset.v1.Client.AnalyzeMove",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.AnalyzeMoveRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.AnalyzeMoveResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeMove",
+          "fullName": "google.cloud.asset.v1.AssetService.AnalyzeMove",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_BatchGetAssetsHistory_sync",
+      "title": "cloudasset BatchGetAssetsHistory Sample",
+      "description": "BatchGetAssetsHistory batch gets the update history of assets that overlap a time window.\nFor IAM_POLICY content, this API outputs history when the asset and its\nattached IAM POLICY both exist. This can create gaps in the output history.\nOtherwise, this API outputs history with asset in both non-delete or\ndeleted status.\nIf a specified asset does not exist, this API returns an INVALID_ARGUMENT\nerror.",
+      "file": "Client/BatchGetAssetsHistory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchGetAssetsHistory",
+        "fullName": "google.cloud.asset.v1.Client.BatchGetAssetsHistory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.BatchGetAssetsHistoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.BatchGetAssetsHistoryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchGetAssetsHistory",
+          "fullName": "google.cloud.asset.v1.AssetService.BatchGetAssetsHistory",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_BatchGetEffectiveIamPolicies_sync",
+      "title": "cloudasset BatchGetEffectiveIamPolicies Sample",
+      "description": "BatchGetEffectiveIamPolicies gets effective IAM policies for a batch of resources.",
+      "file": "Client/BatchGetEffectiveIamPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchGetEffectiveIamPolicies",
+        "fullName": "google.cloud.asset.v1.Client.BatchGetEffectiveIamPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.BatchGetEffectiveIamPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.BatchGetEffectiveIamPoliciesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchGetEffectiveIamPolicies",
+          "fullName": "google.cloud.asset.v1.AssetService.BatchGetEffectiveIamPolicies",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_CreateFeed_sync",
+      "title": "cloudasset CreateFeed Sample",
+      "description": "CreateFeed creates a feed in a parent project/folder/organization to listen to its\nasset updates.",
+      "file": "Client/CreateFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFeed",
+        "fullName": "google.cloud.asset.v1.Client.CreateFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.CreateFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.Feed",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateFeed",
+          "fullName": "google.cloud.asset.v1.AssetService.CreateFeed",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_CreateSavedQuery_sync",
+      "title": "cloudasset CreateSavedQuery Sample",
+      "description": "CreateSavedQuery creates a saved query in a parent project/folder/organization.",
+      "file": "Client/CreateSavedQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSavedQuery",
+        "fullName": "google.cloud.asset.v1.Client.CreateSavedQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.CreateSavedQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.SavedQuery",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateSavedQuery",
+          "fullName": "google.cloud.asset.v1.AssetService.CreateSavedQuery",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_DeleteFeed_sync",
+      "title": "cloudasset DeleteFeed Sample",
+      "description": "DeleteFeed deletes an asset feed.",
+      "file": "Client/DeleteFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFeed",
+        "fullName": "google.cloud.asset.v1.Client.DeleteFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.DeleteFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteFeed",
+          "fullName": "google.cloud.asset.v1.AssetService.DeleteFeed",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_DeleteSavedQuery_sync",
+      "title": "cloudasset DeleteSavedQuery Sample",
+      "description": "DeleteSavedQuery deletes a saved query.",
+      "file": "Client/DeleteSavedQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSavedQuery",
+        "fullName": "google.cloud.asset.v1.Client.DeleteSavedQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.DeleteSavedQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSavedQuery",
+          "fullName": "google.cloud.asset.v1.AssetService.DeleteSavedQuery",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_ExportAssets_sync",
+      "title": "cloudasset ExportAssets Sample",
+      "description": "ExportAssets exports assets with time and resource types to a given Cloud Storage\nlocation/BigQuery table. For Cloud Storage location destinations, the\noutput format is newline-delimited JSON. Each line represents a\ngoogle.cloud.asset.v1.Asset in the JSON\nformat; for BigQuery table destinations, the output table stores the fields\nin asset Protobuf as columns. This API implements the\ngoogle.longrunning.Operation API, which\nallows you to keep track of the export. We recommend intervals of at least\n2 seconds with exponential retry to poll the export operation result. For\nregular-size resource parent, the export operation usually finishes within\n5 minutes.",
+      "file": "Client/ExportAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportAssets",
+        "fullName": "google.cloud.asset.v1.Client.ExportAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.ExportAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportAssetsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportAssets",
+          "fullName": "google.cloud.asset.v1.AssetService.ExportAssets",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_GetFeed_sync",
+      "title": "cloudasset GetFeed Sample",
+      "description": "GetFeed gets details about an asset feed.",
+      "file": "Client/GetFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFeed",
+        "fullName": "google.cloud.asset.v1.Client.GetFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.GetFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.Feed",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "GetFeed",
+          "fullName": "google.cloud.asset.v1.AssetService.GetFeed",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_GetOperation_sync",
+      "title": "cloudasset GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.asset.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.asset.v1.AssetService.GetOperation",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_GetSavedQuery_sync",
+      "title": "cloudasset GetSavedQuery Sample",
+      "description": "GetSavedQuery gets details about a saved query.",
+      "file": "Client/GetSavedQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSavedQuery",
+        "fullName": "google.cloud.asset.v1.Client.GetSavedQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.GetSavedQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.SavedQuery",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSavedQuery",
+          "fullName": "google.cloud.asset.v1.AssetService.GetSavedQuery",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_ListAssets_sync",
+      "title": "cloudasset ListAssets Sample",
+      "description": "ListAssets lists assets with time and resource types and returns paged results in\nresponse.",
+      "file": "Client/ListAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAssets",
+        "fullName": "google.cloud.asset.v1.Client.ListAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.ListAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AssetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAssets",
+          "fullName": "google.cloud.asset.v1.AssetService.ListAssets",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_ListFeeds_sync",
+      "title": "cloudasset ListFeeds Sample",
+      "description": "ListFeeds lists all asset feeds in a parent project/folder/organization.",
+      "file": "Client/ListFeeds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFeeds",
+        "fullName": "google.cloud.asset.v1.Client.ListFeeds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.ListFeedsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.ListFeedsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "ListFeeds",
+          "fullName": "google.cloud.asset.v1.AssetService.ListFeeds",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_ListSavedQueries_sync",
+      "title": "cloudasset ListSavedQueries Sample",
+      "description": "ListSavedQueries lists all saved queries in a parent project/folder/organization.",
+      "file": "Client/ListSavedQueries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSavedQueries",
+        "fullName": "google.cloud.asset.v1.Client.ListSavedQueries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.ListSavedQueriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SavedQueryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSavedQueries",
+          "fullName": "google.cloud.asset.v1.AssetService.ListSavedQueries",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_QueryAssets_sync",
+      "title": "cloudasset QueryAssets Sample",
+      "description": "QueryAssets issue a job that queries assets using a SQL statement compatible with\nBigQuery Standard\nSQL (at http: //cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql).\n\nIf the query execution finishes within timeout and there’s no pagination,\nthe full query results will be returned in the QueryAssetsResponse.\n\nOtherwise, full query results can be obtained by issuing extra requests\nwith the job_reference from the a previous QueryAssets call.\n\nNote, the query result has approximately 10 GB limitation enforced by\nBigQuery\nhttps: //cloud.google.com/bigquery/docs/best-practices-performance-output (at https: //cloud.google.com/bigquery/docs/best-practices-performance-output),\nqueries return larger results will result in errors.",
+      "file": "Client/QueryAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryAssets",
+        "fullName": "google.cloud.asset.v1.Client.QueryAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.QueryAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.QueryAssetsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "QueryAssets",
+          "fullName": "google.cloud.asset.v1.AssetService.QueryAssets",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_SearchAllIamPolicies_sync",
+      "title": "cloudasset SearchAllIamPolicies Sample",
+      "description": "SearchAllIamPolicies searches all IAM policies within the specified scope, such as a project,\nfolder, or organization. The caller must be granted the\ncloudasset.assets.searchAllIamPolicies permission on the desired scope,\notherwise the request will be rejected.",
+      "file": "Client/SearchAllIamPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchAllIamPolicies",
+        "fullName": "google.cloud.asset.v1.Client.SearchAllIamPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.SearchAllIamPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IamPolicySearchResultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchAllIamPolicies",
+          "fullName": "google.cloud.asset.v1.AssetService.SearchAllIamPolicies",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_SearchAllResources_sync",
+      "title": "cloudasset SearchAllResources Sample",
+      "description": "SearchAllResources searches all Cloud resources within the specified scope, such as a project,\nfolder, or organization. The caller must be granted the\ncloudasset.assets.searchAllResources permission on the desired scope,\notherwise the request will be rejected.",
+      "file": "Client/SearchAllResources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchAllResources",
+        "fullName": "google.cloud.asset.v1.Client.SearchAllResources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.SearchAllResourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResourceSearchResultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchAllResources",
+          "fullName": "google.cloud.asset.v1.AssetService.SearchAllResources",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_UpdateFeed_sync",
+      "title": "cloudasset UpdateFeed Sample",
+      "description": "UpdateFeed updates an asset feed configuration.",
+      "file": "Client/UpdateFeed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFeed",
+        "fullName": "google.cloud.asset.v1.Client.UpdateFeed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.UpdateFeedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.Feed",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateFeed",
+          "fullName": "google.cloud.asset.v1.AssetService.UpdateFeed",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_UpdateSavedQuery_sync",
+      "title": "cloudasset UpdateSavedQuery Sample",
+      "description": "UpdateSavedQuery updates a saved query.",
+      "file": "Client/UpdateSavedQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSavedQuery",
+        "fullName": "google.cloud.asset.v1.Client.UpdateSavedQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.UpdateSavedQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "assetpb.SavedQuery",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSavedQuery",
+          "fullName": "google.cloud.asset.v1.AssetService.UpdateSavedQuery",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -17,24 +17,30 @@
 package osconfig
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	osconfigpb "cloud.google.com/go/osconfig/apiv1alpha/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
+	httptransport "google.golang.org/api/transport/http"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -50,6 +56,8 @@ type OsConfigZonalCallOptions struct {
 	DeleteOSPolicyAssignment          []gax.CallOption
 	GetInstanceOSPoliciesCompliance   []gax.CallOption
 	ListInstanceOSPoliciesCompliances []gax.CallOption
+	GetOSPolicyAssignmentReport       []gax.CallOption
+	ListOSPolicyAssignmentReports     []gax.CallOption
 	GetInventory                      []gax.CallOption
 	ListInventories                   []gax.CallOption
 	GetVulnerabilityReport            []gax.CallOption
@@ -158,6 +166,28 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 				})
 			}),
 		},
+		GetOSPolicyAssignmentReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListOSPolicyAssignmentReports: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetInventory: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -205,7 +235,152 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 	}
 }
 
-// internalOsConfigZonalClient is an interface that defines the methods availaible from OS Config API.
+func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
+	return &OsConfigZonalCallOptions{
+		CreateOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListOSPolicyAssignments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListOSPolicyAssignmentRevisions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetInstanceOSPoliciesCompliance: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListInstanceOSPoliciesCompliances: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetOSPolicyAssignmentReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListOSPolicyAssignmentReports: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetInventory: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListInventories: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetVulnerabilityReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListVulnerabilityReports: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+	}
+}
+
+// internalOsConfigZonalClient is an interface that defines the methods available from OS Config API.
 type internalOsConfigZonalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -221,6 +396,8 @@ type internalOsConfigZonalClient interface {
 	DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation
 	GetInstanceOSPoliciesCompliance(context.Context, *osconfigpb.GetInstanceOSPoliciesComplianceRequest, ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error)
 	ListInstanceOSPoliciesCompliances(context.Context, *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, ...gax.CallOption) *InstanceOSPoliciesComplianceIterator
+	GetOSPolicyAssignmentReport(context.Context, *osconfigpb.GetOSPolicyAssignmentReportRequest, ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error)
+	ListOSPolicyAssignmentReports(context.Context, *osconfigpb.ListOSPolicyAssignmentReportsRequest, ...gax.CallOption) *OSPolicyAssignmentReportIterator
 	GetInventory(context.Context, *osconfigpb.GetInventoryRequest, ...gax.CallOption) (*osconfigpb.Inventory, error)
 	ListInventories(context.Context, *osconfigpb.ListInventoriesRequest, ...gax.CallOption) *InventoryIterator
 	GetVulnerabilityReport(context.Context, *osconfigpb.GetVulnerabilityReportRequest, ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error)
@@ -230,7 +407,7 @@ type internalOsConfigZonalClient interface {
 // OsConfigZonalClient is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -264,7 +441,8 @@ func (c *OsConfigZonalClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *OsConfigZonalClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -352,14 +530,30 @@ func (c *OsConfigZonalClient) DeleteOSPolicyAssignmentOperation(name string) *De
 
 // GetInstanceOSPoliciesCompliance get OS policies compliance data for the specified Compute Engine VM
 // instance.
+//
+// Deprecated: GetInstanceOSPoliciesCompliance may be removed in a future version.
 func (c *OsConfigZonalClient) GetInstanceOSPoliciesCompliance(ctx context.Context, req *osconfigpb.GetInstanceOSPoliciesComplianceRequest, opts ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error) {
 	return c.internalClient.GetInstanceOSPoliciesCompliance(ctx, req, opts...)
 }
 
 // ListInstanceOSPoliciesCompliances list OS policies compliance data for all Compute Engine VM instances in the
 // specified zone.
+//
+// Deprecated: ListInstanceOSPoliciesCompliances may be removed in a future version.
 func (c *OsConfigZonalClient) ListInstanceOSPoliciesCompliances(ctx context.Context, req *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, opts ...gax.CallOption) *InstanceOSPoliciesComplianceIterator {
 	return c.internalClient.ListInstanceOSPoliciesCompliances(ctx, req, opts...)
+}
+
+// GetOSPolicyAssignmentReport get the OS policy asssignment report for the specified Compute Engine VM
+// instance.
+func (c *OsConfigZonalClient) GetOSPolicyAssignmentReport(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentReportRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error) {
+	return c.internalClient.GetOSPolicyAssignmentReport(ctx, req, opts...)
+}
+
+// ListOSPolicyAssignmentReports list OS policy asssignment reports for all Compute Engine VM instances in
+// the specified zone.
+func (c *OsConfigZonalClient) ListOSPolicyAssignmentReports(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentReportsRequest, opts ...gax.CallOption) *OSPolicyAssignmentReportIterator {
+	return c.internalClient.ListOSPolicyAssignmentReports(ctx, req, opts...)
 }
 
 // GetInventory get inventory data for the specified VM instance. If the VM has no
@@ -412,7 +606,7 @@ type osConfigZonalGRPCClient struct {
 // NewOsConfigZonalClient creates a new os config zonal service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -463,7 +657,8 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *osConfigZonalGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -473,7 +668,7 @@ func (c *osConfigZonalGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *osConfigZonalGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -483,6 +678,92 @@ func (c *osConfigZonalGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type osConfigZonalRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing OsConfigZonalClient
+	CallOptions **OsConfigZonalCallOptions
+}
+
+// NewOsConfigZonalRESTClient creates a new os config zonal service rest client.
+//
+// # Zonal OS Config API
+//
+// The OS Config service is the server-side component that allows users to
+// manage package installations and patch jobs for Compute Engine VM instances.
+func NewOsConfigZonalRESTClient(ctx context.Context, opts ...option.ClientOption) (*OsConfigZonalClient, error) {
+	clientOpts := append(defaultOsConfigZonalRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultOsConfigZonalRESTCallOptions()
+	c := &osConfigZonalRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &OsConfigZonalClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultOsConfigZonalRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://osconfig.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://osconfig.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://osconfig.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *osConfigZonalRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *osConfigZonalRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *osConfigZonalRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -490,6 +771,7 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateOSPolicyAssignment[0:len((*c.CallOptions).CreateOSPolicyAssignment):len((*c.CallOptions).CreateOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
@@ -513,6 +795,7 @@ func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "os_policy_assignment.name", url.QueryEscape(req.GetOsPolicyAssignment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateOSPolicyAssignment[0:len((*c.CallOptions).UpdateOSPolicyAssignment):len((*c.CallOptions).UpdateOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
@@ -536,6 +819,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOSPolicyAssignment[0:len((*c.CallOptions).GetOSPolicyAssignment):len((*c.CallOptions).GetOSPolicyAssignment)], opts...)
 	var resp *osconfigpb.OSPolicyAssignment
@@ -552,6 +836,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req
 
 func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOSPolicyAssignments[0:len((*c.CallOptions).ListOSPolicyAssignments):len((*c.CallOptions).ListOSPolicyAssignments)], opts...)
 	it := &OSPolicyAssignmentIterator{}
@@ -596,6 +881,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, r
 
 func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOSPolicyAssignmentRevisions[0:len((*c.CallOptions).ListOSPolicyAssignmentRevisions):len((*c.CallOptions).ListOSPolicyAssignmentRevisions)], opts...)
 	it := &OSPolicyAssignmentIterator{}
@@ -645,6 +931,7 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteOSPolicyAssignment[0:len((*c.CallOptions).DeleteOSPolicyAssignment):len((*c.CallOptions).DeleteOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
@@ -668,6 +955,7 @@ func (c *osConfigZonalGRPCClient) GetInstanceOSPoliciesCompliance(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetInstanceOSPoliciesCompliance[0:len((*c.CallOptions).GetInstanceOSPoliciesCompliance):len((*c.CallOptions).GetInstanceOSPoliciesCompliance)], opts...)
 	var resp *osconfigpb.InstanceOSPoliciesCompliance
@@ -684,6 +972,7 @@ func (c *osConfigZonalGRPCClient) GetInstanceOSPoliciesCompliance(ctx context.Co
 
 func (c *osConfigZonalGRPCClient) ListInstanceOSPoliciesCompliances(ctx context.Context, req *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, opts ...gax.CallOption) *InstanceOSPoliciesComplianceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListInstanceOSPoliciesCompliances[0:len((*c.CallOptions).ListInstanceOSPoliciesCompliances):len((*c.CallOptions).ListInstanceOSPoliciesCompliances)], opts...)
 	it := &InstanceOSPoliciesComplianceIterator{}
@@ -726,6 +1015,73 @@ func (c *osConfigZonalGRPCClient) ListInstanceOSPoliciesCompliances(ctx context.
 	return it
 }
 
+func (c *osConfigZonalGRPCClient) GetOSPolicyAssignmentReport(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentReportRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOSPolicyAssignmentReport[0:len((*c.CallOptions).GetOSPolicyAssignmentReport):len((*c.CallOptions).GetOSPolicyAssignmentReport)], opts...)
+	var resp *osconfigpb.OSPolicyAssignmentReport
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.osConfigZonalClient.GetOSPolicyAssignmentReport(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentReports(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentReportsRequest, opts ...gax.CallOption) *OSPolicyAssignmentReportIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOSPolicyAssignmentReports[0:len((*c.CallOptions).ListOSPolicyAssignmentReports):len((*c.CallOptions).ListOSPolicyAssignmentReports)], opts...)
+	it := &OSPolicyAssignmentReportIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentReportsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignmentReport, string, error) {
+		resp := &osconfigpb.ListOSPolicyAssignmentReportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.osConfigZonalClient.ListOSPolicyAssignmentReports(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOsPolicyAssignmentReports(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfigpb.GetInventoryRequest, opts ...gax.CallOption) (*osconfigpb.Inventory, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -733,6 +1089,7 @@ func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetInventory[0:len((*c.CallOptions).GetInventory):len((*c.CallOptions).GetInventory)], opts...)
 	var resp *osconfigpb.Inventory
@@ -749,6 +1106,7 @@ func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfi
 
 func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osconfigpb.ListInventoriesRequest, opts ...gax.CallOption) *InventoryIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListInventories[0:len((*c.CallOptions).ListInventories):len((*c.CallOptions).ListInventories)], opts...)
 	it := &InventoryIterator{}
@@ -798,6 +1156,7 @@ func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVulnerabilityReport[0:len((*c.CallOptions).GetVulnerabilityReport):len((*c.CallOptions).GetVulnerabilityReport)], opts...)
 	var resp *osconfigpb.VulnerabilityReport
@@ -814,6 +1173,7 @@ func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, re
 
 func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, req *osconfigpb.ListVulnerabilityReportsRequest, opts ...gax.CallOption) *VulnerabilityReportIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListVulnerabilityReports[0:len((*c.CallOptions).ListVulnerabilityReports):len((*c.CallOptions).ListVulnerabilityReports)], opts...)
 	it := &VulnerabilityReportIterator{}
@@ -856,9 +1216,1063 @@ func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, 
 	return it
 }
 
+// CreateOSPolicyAssignment create an OS policy assignment.
+//
+// This method also creates the first revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *osConfigZonalRESTClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOsPolicyAssignment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/osPolicyAssignments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("osPolicyAssignmentId", fmt.Sprintf("%v", req.GetOsPolicyAssignmentId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	return &CreateOSPolicyAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateOSPolicyAssignment update an existing OS policy assignment.
+//
+// This method creates a new revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignment(ctx context.Context, req *osconfigpb.UpdateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOsPolicyAssignment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetOsPolicyAssignment().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "os_policy_assignment.name", url.QueryEscape(req.GetOsPolicyAssignment().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	return &UpdateOSPolicyAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetOSPolicyAssignment retrieve an existing OS policy assignment.
+//
+// This method always returns the latest revision. In order to retrieve a
+// previous revision of the assignment, also provide the revision ID in the
+// name parameter.
+func (c *osConfigZonalRESTClient) GetOSPolicyAssignment(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOSPolicyAssignment[0:len((*c.CallOptions).GetOSPolicyAssignment):len((*c.CallOptions).GetOSPolicyAssignment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &osconfigpb.OSPolicyAssignment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOSPolicyAssignments list the OS policy assignments under the parent resource.
+//
+// For each OS policy assignment, the latest revision is returned.
+func (c *osConfigZonalRESTClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	it := &OSPolicyAssignmentIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
+		resp := &osconfigpb.ListOSPolicyAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/osPolicyAssignments", req.GetParent())
+
+		params := url.Values{}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOsPolicyAssignments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListOSPolicyAssignmentRevisions list the OS policy assignment revisions for a given OS policy assignment.
+func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	it := &OSPolicyAssignmentIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentRevisionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
+		resp := &osconfigpb.ListOSPolicyAssignmentRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v:listRevisions", req.GetName())
+
+		params := url.Values{}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOsPolicyAssignments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteOSPolicyAssignment delete the OS policy assignment.
+//
+// This method creates a new revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// If the LRO completes and is not cancelled, all revisions associated with
+// the OS policy assignment are deleted.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignment(ctx context.Context, req *osconfigpb.DeleteOSPolicyAssignmentRequest, opts ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	return &DeleteOSPolicyAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetInstanceOSPoliciesCompliance get OS policies compliance data for the specified Compute Engine VM
+// instance.
+//
+// Deprecated: GetInstanceOSPoliciesCompliance may be removed in a future version.
+func (c *osConfigZonalRESTClient) GetInstanceOSPoliciesCompliance(ctx context.Context, req *osconfigpb.GetInstanceOSPoliciesComplianceRequest, opts ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetInstanceOSPoliciesCompliance[0:len((*c.CallOptions).GetInstanceOSPoliciesCompliance):len((*c.CallOptions).GetInstanceOSPoliciesCompliance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &osconfigpb.InstanceOSPoliciesCompliance{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListInstanceOSPoliciesCompliances list OS policies compliance data for all Compute Engine VM instances in the
+// specified zone.
+//
+// Deprecated: ListInstanceOSPoliciesCompliances may be removed in a future version.
+func (c *osConfigZonalRESTClient) ListInstanceOSPoliciesCompliances(ctx context.Context, req *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, opts ...gax.CallOption) *InstanceOSPoliciesComplianceIterator {
+	it := &InstanceOSPoliciesComplianceIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListInstanceOSPoliciesCompliancesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.InstanceOSPoliciesCompliance, string, error) {
+		resp := &osconfigpb.ListInstanceOSPoliciesCompliancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/instanceOSPoliciesCompliances", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetInstanceOsPoliciesCompliances(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetOSPolicyAssignmentReport get the OS policy asssignment report for the specified Compute Engine VM
+// instance.
+func (c *osConfigZonalRESTClient) GetOSPolicyAssignmentReport(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentReportRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOSPolicyAssignmentReport[0:len((*c.CallOptions).GetOSPolicyAssignmentReport):len((*c.CallOptions).GetOSPolicyAssignmentReport)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &osconfigpb.OSPolicyAssignmentReport{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOSPolicyAssignmentReports list OS policy asssignment reports for all Compute Engine VM instances in
+// the specified zone.
+func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentReports(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentReportsRequest, opts ...gax.CallOption) *OSPolicyAssignmentReportIterator {
+	it := &OSPolicyAssignmentReportIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentReportsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignmentReport, string, error) {
+		resp := &osconfigpb.ListOSPolicyAssignmentReportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/reports", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOsPolicyAssignmentReports(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetInventory get inventory data for the specified VM instance. If the VM has no
+// associated inventory, the message NOT_FOUND is returned.
+func (c *osConfigZonalRESTClient) GetInventory(ctx context.Context, req *osconfigpb.GetInventoryRequest, opts ...gax.CallOption) (*osconfigpb.Inventory, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetInventory[0:len((*c.CallOptions).GetInventory):len((*c.CallOptions).GetInventory)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &osconfigpb.Inventory{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListInventories list inventory data for all VM instances in the specified zone.
+func (c *osConfigZonalRESTClient) ListInventories(ctx context.Context, req *osconfigpb.ListInventoriesRequest, opts ...gax.CallOption) *InventoryIterator {
+	it := &InventoryIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListInventoriesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.Inventory, string, error) {
+		resp := &osconfigpb.ListInventoriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/inventories", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetInventories(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetVulnerabilityReport gets the vulnerability report for the specified VM instance. Only VMs with
+// inventory data have vulnerability reports associated with them.
+func (c *osConfigZonalRESTClient) GetVulnerabilityReport(ctx context.Context, req *osconfigpb.GetVulnerabilityReportRequest, opts ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetVulnerabilityReport[0:len((*c.CallOptions).GetVulnerabilityReport):len((*c.CallOptions).GetVulnerabilityReport)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &osconfigpb.VulnerabilityReport{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListVulnerabilityReports list vulnerability reports for all VM instances in the specified zone.
+func (c *osConfigZonalRESTClient) ListVulnerabilityReports(ctx context.Context, req *osconfigpb.ListVulnerabilityReportsRequest, opts ...gax.CallOption) *VulnerabilityReportIterator {
+	it := &VulnerabilityReportIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListVulnerabilityReportsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.VulnerabilityReport, string, error) {
+		resp := &osconfigpb.ListVulnerabilityReportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/vulnerabilityReports", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetVulnerabilityReports(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateOSPolicyAssignmentOperation manages a long-running operation from CreateOSPolicyAssignment.
 type CreateOSPolicyAssignmentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateOSPolicyAssignmentOperation returns a new CreateOSPolicyAssignmentOperation from a given name.
@@ -869,10 +2283,21 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignmentOperation(name string)
 	}
 }
 
+// CreateOSPolicyAssignmentOperation returns a new CreateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created CreateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *osConfigZonalRESTClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
+	override := fmt.Sprintf("/v1alpha/%s", name)
+	return &CreateOSPolicyAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp osconfigpb.OSPolicyAssignment
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -890,6 +2315,7 @@ func (op *CreateOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...g
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateOSPolicyAssignmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp osconfigpb.OSPolicyAssignment
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -927,7 +2353,8 @@ func (op *CreateOSPolicyAssignmentOperation) Name() string {
 
 // DeleteOSPolicyAssignmentOperation manages a long-running operation from DeleteOSPolicyAssignment.
 type DeleteOSPolicyAssignmentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteOSPolicyAssignmentOperation returns a new DeleteOSPolicyAssignmentOperation from a given name.
@@ -938,10 +2365,21 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignmentOperation(name string)
 	}
 }
 
+// DeleteOSPolicyAssignmentOperation returns a new DeleteOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created DeleteOSPolicyAssignmentOperation, possibly from a different process.
+func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
+	override := fmt.Sprintf("/v1alpha/%s", name)
+	return &DeleteOSPolicyAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -955,6 +2393,7 @@ func (op *DeleteOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...g
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteOSPolicyAssignmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -985,7 +2424,8 @@ func (op *DeleteOSPolicyAssignmentOperation) Name() string {
 
 // UpdateOSPolicyAssignmentOperation manages a long-running operation from UpdateOSPolicyAssignment.
 type UpdateOSPolicyAssignmentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateOSPolicyAssignmentOperation returns a new UpdateOSPolicyAssignmentOperation from a given name.
@@ -996,10 +2436,21 @@ func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignmentOperation(name string)
 	}
 }
 
+// UpdateOSPolicyAssignmentOperation returns a new UpdateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created UpdateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
+	override := fmt.Sprintf("/v1alpha/%s", name)
+	return &UpdateOSPolicyAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp osconfigpb.OSPolicyAssignment
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1017,6 +2468,7 @@ func (op *UpdateOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...g
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateOSPolicyAssignmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp osconfigpb.OSPolicyAssignment
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1188,6 +2640,53 @@ func (it *OSPolicyAssignmentIterator) bufLen() int {
 }
 
 func (it *OSPolicyAssignmentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OSPolicyAssignmentReportIterator manages a stream of *osconfigpb.OSPolicyAssignmentReport.
+type OSPolicyAssignmentReportIterator struct {
+	items    []*osconfigpb.OSPolicyAssignmentReport
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.OSPolicyAssignmentReport, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OSPolicyAssignmentReportIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OSPolicyAssignmentReportIterator) Next() (*osconfigpb.OSPolicyAssignmentReport, error) {
+	var item *osconfigpb.OSPolicyAssignmentReport
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OSPolicyAssignmentReportIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OSPolicyAssignmentReportIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

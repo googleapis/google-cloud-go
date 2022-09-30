@@ -47,7 +47,7 @@ type defaultRetryer struct {
 }
 
 // Logic originally from
-// https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/google-cloud-clients/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StatusUtil.java
+// https://github.com/googleapis/java-pubsub/blob/main/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StatusUtil.java
 func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
 	s, ok := status.FromError(err)
 	if !ok { // includes io.EOF, normal stream close, which causes us to reopen
@@ -89,5 +89,44 @@ func (r *streamingPullRetryer) Retry(err error) (pause time.Duration, shouldRetr
 		return 0, false
 	default:
 		return r.defaultRetryer.Retry(err)
+	}
+}
+
+type publishRetryer struct {
+	defaultRetryer gax.Retryer
+}
+
+func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+	s, ok := status.FromError(err)
+	if !ok {
+		return r.defaultRetryer.Retry(err)
+	}
+	if s.Code() == codes.Internal && strings.Contains(s.Message(), "string field contains invalid UTF-8") {
+		return 0, false
+	}
+	return r.defaultRetryer.Retry(err)
+}
+
+var (
+	exactlyOnceDeliveryTemporaryRetryErrors = map[codes.Code]struct{}{
+		codes.DeadlineExceeded:  {},
+		codes.ResourceExhausted: {},
+		codes.Aborted:           {},
+		codes.Internal:          {},
+		codes.Unavailable:       {},
+	}
+)
+
+// contains checks if grpc code v is in t, a set of retryable error codes.
+func contains(v codes.Code, t map[codes.Code]struct{}) bool {
+	_, ok := t[v]
+	return ok
+}
+
+func newExactlyOnceBackoff() gax.Backoff {
+	return gax.Backoff{
+		Initial:    1 * time.Second,
+		Max:        64 * time.Second,
+		Multiplier: 2,
 	}
 }

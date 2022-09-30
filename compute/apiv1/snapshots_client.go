@@ -45,13 +45,27 @@ type SnapshotsCallOptions struct {
 	Delete             []gax.CallOption
 	Get                []gax.CallOption
 	GetIamPolicy       []gax.CallOption
+	Insert             []gax.CallOption
 	List               []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	SetLabels          []gax.CallOption
 	TestIamPermissions []gax.CallOption
 }
 
-// internalSnapshotsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultSnapshotsRESTCallOptions() *SnapshotsCallOptions {
+	return &SnapshotsCallOptions{
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		SetLabels:          []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalSnapshotsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalSnapshotsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -59,6 +73,7 @@ type internalSnapshotsClient interface {
 	Delete(context.Context, *computepb.DeleteSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSnapshotRequest, ...gax.CallOption) (*computepb.Snapshot, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicySnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
+	Insert(context.Context, *computepb.InsertSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSnapshotsRequest, ...gax.CallOption) *SnapshotIterator
 	SetIamPolicy(context.Context, *computepb.SetIamPolicySnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetLabels(context.Context, *computepb.SetLabelsSnapshotRequest, ...gax.CallOption) (*Operation, error)
@@ -94,7 +109,8 @@ func (c *SnapshotsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SnapshotsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -112,6 +128,11 @@ func (c *SnapshotsClient) Get(ctx context.Context, req *computepb.GetSnapshotReq
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *SnapshotsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// Insert creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
+func (c *SnapshotsClient) Insert(ctx context.Context, req *computepb.InsertSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Insert(ctx, req, opts...)
 }
 
 // List retrieves the list of Snapshot resources contained within the specified project.
@@ -147,6 +168,9 @@ type snapshotsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing SnapshotsClient
+	CallOptions **SnapshotsCallOptions
 }
 
 // NewSnapshotsRESTClient creates a new snapshots rest client.
@@ -159,9 +183,11 @@ func NewSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		return nil, err
 	}
 
+	callOpts := defaultSnapshotsRESTCallOptions()
 	c := &snapshotsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -175,7 +201,7 @@ func NewSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 	}
 	c.operationClient = opC
 
-	return &SnapshotsClient{internalClient: c, CallOptions: &SnapshotsCallOptions{}}, nil
+	return &SnapshotsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultSnapshotsRESTClientOptions() []option.ClientOption {
@@ -192,7 +218,7 @@ func defaultSnapshotsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *snapshotsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -209,14 +235,17 @@ func (c *snapshotsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *snapshotsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
 // Delete deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.
 func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v", req.GetProject(), req.GetSnapshot())
 
 	params := url.Values{}
@@ -227,10 +256,16 @@ func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteS
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "snapshot", url.QueryEscape(req.GetSnapshot())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -274,14 +309,23 @@ func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteS
 
 // Get returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request.
 func (c *snapshotsRESTClient) Get(ctx context.Context, req *computepb.GetSnapshotRequest, opts ...gax.CallOption) (*computepb.Snapshot, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v", req.GetProject(), req.GetSnapshot())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "snapshot", url.QueryEscape(req.GetSnapshot())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Snapshot{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -318,7 +362,10 @@ func (c *snapshotsRESTClient) Get(ctx context.Context, req *computepb.GetSnapsho
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
 	params := url.Values{}
@@ -329,10 +376,16 @@ func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -367,6 +420,80 @@ func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 	return resp, nil
 }
 
+// Insert creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
+func (c *snapshotsRESTClient) Insert(ctx context.Context, req *computepb.InsertSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetSnapshotResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots", req.GetProject())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
 // List retrieves the list of Snapshot resources contained within the specified project.
 func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
@@ -382,7 +509,10 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots", req.GetProject())
 
 		params := url.Values{}
@@ -407,6 +537,9 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -466,14 +599,23 @@ func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -517,14 +659,23 @@ func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v/setLabels", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -575,14 +726,23 @@ func (c *snapshotsRESTClient) TestIamPermissions(ctx context.Context, req *compu
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err

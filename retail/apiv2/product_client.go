@@ -51,6 +51,10 @@ type ProductCallOptions struct {
 	SetInventory            []gax.CallOption
 	AddFulfillmentPlaces    []gax.CallOption
 	RemoveFulfillmentPlaces []gax.CallOption
+	AddLocalInventories     []gax.CallOption
+	RemoveLocalInventories  []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
 func defaultProductGRPCClientOptions() []option.ClientOption {
@@ -175,10 +179,47 @@ func defaultProductCallOptions() *ProductCallOptions {
 				})
 			}),
 		},
+		AddLocalInventories: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RemoveLocalInventories: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{},
+		ListOperations: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        300000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
-// internalProductClient is an interface that defines the methods availaible from Retail API.
+// internalProductClient is an interface that defines the methods available from Retail API.
 type internalProductClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -196,6 +237,12 @@ type internalProductClient interface {
 	AddFulfillmentPlacesOperation(name string) *AddFulfillmentPlacesOperation
 	RemoveFulfillmentPlaces(context.Context, *retailpb.RemoveFulfillmentPlacesRequest, ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error)
 	RemoveFulfillmentPlacesOperation(name string) *RemoveFulfillmentPlacesOperation
+	AddLocalInventories(context.Context, *retailpb.AddLocalInventoriesRequest, ...gax.CallOption) (*AddLocalInventoriesOperation, error)
+	AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation
+	RemoveLocalInventories(context.Context, *retailpb.RemoveLocalInventoriesRequest, ...gax.CallOption) (*RemoveLocalInventoriesOperation, error)
+	RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // ProductClient is a client for interacting with Retail API.
@@ -233,7 +280,8 @@ func (c *ProductClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ProductClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -265,7 +313,7 @@ func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteP
 
 // ImportProducts bulk import of multiple Products.
 //
-// Request processing may be synchronous. No partial updating is supported.
+// Request processing may be synchronous.
 // Non-existing items are created.
 //
 // Note that it is possible for a subset of the
@@ -290,36 +338,46 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // enqueued and processed downstream. As a consequence, when a response is
 // returned, updates are not immediately manifested in the
 // Product queried by
-// GetProduct or
-// ListProducts.
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
 //
 // When inventory is updated with
-// CreateProduct and
-// UpdateProduct, the
-// specified inventory field value(s) will overwrite any existing value(s)
+// ProductService.CreateProduct
+// and
+// ProductService.UpdateProduct,
+// the specified inventory field value(s) will overwrite any existing value(s)
 // while ignoring the last update time for this field. Furthermore, the last
 // update time for the specified inventory fields will be overwritten to the
 // time of the
-// CreateProduct or
-// UpdateProduct
+// ProductService.CreateProduct
+// or
+// ProductService.UpdateProduct
 // request.
 //
 // If no inventory fields are set in
 // CreateProductRequest.product,
 // then any pre-existing inventory information for this product will be used.
 //
-// If no inventory fields are set in UpdateProductRequest.set_mask,
+// If no inventory fields are set in
+// SetInventoryRequest.set_mask,
 // then any existing inventory information will be preserved.
 //
 // Pre-existing inventory information can only be updated with
-// SetInventory,
-// AddFulfillmentPlaces,
+// ProductService.SetInventory,
+// ProductService.AddFulfillmentPlaces,
 // and
-// RemoveFulfillmentPlaces.
+// ProductService.RemoveFulfillmentPlaces.
+//
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
+// Please enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	return c.internalClient.SetInventory(ctx, req, opts...)
 }
@@ -339,12 +397,19 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 // enqueued and processed downstream. As a consequence, when a response is
 // returned, the added place IDs are not immediately manifested in the
 // Product queried by
-// GetProduct or
-// ListProducts.
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
+// Please enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	return c.internalClient.AddFulfillmentPlaces(ctx, req, opts...)
 }
@@ -364,12 +429,19 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 // enqueued and processed downstream. As a consequence, when a response is
 // returned, the removed place IDs are not immediately manifested in the
 // Product queried by
-// GetProduct or
-// ListProducts.
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
+// Please enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	return c.internalClient.RemoveFulfillmentPlaces(ctx, req, opts...)
 }
@@ -378,6 +450,92 @@ func (c *ProductClient) RemoveFulfillmentPlaces(ctx context.Context, req *retail
 // The name must be that of a previously created RemoveFulfillmentPlacesOperation, possibly from a different process.
 func (c *ProductClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFulfillmentPlacesOperation {
 	return c.internalClient.RemoveFulfillmentPlacesOperation(name)
+}
+
+// AddLocalInventories updates local inventory information for a
+// Product at a list of places, while
+// respecting the last update timestamps of each inventory field.
+//
+// This process is asynchronous and does not require the
+// Product to exist before updating
+// inventory information. If the request is valid, the update will be enqueued
+// and processed downstream. As a consequence, when a response is returned,
+// updates are not immediately manifested in the
+// Product queried by
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// Local inventory information can only be modified using this method.
+// ProductService.CreateProduct
+// and
+// ProductService.UpdateProduct
+// has no effect on local inventories.
+//
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
+//
+// This feature is only available for users who have Retail Search enabled.
+// Please enable Retail Search on Cloud Console before using this feature.
+func (c *ProductClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
+	return c.internalClient.AddLocalInventories(ctx, req, opts...)
+}
+
+// AddLocalInventoriesOperation returns a new AddLocalInventoriesOperation from a given name.
+// The name must be that of a previously created AddLocalInventoriesOperation, possibly from a different process.
+func (c *ProductClient) AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation {
+	return c.internalClient.AddLocalInventoriesOperation(name)
+}
+
+// RemoveLocalInventories remove local inventory information for a
+// Product at a list of places at a removal
+// timestamp.
+//
+// This process is asynchronous. If the request is valid, the removal will be
+// enqueued and processed downstream. As a consequence, when a response is
+// returned, removals are not immediately manifested in the
+// Product queried by
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// Local inventory information can only be removed using this method.
+// ProductService.CreateProduct
+// and
+// ProductService.UpdateProduct
+// has no effect on local inventories.
+//
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
+//
+// This feature is only available for users who have Retail Search enabled.
+// Please enable Retail Search on Cloud Console before using this feature.
+func (c *ProductClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
+	return c.internalClient.RemoveLocalInventories(ctx, req, opts...)
+}
+
+// RemoveLocalInventoriesOperation returns a new RemoveLocalInventoriesOperation from a given name.
+// The name must be that of a previously created RemoveLocalInventoriesOperation, possibly from a different process.
+func (c *ProductClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
+	return c.internalClient.RemoveLocalInventoriesOperation(name)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ProductClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *ProductClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // productGRPCClient is a client for interacting with Retail API over gRPC transport.
@@ -400,6 +558,8 @@ type productGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -436,6 +596,7 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 		disableDeadlines: disableDeadlines,
 		productClient:    retailpb.NewProductServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -457,7 +618,8 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *productGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -467,7 +629,7 @@ func (c *productGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -484,6 +646,7 @@ func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	var resp *retailpb.Product
@@ -505,6 +668,7 @@ func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *retailpb.Product
@@ -521,6 +685,7 @@ func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 
 func (c *productGRPCClient) ListProducts(ctx context.Context, req *retailpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
@@ -570,6 +735,7 @@ func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	var resp *retailpb.Product
@@ -591,6 +757,7 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -608,6 +775,7 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportProducts[0:len((*c.CallOptions).ImportProducts):len((*c.CallOptions).ImportProducts)], opts...)
 	var resp *longrunningpb.Operation
@@ -631,6 +799,7 @@ func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetI
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "inventory.name", url.QueryEscape(req.GetInventory().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetInventory[0:len((*c.CallOptions).SetInventory):len((*c.CallOptions).SetInventory)], opts...)
 	var resp *longrunningpb.Operation
@@ -654,6 +823,7 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddFulfillmentPlaces[0:len((*c.CallOptions).AddFulfillmentPlaces):len((*c.CallOptions).AddFulfillmentPlaces)], opts...)
 	var resp *longrunningpb.Operation
@@ -677,6 +847,7 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RemoveFulfillmentPlaces[0:len((*c.CallOptions).RemoveFulfillmentPlaces):len((*c.CallOptions).RemoveFulfillmentPlaces)], opts...)
 	var resp *longrunningpb.Operation
@@ -691,6 +862,116 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	return &RemoveFulfillmentPlacesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AddLocalInventories[0:len((*c.CallOptions).AddLocalInventories):len((*c.CallOptions).AddLocalInventories)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.productClient.AddLocalInventories(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AddLocalInventoriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RemoveLocalInventories[0:len((*c.CallOptions).RemoveLocalInventories):len((*c.CallOptions).RemoveLocalInventories)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.productClient.RemoveLocalInventories(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RemoveLocalInventoriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *productGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *productGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // AddFulfillmentPlacesOperation manages a long-running operation from AddFulfillmentPlaces.
@@ -759,6 +1040,75 @@ func (op *AddFulfillmentPlacesOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *AddFulfillmentPlacesOperation) Name() string {
+	return op.lro.Name()
+}
+
+// AddLocalInventoriesOperation manages a long-running operation from AddLocalInventories.
+type AddLocalInventoriesOperation struct {
+	lro *longrunning.Operation
+}
+
+// AddLocalInventoriesOperation returns a new AddLocalInventoriesOperation from a given name.
+// The name must be that of a previously created AddLocalInventoriesOperation, possibly from a different process.
+func (c *productGRPCClient) AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation {
+	return &AddLocalInventoriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AddLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
+	var resp retailpb.AddLocalInventoriesResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AddLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
+	var resp retailpb.AddLocalInventoriesResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AddLocalInventoriesOperation) Metadata() (*retailpb.AddLocalInventoriesMetadata, error) {
+	var meta retailpb.AddLocalInventoriesMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AddLocalInventoriesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AddLocalInventoriesOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -897,6 +1247,75 @@ func (op *RemoveFulfillmentPlacesOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RemoveFulfillmentPlacesOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RemoveLocalInventoriesOperation manages a long-running operation from RemoveLocalInventories.
+type RemoveLocalInventoriesOperation struct {
+	lro *longrunning.Operation
+}
+
+// RemoveLocalInventoriesOperation returns a new RemoveLocalInventoriesOperation from a given name.
+// The name must be that of a previously created RemoveLocalInventoriesOperation, possibly from a different process.
+func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
+	return &RemoveLocalInventoriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RemoveLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
+	var resp retailpb.RemoveLocalInventoriesResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RemoveLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
+	var resp retailpb.RemoveLocalInventoriesResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RemoveLocalInventoriesOperation) Metadata() (*retailpb.RemoveLocalInventoriesMetadata, error) {
+	var meta retailpb.RemoveLocalInventoriesMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RemoveLocalInventoriesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RemoveLocalInventoriesOperation) Name() string {
 	return op.lro.Name()
 }
 

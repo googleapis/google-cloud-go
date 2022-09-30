@@ -47,7 +47,15 @@ type DiskTypesCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalDiskTypesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultDiskTypesRESTCallOptions() *DiskTypesCallOptions {
+	return &DiskTypesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalDiskTypesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalDiskTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -86,7 +94,8 @@ func (c *DiskTypesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DiskTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -116,6 +125,9 @@ type diskTypesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing DiskTypesClient
+	CallOptions **DiskTypesCallOptions
 }
 
 // NewDiskTypesRESTClient creates a new disk types rest client.
@@ -128,13 +140,15 @@ func NewDiskTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		return nil, err
 	}
 
+	callOpts := defaultDiskTypesRESTCallOptions()
 	c := &diskTypesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &DiskTypesClient{internalClient: c, CallOptions: &DiskTypesCallOptions{}}, nil
+	return &DiskTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultDiskTypesRESTClientOptions() []option.ClientOption {
@@ -151,7 +165,7 @@ func defaultDiskTypesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *diskTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -165,7 +179,7 @@ func (c *diskTypesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *diskTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -185,7 +199,10 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/diskTypes", req.GetProject())
 
 		params := url.Values{}
@@ -213,6 +230,9 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -272,14 +292,23 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 // Get returns the specified disk type. Gets a list of available disk types by making a list() request.
 func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTypeRequest, opts ...gax.CallOption) (*computepb.DiskType, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/diskTypes/%v", req.GetProject(), req.GetZone(), req.GetDiskType())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "disk_type", url.QueryEscape(req.GetDiskType())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.DiskType{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -329,7 +358,10 @@ func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskT
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/diskTypes", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
@@ -354,6 +386,9 @@ func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskT
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err

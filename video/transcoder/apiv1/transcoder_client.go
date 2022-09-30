@@ -73,7 +73,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Transcoder API.
+// internalClient is an interface that defines the methods available from Transcoder API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -122,7 +122,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -232,7 +233,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -242,7 +244,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -259,6 +261,7 @@ func (c *gRPCClient) CreateJob(ctx context.Context, req *transcoderpb.CreateJobR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	var resp *transcoderpb.Job
@@ -275,6 +278,7 @@ func (c *gRPCClient) CreateJob(ctx context.Context, req *transcoderpb.CreateJobR
 
 func (c *gRPCClient) ListJobs(ctx context.Context, req *transcoderpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
@@ -324,6 +328,7 @@ func (c *gRPCClient) GetJob(ctx context.Context, req *transcoderpb.GetJobRequest
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	var resp *transcoderpb.Job
@@ -345,6 +350,7 @@ func (c *gRPCClient) DeleteJob(ctx context.Context, req *transcoderpb.DeleteJobR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -362,6 +368,7 @@ func (c *gRPCClient) CreateJobTemplate(ctx context.Context, req *transcoderpb.Cr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateJobTemplate[0:len((*c.CallOptions).CreateJobTemplate):len((*c.CallOptions).CreateJobTemplate)], opts...)
 	var resp *transcoderpb.JobTemplate
@@ -378,6 +385,7 @@ func (c *gRPCClient) CreateJobTemplate(ctx context.Context, req *transcoderpb.Cr
 
 func (c *gRPCClient) ListJobTemplates(ctx context.Context, req *transcoderpb.ListJobTemplatesRequest, opts ...gax.CallOption) *JobTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListJobTemplates[0:len((*c.CallOptions).ListJobTemplates):len((*c.CallOptions).ListJobTemplates)], opts...)
 	it := &JobTemplateIterator{}
@@ -427,6 +435,7 @@ func (c *gRPCClient) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetJobTemplate[0:len((*c.CallOptions).GetJobTemplate):len((*c.CallOptions).GetJobTemplate)], opts...)
 	var resp *transcoderpb.JobTemplate
@@ -448,6 +457,7 @@ func (c *gRPCClient) DeleteJobTemplate(ctx context.Context, req *transcoderpb.De
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteJobTemplate[0:len((*c.CallOptions).DeleteJobTemplate):len((*c.CallOptions).DeleteJobTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

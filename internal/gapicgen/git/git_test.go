@@ -74,6 +74,11 @@ func TestFormatChanges(t *testing.T) {
 			want:    "\nChanges:\n\nfix(baz): foo\n  bar\n\n",
 		},
 		{
+			name:    "with package, breaking change",
+			changes: []*ChangeInfo{{Title: "feat!: foo", Body: "bar", Package: "baz"}},
+			want:    "\nChanges:\n\nfeat(baz)!: foo\n  bar\n\n",
+		},
+		{
 			name:    "multiple changes",
 			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar", Package: "foo"}, {Title: "fix: baz", Body: "bar"}},
 			want:    "\nChanges:\n\nfix(foo): foo\n  bar\n\nfix: baz\n  bar\n\n",

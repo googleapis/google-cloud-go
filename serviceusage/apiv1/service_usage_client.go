@@ -72,7 +72,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Service Usage API.
+// internalClient is an interface that defines the methods available from Service Usage API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -126,7 +126,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -280,7 +281,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -290,7 +292,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -307,6 +309,7 @@ func (c *gRPCClient) EnableService(ctx context.Context, req *serviceusagepb.Enab
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).EnableService[0:len((*c.CallOptions).EnableService):len((*c.CallOptions).EnableService)], opts...)
 	var resp *longrunningpb.Operation
@@ -330,6 +333,7 @@ func (c *gRPCClient) DisableService(ctx context.Context, req *serviceusagepb.Dis
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DisableService[0:len((*c.CallOptions).DisableService):len((*c.CallOptions).DisableService)], opts...)
 	var resp *longrunningpb.Operation
@@ -353,6 +357,7 @@ func (c *gRPCClient) GetService(ctx context.Context, req *serviceusagepb.GetServ
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *serviceusagepb.Service
@@ -369,6 +374,7 @@ func (c *gRPCClient) GetService(ctx context.Context, req *serviceusagepb.GetServ
 
 func (c *gRPCClient) ListServices(ctx context.Context, req *serviceusagepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
@@ -418,6 +424,7 @@ func (c *gRPCClient) BatchEnableServices(ctx context.Context, req *serviceusagep
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchEnableServices[0:len((*c.CallOptions).BatchEnableServices):len((*c.CallOptions).BatchEnableServices)], opts...)
 	var resp *longrunningpb.Operation
@@ -441,6 +448,7 @@ func (c *gRPCClient) BatchGetServices(ctx context.Context, req *serviceusagepb.B
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchGetServices[0:len((*c.CallOptions).BatchGetServices):len((*c.CallOptions).BatchGetServices)], opts...)
 	var resp *serviceusagepb.BatchGetServicesResponse

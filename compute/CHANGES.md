@@ -1,5 +1,79 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.9.0...compute/v1.10.0) (2022-09-15)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20220831 ([#729](https://github.com/googleapis/google-cloud-go/issues/729)) ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.8.0...compute/v1.9.0) (2022-08-18)
+
+
+### Features
+
+* **compute/metadata:** add http timeout to metadata client ([#6499](https://github.com/googleapis/google-cloud-go/issues/6499)) ([37d49f7](https://github.com/googleapis/google-cloud-go/commit/37d49f7a6a004baf55d880f6aa9e42e2e2d1e27e)), refs [#6498](https://github.com/googleapis/google-cloud-go/issues/6498)
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.7.0...compute/v1.8.0) (2022-08-09)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20220720 ([#723](https://github.com/googleapis/google-cloud-go/issues/723)) ([3db735c](https://github.com/googleapis/google-cloud-go/commit/3db735c3c35ab3473ceb1948cf4da09b87728ef9))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.6.1...compute/v1.7.0) (2022-06-16)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20220526 ([#722](https://github.com/googleapis/google-cloud-go/issues/722)) ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
+### [1.6.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.6.0...compute/v1.6.1) (2022-04-21)
+
+
+### Bug Fixes
+
+* **compute:** revert proto3_optional, required removal on parent_id ([#714](https://github.com/googleapis/google-cloud-go/issues/714)) ([d4ea7dd](https://github.com/googleapis/google-cloud-go/commit/d4ea7dd68bf2b858481727afd8a8830e31a9fe55))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.5.0...compute/v1.6.0) (2022-04-14)
+
+
+### Features
+
+* **compute:** update compute API to revision 20220322 ([#710](https://github.com/googleapis/google-cloud-go/issues/710)) ([bb5da6b](https://github.com/googleapis/google-cloud-go/commit/bb5da6b3c34079a01d18b766b67f626cff18d849))
+
+
+### Bug Fixes
+
+* **compute:** remove proto3_optional from parent_id ([#712](https://github.com/googleapis/google-cloud-go/issues/712)) ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+* **compute:** replace missing REQUIRED for parent_id ([#711](https://github.com/googleapis/google-cloud-go/issues/711)) ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.4.0...compute/v1.5.0) (2022-02-23)
+
+
+### Features
+
+* **compute:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.3.0...compute/v1.4.0) (2022-02-22)
+
+
+### Features
+
+* **compute:** update compute API to revision 20220112 ([#700](https://github.com/googleapis/google-cloud-go/issues/700)) ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
+
+### Bug Fixes
+
+* **compute:** fix breaking changes in Compute API ([#701](https://github.com/googleapis/google-cloud-go/issues/701)) ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.2.0...compute/v1.3.0) (2022-02-14)
+
+
+### Features
+
+* **compute:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
 ## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/compute/v1.1.0...compute/v1.2.0) (2022-02-03)
 
 
@@ -20,7 +94,6 @@
 * **compute:** remove BETA language on Compute V1 ([#697](https://www.github.com/googleapis/google-cloud-go/issues/697)) ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
 
 ## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/compute/v0.1.0...compute/v1.0.0) (2022-01-11)
-
 
 ### Features
 

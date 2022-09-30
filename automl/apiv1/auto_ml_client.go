@@ -196,7 +196,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud AutoML API.
+// internalClient is an interface that defines the methods available from Cloud AutoML API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -277,7 +277,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -328,11 +329,11 @@ func (c *Client) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 //
 // For Tables:
 //
-//   A
-//   schema_inference_version
-//   parameter must be explicitly set.
-//   Returns an empty response in the
-//   response field when it completes.
+//	A
+//	schema_inference_version
+//	parameter must be explicitly set.
+//	Returns an empty response in the
+//	response field when it completes.
 func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	return c.internalClient.ImportData(ctx, req, opts...)
 }
@@ -560,7 +561,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -570,7 +572,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -587,6 +589,7 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *longrunningpb.Operation
@@ -610,6 +613,7 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *automlpb.Dataset
@@ -626,6 +630,7 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 
 func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
@@ -675,6 +680,7 @@ func (c *gRPCClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	var resp *automlpb.Dataset
@@ -696,6 +702,7 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	var resp *longrunningpb.Operation
@@ -719,6 +726,7 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportData[0:len((*c.CallOptions).ImportData):len((*c.CallOptions).ImportData)], opts...)
 	var resp *longrunningpb.Operation
@@ -742,6 +750,7 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportData[0:len((*c.CallOptions).ExportData):len((*c.CallOptions).ExportData)], opts...)
 	var resp *longrunningpb.Operation
@@ -765,6 +774,7 @@ func (c *gRPCClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAnnotationSpec[0:len((*c.CallOptions).GetAnnotationSpec):len((*c.CallOptions).GetAnnotationSpec)], opts...)
 	var resp *automlpb.AnnotationSpec
@@ -786,6 +796,7 @@ func (c *gRPCClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateModel[0:len((*c.CallOptions).CreateModel):len((*c.CallOptions).CreateModel)], opts...)
 	var resp *longrunningpb.Operation
@@ -809,6 +820,7 @@ func (c *gRPCClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	var resp *automlpb.Model
@@ -825,6 +837,7 @@ func (c *gRPCClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 
 func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
@@ -874,6 +887,7 @@ func (c *gRPCClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteModel[0:len((*c.CallOptions).DeleteModel):len((*c.CallOptions).DeleteModel)], opts...)
 	var resp *longrunningpb.Operation
@@ -897,6 +911,7 @@ func (c *gRPCClient) UpdateModel(ctx context.Context, req *automlpb.UpdateModelR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model.name", url.QueryEscape(req.GetModel().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateModel[0:len((*c.CallOptions).UpdateModel):len((*c.CallOptions).UpdateModel)], opts...)
 	var resp *automlpb.Model
@@ -918,6 +933,7 @@ func (c *gRPCClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeployModel[0:len((*c.CallOptions).DeployModel):len((*c.CallOptions).DeployModel)], opts...)
 	var resp *longrunningpb.Operation
@@ -941,6 +957,7 @@ func (c *gRPCClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UndeployModel[0:len((*c.CallOptions).UndeployModel):len((*c.CallOptions).UndeployModel)], opts...)
 	var resp *longrunningpb.Operation
@@ -964,6 +981,7 @@ func (c *gRPCClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportModel[0:len((*c.CallOptions).ExportModel):len((*c.CallOptions).ExportModel)], opts...)
 	var resp *longrunningpb.Operation
@@ -987,6 +1005,7 @@ func (c *gRPCClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetModelEvaluation[0:len((*c.CallOptions).GetModelEvaluation):len((*c.CallOptions).GetModelEvaluation)], opts...)
 	var resp *automlpb.ModelEvaluation
@@ -1003,6 +1022,7 @@ func (c *gRPCClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 
 func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.ListModelEvaluationsRequest, opts ...gax.CallOption) *ModelEvaluationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListModelEvaluations[0:len((*c.CallOptions).ListModelEvaluations):len((*c.CallOptions).ListModelEvaluations)], opts...)
 	it := &ModelEvaluationIterator{}

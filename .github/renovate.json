@@ -6,21 +6,22 @@
     ],
     "semanticCommits": false,
     "postUpdateOptions": [
-        "gomodTidy"
+        "gomodTidy",
+        "gomodNoMassage"
     ],
     "commitMessagePrefix": "chore(all): ",
     "commitMessageAction": "update",
     "groupName": "all",
     "ignoreDeps": [
         "google.golang.org/genproto",
-        "google.golang.org/grpc"
+        "github.com/google/martian/v3"
     ],
     "ignorePaths": [
         "**/snippets/**"
     ],
     "force": {
         "constraints": {
-          "go": "1.17"
+        "go": "1.18"
         }
       }
 }

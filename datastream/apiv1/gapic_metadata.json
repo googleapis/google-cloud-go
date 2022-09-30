@@ -1,0 +1,173 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.datastream.v1",
+  "libraryPackage": "cloud.google.com/go/datastream/apiv1",
+  "services": {
+    "Datastream": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConnectionProfile": {
+              "methods": [
+                "CreateConnectionProfile"
+              ]
+            },
+            "CreatePrivateConnection": {
+              "methods": [
+                "CreatePrivateConnection"
+              ]
+            },
+            "CreateRoute": {
+              "methods": [
+                "CreateRoute"
+              ]
+            },
+            "CreateStream": {
+              "methods": [
+                "CreateStream"
+              ]
+            },
+            "DeleteConnectionProfile": {
+              "methods": [
+                "DeleteConnectionProfile"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePrivateConnection": {
+              "methods": [
+                "DeletePrivateConnection"
+              ]
+            },
+            "DeleteRoute": {
+              "methods": [
+                "DeleteRoute"
+              ]
+            },
+            "DeleteStream": {
+              "methods": [
+                "DeleteStream"
+              ]
+            },
+            "DiscoverConnectionProfile": {
+              "methods": [
+                "DiscoverConnectionProfile"
+              ]
+            },
+            "FetchStaticIps": {
+              "methods": [
+                "FetchStaticIps"
+              ]
+            },
+            "GetConnectionProfile": {
+              "methods": [
+                "GetConnectionProfile"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPrivateConnection": {
+              "methods": [
+                "GetPrivateConnection"
+              ]
+            },
+            "GetRoute": {
+              "methods": [
+                "GetRoute"
+              ]
+            },
+            "GetStream": {
+              "methods": [
+                "GetStream"
+              ]
+            },
+            "GetStreamObject": {
+              "methods": [
+                "GetStreamObject"
+              ]
+            },
+            "ListConnectionProfiles": {
+              "methods": [
+                "ListConnectionProfiles"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPrivateConnections": {
+              "methods": [
+                "ListPrivateConnections"
+              ]
+            },
+            "ListRoutes": {
+              "methods": [
+                "ListRoutes"
+              ]
+            },
+            "ListStreamObjects": {
+              "methods": [
+                "ListStreamObjects"
+              ]
+            },
+            "ListStreams": {
+              "methods": [
+                "ListStreams"
+              ]
+            },
+            "LookupStreamObject": {
+              "methods": [
+                "LookupStreamObject"
+              ]
+            },
+            "StartBackfillJob": {
+              "methods": [
+                "StartBackfillJob"
+              ]
+            },
+            "StopBackfillJob": {
+              "methods": [
+                "StopBackfillJob"
+              ]
+            },
+            "UpdateConnectionProfile": {
+              "methods": [
+                "UpdateConnectionProfile"
+              ]
+            },
+            "UpdateStream": {
+              "methods": [
+                "UpdateStream"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

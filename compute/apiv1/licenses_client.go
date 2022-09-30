@@ -51,7 +51,19 @@ type LicensesCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalLicensesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultLicensesRESTCallOptions() *LicensesCallOptions {
+	return &LicensesCallOptions{
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalLicensesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalLicensesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -94,7 +106,8 @@ func (c *LicensesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *LicensesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -147,6 +160,9 @@ type licensesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing LicensesClient
+	CallOptions **LicensesCallOptions
 }
 
 // NewLicensesRESTClient creates a new licenses rest client.
@@ -159,9 +175,11 @@ func NewLicensesRESTClient(ctx context.Context, opts ...option.ClientOption) (*L
 		return nil, err
 	}
 
+	callOpts := defaultLicensesRESTCallOptions()
 	c := &licensesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -175,7 +193,7 @@ func NewLicensesRESTClient(ctx context.Context, opts ...option.ClientOption) (*L
 	}
 	c.operationClient = opC
 
-	return &LicensesClient{internalClient: c, CallOptions: &LicensesCallOptions{}}, nil
+	return &LicensesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultLicensesRESTClientOptions() []option.ClientOption {
@@ -192,7 +210,7 @@ func defaultLicensesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *licensesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -209,14 +227,17 @@ func (c *licensesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *licensesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
 // Delete deletes the specified license. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
 
 	params := url.Values{}
@@ -227,10 +248,16 @@ func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "license", url.QueryEscape(req.GetLicense())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -274,14 +301,23 @@ func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLi
 
 // Get returns the specified License resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseRequest, opts ...gax.CallOption) (*computepb.License, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "license", url.QueryEscape(req.GetLicense())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.License{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -318,7 +354,10 @@ func (c *licensesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseR
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyLicenseRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
 	params := url.Values{}
@@ -329,10 +368,16 @@ func (c *licensesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.Ge
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -376,7 +421,10 @@ func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLi
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses", req.GetProject())
 
 	params := url.Values{}
@@ -387,10 +435,16 @@ func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -447,7 +501,10 @@ func (c *licensesRESTClient) List(ctx context.Context, req *computepb.ListLicens
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses", req.GetProject())
 
 		params := url.Values{}
@@ -472,6 +529,9 @@ func (c *licensesRESTClient) List(ctx context.Context, req *computepb.ListLicens
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -531,14 +591,23 @@ func (c *licensesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.Se
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -582,14 +651,23 @@ func (c *licensesRESTClient) TestIamPermissions(ctx context.Context, req *comput
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v/testIamPermissions", req.GetProject(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err

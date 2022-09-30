@@ -1,0 +1,797 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/clouddms/apiv1",
+    "version": "1.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.clouddms.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_CreateConnectionProfile_sync",
+      "title": "datamigration CreateConnectionProfile Sample",
+      "description": "CreateConnectionProfile creates a new connection profile in a given project and location.",
+      "file": "DataMigrationClient/CreateConnectionProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConnectionProfile",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.CreateConnectionProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.CreateConnectionProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateConnectionProfileOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "CreateConnectionProfile",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.CreateConnectionProfile",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_CreateMigrationJob_sync",
+      "title": "datamigration CreateMigrationJob Sample",
+      "description": "CreateMigrationJob creates a new migration job in a given project and location.",
+      "file": "DataMigrationClient/CreateMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.CreateMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.CreateMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "CreateMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.CreateMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteConnectionProfile_sync",
+      "title": "datamigration DeleteConnectionProfile Sample",
+      "description": "DeleteConnectionProfile deletes a single Database Migration Service connection profile.\nA connection profile can only be deleted if it is not in use by any\nactive migration jobs.",
+      "file": "DataMigrationClient/DeleteConnectionProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConnectionProfile",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.DeleteConnectionProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.DeleteConnectionProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteConnectionProfileOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "DeleteConnectionProfile",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.DeleteConnectionProfile",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteMigrationJob_sync",
+      "title": "datamigration DeleteMigrationJob Sample",
+      "description": "DeleteMigrationJob deletes a single migration job.",
+      "file": "DataMigrationClient/DeleteMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.DeleteMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.DeleteMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "DeleteMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.DeleteMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_GenerateSshScript_sync",
+      "title": "datamigration GenerateSshScript Sample",
+      "description": "GenerateSshScript generate a SSH configuration script to configure the reverse SSH\nconnectivity.",
+      "file": "DataMigrationClient/GenerateSshScript/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateSshScript",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.GenerateSshScript",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.GenerateSshScriptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "clouddmspb.SshScript",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "GenerateSshScript",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.GenerateSshScript",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_GetConnectionProfile_sync",
+      "title": "datamigration GetConnectionProfile Sample",
+      "description": "GetConnectionProfile gets details of a single connection profile.",
+      "file": "DataMigrationClient/GetConnectionProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnectionProfile",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.GetConnectionProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.GetConnectionProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "clouddmspb.ConnectionProfile",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "GetConnectionProfile",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.GetConnectionProfile",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_GetMigrationJob_sync",
+      "title": "datamigration GetMigrationJob Sample",
+      "description": "GetMigrationJob gets details of a single migration job.",
+      "file": "DataMigrationClient/GetMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.GetMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.GetMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "clouddmspb.MigrationJob",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "GetMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.GetMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_ListConnectionProfiles_sync",
+      "title": "datamigration ListConnectionProfiles Sample",
+      "description": "ListConnectionProfiles retrieve a list of all connection profiles in a given project and location.",
+      "file": "DataMigrationClient/ListConnectionProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnectionProfiles",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.ListConnectionProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.ListConnectionProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionProfileIterator",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "ListConnectionProfiles",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.ListConnectionProfiles",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_ListMigrationJobs_sync",
+      "title": "datamigration ListMigrationJobs Sample",
+      "description": "ListMigrationJobs lists migration jobs in a given project and location.",
+      "file": "DataMigrationClient/ListMigrationJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMigrationJobs",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.ListMigrationJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.ListMigrationJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MigrationJobIterator",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "ListMigrationJobs",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.ListMigrationJobs",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_PromoteMigrationJob_sync",
+      "title": "datamigration PromoteMigrationJob Sample",
+      "description": "PromoteMigrationJob promote a migration job, stopping replication to the destination and\npromoting the destination to be a standalone database.",
+      "file": "DataMigrationClient/PromoteMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PromoteMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.PromoteMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.PromoteMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PromoteMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "PromoteMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.PromoteMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_RestartMigrationJob_sync",
+      "title": "datamigration RestartMigrationJob Sample",
+      "description": "RestartMigrationJob restart a stopped or failed migration job, resetting the destination\ninstance to its original state and starting the migration process from\nscratch.",
+      "file": "DataMigrationClient/RestartMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestartMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.RestartMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.RestartMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestartMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "RestartMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.RestartMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_ResumeMigrationJob_sync",
+      "title": "datamigration ResumeMigrationJob Sample",
+      "description": "ResumeMigrationJob resume a migration job that is currently stopped and is resumable (was\nstopped during CDC phase).",
+      "file": "DataMigrationClient/ResumeMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.ResumeMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.ResumeMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResumeMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "ResumeMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.ResumeMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_StartMigrationJob_sync",
+      "title": "datamigration StartMigrationJob Sample",
+      "description": "StartMigrationJob start an already created migration job.",
+      "file": "DataMigrationClient/StartMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.StartMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.StartMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "StartMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.StartMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_StopMigrationJob_sync",
+      "title": "datamigration StopMigrationJob Sample",
+      "description": "StopMigrationJob stops a running migration job.",
+      "file": "DataMigrationClient/StopMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.StopMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.StopMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "StopMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.StopMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_UpdateConnectionProfile_sync",
+      "title": "datamigration UpdateConnectionProfile Sample",
+      "description": "UpdateConnectionProfile update the configuration of a single connection profile.",
+      "file": "DataMigrationClient/UpdateConnectionProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConnectionProfile",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.UpdateConnectionProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.UpdateConnectionProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateConnectionProfileOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "UpdateConnectionProfile",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.UpdateConnectionProfile",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_UpdateMigrationJob_sync",
+      "title": "datamigration UpdateMigrationJob Sample",
+      "description": "UpdateMigrationJob updates the parameters of a single migration job.",
+      "file": "DataMigrationClient/UpdateMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.UpdateMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.UpdateMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "UpdateMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.UpdateMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_VerifyMigrationJob_sync",
+      "title": "datamigration VerifyMigrationJob Sample",
+      "description": "VerifyMigrationJob verify a migration job, making sure the destination can reach the source\nand that all configuration and prerequisites are met.",
+      "file": "DataMigrationClient/VerifyMigrationJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyMigrationJob",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.VerifyMigrationJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.VerifyMigrationJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VerifyMigrationJobOperation",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "VerifyMigrationJob",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.VerifyMigrationJob",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -57,7 +57,25 @@ type ProjectsCallOptions struct {
 	SetUsageExportBucket      []gax.CallOption
 }
 
-// internalProjectsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
+	return &ProjectsCallOptions{
+		DisableXpnHost:            []gax.CallOption{},
+		DisableXpnResource:        []gax.CallOption{},
+		EnableXpnHost:             []gax.CallOption{},
+		EnableXpnResource:         []gax.CallOption{},
+		Get:                       []gax.CallOption{},
+		GetXpnHost:                []gax.CallOption{},
+		GetXpnResources:           []gax.CallOption{},
+		ListXpnHosts:              []gax.CallOption{},
+		MoveDisk:                  []gax.CallOption{},
+		MoveInstance:              []gax.CallOption{},
+		SetCommonInstanceMetadata: []gax.CallOption{},
+		SetDefaultNetworkTier:     []gax.CallOption{},
+		SetUsageExportBucket:      []gax.CallOption{},
+	}
+}
+
+// internalProjectsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalProjectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -106,7 +124,8 @@ func (c *ProjectsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ProjectsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -131,7 +150,7 @@ func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.E
 	return c.internalClient.EnableXpnResource(ctx, req, opts...)
 }
 
-// Get returns the specified Project resource.
+// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
 func (c *ProjectsClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -156,7 +175,7 @@ func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskPr
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another.
+// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
 func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
@@ -189,6 +208,9 @@ type projectsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ProjectsClient
+	CallOptions **ProjectsCallOptions
 }
 
 // NewProjectsRESTClient creates a new projects rest client.
@@ -201,9 +223,11 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		return nil, err
 	}
 
+	callOpts := defaultProjectsRESTCallOptions()
 	c := &projectsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -217,7 +241,7 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 	}
 	c.operationClient = opC
 
-	return &ProjectsClient{internalClient: c, CallOptions: &ProjectsCallOptions{}}, nil
+	return &ProjectsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultProjectsRESTClientOptions() []option.ClientOption {
@@ -234,7 +258,7 @@ func defaultProjectsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *projectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -251,14 +275,17 @@ func (c *projectsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *projectsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
 // DisableXpnHost disable this project as a shared VPC host project.
 func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnHost", req.GetProject())
 
 	params := url.Values{}
@@ -269,10 +296,16 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).DisableXpnHost[0:len((*c.CallOptions).DisableXpnHost):len((*c.CallOptions).DisableXpnHost)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -323,7 +356,10 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnResource", req.GetProject())
 
 	params := url.Values{}
@@ -334,10 +370,16 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).DisableXpnResource[0:len((*c.CallOptions).DisableXpnResource):len((*c.CallOptions).DisableXpnResource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -381,7 +423,10 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 
 // EnableXpnHost enable this project as a shared VPC host project.
 func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnHost", req.GetProject())
 
 	params := url.Values{}
@@ -392,10 +437,16 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).EnableXpnHost[0:len((*c.CallOptions).EnableXpnHost):len((*c.CallOptions).EnableXpnHost)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -446,7 +497,10 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnResource", req.GetProject())
 
 	params := url.Values{}
@@ -457,10 +511,16 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).EnableXpnResource[0:len((*c.CallOptions).EnableXpnResource):len((*c.CallOptions).EnableXpnResource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -502,16 +562,25 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	return op, nil
 }
 
-// Get returns the specified Project resource.
+// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
 func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v", req.GetProject())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Project{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -548,14 +617,23 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 
 // GetXpnHost gets the shared VPC host project that this project links to. May be empty if no link exists.
 func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnHost", req.GetProject())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetXpnHost[0:len((*c.CallOptions).GetXpnHost):len((*c.CallOptions).GetXpnHost)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Project{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -605,7 +683,10 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
 
 		params := url.Values{}
@@ -630,6 +711,9 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -684,7 +768,7 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	it := &ProjectIterator{}
 	req = proto.Clone(req).(*computepb.ListXpnHostsProjectsRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Project, string, error) {
 		resp := &computepb.XpnHostList{}
@@ -701,7 +785,10 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 			return nil, "", err
 		}
 
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/listXpnHosts", req.GetProject())
 
 		params := url.Values{}
@@ -726,6 +813,9 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 			if err != nil {
 				return err
@@ -785,7 +875,10 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/moveDisk", req.GetProject())
 
 	params := url.Values{}
@@ -796,10 +889,16 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).MoveDisk[0:len((*c.CallOptions).MoveDisk):len((*c.CallOptions).MoveDisk)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -841,7 +940,7 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	return op, nil
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another.
+// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
 func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
@@ -850,7 +949,10 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/moveInstance", req.GetProject())
 
 	params := url.Values{}
@@ -861,10 +963,16 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).MoveInstance[0:len((*c.CallOptions).MoveInstance):len((*c.CallOptions).MoveInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -915,7 +1023,10 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setCommonInstanceMetadata", req.GetProject())
 
 	params := url.Values{}
@@ -926,10 +1037,16 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetCommonInstanceMetadata[0:len((*c.CallOptions).SetCommonInstanceMetadata):len((*c.CallOptions).SetCommonInstanceMetadata)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -980,7 +1097,10 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setDefaultNetworkTier", req.GetProject())
 
 	params := url.Values{}
@@ -991,10 +1111,16 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetDefaultNetworkTier[0:len((*c.CallOptions).SetDefaultNetworkTier):len((*c.CallOptions).SetDefaultNetworkTier)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1045,7 +1171,10 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setUsageExportBucket", req.GetProject())
 
 	params := url.Values{}
@@ -1056,10 +1185,16 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetUsageExportBucket[0:len((*c.CallOptions).SetUsageExportBucket):len((*c.CallOptions).SetUsageExportBucket)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err

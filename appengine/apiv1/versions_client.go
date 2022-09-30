@@ -70,7 +70,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 	}
 }
 
-// internalVersionsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalVersionsClient is an interface that defines the methods available from App Engine Admin API.
 type internalVersionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -119,7 +119,8 @@ func (c *VersionsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *VersionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -153,45 +154,45 @@ func (c *VersionsClient) CreateVersionOperation(name string) *CreateVersionOpera
 //
 // Standard environment
 //
-//   instance_class (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)
+//	instance_class (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)
 //
 // automatic scaling in the standard environment:
 //
-//   automatic_scaling.min_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//	automatic_scaling.min_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//   automatic_scaling.max_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//	automatic_scaling.max_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//   automaticScaling.standard_scheduler_settings.max_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//	automaticScaling.standard_scheduler_settings.max_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//   automaticScaling.standard_scheduler_settings.min_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//	automaticScaling.standard_scheduler_settings.min_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//   automaticScaling.standard_scheduler_settings.target_cpu_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//	automaticScaling.standard_scheduler_settings.target_cpu_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//   automaticScaling.standard_scheduler_settings.target_throughput_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//	automaticScaling.standard_scheduler_settings.target_throughput_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
 // basic scaling or manual scaling in the standard environment:
 //
-//   serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
+//	serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
 //
-//   manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
+//	manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
 //
 // Flexible environment
 //
-//   serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
+//	serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
 //
 // automatic scaling in the flexible environment:
 //
-//   automatic_scaling.min_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//	automatic_scaling.min_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//   automatic_scaling.max_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//	automatic_scaling.max_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//   automatic_scaling.cool_down_period_sec (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//	automatic_scaling.cool_down_period_sec (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//   automatic_scaling.cpu_utilization.target_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//	automatic_scaling.cpu_utilization.target_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
 // manual scaling in the flexible environment:
 //
-//   manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
+//	manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
 func (c *VersionsClient) UpdateVersion(ctx context.Context, req *appenginepb.UpdateVersionRequest, opts ...gax.CallOption) (*UpdateVersionOperation, error) {
 	return c.internalClient.UpdateVersion(ctx, req, opts...)
 }
@@ -289,7 +290,8 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *versionsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -299,7 +301,7 @@ func (c *versionsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *versionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -311,6 +313,7 @@ func (c *versionsGRPCClient) Close() error {
 
 func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *appenginepb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
@@ -355,6 +358,7 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *appenginepb.
 
 func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.GetVersionRequest, opts ...gax.CallOption) (*appenginepb.Version, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	var resp *appenginepb.Version
@@ -371,6 +375,7 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.Ge
 
 func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateVersion[0:len((*c.CallOptions).CreateVersion):len((*c.CallOptions).CreateVersion)], opts...)
 	var resp *longrunningpb.Operation
@@ -389,6 +394,7 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb
 
 func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb.UpdateVersionRequest, opts ...gax.CallOption) (*UpdateVersionOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
 	var resp *longrunningpb.Operation
@@ -407,6 +413,7 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb
 
 func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	var resp *longrunningpb.Operation

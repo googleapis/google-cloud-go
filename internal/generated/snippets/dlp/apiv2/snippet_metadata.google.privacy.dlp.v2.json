@@ -1,0 +1,1572 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/dlp/apiv2",
+    "version": "1.5.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.privacy.dlp.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ActivateJobTrigger_sync",
+      "title": "dlp ActivateJobTrigger Sample",
+      "description": "ActivateJobTrigger activate a job trigger. Causes the immediate execute of a trigger\ninstead of waiting on the trigger event to occur.",
+      "file": "Client/ActivateJobTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ActivateJobTrigger",
+        "fullName": "google.privacy.dlp.v2.Client.ActivateJobTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ActivateJobTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.DlpJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ActivateJobTrigger",
+          "fullName": "google.privacy.dlp.v2.DlpService.ActivateJobTrigger",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CancelDlpJob_sync",
+      "title": "dlp CancelDlpJob Sample",
+      "description": "CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server\nmakes a best effort to cancel the DlpJob, but success is not\nguaranteed.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage (at https: //cloud.google.com/dlp/docs/inspecting-storage) and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis (at https: //cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.",
+      "file": "Client/CancelDlpJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelDlpJob",
+        "fullName": "google.privacy.dlp.v2.Client.CancelDlpJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CancelDlpJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CancelDlpJob",
+          "fullName": "google.privacy.dlp.v2.DlpService.CancelDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CreateDeidentifyTemplate_sync",
+      "title": "dlp CreateDeidentifyTemplate Sample",
+      "description": "CreateDeidentifyTemplate creates a DeidentifyTemplate for reusing frequently used configuration\nfor de-identifying content, images, and storage.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid (at https: //cloud.google.com/dlp/docs/creating-templates-deid) to learn\nmore.",
+      "file": "Client/CreateDeidentifyTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeidentifyTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.CreateDeidentifyTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateDeidentifyTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.DeidentifyTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateDeidentifyTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateDeidentifyTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CreateDlpJob_sync",
+      "title": "dlp CreateDlpJob Sample",
+      "description": "CreateDlpJob creates a new job to inspect storage or calculate risk metrics.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage (at https: //cloud.google.com/dlp/docs/inspecting-storage) and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis (at https: //cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in inspect jobs, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
+      "file": "Client/CreateDlpJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDlpJob",
+        "fullName": "google.privacy.dlp.v2.Client.CreateDlpJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateDlpJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.DlpJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateDlpJob",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CreateInspectTemplate_sync",
+      "title": "dlp CreateInspectTemplate Sample",
+      "description": "CreateInspectTemplate creates an InspectTemplate for reusing frequently used configuration\nfor inspecting content, images, and storage.\nSee https: //cloud.google.com/dlp/docs/creating-templates (at https: //cloud.google.com/dlp/docs/creating-templates) to learn more.",
+      "file": "Client/CreateInspectTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInspectTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.CreateInspectTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateInspectTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.InspectTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateInspectTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateInspectTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CreateJobTrigger_sync",
+      "title": "dlp CreateJobTrigger Sample",
+      "description": "CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for\nsensitive information on a set schedule.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers (at https: //cloud.google.com/dlp/docs/creating-job-triggers) to learn more.",
+      "file": "Client/CreateJobTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateJobTrigger",
+        "fullName": "google.privacy.dlp.v2.Client.CreateJobTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateJobTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.JobTrigger",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateJobTrigger",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateJobTrigger",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CreateStoredInfoType_sync",
+      "title": "dlp CreateStoredInfoType Sample",
+      "description": "CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes (at https: //cloud.google.com/dlp/docs/creating-stored-infotypes) to\nlearn more.",
+      "file": "Client/CreateStoredInfoType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateStoredInfoType",
+        "fullName": "google.privacy.dlp.v2.Client.CreateStoredInfoType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateStoredInfoTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.StoredInfoType",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateStoredInfoType",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateStoredInfoType",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeidentifyContent_sync",
+      "title": "dlp DeidentifyContent Sample",
+      "description": "DeidentifyContent de-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\nSee https: //cloud.google.com/dlp/docs/deidentify-sensitive-data (at https: //cloud.google.com/dlp/docs/deidentify-sensitive-data) to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
+      "file": "Client/DeidentifyContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeidentifyContent",
+        "fullName": "google.privacy.dlp.v2.Client.DeidentifyContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeidentifyContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.DeidentifyContentResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeidentifyContent",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeidentifyContent",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteDeidentifyTemplate_sync",
+      "title": "dlp DeleteDeidentifyTemplate Sample",
+      "description": "DeleteDeidentifyTemplate deletes a DeidentifyTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid (at https: //cloud.google.com/dlp/docs/creating-templates-deid) to learn\nmore.",
+      "file": "Client/DeleteDeidentifyTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDeidentifyTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteDeidentifyTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteDeidentifyTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteDeidentifyTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteDeidentifyTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteDlpJob_sync",
+      "title": "dlp DeleteDlpJob Sample",
+      "description": "DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is\nno longer interested in the DlpJob result. The job will be canceled if\npossible.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage (at https: //cloud.google.com/dlp/docs/inspecting-storage) and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis (at https: //cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.",
+      "file": "Client/DeleteDlpJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDlpJob",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteDlpJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteDlpJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteDlpJob",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteInspectTemplate_sync",
+      "title": "dlp DeleteInspectTemplate Sample",
+      "description": "DeleteInspectTemplate deletes an InspectTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates (at https: //cloud.google.com/dlp/docs/creating-templates) to learn more.",
+      "file": "Client/DeleteInspectTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInspectTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteInspectTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteInspectTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteInspectTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteInspectTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteJobTrigger_sync",
+      "title": "dlp DeleteJobTrigger Sample",
+      "description": "DeleteJobTrigger deletes a job trigger.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers (at https: //cloud.google.com/dlp/docs/creating-job-triggers) to learn more.",
+      "file": "Client/DeleteJobTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJobTrigger",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteJobTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteJobTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteJobTrigger",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteJobTrigger",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteStoredInfoType_sync",
+      "title": "dlp DeleteStoredInfoType Sample",
+      "description": "DeleteStoredInfoType deletes a stored infoType.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes (at https: //cloud.google.com/dlp/docs/creating-stored-infotypes) to\nlearn more.",
+      "file": "Client/DeleteStoredInfoType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteStoredInfoType",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteStoredInfoType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteStoredInfoTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteStoredInfoType",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteStoredInfoType",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_FinishDlpJob_sync",
+      "title": "dlp FinishDlpJob Sample",
+      "description": "FinishDlpJob finish a running hybrid DlpJob. Triggers the finalization steps and running\nof any enabled actions that have not yet run.",
+      "file": "Client/FinishDlpJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FinishDlpJob",
+        "fullName": "google.privacy.dlp.v2.Client.FinishDlpJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.FinishDlpJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "FinishDlpJob",
+          "fullName": "google.privacy.dlp.v2.DlpService.FinishDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetDeidentifyTemplate_sync",
+      "title": "dlp GetDeidentifyTemplate Sample",
+      "description": "GetDeidentifyTemplate gets a DeidentifyTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid (at https: //cloud.google.com/dlp/docs/creating-templates-deid) to learn\nmore.",
+      "file": "Client/GetDeidentifyTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeidentifyTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.GetDeidentifyTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetDeidentifyTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.DeidentifyTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetDeidentifyTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetDeidentifyTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetDlpJob_sync",
+      "title": "dlp GetDlpJob Sample",
+      "description": "GetDlpJob gets the latest state of a long-running DlpJob.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage (at https: //cloud.google.com/dlp/docs/inspecting-storage) and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis (at https: //cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.",
+      "file": "Client/GetDlpJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDlpJob",
+        "fullName": "google.privacy.dlp.v2.Client.GetDlpJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetDlpJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.DlpJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetDlpJob",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetInspectTemplate_sync",
+      "title": "dlp GetInspectTemplate Sample",
+      "description": "GetInspectTemplate gets an InspectTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates (at https: //cloud.google.com/dlp/docs/creating-templates) to learn more.",
+      "file": "Client/GetInspectTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInspectTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.GetInspectTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetInspectTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.InspectTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetInspectTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetInspectTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetJobTrigger_sync",
+      "title": "dlp GetJobTrigger Sample",
+      "description": "GetJobTrigger gets a job trigger.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers (at https: //cloud.google.com/dlp/docs/creating-job-triggers) to learn more.",
+      "file": "Client/GetJobTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJobTrigger",
+        "fullName": "google.privacy.dlp.v2.Client.GetJobTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetJobTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.JobTrigger",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetJobTrigger",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetJobTrigger",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetStoredInfoType_sync",
+      "title": "dlp GetStoredInfoType Sample",
+      "description": "GetStoredInfoType gets a stored infoType.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes (at https: //cloud.google.com/dlp/docs/creating-stored-infotypes) to\nlearn more.",
+      "file": "Client/GetStoredInfoType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetStoredInfoType",
+        "fullName": "google.privacy.dlp.v2.Client.GetStoredInfoType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetStoredInfoTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.StoredInfoType",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetStoredInfoType",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetStoredInfoType",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_HybridInspectDlpJob_sync",
+      "title": "dlp HybridInspectDlpJob Sample",
+      "description": "HybridInspectDlpJob inspect hybrid content and store findings to a job.\nTo review the findings, inspect the job. Inspection will occur\nasynchronously.",
+      "file": "Client/HybridInspectDlpJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "HybridInspectDlpJob",
+        "fullName": "google.privacy.dlp.v2.Client.HybridInspectDlpJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.HybridInspectDlpJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.HybridInspectResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "HybridInspectDlpJob",
+          "fullName": "google.privacy.dlp.v2.DlpService.HybridInspectDlpJob",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_HybridInspectJobTrigger_sync",
+      "title": "dlp HybridInspectJobTrigger Sample",
+      "description": "HybridInspectJobTrigger inspect hybrid content and store findings to a trigger. The inspection\nwill be processed asynchronously. To review the findings monitor the\njobs within the trigger.",
+      "file": "Client/HybridInspectJobTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "HybridInspectJobTrigger",
+        "fullName": "google.privacy.dlp.v2.Client.HybridInspectJobTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.HybridInspectJobTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.HybridInspectResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "HybridInspectJobTrigger",
+          "fullName": "google.privacy.dlp.v2.DlpService.HybridInspectJobTrigger",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_InspectContent_sync",
+      "title": "dlp InspectContent Sample",
+      "description": "InspectContent finds potentially sensitive info in content.\nThis method has limits on input size, processing time, and output size.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.\n\nFor how to guides, see https: //cloud.google.com/dlp/docs/inspecting-images (at https: //cloud.google.com/dlp/docs/inspecting-images)\nand https: //cloud.google.com/dlp/docs/inspecting-text (at https: //cloud.google.com/dlp/docs/inspecting-text),",
+      "file": "Client/InspectContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InspectContent",
+        "fullName": "google.privacy.dlp.v2.Client.InspectContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.InspectContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.InspectContentResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "InspectContent",
+          "fullName": "google.privacy.dlp.v2.DlpService.InspectContent",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListDeidentifyTemplates_sync",
+      "title": "dlp ListDeidentifyTemplates Sample",
+      "description": "ListDeidentifyTemplates lists DeidentifyTemplates.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid (at https: //cloud.google.com/dlp/docs/creating-templates-deid) to learn\nmore.",
+      "file": "Client/ListDeidentifyTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeidentifyTemplates",
+        "fullName": "google.privacy.dlp.v2.Client.ListDeidentifyTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListDeidentifyTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeidentifyTemplateIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListDeidentifyTemplates",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListDeidentifyTemplates",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListDlpJobs_sync",
+      "title": "dlp ListDlpJobs Sample",
+      "description": "ListDlpJobs lists DlpJobs that match the specified filter in the request.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage (at https: //cloud.google.com/dlp/docs/inspecting-storage) and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis (at https: //cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.",
+      "file": "Client/ListDlpJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDlpJobs",
+        "fullName": "google.privacy.dlp.v2.Client.ListDlpJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListDlpJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DlpJobIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListDlpJobs",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListDlpJobs",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListInfoTypes_sync",
+      "title": "dlp ListInfoTypes Sample",
+      "description": "ListInfoTypes returns a list of the sensitive information types that DLP API\nsupports. See https: //cloud.google.com/dlp/docs/infotypes-reference (at https: //cloud.google.com/dlp/docs/infotypes-reference) to\nlearn more.",
+      "file": "Client/ListInfoTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInfoTypes",
+        "fullName": "google.privacy.dlp.v2.Client.ListInfoTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListInfoTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.ListInfoTypesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListInfoTypes",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListInfoTypes",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListInspectTemplates_sync",
+      "title": "dlp ListInspectTemplates Sample",
+      "description": "ListInspectTemplates lists InspectTemplates.\nSee https: //cloud.google.com/dlp/docs/creating-templates (at https: //cloud.google.com/dlp/docs/creating-templates) to learn more.",
+      "file": "Client/ListInspectTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInspectTemplates",
+        "fullName": "google.privacy.dlp.v2.Client.ListInspectTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListInspectTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InspectTemplateIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListInspectTemplates",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListInspectTemplates",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListJobTriggers_sync",
+      "title": "dlp ListJobTriggers Sample",
+      "description": "ListJobTriggers lists job triggers.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers (at https: //cloud.google.com/dlp/docs/creating-job-triggers) to learn more.",
+      "file": "Client/ListJobTriggers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobTriggers",
+        "fullName": "google.privacy.dlp.v2.Client.ListJobTriggers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListJobTriggersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobTriggerIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListJobTriggers",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListJobTriggers",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListStoredInfoTypes_sync",
+      "title": "dlp ListStoredInfoTypes Sample",
+      "description": "ListStoredInfoTypes lists stored infoTypes.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes (at https: //cloud.google.com/dlp/docs/creating-stored-infotypes) to\nlearn more.",
+      "file": "Client/ListStoredInfoTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListStoredInfoTypes",
+        "fullName": "google.privacy.dlp.v2.Client.ListStoredInfoTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListStoredInfoTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoredInfoTypeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListStoredInfoTypes",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListStoredInfoTypes",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_RedactImage_sync",
+      "title": "dlp RedactImage Sample",
+      "description": "RedactImage redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee https: //cloud.google.com/dlp/docs/redacting-sensitive-data-images (at https: //cloud.google.com/dlp/docs/redacting-sensitive-data-images) to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
+      "file": "Client/RedactImage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RedactImage",
+        "fullName": "google.privacy.dlp.v2.Client.RedactImage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.RedactImageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.RedactImageResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "RedactImage",
+          "fullName": "google.privacy.dlp.v2.DlpService.RedactImage",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ReidentifyContent_sync",
+      "title": "dlp ReidentifyContent Sample",
+      "description": "ReidentifyContent re-identifies content that has been de-identified.\nSee\nhttps: //cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example (at https: //cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example)\nto learn more.",
+      "file": "Client/ReidentifyContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReidentifyContent",
+        "fullName": "google.privacy.dlp.v2.Client.ReidentifyContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ReidentifyContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.ReidentifyContentResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ReidentifyContent",
+          "fullName": "google.privacy.dlp.v2.DlpService.ReidentifyContent",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateDeidentifyTemplate_sync",
+      "title": "dlp UpdateDeidentifyTemplate Sample",
+      "description": "UpdateDeidentifyTemplate updates the DeidentifyTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid (at https: //cloud.google.com/dlp/docs/creating-templates-deid) to learn\nmore.",
+      "file": "Client/UpdateDeidentifyTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeidentifyTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateDeidentifyTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateDeidentifyTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.DeidentifyTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateDeidentifyTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateDeidentifyTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateInspectTemplate_sync",
+      "title": "dlp UpdateInspectTemplate Sample",
+      "description": "UpdateInspectTemplate updates the InspectTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates (at https: //cloud.google.com/dlp/docs/creating-templates) to learn more.",
+      "file": "Client/UpdateInspectTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInspectTemplate",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateInspectTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateInspectTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.InspectTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateInspectTemplate",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateInspectTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateJobTrigger_sync",
+      "title": "dlp UpdateJobTrigger Sample",
+      "description": "UpdateJobTrigger updates a job trigger.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers (at https: //cloud.google.com/dlp/docs/creating-job-triggers) to learn more.",
+      "file": "Client/UpdateJobTrigger/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateJobTrigger",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateJobTrigger",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateJobTriggerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.JobTrigger",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateJobTrigger",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateJobTrigger",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateStoredInfoType_sync",
+      "title": "dlp UpdateStoredInfoType Sample",
+      "description": "UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version\nwill continue to be used until the new version is ready.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes (at https: //cloud.google.com/dlp/docs/creating-stored-infotypes) to\nlearn more.",
+      "file": "Client/UpdateStoredInfoType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateStoredInfoType",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateStoredInfoType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateStoredInfoTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dlppb.StoredInfoType",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateStoredInfoType",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateStoredInfoType",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

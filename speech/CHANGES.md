@@ -1,5 +1,54 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.6.0...speech/v1.7.0) (2022-09-21)
+
+
+### Features
+
+* **speech:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.5.0...speech/v1.6.0) (2022-09-19)
+
+
+### Features
+
+* **speech:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.4.0...speech/v1.5.0) (2022-06-29)
+
+
+### Features
+
+* **speech:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.3.1...speech/v1.4.0) (2022-05-24)
+
+
+### Features
+
+* **speech:** Add adaptation proto for v1 api ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
+### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.3.0...speech/v1.3.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* **speech:** use full link in comment to fix JSDoc broken link ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.2.0...speech/v1.3.0) (2022-02-23)
+
+
+### Features
+
+* **speech:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.1.0...speech/v1.2.0) (2022-02-14)
+
+
+### Features
+
+* **speech:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/speech/v1.0.0...speech/v1.1.0) (2022-01-04)
 
 

@@ -47,9 +47,20 @@ type RegionCommitmentsCallOptions struct {
 	Get            []gax.CallOption
 	Insert         []gax.CallOption
 	List           []gax.CallOption
+	Update         []gax.CallOption
 }
 
-// internalRegionCommitmentsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionCommitmentsRESTCallOptions() *RegionCommitmentsCallOptions {
+	return &RegionCommitmentsCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		Insert:         []gax.CallOption{},
+		List:           []gax.CallOption{},
+		Update:         []gax.CallOption{},
+	}
+}
+
+// internalRegionCommitmentsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionCommitmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -58,6 +69,7 @@ type internalRegionCommitmentsClient interface {
 	Get(context.Context, *computepb.GetRegionCommitmentRequest, ...gax.CallOption) (*computepb.Commitment, error)
 	Insert(context.Context, *computepb.InsertRegionCommitmentRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionCommitmentsRequest, ...gax.CallOption) *CommitmentIterator
+	Update(context.Context, *computepb.UpdateRegionCommitmentRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionCommitmentsClient is a client for interacting with Google Compute Engine API.
@@ -89,7 +101,8 @@ func (c *RegionCommitmentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionCommitmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -114,6 +127,11 @@ func (c *RegionCommitmentsClient) List(ctx context.Context, req *computepb.ListR
 	return c.internalClient.List(ctx, req, opts...)
 }
 
+// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
+func (c *RegionCommitmentsClient) Update(ctx context.Context, req *computepb.UpdateRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Update(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type regionCommitmentsRESTClient struct {
 	// The http endpoint to connect to.
@@ -127,6 +145,9 @@ type regionCommitmentsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionCommitmentsClient
+	CallOptions **RegionCommitmentsCallOptions
 }
 
 // NewRegionCommitmentsRESTClient creates a new region commitments rest client.
@@ -139,9 +160,11 @@ func NewRegionCommitmentsRESTClient(ctx context.Context, opts ...option.ClientOp
 		return nil, err
 	}
 
+	callOpts := defaultRegionCommitmentsRESTCallOptions()
 	c := &regionCommitmentsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -155,7 +178,7 @@ func NewRegionCommitmentsRESTClient(ctx context.Context, opts ...option.ClientOp
 	}
 	c.operationClient = opC
 
-	return &RegionCommitmentsClient{internalClient: c, CallOptions: &RegionCommitmentsCallOptions{}}, nil
+	return &RegionCommitmentsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionCommitmentsRESTClientOptions() []option.ClientOption {
@@ -172,7 +195,7 @@ func defaultRegionCommitmentsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *regionCommitmentsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -189,7 +212,7 @@ func (c *regionCommitmentsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionCommitmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -209,7 +232,10 @@ func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *c
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/commitments", req.GetProject())
 
 		params := url.Values{}
@@ -237,6 +263,9 @@ func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *c
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -296,14 +325,23 @@ func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *c
 
 // Get returns the specified commitment resource. Gets a list of available commitments by making a list() request.
 func (c *regionCommitmentsRESTClient) Get(ctx context.Context, req *computepb.GetRegionCommitmentRequest, opts ...gax.CallOption) (*computepb.Commitment, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/commitments/%v", req.GetProject(), req.GetRegion(), req.GetCommitment())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "commitment", url.QueryEscape(req.GetCommitment())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Commitment{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -347,7 +385,10 @@ func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/commitments", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -358,10 +399,16 @@ func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -419,7 +466,10 @@ func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.L
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/commitments", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -444,6 +494,9 @@ func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.L
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -492,6 +545,87 @@ func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.L
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// Update updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
+func (c *regionCommitmentsRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetCommitmentResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/commitments/%v", req.GetProject(), req.GetRegion(), req.GetCommitment())
+
+	params := url.Values{}
+	if req != nil && req.Paths != nil {
+		params.Add("paths", fmt.Sprintf("%v", req.GetPaths()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "commitment", url.QueryEscape(req.GetCommitment())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }
 
 // CommitmentIterator manages a stream of *computepb.Commitment.

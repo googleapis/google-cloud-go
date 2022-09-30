@@ -1,0 +1,291 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/errorreporting/apiv1beta1",
+    "version": "0.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.clouderrorreporting.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "clouderrorreporting_v1beta1_generated_ErrorGroupService_GetGroup_sync",
+      "title": "clouderrorreporting GetGroup Sample",
+      "description": "GetGroup get the specified group.",
+      "file": "ErrorGroupClient/GetGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGroup",
+        "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient.GetGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouderrorreportingpb.GetGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "clouderrorreportingpb.ErrorGroup",
+        "client": {
+          "shortName": "ErrorGroupClient",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient"
+        },
+        "method": {
+          "shortName": "GetGroup",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService.GetGroup",
+          "service": {
+            "shortName": "ErrorGroupService",
+            "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouderrorreporting_v1beta1_generated_ErrorGroupService_UpdateGroup_sync",
+      "title": "clouderrorreporting UpdateGroup Sample",
+      "description": "UpdateGroup replace the data for the specified group.\nFails if the group does not exist.",
+      "file": "ErrorGroupClient/UpdateGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGroup",
+        "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient.UpdateGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouderrorreportingpb.UpdateGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "clouderrorreportingpb.ErrorGroup",
+        "client": {
+          "shortName": "ErrorGroupClient",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient"
+        },
+        "method": {
+          "shortName": "UpdateGroup",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService.UpdateGroup",
+          "service": {
+            "shortName": "ErrorGroupService",
+            "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouderrorreporting_v1beta1_generated_ErrorStatsService_DeleteEvents_sync",
+      "title": "clouderrorreporting DeleteEvents Sample",
+      "description": "DeleteEvents deletes all error events of a given project.",
+      "file": "ErrorStatsClient/DeleteEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEvents",
+        "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient.DeleteEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouderrorreportingpb.DeleteEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "clouderrorreportingpb.DeleteEventsResponse",
+        "client": {
+          "shortName": "ErrorStatsClient",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient"
+        },
+        "method": {
+          "shortName": "DeleteEvents",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService.DeleteEvents",
+          "service": {
+            "shortName": "ErrorStatsService",
+            "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouderrorreporting_v1beta1_generated_ErrorStatsService_ListEvents_sync",
+      "title": "clouderrorreporting ListEvents Sample",
+      "description": "ListEvents lists the specified events.",
+      "file": "ErrorStatsClient/ListEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEvents",
+        "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient.ListEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouderrorreportingpb.ListEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ErrorEventIterator",
+        "client": {
+          "shortName": "ErrorStatsClient",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient"
+        },
+        "method": {
+          "shortName": "ListEvents",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService.ListEvents",
+          "service": {
+            "shortName": "ErrorStatsService",
+            "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouderrorreporting_v1beta1_generated_ErrorStatsService_ListGroupStats_sync",
+      "title": "clouderrorreporting ListGroupStats Sample",
+      "description": "ListGroupStats lists the specified groups.",
+      "file": "ErrorStatsClient/ListGroupStats/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGroupStats",
+        "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient.ListGroupStats",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouderrorreportingpb.ListGroupStatsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ErrorGroupStatsIterator",
+        "client": {
+          "shortName": "ErrorStatsClient",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient"
+        },
+        "method": {
+          "shortName": "ListGroupStats",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService.ListGroupStats",
+          "service": {
+            "shortName": "ErrorStatsService",
+            "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouderrorreporting_v1beta1_generated_ReportErrorsService_ReportErrorEvent_sync",
+      "title": "clouderrorreporting ReportErrorEvent Sample",
+      "description": "ReportErrorEvent report an individual error event and record the event to a log.\n\nThis endpoint accepts either an OAuth token,\nor an API key (at https: //support.google.com/cloud/answer/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na key parameter. For example: \n\nPOST https: //clouderrorreporting.googleapis.com/v1beta1/{projectName}/events: report?key=123ABC456\n\nNote: Error Reporting (at /error-reporting) is a global service built\non Cloud Logging and doesn’t analyze logs stored\nin regional log buckets or logs routed to other Google Cloud projects.\n\nFor more information, see\nUsing Error Reporting with regionalized\nlogs (at /error-reporting/docs/regionalization).",
+      "file": "ReportErrorsClient/ReportErrorEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportErrorEvent",
+        "fullName": "google.devtools.clouderrorreporting.v1beta1.ReportErrorsClient.ReportErrorEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouderrorreportingpb.ReportErrorEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "clouderrorreportingpb.ReportErrorEventResponse",
+        "client": {
+          "shortName": "ReportErrorsClient",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ReportErrorsClient"
+        },
+        "method": {
+          "shortName": "ReportErrorEvent",
+          "fullName": "google.devtools.clouderrorreporting.v1beta1.ReportErrorsService.ReportErrorEvent",
+          "service": {
+            "shortName": "ReportErrorsService",
+            "fullName": "google.devtools.clouderrorreporting.v1beta1.ReportErrorsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

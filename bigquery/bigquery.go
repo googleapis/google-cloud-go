@@ -23,8 +23,10 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal"
+	"cloud.google.com/go/bigquery/internal"
+	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/detect"
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
 	bq "google.golang.org/api/bigquery/v2"
@@ -40,7 +42,7 @@ const (
 	userAgentPrefix = "gcloud-golang-bigquery"
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
+var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
 
 func setClientHeader(headers http.Header) {
 	headers.Set("x-goog-api-client", xGoogHeader)
@@ -74,12 +76,12 @@ const DetectProjectID = "*detect-project-id*"
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	o := []option.ClientOption{
 		option.WithScopes(Scope),
-		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, version.Repo)),
+		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, internal.Version)),
 	}
 	o = append(o, opts...)
 	bqs, err := bq.NewService(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("bigquery: constructing client: %v", err)
+		return nil, fmt.Errorf("bigquery: constructing client: %w", err)
 	}
 
 	// Handle project autodetection.
@@ -118,7 +120,9 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	var res *bq.Job
 	var err error
 	invoke := func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.insert")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}
 	// A job with a client-generated ID can be retried; the presence of the
@@ -148,7 +152,9 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 	var res *bq.QueryResponse
 	var err error
 	invoke := func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.query")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}
 
@@ -185,7 +191,7 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 		Max:        32 * time.Second,
 		Multiplier: 2,
 	}
-	return internal.Retry(ctx, backoff, func() (stop bool, err error) {
+	return cloudinternal.Retry(ctx, backoff, func() (stop bool, err error) {
 		err = call()
 		if err == nil {
 			return true, nil

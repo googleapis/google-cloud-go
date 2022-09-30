@@ -110,7 +110,7 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 	}
 }
 
-// internalUptimeCheckClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalUptimeCheckClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalUptimeCheckClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -159,7 +159,8 @@ func (c *UptimeCheckClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *UptimeCheckClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -267,7 +268,8 @@ func NewUptimeCheckClient(ctx context.Context, opts ...option.ClientOption) (*Up
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *uptimeCheckGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -277,7 +279,7 @@ func (c *uptimeCheckGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *uptimeCheckGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -289,6 +291,7 @@ func (c *uptimeCheckGRPCClient) Close() error {
 
 func (c *uptimeCheckGRPCClient) ListUptimeCheckConfigs(ctx context.Context, req *monitoringpb.ListUptimeCheckConfigsRequest, opts ...gax.CallOption) *UptimeCheckConfigIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListUptimeCheckConfigs[0:len((*c.CallOptions).ListUptimeCheckConfigs):len((*c.CallOptions).ListUptimeCheckConfigs)], opts...)
 	it := &UptimeCheckConfigIterator{}
@@ -338,6 +341,7 @@ func (c *uptimeCheckGRPCClient) GetUptimeCheckConfig(ctx context.Context, req *m
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetUptimeCheckConfig[0:len((*c.CallOptions).GetUptimeCheckConfig):len((*c.CallOptions).GetUptimeCheckConfig)], opts...)
 	var resp *monitoringpb.UptimeCheckConfig
@@ -359,6 +363,7 @@ func (c *uptimeCheckGRPCClient) CreateUptimeCheckConfig(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateUptimeCheckConfig[0:len((*c.CallOptions).CreateUptimeCheckConfig):len((*c.CallOptions).CreateUptimeCheckConfig)], opts...)
 	var resp *monitoringpb.UptimeCheckConfig
@@ -380,6 +385,7 @@ func (c *uptimeCheckGRPCClient) UpdateUptimeCheckConfig(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "uptime_check_config.name", url.QueryEscape(req.GetUptimeCheckConfig().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateUptimeCheckConfig[0:len((*c.CallOptions).UpdateUptimeCheckConfig):len((*c.CallOptions).UpdateUptimeCheckConfig)], opts...)
 	var resp *monitoringpb.UptimeCheckConfig
@@ -401,6 +407,7 @@ func (c *uptimeCheckGRPCClient) DeleteUptimeCheckConfig(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteUptimeCheckConfig[0:len((*c.CallOptions).DeleteUptimeCheckConfig):len((*c.CallOptions).DeleteUptimeCheckConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

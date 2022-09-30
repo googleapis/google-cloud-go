@@ -17,51 +17,62 @@
 // Package compute is an auto-generated package for the
 // Google Compute Engine API.
 //
-// Example usage
+// # Example usage
 //
 // To get started with this package, create a client.
-//  ctx := context.Background()
-//  c, err := compute.NewAcceleratorTypesClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := compute.NewAcceleratorTypesClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// Using the Client
+// # Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//  ctx := context.Background()
-//  c, err := compute.NewAcceleratorTypesRESTClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := compute.NewAcceleratorTypesRESTClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
-//  req := &computepb.AggregatedListAcceleratorTypesRequest{
-//  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAcceleratorTypesRequest.
-//  }
-//  it := c.AggregatedList(ctx, req)
-//  for {
-//  	resp, err := it.Next()
-//  	if err == iterator.Done {
-//  		break
-//  	}
-//  	if err != nil {
-//  		// TODO: Handle error.
-//  	}
-//  	// TODO: Use resp.
-//  	_ = resp
-//  }
+//	req := &computepb.AggregatedListAcceleratorTypesRequest{
+//		// TODO: Fill request struct fields.
+//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAcceleratorTypesRequest.
+//	}
+//	it := c.AggregatedList(ctx, req)
+//	for {
+//		resp, err := it.Next()
+//		if err == iterator.Done {
+//			break
+//		}
+//		if err != nil {
+//			// TODO: Handle error.
+//		}
+//		// TODO: Use resp.
+//		_ = resp
+//	}
 //
-// Use of Context
+// # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewAcceleratorTypesClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
@@ -73,6 +84,7 @@ package compute // import "cloud.google.com/go/compute/apiv1"
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"runtime"
@@ -80,7 +92,6 @@ import (
 	"strings"
 	"unicode"
 
-	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
 )
@@ -90,7 +101,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220202"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -163,7 +181,7 @@ func versionGo() string {
 // of receiving an unknown enum value.
 func maybeUnknownEnum(err error) error {
 	if strings.Contains(err.Error(), "invalid value for enum type") {
-		err = xerrors.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
 	}
 	return err
 }

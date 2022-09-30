@@ -35,6 +35,66 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ExtEnum is an externally define enum.
+type ExtEnum int32
+
+const (
+	ExtEnum_UNDEFINED   ExtEnum = 0
+	ExtEnum_THING       ExtEnum = 1
+	ExtEnum_OTHER_THING ExtEnum = 2
+)
+
+// Enum value maps for ExtEnum.
+var (
+	ExtEnum_name = map[int32]string{
+		0: "UNDEFINED",
+		1: "THING",
+		2: "OTHER_THING",
+	}
+	ExtEnum_value = map[string]int32{
+		"UNDEFINED":   0,
+		"THING":       1,
+		"OTHER_THING": 2,
+	}
+)
+
+func (x ExtEnum) Enum() *ExtEnum {
+	p := new(ExtEnum)
+	*p = x
+	return p
+}
+
+func (x ExtEnum) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExtEnum) Descriptor() protoreflect.EnumDescriptor {
+	return file_messages_proto2_proto_enumTypes[0].Descriptor()
+}
+
+func (ExtEnum) Type() protoreflect.EnumType {
+	return &file_messages_proto2_proto_enumTypes[0]
+}
+
+func (x ExtEnum) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Do not use.
+func (x *ExtEnum) UnmarshalJSON(b []byte) error {
+	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
+	if err != nil {
+		return err
+	}
+	*x = ExtEnum(num)
+	return nil
+}
+
+// Deprecated: Use ExtEnum.Descriptor instead.
+func (ExtEnum) EnumDescriptor() ([]byte, []int) {
+	return file_messages_proto2_proto_rawDescGZIP(), []int{0}
+}
+
 // SimpleMessage represents a simple message that transmits a string and int64 value.
 type SimpleMessageProto2 struct {
 	state         protoimpl.MessageState
@@ -413,6 +473,165 @@ func (x *GithubArchiveMessageProto2) GetOther() string {
 	return ""
 }
 
+// ExternalEnumMessage demonstrates an externally defined enum
+// being present in two different submessages.
+type ExternalEnumMessage struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	MsgA *EnumMsgA `protobuf:"bytes,1,opt,name=msg_a,json=msgA" json:"msg_a,omitempty"`
+	MsgB *EnumMsgB `protobuf:"bytes,2,opt,name=msg_b,json=msgB" json:"msg_b,omitempty"`
+}
+
+func (x *ExternalEnumMessage) Reset() {
+	*x = ExternalEnumMessage{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto2_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ExternalEnumMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExternalEnumMessage) ProtoMessage() {}
+
+func (x *ExternalEnumMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto2_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExternalEnumMessage.ProtoReflect.Descriptor instead.
+func (*ExternalEnumMessage) Descriptor() ([]byte, []int) {
+	return file_messages_proto2_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ExternalEnumMessage) GetMsgA() *EnumMsgA {
+	if x != nil {
+		return x.MsgA
+	}
+	return nil
+}
+
+func (x *ExternalEnumMessage) GetMsgB() *EnumMsgB {
+	if x != nil {
+		return x.MsgB
+	}
+	return nil
+}
+
+type EnumMsgA struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Foo *string  `protobuf:"bytes,1,opt,name=foo" json:"foo,omitempty"`
+	Bar *ExtEnum `protobuf:"varint,2,opt,name=bar,enum=testdata.ExtEnum" json:"bar,omitempty"`
+}
+
+func (x *EnumMsgA) Reset() {
+	*x = EnumMsgA{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto2_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EnumMsgA) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnumMsgA) ProtoMessage() {}
+
+func (x *EnumMsgA) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto2_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnumMsgA.ProtoReflect.Descriptor instead.
+func (*EnumMsgA) Descriptor() ([]byte, []int) {
+	return file_messages_proto2_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *EnumMsgA) GetFoo() string {
+	if x != nil && x.Foo != nil {
+		return *x.Foo
+	}
+	return ""
+}
+
+func (x *EnumMsgA) GetBar() ExtEnum {
+	if x != nil && x.Bar != nil {
+		return *x.Bar
+	}
+	return ExtEnum_UNDEFINED
+}
+
+type EnumMsgB struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Baz *ExtEnum `protobuf:"varint,1,opt,name=baz,enum=testdata.ExtEnum" json:"baz,omitempty"`
+}
+
+func (x *EnumMsgB) Reset() {
+	*x = EnumMsgB{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto2_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EnumMsgB) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnumMsgB) ProtoMessage() {}
+
+func (x *EnumMsgB) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto2_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnumMsgB.ProtoReflect.Descriptor instead.
+func (*EnumMsgB) Descriptor() ([]byte, []int) {
+	return file_messages_proto2_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *EnumMsgB) GetBaz() ExtEnum {
+	if x != nil && x.Baz != nil {
+		return *x.Baz
+	}
+	return ExtEnum_UNDEFINED
+}
+
 var File_messages_proto2_proto protoreflect.FileDescriptor
 
 var file_messages_proto2_proto_rawDesc = []byte{
@@ -463,11 +682,28 @@ var file_messages_proto2_proto_rawDesc = []byte{
 	0x5f, 0x61, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74,
 	0x65, 0x64, 0x41, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x18, 0x09, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x42, 0x3d, 0x5a, 0x3b, 0x63, 0x6c,
-	0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67,
-	0x6f, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x73, 0x74, 0x6f, 0x72, 0x61,
-	0x67, 0x65, 0x2f, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x77, 0x72, 0x69, 0x74, 0x65, 0x72,
-	0x2f, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x22, 0x67, 0x0a, 0x13, 0x45, 0x78,
+	0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x45, 0x6e, 0x75, 0x6d, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x12, 0x27, 0x0a, 0x05, 0x6d, 0x73, 0x67, 0x5f, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x12, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x45, 0x6e, 0x75, 0x6d,
+	0x4d, 0x73, 0x67, 0x41, 0x52, 0x04, 0x6d, 0x73, 0x67, 0x41, 0x12, 0x27, 0x0a, 0x05, 0x6d, 0x73,
+	0x67, 0x5f, 0x62, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x74, 0x65, 0x73, 0x74,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x45, 0x6e, 0x75, 0x6d, 0x4d, 0x73, 0x67, 0x42, 0x52, 0x04, 0x6d,
+	0x73, 0x67, 0x42, 0x22, 0x41, 0x0a, 0x08, 0x45, 0x6e, 0x75, 0x6d, 0x4d, 0x73, 0x67, 0x41, 0x12,
+	0x10, 0x0a, 0x03, 0x66, 0x6f, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x66, 0x6f,
+	0x6f, 0x12, 0x23, 0x0a, 0x03, 0x62, 0x61, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x11,
+	0x2e, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x45, 0x78, 0x74, 0x45, 0x6e, 0x75,
+	0x6d, 0x52, 0x03, 0x62, 0x61, 0x72, 0x22, 0x2f, 0x0a, 0x08, 0x45, 0x6e, 0x75, 0x6d, 0x4d, 0x73,
+	0x67, 0x42, 0x12, 0x23, 0x0a, 0x03, 0x62, 0x61, 0x7a, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x11, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x45, 0x78, 0x74, 0x45, 0x6e,
+	0x75, 0x6d, 0x52, 0x03, 0x62, 0x61, 0x7a, 0x2a, 0x34, 0x0a, 0x07, 0x45, 0x78, 0x74, 0x45, 0x6e,
+	0x75, 0x6d, 0x12, 0x0d, 0x0a, 0x09, 0x55, 0x4e, 0x44, 0x45, 0x46, 0x49, 0x4e, 0x45, 0x44, 0x10,
+	0x00, 0x12, 0x09, 0x0a, 0x05, 0x54, 0x48, 0x49, 0x4e, 0x47, 0x10, 0x01, 0x12, 0x0f, 0x0a, 0x0b,
+	0x4f, 0x54, 0x48, 0x45, 0x52, 0x5f, 0x54, 0x48, 0x49, 0x4e, 0x47, 0x10, 0x02, 0x42, 0x3d, 0x5a,
+	0x3b, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x73, 0x74,
+	0x6f, 0x72, 0x61, 0x67, 0x65, 0x2f, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x77, 0x72, 0x69,
+	0x74, 0x65, 0x72, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61,
 }
 
 var (
@@ -482,23 +718,32 @@ func file_messages_proto2_proto_rawDescGZIP() []byte {
 	return file_messages_proto2_proto_rawDescData
 }
 
-var file_messages_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_messages_proto2_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_messages_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_messages_proto2_proto_goTypes = []interface{}{
-	(*SimpleMessageProto2)(nil),        // 0: testdata.SimpleMessageProto2
-	(*SimpleMessageEvolvedProto2)(nil), // 1: testdata.SimpleMessageEvolvedProto2
-	(*GithubArchiveEntityProto2)(nil),  // 2: testdata.GithubArchiveEntityProto2
-	(*GithubArchiveRepoProto2)(nil),    // 3: testdata.GithubArchiveRepoProto2
-	(*GithubArchiveMessageProto2)(nil), // 4: testdata.GithubArchiveMessageProto2
+	(ExtEnum)(0),                       // 0: testdata.ExtEnum
+	(*SimpleMessageProto2)(nil),        // 1: testdata.SimpleMessageProto2
+	(*SimpleMessageEvolvedProto2)(nil), // 2: testdata.SimpleMessageEvolvedProto2
+	(*GithubArchiveEntityProto2)(nil),  // 3: testdata.GithubArchiveEntityProto2
+	(*GithubArchiveRepoProto2)(nil),    // 4: testdata.GithubArchiveRepoProto2
+	(*GithubArchiveMessageProto2)(nil), // 5: testdata.GithubArchiveMessageProto2
+	(*ExternalEnumMessage)(nil),        // 6: testdata.ExternalEnumMessage
+	(*EnumMsgA)(nil),                   // 7: testdata.EnumMsgA
+	(*EnumMsgB)(nil),                   // 8: testdata.EnumMsgB
 }
 var file_messages_proto2_proto_depIdxs = []int32{
-	3, // 0: testdata.GithubArchiveMessageProto2.repo:type_name -> testdata.GithubArchiveRepoProto2
-	2, // 1: testdata.GithubArchiveMessageProto2.actor:type_name -> testdata.GithubArchiveEntityProto2
-	2, // 2: testdata.GithubArchiveMessageProto2.org:type_name -> testdata.GithubArchiveEntityProto2
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	4, // 0: testdata.GithubArchiveMessageProto2.repo:type_name -> testdata.GithubArchiveRepoProto2
+	3, // 1: testdata.GithubArchiveMessageProto2.actor:type_name -> testdata.GithubArchiveEntityProto2
+	3, // 2: testdata.GithubArchiveMessageProto2.org:type_name -> testdata.GithubArchiveEntityProto2
+	7, // 3: testdata.ExternalEnumMessage.msg_a:type_name -> testdata.EnumMsgA
+	8, // 4: testdata.ExternalEnumMessage.msg_b:type_name -> testdata.EnumMsgB
+	0, // 5: testdata.EnumMsgA.bar:type_name -> testdata.ExtEnum
+	0, // 6: testdata.EnumMsgB.baz:type_name -> testdata.ExtEnum
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_messages_proto2_proto_init() }
@@ -567,19 +812,56 @@ func file_messages_proto2_proto_init() {
 				return nil
 			}
 		}
+		file_messages_proto2_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ExternalEnumMessage); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_messages_proto2_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EnumMsgA); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_messages_proto2_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EnumMsgB); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_messages_proto2_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   5,
+			NumEnums:      1,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_messages_proto2_proto_goTypes,
 		DependencyIndexes: file_messages_proto2_proto_depIdxs,
+		EnumInfos:         file_messages_proto2_proto_enumTypes,
 		MessageInfos:      file_messages_proto2_proto_msgTypes,
 	}.Build()
 	File_messages_proto2_proto = out.File

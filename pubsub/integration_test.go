@@ -127,15 +127,6 @@ func TestIntegration_All(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	for _, sync := range []bool{false, true} {
-		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
-			testPublishAndReceive(t, client, maxMsgs, sync, 10, 0)
-		}
-
-		// Tests for large messages (larger than the 4MB gRPC limit).
-		testPublishAndReceive(t, client, 0, sync, 1, 5*1024*1024)
-	}
-
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
 		t.Errorf("CreateTopic error: %v", err)
@@ -228,6 +219,20 @@ func TestIntegration_All(t *testing.T) {
 	}
 }
 
+func TestPublishReceive(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+
+	for _, sync := range []bool{false, true} {
+		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+			testPublishAndReceive(t, client, maxMsgs, sync, false, 10, 0)
+		}
+
+		// Tests for large messages (larger than the 4MB gRPC limit).
+		testPublishAndReceive(t, client, 0, sync, false, 1, 5*1024*1024)
+	}
+}
+
 // withGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request and returns the
 // updated context.
@@ -246,93 +251,100 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
-	ctx := context.Background()
-	topic, err := client.CreateTopic(ctx, topicIDs.New())
-	if err != nil {
-		t.Errorf("CreateTopic error: %v", err)
-	}
-	defer topic.Stop()
-	exists, err := topic.Exists(ctx)
-	if err != nil {
-		t.Fatalf("TopicExists error: %v", err)
-	}
-	if !exists {
-		t.Errorf("topic %v should exist, but it doesn't", topic)
-	}
-
-	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
-		t.Errorf("CreateSub error: %v", err)
-	}
-	exists, err = sub.Exists(ctx)
-	if err != nil {
-		t.Fatalf("SubExists error: %v", err)
-	}
-	if !exists {
-		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
-	}
-	var msgs []*Message
-	for i := 0; i < numMsgs; i++ {
-		text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
-		attrs := make(map[string]string)
-		attrs["foo"] = "bar"
-		msgs = append(msgs, &Message{
-			Data:       []byte(text),
-			Attributes: attrs,
-		})
-	}
-
-	// Publish some messages.
-	type pubResult struct {
-		m *Message
-		r *PublishResult
-	}
-	var rs []pubResult
-	for _, m := range msgs {
-		r := topic.Publish(ctx, m)
-		rs = append(rs, pubResult{m, r})
-	}
-	want := make(map[string]messageData)
-	for _, res := range rs {
-		id, err := res.r.Get(ctx)
+func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous, exactlyOnceDelivery bool, numMsgs, extraBytes int) {
+	t.Run(fmt.Sprintf("maxMsgs:%d,synchronous:%t,exactlyOnceDelivery:%t,numMsgs:%d", maxMsgs, synchronous, exactlyOnceDelivery, numMsgs), func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		topic, err := client.CreateTopic(ctx, topicIDs.New())
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("CreateTopic error: %v", err)
 		}
-		md := extractMessageData(res.m)
-		md.ID = id
-		want[md.ID] = md
-	}
+		defer topic.Stop()
+		exists, err := topic.Exists(ctx)
+		if err != nil {
+			t.Fatalf("TopicExists error: %v", err)
+		}
+		if !exists {
+			t.Errorf("topic %v should exist, but it doesn't", topic)
+		}
 
-	sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
-	sub.ReceiveSettings.Synchronous = synchronous
+		sub, err := client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+			Topic:                     topic,
+			EnableExactlyOnceDelivery: exactlyOnceDelivery,
+		})
+		if err != nil {
+			t.Errorf("CreateSub error: %v", err)
+		}
+		exists, err = sub.Exists(ctx)
+		if err != nil {
+			t.Fatalf("SubExists error: %v", err)
+		}
+		if !exists {
+			t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
+		}
+		var msgs []*Message
+		for i := 0; i < numMsgs; i++ {
+			text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
+			attrs := make(map[string]string)
+			attrs["foo"] = "bar"
+			msgs = append(msgs, &Message{
+				Data:       []byte(text),
+				Attributes: attrs,
+			})
+		}
 
-	// Use a timeout to ensure that Pull does not block indefinitely if there are
-	// unexpectedly few messages available.
-	now := time.Now()
-	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
-	defer cancel()
-	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
-		m.Ack()
-	})
-	if err != nil {
-		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Since(now) >= time.Minute {
-				t.Fatal("pullN took too long")
+		// Publish some messages.
+		type pubResult struct {
+			m *Message
+			r *PublishResult
+		}
+		var rs []pubResult
+		for _, m := range msgs {
+			r := topic.Publish(ctx, m)
+			rs = append(rs, pubResult{m, r})
+		}
+		want := make(map[string]messageData)
+		for _, res := range rs {
+			id, err := res.r.Get(ctx)
+			if err != nil {
+				t.Fatal(err)
 			}
-		} else {
-			t.Fatalf("Pull: %v", err)
+			md := extractMessageData(res.m)
+			md.ID = id
+			want[md.ID] = md
 		}
-	}
-	got := make(map[string]messageData)
-	for _, m := range gotMsgs {
-		md := extractMessageData(m)
-		got[md.ID] = md
-	}
-	if !testutil.Equal(got, want) {
-		t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
-			maxMsgs, synchronous, got, want)
-	}
+
+		sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
+		sub.ReceiveSettings.Synchronous = synchronous
+
+		// Use a timeout to ensure that Pull does not block indefinitely if there are
+		// unexpectedly few messages available.
+		now := time.Now()
+		timeout := 3 * time.Minute
+		timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+		gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+			m.Ack()
+		})
+		if err != nil {
+			if c := status.Convert(err); c.Code() == codes.Canceled {
+				if time.Since(now) >= timeout {
+					t.Fatal("pullN took too long")
+				}
+			} else {
+				t.Fatalf("Pull: %v", err)
+			}
+		}
+		got := make(map[string]messageData)
+		for _, m := range gotMsgs {
+			md := extractMessageData(m)
+			got[md.ID] = md
+		}
+		if !testutil.Equal(got, want) {
+			t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
+				maxMsgs, synchronous, got, want)
+		}
+	})
 }
 
 // IAM tests.
@@ -624,6 +636,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 				ServiceAccountEmail: serviceAccountEmail,
 			},
 		},
+		State: SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
 	if diff := testutil.Diff(got, want, opt); diff != "" {
@@ -657,6 +670,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		RetentionDuration:   2 * time.Hour,
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    25 * time.Hour,
+		State:               SubscriptionStateActive,
 	}
 
 	if !testutil.Equal(got, want, opt) {
@@ -1275,7 +1289,6 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
-		t.Fatal(err)
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 }
@@ -1976,4 +1989,16 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	if got := cfg.RetentionDuration; got != nil {
 		t.Fatalf("expected cleared retention duration, got: %v", got)
 	}
+}
+
+func TestExactlyOnceDelivery_PublishReceive(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+
+	for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+		testPublishAndReceive(t, client, maxMsgs, false, true, 10, 0)
+	}
+
+	// Tests for large messages (larger than the 4MB gRPC limit).
+	testPublishAndReceive(t, client, 0, false, true, 1, 5*1024*1024)
 }

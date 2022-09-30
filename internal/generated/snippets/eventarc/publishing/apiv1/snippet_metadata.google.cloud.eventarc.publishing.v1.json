@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/eventarc/publishing/apiv1",
+    "version": "1.6.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.eventarc.publishing.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishChannelConnectionEvents_sync",
+      "title": "eventarcpublishing PublishChannelConnectionEvents Sample",
+      "description": "PublishChannelConnectionEvents publish events to a ChannelConnection in a partner’s project.",
+      "file": "PublisherClient/PublishChannelConnectionEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PublishChannelConnectionEvents",
+        "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient.PublishChannelConnectionEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "publisherpb.PublishChannelConnectionEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "publisherpb.PublishChannelConnectionEventsResponse",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "PublishChannelConnectionEvents",
+          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.PublishChannelConnectionEvents",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.cloud.eventarc.publishing.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishEvents_sync",
+      "title": "eventarcpublishing PublishEvents Sample",
+      "description": "PublishEvents publish events to a subscriber’s channel.",
+      "file": "PublisherClient/PublishEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PublishEvents",
+        "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient.PublishEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "publisherpb.PublishEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "publisherpb.PublishEventsResponse",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "PublishEvents",
+          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.PublishEvents",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.cloud.eventarc.publishing.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

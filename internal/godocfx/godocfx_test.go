@@ -19,9 +19,12 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -42,16 +45,35 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func fakeMetaServer() *httptest.Server {
+	meta := repoMetadata{
+		"cloud.google.com/go/storage": repoMetadataItem{
+			Description: "Storage API",
+		},
+		"cloud.google.com/iam/apiv1beta1": repoMetadataItem{
+			Description: "IAM",
+		},
+		"cloud.google.com/go/cloudbuild/apiv1/v2": repoMetadataItem{
+			Description: "Cloud Build API",
+		},
+	}
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(meta)
+	}))
+}
+
 func TestParse(t *testing.T) {
 	mod := "cloud.google.com/go/bigquery"
-	r, err := parse(mod+"/...", ".", []string{"README.md"}, nil)
+	metaServer := fakeMetaServer()
+	defer metaServer.Close()
+	r, err := parse(mod+"/...", ".", []string{"README.md"}, nil, &friendlyAPINamer{metaURL: metaServer.URL})
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
 	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(r.pages), 12; got != want {
+	if got, want := len(r.pages), 18; got != want {
 		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
 	}
 	if got := r.module.Path; got != mod {
@@ -110,7 +132,9 @@ func TestGoldens(t *testing.T) {
 	extraFiles := []string{"README.md"}
 
 	testPath := "cloud.google.com/go/storage"
-	r, err := parse(testPath, ".", extraFiles, nil)
+	metaServer := fakeMetaServer()
+	defer metaServer.Close()
+	r, err := parse(testPath, ".", extraFiles, nil, &friendlyAPINamer{metaURL: metaServer.URL})
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -279,6 +303,45 @@ Deprecated: use Reader.Attrs.Size.`,
 	for _, test := range tests {
 		if got := getStatus(test.doc); got != test.want {
 			t.Errorf("getStatus(%v) got %q, want %q", test.doc, got, test.want)
+		}
+	}
+}
+
+func TestFriendlyAPIName(t *testing.T) {
+	metaServer := fakeMetaServer()
+	defer metaServer.Close()
+	namer := &friendlyAPINamer{metaURL: metaServer.URL}
+
+	tests := []struct {
+		importPath string
+		want       string
+	}{
+		{
+			importPath: "cloud.google.com/go/storage",
+			want:       "Storage API",
+		},
+		{
+			importPath: "cloud.google.com/iam/apiv1beta1",
+			want:       "IAM v1beta1",
+		},
+		{
+			importPath: "cloud.google.com/go/cloudbuild/apiv1/v2",
+			want:       "Cloud Build API v1",
+		},
+		{
+			importPath: "not found",
+			want:       "",
+		},
+	}
+
+	for _, test := range tests {
+		got, err := namer.friendlyAPIName(test.importPath)
+		if err != nil {
+			t.Errorf("friendlyAPIName(%q) got err: %v", test.importPath, err)
+			continue
+		}
+		if got != test.want {
+			t.Errorf("friendlyAPIName(%q) got %q, want %q", test.importPath, got, test.want)
 		}
 	}
 }

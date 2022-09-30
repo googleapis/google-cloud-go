@@ -178,7 +178,7 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 	if !ok {
 		panic(fmt.Sprintf("topic name must be of the form %q", topicPattern))
 	}
-	_, _ = s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
+	s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
 	req := &pb.PublishRequest{
 		Topic:    topic,
 		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs, OrderingKey: orderingKey}},
@@ -319,6 +319,9 @@ func (s *GServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error)
 	if s.topics[t.Name] != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "topic %q", t.Name)
 	}
+	if err := checkMRD(t.MessageRetentionDuration); err != nil {
+		return nil, err
+	}
 	top := newTopic(t)
 	s.topics[t.Name] = top
 	return top.proto, nil
@@ -356,6 +359,11 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 			t.proto.Labels = req.Topic.Labels
 		case "message_storage_policy":
 			t.proto.MessageStoragePolicy = req.Topic.MessageStoragePolicy
+		case "message_retention_duration":
+			if err := checkMRD(req.Topic.MessageRetentionDuration); err != nil {
+				return nil, err
+			}
+			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -472,6 +480,12 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
+	if ps.BigqueryConfig == nil {
+		ps.BigqueryConfig = &pb.BigQueryConfig{}
+	} else if ps.BigqueryConfig.Table != "" {
+		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+	}
+	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	var deadLetterTopic *topic
 	if ps.DeadLetterPolicy != nil {
 		dlTopic, ok := s.topics[ps.DeadLetterPolicy.DeadLetterTopic]
@@ -494,8 +508,9 @@ var minAckDeadlineSecs int32
 // SetMinAckDeadline changes the minack deadline to n. Must be
 // greater than or equal to 1 second. Remember to reset this value
 // to the default after your test changes it. Example usage:
-// 		pstest.SetMinAckDeadlineSecs(1)
-// 		defer pstest.ResetMinAckDeadlineSecs()
+//
+//	pstest.SetMinAckDeadlineSecs(1)
+//	defer pstest.ResetMinAckDeadlineSecs()
 func SetMinAckDeadline(n time.Duration) {
 	if n < time.Second {
 		panic("SetMinAckDeadline expects a value greater than 1 second")
@@ -525,6 +540,9 @@ const (
 var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
 
 func checkMRD(pmrd *durpb.Duration) error {
+	if pmrd == nil {
+		return nil
+	}
 	mrd := pmrd.AsDuration()
 	if mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
 		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
@@ -567,6 +585,12 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		case "push_config":
 			sub.proto.PushConfig = req.Subscription.PushConfig
 
+		case "bigquery_config":
+			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
+			if sub.proto.GetBigqueryConfig().GetTable() != "" {
+				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+			}
+
 		case "ack_deadline_seconds":
 			a := req.Subscription.AckDeadlineSeconds
 			if err := checkAckDeadline(a); err != nil {
@@ -604,6 +628,12 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 
 		case "filter":
 			sub.proto.Filter = req.Subscription.Filter
+
+		case "enable_exactly_once_delivery":
+			sub.proto.EnableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			for _, st := range sub.streams {
+				st.enableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			}
 
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
@@ -773,6 +803,7 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 	if at == 0 {
 		at = 10 * time.Second
 	}
+	ps.State = pb.Subscription_ACTIVE
 	return &subscription{
 		topic:           t,
 		deadLetterTopic: deadLetterTopic,
@@ -902,6 +933,7 @@ func (s *GServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
 	}
 	// Create a new stream to handle the pull.
 	st := sub.newStream(sps, s.streamTimeout)
+	st.ackTimeout = time.Duration(req.StreamAckDeadlineSeconds) * time.Second
 	err = st.pull(&s.wg)
 	sub.deleteStream(st)
 	return err
@@ -979,7 +1011,7 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	var msgs []*pb.ReceivedMessage
-	for id, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
@@ -1001,6 +1033,32 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	return msgs
 }
 
+func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
+	if !enableMessageOrdering {
+		return msgs
+	}
+	result := make(map[string]*message)
+
+	type msg struct {
+		id string
+		m  *message
+	}
+	orderingKeyMap := make(map[string]msg)
+	for id, m := range msgs {
+		orderingKey := m.proto.Message.OrderingKey
+		if orderingKey == "" {
+			orderingKey = id
+		}
+		if val, ok := orderingKeyMap[orderingKey]; !ok || m.proto.Message.PublishTime.AsTime().Before(val.m.proto.Message.PublishTime.AsTime()) {
+			orderingKeyMap[orderingKey] = msg{m: m, id: id}
+		}
+	}
+	for _, val := range orderingKeyMap {
+		result[val.id] = val.m
+	}
+	return result
+}
+
 func (s *subscription) deliver() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1009,7 +1067,7 @@ func (s *subscription) deliver() {
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
-	for id, m := range s.msgs {
+	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
@@ -1087,12 +1145,14 @@ func (s *subscription) maintainMessages(now time.Time) {
 
 func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration) *stream {
 	st := &stream{
-		sub:        s,
-		done:       make(chan struct{}),
-		msgc:       make(chan *pb.ReceivedMessage),
-		gstream:    gs,
-		ackTimeout: s.ackTimeout,
-		timeout:    timeout,
+		sub:                       s,
+		done:                      make(chan struct{}),
+		msgc:                      make(chan *pb.ReceivedMessage),
+		gstream:                   gs,
+		ackTimeout:                s.ackTimeout,
+		timeout:                   timeout,
+		enableExactlyOnceDelivery: s.proto.EnableExactlyOnceDelivery,
+		enableOrdering:            s.proto.EnableMessageOrdering,
 	}
 	s.mu.Lock()
 	s.streams = append(s.streams, st)
@@ -1169,12 +1229,14 @@ func (m *message) makeAvailable() {
 }
 
 type stream struct {
-	sub        *subscription
-	done       chan struct{} // closed when the stream is finished
-	msgc       chan *pb.ReceivedMessage
-	gstream    pb.Subscriber_StreamingPullServer
-	ackTimeout time.Duration
-	timeout    time.Duration
+	sub                       *subscription
+	done                      chan struct{} // closed when the stream is finished
+	msgc                      chan *pb.ReceivedMessage
+	gstream                   pb.Subscriber_StreamingPullServer
+	ackTimeout                time.Duration
+	timeout                   time.Duration
+	enableExactlyOnceDelivery bool
+	enableOrdering            bool
 }
 
 // pull manages the StreamingPull interaction for the life of the stream.
@@ -1212,7 +1274,13 @@ func (st *stream) sendLoop() error {
 		case <-st.done:
 			return nil
 		case rm := <-st.msgc:
-			res := &pb.StreamingPullResponse{ReceivedMessages: []*pb.ReceivedMessage{rm}}
+			res := &pb.StreamingPullResponse{
+				ReceivedMessages: []*pb.ReceivedMessage{rm},
+				SubscriptionProperties: &pb.StreamingPullResponse_SubscriptionProperties{
+					ExactlyOnceDeliveryEnabled: st.enableExactlyOnceDelivery,
+					MessageOrderingEnabled:     st.enableOrdering,
+				},
+			}
 			if err := st.gstream.Send(res); err != nil {
 				return err
 			}

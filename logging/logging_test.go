@@ -24,9 +24,11 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -37,8 +39,11 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
+	"cloud.google.com/go/logging/internal"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
@@ -48,6 +53,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 const testLogIDPrefix = "GO-LOGGING-CLIENT/TEST-LOG"
@@ -81,6 +87,10 @@ func testNow() time.Time {
 
 func TestMain(m *testing.M) {
 	flag.Parse() // needed for testing.Short()
+
+	// disable ingesting instrumentation log entry
+	internal.InstrumentOnce.Do(func() {})
+
 	ctx = context.Background()
 	testProjectID = testutil.ProjID()
 	errorc = make(chan error, 100)
@@ -332,9 +342,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
-				TraceSampled: true,
-			},
+			want: logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with blank span",
 			in: logging.Entry{
@@ -401,6 +409,163 @@ func TestToLogEntry(t *testing.T) {
 				},
 			},
 			wantError: errors.New("logging: HTTPRequest must have a non-nil Request"),
+		},
+		{
+			name: "Traceparent header with entry fields unset",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-01"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:  "projects/P/traces/105445aa7843bc8bf206b12000100012",
+				SpanId: "000000000000004a",
+			},
+		},
+		{
+			name: "traceparent header with preset sampled field",
+			in: logging.Entry{
+				TraceSampled: true,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100012",
+				SpanId:       "000000000000004a",
+				TraceSampled: true,
+			},
+		},
+		{
+			name: "Traceparent header together with x-trace-context header",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120000000/0000000000000bbb;o=1"},
+							"Traceparent":           {"00-105445aa7843bc8bf206b1200010aaaa-0000000000000aaa-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:  "projects/P/traces/105445aa7843bc8bf206b1200010aaaa",
+				SpanId: "0000000000000aaa",
+			},
+		},
+		{
+			name: "Traceparent header invalid protocol",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"01-105445aa7843bc8bf206b12000100012-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header short trace field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header long trace field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-1234567890123456789012345678901234567890-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header invalid trace field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-123456789012345678901234567890xx-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header trace field all 0s",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-00000000000000000000000000000000-000000000000004a-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header short span field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-123456789012345-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header long span field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-12345678901234567890-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header invalid span field",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-abcdefghijklmnop-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		},
+		{
+			name: "Traceparent header span field all 0s",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"Traceparent": {"00-12345678901234567890123456789012-0000000000000000-00"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
 		},
 	}
 	for _, test := range tests {
@@ -730,7 +895,8 @@ func waitFor(f func() bool) bool {
 
 // Interleave a lot of Log and Flush calls, to induce race conditions.
 // Run this test with:
-//   go test -run LogFlushRace -race -count 100
+//
+//	go test -run LogFlushRace -race -count 100
 func TestLogFlushRace(t *testing.T) {
 	initLogs() // Generate new testLogID
 	lg := client.Logger(testLogID,
@@ -836,4 +1002,443 @@ func TestSeverityMarshalThenUnmarshal(t *testing.T) {
 	if entryU.Severity != logging.Warning {
 		t.Fatalf("Severity: got %v, want %v", entryU.Severity, logging.Warning)
 	}
+}
+
+func TestSourceLocationPopulation(t *testing.T) {
+	tests := []struct {
+		name   string
+		logger *logging.Logger
+		in     logging.Entry
+		want   *logpb.LogEntrySourceLocation
+	}{
+		{
+			name:   "populate source location for debug entry when allowed",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries)),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+			},
+			// want field will be patched to setup actual code line and function name
+			want: nil,
+		}, {
+			name:   "populate source location for non-debug entry when allowed",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.AlwaysPopulateSourceLocation)),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Default),
+			},
+			// want field will be patched to setup actual code line and function name
+			want: nil,
+		}, {
+			name:   "do not populate source location for debug entry with source location",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries)),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+				SourceLocation: &logpb.LogEntrySourceLocation{
+					File:     "test_source_file.go",
+					Function: "testFunction",
+					Line:     65536,
+				},
+			},
+			want: &logpb.LogEntrySourceLocation{
+				File:     "test_source_file.go",
+				Function: "testFunction",
+				Line:     65536,
+			},
+		}, {
+			name:   "do not populate source location for non-debug entry when only allowed for debug",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries)),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Info),
+			},
+			want: nil,
+		}, {
+			name:   "do not populate source location when not allowed for any",
+			logger: client.Logger("test-source-location", logging.SourceLocationPopulation(logging.DoNotPopulateSourceLocation)),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+			},
+			want: nil,
+		}, {
+			name:   "do not populate source location by default",
+			logger: client.Logger("test-source-location"),
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+			},
+			want: nil,
+		},
+	}
+
+	for index, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// patch first two want results to produce correct source info
+			if index < 2 {
+				pc, file, line, ok := runtime.Caller(0)
+				if !ok {
+					t.Fatalf("Unexpected error: %+v: failed to call runtime.Caller()", tc.in)
+				}
+				details := runtime.FuncForPC(pc)
+				tc.want = &logpb.LogEntrySourceLocation{
+					File:     file,
+					Function: details.Name(),
+					Line:     int64(line + 11), // 11 code lines between runtime.Caller() and logging.ToLogEntry()
+				}
+			}
+			e, err := tc.logger.ToLogEntry(tc.in, "projects/P")
+			if err != nil {
+				t.Fatalf("Unexpected error: %+v: %v", tc.in, err)
+			}
+
+			if e.SourceLocation != tc.want {
+				if diff := cmp.Diff(e.SourceLocation, tc.want, cmpopts.IgnoreUnexported(logpb.LogEntrySourceLocation{})); diff != "" {
+					t.Errorf("got(-),want(+):\n%s", diff)
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkSourceLocationPopulation(b *testing.B) {
+	logger := *client.Logger("test-source-location", logging.SourceLocationPopulation(logging.PopulateSourceLocationForDebugEntries))
+	tests := []struct {
+		name string
+		in   logging.Entry
+	}{
+		{
+			name: "with source location population",
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Debug),
+			},
+		}, {
+			name: "without source location population",
+			in: logging.Entry{
+				Severity: logging.Severity(logging.Info),
+			},
+		},
+	}
+	var err error
+	for _, tc := range tests {
+		b.Run(tc.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				_, err = logger.ToLogEntry(tc.in, "projects/P")
+				if err != nil {
+					b.Fatalf("Unexpected error: %+v: %v", tc.in, err)
+				}
+			}
+		})
+	}
+}
+
+// writeLogEntriesTestHandler is a fake Logging backend handler used to test partialSuccess option logic
+type writeLogEntriesTestHandler struct {
+	logpb.UnimplementedLoggingServiceV2Server
+	hook func(*logpb.WriteLogEntriesRequest)
+}
+
+func (f *writeLogEntriesTestHandler) WriteLogEntries(_ context.Context, e *logpb.WriteLogEntriesRequest) (*logpb.WriteLogEntriesResponse, error) {
+	if f.hook != nil {
+		f.hook(e)
+	}
+	return &logpb.WriteLogEntriesResponse{}, nil
+}
+
+func fakeClient(parent string, writeLogEntryHandler func(e *logpb.WriteLogEntriesRequest)) (*logging.Client, error) {
+	// setup fake server
+	fakeBackend := &writeLogEntriesTestHandler{}
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		return nil, err
+	}
+	gsrv := grpc.NewServer()
+	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
+	fakeServerAddr := l.Addr().String()
+	go func() {
+		if err := gsrv.Serve(l); err != nil {
+			panic(err)
+		}
+	}()
+	fakeBackend.hook = writeLogEntryHandler
+	ctx := context.Background()
+	client, _ := logging.NewClient(ctx, parent, option.WithEndpoint(fakeServerAddr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()))
+	return client, nil
+}
+
+func TestPartialSuccessOption(t *testing.T) {
+	var logger *logging.Logger
+	var partialSuccess bool
+
+	entry := logging.Entry{Payload: "payload string"}
+	tests := []struct {
+		name string
+		do   func()
+	}{
+		{
+			name: "use PartialSuccess with LogSync",
+			do: func() {
+				logger.LogSync(context.Background(), entry)
+			},
+		},
+		{
+			name: "use PartialSuccess with Log",
+			do: func() {
+				logger.Log(entry)
+				logger.Flush()
+			},
+		},
+	}
+
+	// setup fake client
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {
+		partialSuccess = e.PartialSuccess
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	logger = client.Logger("abc", logging.PartialSuccess())
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			partialSuccess = false
+			tc.do()
+			if !partialSuccess {
+				t.Fatal("e.PartialSuccess = false, want true")
+			}
+		})
+	}
+}
+
+func TestRedirectOutputIngestion(t *testing.T) {
+	var hookCalled bool
+
+	// setup fake client
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {
+		hookCalled = true
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	entry := logging.Entry{Payload: "testing payload string"}
+	tests := []struct {
+		name   string
+		logger *logging.Logger
+		want   bool
+	}{
+		{
+			name:   "redirect output does not ingest",
+			logger: client.Logger("stdout-redirection-log", logging.RedirectAsJSON(os.Stdout)),
+			want:   false,
+		},
+		{
+			name:   "log without Redirect flags ingest",
+			logger: client.Logger("default-ingestion-log"),
+			want:   true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			hookCalled = false
+			tc.logger.LogSync(context.Background(), entry)
+			if hookCalled != tc.want {
+				t.Errorf("Log ingestion works unexpected: got %v want %v\n", hookCalled, tc.want)
+			}
+		})
+	}
+}
+
+func TestRedirectOutputFormats(t *testing.T) {
+	testURL, _ := url.Parse("https://example.com/test")
+	tests := []struct {
+		name      string
+		in        *logging.Entry
+		want      string
+		wantError error
+	}{
+		{
+			name: "full data redirect with text payload",
+			in: &logging.Entry{
+				Labels:       map[string]string{"key1": "value1", "key2": "value2"},
+				Timestamp:    testNow().UTC(),
+				Severity:     logging.Debug,
+				InsertID:     "0000AAA01",
+				Trace:        "projects/P/ABCD12345678AB12345678",
+				SpanID:       "000000000001",
+				TraceSampled: true,
+				SourceLocation: &logpb.LogEntrySourceLocation{
+					File:     "acme.go",
+					Function: "main",
+					Line:     100,
+				},
+				Operation: &logpb.LogEntryOperation{
+					Id:       "0123456789",
+					Producer: "test",
+				},
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    testURL,
+						Method: "POST",
+					},
+				},
+				Payload: "this is text payload",
+			},
+			want: `{"message":"this is text payload","severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
+				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
+				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+		},
+		{
+			name: "full data redirect with json payload",
+			in: &logging.Entry{
+				Labels:       map[string]string{"key1": "value1", "key2": "value2"},
+				Timestamp:    testNow().UTC(),
+				Severity:     logging.Debug,
+				InsertID:     "0000AAA01",
+				Trace:        "projects/P/ABCD12345678AB12345678",
+				SpanID:       "000000000001",
+				TraceSampled: true,
+				SourceLocation: &logpb.LogEntrySourceLocation{
+					File:     "acme.go",
+					Function: "main",
+					Line:     100,
+				},
+				Operation: &logpb.LogEntryOperation{
+					Id:       "0123456789",
+					Producer: "test",
+				},
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    testURL,
+						Method: "POST",
+					},
+				},
+				Payload: map[string]interface{}{
+					"Message": "message part of the payload",
+					"Latency": 321,
+				},
+			},
+			want: `{"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
+				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
+				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+		},
+		{
+			name: "error on redirect with proto payload",
+			in: &logging.Entry{
+				Timestamp: testNow().UTC(),
+				Severity:  logging.Debug,
+				Payload:   &anypb.Any{},
+			},
+			wantError: logging.ErrRedirectProtoPayloadNotSupported,
+		},
+	}
+	buffer := &strings.Builder{}
+	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			buffer.Reset()
+			err := logger.LogSync(context.Background(), *tc.in)
+			if err != nil {
+				if tc.wantError == nil {
+					t.Fatalf("Unexpected error: %+v: %v", tc.in, err)
+				}
+				if tc.wantError != err {
+					t.Errorf("Expected error: %+v, got: %v want: %v\n", tc.in, err, tc.wantError)
+				}
+			} else {
+				if tc.wantError != nil {
+					t.Errorf("Expected error: %+v, want: %v\n", tc.in, tc.wantError)
+				}
+				got := strings.TrimSpace(buffer.String())
+				if got != tc.want {
+					t.Errorf("TestRedirectOutputFormats: %+v: got %v, want %v", tc.in, got, tc.want)
+				}
+			}
+		})
+	}
+}
+
+func TestInstrumentationIngestion(t *testing.T) {
+	var got []*logpb.LogEntry
+
+	// setup fake client
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {
+		got = e.GetEntries()
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
+	logger := client.Logger("test-instrumentation")
+	tests := []struct {
+		entryLen      int
+		hasDiagnostic bool
+	}{
+		{
+			entryLen:      2,
+			hasDiagnostic: true,
+		},
+		{
+			entryLen:      1,
+			hasDiagnostic: false,
+		},
+	}
+	onceBackup := internal.InstrumentOnce
+	internal.InstrumentOnce = new(sync.Once)
+	for _, test := range tests {
+		got = nil
+		err := logger.LogSync(context.Background(), *entry)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(got) != test.entryLen {
+			t.Errorf("got(%v), want(%v)", got, test.entryLen)
+		}
+		diagnosticEntry := false
+		for _, ent := range got {
+			if internal.LogIDFromPath("projects/test", ent.LogName) == "diagnostic-log" {
+				diagnosticEntry = true
+				break
+			}
+		}
+		if diagnosticEntry != test.hasDiagnostic {
+			t.Errorf("instrumentation entry misplaced: got(%v), want(%v)", diagnosticEntry, test.hasDiagnostic)
+		}
+	}
+	internal.InstrumentOnce = onceBackup
+}
+
+func TestInstrumentationWithRedirect(t *testing.T) {
+	want := []string{
+		// do not format the string to preserve expected new-line between messages
+		`{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}
+{"message":{"logging.googleapis.com/diagnostic":{"instrumentation_source":[{"name":"go","version":"` + internal.Version + `"}],"runtime":"` + internal.VersionGo() + `"}},"severity":"DEFAULT","timestamp":"seconds:1000"}`,
+		`{"message":"test string","severity":"INFO","timestamp":"seconds:1000"}`,
+	}
+	entry := &logging.Entry{Severity: logging.Info, Payload: "test string"}
+	buffer := &strings.Builder{}
+	logger := client.Logger("test-redirect-output", logging.RedirectAsJSON(buffer))
+	onceBackup, timeBackup := internal.InstrumentOnce, logging.SetNow(testNow)
+	internal.InstrumentOnce = new(sync.Once)
+	for i := range want {
+		buffer.Reset()
+		err := logger.LogSync(context.Background(), *entry)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := strings.TrimSpace(buffer.String())
+		if got != want[i] {
+			t.Errorf("got(%v), want(%v)", got, want[i])
+		}
+	}
+	logging.SetNow(timeBackup)
+	internal.InstrumentOnce = onceBackup
+}
+
+func ExampleRedirectAsJSON_withStdout() {
+	logger := client.Logger("redirect-to-stdout", logging.RedirectAsJSON(os.Stdout))
+	logger.Log(logging.Entry{Severity: logging.Debug, Payload: "redirected log"})
 }

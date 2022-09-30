@@ -15,20 +15,21 @@
 //go:build go1.15
 // +build go1.15
 
-/*Command godocfx generates DocFX YAML for Go code.
+/*
+Command godocfx generates DocFX YAML for Go code.
 
 Usage:
 
-    godocfx [flags] path
+	godocfx [flags] path
 
-    # New modules with the given prefix. Delete any previous output.
-    godocfx -rm -project my-project -new-modules cloud.google.com/go
-    # Process a single module @latest.
-    godocfx cloud.google.com/go
-    # Process and print, instead of save.
-    godocfx -print cloud.google.com/go/storage@latest
-    # Change output directory.
-    godocfx -out custom/output/dir cloud.google.com/go
+	# New modules with the given prefix. Delete any previous output.
+	godocfx -rm -project my-project -new-modules cloud.google.com/go
+	# Process a single module @latest.
+	godocfx cloud.google.com/go
+	# Process and print, instead of save.
+	godocfx -print cloud.google.com/go/storage@latest
+	# Change output directory.
+	godocfx -out custom/output/dir cloud.google.com/go
 
 See:
 * https://dotnet.github.io/docfx/spec/metadata_format_spec.html
@@ -148,6 +149,18 @@ func runCmd(dir, name string, args ...string) error {
 }
 
 func process(mod indexEntry, workingDir, outDir string, print bool) error {
+	filter := []string{
+		"cloud.google.com/go/analytics",
+		"cloud.google.com/go/area120",
+		"cloud.google.com/go/gsuiteaddons",
+
+		"google.golang.org/appengine/v2/cmd",
+	}
+	if hasPrefix(mod.Path, filter) {
+		log.Printf("%q filtered out, nothing to do: here is the filter: %q", mod.Path, filter)
+		return nil
+	}
+
 	// Be sure to get the module and run the module loader in the tempDir.
 	if err := runCmd(workingDir, "go", "mod", "tidy"); err != nil {
 		return fmt.Errorf("go mod tidy error: %v", err)
@@ -159,14 +172,10 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 
 	log.Println("Starting to parse")
 	optionalExtraFiles := []string{}
-	filter := []string{
-		"cloud.google.com/go/analytics",
-		"cloud.google.com/go/area120",
-		"cloud.google.com/go/gsuiteaddons",
-
-		"google.golang.org/appengine/v2/cmd",
+	namer := &friendlyAPINamer{
+		metaURL: "https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json",
 	}
-	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter)
+	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter, namer)
 	if err != nil {
 		return fmt.Errorf("parse: %v", err)
 	}
@@ -277,7 +286,7 @@ language: "go"
 	// Alternatively, we could plumb this through command line flags.
 	switch module.Path {
 	case "google.golang.org/appengine":
-		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go111/reference\"\n")
+		fmt.Fprintf(w, "stem: \"/appengine/docs/legacy/standard/go111/reference\"\n")
 	case "google.golang.org/appengine/v2":
 		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference/services/bundled\"\n")
 	}

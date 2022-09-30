@@ -17,7 +17,9 @@ package database
 // DatabaseAdminInstancePath returns the path for the instance resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/instances/%s", project, instance)
+//
+//	fmt.Sprintf("projects/%s/instances/%s", project, instance)
+//
 // instead.
 func DatabaseAdminInstancePath(project, instance string) string {
 	return "" +
@@ -31,7 +33,9 @@ func DatabaseAdminInstancePath(project, instance string) string {
 // DatabaseAdminDatabasePath returns the path for the database resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/instances/%s/databases/%s", project, instance, database)
+//
+//	fmt.Sprintf("projects/%s/instances/%s/databases/%s", project, instance, database)
+//
 // instead.
 func DatabaseAdminDatabasePath(project, instance, database string) string {
 	return "" +

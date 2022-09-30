@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/asset/apiv1p5beta1",
+    "version": "1.6.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.asset.v1p5beta1",
+        "version": "v1p5beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudasset_v1p5beta1_generated_AssetService_ListAssets_sync",
+      "title": "cloudasset ListAssets Sample",
+      "description": "ListAssets lists assets with time and resource types and returns paged results in\nresponse.",
+      "file": "Client/ListAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAssets",
+        "fullName": "google.cloud.asset.v1p5beta1.Client.ListAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.ListAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AssetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1p5beta1.Client"
+        },
+        "method": {
+          "shortName": "ListAssets",
+          "fullName": "google.cloud.asset.v1p5beta1.AssetService.ListAssets",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1p5beta1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -31,6 +31,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -50,6 +51,11 @@ type DocumentsCallOptions struct {
 	UpdateDocument  []gax.CallOption
 	ReloadDocument  []gax.CallOption
 	ExportDocument  []gax.CallOption
+	GetLocation     []gax.CallOption
+	ListLocations   []gax.CallOption
+	CancelOperation []gax.CallOption
+	GetOperation    []gax.CallOption
+	ListOperations  []gax.CallOption
 }
 
 func defaultDocumentsGRPCClientOptions() []option.ClientOption {
@@ -154,10 +160,15 @@ func defaultDocumentsCallOptions() *DocumentsCallOptions {
 				})
 			}),
 		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
-// internalDocumentsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalDocumentsClient is an interface that defines the methods available from Dialogflow API.
 type internalDocumentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -176,6 +187,11 @@ type internalDocumentsClient interface {
 	ReloadDocumentOperation(name string) *ReloadDocumentOperation
 	ExportDocument(context.Context, *dialogflowpb.ExportDocumentRequest, ...gax.CallOption) (*ExportDocumentOperation, error)
 	ExportDocumentOperation(name string) *ExportDocumentOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // DocumentsClient is a client for interacting with Dialogflow API.
@@ -212,7 +228,8 @@ func (c *DocumentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DocumentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -233,9 +250,9 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
 	return c.internalClient.CreateDocument(ctx, req, opts...)
 }
@@ -254,9 +271,9 @@ func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: ImportDocumentsResponse
+//	response: ImportDocumentsResponse
 func (c *DocumentsClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	return c.internalClient.ImportDocuments(ctx, req, opts...)
 }
@@ -273,10 +290,10 @@ func (c *DocumentsClient) ImportDocumentsOperation(name string) *ImportDocuments
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	return c.internalClient.DeleteDocument(ctx, req, opts...)
 }
@@ -293,9 +310,9 @@ func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
 	return c.internalClient.UpdateDocument(ctx, req, opts...)
 }
@@ -315,9 +332,9 @@ func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -338,9 +355,9 @@ func (c *DocumentsClient) ReloadDocumentOperation(name string) *ReloadDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) ExportDocument(ctx context.Context, req *dialogflowpb.ExportDocumentRequest, opts ...gax.CallOption) (*ExportDocumentOperation, error) {
 	return c.internalClient.ExportDocument(ctx, req, opts...)
 }
@@ -349,6 +366,31 @@ func (c *DocumentsClient) ExportDocument(ctx context.Context, req *dialogflowpb.
 // The name must be that of a previously created ExportDocumentOperation, possibly from a different process.
 func (c *DocumentsClient) ExportDocumentOperation(name string) *ExportDocumentOperation {
 	return c.internalClient.ExportDocumentOperation(name)
+}
+
+// GetLocation gets information about a location.
+func (c *DocumentsClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *DocumentsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *DocumentsClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *DocumentsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *DocumentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // documentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
@@ -371,6 +413,10 @@ type documentsGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -406,6 +452,8 @@ func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*Docu
 		disableDeadlines: disableDeadlines,
 		documentsClient:  dialogflowpb.NewDocumentsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -427,7 +475,8 @@ func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*Docu
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *documentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -437,7 +486,7 @@ func (c *documentsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *documentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -449,6 +498,7 @@ func (c *documentsGRPCClient) Close() error {
 
 func (c *documentsGRPCClient) ListDocuments(ctx context.Context, req *dialogflowpb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentIterator{}
@@ -498,6 +548,7 @@ func (c *documentsGRPCClient) GetDocument(ctx context.Context, req *dialogflowpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	var resp *dialogflowpb.Document
@@ -519,6 +570,7 @@ func (c *documentsGRPCClient) CreateDocument(ctx context.Context, req *dialogflo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
 	var resp *longrunningpb.Operation
@@ -542,6 +594,7 @@ func (c *documentsGRPCClient) ImportDocuments(ctx context.Context, req *dialogfl
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportDocuments[0:len((*c.CallOptions).ImportDocuments):len((*c.CallOptions).ImportDocuments)], opts...)
 	var resp *longrunningpb.Operation
@@ -565,6 +618,7 @@ func (c *documentsGRPCClient) DeleteDocument(ctx context.Context, req *dialogflo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
 	var resp *longrunningpb.Operation
@@ -588,6 +642,7 @@ func (c *documentsGRPCClient) UpdateDocument(ctx context.Context, req *dialogflo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
 	var resp *longrunningpb.Operation
@@ -611,6 +666,7 @@ func (c *documentsGRPCClient) ReloadDocument(ctx context.Context, req *dialogflo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReloadDocument[0:len((*c.CallOptions).ReloadDocument):len((*c.CallOptions).ReloadDocument)], opts...)
 	var resp *longrunningpb.Operation
@@ -634,6 +690,7 @@ func (c *documentsGRPCClient) ExportDocument(ctx context.Context, req *dialogflo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportDocument[0:len((*c.CallOptions).ExportDocument):len((*c.CallOptions).ExportDocument)], opts...)
 	var resp *longrunningpb.Operation
@@ -648,6 +705,143 @@ func (c *documentsGRPCClient) ExportDocument(ctx context.Context, req *dialogflo
 	return &ExportDocumentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *documentsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *documentsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *documentsGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *documentsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *documentsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateDocumentOperation manages a long-running operation from CreateDocument.

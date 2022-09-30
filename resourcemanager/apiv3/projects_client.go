@@ -114,7 +114,7 @@ func defaultProjectsCallOptions() *ProjectsCallOptions {
 	}
 }
 
-// internalProjectsClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalProjectsClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalProjectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -171,7 +171,8 @@ func (c *ProjectsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ProjectsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -339,39 +340,39 @@ func (c *ProjectsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 //
 // The following constraints apply when using setIamPolicy():
 //
-//   Project does not support allUsers and allAuthenticatedUsers as
-//   members in a Binding of a Policy.
+//	Project does not support allUsers and allAuthenticatedUsers as
+//	members in a Binding of a Policy.
 //
-//   The owner role can be granted to a user, serviceAccount, or a group
-//   that is part of an organization. For example,
-//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//   organization.
+//	The owner role can be granted to a user, serviceAccount, or a group
+//	that is part of an organization. For example,
+//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//	organization.
 //
-//   Service accounts can be made owners of a project directly
-//   without any restrictions. However, to be added as an owner, a user must be
-//   invited using the Cloud Platform console and must accept the invitation.
+//	Service accounts can be made owners of a project directly
+//	without any restrictions. However, to be added as an owner, a user must be
+//	invited using the Cloud Platform console and must accept the invitation.
 //
-//   A user cannot be granted the owner role using setIamPolicy(). The user
-//   must be granted the owner role using the Cloud Platform Console and must
-//   explicitly accept the invitation.
+//	A user cannot be granted the owner role using setIamPolicy(). The user
+//	must be granted the owner role using the Cloud Platform Console and must
+//	explicitly accept the invitation.
 //
-//   Invitations to grant the owner role cannot be sent using
-//   setIamPolicy();
-//   they must be sent only using the Cloud Platform Console.
+//	Invitations to grant the owner role cannot be sent using
+//	setIamPolicy();
+//	they must be sent only using the Cloud Platform Console.
 //
-//   Membership changes that leave the project without any owners that have
-//   accepted the Terms of Service (ToS) will be rejected.
+//	Membership changes that leave the project without any owners that have
+//	accepted the Terms of Service (ToS) will be rejected.
 //
-//   If the project is not part of an organization, there must be at least
-//   one owner who has accepted the Terms of Service (ToS) agreement in the
-//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//   from the policy will fail. This restriction also applies to legacy
-//   projects that no longer have owners who have accepted the ToS. Edits to
-//   IAM policies will be rejected until the lack of a ToS-accepting owner is
-//   rectified.
+//	If the project is not part of an organization, there must be at least
+//	one owner who has accepted the Terms of Service (ToS) agreement in the
+//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//	from the policy will fail. This restriction also applies to legacy
+//	projects that no longer have owners who have accepted the ToS. Edits to
+//	IAM policies will be rejected until the lack of a ToS-accepting owner is
+//	rectified.
 //
-//   Calling this method requires enabling the App Engine Admin API.
+//	Calling this method requires enabling the App Engine Admin API.
 func (c *ProjectsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -457,7 +458,8 @@ func NewProjectsClient(ctx context.Context, opts ...option.ClientOption) (*Proje
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *projectsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -467,7 +469,7 @@ func (c *projectsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *projectsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -484,6 +486,7 @@ func (c *projectsGRPCClient) GetProject(ctx context.Context, req *resourcemanage
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetProject[0:len((*c.CallOptions).GetProject):len((*c.CallOptions).GetProject)], opts...)
 	var resp *resourcemanagerpb.Project
@@ -613,6 +616,7 @@ func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourceman
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project.name", url.QueryEscape(req.GetProject().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateProject[0:len((*c.CallOptions).UpdateProject):len((*c.CallOptions).UpdateProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -636,6 +640,7 @@ func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanag
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).MoveProject[0:len((*c.CallOptions).MoveProject):len((*c.CallOptions).MoveProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -659,6 +664,7 @@ func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourceman
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteProject[0:len((*c.CallOptions).DeleteProject):len((*c.CallOptions).DeleteProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -682,6 +688,7 @@ func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcem
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UndeleteProject[0:len((*c.CallOptions).UndeleteProject):len((*c.CallOptions).UndeleteProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -705,6 +712,7 @@ func (c *projectsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -726,6 +734,7 @@ func (c *projectsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -742,6 +751,7 @@ func (c *projectsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 
 func (c *projectsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse

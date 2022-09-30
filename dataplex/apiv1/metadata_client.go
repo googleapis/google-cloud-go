@@ -29,6 +29,8 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -39,10 +41,21 @@ var newMetadataClientHook clientHook
 
 // MetadataCallOptions contains the retry settings for each method of MetadataClient.
 type MetadataCallOptions struct {
-	GetEntity      []gax.CallOption
-	ListEntities   []gax.CallOption
-	GetPartition   []gax.CallOption
-	ListPartitions []gax.CallOption
+	CreateEntity    []gax.CallOption
+	UpdateEntity    []gax.CallOption
+	DeleteEntity    []gax.CallOption
+	GetEntity       []gax.CallOption
+	ListEntities    []gax.CallOption
+	CreatePartition []gax.CallOption
+	DeletePartition []gax.CallOption
+	GetPartition    []gax.CallOption
+	ListPartitions  []gax.CallOption
+	GetLocation     []gax.CallOption
+	ListLocations   []gax.CallOption
+	CancelOperation []gax.CallOption
+	DeleteOperation []gax.CallOption
+	GetOperation    []gax.CallOption
+	ListOperations  []gax.CallOption
 }
 
 func defaultMetadataGRPCClientOptions() []option.ClientOption {
@@ -59,6 +72,9 @@ func defaultMetadataGRPCClientOptions() []option.ClientOption {
 
 func defaultMetadataCallOptions() *MetadataCallOptions {
 	return &MetadataCallOptions{
+		CreateEntity: []gax.CallOption{},
+		UpdateEntity: []gax.CallOption{},
+		DeleteEntity: []gax.CallOption{},
 		GetEntity: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -81,6 +97,8 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 				})
 			}),
 		},
+		CreatePartition: []gax.CallOption{},
+		DeletePartition: []gax.CallOption{},
 		GetPartition: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -103,18 +121,35 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 				})
 			}),
 		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
-// internalMetadataClient is an interface that defines the methods availaible from Cloud Dataplex API.
+// internalMetadataClient is an interface that defines the methods available from Cloud Dataplex API.
 type internalMetadataClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	CreateEntity(context.Context, *dataplexpb.CreateEntityRequest, ...gax.CallOption) (*dataplexpb.Entity, error)
+	UpdateEntity(context.Context, *dataplexpb.UpdateEntityRequest, ...gax.CallOption) (*dataplexpb.Entity, error)
+	DeleteEntity(context.Context, *dataplexpb.DeleteEntityRequest, ...gax.CallOption) error
 	GetEntity(context.Context, *dataplexpb.GetEntityRequest, ...gax.CallOption) (*dataplexpb.Entity, error)
 	ListEntities(context.Context, *dataplexpb.ListEntitiesRequest, ...gax.CallOption) *EntityIterator
+	CreatePartition(context.Context, *dataplexpb.CreatePartitionRequest, ...gax.CallOption) (*dataplexpb.Partition, error)
+	DeletePartition(context.Context, *dataplexpb.DeletePartitionRequest, ...gax.CallOption) error
 	GetPartition(context.Context, *dataplexpb.GetPartitionRequest, ...gax.CallOption) (*dataplexpb.Partition, error)
 	ListPartitions(context.Context, *dataplexpb.ListPartitionsRequest, ...gax.CallOption) *PartitionIterator
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // MetadataClient is a client for interacting with Cloud Dataplex API.
@@ -147,9 +182,25 @@ func (c *MetadataClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MetadataClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// CreateEntity create a metadata entity.
+func (c *MetadataClient) CreateEntity(ctx context.Context, req *dataplexpb.CreateEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
+	return c.internalClient.CreateEntity(ctx, req, opts...)
+}
+
+// UpdateEntity update a metadata entity. Only supports full resource update.
+func (c *MetadataClient) UpdateEntity(ctx context.Context, req *dataplexpb.UpdateEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
+	return c.internalClient.UpdateEntity(ctx, req, opts...)
+}
+
+// DeleteEntity delete a metadata entity.
+func (c *MetadataClient) DeleteEntity(ctx context.Context, req *dataplexpb.DeleteEntityRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteEntity(ctx, req, opts...)
 }
 
 // GetEntity get a metadata entity.
@@ -162,6 +213,16 @@ func (c *MetadataClient) ListEntities(ctx context.Context, req *dataplexpb.ListE
 	return c.internalClient.ListEntities(ctx, req, opts...)
 }
 
+// CreatePartition create a metadata partition.
+func (c *MetadataClient) CreatePartition(ctx context.Context, req *dataplexpb.CreatePartitionRequest, opts ...gax.CallOption) (*dataplexpb.Partition, error) {
+	return c.internalClient.CreatePartition(ctx, req, opts...)
+}
+
+// DeletePartition delete a metadata partition.
+func (c *MetadataClient) DeletePartition(ctx context.Context, req *dataplexpb.DeletePartitionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeletePartition(ctx, req, opts...)
+}
+
 // GetPartition get a metadata partition of an entity.
 func (c *MetadataClient) GetPartition(ctx context.Context, req *dataplexpb.GetPartitionRequest, opts ...gax.CallOption) (*dataplexpb.Partition, error) {
 	return c.internalClient.GetPartition(ctx, req, opts...)
@@ -170,6 +231,36 @@ func (c *MetadataClient) GetPartition(ctx context.Context, req *dataplexpb.GetPa
 // ListPartitions list metadata partitions of an entity.
 func (c *MetadataClient) ListPartitions(ctx context.Context, req *dataplexpb.ListPartitionsRequest, opts ...gax.CallOption) *PartitionIterator {
 	return c.internalClient.ListPartitions(ctx, req, opts...)
+}
+
+// GetLocation gets information about a location.
+func (c *MetadataClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *MetadataClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *MetadataClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *MetadataClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *MetadataClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *MetadataClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // metadataGRPCClient is a client for interacting with Cloud Dataplex API over gRPC transport.
@@ -187,6 +278,10 @@ type metadataGRPCClient struct {
 
 	// The gRPC API client.
 	metadataClient dataplexpb.MetadataServiceClient
+
+	operationsClient longrunningpb.OperationsClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -223,6 +318,8 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		disableDeadlines: disableDeadlines,
 		metadataClient:   dataplexpb.NewMetadataServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -233,7 +330,8 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -243,7 +341,7 @@ func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *metadataGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -253,6 +351,68 @@ func (c *metadataGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+func (c *metadataGRPCClient) CreateEntity(ctx context.Context, req *dataplexpb.CreateEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateEntity[0:len((*c.CallOptions).CreateEntity):len((*c.CallOptions).CreateEntity)], opts...)
+	var resp *dataplexpb.Entity
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.metadataClient.CreateEntity(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *metadataGRPCClient) UpdateEntity(ctx context.Context, req *dataplexpb.UpdateEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity.name", url.QueryEscape(req.GetEntity().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateEntity[0:len((*c.CallOptions).UpdateEntity):len((*c.CallOptions).UpdateEntity)], opts...)
+	var resp *dataplexpb.Entity
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.metadataClient.UpdateEntity(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *metadataGRPCClient) DeleteEntity(ctx context.Context, req *dataplexpb.DeleteEntityRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteEntity[0:len((*c.CallOptions).DeleteEntity):len((*c.CallOptions).DeleteEntity)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.metadataClient.DeleteEntity(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *metadataGRPCClient) GetEntity(ctx context.Context, req *dataplexpb.GetEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -260,6 +420,7 @@ func (c *metadataGRPCClient) GetEntity(ctx context.Context, req *dataplexpb.GetE
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEntity[0:len((*c.CallOptions).GetEntity):len((*c.CallOptions).GetEntity)], opts...)
 	var resp *dataplexpb.Entity
@@ -276,6 +437,7 @@ func (c *metadataGRPCClient) GetEntity(ctx context.Context, req *dataplexpb.GetE
 
 func (c *metadataGRPCClient) ListEntities(ctx context.Context, req *dataplexpb.ListEntitiesRequest, opts ...gax.CallOption) *EntityIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEntities[0:len((*c.CallOptions).ListEntities):len((*c.CallOptions).ListEntities)], opts...)
 	it := &EntityIterator{}
@@ -318,6 +480,46 @@ func (c *metadataGRPCClient) ListEntities(ctx context.Context, req *dataplexpb.L
 	return it
 }
 
+func (c *metadataGRPCClient) CreatePartition(ctx context.Context, req *dataplexpb.CreatePartitionRequest, opts ...gax.CallOption) (*dataplexpb.Partition, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreatePartition[0:len((*c.CallOptions).CreatePartition):len((*c.CallOptions).CreatePartition)], opts...)
+	var resp *dataplexpb.Partition
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.metadataClient.CreatePartition(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *metadataGRPCClient) DeletePartition(ctx context.Context, req *dataplexpb.DeletePartitionRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeletePartition[0:len((*c.CallOptions).DeletePartition):len((*c.CallOptions).DeletePartition)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.metadataClient.DeletePartition(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *metadataGRPCClient) GetPartition(ctx context.Context, req *dataplexpb.GetPartitionRequest, opts ...gax.CallOption) (*dataplexpb.Partition, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -325,6 +527,7 @@ func (c *metadataGRPCClient) GetPartition(ctx context.Context, req *dataplexpb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPartition[0:len((*c.CallOptions).GetPartition):len((*c.CallOptions).GetPartition)], opts...)
 	var resp *dataplexpb.Partition
@@ -341,6 +544,7 @@ func (c *metadataGRPCClient) GetPartition(ctx context.Context, req *dataplexpb.G
 
 func (c *metadataGRPCClient) ListPartitions(ctx context.Context, req *dataplexpb.ListPartitionsRequest, opts ...gax.CallOption) *PartitionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPartitions[0:len((*c.CallOptions).ListPartitions):len((*c.CallOptions).ListPartitions)], opts...)
 	it := &PartitionIterator{}
@@ -366,6 +570,156 @@ func (c *metadataGRPCClient) ListPartitions(ctx context.Context, req *dataplexpb
 
 		it.Response = resp
 		return resp.GetPartitions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

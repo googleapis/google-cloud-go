@@ -26,6 +26,11 @@ import (
 
 func ExampleNewBackendServicesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewBackendServicesRESTClient() {
 
 func ExampleBackendServicesClient_AddSignedUrlKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleBackendServicesClient_AddSignedUrlKey() {
 
 func ExampleBackendServicesClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,6 +102,11 @@ func ExampleBackendServicesClient_AggregatedList() {
 
 func ExampleBackendServicesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,6 +130,11 @@ func ExampleBackendServicesClient_Delete() {
 
 func ExampleBackendServicesClient_DeleteSignedUrlKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -133,6 +158,11 @@ func ExampleBackendServicesClient_DeleteSignedUrlKey() {
 
 func ExampleBackendServicesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -153,6 +183,11 @@ func ExampleBackendServicesClient_Get() {
 
 func ExampleBackendServicesClient_GetHealth() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -171,8 +206,38 @@ func ExampleBackendServicesClient_GetHealth() {
 	_ = resp
 }
 
+func ExampleBackendServicesClient_GetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewBackendServicesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.GetIamPolicyBackendServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyBackendServiceRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleBackendServicesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,6 +261,11 @@ func ExampleBackendServicesClient_Insert() {
 
 func ExampleBackendServicesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,6 +292,11 @@ func ExampleBackendServicesClient_List() {
 
 func ExampleBackendServicesClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,8 +318,66 @@ func ExampleBackendServicesClient_Patch() {
 	}
 }
 
+func ExampleBackendServicesClient_SetEdgeSecurityPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewBackendServicesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetEdgeSecurityPolicyBackendServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetEdgeSecurityPolicyBackendServiceRequest.
+	}
+	op, err := c.SetEdgeSecurityPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleBackendServicesClient_SetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewBackendServicesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetIamPolicyBackendServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyBackendServiceRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleBackendServicesClient_SetSecurityPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -268,6 +401,11 @@ func ExampleBackendServicesClient_SetSecurityPolicy() {
 
 func ExampleBackendServicesClient_Update() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendServicesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -61,7 +61,7 @@ func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializ
 	}
 }
 
-// internalPolicyTagManagerSerializationClient is an interface that defines the methods availaible from Google Cloud Data Catalog API.
+// internalPolicyTagManagerSerializationClient is an interface that defines the methods available from Google Cloud Data Catalog API.
 type internalPolicyTagManagerSerializationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -103,7 +103,8 @@ func (c *PolicyTagManagerSerializationClient) setGoogleClientInfo(keyval ...stri
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -116,13 +117,13 @@ func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 //
 // This operation automatically does the following:
 //
-//   Deletes the existing policy tags that are missing from the
-//   SerializedPolicyTag.
+//	Deletes the existing policy tags that are missing from the
+//	SerializedPolicyTag.
 //
-//   Creates policy tags that don’t have resource names. They are considered
-//   new.
+//	Creates policy tags that don’t have resource names. They are considered
+//	new.
 //
-//   Updates policy tags with valid resources names accordingly.
+//	Updates policy tags with valid resources names accordingly.
 func (c *PolicyTagManagerSerializationClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	return c.internalClient.ReplaceTaxonomy(ctx, req, opts...)
 }
@@ -212,7 +213,8 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *policyTagManagerSerializationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -222,7 +224,7 @@ func (c *policyTagManagerSerializationGRPCClient) Connection() *grpc.ClientConn 
 // use by Google-written clients.
 func (c *policyTagManagerSerializationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -239,6 +241,7 @@ func (c *policyTagManagerSerializationGRPCClient) ReplaceTaxonomy(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReplaceTaxonomy[0:len((*c.CallOptions).ReplaceTaxonomy):len((*c.CallOptions).ReplaceTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
@@ -260,6 +263,7 @@ func (c *policyTagManagerSerializationGRPCClient) ImportTaxonomies(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportTaxonomies[0:len((*c.CallOptions).ImportTaxonomies):len((*c.CallOptions).ImportTaxonomies)], opts...)
 	var resp *datacatalogpb.ImportTaxonomiesResponse
@@ -281,6 +285,7 @@ func (c *policyTagManagerSerializationGRPCClient) ExportTaxonomies(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportTaxonomies[0:len((*c.CallOptions).ExportTaxonomies):len((*c.CallOptions).ExportTaxonomies)], opts...)
 	var resp *datacatalogpb.ExportTaxonomiesResponse

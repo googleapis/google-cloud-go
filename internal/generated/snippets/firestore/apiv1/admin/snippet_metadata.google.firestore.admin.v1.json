@@ -1,0 +1,748 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/firestore/apiv1/admin",
+    "version": "1.6.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.firestore.admin.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_CancelOperation_sync",
+      "title": "firestore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.CancelOperation",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_CreateIndex_sync",
+      "title": "firestore CreateIndex Sample",
+      "description": "CreateIndex creates a composite index. This returns a google.longrunning.Operation\nwhich may be used to track the status of the creation. The metadata for\nthe operation will be the type IndexOperationMetadata.",
+      "file": "FirestoreAdminClient/CreateIndex/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateIndex",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.CreateIndex",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateIndexRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateIndexOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "CreateIndex",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.CreateIndex",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteIndex_sync",
+      "title": "firestore DeleteIndex Sample",
+      "description": "DeleteIndex deletes a composite index.",
+      "file": "FirestoreAdminClient/DeleteIndex/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteIndex",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.DeleteIndex",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteIndexRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteIndex",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteIndex",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteOperation_sync",
+      "title": "firestore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteOperation",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ExportDocuments_sync",
+      "title": "firestore ExportDocuments Sample",
+      "description": "ExportDocuments exports a copy of all or a subset of documents from Google Cloud Firestore\nto another storage system, such as Google Cloud Storage. Recent updates to\ndocuments may not be reflected in the export. The export occurs in the\nbackground and its progress can be monitored and managed via the\nOperation resource that is created. The output of an export may only be\nused once the associated operation is done. If an export operation is\ncancelled before completion it may leave partial data behind in Google\nCloud Storage.\n\nFor more details on export behavior and output format, refer to: \nhttps: //cloud.google.com/firestore/docs/manage-data/export-import (at https: //cloud.google.com/firestore/docs/manage-data/export-import)",
+      "file": "FirestoreAdminClient/ExportDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportDocuments",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ExportDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ExportDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportDocumentsOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ExportDocuments",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ExportDocuments",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_GetDatabase_sync",
+      "title": "firestore GetDatabase Sample",
+      "description": "GetDatabase gets information about a database.",
+      "file": "FirestoreAdminClient/GetDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDatabase",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.GetDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Database",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "GetDatabase",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetDatabase",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_GetField_sync",
+      "title": "firestore GetField Sample",
+      "description": "GetField gets the metadata and configuration for a Field.",
+      "file": "FirestoreAdminClient/GetField/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetField",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.GetField",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetFieldRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Field",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "GetField",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetField",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_GetIndex_sync",
+      "title": "firestore GetIndex Sample",
+      "description": "GetIndex gets a composite index.",
+      "file": "FirestoreAdminClient/GetIndex/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIndex",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.GetIndex",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetIndexRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Index",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "GetIndex",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetIndex",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_GetOperation_sync",
+      "title": "firestore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetOperation",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ImportDocuments_sync",
+      "title": "firestore ImportDocuments Sample",
+      "description": "ImportDocuments imports documents into Google Cloud Firestore. Existing documents with the\nsame name are overwritten. The import occurs in the background and its\nprogress can be monitored and managed via the Operation resource that is\ncreated. If an ImportDocuments operation is cancelled, it is possible\nthat a subset of the data has already been imported to Cloud Firestore.",
+      "file": "FirestoreAdminClient/ImportDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportDocuments",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ImportDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ImportDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportDocumentsOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ImportDocuments",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ImportDocuments",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ListDatabases_sync",
+      "title": "firestore ListDatabases Sample",
+      "description": "ListDatabases list all the databases in the project.",
+      "file": "FirestoreAdminClient/ListDatabases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatabases",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ListDatabases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListDatabasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ListDatabasesResponse",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ListDatabases",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListDatabases",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ListFields_sync",
+      "title": "firestore ListFields Sample",
+      "description": "ListFields lists the field configuration and metadata for this database.\n\nCurrently, FirestoreAdmin.ListFields only supports listing fields\nthat have been explicitly overridden. To issue this query, call\nFirestoreAdmin.ListFields with the filter set to\nindexConfig.usesAncestorConfig: false .",
+      "file": "FirestoreAdminClient/ListFields/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFields",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ListFields",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListFieldsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FieldIterator",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ListFields",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListFields",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ListIndexes_sync",
+      "title": "firestore ListIndexes Sample",
+      "description": "ListIndexes lists composite indexes.",
+      "file": "FirestoreAdminClient/ListIndexes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIndexes",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ListIndexes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListIndexesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IndexIterator",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ListIndexes",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListIndexes",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ListOperations_sync",
+      "title": "firestore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "FirestoreAdminClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListOperations",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_UpdateDatabase_sync",
+      "title": "firestore UpdateDatabase Sample",
+      "description": "UpdateDatabase updates a database.",
+      "file": "FirestoreAdminClient/UpdateDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDatabase",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.UpdateDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDatabaseOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateDatabase",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.UpdateDatabase",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_UpdateField_sync",
+      "title": "firestore UpdateField Sample",
+      "description": "UpdateField updates a field configuration. Currently, field updates apply only to\nsingle field index configuration. However, calls to\nFirestoreAdmin.UpdateField should provide a field mask to avoid\nchanging any configuration that the caller isn’t aware of. The field mask\nshould be specified as: { paths: \"index_config\" }.\n\nThis call returns a google.longrunning.Operation which may be used to\ntrack the status of the field update. The metadata for\nthe operation will be the type FieldOperationMetadata.\n\nTo configure the default field settings for the database, use\nthe special Field with resource name: \nprojects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*.",
+      "file": "FirestoreAdminClient/UpdateField/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateField",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.UpdateField",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateFieldRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateFieldOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateField",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.UpdateField",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -58,7 +58,7 @@ func defaultAuthorizedDomainsCallOptions() *AuthorizedDomainsCallOptions {
 	}
 }
 
-// internalAuthorizedDomainsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalAuthorizedDomainsClient is an interface that defines the methods available from App Engine Admin API.
 type internalAuthorizedDomainsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -97,7 +97,8 @@ func (c *AuthorizedDomainsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AuthorizedDomainsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -169,7 +170,8 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *authorizedDomainsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -179,7 +181,7 @@ func (c *authorizedDomainsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *authorizedDomainsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -191,6 +193,7 @@ func (c *authorizedDomainsGRPCClient) Close() error {
 
 func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context, req *appenginepb.ListAuthorizedDomainsRequest, opts ...gax.CallOption) *AuthorizedDomainIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAuthorizedDomains[0:len((*c.CallOptions).ListAuthorizedDomains):len((*c.CallOptions).ListAuthorizedDomains)], opts...)
 	it := &AuthorizedDomainIterator{}

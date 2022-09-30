@@ -1,0 +1,1303 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkemulticloud/apiv1",
+    "version": "0.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkemulticloud.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_CreateAwsCluster_sync",
+      "title": "gkemulticloud CreateAwsCluster Sample",
+      "description": "CreateAwsCluster creates a new AwsCluster resource on a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AwsClustersClient/CreateAwsCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAwsCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.CreateAwsCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.CreateAwsClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAwsClusterOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "CreateAwsCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.CreateAwsCluster",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_CreateAwsNodePool_sync",
+      "title": "gkemulticloud CreateAwsNodePool Sample",
+      "description": "CreateAwsNodePool creates a new AwsNodePool, attached to a given AwsCluster.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AwsClustersClient/CreateAwsNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAwsNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.CreateAwsNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.CreateAwsNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAwsNodePoolOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "CreateAwsNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.CreateAwsNodePool",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_DeleteAwsCluster_sync",
+      "title": "gkemulticloud DeleteAwsCluster Sample",
+      "description": "DeleteAwsCluster deletes a specific AwsCluster resource.\n\nFails if the cluster has one or more associated AwsNodePool\nresources.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AwsClustersClient/DeleteAwsCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAwsCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.DeleteAwsCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.DeleteAwsClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAwsClusterOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "DeleteAwsCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.DeleteAwsCluster",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_DeleteAwsNodePool_sync",
+      "title": "gkemulticloud DeleteAwsNodePool Sample",
+      "description": "DeleteAwsNodePool deletes a specific AwsNodePool resource.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AwsClustersClient/DeleteAwsNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAwsNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.DeleteAwsNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.DeleteAwsNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAwsNodePoolOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "DeleteAwsNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.DeleteAwsNodePool",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GenerateAwsAccessToken_sync",
+      "title": "gkemulticloud GenerateAwsAccessToken Sample",
+      "description": "GenerateAwsAccessToken generates a short-lived access token to authenticate to a given\nAwsCluster resource.",
+      "file": "AwsClustersClient/GenerateAwsAccessToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAwsAccessToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GenerateAwsAccessToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAwsAccessTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.GenerateAwsAccessTokenResponse",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAwsAccessToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GenerateAwsAccessToken",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsCluster_sync",
+      "title": "gkemulticloud GetAwsCluster Sample",
+      "description": "GetAwsCluster describes a specific AwsCluster resource.",
+      "file": "AwsClustersClient/GetAwsCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAwsCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GetAwsCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAwsClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.AwsCluster",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GetAwsCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsCluster",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsNodePool_sync",
+      "title": "gkemulticloud GetAwsNodePool Sample",
+      "description": "GetAwsNodePool describes a specific AwsNodePool resource.",
+      "file": "AwsClustersClient/GetAwsNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAwsNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GetAwsNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAwsNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.AwsNodePool",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GetAwsNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsNodePool",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsServerConfig_sync",
+      "title": "gkemulticloud GetAwsServerConfig Sample",
+      "description": "GetAwsServerConfig returns information, such as supported AWS regions and Kubernetes\nversions, on a given Google Cloud location.",
+      "file": "AwsClustersClient/GetAwsServerConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAwsServerConfig",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GetAwsServerConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAwsServerConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.AwsServerConfig",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GetAwsServerConfig",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsServerConfig",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_ListAwsClusters_sync",
+      "title": "gkemulticloud ListAwsClusters Sample",
+      "description": "ListAwsClusters lists all AwsCluster resources on a given Google Cloud project and\nregion.",
+      "file": "AwsClustersClient/ListAwsClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAwsClusters",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.ListAwsClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.ListAwsClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AwsClusterIterator",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "ListAwsClusters",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.ListAwsClusters",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_ListAwsNodePools_sync",
+      "title": "gkemulticloud ListAwsNodePools Sample",
+      "description": "ListAwsNodePools lists all AwsNodePool resources on a given AwsCluster.",
+      "file": "AwsClustersClient/ListAwsNodePools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAwsNodePools",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.ListAwsNodePools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.ListAwsNodePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AwsNodePoolIterator",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "ListAwsNodePools",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.ListAwsNodePools",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_UpdateAwsCluster_sync",
+      "title": "gkemulticloud UpdateAwsCluster Sample",
+      "description": "UpdateAwsCluster updates an AwsCluster.",
+      "file": "AwsClustersClient/UpdateAwsCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAwsCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.UpdateAwsCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.UpdateAwsClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAwsClusterOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "UpdateAwsCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.UpdateAwsCluster",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_UpdateAwsNodePool_sync",
+      "title": "gkemulticloud UpdateAwsNodePool Sample",
+      "description": "UpdateAwsNodePool updates an AwsNodePool.",
+      "file": "AwsClustersClient/UpdateAwsNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAwsNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.UpdateAwsNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.UpdateAwsNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAwsNodePoolOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "UpdateAwsNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.UpdateAwsNodePool",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureClient_sync",
+      "title": "gkemulticloud CreateAzureClient Sample",
+      "description": "CreateAzureClient creates a new AzureClient resource on a given Google Cloud project\nand region.\n\nAzureClient resources hold client authentication\ninformation needed by the Anthos Multicloud API to manage Azure resources\non your Azure subscription on your behalf.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AzureClustersClient/CreateAzureClient/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAzureClient",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.CreateAzureClient",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.CreateAzureClientRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAzureClientOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "CreateAzureClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.CreateAzureClient",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureCluster_sync",
+      "title": "gkemulticloud CreateAzureCluster Sample",
+      "description": "CreateAzureCluster creates a new AzureCluster resource on a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AzureClustersClient/CreateAzureCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAzureCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.CreateAzureCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.CreateAzureClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAzureClusterOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "CreateAzureCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.CreateAzureCluster",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureNodePool_sync",
+      "title": "gkemulticloud CreateAzureNodePool Sample",
+      "description": "CreateAzureNodePool creates a new AzureNodePool, attached to a given AzureCluster.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AzureClustersClient/CreateAzureNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAzureNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.CreateAzureNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.CreateAzureNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAzureNodePoolOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "CreateAzureNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.CreateAzureNodePool",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureClient_sync",
+      "title": "gkemulticloud DeleteAzureClient Sample",
+      "description": "DeleteAzureClient deletes a specific AzureClient resource.\n\nIf the client is used by one or more clusters, deletion will\nfail and a FAILED_PRECONDITION error will be returned.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AzureClustersClient/DeleteAzureClient/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAzureClient",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.DeleteAzureClient",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.DeleteAzureClientRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAzureClientOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "DeleteAzureClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.DeleteAzureClient",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureCluster_sync",
+      "title": "gkemulticloud DeleteAzureCluster Sample",
+      "description": "DeleteAzureCluster deletes a specific AzureCluster resource.\n\nFails if the cluster has one or more associated AzureNodePool\nresources.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AzureClustersClient/DeleteAzureCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAzureCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.DeleteAzureCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.DeleteAzureClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAzureClusterOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "DeleteAzureCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.DeleteAzureCluster",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureNodePool_sync",
+      "title": "gkemulticloud DeleteAzureNodePool Sample",
+      "description": "DeleteAzureNodePool deletes a specific AzureNodePool resource.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "file": "AzureClustersClient/DeleteAzureNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAzureNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.DeleteAzureNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.DeleteAzureNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAzureNodePoolOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "DeleteAzureNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.DeleteAzureNodePool",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GenerateAzureAccessToken_sync",
+      "title": "gkemulticloud GenerateAzureAccessToken Sample",
+      "description": "GenerateAzureAccessToken generates a short-lived access token to authenticate to a given\nAzureCluster resource.",
+      "file": "AzureClustersClient/GenerateAzureAccessToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAzureAccessToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GenerateAzureAccessToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAzureAccessTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.GenerateAzureAccessTokenResponse",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAzureAccessToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GenerateAzureAccessToken",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureClient_sync",
+      "title": "gkemulticloud GetAzureClient Sample",
+      "description": "GetAzureClient describes a specific AzureClient resource.",
+      "file": "AzureClustersClient/GetAzureClient/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureClient",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureClient",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureClientRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.AzureClient",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureClient",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureCluster_sync",
+      "title": "gkemulticloud GetAzureCluster Sample",
+      "description": "GetAzureCluster describes a specific AzureCluster resource.",
+      "file": "AzureClustersClient/GetAzureCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.AzureCluster",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureCluster",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureNodePool_sync",
+      "title": "gkemulticloud GetAzureNodePool Sample",
+      "description": "GetAzureNodePool describes a specific AzureNodePool resource.",
+      "file": "AzureClustersClient/GetAzureNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.AzureNodePool",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureNodePool",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureServerConfig_sync",
+      "title": "gkemulticloud GetAzureServerConfig Sample",
+      "description": "GetAzureServerConfig returns information, such as supported Azure regions and Kubernetes\nversions, on a given Google Cloud location.",
+      "file": "AzureClustersClient/GetAzureServerConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureServerConfig",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureServerConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureServerConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkemulticloudpb.AzureServerConfig",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureServerConfig",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureServerConfig",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureClients_sync",
+      "title": "gkemulticloud ListAzureClients Sample",
+      "description": "ListAzureClients lists all AzureClient resources on a given Google Cloud project and\nregion.",
+      "file": "AzureClustersClient/ListAzureClients/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAzureClients",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.ListAzureClients",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.ListAzureClientsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AzureClientIterator",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "ListAzureClients",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.ListAzureClients",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureClusters_sync",
+      "title": "gkemulticloud ListAzureClusters Sample",
+      "description": "ListAzureClusters lists all AzureCluster resources on a given Google Cloud project and\nregion.",
+      "file": "AzureClustersClient/ListAzureClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAzureClusters",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.ListAzureClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.ListAzureClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AzureClusterIterator",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "ListAzureClusters",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.ListAzureClusters",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureNodePools_sync",
+      "title": "gkemulticloud ListAzureNodePools Sample",
+      "description": "ListAzureNodePools lists all AzureNodePool resources on a given AzureCluster.",
+      "file": "AzureClustersClient/ListAzureNodePools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAzureNodePools",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.ListAzureNodePools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.ListAzureNodePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AzureNodePoolIterator",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "ListAzureNodePools",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.ListAzureNodePools",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_UpdateAzureCluster_sync",
+      "title": "gkemulticloud UpdateAzureCluster Sample",
+      "description": "UpdateAzureCluster updates an AzureCluster.",
+      "file": "AzureClustersClient/UpdateAzureCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAzureCluster",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.UpdateAzureCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.UpdateAzureClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAzureClusterOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "UpdateAzureCluster",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.UpdateAzureCluster",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_UpdateAzureNodePool_sync",
+      "title": "gkemulticloud UpdateAzureNodePool Sample",
+      "description": "UpdateAzureNodePool updates an AzureNodePool.",
+      "file": "AzureClustersClient/UpdateAzureNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAzureNodePool",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.UpdateAzureNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.UpdateAzureNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAzureNodePoolOperation",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "UpdateAzureNodePool",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.UpdateAzureNodePool",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

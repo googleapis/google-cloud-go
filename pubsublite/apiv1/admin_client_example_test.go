@@ -22,10 +22,16 @@ import (
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
 	"google.golang.org/api/iterator"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewAdminClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +44,11 @@ func ExampleNewAdminClient() {
 
 func ExampleAdminClient_CreateTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +69,11 @@ func ExampleAdminClient_CreateTopic() {
 
 func ExampleAdminClient_GetTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +94,11 @@ func ExampleAdminClient_GetTopic() {
 
 func ExampleAdminClient_GetTopicPartitions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,6 +119,11 @@ func ExampleAdminClient_GetTopicPartitions() {
 
 func ExampleAdminClient_ListTopics() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +150,11 @@ func ExampleAdminClient_ListTopics() {
 
 func ExampleAdminClient_UpdateTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,6 +175,11 @@ func ExampleAdminClient_UpdateTopic() {
 
 func ExampleAdminClient_DeleteTopic() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -162,6 +198,11 @@ func ExampleAdminClient_DeleteTopic() {
 
 func ExampleAdminClient_ListTopicSubscriptions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -188,6 +229,11 @@ func ExampleAdminClient_ListTopicSubscriptions() {
 
 func ExampleAdminClient_CreateSubscription() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -208,6 +254,11 @@ func ExampleAdminClient_CreateSubscription() {
 
 func ExampleAdminClient_GetSubscription() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +279,11 @@ func ExampleAdminClient_GetSubscription() {
 
 func ExampleAdminClient_ListSubscriptions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -254,6 +310,11 @@ func ExampleAdminClient_ListSubscriptions() {
 
 func ExampleAdminClient_UpdateSubscription() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -274,6 +335,11 @@ func ExampleAdminClient_UpdateSubscription() {
 
 func ExampleAdminClient_DeleteSubscription() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -292,6 +358,11 @@ func ExampleAdminClient_DeleteSubscription() {
 
 func ExampleAdminClient_SeekSubscription() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -317,6 +388,11 @@ func ExampleAdminClient_SeekSubscription() {
 
 func ExampleAdminClient_CreateReservation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -337,6 +413,11 @@ func ExampleAdminClient_CreateReservation() {
 
 func ExampleAdminClient_GetReservation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -357,6 +438,11 @@ func ExampleAdminClient_GetReservation() {
 
 func ExampleAdminClient_ListReservations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -383,6 +469,11 @@ func ExampleAdminClient_ListReservations() {
 
 func ExampleAdminClient_UpdateReservation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -403,6 +494,11 @@ func ExampleAdminClient_UpdateReservation() {
 
 func ExampleAdminClient_DeleteReservation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -421,6 +517,11 @@ func ExampleAdminClient_DeleteReservation() {
 
 func ExampleAdminClient_ListReservationTopics() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -432,6 +533,108 @@ func ExampleAdminClient_ListReservationTopics() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListReservationTopicsRequest.
 	}
 	it := c.ListReservationTopics(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAdminClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

@@ -19,17 +19,22 @@ package dataflow
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -58,7 +63,13 @@ func defaultMessagesV1Beta3CallOptions() *MessagesV1Beta3CallOptions {
 	}
 }
 
-// internalMessagesV1Beta3Client is an interface that defines the methods availaible from Dataflow API.
+func defaultMessagesV1Beta3RESTCallOptions() *MessagesV1Beta3CallOptions {
+	return &MessagesV1Beta3CallOptions{
+		ListJobMessages: []gax.CallOption{},
+	}
+}
+
+// internalMessagesV1Beta3Client is an interface that defines the methods available from Dataflow API.
 type internalMessagesV1Beta3Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -96,7 +107,8 @@ func (c *MessagesV1Beta3Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MessagesV1Beta3Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -173,7 +185,8 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *messagesV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -183,7 +196,7 @@ func (c *messagesV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *messagesV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -193,8 +206,78 @@ func (c *messagesV1Beta3GRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type messagesV1Beta3RESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing MessagesV1Beta3Client
+	CallOptions **MessagesV1Beta3CallOptions
+}
+
+// NewMessagesV1Beta3RESTClient creates a new messages v1 beta3 rest client.
+//
+// The Dataflow Messages API is used for monitoring the progress of
+// Dataflow jobs.
+func NewMessagesV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*MessagesV1Beta3Client, error) {
+	clientOpts := append(defaultMessagesV1Beta3RESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultMessagesV1Beta3RESTCallOptions()
+	c := &messagesV1Beta3RESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &MessagesV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultMessagesV1Beta3RESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://dataflow.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://dataflow.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *messagesV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *messagesV1Beta3RESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *messagesV1Beta3RESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *dataflowpb.ListJobMessagesRequest, opts ...gax.CallOption) *JobMessageIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "job_id", url.QueryEscape(req.GetJobId()), "location", url.QueryEscape(req.GetLocation())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListJobMessages[0:len((*c.CallOptions).ListJobMessages):len((*c.CallOptions).ListJobMessages)], opts...)
 	it := &JobMessageIterator{}
@@ -221,6 +304,116 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 		it.Response = resp
 		return resp.GetJobMessages(), resp.GetNextPageToken(), nil
 	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListJobMessages request the job status.
+//
+// To request the status of a job, we recommend using
+// projects.locations.jobs.messages.list with a [regional endpoint]
+// (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using
+// projects.jobs.messages.list is not recommended, as you can only request
+// the status of jobs that are running in us-central1.
+func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *dataflowpb.ListJobMessagesRequest, opts ...gax.CallOption) *JobMessageIterator {
+	it := &JobMessageIterator{}
+	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.JobMessage, string, error) {
+		resp := &dataflowpb.ListJobMessagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/messages", req.GetProjectId(), req.GetLocation(), req.GetJobId())
+
+		params := url.Values{}
+		if req.GetEndTime() != nil {
+			endTime, err := protojson.Marshal(req.GetEndTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("endTime", string(endTime))
+		}
+		if req.GetMinimumImportance() != 0 {
+			params.Add("minimumImportance", fmt.Sprintf("%v", req.GetMinimumImportance()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetStartTime() != nil {
+			startTime, err := protojson.Marshal(req.GetStartTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("startTime", string(startTime))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetJobMessages(), resp.GetNextPageToken(), nil
+	}
+
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
 		if err != nil {

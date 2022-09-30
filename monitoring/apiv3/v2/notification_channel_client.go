@@ -148,7 +148,7 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 	}
 }
 
-// internalNotificationChannelClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalNotificationChannelClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalNotificationChannelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -195,7 +195,8 @@ func (c *NotificationChannelClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *NotificationChannelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -342,7 +343,8 @@ func NewNotificationChannelClient(ctx context.Context, opts ...option.ClientOpti
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *notificationChannelGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -352,7 +354,7 @@ func (c *notificationChannelGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *notificationChannelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -364,6 +366,7 @@ func (c *notificationChannelGRPCClient) Close() error {
 
 func (c *notificationChannelGRPCClient) ListNotificationChannelDescriptors(ctx context.Context, req *monitoringpb.ListNotificationChannelDescriptorsRequest, opts ...gax.CallOption) *NotificationChannelDescriptorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListNotificationChannelDescriptors[0:len((*c.CallOptions).ListNotificationChannelDescriptors):len((*c.CallOptions).ListNotificationChannelDescriptors)], opts...)
 	it := &NotificationChannelDescriptorIterator{}
@@ -413,6 +416,7 @@ func (c *notificationChannelGRPCClient) GetNotificationChannelDescriptor(ctx con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetNotificationChannelDescriptor[0:len((*c.CallOptions).GetNotificationChannelDescriptor):len((*c.CallOptions).GetNotificationChannelDescriptor)], opts...)
 	var resp *monitoringpb.NotificationChannelDescriptor
@@ -429,6 +433,7 @@ func (c *notificationChannelGRPCClient) GetNotificationChannelDescriptor(ctx con
 
 func (c *notificationChannelGRPCClient) ListNotificationChannels(ctx context.Context, req *monitoringpb.ListNotificationChannelsRequest, opts ...gax.CallOption) *NotificationChannelIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListNotificationChannels[0:len((*c.CallOptions).ListNotificationChannels):len((*c.CallOptions).ListNotificationChannels)], opts...)
 	it := &NotificationChannelIterator{}
@@ -478,6 +483,7 @@ func (c *notificationChannelGRPCClient) GetNotificationChannel(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetNotificationChannel[0:len((*c.CallOptions).GetNotificationChannel):len((*c.CallOptions).GetNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel
@@ -499,6 +505,7 @@ func (c *notificationChannelGRPCClient) CreateNotificationChannel(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateNotificationChannel[0:len((*c.CallOptions).CreateNotificationChannel):len((*c.CallOptions).CreateNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel
@@ -520,6 +527,7 @@ func (c *notificationChannelGRPCClient) UpdateNotificationChannel(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notification_channel.name", url.QueryEscape(req.GetNotificationChannel().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateNotificationChannel[0:len((*c.CallOptions).UpdateNotificationChannel):len((*c.CallOptions).UpdateNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel
@@ -541,6 +549,7 @@ func (c *notificationChannelGRPCClient) DeleteNotificationChannel(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteNotificationChannel[0:len((*c.CallOptions).DeleteNotificationChannel):len((*c.CallOptions).DeleteNotificationChannel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -558,6 +567,7 @@ func (c *notificationChannelGRPCClient) SendNotificationChannelVerificationCode(
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SendNotificationChannelVerificationCode[0:len((*c.CallOptions).SendNotificationChannelVerificationCode):len((*c.CallOptions).SendNotificationChannelVerificationCode)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -575,6 +585,7 @@ func (c *notificationChannelGRPCClient) GetNotificationChannelVerificationCode(c
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetNotificationChannelVerificationCode[0:len((*c.CallOptions).GetNotificationChannelVerificationCode):len((*c.CallOptions).GetNotificationChannelVerificationCode)], opts...)
 	var resp *monitoringpb.GetNotificationChannelVerificationCodeResponse
@@ -596,6 +607,7 @@ func (c *notificationChannelGRPCClient) VerifyNotificationChannel(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).VerifyNotificationChannel[0:len((*c.CallOptions).VerifyNotificationChannel):len((*c.CallOptions).VerifyNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel

@@ -10,9 +10,29 @@
         "grpc": {
           "libraryClient": "CatalogClient",
           "rpcs": {
+            "AddCatalogAttribute": {
+              "methods": [
+                "AddCatalogAttribute"
+              ]
+            },
+            "GetAttributesConfig": {
+              "methods": [
+                "GetAttributesConfig"
+              ]
+            },
+            "GetCompletionConfig": {
+              "methods": [
+                "GetCompletionConfig"
+              ]
+            },
             "GetDefaultBranch": {
               "methods": [
                 "GetDefaultBranch"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListCatalogs": {
@@ -20,14 +40,39 @@
                 "ListCatalogs"
               ]
             },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveCatalogAttribute": {
+              "methods": [
+                "RemoveCatalogAttribute"
+              ]
+            },
+            "ReplaceCatalogAttribute": {
+              "methods": [
+                "ReplaceCatalogAttribute"
+              ]
+            },
             "SetDefaultBranch": {
               "methods": [
                 "SetDefaultBranch"
               ]
             },
+            "UpdateAttributesConfig": {
+              "methods": [
+                "UpdateAttributesConfig"
+              ]
+            },
             "UpdateCatalog": {
               "methods": [
                 "UpdateCatalog"
+              ]
+            },
+            "UpdateCompletionConfig": {
+              "methods": [
+                "UpdateCompletionConfig"
               ]
             }
           }
@@ -44,9 +89,63 @@
                 "CompleteQuery"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportCompletionData": {
               "methods": [
                 "ImportCompletionData"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ControlService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ControlClient",
+          "rpcs": {
+            "CreateControl": {
+              "methods": [
+                "CreateControl"
+              ]
+            },
+            "DeleteControl": {
+              "methods": [
+                "DeleteControl"
+              ]
+            },
+            "GetControl": {
+              "methods": [
+                "GetControl"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListControls": {
+              "methods": [
+                "ListControls"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateControl": {
+              "methods": [
+                "UpdateControl"
               ]
             }
           }
@@ -58,6 +157,16 @@
         "grpc": {
           "libraryClient": "PredictionClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Predict": {
               "methods": [
                 "Predict"
@@ -77,6 +186,11 @@
                 "AddFulfillmentPlaces"
               ]
             },
+            "AddLocalInventories": {
+              "methods": [
+                "AddLocalInventories"
+              ]
+            },
             "CreateProduct": {
               "methods": [
                 "CreateProduct"
@@ -85,6 +199,11 @@
             "DeleteProduct": {
               "methods": [
                 "DeleteProduct"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetProduct": {
@@ -97,6 +216,11 @@
                 "ImportProducts"
               ]
             },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListProducts": {
               "methods": [
                 "ListProducts"
@@ -105,6 +229,11 @@
             "RemoveFulfillmentPlaces": {
               "methods": [
                 "RemoveFulfillmentPlaces"
+              ]
+            },
+            "RemoveLocalInventories": {
+              "methods": [
+                "RemoveLocalInventories"
               ]
             },
             "SetInventory": {
@@ -126,9 +255,73 @@
         "grpc": {
           "libraryClient": "SearchClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Search": {
               "methods": [
                 "Search"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ServingConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ServingConfigClient",
+          "rpcs": {
+            "AddControl": {
+              "methods": [
+                "AddControl"
+              ]
+            },
+            "CreateServingConfig": {
+              "methods": [
+                "CreateServingConfig"
+              ]
+            },
+            "DeleteServingConfig": {
+              "methods": [
+                "DeleteServingConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServingConfig": {
+              "methods": [
+                "GetServingConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServingConfigs": {
+              "methods": [
+                "ListServingConfigs"
+              ]
+            },
+            "RemoveControl": {
+              "methods": [
+                "RemoveControl"
+              ]
+            },
+            "UpdateServingConfig": {
+              "methods": [
+                "UpdateServingConfig"
               ]
             }
           }
@@ -145,9 +338,19 @@
                 "CollectUserEvent"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportUserEvents": {
               "methods": [
                 "ImportUserEvents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "PurgeUserEvents": {

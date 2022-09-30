@@ -1,0 +1,335 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/essentialcontacts/apiv1",
+    "version": "1.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.essentialcontacts.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "essentialcontacts_v1_generated_EssentialContactsService_ComputeContacts_sync",
+      "title": "essentialcontacts ComputeContacts Sample",
+      "description": "ComputeContacts lists all contacts for the resource that are subscribed to the\nspecified notification categories, including contacts inherited from\nany parent resources.",
+      "file": "Client/ComputeContacts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ComputeContacts",
+        "fullName": "google.cloud.essentialcontacts.v1.Client.ComputeContacts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "essentialcontactspb.ComputeContactsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ContactIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.essentialcontacts.v1.Client"
+        },
+        "method": {
+          "shortName": "ComputeContacts",
+          "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService.ComputeContacts",
+          "service": {
+            "shortName": "EssentialContactsService",
+            "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "essentialcontacts_v1_generated_EssentialContactsService_CreateContact_sync",
+      "title": "essentialcontacts CreateContact Sample",
+      "description": "CreateContact adds a new contact for a resource.",
+      "file": "Client/CreateContact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateContact",
+        "fullName": "google.cloud.essentialcontacts.v1.Client.CreateContact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "essentialcontactspb.CreateContactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "essentialcontactspb.Contact",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.essentialcontacts.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateContact",
+          "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService.CreateContact",
+          "service": {
+            "shortName": "EssentialContactsService",
+            "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "essentialcontacts_v1_generated_EssentialContactsService_DeleteContact_sync",
+      "title": "essentialcontacts DeleteContact Sample",
+      "description": "DeleteContact deletes a contact.",
+      "file": "Client/DeleteContact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteContact",
+        "fullName": "google.cloud.essentialcontacts.v1.Client.DeleteContact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "essentialcontactspb.DeleteContactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.essentialcontacts.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteContact",
+          "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService.DeleteContact",
+          "service": {
+            "shortName": "EssentialContactsService",
+            "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "essentialcontacts_v1_generated_EssentialContactsService_GetContact_sync",
+      "title": "essentialcontacts GetContact Sample",
+      "description": "GetContact gets a single contact.",
+      "file": "Client/GetContact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetContact",
+        "fullName": "google.cloud.essentialcontacts.v1.Client.GetContact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "essentialcontactspb.GetContactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "essentialcontactspb.Contact",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.essentialcontacts.v1.Client"
+        },
+        "method": {
+          "shortName": "GetContact",
+          "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService.GetContact",
+          "service": {
+            "shortName": "EssentialContactsService",
+            "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "essentialcontacts_v1_generated_EssentialContactsService_ListContacts_sync",
+      "title": "essentialcontacts ListContacts Sample",
+      "description": "ListContacts lists the contacts that have been set on a resource.",
+      "file": "Client/ListContacts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListContacts",
+        "fullName": "google.cloud.essentialcontacts.v1.Client.ListContacts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "essentialcontactspb.ListContactsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ContactIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.essentialcontacts.v1.Client"
+        },
+        "method": {
+          "shortName": "ListContacts",
+          "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService.ListContacts",
+          "service": {
+            "shortName": "EssentialContactsService",
+            "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "essentialcontacts_v1_generated_EssentialContactsService_SendTestMessage_sync",
+      "title": "essentialcontacts SendTestMessage Sample",
+      "description": "SendTestMessage allows a contact admin to send a test message to contact to verify that it\nhas been configured correctly.",
+      "file": "Client/SendTestMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SendTestMessage",
+        "fullName": "google.cloud.essentialcontacts.v1.Client.SendTestMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "essentialcontactspb.SendTestMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.essentialcontacts.v1.Client"
+        },
+        "method": {
+          "shortName": "SendTestMessage",
+          "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService.SendTestMessage",
+          "service": {
+            "shortName": "EssentialContactsService",
+            "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "essentialcontacts_v1_generated_EssentialContactsService_UpdateContact_sync",
+      "title": "essentialcontacts UpdateContact Sample",
+      "description": "UpdateContact updates a contact.\nNote: A contact’s email address cannot be changed.",
+      "file": "Client/UpdateContact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateContact",
+        "fullName": "google.cloud.essentialcontacts.v1.Client.UpdateContact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "essentialcontactspb.UpdateContactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "essentialcontactspb.Contact",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.essentialcontacts.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateContact",
+          "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService.UpdateContact",
+          "service": {
+            "shortName": "EssentialContactsService",
+            "fullName": "google.cloud.essentialcontacts.v1.EssentialContactsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

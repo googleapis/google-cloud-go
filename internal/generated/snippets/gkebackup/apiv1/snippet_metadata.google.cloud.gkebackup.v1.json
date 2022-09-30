@@ -1,0 +1,1119 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkebackup/apiv1",
+    "version": "0.1.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkebackup.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateBackup_sync",
+      "title": "gkebackup CreateBackup Sample",
+      "description": "CreateBackup creates a Backup for the given BackupPlan.",
+      "file": "BackupForGKEClient/CreateBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackup",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.CreateBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.CreateBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "CreateBackup",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.CreateBackup",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateBackupPlan_sync",
+      "title": "gkebackup CreateBackupPlan Sample",
+      "description": "CreateBackupPlan creates a new BackupPlan in a given location.",
+      "file": "BackupForGKEClient/CreateBackupPlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackupPlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.CreateBackupPlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.CreateBackupPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupPlanOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "CreateBackupPlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.CreateBackupPlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateRestore_sync",
+      "title": "gkebackup CreateRestore Sample",
+      "description": "CreateRestore creates a new Restore for the given RestorePlan.",
+      "file": "BackupForGKEClient/CreateRestore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRestore",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.CreateRestore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.CreateRestoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRestoreOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "CreateRestore",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.CreateRestore",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateRestorePlan_sync",
+      "title": "gkebackup CreateRestorePlan Sample",
+      "description": "CreateRestorePlan creates a new RestorePlan in a given location.",
+      "file": "BackupForGKEClient/CreateRestorePlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRestorePlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.CreateRestorePlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.CreateRestorePlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRestorePlanOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "CreateRestorePlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.CreateRestorePlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteBackup_sync",
+      "title": "gkebackup DeleteBackup Sample",
+      "description": "DeleteBackup deletes an existing Backup.",
+      "file": "BackupForGKEClient/DeleteBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackup",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.DeleteBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.DeleteBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "DeleteBackup",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.DeleteBackup",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteBackupPlan_sync",
+      "title": "gkebackup DeleteBackupPlan Sample",
+      "description": "DeleteBackupPlan deletes an existing BackupPlan.",
+      "file": "BackupForGKEClient/DeleteBackupPlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackupPlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.DeleteBackupPlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.DeleteBackupPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupPlanOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "DeleteBackupPlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.DeleteBackupPlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteRestore_sync",
+      "title": "gkebackup DeleteRestore Sample",
+      "description": "DeleteRestore deletes an existing Restore.",
+      "file": "BackupForGKEClient/DeleteRestore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRestore",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.DeleteRestore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.DeleteRestoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRestoreOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "DeleteRestore",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.DeleteRestore",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteRestorePlan_sync",
+      "title": "gkebackup DeleteRestorePlan Sample",
+      "description": "DeleteRestorePlan deletes an existing RestorePlan.",
+      "file": "BackupForGKEClient/DeleteRestorePlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRestorePlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.DeleteRestorePlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.DeleteRestorePlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRestorePlanOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "DeleteRestorePlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.DeleteRestorePlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackup_sync",
+      "title": "gkebackup GetBackup Sample",
+      "description": "GetBackup retrieve the details of a single Backup.",
+      "file": "BackupForGKEClient/GetBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackup",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkebackuppb.Backup",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetBackup",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetBackup",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackupPlan_sync",
+      "title": "gkebackup GetBackupPlan Sample",
+      "description": "GetBackupPlan retrieve the details of a single BackupPlan.",
+      "file": "BackupForGKEClient/GetBackupPlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupPlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetBackupPlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetBackupPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkebackuppb.BackupPlan",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetBackupPlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetBackupPlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetRestore_sync",
+      "title": "gkebackup GetRestore Sample",
+      "description": "GetRestore retrieves the details of a single Restore.",
+      "file": "BackupForGKEClient/GetRestore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRestore",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetRestore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetRestoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkebackuppb.Restore",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetRestore",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetRestore",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetRestorePlan_sync",
+      "title": "gkebackup GetRestorePlan Sample",
+      "description": "GetRestorePlan retrieve the details of a single RestorePlan.",
+      "file": "BackupForGKEClient/GetRestorePlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRestorePlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetRestorePlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetRestorePlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkebackuppb.RestorePlan",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetRestorePlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetRestorePlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetVolumeBackup_sync",
+      "title": "gkebackup GetVolumeBackup Sample",
+      "description": "GetVolumeBackup retrieve the details of a single VolumeBackup.",
+      "file": "BackupForGKEClient/GetVolumeBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVolumeBackup",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetVolumeBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetVolumeBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkebackuppb.VolumeBackup",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetVolumeBackup",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetVolumeBackup",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetVolumeRestore_sync",
+      "title": "gkebackup GetVolumeRestore Sample",
+      "description": "GetVolumeRestore retrieve the details of a single VolumeRestore.",
+      "file": "BackupForGKEClient/GetVolumeRestore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVolumeRestore",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetVolumeRestore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetVolumeRestoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkebackuppb.VolumeRestore",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetVolumeRestore",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetVolumeRestore",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListBackupPlans_sync",
+      "title": "gkebackup ListBackupPlans Sample",
+      "description": "ListBackupPlans lists BackupPlans in a given location.",
+      "file": "BackupForGKEClient/ListBackupPlans/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupPlans",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListBackupPlans",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListBackupPlansRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupPlanIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListBackupPlans",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListBackupPlans",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListBackups_sync",
+      "title": "gkebackup ListBackups Sample",
+      "description": "ListBackups lists the Backups for a given BackupPlan.",
+      "file": "BackupForGKEClient/ListBackups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackups",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListBackups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListBackupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListBackups",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListBackups",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListRestorePlans_sync",
+      "title": "gkebackup ListRestorePlans Sample",
+      "description": "ListRestorePlans lists RestorePlans in a given location.",
+      "file": "BackupForGKEClient/ListRestorePlans/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRestorePlans",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListRestorePlans",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListRestorePlansRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestorePlanIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListRestorePlans",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListRestorePlans",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListRestores_sync",
+      "title": "gkebackup ListRestores Sample",
+      "description": "ListRestores lists the Restores for a given RestorePlan.",
+      "file": "BackupForGKEClient/ListRestores/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRestores",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListRestores",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListRestoresRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListRestores",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListRestores",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListVolumeBackups_sync",
+      "title": "gkebackup ListVolumeBackups Sample",
+      "description": "ListVolumeBackups lists the VolumeBackups for a given Backup.",
+      "file": "BackupForGKEClient/ListVolumeBackups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVolumeBackups",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListVolumeBackups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListVolumeBackupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VolumeBackupIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListVolumeBackups",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListVolumeBackups",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListVolumeRestores_sync",
+      "title": "gkebackup ListVolumeRestores Sample",
+      "description": "ListVolumeRestores lists the VolumeRestores for a given Restore.",
+      "file": "BackupForGKEClient/ListVolumeRestores/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVolumeRestores",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListVolumeRestores",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.ListVolumeRestoresRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VolumeRestoreIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListVolumeRestores",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.ListVolumeRestores",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_UpdateBackup_sync",
+      "title": "gkebackup UpdateBackup Sample",
+      "description": "UpdateBackup update a Backup.",
+      "file": "BackupForGKEClient/UpdateBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackup",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.UpdateBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.UpdateBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBackupOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "UpdateBackup",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.UpdateBackup",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_UpdateBackupPlan_sync",
+      "title": "gkebackup UpdateBackupPlan Sample",
+      "description": "UpdateBackupPlan update a BackupPlan.",
+      "file": "BackupForGKEClient/UpdateBackupPlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackupPlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.UpdateBackupPlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.UpdateBackupPlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBackupPlanOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "UpdateBackupPlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.UpdateBackupPlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_UpdateRestore_sync",
+      "title": "gkebackup UpdateRestore Sample",
+      "description": "UpdateRestore update a Restore.",
+      "file": "BackupForGKEClient/UpdateRestore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRestore",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.UpdateRestore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.UpdateRestoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRestoreOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "UpdateRestore",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.UpdateRestore",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_UpdateRestorePlan_sync",
+      "title": "gkebackup UpdateRestorePlan Sample",
+      "description": "UpdateRestorePlan update a RestorePlan.",
+      "file": "BackupForGKEClient/UpdateRestorePlan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRestorePlan",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.UpdateRestorePlan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.UpdateRestorePlanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateRestorePlanOperation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "UpdateRestorePlan",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.UpdateRestorePlan",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

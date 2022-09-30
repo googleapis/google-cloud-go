@@ -85,6 +85,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Cl", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)}, Position: line(13)},
 					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
 					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
+					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -107,6 +108,7 @@ func TestSQL(t *testing.T) {
   Cl TIMESTAMP OPTIONS (allow_commit_timestamp = null),
   Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
   Cn JSON,
+  Co INT64 DEFAULT (1),
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -270,6 +272,22 @@ func TestSQL(t *testing.T) {
 			&AlterTable{
 				Name: "Ta",
 				Alteration: AlterColumn{
+					Name: "Ch",
+					Alteration: SetColumnType{
+						Type:    Type{Base: String, Len: MaxLen},
+						NotNull: true,
+						Default: StringLiteral("1"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Ch STRING(MAX) NOT NULL DEFAULT (\"1\")",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
 					Name: "Ci",
 					Alteration: SetColumnOptions{
 						Options: ColumnOptions{
@@ -280,6 +298,32 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"ALTER TABLE Ta ALTER COLUMN Ci SET OPTIONS (allow_commit_timestamp = null)",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name: "Cj",
+					Alteration: SetDefault{
+						Default: StringLiteral("1"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Cj SET DEFAULT (\"1\")",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name:       "Ck",
+					Alteration: DropDefault{},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Ck DROP DEFAULT",
 			reparseDDL,
 		},
 		{
@@ -366,6 +410,15 @@ func TestSQL(t *testing.T) {
 			},
 			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)",
 			reparseDDL,
+		},
+		{
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Marc", "Richards")`,
+			reparseDML,
 		},
 		{
 			&Delete{
@@ -512,7 +565,12 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			TimestampLiteral(time.Date(2014, time.September, 27, 12, 34, 56, 123456e3, latz)),
-			`TIMESTAMP '2014-09-27 12:34:56.123456 -07:00'`,
+			`TIMESTAMP '2014-09-27 12:34:56.123456-07:00'`,
+			reparseExpr,
+		},
+		{
+			JSONLiteral(`{"a": 1}`),
+			`JSON '{"a": 1}'`,
 			reparseExpr,
 		},
 		{
@@ -564,6 +622,98 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A INNER JOIN Table3 USING (X)",
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							Expr: ID("X"),
+							WhenClauses: []WhenClause{
+								{Cond: IntegerLiteral(1), Result: StringLiteral("X")},
+								{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
+							},
+							ElseResult: Null,
+						}},
+				},
+			},
+			`SELECT CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							WhenClauses: []WhenClause{
+								{Cond: True, Result: StringLiteral("X")},
+								{Cond: False, Result: StringLiteral("Y")},
+							},
+						}},
+				},
+			},
+			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						If{
+							Expr:       ComparisonOp{LHS: IntegerLiteral(1), Op: Lt, RHS: IntegerLiteral(2)},
+							TrueResult: True,
+							ElseResult: False,
+						},
+					},
+				},
+			},
+			`SELECT IF(1 < 2, TRUE, FALSE)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						IfNull{
+							Expr:       IntegerLiteral(10),
+							NullResult: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT IFNULL(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						NullIf{
+							Expr:        IntegerLiteral(10),
+							ExprToMatch: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT NULLIF(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Coalesce{
+							ExprList: []Expr{
+								StringLiteral("A"),
+								Null,
+								StringLiteral("C"),
+							},
+						},
+					},
+				},
+			},
+			`SELECT COALESCE("A", NULL, "C")`,
 			reparseQuery,
 		},
 	}

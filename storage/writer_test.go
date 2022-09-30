@@ -30,7 +30,6 @@ import (
 var testEncryptionKey = []byte("secret-key-that-is-32-bytes-long")
 
 func TestErrorOnObjectsInsertCall(t *testing.T) {
-	t.Skip("Should be re-enabled after https://github.com/googleapis/google-cloud-go/pull/5210")
 	t.Parallel()
 	ctx := context.Background()
 	const contents = "hello world"

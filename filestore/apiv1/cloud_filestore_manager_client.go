@@ -124,7 +124,7 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 	}
 }
 
-// internalCloudFilestoreManagerClient is an interface that defines the methods availaible from Cloud Filestore API.
+// internalCloudFilestoreManagerClient is an interface that defines the methods available from Cloud Filestore API.
 type internalCloudFilestoreManagerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -159,24 +159,24 @@ type internalCloudFilestoreManagerClient interface {
 // The file.googleapis.com service implements the Cloud Filestore API and
 // defines the following resource model for managing instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of instances and backups, named:
-//   /instances/* and /backups/* respectively.
+//	Each location has a collection of instances and backups, named:
+//	/instances/* and /backups/* respectively.
 //
-//   As such, Cloud Filestore instances are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/instances/{instance_id}
-//   and backups are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/backup/{backup_id}
+//	As such, Cloud Filestore instances are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
+//	and backups are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
 // Note that location_id must be a GCP zone for instances and but to a GCP
 // region for backups; for example:
 //
-//   projects/12345/locations/us-central1-c/instances/my-filestore
+//	projects/12345/locations/us-central1-c/instances/my-filestore
 //
-//   projects/12345/locations/us-central1/backups/my-backup
+//	projects/12345/locations/us-central1/backups/my-backup
 type CloudFilestoreManagerClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudFilestoreManagerClient
@@ -207,7 +207,8 @@ func (c *CloudFilestoreManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudFilestoreManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -353,24 +354,24 @@ type cloudFilestoreManagerGRPCClient struct {
 // The file.googleapis.com service implements the Cloud Filestore API and
 // defines the following resource model for managing instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of instances and backups, named:
-//   /instances/* and /backups/* respectively.
+//	Each location has a collection of instances and backups, named:
+//	/instances/* and /backups/* respectively.
 //
-//   As such, Cloud Filestore instances are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/instances/{instance_id}
-//   and backups are resources of the form:
-//   /projects/{project_number}/locations/{location_id}/backup/{backup_id}
+//	As such, Cloud Filestore instances are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
+//	and backups are resources of the form:
+//	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
 // Note that location_id must be a GCP zone for instances and but to a GCP
 // region for backups; for example:
 //
-//   projects/12345/locations/us-central1-c/instances/my-filestore
+//	projects/12345/locations/us-central1-c/instances/my-filestore
 //
-//   projects/12345/locations/us-central1/backups/my-backup
+//	projects/12345/locations/us-central1/backups/my-backup
 func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOption) (*CloudFilestoreManagerClient, error) {
 	clientOpts := defaultCloudFilestoreManagerGRPCClientOptions()
 	if newCloudFilestoreManagerClientHook != nil {
@@ -418,7 +419,8 @@ func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOp
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudFilestoreManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -428,7 +430,7 @@ func (c *cloudFilestoreManagerGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *cloudFilestoreManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -440,6 +442,7 @@ func (c *cloudFilestoreManagerGRPCClient) Close() error {
 
 func (c *cloudFilestoreManagerGRPCClient) ListInstances(ctx context.Context, req *filestorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
@@ -489,6 +492,7 @@ func (c *cloudFilestoreManagerGRPCClient) GetInstance(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *filestorepb.Instance
@@ -510,6 +514,7 @@ func (c *cloudFilestoreManagerGRPCClient) CreateInstance(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -533,6 +538,7 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateInstance(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -556,6 +562,7 @@ func (c *cloudFilestoreManagerGRPCClient) RestoreInstance(ctx context.Context, r
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RestoreInstance[0:len((*c.CallOptions).RestoreInstance):len((*c.CallOptions).RestoreInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -579,6 +586,7 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteInstance(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -597,6 +605,7 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteInstance(ctx context.Context, re
 
 func (c *cloudFilestoreManagerGRPCClient) ListBackups(ctx context.Context, req *filestorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
@@ -646,6 +655,7 @@ func (c *cloudFilestoreManagerGRPCClient) GetBackup(ctx context.Context, req *fi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *filestorepb.Backup
@@ -667,6 +677,7 @@ func (c *cloudFilestoreManagerGRPCClient) CreateBackup(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
@@ -690,6 +701,7 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteBackup(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	var resp *longrunningpb.Operation
@@ -713,6 +725,7 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateBackup(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateBackup[0:len((*c.CallOptions).UpdateBackup):len((*c.CallOptions).UpdateBackup)], opts...)
 	var resp *longrunningpb.Operation

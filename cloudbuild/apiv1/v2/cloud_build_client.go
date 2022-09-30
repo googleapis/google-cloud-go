@@ -174,7 +174,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Build API.
+// internalClient is an interface that defines the methods available from Cloud Build API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -247,7 +247,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -295,28 +296,28 @@ func (c *Client) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBuildR
 //
 // For triggered builds:
 //
-//   Triggered builds resolve to a precise revision; therefore a retry of a
-//   triggered build will result in a build that uses the same revision.
+//	Triggered builds resolve to a precise revision; therefore a retry of a
+//	triggered build will result in a build that uses the same revision.
 //
 // For non-triggered builds that specify RepoSource:
 //
-//   If the original build built from the tip of a branch, the retried build
-//   will build from the tip of that branch, which may not be the same revision
-//   as the original build.
+//	If the original build built from the tip of a branch, the retried build
+//	will build from the tip of that branch, which may not be the same revision
+//	as the original build.
 //
-//   If the original build specified a commit sha or revision ID, the retried
-//   build will use the identical source.
+//	If the original build specified a commit sha or revision ID, the retried
+//	build will use the identical source.
 //
 // For builds that specify StorageSource:
 //
-//   If the original build pulled source from Google Cloud Storage without
-//   specifying the generation of the object, the new build will use the current
-//   object, which may be different from the original build source.
+//	If the original build pulled source from Google Cloud Storage without
+//	specifying the generation of the object, the new build will use the current
+//	object, which may be different from the original build source.
 //
-//   If the original build pulled source from Cloud Storage and specified the
-//   generation of the object, the new build will attempt to use the same
-//   object, which may or may not be available depending on the bucket’s
-//   lifecycle management settings.
+//	If the original build pulled source from Cloud Storage and specified the
+//	generation of the object, the new build will attempt to use the same
+//	object, which may or may not be available depending on the bucket’s
+//	lifecycle management settings.
 func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildRequest, opts ...gax.CallOption) (*RetryBuildOperation, error) {
 	return c.internalClient.RetryBuild(ctx, req, opts...)
 }
@@ -521,7 +522,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -531,7 +533,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -548,6 +550,7 @@ func (c *gRPCClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBuild[0:len((*c.CallOptions).CreateBuild):len((*c.CallOptions).CreateBuild)], opts...)
 	var resp *longrunningpb.Operation
@@ -571,6 +574,7 @@ func (c *gRPCClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId()), "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBuild[0:len((*c.CallOptions).GetBuild):len((*c.CallOptions).GetBuild)], opts...)
 	var resp *cloudbuildpb.Build
@@ -587,6 +591,7 @@ func (c *gRPCClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 
 func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuildsRequest, opts ...gax.CallOption) *BuildIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBuilds[0:len((*c.CallOptions).ListBuilds):len((*c.CallOptions).ListBuilds)], opts...)
 	it := &BuildIterator{}
@@ -636,6 +641,7 @@ func (c *gRPCClient) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId()), "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelBuild[0:len((*c.CallOptions).CancelBuild):len((*c.CallOptions).CancelBuild)], opts...)
 	var resp *cloudbuildpb.Build
@@ -657,6 +663,7 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId()), "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RetryBuild[0:len((*c.CallOptions).RetryBuild):len((*c.CallOptions).RetryBuild)], opts...)
 	var resp *longrunningpb.Operation
@@ -675,6 +682,7 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 
 func (c *gRPCClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.ApproveBuildRequest, opts ...gax.CallOption) (*ApproveBuildOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ApproveBuild[0:len((*c.CallOptions).ApproveBuild):len((*c.CallOptions).ApproveBuild)], opts...)
 	var resp *longrunningpb.Operation
@@ -698,6 +706,7 @@ func (c *gRPCClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBuildTrigger[0:len((*c.CallOptions).CreateBuildTrigger):len((*c.CallOptions).CreateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
@@ -719,6 +728,7 @@ func (c *gRPCClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId()), "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBuildTrigger[0:len((*c.CallOptions).GetBuildTrigger):len((*c.CallOptions).GetBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
@@ -735,6 +745,7 @@ func (c *gRPCClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 
 func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBuildTriggersRequest, opts ...gax.CallOption) *BuildTriggerIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBuildTriggers[0:len((*c.CallOptions).ListBuildTriggers):len((*c.CallOptions).ListBuildTriggers)], opts...)
 	it := &BuildTriggerIterator{}
@@ -784,6 +795,7 @@ func (c *gRPCClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId()), "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBuildTrigger[0:len((*c.CallOptions).DeleteBuildTrigger):len((*c.CallOptions).DeleteBuildTrigger)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -801,6 +813,7 @@ func (c *gRPCClient) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.U
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId()), "trigger.resource_name", url.QueryEscape(req.GetTrigger().GetResourceName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateBuildTrigger[0:len((*c.CallOptions).UpdateBuildTrigger):len((*c.CallOptions).UpdateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
@@ -822,6 +835,7 @@ func (c *gRPCClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId()), "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RunBuildTrigger[0:len((*c.CallOptions).RunBuildTrigger):len((*c.CallOptions).RunBuildTrigger)], opts...)
 	var resp *longrunningpb.Operation
@@ -840,6 +854,7 @@ func (c *gRPCClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 
 func (c *gRPCClient) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildpb.ReceiveTriggerWebhookRequest, opts ...gax.CallOption) (*cloudbuildpb.ReceiveTriggerWebhookResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger", url.QueryEscape(req.GetTrigger()), "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReceiveTriggerWebhook[0:len((*c.CallOptions).ReceiveTriggerWebhook):len((*c.CallOptions).ReceiveTriggerWebhook)], opts...)
 	var resp *cloudbuildpb.ReceiveTriggerWebhookResponse
@@ -861,6 +876,7 @@ func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateWorkerPool[0:len((*c.CallOptions).CreateWorkerPool):len((*c.CallOptions).CreateWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
@@ -884,6 +900,7 @@ func (c *gRPCClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetWorkerPool[0:len((*c.CallOptions).GetWorkerPool):len((*c.CallOptions).GetWorkerPool)], opts...)
 	var resp *cloudbuildpb.WorkerPool
@@ -905,6 +922,7 @@ func (c *gRPCClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteWorkerPool[0:len((*c.CallOptions).DeleteWorkerPool):len((*c.CallOptions).DeleteWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
@@ -928,6 +946,7 @@ func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "worker_pool.name", url.QueryEscape(req.GetWorkerPool().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateWorkerPool[0:len((*c.CallOptions).UpdateWorkerPool):len((*c.CallOptions).UpdateWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
@@ -946,6 +965,7 @@ func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 
 func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) *WorkerPoolIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListWorkerPools[0:len((*c.CallOptions).ListWorkerPools):len((*c.CallOptions).ListWorkerPools)], opts...)
 	it := &WorkerPoolIterator{}

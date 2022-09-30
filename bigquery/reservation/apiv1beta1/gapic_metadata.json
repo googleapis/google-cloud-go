@@ -106,6 +106,106 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateAssignment": {
+              "methods": [
+                "CreateAssignment"
+              ]
+            },
+            "CreateCapacityCommitment": {
+              "methods": [
+                "CreateCapacityCommitment"
+              ]
+            },
+            "CreateReservation": {
+              "methods": [
+                "CreateReservation"
+              ]
+            },
+            "DeleteAssignment": {
+              "methods": [
+                "DeleteAssignment"
+              ]
+            },
+            "DeleteCapacityCommitment": {
+              "methods": [
+                "DeleteCapacityCommitment"
+              ]
+            },
+            "DeleteReservation": {
+              "methods": [
+                "DeleteReservation"
+              ]
+            },
+            "GetBiReservation": {
+              "methods": [
+                "GetBiReservation"
+              ]
+            },
+            "GetCapacityCommitment": {
+              "methods": [
+                "GetCapacityCommitment"
+              ]
+            },
+            "GetReservation": {
+              "methods": [
+                "GetReservation"
+              ]
+            },
+            "ListAssignments": {
+              "methods": [
+                "ListAssignments"
+              ]
+            },
+            "ListCapacityCommitments": {
+              "methods": [
+                "ListCapacityCommitments"
+              ]
+            },
+            "ListReservations": {
+              "methods": [
+                "ListReservations"
+              ]
+            },
+            "MergeCapacityCommitments": {
+              "methods": [
+                "MergeCapacityCommitments"
+              ]
+            },
+            "MoveAssignment": {
+              "methods": [
+                "MoveAssignment"
+              ]
+            },
+            "SearchAssignments": {
+              "methods": [
+                "SearchAssignments"
+              ]
+            },
+            "SplitCapacityCommitment": {
+              "methods": [
+                "SplitCapacityCommitment"
+              ]
+            },
+            "UpdateBiReservation": {
+              "methods": [
+                "UpdateBiReservation"
+              ]
+            },
+            "UpdateCapacityCommitment": {
+              "methods": [
+                "UpdateCapacityCommitment"
+              ]
+            },
+            "UpdateReservation": {
+              "methods": [
+                "UpdateReservation"
+              ]
+            }
+          }
         }
       }
     }

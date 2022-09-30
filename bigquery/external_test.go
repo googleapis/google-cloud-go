@@ -41,6 +41,7 @@ func TestExternalDataConfig(t *testing.T) {
 				SkipLeadingRows:     3,
 				NullMarker:          "marker",
 			},
+			ConnectionID: "connection",
 		},
 		{
 			SourceFormat: GoogleSheets,

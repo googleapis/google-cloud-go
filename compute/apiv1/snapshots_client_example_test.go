@@ -26,6 +26,11 @@ import (
 
 func ExampleNewSnapshotsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewSnapshotsRESTClient() {
 
 func ExampleSnapshotsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,6 +71,11 @@ func ExampleSnapshotsClient_Delete() {
 
 func ExampleSnapshotsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -81,6 +96,11 @@ func ExampleSnapshotsClient_Get() {
 
 func ExampleSnapshotsClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -99,8 +119,41 @@ func ExampleSnapshotsClient_GetIamPolicy() {
 	_ = resp
 }
 
+func ExampleSnapshotsClient_Insert() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewSnapshotsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.InsertSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSnapshotRequest.
+	}
+	op, err := c.Insert(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleSnapshotsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -127,6 +180,11 @@ func ExampleSnapshotsClient_List() {
 
 func ExampleSnapshotsClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -147,6 +205,11 @@ func ExampleSnapshotsClient_SetIamPolicy() {
 
 func ExampleSnapshotsClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,6 +233,11 @@ func ExampleSnapshotsClient_SetLabels() {
 
 func ExampleSnapshotsClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSnapshotsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

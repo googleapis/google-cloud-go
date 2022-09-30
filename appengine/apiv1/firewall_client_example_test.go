@@ -26,6 +26,11 @@ import (
 
 func ExampleNewFirewallClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewFirewallClient() {
 
 func ExampleFirewallClient_ListIngressRules() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleFirewallClient_ListIngressRules() {
 
 func ExampleFirewallClient_BatchUpdateIngressRules() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleFirewallClient_BatchUpdateIngressRules() {
 
 func ExampleFirewallClient_CreateIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleFirewallClient_CreateIngressRule() {
 
 func ExampleFirewallClient_GetIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +149,11 @@ func ExampleFirewallClient_GetIngressRule() {
 
 func ExampleFirewallClient_UpdateIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,6 +174,11 @@ func ExampleFirewallClient_UpdateIngressRule() {
 
 func ExampleFirewallClient_DeleteIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

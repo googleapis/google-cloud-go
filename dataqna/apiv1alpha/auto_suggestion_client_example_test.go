@@ -20,12 +20,34 @@ import (
 	"context"
 
 	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
-	dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
+	dataqnapb "cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 )
 
 func ExampleNewAutoSuggestionClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewAutoSuggestionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewAutoSuggestionRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataqna.NewAutoSuggestionRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,6 +59,11 @@ func ExampleNewAutoSuggestionClient() {
 
 func ExampleAutoSuggestionClient_SuggestQueries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewAutoSuggestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +72,7 @@ func ExampleAutoSuggestionClient_SuggestQueries() {
 
 	req := &dataqnapb.SuggestQueriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#SuggestQueriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#SuggestQueriesRequest.
 	}
 	resp, err := c.SuggestQueries(ctx, req)
 	if err != nil {

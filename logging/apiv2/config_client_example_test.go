@@ -26,6 +26,11 @@ import (
 
 func ExampleNewConfigClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewConfigClient() {
 
 func ExampleConfigClient_ListBuckets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleConfigClient_ListBuckets() {
 
 func ExampleConfigClient_GetBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleConfigClient_GetBucket() {
 
 func ExampleConfigClient_CreateBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleConfigClient_CreateBucket() {
 
 func ExampleConfigClient_UpdateBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,6 +149,11 @@ func ExampleConfigClient_UpdateBucket() {
 
 func ExampleConfigClient_DeleteBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,6 +172,11 @@ func ExampleConfigClient_DeleteBucket() {
 
 func ExampleConfigClient_UndeleteBucket() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -160,6 +195,11 @@ func ExampleConfigClient_UndeleteBucket() {
 
 func ExampleConfigClient_ListViews() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -186,6 +226,11 @@ func ExampleConfigClient_ListViews() {
 
 func ExampleConfigClient_GetView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -206,6 +251,11 @@ func ExampleConfigClient_GetView() {
 
 func ExampleConfigClient_CreateView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -226,6 +276,11 @@ func ExampleConfigClient_CreateView() {
 
 func ExampleConfigClient_UpdateView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -246,6 +301,11 @@ func ExampleConfigClient_UpdateView() {
 
 func ExampleConfigClient_DeleteView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -264,6 +324,11 @@ func ExampleConfigClient_DeleteView() {
 
 func ExampleConfigClient_ListSinks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -290,6 +355,11 @@ func ExampleConfigClient_ListSinks() {
 
 func ExampleConfigClient_GetSink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -310,6 +380,11 @@ func ExampleConfigClient_GetSink() {
 
 func ExampleConfigClient_CreateSink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -330,6 +405,11 @@ func ExampleConfigClient_CreateSink() {
 
 func ExampleConfigClient_UpdateSink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -350,6 +430,11 @@ func ExampleConfigClient_UpdateSink() {
 
 func ExampleConfigClient_DeleteSink() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -368,6 +453,11 @@ func ExampleConfigClient_DeleteSink() {
 
 func ExampleConfigClient_ListExclusions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -394,6 +484,11 @@ func ExampleConfigClient_ListExclusions() {
 
 func ExampleConfigClient_GetExclusion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -414,6 +509,11 @@ func ExampleConfigClient_GetExclusion() {
 
 func ExampleConfigClient_CreateExclusion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -434,6 +534,11 @@ func ExampleConfigClient_CreateExclusion() {
 
 func ExampleConfigClient_UpdateExclusion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -454,6 +559,11 @@ func ExampleConfigClient_UpdateExclusion() {
 
 func ExampleConfigClient_DeleteExclusion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -472,6 +582,11 @@ func ExampleConfigClient_DeleteExclusion() {
 
 func ExampleConfigClient_GetCmekSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -492,6 +607,11 @@ func ExampleConfigClient_GetCmekSettings() {
 
 func ExampleConfigClient_UpdateCmekSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -503,6 +623,86 @@ func ExampleConfigClient_UpdateCmekSettings() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateCmekSettingsRequest.
 	}
 	resp, err := c.UpdateCmekSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConfigClient_GetSettings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &loggingpb.GetSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetSettingsRequest.
+	}
+	resp, err := c.GetSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConfigClient_UpdateSettings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &loggingpb.UpdateSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateSettingsRequest.
+	}
+	resp, err := c.UpdateSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConfigClient_CopyLogEntries() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &loggingpb.CopyLogEntriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CopyLogEntriesRequest.
+	}
+	op, err := c.CopyLogEntries(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

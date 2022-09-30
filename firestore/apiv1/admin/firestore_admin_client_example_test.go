@@ -22,10 +22,16 @@ import (
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
 	"google.golang.org/api/iterator"
 	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewFirestoreAdminClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +44,11 @@ func ExampleNewFirestoreAdminClient() {
 
 func ExampleFirestoreAdminClient_CreateIndex() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -63,6 +74,11 @@ func ExampleFirestoreAdminClient_CreateIndex() {
 
 func ExampleFirestoreAdminClient_ListIndexes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,6 +105,11 @@ func ExampleFirestoreAdminClient_ListIndexes() {
 
 func ExampleFirestoreAdminClient_GetIndex() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +130,11 @@ func ExampleFirestoreAdminClient_GetIndex() {
 
 func ExampleFirestoreAdminClient_DeleteIndex() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -127,6 +153,11 @@ func ExampleFirestoreAdminClient_DeleteIndex() {
 
 func ExampleFirestoreAdminClient_GetField() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -147,6 +178,11 @@ func ExampleFirestoreAdminClient_GetField() {
 
 func ExampleFirestoreAdminClient_UpdateField() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -172,6 +208,11 @@ func ExampleFirestoreAdminClient_UpdateField() {
 
 func ExampleFirestoreAdminClient_ListFields() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -198,6 +239,11 @@ func ExampleFirestoreAdminClient_ListFields() {
 
 func ExampleFirestoreAdminClient_ExportDocuments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -223,6 +269,11 @@ func ExampleFirestoreAdminClient_ExportDocuments() {
 
 func ExampleFirestoreAdminClient_ImportDocuments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -246,6 +297,11 @@ func ExampleFirestoreAdminClient_ImportDocuments() {
 
 func ExampleFirestoreAdminClient_GetDatabase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -266,6 +322,11 @@ func ExampleFirestoreAdminClient_GetDatabase() {
 
 func ExampleFirestoreAdminClient_ListDatabases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -286,6 +347,11 @@ func ExampleFirestoreAdminClient_ListDatabases() {
 
 func ExampleFirestoreAdminClient_UpdateDatabase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -307,4 +373,106 @@ func ExampleFirestoreAdminClient_UpdateDatabase() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleFirestoreAdminClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apiv1.NewFirestoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleFirestoreAdminClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apiv1.NewFirestoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleFirestoreAdminClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apiv1.NewFirestoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFirestoreAdminClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apiv1.NewFirestoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

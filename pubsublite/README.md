@@ -22,7 +22,8 @@ To publish messages to a topic:
 [snip]:# (publish)
 ```go
 // Create a PublisherClient for topic1 in zone us-central1-b.
-// See https://cloud.google.com/pubsub/lite/docs/locations for available zones.
+// See https://cloud.google.com/pubsub/lite/docs/locations for available regions
+// and zones.
 const topic = "projects/project-id/locations/us-central1-b/topics/topic1"
 publisher, err := pscompat.NewPublisherClient(ctx, topic)
 if err != nil {

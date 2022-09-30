@@ -53,6 +53,7 @@ type DatabaseAdminCallOptions struct {
 	GetIamPolicy           []gax.CallOption
 	TestIamPermissions     []gax.CallOption
 	CreateBackup           []gax.CallOption
+	CopyBackup             []gax.CallOption
 	GetBackup              []gax.CallOption
 	UpdateBackup           []gax.CallOption
 	DeleteBackup           []gax.CallOption
@@ -60,6 +61,11 @@ type DatabaseAdminCallOptions struct {
 	RestoreDatabase        []gax.CallOption
 	ListDatabaseOperations []gax.CallOption
 	ListBackupOperations   []gax.CallOption
+	ListDatabaseRoles      []gax.CallOption
+	CancelOperation        []gax.CallOption
+	DeleteOperation        []gax.CallOption
+	GetOperation           []gax.CallOption
+	ListOperations         []gax.CallOption
 }
 
 func defaultDatabaseAdminGRPCClientOptions() []option.ClientOption {
@@ -152,6 +158,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 		},
 		TestIamPermissions: []gax.CallOption{},
 		CreateBackup:       []gax.CallOption{},
+		CopyBackup:         []gax.CallOption{},
 		GetBackup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -225,10 +232,26 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
+		ListDatabaseRoles: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
-// internalDatabaseAdminClient is an interface that defines the methods availaible from Cloud Spanner Database Admin API.
+// internalDatabaseAdminClient is an interface that defines the methods available from Cloud Spanner API.
 type internalDatabaseAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -246,6 +269,8 @@ type internalDatabaseAdminClient interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	CreateBackup(context.Context, *databasepb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
 	CreateBackupOperation(name string) *CreateBackupOperation
+	CopyBackup(context.Context, *databasepb.CopyBackupRequest, ...gax.CallOption) (*CopyBackupOperation, error)
+	CopyBackupOperation(name string) *CopyBackupOperation
 	GetBackup(context.Context, *databasepb.GetBackupRequest, ...gax.CallOption) (*databasepb.Backup, error)
 	UpdateBackup(context.Context, *databasepb.UpdateBackupRequest, ...gax.CallOption) (*databasepb.Backup, error)
 	DeleteBackup(context.Context, *databasepb.DeleteBackupRequest, ...gax.CallOption) error
@@ -254,22 +279,27 @@ type internalDatabaseAdminClient interface {
 	RestoreDatabaseOperation(name string) *RestoreDatabaseOperation
 	ListDatabaseOperations(context.Context, *databasepb.ListDatabaseOperationsRequest, ...gax.CallOption) *OperationIterator
 	ListBackupOperations(context.Context, *databasepb.ListBackupOperationsRequest, ...gax.CallOption) *OperationIterator
+	ListDatabaseRoles(context.Context, *databasepb.ListDatabaseRolesRequest, ...gax.CallOption) *DatabaseRoleIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// DatabaseAdminClient is a client for interacting with Cloud Spanner Database Admin API.
+// DatabaseAdminClient is a client for interacting with Cloud Spanner API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 type DatabaseAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatabaseAdminClient
@@ -300,7 +330,8 @@ func (c *DatabaseAdminClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DatabaseAdminClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -425,6 +456,28 @@ func (c *DatabaseAdminClient) CreateBackupOperation(name string) *CreateBackupOp
 	return c.internalClient.CreateBackupOperation(name)
 }
 
+// CopyBackup starts copying a Cloud Spanner Backup.
+// The returned backup [long-running operation][google.longrunning.Operation]
+// will have a name of the format
+// projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
+// and can be used to track copying of the backup. The operation is associated
+// with the destination backup.
+// The metadata field type is
+// CopyBackupMetadata.
+// The response field type is
+// Backup, if successful. Cancelling the returned operation will stop the
+// copying and delete the backup.
+// Concurrent CopyBackup requests can run on the same source backup.
+func (c *DatabaseAdminClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
+	return c.internalClient.CopyBackup(ctx, req, opts...)
+}
+
+// CopyBackupOperation returns a new CopyBackupOperation from a given name.
+// The name must be that of a previously created CopyBackupOperation, possibly from a different process.
+func (c *DatabaseAdminClient) CopyBackupOperation(name string) *CopyBackupOperation {
+	return c.internalClient.CopyBackupOperation(name)
+}
+
 // GetBackup gets metadata on a pending or completed Backup.
 func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	return c.internalClient.GetBackup(ctx, req, opts...)
@@ -500,7 +553,32 @@ func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *dat
 	return c.internalClient.ListBackupOperations(ctx, req, opts...)
 }
 
-// databaseAdminGRPCClient is a client for interacting with Cloud Spanner Database Admin API over gRPC transport.
+// ListDatabaseRoles lists Cloud Spanner database roles.
+func (c *DatabaseAdminClient) ListDatabaseRoles(ctx context.Context, req *databasepb.ListDatabaseRolesRequest, opts ...gax.CallOption) *DatabaseRoleIterator {
+	return c.internalClient.ListDatabaseRoles(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *DatabaseAdminClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *DatabaseAdminClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *DatabaseAdminClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *DatabaseAdminClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// databaseAdminGRPCClient is a client for interacting with Cloud Spanner API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type databaseAdminGRPCClient struct {
@@ -521,6 +599,8 @@ type databaseAdminGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -528,17 +608,17 @@ type databaseAdminGRPCClient struct {
 // NewDatabaseAdminClient creates a new database admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := defaultDatabaseAdminGRPCClientOptions()
 	if newDatabaseAdminClientHook != nil {
@@ -565,6 +645,7 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		disableDeadlines:    disableDeadlines,
 		databaseAdminClient: databasepb.NewDatabaseAdminClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -586,7 +667,8 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *databaseAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -596,7 +678,7 @@ func (c *databaseAdminGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *databaseAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -608,6 +690,7 @@ func (c *databaseAdminGRPCClient) Close() error {
 
 func (c *databaseAdminGRPCClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
@@ -657,6 +740,7 @@ func (c *databaseAdminGRPCClient) CreateDatabase(ctx context.Context, req *datab
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
 	var resp *longrunningpb.Operation
@@ -680,6 +764,7 @@ func (c *databaseAdminGRPCClient) GetDatabase(ctx context.Context, req *database
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
 	var resp *databasepb.Database
@@ -701,6 +786,7 @@ func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *da
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateDatabaseDdl[0:len((*c.CallOptions).UpdateDatabaseDdl):len((*c.CallOptions).UpdateDatabaseDdl)], opts...)
 	var resp *longrunningpb.Operation
@@ -724,6 +810,7 @@ func (c *databaseAdminGRPCClient) DropDatabase(ctx context.Context, req *databas
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DropDatabase[0:len((*c.CallOptions).DropDatabase):len((*c.CallOptions).DropDatabase)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -741,6 +828,7 @@ func (c *databaseAdminGRPCClient) GetDatabaseDdl(ctx context.Context, req *datab
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDatabaseDdl[0:len((*c.CallOptions).GetDatabaseDdl):len((*c.CallOptions).GetDatabaseDdl)], opts...)
 	var resp *databasepb.GetDatabaseDdlResponse
@@ -762,6 +850,7 @@ func (c *databaseAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -783,6 +872,7 @@ func (c *databaseAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -804,6 +894,7 @@ func (c *databaseAdminGRPCClient) TestIamPermissions(ctx context.Context, req *i
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
@@ -825,6 +916,7 @@ func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databas
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
@@ -841,6 +933,30 @@ func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databas
 	}, nil
 }
 
+func (c *databaseAdminGRPCClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CopyBackup[0:len((*c.CallOptions).CopyBackup):len((*c.CallOptions).CopyBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.databaseAdminClient.CopyBackup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CopyBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
@@ -848,6 +964,7 @@ func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *databasepb.Backup
@@ -869,6 +986,7 @@ func (c *databaseAdminGRPCClient) UpdateBackup(ctx context.Context, req *databas
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateBackup[0:len((*c.CallOptions).UpdateBackup):len((*c.CallOptions).UpdateBackup)], opts...)
 	var resp *databasepb.Backup
@@ -890,6 +1008,7 @@ func (c *databaseAdminGRPCClient) DeleteBackup(ctx context.Context, req *databas
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -902,6 +1021,7 @@ func (c *databaseAdminGRPCClient) DeleteBackup(ctx context.Context, req *databas
 
 func (c *databaseAdminGRPCClient) ListBackups(ctx context.Context, req *databasepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
@@ -951,6 +1071,7 @@ func (c *databaseAdminGRPCClient) RestoreDatabase(ctx context.Context, req *data
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RestoreDatabase[0:len((*c.CallOptions).RestoreDatabase):len((*c.CallOptions).RestoreDatabase)], opts...)
 	var resp *longrunningpb.Operation
@@ -969,6 +1090,7 @@ func (c *databaseAdminGRPCClient) RestoreDatabase(ctx context.Context, req *data
 
 func (c *databaseAdminGRPCClient) ListDatabaseOperations(ctx context.Context, req *databasepb.ListDatabaseOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDatabaseOperations[0:len((*c.CallOptions).ListDatabaseOperations):len((*c.CallOptions).ListDatabaseOperations)], opts...)
 	it := &OperationIterator{}
@@ -1013,6 +1135,7 @@ func (c *databaseAdminGRPCClient) ListDatabaseOperations(ctx context.Context, re
 
 func (c *databaseAdminGRPCClient) ListBackupOperations(ctx context.Context, req *databasepb.ListBackupOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBackupOperations[0:len((*c.CallOptions).ListBackupOperations):len((*c.CallOptions).ListBackupOperations)], opts...)
 	it := &OperationIterator{}
@@ -1053,6 +1176,208 @@ func (c *databaseAdminGRPCClient) ListBackupOperations(ctx context.Context, req 
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *databaseAdminGRPCClient) ListDatabaseRoles(ctx context.Context, req *databasepb.ListDatabaseRolesRequest, opts ...gax.CallOption) *DatabaseRoleIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListDatabaseRoles[0:len((*c.CallOptions).ListDatabaseRoles):len((*c.CallOptions).ListDatabaseRoles)], opts...)
+	it := &DatabaseRoleIterator{}
+	req = proto.Clone(req).(*databasepb.ListDatabaseRolesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.DatabaseRole, string, error) {
+		resp := &databasepb.ListDatabaseRolesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.databaseAdminClient.ListDatabaseRoles(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatabaseRoles(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *databaseAdminGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *databaseAdminGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *databaseAdminGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *databaseAdminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CopyBackupOperation manages a long-running operation from CopyBackup.
+type CopyBackupOperation struct {
+	lro *longrunning.Operation
+}
+
+// CopyBackupOperation returns a new CopyBackupOperation from a given name.
+// The name must be that of a previously created CopyBackupOperation, possibly from a different process.
+func (c *databaseAdminGRPCClient) CopyBackupOperation(name string) *CopyBackupOperation {
+	return &CopyBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CopyBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*databasepb.Backup, error) {
+	var resp databasepb.Backup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CopyBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*databasepb.Backup, error) {
+	var resp databasepb.Backup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CopyBackupOperation) Metadata() (*databasepb.CopyBackupMetadata, error) {
+	var meta databasepb.CopyBackupMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CopyBackupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CopyBackupOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateBackupOperation manages a long-running operation from CreateBackup.
@@ -1409,6 +1734,53 @@ func (it *DatabaseIterator) bufLen() int {
 }
 
 func (it *DatabaseIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DatabaseRoleIterator manages a stream of *databasepb.DatabaseRole.
+type DatabaseRoleIterator struct {
+	items    []*databasepb.DatabaseRole
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*databasepb.DatabaseRole, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DatabaseRoleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DatabaseRoleIterator) Next() (*databasepb.DatabaseRole, error) {
+	var item *databasepb.DatabaseRole
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DatabaseRoleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DatabaseRoleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

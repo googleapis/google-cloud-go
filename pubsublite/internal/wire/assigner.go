@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
@@ -113,7 +114,7 @@ func newAssigner(ctx context.Context, assignmentClient *vkit.PartitionAssignment
 		receiveAssignment: receiver,
 		metadata:          newPubsubMetadata(),
 	}
-	a.stream = newRetryableStream(ctx, a, settings.Timeout, reflect.TypeOf(pb.PartitionAssignment{}))
+	a.stream = newRetryableStream(ctx, a, settings.Timeout, 10*time.Minute, reflect.TypeOf(pb.PartitionAssignment{}))
 	a.metadata.AddClientInfo(settings.Framework)
 	return a, nil
 }

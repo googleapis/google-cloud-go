@@ -22,11 +22,16 @@ import (
 	"context"
 
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
+	"cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := assuredworkloads.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &assuredworkloadspb.UpdateWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#UpdateWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#UpdateWorkloadRequest.
 	}
 	resp, err := c.UpdateWorkload(ctx, req)
 	if err != nil {

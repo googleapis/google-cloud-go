@@ -45,7 +45,14 @@ type InterconnectLocationsCallOptions struct {
 	List []gax.CallOption
 }
 
-// internalInterconnectLocationsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultInterconnectLocationsRESTCallOptions() *InterconnectLocationsCallOptions {
+	return &InterconnectLocationsCallOptions{
+		Get:  []gax.CallOption{},
+		List: []gax.CallOption{},
+	}
+}
+
+// internalInterconnectLocationsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalInterconnectLocationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -83,7 +90,8 @@ func (c *InterconnectLocationsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *InterconnectLocationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -108,6 +116,9 @@ type interconnectLocationsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing InterconnectLocationsClient
+	CallOptions **InterconnectLocationsCallOptions
 }
 
 // NewInterconnectLocationsRESTClient creates a new interconnect locations rest client.
@@ -120,13 +131,15 @@ func NewInterconnectLocationsRESTClient(ctx context.Context, opts ...option.Clie
 		return nil, err
 	}
 
+	callOpts := defaultInterconnectLocationsRESTCallOptions()
 	c := &interconnectLocationsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &InterconnectLocationsClient{internalClient: c, CallOptions: &InterconnectLocationsCallOptions{}}, nil
+	return &InterconnectLocationsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultInterconnectLocationsRESTClientOptions() []option.ClientOption {
@@ -143,7 +156,7 @@ func defaultInterconnectLocationsRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *interconnectLocationsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -157,21 +170,30 @@ func (c *interconnectLocationsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *interconnectLocationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
 // Get returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.
 func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectLocationRequest, opts ...gax.CallOption) (*computepb.InterconnectLocation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectLocations/%v", req.GetProject(), req.GetInterconnectLocation())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect_location", url.QueryEscape(req.GetInterconnectLocation())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InterconnectLocation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -221,7 +243,10 @@ func (c *interconnectLocationsRESTClient) List(ctx context.Context, req *compute
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectLocations", req.GetProject())
 
 		params := url.Values{}
@@ -246,6 +271,9 @@ func (c *interconnectLocationsRESTClient) List(ctx context.Context, req *compute
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err

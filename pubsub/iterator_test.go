@@ -25,19 +25,23 @@ import (
 	"testing"
 	"time"
 
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 )
 
 var (
-	projName                = "some-project"
+	projName                = "P"
 	topicName               = "some-topic"
+	subName                 = "some-sub"
 	fullyQualifiedTopicName = fmt.Sprintf("projects/%s/topics/%s", projName, topicName)
+	fullyQualifiedSubName   = fmt.Sprintf("projects/%s/subscriptions/%s", projName, subName)
 )
 
 func TestSplitRequestIDs(t *testing.T) {
@@ -47,16 +51,17 @@ func TestSplitRequestIDs(t *testing.T) {
 		ids        []string
 		splitIndex int
 	}{
-		{[]string{}, 0},
-		{ids, 2},
-		{ids[:2], 2},
+		{[]string{}, 0}, // empty slice, no split
+		{ids, 2},        // slice of size 5, split at index 2
+		{ids[:2], 2},    // slice of size 3, split at index 2
+		{ids[:1], 1},    // slice of size 1, split at index 1
 	} {
-		got1, got2 := splitRequestIDs(test.ids, 15)
+		got1, got2 := splitRequestIDs(test.ids, 2)
 		want1, want2 := test.ids[:test.splitIndex], test.ids[test.splitIndex:]
-		if !testutil.Equal(got1, want1) {
+		if !testutil.Equal(len(got1), len(want1)) {
 			t.Errorf("%v, 1: got %v, want %v", test, got1, want1)
 		}
-		if !testutil.Equal(got2, want2) {
+		if !testutil.Equal(len(got2), len(want2)) {
 			t.Errorf("%v, 2: got %v, want %v", test, got2, want2)
 		}
 	}
@@ -118,12 +123,13 @@ func TestMaxExtensionPeriod(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := 1 * time.Second
+	want := 15 * time.Second
 	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{
 		maxExtensionPeriod: want,
 	})
 
-	receiveTime := time.Now().Add(time.Duration(-3) * time.Second)
+	// Add a datapoint that's greater than maxExtensionPeriod.
+	receiveTime := time.Now().Add(time.Duration(-20) * time.Second)
 	iter.ackTimeDist.Record(int(time.Since(receiveTime) / time.Second))
 
 	if got := iter.ackDeadline(); got != want {
@@ -140,8 +146,8 @@ func TestAckDistribution(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	minAckDeadline = 1 * time.Second
-	pstest.SetMinAckDeadline(minAckDeadline)
+	minDurationPerLeaseExtension = 1 * time.Second
+	pstest.SetMinAckDeadline(minDurationPerLeaseExtension)
 	srv := pstest.NewServer()
 	defer srv.Close()
 	defer pstest.ResetMinAckDeadline()
@@ -190,7 +196,7 @@ func TestAckDistribution(t *testing.T) {
 
 		modacks := modacksByTime(srv.Messages())
 		u := modackDeadlines(modacks)
-		initialDL := int32(minAckDeadline / time.Second)
+		initialDL := int32(minDurationPerLeaseExtension / time.Second)
 		if !setsAreEqual(u, []int32{initialDL, testcase.initialProcessSecs, testcase.finalProcessSecs}) {
 			t.Fatalf("Expected modack deadlines to contain (exactly, and only) %ds, %ds, %ds. Instead, got %v",
 				initialDL, testcase.initialProcessSecs, testcase.finalProcessSecs, toSet(u))
@@ -240,7 +246,7 @@ func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg 
 		_, ok := recvd[msgData]
 		if ok {
 			recvdMu.Unlock()
-			t.Fatalf("already saw \"%s\"\n", msgData)
+			t.Logf("already saw \"%s\"\n", msgData)
 			return
 		}
 		recvd[msgData] = true
@@ -273,7 +279,7 @@ func startSending(t *testing.T, queuedMsgs chan int32, processTimeSecs *int32, i
 	recvdWg.Add(1)
 	msg++
 	queuedMsgs <- msg
-	<-time.After(minAckDeadline)
+	<-time.After(minDurationPerLeaseExtension)
 
 	t.Logf("Sending some messages to update distribution to %d. This new distribution will be used "+
 		"when the next batch of messages go out.", initialProcessSecs)
@@ -420,4 +426,401 @@ func TestIterator_SynchronousPullCancel(t *testing.T) {
 	if _, err := iter.pullMessages(100); err != nil {
 		t.Fatalf("Got error in pullMessages: %v", err)
 	}
+}
+
+func TestIterator_BoundedDuration(t *testing.T) {
+	// Use exported fields for time.Duration fields so they
+	// print nicely. Otherwise, they will print as integers.
+	//
+	// AckDeadline is bounded by min/max ack deadline, which are
+	// 10 seconds and 600 seconds respectively. This is
+	// true for the real distribution data points as well.
+	testCases := []struct {
+		desc        string
+		AckDeadline time.Duration
+		MinDuration time.Duration
+		MaxDuration time.Duration
+		exactlyOnce bool
+		Want        time.Duration
+	}{
+		{
+			desc:        "AckDeadline should be updated to the min duration",
+			AckDeadline: time.Duration(10 * time.Second),
+			MinDuration: time.Duration(15 * time.Second),
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: false,
+			Want:        time.Duration(15 * time.Second),
+		},
+		{
+			desc:        "AckDeadline should be updated to 1 minute when using exactly once",
+			AckDeadline: time.Duration(10 * time.Second),
+			MinDuration: 0,
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: true,
+			Want:        time.Duration(1 * time.Minute),
+		},
+		{
+			desc:        "AckDeadline should not be updated here, even though exactly once is enabled",
+			AckDeadline: time.Duration(10 * time.Second),
+			MinDuration: time.Duration(15 * time.Second),
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: true,
+			Want:        time.Duration(15 * time.Second),
+		},
+		{
+			desc:        "AckDeadline should not be updated here",
+			AckDeadline: time.Duration(10 * time.Minute),
+			MinDuration: time.Duration(15 * time.Second),
+			MaxDuration: time.Duration(10 * time.Minute),
+			exactlyOnce: true,
+			Want:        time.Duration(10 * time.Minute),
+		},
+		{
+			desc:        "AckDeadline should not be updated when neither durations are set",
+			AckDeadline: time.Duration(5 * time.Minute),
+			MinDuration: 0,
+			MaxDuration: 0,
+			exactlyOnce: false,
+			Want:        time.Duration(5 * time.Minute),
+		},
+		{
+			desc:        "AckDeadline should should not be updated here since it is within both boundaries",
+			AckDeadline: time.Duration(5 * time.Minute),
+			MinDuration: time.Duration(1 * time.Minute),
+			MaxDuration: time.Duration(7 * time.Minute),
+			exactlyOnce: false,
+			Want:        time.Duration(5 * time.Minute),
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			got := boundedDuration(tc.AckDeadline, tc.MinDuration, tc.MaxDuration, tc.exactlyOnce)
+			if got != tc.Want {
+				t.Errorf("boundedDuration mismatch:\n%+v\ngot: %v, want: %v", tc, got, tc.Want)
+			}
+		})
+	}
+}
+
+func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
+	srv := pstest.NewServer()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	opts := withGRPCHeadersAssertion(t, option.WithGRPCConn(conn))
+	client, err := NewClient(ctx, projName, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	topic := client.Topic(topicName)
+	sc := SubscriptionConfig{
+		Topic:                     topic,
+		EnableMessageOrdering:     true,
+		EnableExactlyOnceDelivery: true,
+	}
+	_, err = client.CreateSubscription(ctx, subName, sc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Make sure to call publish before constructing the iterator.
+	srv.Publish(fullyQualifiedTopicName, []byte("msg"), nil)
+
+	iter := newMessageIterator(client.subc, fullyQualifiedSubName, &pullOptions{
+		synchronous:            false,
+		maxOutstandingMessages: 100,
+		maxOutstandingBytes:    1e6,
+		maxPrefetch:            30,
+		maxExtension:           1 * time.Minute,
+		maxExtensionPeriod:     10 * time.Second,
+	})
+
+	if _, err := iter.receive(10); err != nil {
+		t.Fatalf("Got error in recvMessages: %v", err)
+	}
+
+	if !iter.enableExactlyOnceDelivery {
+		t.Fatalf("expected iter.enableExactlyOnce=true")
+	}
+}
+
+func TestAddToDistribution(t *testing.T) {
+	c, _ := newFake(t)
+
+	iter := newMessageIterator(c.subc, "some-sub", &pullOptions{})
+
+	// Start with a datapoint that's too small that should be bounded to 10s.
+	receiveTime := time.Now().Add(time.Duration(-1) * time.Second)
+	iter.addToDistribution(receiveTime)
+	deadline := iter.ackTimeDist.Percentile(.99)
+	want := 10
+	if deadline != want {
+		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
+	}
+
+	// The next datapoint should not be bounded.
+	receiveTime = time.Now().Add(time.Duration(-300) * time.Second)
+	iter.addToDistribution(receiveTime)
+	deadline = iter.ackTimeDist.Percentile(.99)
+	want = 300
+	if deadline != want {
+		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
+	}
+
+	// Lastly, add a datapoint that should be bounded to 600s
+	receiveTime = time.Now().Add(time.Duration(-1000) * time.Second)
+	iter.addToDistribution(receiveTime)
+	deadline = iter.ackTimeDist.Percentile(.99)
+	want = 600
+	if deadline != want {
+		t.Errorf("99th percentile ack distribution got: %v, want %v", deadline, want)
+	}
+}
+
+func TestPingStreamAckDeadline(t *testing.T) {
+	c, srv := newFake(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	topic := c.Topic(topicName)
+	s, err := c.CreateSubscription(ctx, subName, SubscriptionConfig{Topic: topic})
+	if err != nil {
+		t.Errorf("failed to create subscription: %v", err)
+	}
+
+	iter := newMessageIterator(c.subc, fullyQualifiedSubName, &pullOptions{})
+	defer iter.stop()
+
+	iter.eoMu.RLock()
+	if iter.enableExactlyOnceDelivery {
+		t.Error("iter.enableExactlyOnceDelivery should be false")
+	}
+	iter.eoMu.RUnlock()
+
+	_, err = s.Update(ctx, SubscriptionConfigToUpdate{
+		EnableExactlyOnceDelivery: true,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	// Receive one message via the stream to trigger the update to enableExactlyOnceDelivery
+	iter.receive(1)
+	iter.eoMu.RLock()
+	if !iter.enableExactlyOnceDelivery {
+		t.Error("iter.enableExactlyOnceDelivery should be true")
+	}
+	iter.eoMu.RUnlock()
+}
+
+func compareCompletedRetryLengths(t *testing.T, completed, retry map[string]*AckResult, wantCompleted, wantRetry int) {
+	if l := len(completed); l != wantCompleted {
+		t.Errorf("completed slice length got %d, want %d", l, wantCompleted)
+	}
+	if l := len(retry); l != wantRetry {
+		t.Errorf("retry slice length got %d, want %d", l, wantRetry)
+	}
+}
+
+func TestExactlyOnceProcessRequests(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("NoResults", func(t *testing.T) {
+		// If the ackResMap is nil, then the resulting slices should be empty.
+		// nil maps here behave the same as if they were empty maps.
+		completed, retry := processResults(nil, nil, nil)
+		compareCompletedRetryLengths(t, completed, retry, 0, 0)
+	})
+
+	t.Run("NoErrorsNilAckResult", func(t *testing.T) {
+		// No errors so request should be completed even without an AckResult.
+		ackReqMap := map[string]*AckResult{
+			"ackID": nil,
+		}
+		completed, retry := processResults(nil, ackReqMap, nil)
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+	})
+
+	t.Run("NoErrors", func(t *testing.T) {
+		// No errors so AckResult should be completed with success.
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		completed, retry := processResults(nil, ackReqMap, nil)
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+
+		// We can obtain the AckStatus from AckResult if results are completed.
+		s, err := r.Get(ctx)
+		if err != nil {
+			t.Errorf("AckResult err: got %v, want nil", err)
+		}
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("got %v, want AcknowledgeStatusSuccess", s)
+		}
+	})
+
+	t.Run("PermanentErrorInvalidAckID", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		errorsMap := map[string]string{
+			"ackID1": permanentInvalidAckErrString,
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("AckResult err: got nil, want err")
+		}
+		if s != AcknowledgeStatusInvalidAckID {
+			t.Errorf("got %v, want AcknowledgeStatusSuccess", s)
+		}
+	})
+
+	t.Run("TransientErrorRetry", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		errorsMap := map[string]string{
+			"ackID1": transientErrStringPrefix + "_FAILURE",
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		compareCompletedRetryLengths(t, completed, retry, 0, 1)
+	})
+
+	t.Run("UnknownError", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		errorsMap := map[string]string{
+			"ackID1": "unknown_error",
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+
+		s, err := r.Get(ctx)
+		if s != AcknowledgeStatusOther {
+			t.Errorf("got %v, want AcknowledgeStatusOther", s)
+		}
+		if err == nil || err.Error() != "unknown_error" {
+			t.Errorf("AckResult err: got %s, want unknown_error", err.Error())
+		}
+	})
+
+	t.Run("PermissionDenied", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		st := status.New(codes.PermissionDenied, "permission denied")
+		completed, retry := processResults(st, ackReqMap, nil)
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("AckResult err: got nil, want err")
+		}
+		if s != AcknowledgeStatusPermissionDenied {
+			t.Errorf("got %v, want AcknowledgeStatusPermissionDenied", s)
+		}
+	})
+
+	t.Run("FailedPrecondition", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		st := status.New(codes.FailedPrecondition, "failed_precondition")
+		completed, retry := processResults(st, ackReqMap, nil)
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("AckResult err: got nil, want err")
+		}
+		if s != AcknowledgeStatusFailedPrecondition {
+			t.Errorf("got %v, want AcknowledgeStatusFailedPrecondition", s)
+		}
+	})
+
+	t.Run("OtherErrorStatus", func(t *testing.T) {
+		r := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r,
+		}
+		st := status.New(codes.OutOfRange, "out of range")
+		completed, retry := processResults(st, ackReqMap, nil)
+		compareCompletedRetryLengths(t, completed, retry, 1, 0)
+		s, err := r.Get(ctx)
+		if err == nil {
+			t.Error("AckResult err: got nil, want err")
+		}
+		if s != AcknowledgeStatusOther {
+			t.Errorf("got %v, want AcknowledgeStatusOther", s)
+		}
+	})
+
+	t.Run("MixedSuccessFailureAcks", func(t *testing.T) {
+		r1 := ipubsub.NewAckResult()
+		r2 := ipubsub.NewAckResult()
+		r3 := ipubsub.NewAckResult()
+		ackReqMap := map[string]*AckResult{
+			"ackID1": r1,
+			"ackID2": r2,
+			"ackID3": r3,
+		}
+		errorsMap := map[string]string{
+			"ackID1": permanentInvalidAckErrString,
+			"ackID2": transientErrStringPrefix + "_FAILURE",
+		}
+		completed, retry := processResults(nil, ackReqMap, errorsMap)
+		compareCompletedRetryLengths(t, completed, retry, 2, 1)
+		// message with ackID "ackID1" fails
+		s, err := r1.Get(ctx)
+		if err == nil {
+			t.Error("r1: AckResult err: got nil, want err")
+		}
+		if s != AcknowledgeStatusInvalidAckID {
+			t.Errorf("r1: got %v, want AcknowledgeInvalidAckID", s)
+		}
+
+		// message with ackID "ackID2" is to be retried
+		ctx2, cancel := context.WithTimeout(ctx, 2*time.Second)
+		defer cancel()
+		_, err = r2.Get(ctx2)
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("r2: AckResult.Get should timeout, got: %v", err)
+		}
+
+		// message with ackID "ackID3" succeeds
+		s, err = r3.Get(ctx)
+		if err != nil {
+			t.Errorf("r3: AckResult err: got %v, want nil\n", err)
+		}
+		if s != AcknowledgeStatusSuccess {
+			t.Errorf("r3: got %v, want AcknowledgeStatusSuccess", s)
+		}
+	})
+
+	t.Run("RetriableErrorStatusReturnsRequestForRetrying", func(t *testing.T) {
+		for c := range exactlyOnceDeliveryTemporaryRetryErrors {
+			r := ipubsub.NewAckResult()
+			ackReqMap := map[string]*AckResult{
+				"ackID1": r,
+			}
+			st := status.New(c, "")
+			completed, retry := processResults(st, ackReqMap, nil)
+			compareCompletedRetryLengths(t, completed, retry, 0, 1)
+		}
+	})
 }

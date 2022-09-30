@@ -94,7 +94,7 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 	}
 }
 
-// internalBigQueryReadClient is an interface that defines the methods availaible from BigQuery Storage API.
+// internalBigQueryReadClient is an interface that defines the methods available from BigQuery Storage API.
 type internalBigQueryReadClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -135,7 +135,8 @@ func (c *BigQueryReadClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BigQueryReadClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -252,7 +253,8 @@ func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*B
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *bigQueryReadGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -262,7 +264,7 @@ func (c *bigQueryReadGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *bigQueryReadGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -279,6 +281,7 @@ func (c *bigQueryReadGRPCClient) CreateReadSession(ctx context.Context, req *sto
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_session.table", url.QueryEscape(req.GetReadSession().GetTable())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateReadSession[0:len((*c.CallOptions).CreateReadSession):len((*c.CallOptions).CreateReadSession)], opts...)
 	var resp *storagepb.ReadSession
@@ -295,6 +298,7 @@ func (c *bigQueryReadGRPCClient) CreateReadSession(ctx context.Context, req *sto
 
 func (c *bigQueryReadGRPCClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_stream", url.QueryEscape(req.GetReadStream())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	var resp storagepb.BigQueryRead_ReadRowsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -315,6 +319,7 @@ func (c *bigQueryReadGRPCClient) SplitReadStream(ctx context.Context, req *stora
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SplitReadStream[0:len((*c.CallOptions).SplitReadStream):len((*c.CallOptions).SplitReadStream)], opts...)
 	var resp *storagepb.SplitReadStreamResponse

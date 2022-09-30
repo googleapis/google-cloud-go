@@ -33,25 +33,23 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
-	gapic "cloud.google.com/go/storage/internal/apiv2"
+	"cloud.google.com/go/storage/internal"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
-	storagepb "google.golang.org/genproto/googleapis/storage/v2"
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -65,11 +63,14 @@ var (
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	// ErrObjectNotExist indicates that the object does not exist.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
+	// errMethodNotSupported indicates that the method called is not currently supported by the client.
+	// TODO: Export this error when launching the transport-agnostic client.
+	errMethodNotSupported = errors.New("storage: method is not currently supported")
 	// errMethodNotValid indicates that given HTTP method is not valid.
 	errMethodNotValid = fmt.Errorf("storage: HTTP method should be one of %v", reflect.ValueOf(signedURLMethods).MapKeys())
 )
 
-var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", version.Repo)
+var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", internal.Version)
 
 const (
 	// ScopeFullControl grants permissions to manage your
@@ -84,17 +85,18 @@ const (
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
 
-	// defaultConnPoolSize is the default number of connections
-	// to initialize in the GAPIC gRPC connection pool. A larger
-	// connection pool may be necessary for jobs that require
-	// high throughput and/or leverage many concurrent streams.
-	defaultConnPoolSize = 4
+	// aes256Algorithm is the AES256 encryption algorithm used with the
+	// Customer-Supplied Encryption Keys feature.
+	aes256Algorithm = "AES256"
+
+	// defaultGen indicates the latest object generation by default,
+	// using a negative value.
+	defaultGen = int64(-1)
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
-
+// TODO: remove this once header with invocation ID is applied to all methods.
 func setClientHeader(headers http.Header) {
-	headers.Set("x-goog-api-client", xGoogHeader)
+	headers.Set("x-goog-api-client", xGoogDefaultHeader)
 }
 
 // Client is a client for interacting with Google Cloud Storage.
@@ -112,10 +114,12 @@ type Client struct {
 	creds *google.Credentials
 	retry *retryConfig
 
-	// gc is an optional gRPC-based, GAPIC client.
-	//
-	// This is an experimental field and not intended for public use.
-	gc *gapic.Client
+	// tc is the transport-agnostic client implemented with either gRPC or HTTP.
+	tc storageClient
+	// useGRPC flags whether the client uses gRPC. This is needed while the
+	// integration piece is only partially complete.
+	// TODO: remove before merging to main.
+	useGRPC bool
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -125,6 +129,13 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+
+	// Use the experimental gRPC client if the env var is set.
+	// This is an experimental API and not intended for public use.
+	if withGRPC := os.Getenv("STORAGE_USE_GRPC"); withGRPC != "" {
+		return newGRPCClient(ctx, opts...)
+	}
+
 	var creds *google.Credentials
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
@@ -176,17 +187,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	// RawService should be created with the chosen endpoint to take account of user override.
 	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	if err != nil {
-		return nil, fmt.Errorf("storage client: %v", err)
+		return nil, fmt.Errorf("storage client: %w", err)
 	}
 	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
-		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
+		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
+	}
+
+	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...))
+	if err != nil {
+		return nil, fmt.Errorf("storage: %w", err)
 	}
 
 	return &Client{
@@ -195,66 +211,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		scheme:   u.Scheme,
 		readHost: u.Host,
 		creds:    creds,
+		tc:       tc,
 	}, nil
 }
 
-// hybridClientOptions carries the set of client options for HTTP and gRPC clients.
-type hybridClientOptions struct {
-	HTTPOpts []option.ClientOption
-	GRPCOpts []option.ClientOption
-}
-
-// newHybridClient creates a new Storage client that initializes a gRPC-based client
-// for media upload and download operations.
+// newGRPCClient creates a new Storage client that initializes a gRPC-based
+// client. Calls that have not been implemented in gRPC will panic.
 //
 // This is an experimental API and not intended for public use.
-func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, error) {
-	if opts == nil {
-		opts = &hybridClientOptions{}
-	}
-	opts.GRPCOpts = append(defaultGRPCOptions(), opts.GRPCOpts...)
-
-	c, err := NewClient(ctx, opts.HTTPOpts...)
+func newGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	opts = append(defaultGRPCOptions(), opts...)
+	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, err
 	}
 
-	// Set emulator options for gRPC if an emulator was specified. Note that in a
-	// hybrid client, STORAGE_EMULATOR_HOST will set the host to use for HTTP and
-	// STORAGE_EMULATOR_HOST_GRPC will set the host to use for gRPC (when using a
-	// local emulator, HTTP and gRPC must use different ports, so this is
-	// necessary).
-	// TODO: when full gRPC client is available, remove STORAGE_EMULATOR_HOST_GRPC
-	// and use STORAGE_EMULATOR_HOST for both the HTTP and gRPC based clients.
-	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
-		// Strip the scheme from the emulator host. WithEndpoint does not take a
-		// scheme for gRPC.
-		if strings.Contains(host, "://") {
-			host = strings.SplitN(host, "://", 2)[1]
-		}
-
-		opts.GRPCOpts = append(opts.GRPCOpts,
-			option.WithEndpoint(host),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
-			option.WithoutAuthentication(),
-		)
-	}
-
-	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
-	if err != nil {
-		return nil, err
-	}
-	c.gc = g
-
-	return c, nil
-}
-
-// defaultGRPCOptions returns a set of the default client options
-// for gRPC client initialization.
-func defaultGRPCOptions() []option.ClientOption {
-	return []option.ClientOption{
-		option.WithGRPCConnectionPool(defaultConnPoolSize),
-	}
+	return &Client{tc: tc, useGRPC: true}, nil
 }
 
 // Close closes the Client.
@@ -265,8 +237,8 @@ func (c *Client) Close() error {
 	c.hc = nil
 	c.raw = nil
 	c.creds = nil
-	if c.gc != nil {
-		return c.gc.Close()
+	if c.tc != nil {
+		return c.tc.Close()
 	}
 	return nil
 }
@@ -308,10 +280,18 @@ type bucketBoundHostname struct {
 }
 
 func (s pathStyle) host(bucket string) string {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		return stripScheme(host)
+	}
+
 	return "storage.googleapis.com"
 }
 
 func (s virtualHostedStyle) host(bucket string) string {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		return bucket + "." + stripScheme(host)
+	}
+
 	return bucket + ".storage.googleapis.com"
 }
 
@@ -357,6 +337,14 @@ func VirtualHostedStyle() URLStyle {
 // be set to true.
 func BucketBoundHostname(hostname string) URLStyle {
 	return bucketBoundHostname{hostname: hostname}
+}
+
+// Strips the scheme from a host if it contains it
+func stripScheme(host string) string {
+	if strings.Contains(host, "://") {
+		host = strings.SplitN(host, "://", 2)[1]
+	}
+	return host
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
@@ -532,13 +520,13 @@ func v2SanitizeHeaders(hdrs []string) []string {
 // at https://cloud.google.com/storage/docs/authentication/canonical-requests#about-headers.
 //
 // V4 does a couple things differently from V2:
-// - Headers get sorted by key, instead of by key:value. We do this in
-//   signedURLV4.
-// - There's no canonical regexp: we simply split headers on :.
-// - We don't exclude canonical headers.
-// - We replace leading and trailing spaces in header values, like v2, but also
-//   all intermediate space duplicates get stripped. That is, there's only ever
-//   a single consecutive space.
+//   - Headers get sorted by key, instead of by key:value. We do this in
+//     signedURLV4.
+//   - There's no canonical regexp: we simply split headers on :.
+//   - We don't exclude canonical headers.
+//   - We replace leading and trailing spaces in header values, like v2, but also
+//     all intermediate space duplicates get stripped. That is, there's only ever
+//     a single consecutive space.
 func v4SanitizeHeaders(hdrs []string) []string {
 	headerMap := map[string][]string{}
 	for _, hdr := range hdrs {
@@ -585,6 +573,8 @@ func v4SanitizeHeaders(hdrs []string) []string {
 // access to a restricted resource for a limited time without needing a
 // Google account or signing in. For more information about signed URLs, see
 // https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+// If initializing a Storage Client, instead use the Bucket.SignedURL method
+// which uses the Client's credentials to handle authentication.
 func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
 	now := utcNow()
 	if err := validateOptions(opts, now); err != nil {
@@ -855,7 +845,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	u.Scheme = "https"
-	u.Host = "storage.googleapis.com"
+	u.Host = PathStyle().host(bucket)
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
@@ -928,27 +918,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
-	call := o.c.raw.Objects.Get(o.bucket, o.object).Projection("full").Context(ctx)
-	if err := applyConds("Attrs", o.gen, o.conds, call); err != nil {
-		return nil, err
-	}
-	if o.userProject != "" {
-		call.UserProject(o.userProject)
-	}
-	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
-		return nil, err
-	}
-	var obj *raw.Object
-	setClientHeader(call.Header())
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true)
-	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
-	}
-	if err != nil {
-		return nil, err
-	}
-	return newObject(obj), nil
+	opts := makeStorageOpts(true, o.retry, o.userProject)
+	return o.c.tc.GetObject(ctx, o.bucket, o.object, o.gen, o.encryptionKey, o.conds, opts...)
 }
 
 // Update updates an object with the provided attributes. See
@@ -961,99 +932,9 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
-	var attrs ObjectAttrs
-	// Lists of fields to send, and set to null, in the JSON.
-	var forceSendFields, nullFields []string
-	if uattrs.ContentType != nil {
-		attrs.ContentType = optional.ToString(uattrs.ContentType)
-		// For ContentType, sending the empty string is a no-op.
-		// Instead we send a null.
-		if attrs.ContentType == "" {
-			nullFields = append(nullFields, "ContentType")
-		} else {
-			forceSendFields = append(forceSendFields, "ContentType")
-		}
-	}
-	if uattrs.ContentLanguage != nil {
-		attrs.ContentLanguage = optional.ToString(uattrs.ContentLanguage)
-		// For ContentLanguage it's an error to send the empty string.
-		// Instead we send a null.
-		if attrs.ContentLanguage == "" {
-			nullFields = append(nullFields, "ContentLanguage")
-		} else {
-			forceSendFields = append(forceSendFields, "ContentLanguage")
-		}
-	}
-	if uattrs.ContentEncoding != nil {
-		attrs.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
-		forceSendFields = append(forceSendFields, "ContentEncoding")
-	}
-	if uattrs.ContentDisposition != nil {
-		attrs.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
-		forceSendFields = append(forceSendFields, "ContentDisposition")
-	}
-	if uattrs.CacheControl != nil {
-		attrs.CacheControl = optional.ToString(uattrs.CacheControl)
-		forceSendFields = append(forceSendFields, "CacheControl")
-	}
-	if uattrs.EventBasedHold != nil {
-		attrs.EventBasedHold = optional.ToBool(uattrs.EventBasedHold)
-		forceSendFields = append(forceSendFields, "EventBasedHold")
-	}
-	if uattrs.TemporaryHold != nil {
-		attrs.TemporaryHold = optional.ToBool(uattrs.TemporaryHold)
-		forceSendFields = append(forceSendFields, "TemporaryHold")
-	}
-	if !uattrs.CustomTime.IsZero() {
-		attrs.CustomTime = uattrs.CustomTime
-		forceSendFields = append(forceSendFields, "CustomTime")
-	}
-	if uattrs.Metadata != nil {
-		attrs.Metadata = uattrs.Metadata
-		if len(attrs.Metadata) == 0 {
-			// Sending the empty map is a no-op. We send null instead.
-			nullFields = append(nullFields, "Metadata")
-		} else {
-			forceSendFields = append(forceSendFields, "Metadata")
-		}
-	}
-	if uattrs.ACL != nil {
-		attrs.ACL = uattrs.ACL
-		// It's an error to attempt to delete the ACL, so
-		// we don't append to nullFields here.
-		forceSendFields = append(forceSendFields, "Acl")
-	}
-	rawObj := attrs.toRawObject(o.bucket)
-	rawObj.ForceSendFields = forceSendFields
-	rawObj.NullFields = nullFields
-	call := o.c.raw.Objects.Patch(o.bucket, o.object, rawObj).Projection("full").Context(ctx)
-	if err := applyConds("Update", o.gen, o.conds, call); err != nil {
-		return nil, err
-	}
-	if o.userProject != "" {
-		call.UserProject(o.userProject)
-	}
-	if uattrs.PredefinedACL != "" {
-		call.PredefinedAcl(uattrs.PredefinedACL)
-	}
-	if err := setEncryptionHeaders(call.Header(), o.encryptionKey, false); err != nil {
-		return nil, err
-	}
-	var obj *raw.Object
-	setClientHeader(call.Header())
-	var isIdempotent bool
-	if o.conds != nil && o.conds.MetagenerationMatch != 0 {
-		isIdempotent = true
-	}
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent)
-	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return nil, ErrObjectNotExist
-	}
-	if err != nil {
-		return nil, err
-	}
-	return newObject(obj), nil
+	isIdempotent := o.conds != nil && o.conds.MetagenerationMatch != 0
+	opts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
+	return o.c.tc.UpdateObject(ctx, o.bucket, o.object, &uattrs, o.gen, o.encryptionKey, o.conds, opts...)
 }
 
 // BucketName returns the name of the bucket.
@@ -1073,11 +954,12 @@ func (o *ObjectHandle) ObjectName() string {
 //
 // For example, to change ContentType and delete ContentEncoding and
 // Metadata, use
-//    ObjectAttrsToUpdate{
-//        ContentType: "text/html",
-//        ContentEncoding: "",
-//        Metadata: map[string]string{},
-//    }
+//
+//	ObjectAttrsToUpdate{
+//	    ContentType: "text/html",
+//	    ContentEncoding: "",
+//	    Metadata: map[string]string{},
+//	}
 type ObjectAttrsToUpdate struct {
 	EventBasedHold     optional.Bool
 	TemporaryHold      optional.Bool
@@ -1100,27 +982,11 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if err := o.validate(); err != nil {
 		return err
 	}
-	call := o.c.raw.Objects.Delete(o.bucket, o.object).Context(ctx)
-	if err := applyConds("Delete", o.gen, o.conds, call); err != nil {
-		return err
-	}
-	if o.userProject != "" {
-		call.UserProject(o.userProject)
-	}
-	// Encryption doesn't apply to Delete.
-	setClientHeader(call.Header())
-	var isIdempotent bool
 	// Delete is idempotent if GenerationMatch or Generation have been passed in.
 	// The default generation is negative to get the latest version of the object.
-	if (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0 {
-		isIdempotent = true
-	}
-	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent)
-	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
-		return ErrObjectNotExist
-	}
-	return err
+	isIdempotent := (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0
+	opts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
+	return o.c.tc.DeleteObject(ctx, o.bucket, o.object, o.gen, o.conds, opts...)
 }
 
 // ReadCompressed when true causes the read to happen without decompressing.
@@ -1142,6 +1008,9 @@ func (o *ObjectHandle) ReadCompressed(compressed bool) *ObjectHandle {
 // ObjectAttrs field before the first call to Write. If no ContentType
 // attribute is specified, the content type will be automatically sniffed
 // using net/http.DetectContentType.
+//
+// Note that each Writer allocates an internal buffer of size Writer.ChunkSize.
+// See the ChunkSize docs for more information.
 //
 // It is the caller's responsibility to call Close when writing is done. To
 // stop writing without saving the data, cancel the context.
@@ -1226,8 +1095,11 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 	}
 
 	// For now, there are only globally unique buckets, and "_" is the alias
-	// project ID for such buckets.
-	b = bucketResourceName("_", b)
+	// project ID for such buckets. If the bucket is not provided, like in the
+	// destination ObjectAttrs of a Copy, do not attempt to format it.
+	if b != "" {
+		b = bucketResourceName(globalProjectAlias, b)
+	}
 
 	return &storagepb.Object{
 		Bucket:              b,
@@ -1252,6 +1124,49 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		Size:                o.Size,
 		Checksums:           checksums,
 	}
+}
+
+// toProtoObject copies the attributes to update from uattrs to the proto library's Object type.
+func (uattrs *ObjectAttrsToUpdate) toProtoObject(bucket, object string) *storagepb.Object {
+	o := &storagepb.Object{
+		Name:   object,
+		Bucket: bucket,
+	}
+	if uattrs == nil {
+		return o
+	}
+
+	if uattrs.EventBasedHold != nil {
+		o.EventBasedHold = proto.Bool(optional.ToBool(uattrs.EventBasedHold))
+	}
+	if uattrs.TemporaryHold != nil {
+		o.TemporaryHold = optional.ToBool(uattrs.TemporaryHold)
+	}
+	if uattrs.ContentType != nil {
+		o.ContentType = optional.ToString(uattrs.ContentType)
+	}
+	if uattrs.ContentLanguage != nil {
+		o.ContentLanguage = optional.ToString(uattrs.ContentLanguage)
+	}
+	if uattrs.ContentEncoding != nil {
+		o.ContentEncoding = optional.ToString(uattrs.ContentEncoding)
+	}
+	if uattrs.ContentDisposition != nil {
+		o.ContentDisposition = optional.ToString(uattrs.ContentDisposition)
+	}
+	if uattrs.CacheControl != nil {
+		o.CacheControl = optional.ToString(uattrs.CacheControl)
+	}
+	if !uattrs.CustomTime.IsZero() {
+		o.CustomTime = toProtoTimestamp(uattrs.CustomTime)
+	}
+	if uattrs.ACL != nil {
+		o.Acl = toProtoObjectACL(uattrs.ACL)
+	}
+
+	// TODO(cathyo): Handle metadata. Pending b/230510191.
+
+	return o
 }
 
 // ObjectAttrs represents the metadata for a Google Cloud Storage (GCS) object.
@@ -1325,6 +1240,9 @@ type ObjectAttrs struct {
 	// Composer. In those cases, if the SendCRC32C field in the Writer or Composer
 	// is set to is true, the uploaded data is rejected if its CRC32C hash does
 	// not match this field.
+	//
+	// Note: For a Writer, SendCRC32C must be set to true BEFORE the first call to
+	// Writer.Write() in order to send the checksum.
 	CRC32C uint32
 
 	// MediaLink is an URL to the object's content. This field is read-only.
@@ -1332,6 +1250,10 @@ type ObjectAttrs struct {
 
 	// Metadata represents user-provided metadata, in key/value pairs.
 	// It can be nil if no metadata is provided.
+	//
+	// For object downloads using Reader, metadata keys are sent as headers.
+	// Therefore, avoid setting metadata keys using characters that are not valid
+	// for headers. See https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6.
 	Metadata map[string]string
 
 	// Generation is the generation number of the object's content.
@@ -1484,7 +1406,7 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 		EventBasedHold:          o.GetEventBasedHold(),
 		TemporaryHold:           o.TemporaryHold,
 		RetentionExpirationTime: convertProtoTime(o.GetRetentionExpireTime()),
-		ACL:                     fromProtoToObjectACLRules(o.GetAcl()),
+		ACL:                     toObjectACLRulesFromProto(o.GetAcl()),
 		Owner:                   o.GetOwner().GetEntity(),
 		ContentEncoding:         o.ContentEncoding,
 		ContentDisposition:      o.ContentDisposition,
@@ -1587,6 +1509,14 @@ type Query struct {
 	// which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,
 	// which may improve performance when listing many objects.
 	Projection Projection
+
+	// IncludeTrailingDelimiter controls how objects which end in a single
+	// instance of Delimiter (for example, if Query.Delimiter = "/" and the
+	// object name is "foo/bar/") are included in the results. By default, these
+	// objects only show up as prefixes. If IncludeTrailingDelimiter is set to
+	// true, they will also be included as objects and their metadata will be
+	// populated in the returned ObjectAttrs.
+	IncludeTrailingDelimiter bool
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1798,6 +1728,33 @@ func applySourceConds(gen int64, conds *Conditions, call *raw.ObjectsRewriteCall
 	return nil
 }
 
+func applySourceCondsProto(gen int64, conds *Conditions, call *storagepb.RewriteObjectRequest) error {
+	if gen >= 0 {
+		call.SourceGeneration = gen
+	}
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate("CopyTo source"); err != nil {
+		return err
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		call.IfSourceGenerationMatch = proto.Int64(conds.GenerationMatch)
+	case conds.GenerationNotMatch != 0:
+		call.IfSourceGenerationNotMatch = proto.Int64(conds.GenerationNotMatch)
+	case conds.DoesNotExist:
+		call.IfSourceGenerationMatch = proto.Int64(0)
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		call.IfSourceMetagenerationMatch = proto.Int64(conds.MetagenerationMatch)
+	case conds.MetagenerationNotMatch != 0:
+		call.IfSourceMetagenerationNotMatch = proto.Int64(conds.MetagenerationNotMatch)
+	}
+	return nil
+}
+
 // setConditionField sets a field on a *raw.WhateverCall.
 // We can't use anonymous interfaces because the return type is
 // different, since the field setters are builders.
@@ -1919,8 +1876,8 @@ func (ws *withPolicy) apply(config *retryConfig) {
 
 // WithErrorFunc allows users to pass a custom function to the retryer. Errors
 // will be retried if and only if `shouldRetry(err)` returns true.
-// By default, the following errors are retried (see invoke.go for the default
-// shouldRetry function):
+// By default, the following errors are retried (see ShouldRetry for the default
+// function):
 //
 // - HTTP responses with codes 408, 429, 502, 503, and 504.
 //
@@ -1931,7 +1888,8 @@ func (ws *withPolicy) apply(config *retryConfig) {
 // - Wrapped versions of these errors.
 //
 // This option can be used to retry on a different set of errors than the
-// default.
+// default. Users can use the default ShouldRetry function inside their custom
+// function if they only want to make minor modifications to default behavior.
 func WithErrorFunc(shouldRetry func(err error) bool) RetryOption {
 	return &withErrorFunc{
 		shouldRetry: shouldRetry,
@@ -2004,26 +1962,31 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 	if copySource {
 		cs = "copy-source-"
 	}
-	headers.Set("x-goog-"+cs+"encryption-algorithm", "AES256")
+	headers.Set("x-goog-"+cs+"encryption-algorithm", aes256Algorithm)
 	headers.Set("x-goog-"+cs+"encryption-key", base64.StdEncoding.EncodeToString(key))
 	keyHash := sha256.Sum256(key)
 	headers.Set("x-goog-"+cs+"encryption-key-sha256", base64.StdEncoding.EncodeToString(keyHash[:]))
 	return nil
 }
 
+// toProtoCommonObjectRequestParams sets customer-supplied encryption to the proto library's CommonObjectRequestParams.
+func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequestParams {
+	if key == nil {
+		return nil
+	}
+	keyHash := sha256.Sum256(key)
+	return &storagepb.CommonObjectRequestParams{
+		EncryptionAlgorithm:      aes256Algorithm,
+		EncryptionKeyBytes:       key,
+		EncryptionKeySha256Bytes: keyHash[:],
+	}
+}
+
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
-	r := c.raw.Projects.ServiceAccount.Get(projectID)
-	var res *raw.ServiceAccount
-	var err error
-	err = run(ctx, func() error {
-		res, err = r.Context(ctx).Do()
-		return err
-	}, c.retry, true)
-	if err != nil {
-		return "", err
-	}
-	return res.EmailAddress, nil
+	o := makeStorageOpts(true, c.retry, "")
+	return c.tc.GetServiceAccount(ctx, projectID, o...)
+
 }
 
 // bucketResourceName formats the given project ID and bucketResourceName ID
@@ -2036,7 +1999,32 @@ func bucketResourceName(p, b string) string {
 // parseBucketName strips the leading resource path segment and returns the
 // bucket ID, which is the simple Bucket name typical of the v1 API.
 func parseBucketName(b string) string {
-	return strings.TrimPrefix(b, "projects/_/buckets/")
+	sep := strings.LastIndex(b, "/")
+	return b[sep+1:]
+}
+
+// parseProjectNumber consume the given resource name and parses out the project
+// number if one is present i.e. it is not a project ID.
+func parseProjectNumber(r string) uint64 {
+	projectID := regexp.MustCompile(`projects\/([0-9]+)\/?`)
+	if matches := projectID.FindStringSubmatch(r); len(matches) > 0 {
+		// Capture group follows the matched segment. For example:
+		// input: projects/123/bars/456
+		// output: [projects/123/, 123]
+		number, err := strconv.ParseUint(matches[1], 10, 64)
+		if err != nil {
+			return 0
+		}
+		return number
+	}
+
+	return 0
+}
+
+// toProjectResource accepts a project ID and formats it as a Project resource
+// name.
+func toProjectResource(project string) string {
+	return fmt.Sprintf("projects/%s", project)
 }
 
 // setConditionProtoField uses protobuf reflection to set named condition field

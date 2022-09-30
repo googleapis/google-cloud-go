@@ -24,20 +24,25 @@ import (
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newPredictionClientHook clientHook
 
 // PredictionCallOptions contains the retry settings for each method of PredictionClient.
 type PredictionCallOptions struct {
-	Predict []gax.CallOption
+	Predict        []gax.CallOption
+	GetOperation   []gax.CallOption
+	ListOperations []gax.CallOption
 }
 
 func defaultPredictionGRPCClientOptions() []option.ClientOption {
@@ -66,15 +71,30 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 				})
 			}),
 		},
+		GetOperation: []gax.CallOption{},
+		ListOperations: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        300000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
-// internalPredictionClient is an interface that defines the methods availaible from Retail API.
+// internalPredictionClient is an interface that defines the methods available from Retail API.
 type internalPredictionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Predict(context.Context, *retailpb.PredictRequest, ...gax.CallOption) (*retailpb.PredictResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // PredictionClient is a client for interacting with Retail API.
@@ -106,7 +126,8 @@ func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PredictionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -114,6 +135,16 @@ func (c *PredictionClient) Connection() *grpc.ClientConn {
 // Predict makes a recommendation prediction.
 func (c *PredictionClient) Predict(ctx context.Context, req *retailpb.PredictRequest, opts ...gax.CallOption) (*retailpb.PredictResponse, error) {
 	return c.internalClient.Predict(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *PredictionClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *PredictionClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // predictionGRPCClient is a client for interacting with Retail API over gRPC transport.
@@ -131,6 +162,8 @@ type predictionGRPCClient struct {
 
 	// The gRPC API client.
 	predictionClient retailpb.PredictionServiceClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -166,6 +199,7 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		disableDeadlines: disableDeadlines,
 		predictionClient: retailpb.NewPredictionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -176,7 +210,8 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -186,7 +221,7 @@ func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -203,6 +238,7 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *retailpb.Predic
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "placement", url.QueryEscape(req.GetPlacement())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	var resp *retailpb.PredictResponse
@@ -215,4 +251,66 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *retailpb.Predic
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *predictionGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

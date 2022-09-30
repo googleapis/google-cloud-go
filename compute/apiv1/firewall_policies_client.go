@@ -62,7 +62,30 @@ type FirewallPoliciesCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-// internalFirewallPoliciesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultFirewallPoliciesRESTCallOptions() *FirewallPoliciesCallOptions {
+	return &FirewallPoliciesCallOptions{
+		AddAssociation:     []gax.CallOption{},
+		AddRule:            []gax.CallOption{},
+		CloneRules:         []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		Get:                []gax.CallOption{},
+		GetAssociation:     []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		GetRule:            []gax.CallOption{},
+		Insert:             []gax.CallOption{},
+		List:               []gax.CallOption{},
+		ListAssociations:   []gax.CallOption{},
+		Move:               []gax.CallOption{},
+		Patch:              []gax.CallOption{},
+		PatchRule:          []gax.CallOption{},
+		RemoveAssociation:  []gax.CallOption{},
+		RemoveRule:         []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+	}
+}
+
+// internalFirewallPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalFirewallPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -116,7 +139,8 @@ func (c *FirewallPoliciesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FirewallPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -224,6 +248,9 @@ type firewallPoliciesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing FirewallPoliciesClient
+	CallOptions **FirewallPoliciesCallOptions
 }
 
 // NewFirewallPoliciesRESTClient creates a new firewall policies rest client.
@@ -236,9 +263,11 @@ func NewFirewallPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultFirewallPoliciesRESTCallOptions()
 	c := &firewallPoliciesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -252,7 +281,7 @@ func NewFirewallPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 	}
 	c.operationClient = opC
 
-	return &FirewallPoliciesClient{internalClient: c, CallOptions: &FirewallPoliciesCallOptions{}}, nil
+	return &FirewallPoliciesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultFirewallPoliciesRESTClientOptions() []option.ClientOption {
@@ -269,7 +298,7 @@ func defaultFirewallPoliciesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *firewallPoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -286,7 +315,7 @@ func (c *firewallPoliciesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *firewallPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -300,7 +329,10 @@ func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *co
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/addAssociation", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -314,10 +346,16 @@ func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *co
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).AddAssociation[0:len((*c.CallOptions).AddAssociation):len((*c.CallOptions).AddAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -367,7 +405,10 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/addRule", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -378,10 +419,16 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).AddRule[0:len((*c.CallOptions).AddRule):len((*c.CallOptions).AddRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -424,7 +471,10 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 
 // CloneRules copies rules to the specified firewall policy.
 func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *computepb.CloneRulesFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/cloneRules", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -438,10 +488,16 @@ func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *comput
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CloneRules[0:len((*c.CallOptions).CloneRules):len((*c.CallOptions).CloneRules)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -484,7 +540,10 @@ func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *comput
 
 // Delete deletes the specified policy.
 func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -495,10 +554,16 @@ func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -541,14 +606,23 @@ func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get returns the specified firewall policy.
 func (c *firewallPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicy, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.FirewallPolicy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -585,7 +659,10 @@ func (c *firewallPoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // GetAssociation gets an association with the specified name.
 func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyAssociation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getAssociation", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -596,10 +673,16 @@ func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *co
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetAssociation[0:len((*c.CallOptions).GetAssociation):len((*c.CallOptions).GetAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.FirewallPolicyAssociation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -636,7 +719,10 @@ func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *co
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getIamPolicy", req.GetResource())
 
 	params := url.Values{}
@@ -647,10 +733,16 @@ func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -687,7 +779,10 @@ func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 
 // GetRule gets a rule of the specified priority.
 func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getRule", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -698,10 +793,16 @@ func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.FirewallPolicyRule{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -745,7 +846,10 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies")
 
 	params := url.Values{}
@@ -758,9 +862,13 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -816,7 +924,10 @@ func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies")
 
 		params := url.Values{}
@@ -844,6 +955,9 @@ func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -896,7 +1010,10 @@ func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 
 // ListAssociations lists associations of a specified target, i.e., organization or folder.
 func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *computepb.ListAssociationsFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPoliciesListAssociationsResponse, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/listAssociations")
 
 	params := url.Values{}
@@ -908,9 +1025,13 @@ func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ListAssociations[0:len((*c.CallOptions).ListAssociations):len((*c.CallOptions).ListAssociations)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.FirewallPoliciesListAssociationsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -947,7 +1068,10 @@ func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *
 
 // Move moves the specified firewall policy.
 func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.MoveFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/move", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -959,10 +1083,16 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Move[0:len((*c.CallOptions).Move):len((*c.CallOptions).Move)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -1012,7 +1142,10 @@ func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1023,10 +1156,16 @@ func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1076,7 +1215,10 @@ func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/patchRule", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1090,10 +1232,16 @@ func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).PatchRule[0:len((*c.CallOptions).PatchRule):len((*c.CallOptions).PatchRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1136,7 +1284,10 @@ func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 
 // RemoveAssociation removes an association for the specified firewall policy.
 func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/removeAssociation", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1150,10 +1301,16 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RemoveAssociation[0:len((*c.CallOptions).RemoveAssociation):len((*c.CallOptions).RemoveAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -1196,7 +1353,10 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 
 // RemoveRule deletes a rule of the specified priority.
 func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/removeRule", req.GetFirewallPolicy())
 
 	params := url.Values{}
@@ -1210,10 +1370,16 @@ func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RemoveRule[0:len((*c.CallOptions).RemoveRule):len((*c.CallOptions).RemoveRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -1263,14 +1429,23 @@ func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/setIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1314,14 +1489,23 @@ func (c *firewallPoliciesRESTClient) TestIamPermissions(ctx context.Context, req
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/testIamPermissions", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err

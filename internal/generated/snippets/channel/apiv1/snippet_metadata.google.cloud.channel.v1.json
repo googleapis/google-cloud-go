@@ -1,0 +1,2264 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/channel/apiv1",
+    "version": "1.7.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.channel.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ActivateEntitlement_sync",
+      "title": "cloudchannel ActivateEntitlement Sample",
+      "description": "ActivateEntitlement activates a previously suspended entitlement. Entitlements suspended for\npending ToS acceptance can’t be activated using this method.\n\nAn entitlement activation is a long-running operation and it updates\nthe state of the customer entitlement.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: Entitlement resource not found.\n\n\tSUSPENSION_NOT_RESELLER_INITIATED: Can only activate reseller-initiated\n\tsuspensions and entitlements that have accepted the TOS.\n\n\tNOT_SUSPENDED: Can only activate suspended entitlements not in an ACTIVE\n\tstate.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/ActivateEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ActivateEntitlement",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ActivateEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ActivateEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ActivateEntitlementOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ActivateEntitlement",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ActivateEntitlement",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CancelEntitlement_sync",
+      "title": "cloudchannel CancelEntitlement Sample",
+      "description": "CancelEntitlement cancels a previously fulfilled entitlement.\n\nAn entitlement cancellation is a long-running operation.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tFAILED_PRECONDITION: There are Google Cloud projects linked to the\n\tGoogle Cloud entitlement’s Cloud Billing subaccount.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: Entitlement resource not found.\n\n\tDELETION_TYPE_NOT_ALLOWED: Cancel is only allowed for Google Workspace\n\tadd-ons, or entitlements for Google Cloud’s development platform.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The response will contain\ngoogle.protobuf.Empty on success. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/CancelEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelEntitlement",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CancelEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CancelEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CancelEntitlementOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CancelEntitlement",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CancelEntitlement",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CancelOperation_sync",
+      "title": "cloudchannel CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CancelOperation",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ChangeOffer_sync",
+      "title": "cloudchannel ChangeOffer Sample",
+      "description": "ChangeOffer updates the Offer for an existing customer entitlement.\n\nAn entitlement update is a long-running operation and it updates the\nentitlement as a result of fulfillment.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: Offer or Entitlement resource not found.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/ChangeOffer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ChangeOffer",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ChangeOffer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ChangeOfferRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChangeOfferOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ChangeOffer",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ChangeOffer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ChangeParameters_sync",
+      "title": "cloudchannel ChangeParameters Sample",
+      "description": "ChangeParameters change parameters of the entitlement.\n\nAn entitlement update is a long-running operation and it updates the\nentitlement as a result of fulfillment.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\tFor example, the number of seats being changed is greater than the allowed\n\tnumber of max seats, or decreasing seats for a commitment based plan.\n\n\tNOT_FOUND: Entitlement resource not found.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/ChangeParameters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ChangeParameters",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ChangeParameters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ChangeParametersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChangeParametersOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ChangeParameters",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ChangeParameters",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ChangeRenewalSettings_sync",
+      "title": "cloudchannel ChangeRenewalSettings Sample",
+      "description": "ChangeRenewalSettings updates the renewal settings for an existing customer entitlement.\n\nAn entitlement update is a long-running operation and it updates the\nentitlement as a result of fulfillment.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: Entitlement resource not found.\n\n\tNOT_COMMITMENT_PLAN: Renewal Settings are only applicable for a\n\tcommitment plan. Can’t enable or disable renewals for non-commitment plans.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/ChangeRenewalSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ChangeRenewalSettings",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ChangeRenewalSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ChangeRenewalSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChangeRenewalSettingsOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ChangeRenewalSettings",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ChangeRenewalSettings",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CheckCloudIdentityAccountsExist_sync",
+      "title": "cloudchannel CheckCloudIdentityAccountsExist Sample",
+      "description": "CheckCloudIdentityAccountsExist confirms the existence of Cloud Identity accounts based on the domain and\nif the Cloud Identity accounts are owned by the reseller.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tINVALID_VALUE: Invalid domain value in the request.\n\nReturn value: \nA list of CloudIdentityCustomerAccount resources for the domain (may be\nempty)\n\nNote: in the v1alpha1 version of the API, a NOT_FOUND error returns if\nno CloudIdentityCustomerAccount resources match the domain.",
+      "file": "CloudChannelClient/CheckCloudIdentityAccountsExist/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckCloudIdentityAccountsExist",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CheckCloudIdentityAccountsExist",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CheckCloudIdentityAccountsExistRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.CheckCloudIdentityAccountsExistResponse",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CheckCloudIdentityAccountsExist",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CheckCloudIdentityAccountsExist",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateChannelPartnerLink_sync",
+      "title": "cloudchannel CreateChannelPartnerLink Sample",
+      "description": "CreateChannelPartnerLink initiates a channel partner link between a distributor and a reseller, or\nbetween resellers in an n-tier reseller channel.\nInvited partners need to follow the invite_link_uri provided in the\nresponse to accept. After accepting the invitation, a link is set up\nbetween the two parties.\nYou must be a distributor to call this method.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tALREADY_EXISTS: The ChannelPartnerLink sent in the request already\n\texists.\n\n\tNOT_FOUND: No Cloud Identity customer exists for provided domain.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe new ChannelPartnerLink resource.",
+      "file": "CloudChannelClient/CreateChannelPartnerLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateChannelPartnerLink",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CreateChannelPartnerLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CreateChannelPartnerLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerLink",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CreateChannelPartnerLink",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CreateChannelPartnerLink",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel CreateChannelPartnerRepricingConfig Sample",
+      "description": "CreateChannelPartnerRepricingConfig creates a ChannelPartnerRepricingConfig. Call this method to set\nmodifications for a specific ChannelPartner’s bill. You can only create\nconfigs if the RepricingConfig.effective_invoice_month is a future\nmonth. If needed, you can create a config for the current month, with some\nrestrictions.\n\nWhen creating a config for a future month, make sure there are no existing\nconfigs for that\nRepricingConfig.effective_invoice_month.\n\nThe following restrictions are for creating configs in the current month.\n\n\tThis functionality is reserved for recovering from an erroneous config,\n\tand should not be used for regular business cases.\n\n\tThe new config will not modify exports used with other configs.\n\tChanges to the config may be immediate, but may take up to 24 hours.\n\n\tThere is a limit of ten configs for any ChannelPartner or\n\tRepricingConfig.effective_invoice_month.\n\n\tThe contained ChannelPartnerRepricingConfig.repricing_config vaule\n\tmust be different from the value used in the current config for a\n\tChannelPartner.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tINVALID_ARGUMENT: Missing or invalid required parameters in the\n\trequest. Also displays if the updated config is for the current month or\n\tpast months.\n\n\tNOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist\n\tor is not associated with the given account.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated ChannelPartnerRepricingConfig resource,\notherwise returns an error.",
+      "file": "CloudChannelClient/CreateChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CreateChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CreateChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CreateChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CreateChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateCustomer_sync",
+      "title": "cloudchannel CreateCustomer Sample",
+      "description": "CreateCustomer creates a new Customer resource under the reseller or distributor\naccount.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: \n\n\t  Required request parameters are missing or invalid.\n\n\t  Domain field value doesn’t match the primary email domain.\n\nReturn value: \nThe newly created Customer resource.",
+      "file": "CloudChannelClient/CreateCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomer",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CreateCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CreateCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.Customer",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CreateCustomer",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CreateCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateCustomerRepricingConfig_sync",
+      "title": "cloudchannel CreateCustomerRepricingConfig Sample",
+      "description": "CreateCustomerRepricingConfig creates a CustomerRepricingConfig. Call this method to set modifications\nfor a specific customer’s bill. You can only create configs if the\nRepricingConfig.effective_invoice_month is a\nfuture month. If needed, you can create a config for the current month,\nwith some restrictions.\n\nWhen creating a config for a future month, make sure there are no existing\nconfigs for that\nRepricingConfig.effective_invoice_month.\n\nThe following restrictions are for creating configs in the current month.\n\n\tThis functionality is reserved for recovering from an erroneous config,\n\tand should not be used for regular business cases.\n\n\tThe new config will not modify exports used with other configs.\n\tChanges to the config may be immediate, but may take up to 24 hours.\n\n\tThere is a limit of ten configs for any\n\tRepricingConfig.EntitlementGranularity.entitlement\n\tor RepricingConfig.effective_invoice_month.\n\n\tThe contained CustomerRepricingConfig.repricing_config vaule must be\n\tdifferent from the value used in the current config for a\n\tRepricingConfig.EntitlementGranularity.entitlement.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tINVALID_ARGUMENT: Missing or invalid required parameters in the\n\trequest. Also displays if the updated config is for the current month or\n\tpast months.\n\n\tNOT_FOUND: The CustomerRepricingConfig specified does not exist or is\n\tnot associated with the given account.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated CustomerRepricingConfig resource, otherwise\nreturns an error.",
+      "file": "CloudChannelClient/CreateCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CreateCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CreateCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.CustomerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CreateCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CreateCustomerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateEntitlement_sync",
+      "title": "cloudchannel CreateEntitlement Sample",
+      "description": "CreateEntitlement creates an entitlement for a customer.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: \n\n\t  Required request parameters are missing or invalid.\n\n\t  There is already a customer entitlement for a SKU from the same\n\t  product family.\n\n\tINVALID_VALUE: Make sure the OfferId is valid. If it is, contact\n\tGoogle Channel support for further troubleshooting.\n\n\tNOT_FOUND: The customer or offer resource was not found.\n\n\tALREADY_EXISTS: \n\n\t  The SKU was already purchased for the customer.\n\n\t  The customer’s primary email already exists. Retry\n\t  after changing the customer’s primary contact email.\n\n\tCONDITION_NOT_MET or FAILED_PRECONDITION: \n\n\t  The domain required for purchasing a SKU has not been verified.\n\n\t  A pre-requisite SKU required to purchase an Add-On SKU is missing.\n\t  For example, Google Workspace Business Starter is required to purchase\n\t  Vault or Drive.\n\n\t  (Developer accounts only) Reseller and resold domain must meet the\n\t  following naming requirements: \n\n\t    Domain names must start with goog-test.\n\n\t    Domain names must include the reseller domain.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/CreateEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEntitlement",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CreateEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CreateEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEntitlementOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CreateEntitlement",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CreateEntitlement",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel DeleteChannelPartnerRepricingConfig Sample",
+      "description": "DeleteChannelPartnerRepricingConfig deletes the given ChannelPartnerRepricingConfig permanently. You can\nonly delete configs if their RepricingConfig.effective_invoice_month is\nset to a date after the current month.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The account making the request does not own\n\tthis customer.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tFAILED_PRECONDITION: The ChannelPartnerRepricingConfig is active or\n\tin the past.\n\n\tNOT_FOUND: No ChannelPartnerRepricingConfig found for the name in the\n\trequest.",
+      "file": "CloudChannelClient/DeleteChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.DeleteChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.DeleteChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteCustomer_sync",
+      "title": "cloudchannel DeleteCustomer Sample",
+      "description": "DeleteCustomer deletes the given Customer permanently.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The account making the request does not own\n\tthis customer.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tFAILED_PRECONDITION: The customer has existing entitlements.\n\n\tNOT_FOUND: No Customer resource found for the name in the request.",
+      "file": "CloudChannelClient/DeleteCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCustomer",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.DeleteCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.DeleteCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteCustomer",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteCustomerRepricingConfig_sync",
+      "title": "cloudchannel DeleteCustomerRepricingConfig Sample",
+      "description": "DeleteCustomerRepricingConfig deletes the given CustomerRepricingConfig permanently. You can only\ndelete configs if their RepricingConfig.effective_invoice_month is set\nto a date after the current month.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The account making the request does not own\n\tthis customer.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tFAILED_PRECONDITION: The CustomerRepricingConfig is active or in the\n\tpast.\n\n\tNOT_FOUND: No CustomerRepricingConfig found for the name in the\n\trequest.",
+      "file": "CloudChannelClient/DeleteCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.DeleteCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.DeleteCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteCustomerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteOperation_sync",
+      "title": "cloudchannel DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteOperation",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetChannelPartnerLink_sync",
+      "title": "cloudchannel GetChannelPartnerLink Sample",
+      "description": "GetChannelPartnerLink returns the requested ChannelPartnerLink resource.\nYou must be a distributor to call this method.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: ChannelPartnerLink resource not found because of an\n\tinvalid channel partner link name.\n\nReturn value: \nThe ChannelPartnerLink resource.",
+      "file": "CloudChannelClient/GetChannelPartnerLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetChannelPartnerLink",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetChannelPartnerLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.GetChannelPartnerLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerLink",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetChannelPartnerLink",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetChannelPartnerLink",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel GetChannelPartnerRepricingConfig Sample",
+      "description": "GetChannelPartnerRepricingConfig gets information about how a Distributor modifies their bill before sending\nit to a ChannelPartner.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tNOT_FOUND: The ChannelPartnerRepricingConfig was not found.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the ChannelPartnerRepricingConfig resource, otherwise\nreturns an error.",
+      "file": "CloudChannelClient/GetChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.GetChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetCustomer_sync",
+      "title": "cloudchannel GetCustomer Sample",
+      "description": "GetCustomer returns the requested Customer resource.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: The customer resource doesn’t exist. Usually the result of an\n\tinvalid name parameter.\n\nReturn value: \nThe Customer resource.",
+      "file": "CloudChannelClient/GetCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomer",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.GetCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.Customer",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetCustomer",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetCustomerRepricingConfig_sync",
+      "title": "cloudchannel GetCustomerRepricingConfig Sample",
+      "description": "GetCustomerRepricingConfig gets information about how a Reseller modifies their bill before sending\nit to a Customer.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tNOT_FOUND: The CustomerRepricingConfig was not found.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the CustomerRepricingConfig resource, otherwise returns\nan error.",
+      "file": "CloudChannelClient/GetCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.GetCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.CustomerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetCustomerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetEntitlement_sync",
+      "title": "cloudchannel GetEntitlement Sample",
+      "description": "GetEntitlement returns the requested Entitlement resource.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: The customer entitlement was not found.\n\nReturn value: \nThe requested Entitlement resource.",
+      "file": "CloudChannelClient/GetEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEntitlement",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.GetEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.Entitlement",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetEntitlement",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetEntitlement",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetOperation_sync",
+      "title": "cloudchannel GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetOperation",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ImportCustomer_sync",
+      "title": "cloudchannel ImportCustomer Sample",
+      "description": "ImportCustomer imports a Customer from the Cloud Identity associated with the provided\nCloud Identity ID or domain before a TransferEntitlements call. If a\nlinked Customer already exists and overwrite_if_exists is true, it will\nupdate that Customer’s data.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tNOT_FOUND: Cloud Identity doesn’t exist or was deleted.\n\n\tINVALID_ARGUMENT: Required parameters are missing, or the auth_token is\n\texpired or invalid.\n\n\tALREADY_EXISTS: A customer already exists and has conflicting critical\n\tfields. Requires an overwrite.\n\nReturn value: \nThe Customer.",
+      "file": "CloudChannelClient/ImportCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportCustomer",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ImportCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ImportCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.Customer",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ImportCustomer",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ImportCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListChannelPartnerLinks_sync",
+      "title": "cloudchannel ListChannelPartnerLinks Sample",
+      "description": "ListChannelPartnerLinks list ChannelPartnerLinks belonging to a distributor.\nYou must be a distributor to call this method.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\nReturn value: \nThe list of the distributor account’s ChannelPartnerLink resources.",
+      "file": "CloudChannelClient/ListChannelPartnerLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChannelPartnerLinks",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListChannelPartnerLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListChannelPartnerLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChannelPartnerLinkIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListChannelPartnerLinks",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListChannelPartnerLinks",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListChannelPartnerRepricingConfigs_sync",
+      "title": "cloudchannel ListChannelPartnerRepricingConfigs Sample",
+      "description": "ListChannelPartnerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a ChannelPartner.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tNOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist\n\tor is not associated with the given account.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the ChannelPartnerRepricingConfig resources.\nThe data for each resource is displayed in the ascending order of: \n\n\tchannel partner ID\n\n\tRepricingConfig.effective_invoice_month\n\n\tChannelPartnerRepricingConfig.update_time\n\nIf unsuccessful, returns an error.",
+      "file": "CloudChannelClient/ListChannelPartnerRepricingConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChannelPartnerRepricingConfigs",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListChannelPartnerRepricingConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListChannelPartnerRepricingConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChannelPartnerRepricingConfigIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListChannelPartnerRepricingConfigs",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListChannelPartnerRepricingConfigs",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListCustomerRepricingConfigs_sync",
+      "title": "cloudchannel ListCustomerRepricingConfigs Sample",
+      "description": "ListCustomerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a Customer.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tNOT_FOUND: The CustomerRepricingConfig specified does not exist or is\n\tnot associated with the given account.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the CustomerRepricingConfig resources. The\ndata for each resource is displayed in the ascending order of: \n\n\tcustomer ID\n\n\tRepricingConfig.EntitlementGranularity.entitlement\n\n\tRepricingConfig.effective_invoice_month\n\n\tCustomerRepricingConfig.update_time\n\nIf unsuccessful, returns an error.",
+      "file": "CloudChannelClient/ListCustomerRepricingConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomerRepricingConfigs",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListCustomerRepricingConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListCustomerRepricingConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomerRepricingConfigIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListCustomerRepricingConfigs",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListCustomerRepricingConfigs",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListCustomers_sync",
+      "title": "cloudchannel ListCustomers Sample",
+      "description": "ListCustomers list Customers.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\nReturn value: \nList of Customers, or an empty list if there are no customers.",
+      "file": "CloudChannelClient/ListCustomers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomers",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListCustomers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListCustomersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomerIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListCustomers",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListCustomers",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListEntitlements_sync",
+      "title": "cloudchannel ListEntitlements Sample",
+      "description": "ListEntitlements lists Entitlements belonging to a customer.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\nReturn value: \nA list of the customer’s Entitlements.",
+      "file": "CloudChannelClient/ListEntitlements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEntitlements",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListEntitlements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListEntitlementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EntitlementIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListEntitlements",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListEntitlements",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListOffers_sync",
+      "title": "cloudchannel ListOffers Sample",
+      "description": "ListOffers lists the Offers the reseller can sell.\n\nPossible error codes: \n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.",
+      "file": "CloudChannelClient/ListOffers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOffers",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListOffers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListOffersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OfferIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListOffers",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListOffers",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListOperations_sync",
+      "title": "cloudchannel ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListOperations",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListProducts_sync",
+      "title": "cloudchannel ListProducts Sample",
+      "description": "ListProducts lists the Products the reseller is authorized to sell.\n\nPossible error codes: \n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.",
+      "file": "CloudChannelClient/ListProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProducts",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProductIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListProducts",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListProducts",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListPurchasableOffers_sync",
+      "title": "cloudchannel ListPurchasableOffers Sample",
+      "description": "ListPurchasableOffers lists the following: \n\n\tOffers that you can purchase for a customer.\n\n\tOffers that you can change for an entitlement.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.",
+      "file": "CloudChannelClient/ListPurchasableOffers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPurchasableOffers",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListPurchasableOffers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListPurchasableOffersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurchasableOfferIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListPurchasableOffers",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListPurchasableOffers",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListPurchasableSkus_sync",
+      "title": "cloudchannel ListPurchasableSkus Sample",
+      "description": "ListPurchasableSkus lists the following: \n\n\tSKUs that you can purchase for a customer\n\n\tSKUs that you can upgrade or downgrade for an entitlement.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.",
+      "file": "CloudChannelClient/ListPurchasableSkus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPurchasableSkus",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListPurchasableSkus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListPurchasableSkusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurchasableSkuIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListPurchasableSkus",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListPurchasableSkus",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSkus_sync",
+      "title": "cloudchannel ListSkus Sample",
+      "description": "ListSkus lists the SKUs for a product the reseller is authorized to sell.\n\nPossible error codes: \n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.",
+      "file": "CloudChannelClient/ListSkus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSkus",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListSkus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListSkusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SkuIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListSkus",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListSkus",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSubscribers_sync",
+      "title": "cloudchannel ListSubscribers Sample",
+      "description": "ListSubscribers lists service accounts with subscriber privileges on the Cloud Pub/Sub\ntopic created for this Channel Services account.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request and the\n\tprovided reseller account are different, or the impersonated user\n\tis not a super admin.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: The topic resource doesn’t exist.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nA list of service email addresses.",
+      "file": "CloudChannelClient/ListSubscribers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubscribers",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListSubscribers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListSubscribersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListSubscribers",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListSubscribers",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListTransferableOffers_sync",
+      "title": "cloudchannel ListTransferableOffers Sample",
+      "description": "ListTransferableOffers list TransferableOffers of a customer based on Cloud Identity ID or\nCustomer Name in the request.\n\nUse this method when a reseller gets the entitlement information of an\nunowned customer. The reseller should provide the customer’s\nCloud Identity ID or Customer Name.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: \n\n\t  The customer doesn’t belong to the reseller and has no auth token.\n\n\t  The supplied auth token is invalid.\n\n\t  The reseller account making the request is different\n\t  from the reseller account in the query.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\nReturn value: \nList of TransferableOffer for the given customer and SKU.",
+      "file": "CloudChannelClient/ListTransferableOffers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTransferableOffers",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListTransferableOffers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListTransferableOffersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferableOfferIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListTransferableOffers",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListTransferableOffers",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListTransferableSkus_sync",
+      "title": "cloudchannel ListTransferableSkus Sample",
+      "description": "ListTransferableSkus list TransferableSkus of a customer based on the Cloud Identity ID or\nCustomer Name in the request.\n\nUse this method to list the entitlements information of an\nunowned customer. You should provide the customer’s\nCloud Identity ID or Customer Name.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: \n\n\t  The customer doesn’t belong to the reseller and has no auth token.\n\n\t  The supplied auth token is invalid.\n\n\t  The reseller account making the request is different\n\t  from the reseller account in the query.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\nReturn value: \nA list of the customer’s TransferableSku.",
+      "file": "CloudChannelClient/ListTransferableSkus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTransferableSkus",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListTransferableSkus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListTransferableSkusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferableSkuIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListTransferableSkus",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListTransferableSkus",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_LookupOffer_sync",
+      "title": "cloudchannel LookupOffer Sample",
+      "description": "LookupOffer returns the requested Offer resource.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The entitlement doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: Entitlement or offer was not found.\n\nReturn value: \nThe Offer resource.",
+      "file": "CloudChannelClient/LookupOffer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LookupOffer",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.LookupOffer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.LookupOfferRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.Offer",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "LookupOffer",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.LookupOffer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ProvisionCloudIdentity_sync",
+      "title": "cloudchannel ProvisionCloudIdentity Sample",
+      "description": "ProvisionCloudIdentity creates a Cloud Identity for the given customer using the customer’s\ninformation, or the information provided here.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: The customer was not found.\n\n\tALREADY_EXISTS: The customer’s primary email already exists. Retry\n\tafter changing the customer’s primary contact email.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata contains an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/ProvisionCloudIdentity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ProvisionCloudIdentity",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ProvisionCloudIdentity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ProvisionCloudIdentityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProvisionCloudIdentityOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ProvisionCloudIdentity",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ProvisionCloudIdentity",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_RegisterSubscriber_sync",
+      "title": "cloudchannel RegisterSubscriber Sample",
+      "description": "RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub\ntopic for this Channel Services account. After you create a\nsubscriber, you get the events through SubscriberEvent\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request and the\n\tprovided reseller account are different, or the impersonated user\n\tis not a super admin.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe topic name with the registered service email address.",
+      "file": "CloudChannelClient/RegisterSubscriber/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RegisterSubscriber",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.RegisterSubscriber",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.RegisterSubscriberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.RegisterSubscriberResponse",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "RegisterSubscriber",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.RegisterSubscriber",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_StartPaidService_sync",
+      "title": "cloudchannel StartPaidService Sample",
+      "description": "StartPaidService starts paid service for a trial entitlement.\n\nStarts paid service for a trial entitlement immediately. This method is\nonly applicable if a plan is set up for a trial entitlement but has some\ntrial days remaining.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: Entitlement resource not found.\n\n\tFAILED_PRECONDITION/NOT_IN_TRIAL: This method only works for\n\tentitlement on trial plans.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/StartPaidService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartPaidService",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.StartPaidService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.StartPaidServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartPaidServiceOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "StartPaidService",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.StartPaidService",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_SuspendEntitlement_sync",
+      "title": "cloudchannel SuspendEntitlement Sample",
+      "description": "SuspendEntitlement suspends a previously fulfilled entitlement.\n\nAn entitlement suspension is a long-running operation.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: Entitlement resource not found.\n\n\tNOT_ACTIVE: Entitlement is not active.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/SuspendEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SuspendEntitlement",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.SuspendEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.SuspendEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SuspendEntitlementOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "SuspendEntitlement",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.SuspendEntitlement",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_TransferEntitlements_sync",
+      "title": "cloudchannel TransferEntitlements Sample",
+      "description": "TransferEntitlements transfers customer entitlements to new reseller.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: The customer or offer resource was not found.\n\n\tALREADY_EXISTS: The SKU was already transferred for the customer.\n\n\tCONDITION_NOT_MET or FAILED_PRECONDITION: \n\n\t  The SKU requires domain verification to transfer, but the domain is\n\t  not verified.\n\n\t  An Add-On SKU (example, Vault or Drive) is missing the\n\t  pre-requisite SKU (example, G Suite Basic).\n\n\t  (Developer accounts only) Reseller and resold domain must meet the\n\t  following naming requirements: \n\n\t    Domain names must start with goog-test.\n\n\t    Domain names must include the reseller domain.\n\n\t  Specify all transferring entitlements.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/TransferEntitlements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TransferEntitlements",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.TransferEntitlements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.TransferEntitlementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferEntitlementsOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "TransferEntitlements",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.TransferEntitlements",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_TransferEntitlementsToGoogle_sync",
+      "title": "cloudchannel TransferEntitlementsToGoogle Sample",
+      "description": "TransferEntitlementsToGoogle transfers customer entitlements from their current reseller to Google.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The customer doesn’t belong to the reseller.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: The customer or offer resource was not found.\n\n\tALREADY_EXISTS: The SKU was already transferred for the customer.\n\n\tCONDITION_NOT_MET or FAILED_PRECONDITION: \n\n\t  The SKU requires domain verification to transfer, but the domain is\n\t  not verified.\n\n\t  An Add-On SKU (example, Vault or Drive) is missing the\n\t  pre-requisite SKU (example, G Suite Basic).\n\n\t  (Developer accounts only) Reseller and resold domain must meet the\n\t  following naming requirements: \n\n\t    Domain names must start with goog-test.\n\n\t    Domain names must include the reseller domain.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The response will contain\ngoogle.protobuf.Empty on success. The Operation metadata will contain an\ninstance of OperationMetadata.",
+      "file": "CloudChannelClient/TransferEntitlementsToGoogle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TransferEntitlementsToGoogle",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.TransferEntitlementsToGoogle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.TransferEntitlementsToGoogleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferEntitlementsToGoogleOperation",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "TransferEntitlementsToGoogle",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.TransferEntitlementsToGoogle",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_UnregisterSubscriber_sync",
+      "title": "cloudchannel UnregisterSubscriber Sample",
+      "description": "UnregisterSubscriber unregisters a service account with subscriber privileges on the Cloud\nPub/Sub topic created for this Channel Services account. If there are no\nservice accounts left with subscriber privileges, this deletes the topic.\nYou can call ListSubscribers to check for these accounts.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request and the\n\tprovided reseller account are different, or the impersonated user\n\tis not a super admin.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: The topic resource doesn’t exist.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe topic name that unregistered the service email address.\nReturns a success response if the service email address wasn’t registered\nwith the topic.",
+      "file": "CloudChannelClient/UnregisterSubscriber/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UnregisterSubscriber",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.UnregisterSubscriber",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.UnregisterSubscriberRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.UnregisterSubscriberResponse",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "UnregisterSubscriber",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.UnregisterSubscriber",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateChannelPartnerLink_sync",
+      "title": "cloudchannel UpdateChannelPartnerLink Sample",
+      "description": "UpdateChannelPartnerLink updates a channel partner link. Distributors call this method to change a\nlink’s status. For example, to suspend a partner link.\nYou must be a distributor to call this method.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: \n\n\t  Required request parameters are missing or invalid.\n\n\t  Link state cannot change from invited to active or suspended.\n\n\t  Cannot send reseller_cloud_identity_id, invite_url, or name in update\n\t  mask.\n\n\tNOT_FOUND: ChannelPartnerLink resource not found.\n\n\tINTERNAL: Any non-user error related to a technical issue in the\n\tbackend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue in the backend.\n\tContact Cloud Channel support.\n\nReturn value: \nThe updated ChannelPartnerLink resource.",
+      "file": "CloudChannelClient/UpdateChannelPartnerLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateChannelPartnerLink",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.UpdateChannelPartnerLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.UpdateChannelPartnerLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerLink",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "UpdateChannelPartnerLink",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.UpdateChannelPartnerLink",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel UpdateChannelPartnerRepricingConfig Sample",
+      "description": "UpdateChannelPartnerRepricingConfig updates a ChannelPartnerRepricingConfig. Call this method to set\nmodifications for a specific ChannelPartner’s bill. This method overwrites\nthe existing CustomerRepricingConfig.\n\nYou can only update configs if the\nRepricingConfig.effective_invoice_month is a\nfuture month. To make changes to configs for the current month, use\nCreateChannelPartnerRepricingConfig, taking note of its restrictions.\nYou cannot update the RepricingConfig.effective_invoice_month.\n\nWhen updating a config in the future: \n\n\tThis config must already exist.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tINVALID_ARGUMENT: Missing or invalid required parameters in the\n\trequest. Also displays if the updated config is for the current month or\n\tpast months.\n\n\tNOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist\n\tor is not associated with the given account.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated ChannelPartnerRepricingConfig resource,\notherwise returns an error.",
+      "file": "CloudChannelClient/UpdateChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.UpdateChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.UpdateChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "UpdateChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.UpdateChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateCustomer_sync",
+      "title": "cloudchannel UpdateCustomer Sample",
+      "description": "UpdateCustomer updates an existing Customer resource for the reseller or\ndistributor.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The reseller account making the request is different\n\tfrom the reseller account in the API request.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n\tNOT_FOUND: No Customer resource found for the name in the request.\n\nReturn value: \nThe updated Customer resource.",
+      "file": "CloudChannelClient/UpdateCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomer",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.UpdateCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.UpdateCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.Customer",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomer",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.UpdateCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateCustomerRepricingConfig_sync",
+      "title": "cloudchannel UpdateCustomerRepricingConfig Sample",
+      "description": "UpdateCustomerRepricingConfig updates a CustomerRepricingConfig. Call this method to set modifications\nfor a specific customer’s bill. This method overwrites the existing\nCustomerRepricingConfig.\n\nYou can only update configs if the\nRepricingConfig.effective_invoice_month is a\nfuture month. To make changes to configs for the current month, use\nCreateCustomerRepricingConfig, taking note of its restrictions. You\ncannot update the RepricingConfig.effective_invoice_month.\n\nWhen updating a config in the future: \n\n\tThis config must already exist.\n\nPossible Error Codes: \n\n\tPERMISSION_DENIED: If the account making the request and the account\n\tbeing queried are different.\n\n\tINVALID_ARGUMENT: Missing or invalid required parameters in the\n\trequest. Also displays if the updated config is for the current month or\n\tpast months.\n\n\tNOT_FOUND: The CustomerRepricingConfig specified does not exist or is\n\tnot associated with the given account.\n\n\tINTERNAL: Any non-user error related to technical issues in the\n\tbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated CustomerRepricingConfig resource, otherwise\nreturns an error.",
+      "file": "CloudChannelClient/UpdateCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.UpdateCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.UpdateCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.CustomerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.UpdateCustomerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

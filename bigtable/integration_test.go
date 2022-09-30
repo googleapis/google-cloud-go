@@ -703,7 +703,8 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	defer cleanup()
 
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "ts"); err != nil {
+	ts := uid.NewSpace("ts", &uid.Options{Short: true}).New()
+	if err := adminClient.CreateColumnFamily(ctx, tableName, ts); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -711,7 +712,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	nonsense := []byte("lorem ipsum dolor sit amet, ")
 	fill(bigBytes, nonsense)
 	mut := NewMutation()
-	mut.Set("ts", "col", 1000, bigBytes)
+	mut.Set(ts, "col", 1000, bigBytes)
 	if err := table.Apply(ctx, "bigrow", mut); err != nil {
 		t.Fatalf("Big write: %v", err)
 	}
@@ -721,8 +722,8 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		t.Fatalf("Big read: %v", err)
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
-	wantRow := Row{"ts": []ReadItem{
-		{Row: "bigrow", Column: "ts:col", Timestamp: 1000, Value: bigBytes},
+	wantRow := Row{ts: []ReadItem{
+		{Row: "bigrow", Column: fmt.Sprintf("%s:col", ts), Timestamp: 1000, Value: bigBytes},
 	}}
 	if !testutil.Equal(r, wantRow) {
 		t.Fatalf("Big read returned incorrect bytes: %v", r)
@@ -735,7 +736,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	sem := make(chan int, 50) // do up to 50 mutations at a time.
 	for i := 0; i < 1000; i++ {
 		mut := NewMutation()
-		mut.Set("ts", "big-scan", 1000, medBytes)
+		mut.Set(ts, "big-scan", 1000, medBytes)
 		row := fmt.Sprintf("row-%d", i)
 		wg.Add(1)
 		go func() {
@@ -781,7 +782,8 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 
 	// Test bulk mutations
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "bulk"); err != nil {
+	bulk := uid.NewSpace("bulk", &uid.Options{Short: true}).New()
+	if err := adminClient.CreateColumnFamily(ctx, tableName, bulk); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	bulkData := map[string][]string{
@@ -794,7 +796,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	for row, ss := range bulkData {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("bulk", name, 1000, []byte("1"))
+			mut.Set(bulk, name, 1000, []byte("1"))
 		}
 		rowKeys = append(rowKeys, row)
 		muts = append(muts, mut)
@@ -817,9 +819,10 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		verifyDirectPathRemoteAddress(testEnv, t)
 		var wantItems []ReadItem
 		for _, val := range ss {
-			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: "bulk:" + val, Timestamp: 1000, Value: []byte("1")})
+			c := fmt.Sprintf("%s:%s", bulk, val)
+			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: c, Timestamp: 1000, Value: []byte("1")})
 		}
-		wantRow := Row{"bulk": wantItems}
+		wantRow := Row{bulk: wantItems}
 		if !testutil.Equal(row, wantRow) {
 			t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 		}
@@ -1112,7 +1115,8 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 	defer adminClient.DeleteTable(ctx, presplitTable)
 
-	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "follows"); err != nil {
+	cf := uid.NewSpace("follows", &uid.Options{Short: true}).New()
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, cf); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1128,7 +1132,7 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	for row, ss := range initialData {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("follows", name, 1000, []byte("1"))
+			mut.Set(cf, name, 1000, []byte("1"))
 		}
 		if err := table.Apply(ctx, row, mut); err != nil {
 			t.Fatalf("Mutating row %q: %v", row, err)
@@ -1400,8 +1404,12 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
+
 	// Create backup.
-	backup := "backup"
+	opts := &uid.Options{Sep: '_'}
+	backupUUID := uid.NewSpace("backup", opts)
+	backup := backupUUID.New()
+
 	defer adminClient.DeleteBackup(ctx, cluster, backup)
 	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
@@ -1454,7 +1462,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		t.Skip("emulator doesn't support instance creation")
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 7 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
@@ -1474,9 +1482,13 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
+
+	// CreateInstance can be flaky; retry 3 times before marking as failing.
+	testutil.Retry(t, 3, 5*time.Second, func(r *testutil.R) {
+		if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+	})
 
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
@@ -1735,7 +1747,7 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 	}
 
 	// Create an instance admin client
-	timeout := 5 * time.Minute
+	timeout := 7 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -1751,9 +1763,12 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Zone:         instanceToCreateZone,
 	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
+
+	testutil.Retry(t, 3, 5*time.Second, func(R *testutil.R) {
+		if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+	})
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	// Check the created test instances
@@ -2257,7 +2272,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 
 	uniqueID := make([]byte, 4)
 	rand.Read(uniqueID)
-	profileID := fmt.Sprintf("app_profile%x", uniqueID)
+	profileID := fmt.Sprintf("app_profile_id%x", uniqueID)
 
 	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
 

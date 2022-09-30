@@ -86,7 +86,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	return &Client{
@@ -128,7 +128,7 @@ func (c *Client) fullTableName(table string) string {
 }
 
 func (c *Client) requestParamsHeaderValue(table string) string {
-	return fmt.Sprintf("table_name=%s&app_profile=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
+	return fmt.Sprintf("table_name=%s&app_profile_id=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
 }
 
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
@@ -251,7 +251,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 }
 
 // ReadRow is a convenience implementation of a single-row reader.
-// A missing row will return a zero-length map and a nil error.
+// A missing row will return nil for both Row and error.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
 	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {

@@ -25,6 +25,11 @@ import (
 
 func ExampleNewPublisherClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := publishing.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewPublisherClient() {
 
 func ExamplePublisherClient_PublishChannelConnectionEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := publishing.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,6 +58,31 @@ func ExamplePublisherClient_PublishChannelConnectionEvents() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/publishing/v1#PublishChannelConnectionEventsRequest.
 	}
 	resp, err := c.PublishChannelConnectionEvents(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePublisherClient_PublishEvents() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := publishing.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &publisherpb.PublishEventsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/publishing/v1#PublishEventsRequest.
+	}
+	resp, err := c.PublishEvents(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -40,6 +40,7 @@ type Config struct {
 	RegenOnly         bool
 	ForceAll          bool
 	GenModule         bool
+	GenAlias          bool
 }
 
 // Generate generates genproto and gapics.
@@ -88,8 +89,8 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 		return nil, err
 	}
 	gapicPkgs := make(map[string]string)
-	for _, v := range microgenGapicConfigs {
-		gapicPkgs[v.inputDirectoryPath] = v.importPath
+	for _, v := range MicrogenGapicConfigs {
+		gapicPkgs[v.InputDirectoryPath] = v.ImportPath
 	}
 	changes, err := git.ParseChangeInfo(googleapisDir, commits, gapicPkgs)
 	if err != nil {

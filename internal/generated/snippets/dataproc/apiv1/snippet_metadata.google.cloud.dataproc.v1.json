@@ -1,0 +1,1437 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/dataproc/apiv1",
+    "version": "1.5.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.dataproc.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_CreateAutoscalingPolicy_sync",
+      "title": "dataproc CreateAutoscalingPolicy Sample",
+      "description": "CreateAutoscalingPolicy creates new autoscaling policy.",
+      "file": "AutoscalingPolicyClient/CreateAutoscalingPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAutoscalingPolicy",
+        "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient.CreateAutoscalingPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CreateAutoscalingPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.AutoscalingPolicy",
+        "client": {
+          "shortName": "AutoscalingPolicyClient",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient"
+        },
+        "method": {
+          "shortName": "CreateAutoscalingPolicy",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService.CreateAutoscalingPolicy",
+          "service": {
+            "shortName": "AutoscalingPolicyService",
+            "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_DeleteAutoscalingPolicy_sync",
+      "title": "dataproc DeleteAutoscalingPolicy Sample",
+      "description": "DeleteAutoscalingPolicy deletes an autoscaling policy. It is an error to delete an autoscaling\npolicy that is in use by one or more clusters.",
+      "file": "AutoscalingPolicyClient/DeleteAutoscalingPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAutoscalingPolicy",
+        "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient.DeleteAutoscalingPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DeleteAutoscalingPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AutoscalingPolicyClient",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient"
+        },
+        "method": {
+          "shortName": "DeleteAutoscalingPolicy",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService.DeleteAutoscalingPolicy",
+          "service": {
+            "shortName": "AutoscalingPolicyService",
+            "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_GetAutoscalingPolicy_sync",
+      "title": "dataproc GetAutoscalingPolicy Sample",
+      "description": "GetAutoscalingPolicy retrieves autoscaling policy.",
+      "file": "AutoscalingPolicyClient/GetAutoscalingPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAutoscalingPolicy",
+        "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient.GetAutoscalingPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetAutoscalingPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.AutoscalingPolicy",
+        "client": {
+          "shortName": "AutoscalingPolicyClient",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient"
+        },
+        "method": {
+          "shortName": "GetAutoscalingPolicy",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService.GetAutoscalingPolicy",
+          "service": {
+            "shortName": "AutoscalingPolicyService",
+            "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_ListAutoscalingPolicies_sync",
+      "title": "dataproc ListAutoscalingPolicies Sample",
+      "description": "ListAutoscalingPolicies lists autoscaling policies in the project.",
+      "file": "AutoscalingPolicyClient/ListAutoscalingPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAutoscalingPolicies",
+        "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient.ListAutoscalingPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ListAutoscalingPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AutoscalingPolicyIterator",
+        "client": {
+          "shortName": "AutoscalingPolicyClient",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient"
+        },
+        "method": {
+          "shortName": "ListAutoscalingPolicies",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService.ListAutoscalingPolicies",
+          "service": {
+            "shortName": "AutoscalingPolicyService",
+            "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_UpdateAutoscalingPolicy_sync",
+      "title": "dataproc UpdateAutoscalingPolicy Sample",
+      "description": "UpdateAutoscalingPolicy updates (replaces) autoscaling policy.\n\nDisabled check for update_mask, because all updates will be full\nreplacements.",
+      "file": "AutoscalingPolicyClient/UpdateAutoscalingPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAutoscalingPolicy",
+        "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient.UpdateAutoscalingPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.UpdateAutoscalingPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.AutoscalingPolicy",
+        "client": {
+          "shortName": "AutoscalingPolicyClient",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyClient"
+        },
+        "method": {
+          "shortName": "UpdateAutoscalingPolicy",
+          "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService.UpdateAutoscalingPolicy",
+          "service": {
+            "shortName": "AutoscalingPolicyService",
+            "fullName": "google.cloud.dataproc.v1.AutoscalingPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_BatchController_CreateBatch_sync",
+      "title": "dataproc CreateBatch Sample",
+      "description": "CreateBatch creates a batch workload that executes asynchronously.",
+      "file": "BatchControllerClient/CreateBatch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBatch",
+        "fullName": "google.cloud.dataproc.v1.BatchControllerClient.CreateBatch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CreateBatchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBatchOperation",
+        "client": {
+          "shortName": "BatchControllerClient",
+          "fullName": "google.cloud.dataproc.v1.BatchControllerClient"
+        },
+        "method": {
+          "shortName": "CreateBatch",
+          "fullName": "google.cloud.dataproc.v1.BatchController.CreateBatch",
+          "service": {
+            "shortName": "BatchController",
+            "fullName": "google.cloud.dataproc.v1.BatchController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_BatchController_DeleteBatch_sync",
+      "title": "dataproc DeleteBatch Sample",
+      "description": "DeleteBatch deletes the batch workload resource. If the batch is not in terminal state,\nthe delete fails and the response returns FAILED_PRECONDITION.",
+      "file": "BatchControllerClient/DeleteBatch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBatch",
+        "fullName": "google.cloud.dataproc.v1.BatchControllerClient.DeleteBatch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DeleteBatchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BatchControllerClient",
+          "fullName": "google.cloud.dataproc.v1.BatchControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteBatch",
+          "fullName": "google.cloud.dataproc.v1.BatchController.DeleteBatch",
+          "service": {
+            "shortName": "BatchController",
+            "fullName": "google.cloud.dataproc.v1.BatchController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_BatchController_GetBatch_sync",
+      "title": "dataproc GetBatch Sample",
+      "description": "GetBatch gets the batch workload resource representation.",
+      "file": "BatchControllerClient/GetBatch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBatch",
+        "fullName": "google.cloud.dataproc.v1.BatchControllerClient.GetBatch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetBatchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.Batch",
+        "client": {
+          "shortName": "BatchControllerClient",
+          "fullName": "google.cloud.dataproc.v1.BatchControllerClient"
+        },
+        "method": {
+          "shortName": "GetBatch",
+          "fullName": "google.cloud.dataproc.v1.BatchController.GetBatch",
+          "service": {
+            "shortName": "BatchController",
+            "fullName": "google.cloud.dataproc.v1.BatchController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_BatchController_ListBatches_sync",
+      "title": "dataproc ListBatches Sample",
+      "description": "ListBatches lists batch workloads.",
+      "file": "BatchControllerClient/ListBatches/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBatches",
+        "fullName": "google.cloud.dataproc.v1.BatchControllerClient.ListBatches",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ListBatchesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchIterator",
+        "client": {
+          "shortName": "BatchControllerClient",
+          "fullName": "google.cloud.dataproc.v1.BatchControllerClient"
+        },
+        "method": {
+          "shortName": "ListBatches",
+          "fullName": "google.cloud.dataproc.v1.BatchController.ListBatches",
+          "service": {
+            "shortName": "BatchController",
+            "fullName": "google.cloud.dataproc.v1.BatchController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_CreateCluster_sync",
+      "title": "dataproc CreateCluster Sample",
+      "description": "CreateCluster creates a cluster in a project. The returned\nOperation.metadata will be\nClusterOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).",
+      "file": "ClusterControllerClient/CreateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCluster",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.CreateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CreateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateClusterOperation",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "CreateCluster",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.CreateCluster",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_DeleteCluster_sync",
+      "title": "dataproc DeleteCluster Sample",
+      "description": "DeleteCluster deletes a cluster in a project. The returned\nOperation.metadata will be\nClusterOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).",
+      "file": "ClusterControllerClient/DeleteCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCluster",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.DeleteCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DeleteClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteClusterOperation",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteCluster",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.DeleteCluster",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_DiagnoseCluster_sync",
+      "title": "dataproc DiagnoseCluster Sample",
+      "description": "DiagnoseCluster gets cluster diagnostic information. The returned\nOperation.metadata will be\nClusterOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).\nAfter the operation completes,\nOperation.response\ncontains\nDiagnoseClusterResults (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#diagnoseclusterresults).",
+      "file": "ClusterControllerClient/DiagnoseCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DiagnoseCluster",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.DiagnoseCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DiagnoseClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DiagnoseClusterOperation",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "DiagnoseCluster",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.DiagnoseCluster",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_GetCluster_sync",
+      "title": "dataproc GetCluster Sample",
+      "description": "GetCluster gets the resource representation for a cluster in a project.",
+      "file": "ClusterControllerClient/GetCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCluster",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.GetCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.Cluster",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "GetCluster",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.GetCluster",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_ListClusters_sync",
+      "title": "dataproc ListClusters Sample",
+      "description": "ListClusters lists all regions/{region}/clusters in a project alphabetically.",
+      "file": "ClusterControllerClient/ListClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListClusters",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.ListClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ListClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ClusterIterator",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "ListClusters",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.ListClusters",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_StartCluster_sync",
+      "title": "dataproc StartCluster Sample",
+      "description": "StartCluster starts a cluster in a project.",
+      "file": "ClusterControllerClient/StartCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartCluster",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.StartCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.StartClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartClusterOperation",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "StartCluster",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.StartCluster",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_StopCluster_sync",
+      "title": "dataproc StopCluster Sample",
+      "description": "StopCluster stops a cluster in a project.",
+      "file": "ClusterControllerClient/StopCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopCluster",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.StopCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.StopClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopClusterOperation",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "StopCluster",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.StopCluster",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_ClusterController_UpdateCluster_sync",
+      "title": "dataproc UpdateCluster Sample",
+      "description": "UpdateCluster updates a cluster in a project. The returned\nOperation.metadata will be\nClusterOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).\nThe cluster must be in a [RUNNING][google.cloud.dataproc.v1.ClusterStatus.State] state or an error\nis returned.",
+      "file": "ClusterControllerClient/UpdateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCluster",
+        "fullName": "google.cloud.dataproc.v1.ClusterControllerClient.UpdateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.UpdateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateClusterOperation",
+        "client": {
+          "shortName": "ClusterControllerClient",
+          "fullName": "google.cloud.dataproc.v1.ClusterControllerClient"
+        },
+        "method": {
+          "shortName": "UpdateCluster",
+          "fullName": "google.cloud.dataproc.v1.ClusterController.UpdateCluster",
+          "service": {
+            "shortName": "ClusterController",
+            "fullName": "google.cloud.dataproc.v1.ClusterController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_JobController_CancelJob_sync",
+      "title": "dataproc CancelJob Sample",
+      "description": "CancelJob starts a job cancellation request. To access the job resource\nafter cancellation, call\nregions/{region}/jobs.list (at https: //cloud.google.com/dataproc/docs/reference/rest/v1/projects.regions.jobs/list)\nor\nregions/{region}/jobs.get (at https: //cloud.google.com/dataproc/docs/reference/rest/v1/projects.regions.jobs/get).",
+      "file": "JobControllerClient/CancelJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelJob",
+        "fullName": "google.cloud.dataproc.v1.JobControllerClient.CancelJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CancelJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.Job",
+        "client": {
+          "shortName": "JobControllerClient",
+          "fullName": "google.cloud.dataproc.v1.JobControllerClient"
+        },
+        "method": {
+          "shortName": "CancelJob",
+          "fullName": "google.cloud.dataproc.v1.JobController.CancelJob",
+          "service": {
+            "shortName": "JobController",
+            "fullName": "google.cloud.dataproc.v1.JobController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_JobController_DeleteJob_sync",
+      "title": "dataproc DeleteJob Sample",
+      "description": "DeleteJob deletes the job from the project. If the job is active, the delete fails,\nand the response returns FAILED_PRECONDITION.",
+      "file": "JobControllerClient/DeleteJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJob",
+        "fullName": "google.cloud.dataproc.v1.JobControllerClient.DeleteJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DeleteJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "JobControllerClient",
+          "fullName": "google.cloud.dataproc.v1.JobControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteJob",
+          "fullName": "google.cloud.dataproc.v1.JobController.DeleteJob",
+          "service": {
+            "shortName": "JobController",
+            "fullName": "google.cloud.dataproc.v1.JobController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_JobController_GetJob_sync",
+      "title": "dataproc GetJob Sample",
+      "description": "GetJob gets the resource representation for a job in a project.",
+      "file": "JobControllerClient/GetJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJob",
+        "fullName": "google.cloud.dataproc.v1.JobControllerClient.GetJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.Job",
+        "client": {
+          "shortName": "JobControllerClient",
+          "fullName": "google.cloud.dataproc.v1.JobControllerClient"
+        },
+        "method": {
+          "shortName": "GetJob",
+          "fullName": "google.cloud.dataproc.v1.JobController.GetJob",
+          "service": {
+            "shortName": "JobController",
+            "fullName": "google.cloud.dataproc.v1.JobController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_JobController_ListJobs_sync",
+      "title": "dataproc ListJobs Sample",
+      "description": "ListJobs lists regions/{region}/jobs in a project.",
+      "file": "JobControllerClient/ListJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobs",
+        "fullName": "google.cloud.dataproc.v1.JobControllerClient.ListJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ListJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobIterator",
+        "client": {
+          "shortName": "JobControllerClient",
+          "fullName": "google.cloud.dataproc.v1.JobControllerClient"
+        },
+        "method": {
+          "shortName": "ListJobs",
+          "fullName": "google.cloud.dataproc.v1.JobController.ListJobs",
+          "service": {
+            "shortName": "JobController",
+            "fullName": "google.cloud.dataproc.v1.JobController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_JobController_SubmitJob_sync",
+      "title": "dataproc SubmitJob Sample",
+      "description": "SubmitJob submits a job to a cluster.",
+      "file": "JobControllerClient/SubmitJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitJob",
+        "fullName": "google.cloud.dataproc.v1.JobControllerClient.SubmitJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.SubmitJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.Job",
+        "client": {
+          "shortName": "JobControllerClient",
+          "fullName": "google.cloud.dataproc.v1.JobControllerClient"
+        },
+        "method": {
+          "shortName": "SubmitJob",
+          "fullName": "google.cloud.dataproc.v1.JobController.SubmitJob",
+          "service": {
+            "shortName": "JobController",
+            "fullName": "google.cloud.dataproc.v1.JobController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_JobController_SubmitJobAsOperation_sync",
+      "title": "dataproc SubmitJobAsOperation Sample",
+      "description": "SubmitJobAsOperation submits job to a cluster.",
+      "file": "JobControllerClient/SubmitJobAsOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitJobAsOperation",
+        "fullName": "google.cloud.dataproc.v1.JobControllerClient.SubmitJobAsOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.SubmitJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubmitJobAsOperationOperation",
+        "client": {
+          "shortName": "JobControllerClient",
+          "fullName": "google.cloud.dataproc.v1.JobControllerClient"
+        },
+        "method": {
+          "shortName": "SubmitJobAsOperation",
+          "fullName": "google.cloud.dataproc.v1.JobController.SubmitJobAsOperation",
+          "service": {
+            "shortName": "JobController",
+            "fullName": "google.cloud.dataproc.v1.JobController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_JobController_UpdateJob_sync",
+      "title": "dataproc UpdateJob Sample",
+      "description": "UpdateJob updates a job in a project.",
+      "file": "JobControllerClient/UpdateJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateJob",
+        "fullName": "google.cloud.dataproc.v1.JobControllerClient.UpdateJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.UpdateJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.Job",
+        "client": {
+          "shortName": "JobControllerClient",
+          "fullName": "google.cloud.dataproc.v1.JobControllerClient"
+        },
+        "method": {
+          "shortName": "UpdateJob",
+          "fullName": "google.cloud.dataproc.v1.JobController.UpdateJob",
+          "service": {
+            "shortName": "JobController",
+            "fullName": "google.cloud.dataproc.v1.JobController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_WorkflowTemplateService_CreateWorkflowTemplate_sync",
+      "title": "dataproc CreateWorkflowTemplate Sample",
+      "description": "CreateWorkflowTemplate creates new workflow template.",
+      "file": "WorkflowTemplateClient/CreateWorkflowTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkflowTemplate",
+        "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient.CreateWorkflowTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CreateWorkflowTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.WorkflowTemplate",
+        "client": {
+          "shortName": "WorkflowTemplateClient",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient"
+        },
+        "method": {
+          "shortName": "CreateWorkflowTemplate",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService.CreateWorkflowTemplate",
+          "service": {
+            "shortName": "WorkflowTemplateService",
+            "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_WorkflowTemplateService_DeleteWorkflowTemplate_sync",
+      "title": "dataproc DeleteWorkflowTemplate Sample",
+      "description": "DeleteWorkflowTemplate deletes a workflow template. It does not cancel in-progress workflows.",
+      "file": "WorkflowTemplateClient/DeleteWorkflowTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkflowTemplate",
+        "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient.DeleteWorkflowTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DeleteWorkflowTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "WorkflowTemplateClient",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient"
+        },
+        "method": {
+          "shortName": "DeleteWorkflowTemplate",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService.DeleteWorkflowTemplate",
+          "service": {
+            "shortName": "WorkflowTemplateService",
+            "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_WorkflowTemplateService_GetWorkflowTemplate_sync",
+      "title": "dataproc GetWorkflowTemplate Sample",
+      "description": "GetWorkflowTemplate retrieves the latest workflow template.\n\nCan retrieve previously instantiated template by specifying optional\nversion parameter.",
+      "file": "WorkflowTemplateClient/GetWorkflowTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkflowTemplate",
+        "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient.GetWorkflowTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetWorkflowTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.WorkflowTemplate",
+        "client": {
+          "shortName": "WorkflowTemplateClient",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient"
+        },
+        "method": {
+          "shortName": "GetWorkflowTemplate",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService.GetWorkflowTemplate",
+          "service": {
+            "shortName": "WorkflowTemplateService",
+            "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_WorkflowTemplateService_InstantiateInlineWorkflowTemplate_sync",
+      "title": "dataproc InstantiateInlineWorkflowTemplate Sample",
+      "description": "InstantiateInlineWorkflowTemplate instantiates a template and begins execution.\n\nThis method is equivalent to executing the sequence\nCreateWorkflowTemplate, InstantiateWorkflowTemplate,\nDeleteWorkflowTemplate.\n\nThe returned Operation can be used to track execution of\nworkflow by polling\noperations.get.\nThe Operation will complete when entire workflow is finished.\n\nThe running workflow can be aborted via\noperations.cancel.\nThis will cause any inflight jobs to be cancelled and workflow-owned\nclusters to be deleted.\n\nThe Operation.metadata will be\nWorkflowMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).\nAlso see Using\nWorkflowMetadata (at https: //cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).\n\nOn successful completion,\nOperation.response will be\nEmpty.",
+      "file": "WorkflowTemplateClient/InstantiateInlineWorkflowTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InstantiateInlineWorkflowTemplate",
+        "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient.InstantiateInlineWorkflowTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.InstantiateInlineWorkflowTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstantiateInlineWorkflowTemplateOperation",
+        "client": {
+          "shortName": "WorkflowTemplateClient",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient"
+        },
+        "method": {
+          "shortName": "InstantiateInlineWorkflowTemplate",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateInlineWorkflowTemplate",
+          "service": {
+            "shortName": "WorkflowTemplateService",
+            "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_WorkflowTemplateService_InstantiateWorkflowTemplate_sync",
+      "title": "dataproc InstantiateWorkflowTemplate Sample",
+      "description": "InstantiateWorkflowTemplate instantiates a template and begins execution.\n\nThe returned Operation can be used to track execution of\nworkflow by polling\noperations.get.\nThe Operation will complete when entire workflow is finished.\n\nThe running workflow can be aborted via\noperations.cancel.\nThis will cause any inflight jobs to be cancelled and workflow-owned\nclusters to be deleted.\n\nThe Operation.metadata will be\nWorkflowMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata).\nAlso see Using\nWorkflowMetadata (at https: //cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).\n\nOn successful completion,\nOperation.response will be\nEmpty.",
+      "file": "WorkflowTemplateClient/InstantiateWorkflowTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InstantiateWorkflowTemplate",
+        "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient.InstantiateWorkflowTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.InstantiateWorkflowTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstantiateWorkflowTemplateOperation",
+        "client": {
+          "shortName": "WorkflowTemplateClient",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient"
+        },
+        "method": {
+          "shortName": "InstantiateWorkflowTemplate",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateWorkflowTemplate",
+          "service": {
+            "shortName": "WorkflowTemplateService",
+            "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_WorkflowTemplateService_ListWorkflowTemplates_sync",
+      "title": "dataproc ListWorkflowTemplates Sample",
+      "description": "ListWorkflowTemplates lists workflows that match the specified filter in the request.",
+      "file": "WorkflowTemplateClient/ListWorkflowTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkflowTemplates",
+        "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient.ListWorkflowTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ListWorkflowTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkflowTemplateIterator",
+        "client": {
+          "shortName": "WorkflowTemplateClient",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient"
+        },
+        "method": {
+          "shortName": "ListWorkflowTemplates",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService.ListWorkflowTemplates",
+          "service": {
+            "shortName": "WorkflowTemplateService",
+            "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_WorkflowTemplateService_UpdateWorkflowTemplate_sync",
+      "title": "dataproc UpdateWorkflowTemplate Sample",
+      "description": "UpdateWorkflowTemplate updates (replaces) workflow template. The updated template\nmust contain version that matches the current server version.",
+      "file": "WorkflowTemplateClient/UpdateWorkflowTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkflowTemplate",
+        "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient.UpdateWorkflowTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.UpdateWorkflowTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.WorkflowTemplate",
+        "client": {
+          "shortName": "WorkflowTemplateClient",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateClient"
+        },
+        "method": {
+          "shortName": "UpdateWorkflowTemplate",
+          "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService.UpdateWorkflowTemplate",
+          "service": {
+            "shortName": "WorkflowTemplateService",
+            "fullName": "google.cloud.dataproc.v1.WorkflowTemplateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

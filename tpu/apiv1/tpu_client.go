@@ -82,7 +82,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud TPU API.
+// internalClient is an interface that defines the methods available from Cloud TPU API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,7 +108,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud TPU API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Manages TPU nodes and other resources
+// # Manages TPU nodes and other resources
 //
 // TPU API v1
 type Client struct {
@@ -141,7 +141,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -259,7 +260,7 @@ type gRPCClient struct {
 // NewClient creates a new tpu client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Manages TPU nodes and other resources
+// # Manages TPU nodes and other resources
 //
 // TPU API v1
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -309,7 +310,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -319,7 +321,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -331,6 +333,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListNodes(ctx context.Context, req *tpupb.ListNodesRequest, opts ...gax.CallOption) *NodeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListNodes[0:len((*c.CallOptions).ListNodes):len((*c.CallOptions).ListNodes)], opts...)
 	it := &NodeIterator{}
@@ -380,6 +383,7 @@ func (c *gRPCClient) GetNode(ctx context.Context, req *tpupb.GetNodeRequest, opt
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetNode[0:len((*c.CallOptions).GetNode):len((*c.CallOptions).GetNode)], opts...)
 	var resp *tpupb.Node
@@ -401,6 +405,7 @@ func (c *gRPCClient) CreateNode(ctx context.Context, req *tpupb.CreateNodeReques
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateNode[0:len((*c.CallOptions).CreateNode):len((*c.CallOptions).CreateNode)], opts...)
 	var resp *longrunningpb.Operation
@@ -424,6 +429,7 @@ func (c *gRPCClient) DeleteNode(ctx context.Context, req *tpupb.DeleteNodeReques
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteNode[0:len((*c.CallOptions).DeleteNode):len((*c.CallOptions).DeleteNode)], opts...)
 	var resp *longrunningpb.Operation
@@ -447,6 +453,7 @@ func (c *gRPCClient) ReimageNode(ctx context.Context, req *tpupb.ReimageNodeRequ
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReimageNode[0:len((*c.CallOptions).ReimageNode):len((*c.CallOptions).ReimageNode)], opts...)
 	var resp *longrunningpb.Operation
@@ -470,6 +477,7 @@ func (c *gRPCClient) StopNode(ctx context.Context, req *tpupb.StopNodeRequest, o
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StopNode[0:len((*c.CallOptions).StopNode):len((*c.CallOptions).StopNode)], opts...)
 	var resp *longrunningpb.Operation
@@ -493,6 +501,7 @@ func (c *gRPCClient) StartNode(ctx context.Context, req *tpupb.StartNodeRequest,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartNode[0:len((*c.CallOptions).StartNode):len((*c.CallOptions).StartNode)], opts...)
 	var resp *longrunningpb.Operation
@@ -511,6 +520,7 @@ func (c *gRPCClient) StartNode(ctx context.Context, req *tpupb.StartNodeRequest,
 
 func (c *gRPCClient) ListTensorFlowVersions(ctx context.Context, req *tpupb.ListTensorFlowVersionsRequest, opts ...gax.CallOption) *TensorFlowVersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTensorFlowVersions[0:len((*c.CallOptions).ListTensorFlowVersions):len((*c.CallOptions).ListTensorFlowVersions)], opts...)
 	it := &TensorFlowVersionIterator{}
@@ -560,6 +570,7 @@ func (c *gRPCClient) GetTensorFlowVersion(ctx context.Context, req *tpupb.GetTen
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTensorFlowVersion[0:len((*c.CallOptions).GetTensorFlowVersion):len((*c.CallOptions).GetTensorFlowVersion)], opts...)
 	var resp *tpupb.TensorFlowVersion
@@ -576,6 +587,7 @@ func (c *gRPCClient) GetTensorFlowVersion(ctx context.Context, req *tpupb.GetTen
 
 func (c *gRPCClient) ListAcceleratorTypes(ctx context.Context, req *tpupb.ListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAcceleratorTypes[0:len((*c.CallOptions).ListAcceleratorTypes):len((*c.CallOptions).ListAcceleratorTypes)], opts...)
 	it := &AcceleratorTypeIterator{}
@@ -625,6 +637,7 @@ func (c *gRPCClient) GetAcceleratorType(ctx context.Context, req *tpupb.GetAccel
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAcceleratorType[0:len((*c.CallOptions).GetAcceleratorType):len((*c.CallOptions).GetAcceleratorType)], opts...)
 	var resp *tpupb.AcceleratorType

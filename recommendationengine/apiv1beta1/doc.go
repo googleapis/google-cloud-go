@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,58 @@
 // personalized recommendation systems without requiring a high level of
 // expertise in machine learning, recommendation system, or Google Cloud.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
-// Use of Context
+// # Example usage
 //
-// The ctx passed to NewClient is used for authentication requests and
+// To get started with this package, create a client.
+//
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := recommendationengine.NewCatalogClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
+//
+// The client will use your default application credentials. Clients should be reused instead of created as needed.
+// The methods of Client are safe for concurrent use by multiple goroutines.
+// The returned client must be Closed when it is done being used.
+//
+// # Using the Client
+//
+// The following is an example of making an API call with the newly created client.
+//
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := recommendationengine.NewCatalogClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
+//
+//	req := &recommendationenginepb.CreateCatalogItemRequest{
+//		// TODO: Fill request struct fields.
+//		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#CreateCatalogItemRequest.
+//	}
+//	resp, err := c.CreateCatalogItem(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
+//
+// # Use of Context
+//
+// The ctx passed to NewCatalogClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
@@ -37,6 +84,8 @@ package recommendationengine // import "cloud.google.com/go/recommendationengine
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -52,7 +101,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220114"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -117,4 +173,23 @@ func versionGo() string {
 		return s
 	}
 	return "UNKNOWN"
+}
+
+// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
+// of receiving an unknown enum value.
+func maybeUnknownEnum(err error) error {
+	if strings.Contains(err.Error(), "invalid value for enum type") {
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+	}
+	return err
+}
+
+// buildHeaders extracts metadata from the outgoing context, joins it with any other
+// given metadata, and converts them into a http.Header.
+func buildHeaders(ctx context.Context, mds ...metadata.MD) http.Header {
+	if cmd, ok := metadata.FromOutgoingContext(ctx); ok {
+		mds = append(mds, cmd)
+	}
+	md := metadata.Join(mds...)
+	return http.Header(md)
 }

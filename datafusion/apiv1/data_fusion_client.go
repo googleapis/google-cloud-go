@@ -74,7 +74,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Data Fusion API.
+// internalClient is an interface that defines the methods available from Cloud Data Fusion API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -128,7 +128,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -272,7 +273,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -282,7 +284,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -294,6 +296,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListAvailableVersions(ctx context.Context, req *datafusionpb.ListAvailableVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAvailableVersions[0:len((*c.CallOptions).ListAvailableVersions):len((*c.CallOptions).ListAvailableVersions)], opts...)
 	it := &VersionIterator{}
@@ -338,6 +341,7 @@ func (c *gRPCClient) ListAvailableVersions(ctx context.Context, req *datafusionp
 
 func (c *gRPCClient) ListInstances(ctx context.Context, req *datafusionpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
@@ -387,6 +391,7 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *datafusionpb.GetInsta
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *datafusionpb.Instance
@@ -408,6 +413,7 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *datafusionpb.Creat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -431,6 +437,7 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *datafusionpb.Delet
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -454,6 +461,7 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *datafusionpb.Updat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -477,6 +485,7 @@ func (c *gRPCClient) RestartInstance(ctx context.Context, req *datafusionpb.Rest
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RestartInstance[0:len((*c.CallOptions).RestartInstance):len((*c.CallOptions).RestartInstance)], opts...)
 	var resp *longrunningpb.Operation

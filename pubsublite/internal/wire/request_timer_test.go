@@ -15,11 +15,42 @@ package wire
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/pubsublite/internal/test"
 )
+
+func TestMinDuration(t *testing.T) {
+	for _, tc := range []struct {
+		a    time.Duration
+		b    time.Duration
+		want time.Duration
+	}{
+		{
+			a:    10 * time.Millisecond,
+			b:    10 * time.Millisecond,
+			want: 10 * time.Millisecond,
+		},
+		{
+			a:    10 * time.Millisecond,
+			b:    9 * time.Millisecond,
+			want: 9 * time.Millisecond,
+		},
+		{
+			a:    5 * time.Millisecond,
+			b:    5 * time.Second,
+			want: 5 * time.Millisecond,
+		},
+	} {
+		t.Run(fmt.Sprintf("%s %s", tc.a, tc.b), func(t *testing.T) {
+			if got := minDuration(tc.a, tc.b); got != tc.want {
+				t.Errorf("minDuration(%v, %v): got %v, want %v", tc.a, tc.b, got, tc.want)
+			}
+		})
+	}
+}
 
 func TestRequestTimerStop(t *testing.T) {
 	const timeout = 5 * time.Millisecond
@@ -58,4 +89,55 @@ func TestRequestTimerExpires(t *testing.T) {
 	if gotErr := rt.ResolveError(errors.New("ignored")); !test.ErrorEqual(gotErr, timeoutErr) {
 		t.Errorf("ResolveError() got err: %v, want err: %v", gotErr, timeoutErr)
 	}
+}
+
+func TestStreamIdleTimerExpires(t *testing.T) {
+	const timeout = 5 * time.Millisecond
+	expired := test.NewCondition("timer expired")
+
+	st := newStreamIdleTimer(timeout, expired.SetDone)
+	defer st.Shutdown()
+	st.Restart()
+	expired.WaitUntilDone(t, serviceTestWaitTimeout)
+}
+
+func TestStreamIdleTimerRestart(t *testing.T) {
+	const timeout = 20 * time.Millisecond
+	const delta = 15 * time.Millisecond
+	expired := test.NewCondition("timer expired")
+
+	st := newStreamIdleTimer(timeout, expired.SetDone)
+	defer st.Shutdown()
+	st.Restart()
+	time.Sleep(delta)
+	expired.VerifyNotDone(t)
+	st.Restart()
+	time.Sleep(delta)
+	expired.VerifyNotDone(t)
+	expired.WaitUntilDone(t, serviceTestWaitTimeout)
+}
+
+func TestStreamIdleTimerStop(t *testing.T) {
+	const timeout = 5 * time.Millisecond
+	onTimeout := func() {
+		t.Error("onTimeout should not be called")
+	}
+
+	st := newStreamIdleTimer(timeout, onTimeout)
+	defer st.Shutdown()
+	st.Restart()
+	st.Stop()
+	time.Sleep(2 * timeout)
+}
+
+func TestStreamIdleTimerShutdown(t *testing.T) {
+	const timeout = 5 * time.Millisecond
+	onTimeout := func() {
+		t.Error("onTimeout should not be called")
+	}
+
+	st := newStreamIdleTimer(timeout, onTimeout)
+	st.Restart()
+	st.Shutdown()
+	time.Sleep(2 * timeout)
 }

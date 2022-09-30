@@ -69,7 +69,7 @@ func defaultLookupCallOptions() *LookupCallOptions {
 	}
 }
 
-// internalLookupClient is an interface that defines the methods availaible from Service Directory API.
+// internalLookupClient is an interface that defines the methods available from Service Directory API.
 type internalLookupClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -106,7 +106,8 @@ func (c *LookupClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *LookupClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -178,7 +179,8 @@ func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *lookupGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -188,7 +190,7 @@ func (c *lookupGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *lookupGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -205,6 +207,7 @@ func (c *lookupGRPCClient) ResolveService(ctx context.Context, req *servicedirec
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResolveService[0:len((*c.CallOptions).ResolveService):len((*c.CallOptions).ResolveService)], opts...)
 	var resp *servicedirectorypb.ResolveServiceResponse

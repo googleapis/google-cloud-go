@@ -28,6 +28,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -38,6 +39,7 @@ var newCompletionClientHook clientHook
 // CompletionCallOptions contains the retry settings for each method of CompletionClient.
 type CompletionCallOptions struct {
 	CompleteQuery []gax.CallOption
+	GetOperation  []gax.CallOption
 }
 
 func defaultCompletionGRPCClientOptions() []option.ClientOption {
@@ -66,15 +68,17 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 				})
 			}),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
-// internalCompletionClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+// internalCompletionClient is an interface that defines the methods available from Cloud Talent Solution API.
 type internalCompletionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	CompleteQuery(context.Context, *talentpb.CompleteQueryRequest, ...gax.CallOption) (*talentpb.CompleteQueryResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // CompletionClient is a client for interacting with Cloud Talent Solution API.
@@ -106,7 +110,8 @@ func (c *CompletionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CompletionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -115,6 +120,11 @@ func (c *CompletionClient) Connection() *grpc.ClientConn {
 // Intended for use by a job search auto-complete search box.
 func (c *CompletionClient) CompleteQuery(ctx context.Context, req *talentpb.CompleteQueryRequest, opts ...gax.CallOption) (*talentpb.CompleteQueryResponse, error) {
 	return c.internalClient.CompleteQuery(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *CompletionClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // completionGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
@@ -132,6 +142,8 @@ type completionGRPCClient struct {
 
 	// The gRPC API client.
 	completionClient talentpb.CompletionClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -167,6 +179,7 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		disableDeadlines: disableDeadlines,
 		completionClient: talentpb.NewCompletionClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -177,7 +190,8 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *completionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -187,7 +201,7 @@ func (c *completionGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *completionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -204,12 +218,30 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *talentpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tenant", url.QueryEscape(req.GetTenant())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CompleteQuery[0:len((*c.CallOptions).CompleteQuery):len((*c.CallOptions).CompleteQuery)], opts...)
 	var resp *talentpb.CompleteQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.completionClient.CompleteQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

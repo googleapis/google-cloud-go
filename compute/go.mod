@@ -1,14 +1,25 @@
 module cloud.google.com/go/compute
 
-go 1.11
+go 1.17
 
 require (
-	cloud.google.com/go v0.100.2
-	github.com/google/go-cmp v0.5.7
-	github.com/googleapis/gax-go/v2 v2.1.1
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-	google.golang.org/api v0.66.0
-	google.golang.org/genproto v0.0.0-20220202230416-2a053f022f0d
-	google.golang.org/grpc v1.40.1
-	google.golang.org/protobuf v1.27.1
+	cloud.google.com/go v0.104.0
+	github.com/google/go-cmp v0.5.8
+	github.com/googleapis/gax-go/v2 v2.5.1
+	google.golang.org/api v0.96.0
+	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
+	google.golang.org/grpc v1.49.0
+	google.golang.org/protobuf v1.28.1
+)
+
+require (
+	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
+	go.opencensus.io v0.23.0 // indirect
+	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
+	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
+	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 )
