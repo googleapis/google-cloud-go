@@ -1576,8 +1576,16 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// on the *last* message of the stream (instead of the first).
 			if w.sendCRC32C {
 				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C:  proto.Uint32(w.attrs.CRC32C),
-					Md5Hash: w.attrs.MD5,
+					Crc32C: proto.Uint32(w.attrs.CRC32C),
+				}
+			}
+			if len(w.attrs.MD5) != 0 {
+				if cs := req.GetObjectChecksums(); cs == nil {
+					req.ObjectChecksums = &storagepb.ObjectChecksums{
+						Md5Hash: w.attrs.MD5,
+					}
+				} else {
+					cs.Md5Hash = w.attrs.MD5
 				}
 			}
 		}
