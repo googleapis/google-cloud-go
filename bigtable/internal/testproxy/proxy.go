@@ -339,33 +339,9 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
 type testClient struct {
-	c                   *bigtable.Client     // c stores the Bigtable client under test
-	cancels             []context.CancelFunc // cancels stores a cancel() for each call to this client
-	cancelsLock         sync.Mutex           // cancelsLock ensures that adding cancels to a client is thread safe
-	appProfileID        string               // appProfileID is currently unused
-	perOperationTimeout *duration.Duration   // perOperationTimeout sets a custom timeout for methods calls on this client
-}
-
-// addCancelFunction appends a context.CancelFunc to testClient.cancels slice.
-// It returns a new context object composed from the original.
-func (tc *testClient) addCancelFunction(ctx context.Context) context.Context {
-	tc.cancelsLock.Lock()
-	defer tc.cancelsLock.Unlock()
-	ctx2, cancel := context.WithCancel(ctx)
-	if tc.perOperationTimeout.AsDuration() > 0 {
-		ctx2, cancel = context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
-	}
-	tc.cancels = append(tc.cancels, cancel)
-	return ctx2
-}
-
-// cancelAll calls all of the context.CancelFuncs stored in this testClient.
-func (tc *testClient) cancelAll() {
-	tc.cancelsLock.Lock()
-	defer tc.cancelsLock.Unlock()
-	for _, c := range tc.cancels {
-		c()
-	}
+	c                   *bigtable.Client   // c stores the Bigtable client under test
+	appProfileID        string             // appProfileID is currently unused
+	perOperationTimeout *duration.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
 }
 
 // credentialsBundle implements credentials.Bundle interface
@@ -505,7 +481,7 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
 	clientIDs   map[string]*testClient // clientIDs has all of the bigtable.Client objects under test
-	clientsLock sync.Mutex
+	clientsLock sync.RWMutex
 }
 
 // CreateClient responds to the CreateClient RPC. This method adds a new client
@@ -538,23 +514,14 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		return nil, stat.Error(codes.Unknown, fmt.Sprintf("%s: failed to create connection: %v", logLabel, err))
 	}
 
-	localCtx, cancel := context.WithCancel(context.Background())
-	c, err := bigtable.NewClient(localCtx, req.ProjectId, req.InstanceId, option.WithGRPCConn(conn))
+	c, err := bigtable.NewClient(ctx, req.ProjectId, req.InstanceId, option.WithGRPCConn(conn))
 	if err != nil {
-		cancel()
 		return nil, stat.Error(codes.Internal,
 			fmt.Sprintf("%s: failed to create client: %v", logLabel, err))
 	}
 
-	if s.clientIDs == nil {
-		s.clientIDs = make(map[string]*testClient)
-	}
-
 	s.clientIDs[req.ClientId] = &testClient{
-		c: c,
-		cancels: []context.CancelFunc{
-			cancel,
-		},
+		c:                   c,
 		appProfileID:        req.AppProfileId,
 		perOperationTimeout: req.PerOperationTimeout,
 	}
@@ -566,7 +533,6 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 // existing client from the goTestProxyServer
 func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClientRequest) (*pb.RemoveClientResponse, error) {
 	clientID := req.ClientId
-	doCancelAll := req.CancelAll
 
 	s.clientsLock.Lock()
 	defer s.clientsLock.Unlock()
@@ -577,9 +543,7 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
 
-	if doCancelAll {
-		btc.cancelAll()
-	}
+	// this closes every ClientConn in the pool.
 	btc.c.Close()
 	delete(s.clientIDs, clientID)
 
@@ -633,7 +597,12 @@ func (s *goTestProxyServer) mustEmbedUnimplementedCloudBigtableV2TestProxyServer
 
 func newProxyServer(lis net.Listener) *grpc.Server {
 	s := grpc.NewServer()
-	pb.RegisterCloudBigtableV2TestProxyServer(s, &goTestProxyServer{})
+
+	tps := &goTestProxyServer{
+		clientIDs: make(map[string]*testClient),
+	}
+
+	pb.RegisterCloudBigtableV2TestProxyServer(s, tps)
 	log.Printf("server listening at %v", lis.Addr())
 	return s
 }
