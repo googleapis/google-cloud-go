@@ -187,22 +187,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	// RawService should be created with the chosen endpoint to take account of user override.
 	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	if err != nil {
-		return nil, fmt.Errorf("storage client: %v", err)
+		return nil, fmt.Errorf("storage client: %w", err)
 	}
 	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
-		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
+		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
 	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
-		return nil, fmt.Errorf("storage: %v", err)
+		return nil, fmt.Errorf("storage: %w", err)
 	}
 
 	return &Client{
