@@ -545,7 +545,9 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		err := errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")
+		ipubsub.SetPublishResult(r, "", err)
+		spanRecordError(span, err)
 		return r
 	}
 
@@ -564,8 +566,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", errTopicStopped)
-		span.RecordError(errTopicStopped)
-		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
+		spanRecordError(span, errTopicStopped)
 		return r
 	}
 
@@ -573,8 +574,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
-		span.RecordError(errTopicStopped)
-		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
+		spanRecordError(span, err)
 		return r
 	}
 	fcSpan.End()
@@ -592,8 +592,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
-		span.RecordError(errTopicStopped)
-		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
+		spanRecordError(span, err)
 	}
 
 	if span.SpanContext().IsValid() {
