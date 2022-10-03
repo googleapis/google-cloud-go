@@ -556,9 +556,9 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
 	s.clientsLock.RLock()
-	defer s.clientsLock.RUnlock()
-
 	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
