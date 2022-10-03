@@ -209,7 +209,7 @@ func TestReadRow(t *testing.T) {
 		RowKey:    rowKey,
 	}
 
-	resp, err := (*client).ReadRow(ctx, req)
+	resp, err := client.ReadRow(ctx, req)
 	if err != nil {
 		t.Fatalf("testproxy test: ReadRow() failed: %v", err)
 	}
