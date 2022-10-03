@@ -138,9 +138,9 @@ func mutationFromProto(mPbs []*btpb.Mutation) *bigtable.Mutation {
 	m := bigtable.NewMutation()
 	for _, mpb := range mPbs {
 
-		switch mut := mpb.Mutation; mut.(type) {
+		switch mut := mpb.Mutation.(type) {
 		case *btpb.Mutation_DeleteFromColumn_:
-			del := mut.(*btpb.Mutation_DeleteFromColumn_)
+			del := mut
 			fam := del.DeleteFromColumn.FamilyName
 			col := del.DeleteFromColumn.ColumnQualifier
 
@@ -153,7 +153,7 @@ func mutationFromProto(mPbs []*btpb.Mutation) *bigtable.Mutation {
 			}
 
 		case *btpb.Mutation_DeleteFromFamily_:
-			del := mut.(*btpb.Mutation_DeleteFromFamily_)
+			del := mut
 			fam := del.DeleteFromFamily.FamilyName
 			m.DeleteCellsInFamily(fam)
 
@@ -161,7 +161,7 @@ func mutationFromProto(mPbs []*btpb.Mutation) *bigtable.Mutation {
 			m.DeleteRow()
 
 		case *btpb.Mutation_SetCell_:
-			setCell := mut.(*btpb.Mutation_SetCell_)
+			setCell := mut
 			fam := setCell.SetCell.FamilyName
 			col := setCell.SetCell.ColumnQualifier
 			val := setCell.SetCell.Value
@@ -178,9 +178,9 @@ func mutationFromProto(mPbs []*btpb.Mutation) *bigtable.Mutation {
 // Filter object.
 func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 	var f *bigtable.Filter
-	switch fpb := rfPb.Filter; fpb.(type) {
+	switch fpb := rfPb.Filter.(type) {
 	case *btpb.RowFilter_Chain_:
-		c := fpb.(*btpb.RowFilter_Chain_)
+		c := fpb
 		var fs []bigtable.Filter
 		for _, cfpb := range c.Chain.Filters {
 			cf := filterFromProto(cfpb)
@@ -190,7 +190,7 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		f = &cf
 
 	case *btpb.RowFilter_Interleave_:
-		i := fpb.(*btpb.RowFilter_Interleave_)
+		i := fpb
 		fs := make([]bigtable.Filter, 0)
 		for _, ipb := range i.Interleave.Filters {
 			ipbf := filterFromProto(ipb)
@@ -200,7 +200,7 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		f = &inf
 
 	case *btpb.RowFilter_Condition_:
-		cond := fpb.(*btpb.RowFilter_Condition_)
+		cond := fpb
 
 		tf := filterFromProto(cond.Condition.TrueFilter)
 		ff := filterFromProto(cond.Condition.TrueFilter)
@@ -222,31 +222,31 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		f = &b
 
 	case *btpb.RowFilter_RowKeyRegexFilter:
-		rf := fpb.(*btpb.RowFilter_RowKeyRegexFilter)
+		rf := fpb
 		re := rf.RowKeyRegexFilter
 		rrf := bigtable.RowKeyFilter(string(re))
 		f = &rrf
 
 	case *btpb.RowFilter_RowSampleFilter:
-		rsf := fpb.(*btpb.RowFilter_RowSampleFilter)
+		rsf := fpb
 		rs := rsf.RowSampleFilter
 		rf := bigtable.RowSampleFilter(rs)
 		f = &rf
 
 	case *btpb.RowFilter_FamilyNameRegexFilter:
-		fnf := fpb.(*btpb.RowFilter_FamilyNameRegexFilter)
+		fnf := fpb
 		re := fnf.FamilyNameRegexFilter
 		fn := bigtable.FamilyFilter(re)
 		f = &fn
 
 	case *btpb.RowFilter_ColumnQualifierRegexFilter:
-		cqf := fpb.(*btpb.RowFilter_ColumnQualifierRegexFilter)
+		cqf := fpb
 		re := cqf.ColumnQualifierRegexFilter
 		cq := bigtable.ColumnFilter(string(re))
 		f = &cq
 
 	case *btpb.RowFilter_ColumnRangeFilter:
-		crf := fpb.(*btpb.RowFilter_ColumnRangeFilter)
+		crf := fpb
 		cr := crf.ColumnRangeFilter
 
 		var start, end string
@@ -268,20 +268,20 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		f = &cf
 
 	case *btpb.RowFilter_TimestampRangeFilter:
-		trf := fpb.(*btpb.RowFilter_TimestampRangeFilter)
+		trf := fpb
 		tsr := trf.TimestampRangeFilter
 
 		tsf := bigtable.TimestampRangeFilter(time.UnixMicro(tsr.StartTimestampMicros), time.UnixMicro(tsr.EndTimestampMicros))
 		f = &tsf
 
 	case *btpb.RowFilter_ValueRegexFilter:
-		vrf := fpb.(*btpb.RowFilter_ValueRegexFilter)
+		vrf := fpb
 		re := vrf.ValueRegexFilter
 		vr := bigtable.ValueFilter(string(re))
 		f = &vr
 
 	case *btpb.RowFilter_ValueRangeFilter:
-		vrf := fpb.(*btpb.RowFilter_ValueRangeFilter)
+		vrf := fpb
 
 		var start, end []byte
 		switch sv := vrf.ValueRangeFilter.StartValue; sv.(type) {
@@ -302,19 +302,19 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		f = &vr
 
 	case *btpb.RowFilter_CellsPerRowOffsetFilter:
-		cof := fpb.(*btpb.RowFilter_CellsPerRowOffsetFilter)
+		cof := fpb
 		off := cof.CellsPerRowOffsetFilter
 		co := bigtable.CellsPerRowOffsetFilter(int(off))
 		f = &co
 
 	case *btpb.RowFilter_CellsPerRowLimitFilter:
-		clf := fpb.(*btpb.RowFilter_CellsPerRowLimitFilter)
+		clf := fpb
 		lim := clf.CellsPerRowLimitFilter
 		cl := bigtable.CellsPerRowLimitFilter(int(lim))
 		f = &cl
 
 	case *btpb.RowFilter_CellsPerColumnLimitFilter:
-		ccf := fpb.(*btpb.RowFilter_CellsPerColumnLimitFilter)
+		ccf := fpb
 		lim := ccf.CellsPerColumnLimitFilter
 		cc := bigtable.LatestNFilter(int(lim))
 		f = &cc
@@ -324,7 +324,7 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		f = &sv
 
 	case *btpb.RowFilter_ApplyLabelTransformer:
-		alf := fpb.(*btpb.RowFilter_ApplyLabelTransformer)
+		alf := fpb
 		l := alf.ApplyLabelTransformer
 		al := bigtable.LabelFilter(l)
 		f = &al
