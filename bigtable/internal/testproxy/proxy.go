@@ -32,6 +32,7 @@ import (
 	gauth "golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
@@ -556,7 +557,60 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // ReadRows responds to the ReadRows RPC. This method gets all of the column
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadRows not implemented")
+	s.clientsLock.Lock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.Unlock()
+
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	lim := req.GetCancelAfterRows()
+
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
+	}
+
+	t := btc.c.Open(rrq.TableName)
+
+	rowPbs := rrq.Rows
+	var rs bigtable.RowSet
+
+	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
+	// provided for ReadRows. Use InfiniteRange() to get the full table.
+	if len(rowPbs.GetRowKeys()) == 0 && len(rowPbs.GetRowRanges()) == 0 {
+		// Should be lowest possible key value, an empty byte array
+		rs = bigtable.InfiniteRange(string([]byte{}))
+	} else {
+		rs = rowSetFromProto(rowPbs)
+	}
+
+	var c int32
+	rowsPb := make([]*btpb.Row, 0)
+
+	t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+		c++
+		if c == lim {
+			return false
+		}
+		rpb, err := rowToProto(r)
+		if err != nil {
+			return false
+		}
+		rowsPb = append(rowsPb, rpb)
+		return true
+	})
+
+	res := &pb.RowsResult{
+		Status: &status.Status{
+			Code: int32(codes.OK),
+		},
+		Row: rowsPb,
+	}
+
+	return res, nil
 }
 
 // MutateRow responds to the MutateRow RPC. This methods applies a series of

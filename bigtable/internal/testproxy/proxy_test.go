@@ -27,7 +27,9 @@ import (
 	"cloud.google.com/go/bigtable/bttest"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 )
@@ -198,5 +200,28 @@ func TestCreateAndRemoveClient(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("testproxy test: RemoveClient() failed: %v", err)
+	}
+}
+
+func TestReadRows(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.ReadRowsRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.ReadRowsRequest{
+			TableName: tableName,
+		},
+	}
+
+	resp, err := (*client).ReadRows(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: ReadRows returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if len(resp.Row) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Row))
 	}
 }
