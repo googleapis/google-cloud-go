@@ -45,7 +45,7 @@ const (
 
 var (
 	lis    *bufconn.Listener
-	client *pb.CloudBigtableV2TestProxyClient
+	client pb.CloudBigtableV2TestProxyClient
 )
 
 func bufDialer(context.Context, string) (net.Conn, error) {
@@ -53,7 +53,6 @@ func bufDialer(context.Context, string) (net.Conn, error) {
 }
 
 // helper function to populate the in-memory BT table.
-// TODO(developer): Expose this (and bttest) as suite of test tools
 func populateTable(bts *bttest.Server) error {
 	ctx := context.Background()
 
@@ -63,7 +62,8 @@ func populateTable(bts *bttest.Server) error {
 	}
 	defer conn.Close()
 
-	adminClient, err := bigtable.NewAdminClient(ctx, "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	adminClient, err := bigtable.NewAdminClient(ctx, "client", "instance",
+		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return fmt.Errorf("testproxy setup: can't create AdminClient: %v", err)
 	}
@@ -73,7 +73,7 @@ func populateTable(bts *bttest.Server) error {
 		return fmt.Errorf("testproxy setup: can't create table: %v", err)
 	}
 
-	// Create column families
+	// Create column families (3 is an arbitrarily sufficient number)
 	count := 3
 	for i := 0; i < count; i++ {
 		cfName := fmt.Sprintf("%s%d", columnFamily, i)
@@ -82,8 +82,8 @@ func populateTable(bts *bttest.Server) error {
 		}
 	}
 
-	// Create rows
-	dataClient, err := bigtable.NewClient(ctx, "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	dataClient, err := bigtable.NewClient(ctx, "client", "instance",
+		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return fmt.Errorf("testproxy setup: can't create Bigtable client: %v", err)
 	}
@@ -150,8 +150,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("testproxy setup: failed to dial testproxy: %v", err)
 	}
 	defer conn2.Close()
-	c := pb.NewCloudBigtableV2TestProxyClient(conn2)
-	client = &c
+	client = pb.NewCloudBigtableV2TestProxyClient(conn2)
 
 	// This could create a little bit of a race condition with the previous
 	// go routine ...
@@ -164,7 +163,7 @@ func TestMain(m *testing.M) {
 		InstanceId: "instance",
 	}
 
-	_, err = (*client).CreateClient(ctx, req)
+	_, err = client.CreateClient(ctx, req)
 	if err != nil {
 		log.Fatalf("testproxy setup:  CreateClient() failed: %v", err)
 	}
@@ -184,14 +183,15 @@ func TestCreateAndRemoveClient(t *testing.T) {
 		InstanceId: "instance",
 	}
 
-	_, err := (*client).CreateClient(ctx, req)
+	_, err := client.CreateClient(ctx, req)
+
 	if err != nil {
 		t.Fatalf("testproxy test: CreateClient() failed: %v", err)
 	}
 
 	t.Log("testproxy test: client created successfully in test proxy")
 
-	_, err = (*client).RemoveClient(ctx, &pb.RemoveClientRequest{
+	_, err = client.RemoveClient(ctx, &pb.RemoveClientRequest{
 		ClientId:  cid,
 		CancelAll: true,
 	})

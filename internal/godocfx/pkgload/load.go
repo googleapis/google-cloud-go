@@ -17,13 +17,13 @@ package pkgload
 import (
 	"fmt"
 	"go/ast"
+	"go/doc"
 	"go/parser"
 	"go/token"
 	"sort"
 	"strconv"
 	"strings"
 
-	"cloud.google.com/go/third_party/go/doc"
 	"golang.org/x/tools/go/packages"
 )
 
