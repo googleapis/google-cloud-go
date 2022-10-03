@@ -65,10 +65,10 @@ func TestTableAdmin_UpdateTable(t *testing.T) {
 		t.Errorf("UpdateTable failed: %v", err)
 	}
 	updateTableReq := mock.updateTableReq
-	if updateTableReq.Table.Name != "My-table" {
+	if !cmp.Equal(updateTableReq.Table.Name, "My-table") {
 		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
 	}
-	if updateTableReq.Table.DeletionProtection != true {
+	if !cmp.Equal(updateTableReq.Table.DeletionProtection, true) {
 		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
 	}
 }
