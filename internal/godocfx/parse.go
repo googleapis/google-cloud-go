@@ -27,6 +27,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/doc"
 	"go/format"
 	"go/printer"
 	"go/token"
@@ -39,12 +40,8 @@ import (
 	"strings"
 	"sync"
 
-	goldmarkcodeblock "cloud.google.com/go/internal/godocfx/goldmark-codeblock"
 	"cloud.google.com/go/internal/godocfx/pkgload"
-	"cloud.google.com/go/third_party/go/doc"
 	"cloud.google.com/go/third_party/pkgsite"
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/renderer/html"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -174,7 +171,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 			UID:             pi.Doc.ImportPath,
 			Name:            pi.Doc.ImportPath,
 			ID:              pi.Doc.Name,
-			Summary:         toHTML(pi.Doc.Doc),
+			Summary:         toHTML(pi.Doc, pi.Doc.Doc),
 			Langs:           onlyGo,
 			Type:            "package",
 			Examples:        processExamples(pi.Doc.Examples, pi.Fset),
@@ -622,23 +619,19 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 	return toc
 }
 
-func toHTML(s string) string {
+func toHTML(p *doc.Package, s string) string {
 	buf := &bytes.Buffer{}
 	// First, convert to Markdown.
-	doc.ToMarkdown(buf, s, nil)
-
-	// Then, handle Markdown stuff, like lists and links.
-	md := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe()), goldmark.WithExtensions(goldmarkcodeblock.CodeBlock))
-	mdBuf := &bytes.Buffer{}
-	if err := md.Convert(buf.Bytes(), mdBuf); err != nil {
-		panic(err)
-	}
+	buf.Write(p.HTML(s))
 
 	// Replace * with &#42; to avoid confusing the DocFX Markdown processor,
 	// which sometimes interprets * as <em>.
-	result := string(bytes.ReplaceAll(mdBuf.Bytes(), []byte("*"), []byte("&#42;")))
+	b := bytes.ReplaceAll(buf.Bytes(), []byte("*"), []byte("&#42;"))
 
-	return result
+	// Add prettyprint class to all pre elements.
+	b = bytes.ReplaceAll(b, []byte("<pre>"), []byte("<pre class=\"prettyprint\">"))
+
+	return string(b)
 }
 
 func hasPrefix(s string, prefixes []string) bool {
