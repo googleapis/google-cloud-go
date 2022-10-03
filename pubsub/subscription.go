@@ -828,7 +828,7 @@ type SubscriptionConfigToUpdate struct {
 func (s *Subscription) Update(ctx context.Context, cfg SubscriptionConfigToUpdate) (SubscriptionConfig, error) {
 	req := s.updateRequest(&cfg)
 	if err := cfg.validate(); err != nil {
-		return SubscriptionConfig{}, fmt.Errorf("pubsub: UpdateSubscription %v", err)
+		return SubscriptionConfig{}, fmt.Errorf("pubsub: UpdateSubscription %w", err)
 	}
 	if len(req.UpdateMask.Paths) == 0 {
 		return SubscriptionConfig{}, errors.New("pubsub: UpdateSubscription call with nothing to update")
