@@ -114,17 +114,17 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, s.clientOption...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	// RawService should be created with the chosen endpoint to take account of user override.
 	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	if err != nil {
-		return nil, fmt.Errorf("storage client: %v", err)
+		return nil, fmt.Errorf("storage client: %w", err)
 	}
 	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
-		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
+		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
 	return &httpStorageClient{
@@ -905,7 +905,7 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		if dashIndex >= 0 {
 			startOffset, err = strconv.ParseInt(cr[len("bytes="):dashIndex], 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("storage: invalid Content-Range %q: %v", cr, err)
+				return nil, fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
 			}
 		}
 	} else {
