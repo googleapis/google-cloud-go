@@ -3486,7 +3486,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled attr so we don't fail when setting CORS to nil
+				// Set VersioningEnabled so that we don't send an empty update/patch request, which is invalid for gRPC
 				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
 				attrs := h.mustBucketAttrs(bkt)
 				if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
