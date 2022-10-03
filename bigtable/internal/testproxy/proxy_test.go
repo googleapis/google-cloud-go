@@ -52,7 +52,6 @@ func bufDialer(context.Context, string) (net.Conn, error) {
 }
 
 // helper function to populate the in-memory BT table.
-// TODO(developer): Expose this (and bttest) as suite of test tools
 func populateTable(bts *bttest.Server) error {
 	ctx := context.Background()
 
@@ -62,7 +61,8 @@ func populateTable(bts *bttest.Server) error {
 	}
 	defer conn.Close()
 
-	adminClient, err := bigtable.NewAdminClient(ctx, "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	adminClient, err := bigtable.NewAdminClient(ctx, "client", "instance",
+		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return fmt.Errorf("testproxy setup: can't create AdminClient: %v", err)
 	}
@@ -72,7 +72,7 @@ func populateTable(bts *bttest.Server) error {
 		return fmt.Errorf("testproxy setup: can't create table: %v", err)
 	}
 
-	// Create column families
+	// Create column families (3 is an arbitrarily sufficient number)
 	count := 3
 	for i := 0; i < count; i++ {
 		cfName := fmt.Sprintf("%s%d", columnFamily, i)
@@ -82,7 +82,8 @@ func populateTable(bts *bttest.Server) error {
 	}
 
 	// Create rows
-	dataClient, err := bigtable.NewClient(ctx, "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	dataClient, err := bigtable.NewClient(ctx, "client", "instance",
+		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return fmt.Errorf("testproxy setup: can't create Bigtable client: %v", err)
 	}
@@ -163,7 +164,7 @@ func TestMain(m *testing.M) {
 		InstanceId: "instance",
 	}
 
-	_, err = (*client).CreateClient(ctx, req)
+	_, err = c.CreateClient(ctx, req)
 	if err != nil {
 		log.Fatalf("testproxy setup:  CreateClient() failed: %v", err)
 	}
