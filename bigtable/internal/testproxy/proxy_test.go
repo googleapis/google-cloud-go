@@ -44,7 +44,7 @@ const (
 
 var (
 	lis    *bufconn.Listener
-	client *pb.CloudBigtableV2TestProxyClient
+	client pb.CloudBigtableV2TestProxyClient
 )
 
 func bufDialer(context.Context, string) (net.Conn, error) {
@@ -150,8 +150,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("testproxy setup: failed to dial testproxy: %v", err)
 	}
 	defer conn2.Close()
-	c := pb.NewCloudBigtableV2TestProxyClient(conn2)
-	client = &c
+	client = pb.NewCloudBigtableV2TestProxyClient(conn2)
 
 	// This could create a little bit of a race condition with the previous
 	// go routine ...
@@ -164,7 +163,7 @@ func TestMain(m *testing.M) {
 		InstanceId: "instance",
 	}
 
-	_, err = c.CreateClient(ctx, req)
+	_, err = client.CreateClient(ctx, req)
 	if err != nil {
 		log.Fatalf("testproxy setup:  CreateClient() failed: %v", err)
 	}
@@ -184,14 +183,14 @@ func TestCreateAndRemoveClient(t *testing.T) {
 		InstanceId: "instance",
 	}
 
-	_, err := (*client).CreateClient(ctx, req)
+	_, err := client.CreateClient(ctx, req)
 	if err != nil {
 		t.Fatalf("testproxy test: CreateClient() failed: %v", err)
 	}
 
 	t.Log("testproxy test: client created successfully in test proxy")
 
-	_, err = (*client).RemoveClient(ctx, &pb.RemoveClientRequest{
+	_, err = client.RemoveClient(ctx, &pb.RemoveClientRequest{
 		ClientId:  cid,
 		CancelAll: true,
 	})
