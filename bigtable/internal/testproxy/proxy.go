@@ -328,10 +328,7 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 		l := alf.ApplyLabelTransformer
 		al := bigtable.LabelFilter(l)
 		f = &al
-	default:
-		return nil
 	}
-
 	return f
 }
 
@@ -547,8 +544,7 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	btc.c.Close()
 	delete(s.clientIDs, clientID)
 
-	resp := &pb.RemoveClientResponse{}
-	return resp, nil
+	return &pb.RemoveClientResponse{}, nil
 }
 
 // ReadRow responds to the ReadRow RPC. This method gets all of the column
