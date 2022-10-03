@@ -205,7 +205,7 @@ enabled by default.  You can enable it via the EnableWriteRetries option when co
 managed stream.  Use of automatic retries can impact correctness when attempting certain exactly-once
 write patterns, but is generally recommended for workloads that only need at-least-once writing.
 
-With write retries enabled, failed writes will be automatically retried a finite number of times
+With write retries enabled, failed writes will be automatically attempted a finite number of times
 (currently 4) if the failure is considered retriable.
 
 In support of the retry changes, the AppendResult returned as part of an append call now includes
