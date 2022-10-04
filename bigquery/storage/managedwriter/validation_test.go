@@ -388,8 +388,6 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerArraySum("enum_repeated", 7, 1),
 			},
 		},
-		/* skipping this test case until all test projects have the feature enabled.
-		   Tracked internally via b/248113818
 		{
 			description: "proto2 w/column annotations",
 			tableSchema: testdata.ValidationColumnAnnotations,
@@ -405,7 +403,6 @@ func TestValidation_Values(t *testing.T) {
 				withStringValueCount("特別コラム", "second_val", 1),
 			},
 		},
-		*/
 	}
 
 	// Common setup.
