@@ -91,7 +91,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("GCLOUD_TESTS_GOLANG_KEY"))
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
