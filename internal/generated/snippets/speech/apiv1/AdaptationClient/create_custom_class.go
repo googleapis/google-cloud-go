@@ -27,7 +27,7 @@ import (
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
-func createCustomClass(w io.Writer, parent, customClassId string) error {
+func createCustomClass(w io.Writer, parent, customClassId string) (*speechpb.CustomClass, error) {
 	// The custom class parent element
 	// parent = "projects/[PROJECT]/locations/us"
 	// The id for the custom class
@@ -37,37 +37,37 @@ func createCustomClass(w io.Writer, parent, customClassId string) error {
 	c, err := speech.NewAdaptationClient(ctx,
 		option.WithEndpoint("us-speech.googleapis.com:443"))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer c.Close()
-	customClass := &speechpb.CustomClass{
-		Items: []*speechpb.CustomClass_ClassItem{
-			{
-				Value: "Titanic",
-			},
-			{
-				Value: "RMS Queen Mary",
+
+	createCustomClassRequest := &speechpb.CreateCustomClassRequest{
+		Parent:        parent,
+		CustomClassId: customClassId,
+		CustomClass: &speechpb.CustomClass{
+			Items: []*speechpb.CustomClass_ClassItem{
+				{
+					Value: "Titanic",
+				},
+				{
+					Value: "RMS Queen Mary",
+				},
 			},
 		},
 	}
-
-	req := &speechpb.CreateCustomClassRequest{
-		Parent:        parent,
-		CustomClassId: customClassId,
-		CustomClass:   customClass,
-	}
 	fmt.Fprintln(w, "Calling the CreateCustomClass operation.")
-	resp, err := c.CreateCustomClass(ctx, req)
+	createdCustomClass, err := c.CreateCustomClass(ctx, createCustomClassRequest)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	fmt.Fprintln(w, "A Custom Class with the following name has been created.")
-	fmt.Fprintln(w, resp.Name)
+	fmt.Fprintln(w, createdCustomClass.Name)
 	fmt.Fprintln(w, "The Custom class contains the following items.")
-	for _, item := range resp.Items {
-		fmt.Fprintln(w, item.Value)
+	itemsList := createdCustomClass.Items
+	for _, item := range itemsList {
+		fmt.Fprintln(w, item)
 	}
-	return nil
+	return createdCustomClass, nil
 }
 
 // [END speech_v1_generated_Adaptation_CreateCustomClass_sync]
