@@ -380,14 +380,14 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		it.query = *q
 	}
 	req := &storagepb.ListObjectsRequest{
-		Parent:             bucketResourceName(globalProjectAlias, bucket),
-		Prefix:             it.query.Prefix,
-		Delimiter:          it.query.Delimiter,
-		Versions:           it.query.Versions,
-		LexicographicStart: it.query.StartOffset,
-		LexicographicEnd:   it.query.EndOffset,
-		// TODO(noahietz): Convert a projection to a FieldMask.
-		// ReadMask: q.Projection,
+		Parent:                   bucketResourceName(globalProjectAlias, bucket),
+		Prefix:                   it.query.Prefix,
+		Delimiter:                it.query.Delimiter,
+		Versions:                 it.query.Versions,
+		LexicographicStart:       it.query.StartOffset,
+		LexicographicEnd:         it.query.EndOffset,
+		ReadMask:                 it.query.toFieldMask(),
+		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -409,6 +409,12 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		for _, obj := range objects {
 			b := newObjectFromProto(obj)
 			it.items = append(it.items, b)
+		}
+
+		// Response is always non-nil after a successful request.
+		res := gitr.Response.(*storagepb.ListObjectsResponse)
+		for _, prefix := range res.GetPrefixes() {
+			it.items = append(it.items, &ObjectAttrs{Prefix: prefix})
 		}
 
 		return token, nil

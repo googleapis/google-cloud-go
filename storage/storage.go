@@ -52,6 +52,7 @@ import (
 	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1488,6 +1489,11 @@ type Query struct {
 	// calling Query.SetAttrSelection
 	fieldSelection string
 
+	// protoFieldSelection is used to select only specific fields to be returned by
+	// the query. It's used internally and is populated for the user by
+	// calling Query.SetAttrSelection. It takes precedent over Projection.
+	protoFieldSelection *fieldmaskpb.FieldMask
+
 	// StartOffset is used to filter results to objects whose names are
 	// lexicographically equal to or after startOffset. If endOffset is also set,
 	// the objects listed will have names between startOffset (inclusive) and
@@ -1546,6 +1552,39 @@ var attrToFieldMap = map[string]string{
 	"CustomTime":              "customTime",
 }
 
+// attrToProtoFieldMap maps the field names of ObjectAttrs to the underlying field
+// names in the protobuf Object message.
+var attrToProtoFieldMap = map[string]string{
+	"Name":                    "name",
+	"Bucket":                  "bucket",
+	"Etag":                    "etag",
+	"Generation":              "generation",
+	"Metageneration":          "metageneration",
+	"StorageClass":            "storage_class",
+	"Size":                    "size",
+	"ContentEncoding":         "content_encoding",
+	"ContentDisposition":      "content_disposition",
+	"CacheControl":            "cache_control",
+	"ACL":                     "acl",
+	"ContentLanguage":         "content_language",
+	"Deleted":                 "delete_time",
+	"ContentType":             "content_type",
+	"Created":                 "create_time",
+	"CRC32C":                  "checksums.crc32c",
+	"MD5":                     "checksums.md5_hash",
+	"Updated":                 "update_time",
+	"KMSKeyName":              "kms_key",
+	"TemporaryHold":           "temporary_hold",
+	"RetentionExpirationTime": "retention_expire_time",
+	"Metadata":                "metadata",
+	"EventBasedHold":          "event_based_hold",
+	"Owner":                   "owner",
+	"CustomerKeySHA256":       "customer_encryption",
+	"CustomTime":              "custom_time",
+	// TODO(noahdietz): No such field on the Object proto, but is it an HTTP-specific thing?
+	// "MediaLink":               "mediaLink",
+}
+
 // SetAttrSelection makes the query populate only specific attributes of
 // objects. When iterating over objects, if you only need each object's name
 // and size, pass []string{"Name", "Size"} to this method. Only these fields
@@ -1555,6 +1594,7 @@ var attrToFieldMap = map[string]string{
 // https://cloud.google.com/storage/docs/json_api/v1/how-tos/performance
 func (q *Query) SetAttrSelection(attrs []string) error {
 	fieldSet := make(map[string]bool)
+	protoFieldPaths := make([]string, 0, len(attrs))
 
 	for _, attr := range attrs {
 		field, ok := attrToFieldMap[attr]
@@ -1562,6 +1602,9 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 			return fmt.Errorf("storage: attr %v is not valid", attr)
 		}
 		fieldSet[field] = true
+		if pf, ok := attrToProtoFieldMap[attr]; ok {
+			protoFieldPaths = append(protoFieldPaths, pf)
+		}
 	}
 
 	if len(fieldSet) > 0 {
@@ -1578,7 +1621,37 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 		b.WriteString(")")
 		q.fieldSelection = b.String()
 	}
+	if len(protoFieldPaths) > 0 {
+		q.protoFieldSelection = &fieldmaskpb.FieldMask{Paths: protoFieldPaths}
+	}
 	return nil
+}
+
+func (q *Query) toFieldMask() *fieldmaskpb.FieldMask {
+	if q == nil {
+		return nil
+	}
+
+	// SetAttrSelection wins over Projection.
+	if q.protoFieldSelection != nil {
+		return q.protoFieldSelection
+	}
+
+	// ProjectDefault == ProjectionFull which means all fields.
+	fm := &fieldmaskpb.FieldMask{Paths: []string{"*"}}
+	if q.Projection == ProjectionNoACL {
+		paths := make([]string, 0, len(attrToProtoFieldMap)-1)
+		for _, f := range attrToProtoFieldMap {
+			// Skip the acl field for "NoACL".
+			if f == "acl" || f == "owner" {
+				continue
+			}
+			paths = append(paths, f)
+		}
+		fm.Paths = paths
+	}
+
+	return fm
 }
 
 // Conditions constrain methods to act on specific generations of

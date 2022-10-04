@@ -1469,462 +1469,497 @@ func TestIntegration_ConditionalDownload(t *testing.T) {
 	})
 }
 
-func TestIntegration_Objects(t *testing.T) {
-	// TODO(jba): Use subtests (Go 1.7).
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	// Reset testTime, 'cause object last modification time should be within 5 min
-	// from test (test iteration if -count passed) start time.
-	testTime = time.Now().UTC()
-	newBucketName := uidSpace.New()
-	h := testHelper{t}
-	bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
+func TestIntegration_ObjectIteration(t *testing.T) {
 
-	h.mustCreate(bkt, testutil.ProjID(), nil)
-	defer func() {
-		if err := killBucket(ctx, client, newBucketName); err != nil {
-			log.Printf("deleting %q: %v", newBucketName, err)
-		}
-	}()
-	const defaultType = "text/plain"
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		// Reset testTime, 'cause object last modification time should be within 5 min
+		// from test (test iteration if -count passed) start time.
+		testTime = time.Now().UTC()
+		newBucketName := prefix + uidSpace.New()
+		h := testHelper{t}
+		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
 
-	// Populate object names and make a map for their contents.
-	objects := []string{
-		"obj1",
-		"obj2",
-		"obj/with/slashes",
-		"obj/",
-	}
-	contents := make(map[string][]byte)
-
-	// Test Writer.
-	for _, obj := range objects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-		contents[obj] = c
-	}
-
-	testObjectIterator(t, bkt, objects)
-	testObjectsIterateSelectedAttrs(t, bkt, objects)
-	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
-	testObjectIteratorWithOffset(t, bkt, objects)
-	testObjectsIterateWithProjection(t, bkt)
-	t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
-		query := &Query{Prefix: "", Delimiter: "/"}
-		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
-			t.Fatalf("selecting query attrs: %v", err)
-		}
-
-		var gotNames []string
-		var gotPrefixes []string
-		it := bkt.Objects(context.Background(), query)
-		for {
-			attrs, err := it.Next()
-			if err == iterator.Done {
-				break
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer func() {
+			if err := killBucket(ctx, client, newBucketName); err != nil {
+				log.Printf("deleting %q: %v", newBucketName, err)
 			}
-			if err != nil {
-				t.Fatalf("iterator.Next: %v", err)
+		}()
+		const defaultType = "text/plain"
+
+		// Populate object names and make a map for their contents.
+		objects := []string{
+			"obj1",
+			"obj2",
+			"obj/with/slashes",
+			"obj/",
+		}
+		contents := make(map[string][]byte)
+
+		// Test Writer.
+		for _, obj := range objects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
 			}
-			if attrs.Name != "" {
-				gotNames = append(gotNames, attrs.Name)
-			} else if attrs.Prefix != "" {
-				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			contents[obj] = c
+		}
+
+		testObjectIterator(t, bkt, objects)
+		testObjectsIterateSelectedAttrs(t, bkt, objects)
+		testObjectsIterateAllSelectedAttrs(t, bkt, objects)
+		testObjectIteratorWithOffset(t, bkt, objects)
+		testObjectsIterateWithProjection(t, bkt)
+		t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
+			query := &Query{Prefix: "", Delimiter: "/"}
+			if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+				t.Fatalf("selecting query attrs: %v", err)
 			}
 
-			if attrs.Bucket != "" {
-				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
-			}
-		}
+			var gotNames []string
+			var gotPrefixes []string
+			it := bkt.Objects(context.Background(), query)
+			for {
+				attrs, err := it.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatalf("iterator.Next: %v", err)
+				}
+				if attrs.Name != "" {
+					gotNames = append(gotNames, attrs.Name)
+				} else if attrs.Prefix != "" {
+					gotPrefixes = append(gotPrefixes, attrs.Prefix)
+				}
 
-		sortedNames := []string{"obj1", "obj2"}
-		if !cmp.Equal(sortedNames, gotNames) {
-			t.Errorf("names = %v, want %v", gotNames, sortedNames)
-		}
-		sortedPrefixes := []string{"obj/"}
-		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
-			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
-		}
+				if attrs.Bucket != "" {
+					t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+				}
+			}
+
+			sortedNames := []string{"obj1", "obj2"}
+			if !cmp.Equal(sortedNames, gotNames) {
+				t.Errorf("names = %v, want %v", gotNames, sortedNames)
+			}
+			sortedPrefixes := []string{"obj/"}
+			if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+				t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+			}
+		})
+		t.Run("testObjectsIterateSelectedAttrsDelimiterIncludeTrailingDelimiter", func(t *testing.T) {
+			query := &Query{Prefix: "", Delimiter: "/", IncludeTrailingDelimiter: true}
+			if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+				t.Fatalf("selecting query attrs: %v", err)
+			}
+
+			var gotNames []string
+			var gotPrefixes []string
+			it := bkt.Objects(context.Background(), query)
+			for {
+				attrs, err := it.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatalf("iterator.Next: %v", err)
+				}
+				if attrs.Name != "" {
+					gotNames = append(gotNames, attrs.Name)
+				} else if attrs.Prefix != "" {
+					gotPrefixes = append(gotPrefixes, attrs.Prefix)
+				}
+
+				if attrs.Bucket != "" {
+					t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+				}
+			}
+
+			sortedNames := []string{"obj/", "obj1", "obj2"}
+			if !cmp.Equal(sortedNames, gotNames) {
+				t.Errorf("names = %v, want %v", gotNames, sortedNames)
+			}
+			sortedPrefixes := []string{"obj/"}
+			if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+				t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+			}
+		})
 	})
-	t.Run("testObjectsIterateSelectedAttrsDelimiterIncludeTrailingDelimiter", func(t *testing.T) {
-		query := &Query{Prefix: "", Delimiter: "/", IncludeTrailingDelimiter: true}
-		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
-			t.Fatalf("selecting query attrs: %v", err)
-		}
+}
 
-		var gotNames []string
-		var gotPrefixes []string
-		it := bkt.Objects(context.Background(), query)
-		for {
-			attrs, err := it.Next()
-			if err == iterator.Done {
-				break
+func TestIntegration_ObjectUseCases(t *testing.T) {
+	multiTransportTest(skipGRPC("temporary skip - needs deliberate refactoring"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		// Reset testTime, 'cause object last modification time should be within 5 min
+		// from test (test iteration if -count passed) start time.
+		testTime = time.Now().UTC()
+		newBucketName := prefix + uidSpace.New()
+		h := testHelper{t}
+		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
+
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer func() {
+			if err := killBucket(ctx, client, newBucketName); err != nil {
+				log.Printf("deleting %q: %v", newBucketName, err)
 			}
+		}()
+		const defaultType = "text/plain"
+
+		// Populate object names and make a map for their contents.
+		objects := []string{
+			"obj1",
+			"obj2",
+			"obj/with/slashes",
+			"obj/",
+		}
+		contents := make(map[string][]byte)
+
+		// Test Writer.
+		for _, obj := range objects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			contents[obj] = c
+		}
+		// Test Reader.
+		for _, obj := range objects {
+			rc, err := bkt.Object(obj).NewReader(ctx)
 			if err != nil {
-				t.Fatalf("iterator.Next: %v", err)
+				t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
+				continue
 			}
-			if attrs.Name != "" {
-				gotNames = append(gotNames, attrs.Name)
-			} else if attrs.Prefix != "" {
-				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			if !rc.checkCRC {
+				t.Errorf("%v: not checking CRC", obj)
 			}
-
-			if attrs.Bucket != "" {
-				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+			slurp, err := ioutil.ReadAll(rc)
+			if err != nil {
+				t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
 			}
-		}
-
-		sortedNames := []string{"obj/", "obj1", "obj2"}
-		if !cmp.Equal(sortedNames, gotNames) {
-			t.Errorf("names = %v, want %v", gotNames, sortedNames)
-		}
-		sortedPrefixes := []string{"obj/"}
-		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
-			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
-		}
-	})
-
-	// Test Reader.
-	for _, obj := range objects {
-		rc, err := bkt.Object(obj).NewReader(ctx)
-		if err != nil {
-			t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
-			continue
-		}
-		if !rc.checkCRC {
-			t.Errorf("%v: not checking CRC", obj)
-		}
-		slurp, err := ioutil.ReadAll(rc)
-		if err != nil {
-			t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
-		}
-		if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
-			t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
-		}
-		if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
-			t.Errorf("Size (%q) = %d; want %d", obj, got, want)
-		}
-		if got, want := rc.ContentType(), "text/plain"; got != want {
-			t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
-		}
-		if got, want := rc.CacheControl(), "public, max-age=60"; got != want {
-			t.Errorf("CacheControl (%q) = %q; want %q", obj, got, want)
-		}
-		// We just wrote these objects, so they should have a recent last-modified time.
-		lm, err := rc.LastModified()
-		// Accept a time within +/- of the test time, to account for natural
-		// variation and the fact that testTime is set at the start of the test run.
-		expectedVariance := 5 * time.Minute
-		if err != nil {
-			t.Errorf("LastModified (%q): got error %v", obj, err)
-		} else if lm.Before(testTime.Add(-expectedVariance)) || lm.After(testTime.Add(expectedVariance)) {
-			t.Errorf("LastModified (%q): got %s, which not the %v from now (%v)", obj, lm, expectedVariance, testTime)
-		}
-		rc.Close()
-
-		// Check early close.
-		buf := make([]byte, 1)
-		rc, err = bkt.Object(obj).NewReader(ctx)
-		if err != nil {
-			t.Fatalf("%v: %v", obj, err)
-		}
-		_, err = rc.Read(buf)
-		if err != nil {
-			t.Fatalf("%v: %v", obj, err)
-		}
-		if got, want := buf, contents[obj][:1]; !bytes.Equal(got, want) {
-			t.Errorf("Contents[0] (%q) = %q; want %q", obj, got, want)
-		}
-		if err := rc.Close(); err != nil {
-			t.Errorf("%v Close: %v", obj, err)
-		}
-	}
-
-	obj := objects[0]
-	objlen := int64(len(contents[obj]))
-	// Test Range Reader.
-	for i, r := range []struct {
-		offset, length, want int64
-	}{
-		{0, objlen, objlen},
-		{0, objlen / 2, objlen / 2},
-		{objlen / 2, objlen, objlen / 2},
-		{0, 0, 0},
-		{objlen / 2, 0, 0},
-		{objlen / 2, -1, objlen / 2},
-		{0, objlen * 2, objlen},
-		{-2, -1, 2},
-		{-objlen, -1, objlen},
-		{-(objlen / 2), -1, objlen / 2},
-	} {
-		rc, err := bkt.Object(obj).NewRangeReader(ctx, r.offset, r.length)
-		if err != nil {
-			t.Errorf("%+v: Can't create a range reader for %v, errored with %v", i, obj, err)
-			continue
-		}
-		if rc.Size() != objlen {
-			t.Errorf("%+v: Reader has a content-size of %d, want %d", i, rc.Size(), objlen)
-		}
-		if rc.Remain() != r.want {
-			t.Errorf("%+v: Reader's available bytes reported as %d, want %d", i, rc.Remain(), r.want)
-		}
-		slurp, err := ioutil.ReadAll(rc)
-		if err != nil {
-			t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
-			continue
-		}
-		if len(slurp) != int(r.want) {
-			t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
-			continue
-		}
-
-		switch {
-		case r.offset < 0: // The case of reading the last N bytes.
-			start := objlen + r.offset
-			if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
-				t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+			if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
+				t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
 			}
+			if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
+				t.Errorf("Size (%q) = %d; want %d", obj, got, want)
+			}
+			if got, want := rc.ContentType(), "text/plain"; got != want {
+				t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
+			}
+			if got, want := rc.CacheControl(), "public, max-age=60"; got != want {
+				t.Errorf("CacheControl (%q) = %q; want %q", obj, got, want)
+			}
+			// We just wrote these objects, so they should have a recent last-modified time.
+			lm, err := rc.LastModified()
+			// Accept a time within +/- of the test time, to account for natural
+			// variation and the fact that testTime is set at the start of the test run.
+			expectedVariance := 5 * time.Minute
+			if err != nil {
+				t.Errorf("LastModified (%q): got error %v", obj, err)
+			} else if lm.Before(testTime.Add(-expectedVariance)) || lm.After(testTime.Add(expectedVariance)) {
+				t.Errorf("LastModified (%q): got %s, which not the %v from now (%v)", obj, lm, expectedVariance, testTime)
+			}
+			rc.Close()
 
-		default:
-			if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
-				t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+			// Check early close.
+			buf := make([]byte, 1)
+			rc, err = bkt.Object(obj).NewReader(ctx)
+			if err != nil {
+				t.Fatalf("%v: %v", obj, err)
+			}
+			_, err = rc.Read(buf)
+			if err != nil {
+				t.Fatalf("%v: %v", obj, err)
+			}
+			if got, want := buf, contents[obj][:1]; !bytes.Equal(got, want) {
+				t.Errorf("Contents[0] (%q) = %q; want %q", obj, got, want)
+			}
+			if err := rc.Close(); err != nil {
+				t.Errorf("%v Close: %v", obj, err)
 			}
 		}
-		rc.Close()
-	}
 
-	objName := objects[0]
+		obj := objects[0]
+		objlen := int64(len(contents[obj]))
+		// Test Range Reader.
+		for i, r := range []struct {
+			offset, length, want int64
+		}{
+			{0, objlen, objlen},
+			{0, objlen / 2, objlen / 2},
+			{objlen / 2, objlen, objlen / 2},
+			{0, 0, 0},
+			{objlen / 2, 0, 0},
+			{objlen / 2, -1, objlen / 2},
+			{0, objlen * 2, objlen},
+			{-2, -1, 2},
+			{-objlen, -1, objlen},
+			{-(objlen / 2), -1, objlen / 2},
+		} {
+			rc, err := bkt.Object(obj).NewRangeReader(ctx, r.offset, r.length)
+			if err != nil {
+				t.Errorf("%+v: Can't create a range reader for %v, errored with %v", i, obj, err)
+				continue
+			}
+			if rc.Size() != objlen {
+				t.Errorf("%+v: Reader has a content-size of %d, want %d", i, rc.Size(), objlen)
+			}
+			if rc.Remain() != r.want {
+				t.Errorf("%+v: Reader's available bytes reported as %d, want %d", i, rc.Remain(), r.want)
+			}
+			slurp, err := ioutil.ReadAll(rc)
+			if err != nil {
+				t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
+				continue
+			}
+			if len(slurp) != int(r.want) {
+				t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
+				continue
+			}
 
-	// Test NewReader googleapi.Error.
-	// Since a 429 or 5xx is hard to cause, we trigger a 416.
-	realLen := len(contents[objName])
-	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
-	var e *googleapi.Error
-	if ok := errors.As(err, &e); !ok {
-		t.Error("NewRangeReader did not return a googleapi.Error")
-	} else {
-		if e.Code != 416 {
-			t.Errorf("Code = %d; want %d", e.Code, 416)
+			switch {
+			case r.offset < 0: // The case of reading the last N bytes.
+				start := objlen + r.offset
+				if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
+					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+				}
+
+			default:
+				if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
+					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+				}
+			}
+			rc.Close()
 		}
-		if len(e.Header) == 0 {
-			t.Error("Missing googleapi.Error.Header")
+
+		objName := objects[0]
+
+		// Test NewReader googleapi.Error.
+		// Since a 429 or 5xx is hard to cause, we trigger a 416.
+		realLen := len(contents[objName])
+		_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
+		var e *googleapi.Error
+		if ok := errors.As(err, &e); !ok {
+			t.Error("NewRangeReader did not return a googleapi.Error")
+		} else {
+			if e.Code != 416 {
+				t.Errorf("Code = %d; want %d", e.Code, 416)
+			}
+			if len(e.Header) == 0 {
+				t.Error("Missing googleapi.Error.Header")
+			}
+			if len(e.Body) == 0 {
+				t.Error("Missing googleapi.Error.Body")
+			}
 		}
-		if len(e.Body) == 0 {
-			t.Error("Missing googleapi.Error.Body")
+
+		// Test StatObject.
+		o := h.mustObjectAttrs(bkt.Object(objName))
+		if got, want := o.Name, objName; got != want {
+			t.Errorf("Name (%v) = %q; want %q", objName, got, want)
 		}
-	}
+		if got, want := o.ContentType, defaultType; got != want {
+			t.Errorf("ContentType (%v) = %q; want %q", objName, got, want)
+		}
+		created := o.Created
+		// Check that the object is newer than its containing bucket.
+		bAttrs := h.mustBucketAttrs(bkt)
+		if o.Created.Before(bAttrs.Created) {
+			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
+		}
 
-	// Test StatObject.
-	o := h.mustObjectAttrs(bkt.Object(objName))
-	if got, want := o.Name, objName; got != want {
-		t.Errorf("Name (%v) = %q; want %q", objName, got, want)
-	}
-	if got, want := o.ContentType, defaultType; got != want {
-		t.Errorf("ContentType (%v) = %q; want %q", objName, got, want)
-	}
-	created := o.Created
-	// Check that the object is newer than its containing bucket.
-	bAttrs := h.mustBucketAttrs(bkt)
-	if o.Created.Before(bAttrs.Created) {
-		t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
-	}
-
-	// Test object copy.
-	copyName := "copy-" + objName
-	copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
-	if err != nil {
-		t.Errorf("Copier.Run failed with %v", err)
-	} else if !namesEqual(copyObj, newBucketName, copyName) {
-		t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-			copyObj.Bucket, copyObj.Name, newBucketName, copyName)
-	}
-
-	// Copying with attributes.
-	const contentEncoding = "identity"
-	copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
-	copier.ContentEncoding = contentEncoding
-	copyObj, err = copier.Run(ctx)
-	if err != nil {
-		t.Errorf("Copier.Run failed with %v", err)
-	} else {
-		if !namesEqual(copyObj, newBucketName, copyName) {
+		// Test object copy.
+		copyName := "copy-" + objName
+		copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
+		if err != nil {
+			t.Errorf("Copier.Run failed with %v", err)
+		} else if !namesEqual(copyObj, newBucketName, copyName) {
 			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
 				copyObj.Bucket, copyObj.Name, newBucketName, copyName)
 		}
-		if copyObj.ContentEncoding != contentEncoding {
-			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
-		}
-	}
 
-	objectHandle := bkt.Object(objName)
-
-	// Test UpdateAttrs.
-	metadata := map[string]string{"key": "value"}
-	updated := h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
-		ContentType:     "text/html",
-		ContentLanguage: "en",
-		Metadata:        metadata,
-		ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
-	}, h.mustObjectAttrs(objectHandle).Metageneration)
-	if got, want := updated.ContentType, "text/html"; got != want {
-		t.Errorf("updated.ContentType == %q; want %q", got, want)
-	}
-	if got, want := updated.ContentLanguage, "en"; got != want {
-		t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
-	}
-	if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
-		t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
-	}
-	if got, want := updated.Created, created; got != want {
-		t.Errorf("updated.Created == %q; want %q", got, want)
-	}
-	if !updated.Created.Before(updated.Updated) {
-		t.Errorf("updated.Updated should be newer than update.Created")
-	}
-
-	// Delete ContentType and ContentLanguage.
-	updated = h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
-		ContentType:     "",
-		ContentLanguage: "",
-		Metadata:        map[string]string{},
-	}, h.mustObjectAttrs(objectHandle).Metageneration)
-	if got, want := updated.ContentType, ""; got != want {
-		t.Errorf("updated.ContentType == %q; want %q", got, want)
-	}
-	if got, want := updated.ContentLanguage, ""; got != want {
-		t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
-	}
-	if updated.Metadata != nil {
-		t.Errorf("updated.Metadata == %+v; want nil", updated.Metadata)
-	}
-	if got, want := updated.Created, created; got != want {
-		t.Errorf("updated.Created == %q; want %q", got, want)
-	}
-	if !updated.Created.Before(updated.Updated) {
-		t.Errorf("updated.Updated should be newer than update.Created")
-	}
-
-	// Test checksums.
-	checksumCases := []struct {
-		name     string
-		contents [][]byte
-		size     int64
-		md5      string
-		crc32c   uint32
-	}{
-		{
-			name:     "checksum-object",
-			contents: [][]byte{[]byte("hello"), []byte("world")},
-			size:     10,
-			md5:      "fc5e038d38a57032085441e7fe7010b0",
-			crc32c:   1456190592,
-		},
-		{
-			name:     "zero-object",
-			contents: [][]byte{},
-			size:     0,
-			md5:      "d41d8cd98f00b204e9800998ecf8427e",
-			crc32c:   0,
-		},
-	}
-	for _, c := range checksumCases {
-		wc := bkt.Object(c.name).NewWriter(ctx)
-		for _, data := range c.contents {
-			if _, err := wc.Write(data); err != nil {
-				t.Errorf("Write(%q) failed with %q", data, err)
+		// Copying with attributes.
+		const contentEncoding = "identity"
+		copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
+		copier.ContentEncoding = contentEncoding
+		copyObj, err = copier.Run(ctx)
+		if err != nil {
+			t.Errorf("Copier.Run failed with %v", err)
+		} else {
+			if !namesEqual(copyObj, newBucketName, copyName) {
+				t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
+					copyObj.Bucket, copyObj.Name, newBucketName, copyName)
+			}
+			if copyObj.ContentEncoding != contentEncoding {
+				t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
 			}
 		}
-		if err = wc.Close(); err != nil {
-			t.Errorf("%q: close failed with %q", c.name, err)
+
+		objectHandle := bkt.Object(objName)
+
+		// Test UpdateAttrs.
+		metadata := map[string]string{"key": "value"}
+		updated := h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
+			ContentType:     "text/html",
+			ContentLanguage: "en",
+			Metadata:        metadata,
+			ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
+		}, h.mustObjectAttrs(objectHandle).Metageneration)
+		if got, want := updated.ContentType, "text/html"; got != want {
+			t.Errorf("updated.ContentType == %q; want %q", got, want)
 		}
-		obj := wc.Attrs()
-		if got, want := obj.Size, c.size; got != want {
-			t.Errorf("Object (%q) Size = %v; want %v", c.name, got, want)
+		if got, want := updated.ContentLanguage, "en"; got != want {
+			t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
 		}
-		if got, want := fmt.Sprintf("%x", obj.MD5), c.md5; got != want {
-			t.Errorf("Object (%q) MD5 = %q; want %q", c.name, got, want)
+		if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
+			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
 		}
-		if got, want := obj.CRC32C, c.crc32c; got != want {
-			t.Errorf("Object (%q) CRC32C = %v; want %v", c.name, got, want)
+		if got, want := updated.Created, created; got != want {
+			t.Errorf("updated.Created == %q; want %q", got, want)
 		}
-	}
+		if !updated.Created.Before(updated.Updated) {
+			t.Errorf("updated.Updated should be newer than update.Created")
+		}
 
-	// Test public ACL.
-	publicObj := objects[0]
-	if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
-		t.Errorf("PutACLEntry failed with %v", err)
-	}
-	publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
-	if err != nil {
-		t.Fatal(err)
-	}
+		// Delete ContentType and ContentLanguage.
+		updated = h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
+			ContentType:     "",
+			ContentLanguage: "",
+			Metadata:        map[string]string{},
+		}, h.mustObjectAttrs(objectHandle).Metageneration)
+		if got, want := updated.ContentType, ""; got != want {
+			t.Errorf("updated.ContentType == %q; want %q", got, want)
+		}
+		if got, want := updated.ContentLanguage, ""; got != want {
+			t.Errorf("updated.ContentLanguage == %q; want %q", updated.ContentLanguage, want)
+		}
+		if updated.Metadata != nil {
+			t.Errorf("updated.Metadata == %+v; want nil", updated.Metadata)
+		}
+		if got, want := updated.Created, created; got != want {
+			t.Errorf("updated.Created == %q; want %q", got, want)
+		}
+		if !updated.Created.Before(updated.Updated) {
+			t.Errorf("updated.Updated should be newer than update.Created")
+		}
 
-	slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
-	if !bytes.Equal(slurp, contents[publicObj]) {
-		t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
-	}
+		// Test checksums.
+		checksumCases := []struct {
+			name     string
+			contents [][]byte
+			size     int64
+			md5      string
+			crc32c   uint32
+		}{
+			{
+				name:     "checksum-object",
+				contents: [][]byte{[]byte("hello"), []byte("world")},
+				size:     10,
+				md5:      "fc5e038d38a57032085441e7fe7010b0",
+				crc32c:   1456190592,
+			},
+			{
+				name:     "zero-object",
+				contents: [][]byte{},
+				size:     0,
+				md5:      "d41d8cd98f00b204e9800998ecf8427e",
+				crc32c:   0,
+			},
+		}
+		for _, c := range checksumCases {
+			wc := bkt.Object(c.name).NewWriter(ctx)
+			for _, data := range c.contents {
+				if _, err := wc.Write(data); err != nil {
+					t.Errorf("Write(%q) failed with %q", data, err)
+				}
+			}
+			if err = wc.Close(); err != nil {
+				t.Errorf("%q: close failed with %q", c.name, err)
+			}
+			obj := wc.Attrs()
+			if got, want := obj.Size, c.size; got != want {
+				t.Errorf("Object (%q) Size = %v; want %v", c.name, got, want)
+			}
+			if got, want := fmt.Sprintf("%x", obj.MD5), c.md5; got != want {
+				t.Errorf("Object (%q) MD5 = %q; want %q", c.name, got, want)
+			}
+			if got, want := obj.CRC32C, c.crc32c; got != want {
+				t.Errorf("Object (%q) CRC32C = %v; want %v", c.name, got, want)
+			}
+		}
 
-	// Test writer error handling.
-	wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
-	if _, err := wc.Write([]byte("hello")); err != nil {
-		t.Errorf("Write unexpectedly failed with %v", err)
-	}
-	if err = wc.Close(); err == nil {
-		t.Error("Close expected an error, found none")
-	}
-
-	// Test deleting the copy object.
-	h.mustDeleteObject(bkt.Object(copyName))
-	// Deleting it a second time should return ErrObjectNotExist.
-	if err := bkt.Object(copyName).Delete(ctx); err != ErrObjectNotExist {
-		t.Errorf("second deletion of %v = %v; want ErrObjectNotExist", copyName, err)
-	}
-	_, err = bkt.Object(copyName).Attrs(ctx)
-	if err != ErrObjectNotExist {
-		t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
-	}
-
-	// Test object composition.
-	var compSrcs []*ObjectHandle
-	var wantContents []byte
-	for _, obj := range objects {
-		compSrcs = append(compSrcs, bkt.Object(obj))
-		wantContents = append(wantContents, contents[obj]...)
-	}
-	checkCompose := func(obj *ObjectHandle, wantContentType string) {
-		rc := h.mustNewReader(obj)
-		slurp, err = ioutil.ReadAll(rc)
+		// Test public ACL.
+		publicObj := objects[0]
+		if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
+			t.Errorf("PutACLEntry failed with %v", err)
+		}
+		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
 		if err != nil {
-			t.Fatalf("ioutil.ReadAll: %v", err)
+			t.Fatal(err)
 		}
-		defer rc.Close()
-		if !bytes.Equal(slurp, wantContents) {
-			t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
-		}
-		if got := rc.ContentType(); got != wantContentType {
-			t.Errorf("Composed object content-type = %q, want %q", got, wantContentType)
-		}
-	}
 
-	// Compose should work even if the user sets no destination attributes.
-	compDst := bkt.Object("composed1")
-	c := compDst.ComposerFrom(compSrcs...)
-	if _, err := c.Run(ctx); err != nil {
-		t.Fatalf("ComposeFrom error: %v", err)
-	}
-	checkCompose(compDst, "application/octet-stream")
+		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
+		if !bytes.Equal(slurp, contents[publicObj]) {
+			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
+		}
 
-	// It should also work if we do.
-	compDst = bkt.Object("composed2")
-	c = compDst.ComposerFrom(compSrcs...)
-	c.ContentType = "text/json"
-	if _, err := c.Run(ctx); err != nil {
-		t.Fatalf("ComposeFrom error: %v", err)
-	}
-	checkCompose(compDst, "text/json")
+		// Test writer error handling.
+		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
+		if _, err := wc.Write([]byte("hello")); err != nil {
+			t.Errorf("Write unexpectedly failed with %v", err)
+		}
+		if err = wc.Close(); err == nil {
+			t.Error("Close expected an error, found none")
+		}
+
+		// Test deleting the copy object.
+		h.mustDeleteObject(bkt.Object(copyName))
+		// Deleting it a second time should return ErrObjectNotExist.
+		if err := bkt.Object(copyName).Delete(ctx); err != ErrObjectNotExist {
+			t.Errorf("second deletion of %v = %v; want ErrObjectNotExist", copyName, err)
+		}
+		_, err = bkt.Object(copyName).Attrs(ctx)
+		if err != ErrObjectNotExist {
+			t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
+		}
+
+		// Test object composition.
+		var compSrcs []*ObjectHandle
+		var wantContents []byte
+		for _, obj := range objects {
+			compSrcs = append(compSrcs, bkt.Object(obj))
+			wantContents = append(wantContents, contents[obj]...)
+		}
+		checkCompose := func(obj *ObjectHandle, wantContentType string) {
+			rc := h.mustNewReader(obj)
+			slurp, err = ioutil.ReadAll(rc)
+			if err != nil {
+				t.Fatalf("ioutil.ReadAll: %v", err)
+			}
+			defer rc.Close()
+			if !bytes.Equal(slurp, wantContents) {
+				t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
+			}
+			if got := rc.ContentType(); got != wantContentType {
+				t.Errorf("Composed object content-type = %q, want %q", got, wantContentType)
+			}
+		}
+
+		// Compose should work even if the user sets no destination attributes.
+		compDst := bkt.Object("composed1")
+		c := compDst.ComposerFrom(compSrcs...)
+		if _, err := c.Run(ctx); err != nil {
+			t.Fatalf("ComposeFrom error: %v", err)
+		}
+		checkCompose(compDst, "application/octet-stream")
+
+		// It should also work if we do.
+		compDst = bkt.Object("composed2")
+		c = compDst.ComposerFrom(compSrcs...)
+		c.ContentType = "text/json"
+		if _, err := c.Run(ctx); err != nil {
+			t.Fatalf("ComposeFrom error: %v", err)
+		}
+		checkCompose(compDst, "text/json")
+	})
 }
 
 func TestIntegration_Encoding(t *testing.T) {
@@ -2067,7 +2102,9 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 		EndOffset:   "obj2",
 	}
 	var selectedAttrs []string
-	for k := range attrToFieldMap {
+	// Iterate over proto fields instead because it doesn't have MediaLink.
+	// TODO(noahdietz): figure out how to handle this better.
+	for k := range attrToProtoFieldMap {
 		selectedAttrs = append(selectedAttrs, k)
 	}
 	query.SetAttrSelection(selectedAttrs)
