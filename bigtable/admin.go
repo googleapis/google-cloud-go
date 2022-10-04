@@ -275,31 +275,51 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
+// set to true to make the table protected against data loss
+// i.e. deleting the table, the column families in the table,
+// and the instance containing the table would be prohibited
+type DeletionProtection int
+
+const (
+	UnSet DeletionProtection = 0
+	True                     = 1
+	False                    = 2
+)
+
 // UpdateTableConf contains all of the information necessary to update a table with column families.
 type UpdateTableConf struct {
-	TableID string
-	// Set to true to make the table protected against data loss
-	// i.e. deleting the table, the column families in the table and the instance containing the table would be prohibited
-	DeletionProtection *bool
+	tableID string
+	// deletionProtection can be unset, true or false
+	// set to true to make the table protected against data loss
+	deletionProtection DeletionProtection
+}
+
+func (ac *AdminClient) NewUpdateTable(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
+	return ac.UpdateTable(ctx, &UpdateTableConf{tableID, deletionProtection})
 }
 
 // UpdateTable updates a table in the instance from the given configuration.
 // Only deletion protection can be updated at this period.
 func (ac *AdminClient) UpdateTable(ctx context.Context, conf *UpdateTableConf) error {
-	if conf.TableID == "" {
+	if conf.tableID == "" {
 		return errors.New("TableID is required")
 	}
 
-	if conf.DeletionProtection != nil {
+	if conf.deletionProtection != 0 {
 		ctx = mergeOutgoingMetadata(ctx, ac.md)
 
 		updateMask := &field_mask.FieldMask{}
 		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
 
+		var deletionProtection bool
+		if deletionProtection = true; conf.deletionProtection == 2 {
+			deletionProtection = false
+		}
+
 		req := &btapb.UpdateTableRequest{
 			Table: &btapb.Table{
-				Name:               conf.TableID,
-				DeletionProtection: *conf.DeletionProtection,
+				Name:               conf.tableID,
+				DeletionProtection: deletionProtection,
 			},
 			UpdateMask: updateMask,
 		}
