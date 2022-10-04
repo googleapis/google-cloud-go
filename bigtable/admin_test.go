@@ -57,10 +57,11 @@ func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminCli
 func TestTableAdmin_UpdateTable(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
+	var deletion_protection DeletionProtection
+	deletion_protection = 1
 
 	// Check if the deletion protection updates correctly
-	deletion_protection := true
-	err := c.UpdateTable(context.Background(), &UpdateTableConf{TableID: "My-table", DeletionProtection: &deletion_protection})
+	err := c.NewUpdateTable(context.Background(), "My-table", deletion_protection)
 	if err != nil {
 		t.Errorf("UpdateTable failed: %v", err)
 	}
@@ -76,10 +77,11 @@ func TestTableAdmin_UpdateTable(t *testing.T) {
 func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
-	deletion_protection := true
+	var deletion_protection DeletionProtection
+	deletion_protection = 1
 
 	// Check if the update fails when TableID is not provided
-	err := c.UpdateTable(context.Background(), &UpdateTableConf{DeletionProtection: &deletion_protection})
+	err := c.NewUpdateTable(context.Background(), "", deletion_protection)
 	if fmt.Sprint(err) != "TableID is required" {
 		t.Errorf("UpdateTable failed: %v", err)
 	}
@@ -88,9 +90,11 @@ func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
 func TestTableAdmin_UpdateTable_DeletionProtection_NotProvided(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
+	var deletion_protection DeletionProtection
+	deletion_protection = 0
 
 	// Check if the update fails when deletion protection is not provided
-	err := c.UpdateTable(context.Background(), &UpdateTableConf{TableID: "My-table"})
+	err := c.NewUpdateTable(context.Background(), "My-table", deletion_protection)
 
 	if fmt.Sprint(err) != "deletion protection is required" {
 		t.Errorf("UpdateTable failed: %v", err)
