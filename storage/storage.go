@@ -1642,7 +1642,7 @@ func (q *Query) toFieldMask() *fieldmaskpb.FieldMask {
 	if q.Projection == ProjectionNoACL {
 		paths := make([]string, 0, len(attrToProtoFieldMap)-1)
 		for _, f := range attrToProtoFieldMap {
-			// Skip the acl field for "NoACL".
+			// Skip the acl and owner fields for "NoACL".
 			if f == "acl" || f == "owner" {
 				continue
 			}

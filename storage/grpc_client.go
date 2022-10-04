@@ -455,6 +455,8 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string
 	req := &storagepb.GetObjectRequest{
 		Bucket: bucketResourceName(globalProjectAlias, bucket),
 		Object: object,
+		// ProjectionFull by default.
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyCondsProto("grpcStorageClient.GetObject", gen, conds, req); err != nil {
 		return nil, err

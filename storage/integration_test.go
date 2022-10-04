@@ -1587,7 +1587,7 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 	})
 }
 
-func TestIntegration_ObjectUseCases(t *testing.T) {
+func TestIntegration_Objects(t *testing.T) {
 	multiTransportTest(skipGRPC("temporary skip - needs deliberate refactoring"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
 		// from test (test iteration if -count passed) start time.
