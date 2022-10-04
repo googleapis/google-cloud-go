@@ -57,7 +57,7 @@ func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminCli
 }
 
 func TestTableAdmin_UpdateTable(t *testing.T) {
-	mock := &mockTableAdminClock{updateTableError: nil}
+	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 	var deletion_protection DeletionProtection
 	deletion_protection = True
@@ -91,7 +91,7 @@ func TestTableAdmin_UpdateTable_WithError(t *testing.T) {
 }
 
 func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
-	mock := &mockTableAdminClock{updateTableError: nil}
+	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 	var deletion_protection DeletionProtection
 	deletion_protection = True
@@ -104,7 +104,7 @@ func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
 }
 
 func TestTableAdmin_UpdateTable_DeletionProtection_NotProvided(t *testing.T) {
-	mock := &mockTableAdminClock{updateTableError: nil}
+	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 	var deletion_protection DeletionProtection
 	deletion_protection = UnSet
