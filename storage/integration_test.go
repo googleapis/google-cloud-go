@@ -893,51 +893,54 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(skipGRPC("b/250958907"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	objName := uidSpace.New()
-	obj := bkt.Object(objName)
-	contents := []byte("Hello, world this is a range request")
+		objName := uidSpace.New()
+		obj := bkt.Object(objName)
+		contents := []byte("Hello, world this is a range request")
 
-	w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
-	if _, err := w.Write(contents); err != nil {
-		t.Errorf("Failed to write contents: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Errorf("Failed to close writer: %v", err)
-	}
+		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			t.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("Failed to close writer: %v", err)
+		}
 
-	last5s := []struct {
-		name   string
-		start  int64
-		length int64
-	}{
-		{name: "negative offset", start: -5, length: -1},
-		{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
-		{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
-	}
+		last5s := []struct {
+			name   string
+			start  int64
+			length int64
+		}{
+			{name: "negative offset", start: -5, length: -1},
+			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
+			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+		}
 
-	for _, last5 := range last5s {
-		t.Run(last5.name, func(t *testing.T) {
-			r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
-			if err != nil {
-				t.Fatalf("Failed to make range read: %v", err)
-			}
-			defer r.Close()
+		for _, last5 := range last5s {
+			t.Run(last5.name, func(t *testing.T) {
+				wantBuf := contents[len(contents)-5:]
+				r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
+				if err != nil {
+					t.Fatalf("Failed to make range read: %v", err)
+				}
+				defer r.Close()
 
-			if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
-				t.Fatalf("StartOffset mismatch, got %d want %d", got, want)
-			}
+				if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+					t.Fatalf("StartOffset mismatch, got %d want %d", got, want)
+				}
 
-			nr, _ := io.Copy(ioutil.Discard, r)
-			if got, want := nr, int64(5); got != want {
-				t.Fatalf("Body length mismatch, got %d want %d", got, want)
-			}
-		})
-	}
+				gotBuf := &bytes.Buffer{}
+				nr, _ := io.Copy(gotBuf, r)
+				if got, want := nr, int64(5); got != want {
+					t.Fatalf("Body length mismatch, got %d want %d", got, want)
+				} else if diff := cmp.Diff(gotBuf.String(), string(wantBuf)); diff != "" {
+					t.Fatalf("Content read does not match - got(-),want(+):\n%s", diff)
+				}
+			})
+		}
+	})
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
