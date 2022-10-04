@@ -91,6 +91,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", os.Getenv("GCLOUD_TESTS_GOLANG_KEY"))
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
@@ -3624,180 +3625,185 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_CustomTime(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	// Create object with CustomTime.
-	bkt := client.Bucket(bucketName)
-	obj := bkt.Object("custom-time-obj")
-	w := obj.NewWriter(ctx)
-	ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
-	w.ObjectAttrs.CustomTime = ct
-	h.mustWrite(w, randomContents())
+		// Create object with CustomTime.
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("custom-time-obj")
+		w := obj.NewWriter(ctx)
+		ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
+		w.ObjectAttrs.CustomTime = ct
+		h.mustWrite(w, randomContents())
 
-	// Validate that CustomTime has been set
-	checkCustomTime := func(want time.Time) error {
-		attrs, err := obj.Attrs(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to get object attrs: %v", err)
+		// Validate that CustomTime has been set
+		checkCustomTime := func(want time.Time) error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("failed to get object attrs: %v", err)
+			}
+			if got := attrs.CustomTime; got != want {
+				return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+			}
+			return nil
 		}
-		if got := attrs.CustomTime; got != want {
-			return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+
+		if err := checkCustomTime(ct); err != nil {
+			t.Fatalf("checking CustomTime: %v", err)
 		}
-		return nil
-	}
 
-	if err := checkCustomTime(ct); err != nil {
-		t.Fatalf("checking CustomTime: %v", err)
-	}
+		// Update CustomTime to the future should succeed.
+		laterTime := ct.Add(10 * time.Hour)
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
+			t.Fatalf("updating CustomTime: %v", err)
+		}
 
-	// Update CustomTime to the future should succeed.
-	laterTime := ct.Add(10 * time.Hour)
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
-		t.Fatalf("updating CustomTime: %v", err)
-	}
+		// Update CustomTime to the past should give error.
+		earlierTime := ct.Add(5 * time.Hour)
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
+			t.Fatalf("backdating CustomTime: expected error, got none")
+		}
 
-	// Update CustomTime to the past should give error.
-	earlierTime := ct.Add(5 * time.Hour)
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
-		t.Fatalf("backdating CustomTime: expected error, got none")
-	}
-
-	// Zero value for CustomTime should be ignored.
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {
-		t.Fatalf("empty update: %v", err)
-	}
-	if err := checkCustomTime(laterTime); err != nil {
-		t.Fatalf("after sending zero value: %v", err)
-	}
+		// Zero value for CustomTime should be ignored. Set TemporaryHold so that
+		// we don't send an empty update request, which is invalid for gRPC.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{TemporaryHold: false}); err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if err := checkCustomTime(laterTime); err != nil {
+			t.Fatalf("after sending zero value: %v", err)
+		}
+	})
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		initial := &RetentionPolicy{RetentionPeriod: time.Minute}
 
-	initial := &RetentionPolicy{RetentionPeriod: time.Minute}
+		for _, test := range []struct {
+			desc  string
+			input *RetentionPolicy
+			want  *RetentionPolicy
+		}{
+			{
+				desc:  "update",
+				input: &RetentionPolicy{RetentionPeriod: time.Hour},
+				want:  &RetentionPolicy{RetentionPeriod: time.Hour},
+			},
+			{
+				desc:  "update even with timestamp (EffectiveTime should be ignored)",
+				input: &RetentionPolicy{RetentionPeriod: time.Hour, EffectiveTime: time.Now()},
+				want:  &RetentionPolicy{RetentionPeriod: time.Hour},
+			},
+			{
+				desc:  "remove",
+				input: &RetentionPolicy{},
+				want:  nil,
+			},
+			{
+				desc:  "remove even with timestamp (EffectiveTime should be ignored)",
+				input: &RetentionPolicy{EffectiveTime: time.Now().Add(time.Hour)},
+				want:  nil,
+			},
+			{
+				desc:  "ignore",
+				input: nil,
+				want:  initial,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				h := testHelper{t}
+				bkt := client.Bucket(prefix + uidSpace.New())
+				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
+				defer h.mustDeleteBucket(bkt)
+				// Set VersioningEnabled so that we don't send an empty update request, which is invalid for gRPC
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
 
-	for _, test := range []struct {
-		input *RetentionPolicy
-		want  *RetentionPolicy
-	}{
-		{ // Update
-			input: &RetentionPolicy{RetentionPeriod: time.Hour},
-			want:  &RetentionPolicy{RetentionPeriod: time.Hour},
-		},
-		{ // Update even with timestamp (EffectiveTime should be ignored)
-			input: &RetentionPolicy{RetentionPeriod: time.Hour, EffectiveTime: time.Now()},
-			want:  &RetentionPolicy{RetentionPeriod: time.Hour},
-		},
-		{ // Remove
-			input: &RetentionPolicy{},
-			want:  nil,
-		},
-		{ // Remove even with timestamp (EffectiveTime should be ignored)
-			input: &RetentionPolicy{EffectiveTime: time.Now()},
-			want:  nil,
-		},
-		{ // Ignore
-			input: nil,
-			want:  initial,
-		},
-	} {
-		bkt := client.Bucket(uidSpace.New())
-		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
-		defer h.mustDeleteBucket(bkt)
-		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
-		attrs := h.mustBucketAttrs(bkt)
-		if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
-			// Should be set by the server and parsed by the client
-			t.Fatal("EffectiveTime should be set, but it was not")
+				attrs := h.mustBucketAttrs(bkt)
+				if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
+					// Should be set by the server and parsed by the client
+					t.Fatal("EffectiveTime should be set, but it was not")
+				}
+				if diff := testutil.Diff(attrs.RetentionPolicy, test.want, cmpopts.IgnoreTypes(time.Time{})); diff != "" {
+					t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
+				}
+			})
 		}
-		if diff := testutil.Diff(attrs.RetentionPolicy, test.want, cmpopts.IgnoreTypes(time.Time{})); diff != "" {
-			t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
-		}
-	}
+	})
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 25 * time.Hour}})
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 25 * time.Hour}})
+		defer h.mustDeleteBucket(bkt)
 
-	o := bkt.Object("some-object")
-	if err := writeObject(ctx, o, "text/plain", []byte("hello world")); err != nil {
-		t.Fatal(err)
-	}
+		o := bkt.Object("some-object")
+		if err := writeObject(ctx, o, "text/plain", []byte("hello world")); err != nil {
+			t.Fatal(err)
+		}
 
-	if err := o.Delete(ctx); err == nil {
-		t.Fatal("expected to err deleting an object in a bucket with retention period, but got nil")
-	}
+		if err := o.Delete(ctx); err == nil {
+			t.Fatal("expected to err deleting an object in a bucket with retention period, but got nil")
+		}
 
-	// Remove the retention period
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}}, h.mustBucketAttrs(bkt).MetaGeneration)
+		// Remove the retention period
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}}, h.mustBucketAttrs(bkt).MetaGeneration)
 
-	// Delete with retry, as bucket metadata changes
-	// can take some time to propagate.
-	retry := func(err error) bool { return err != nil }
-	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
-	defer cancel()
+		// Delete with retry, as bucket metadata changes
+		// can take some time to propagate.
+		retry := func(err error) bool { return err != nil }
+		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+		defer cancel()
 
-	o = o.Retryer(WithErrorFunc(retry), WithPolicy(RetryAlways))
-	if err := o.Delete(ctx); err != nil {
-		t.Fatalf("object delete: %v", err)
-	}
-	h.mustDeleteBucket(bkt)
+		o = o.Retryer(WithErrorFunc(retry), WithPolicy(RetryAlways))
+		if err := o.Delete(ctx); err != nil {
+			t.Fatalf("object delete: %v", err)
+		}
+	})
 }
 
 func TestIntegration_LockBucket(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25}})
-	attrs := h.mustBucketAttrs(bkt)
-	if attrs.RetentionPolicy.IsLocked {
-		t.Fatal("Expected bucket to begin unlocked, but it was not")
-	}
-	err := bkt.If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
-	if err != nil {
-		t.Fatal("could not lock", err)
-	}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25}})
+		attrs := h.mustBucketAttrs(bkt)
+		if attrs.RetentionPolicy.IsLocked {
+			t.Fatal("Expected bucket to begin unlocked, but it was not")
+		}
+		err := bkt.If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
+		if err != nil {
+			t.Fatal("could not lock", err)
+		}
 
-	attrs = h.mustBucketAttrs(bkt)
-	if !attrs.RetentionPolicy.IsLocked {
-		t.Fatal("Expected bucket to be locked, but it was not")
-	}
+		attrs = h.mustBucketAttrs(bkt)
+		if !attrs.RetentionPolicy.IsLocked {
+			t.Fatal("Expected bucket to be locked, but it was not")
+		}
 
-	_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
-	if err == nil {
-		t.Fatal("Expected error updating locked bucket, got nil")
-	}
+		_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
+		if err == nil {
+			t.Fatal("Expected error updating locked bucket, got nil")
+		}
+	})
 }
 
 func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-		RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25},
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25},
+		})
+		err := bkt.LockRetentionPolicy(ctx)
+		if err == nil {
+			t.Fatal("expected error locking bucket without metageneration condition, got nil")
+		}
 	})
-	err := bkt.LockRetentionPolicy(ctx)
-	if err == nil {
-		t.Fatal("expected error locking bucket without metageneration condition, got nil")
-	}
 }
 
 func TestIntegration_KMS(t *testing.T) {
