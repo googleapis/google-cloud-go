@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.21.0",
+    "version": "1.24.0",
     "language": "GO",
     "apis": [
       {
@@ -8621,6 +8621,52 @@
         "method": {
           "shortName": "QueryExecutionInputsAndOutputs",
           "fullName": "google.cloud.aiplatform.v1.MetadataService.QueryExecutionInputsAndOutputs",
+          "service": {
+            "shortName": "MetadataService",
+            "fullName": "google.cloud.aiplatform.v1.MetadataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_MetadataService_RemoveContextChildren_sync",
+      "title": "aiplatform RemoveContextChildren Sample",
+      "description": "RemoveContextChildren remove a set of children contexts from a parent Context. If any of the\nchild Contexts were NOT added to the parent Context, they are\nsimply skipped.",
+      "file": "MetadataClient/RemoveContextChildren/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveContextChildren",
+        "fullName": "google.cloud.aiplatform.v1.MetadataClient.RemoveContextChildren",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RemoveContextChildrenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.RemoveContextChildrenResponse",
+        "client": {
+          "shortName": "MetadataClient",
+          "fullName": "google.cloud.aiplatform.v1.MetadataClient"
+        },
+        "method": {
+          "shortName": "RemoveContextChildren",
+          "fullName": "google.cloud.aiplatform.v1.MetadataService.RemoveContextChildren",
           "service": {
             "shortName": "MetadataService",
             "fullName": "google.cloud.aiplatform.v1.MetadataService"

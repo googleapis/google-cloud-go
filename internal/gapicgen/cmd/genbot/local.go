@@ -66,10 +66,10 @@ func genLocal(ctx context.Context, c localConfig) error {
 
 	// Regen.
 	conf := &generator.Config{
-		GoogleapisDir:     deafultDir(tmpGoogleapisDir, c.googleapisDir),
-		GenprotoDir:       deafultDir(tmpGenprotoDir, c.genprotoDir),
-		GapicDir:          deafultDir(tmpGocloudDir, c.gocloudDir),
-		ProtoDir:          deafultDir(tmpProtoDir, c.protoDir),
+		GoogleapisDir:     defaultDir(tmpGoogleapisDir, c.googleapisDir),
+		GenprotoDir:       defaultDir(tmpGenprotoDir, c.genprotoDir),
+		GapicDir:          defaultDir(tmpGocloudDir, c.gocloudDir),
+		ProtoDir:          defaultDir(tmpProtoDir, c.protoDir),
 		GapicToGenerate:   c.gapicToGenerate,
 		OnlyGenerateGapic: c.onlyGapics,
 		LocalMode:         true,
@@ -104,8 +104,8 @@ func gitShallowClone(eg *errgroup.Group, repo, dir, tmpDir string) {
 	})
 }
 
-// deafultDir returns the default option if dir is not set.
-func deafultDir(def, dir string) string {
+// defaultDir returns the default option if dir is not set.
+func defaultDir(def, dir string) string {
 	if dir == "" {
 		return def
 	}

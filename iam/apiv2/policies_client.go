@@ -42,13 +42,12 @@ var newPoliciesClientHook clientHook
 
 // PoliciesCallOptions contains the retry settings for each method of PoliciesClient.
 type PoliciesCallOptions struct {
-	ListPolicies           []gax.CallOption
-	GetPolicy              []gax.CallOption
-	CreatePolicy           []gax.CallOption
-	UpdatePolicy           []gax.CallOption
-	DeletePolicy           []gax.CallOption
-	ListApplicablePolicies []gax.CallOption
-	GetOperation           []gax.CallOption
+	ListPolicies []gax.CallOption
+	GetPolicy    []gax.CallOption
+	CreatePolicy []gax.CallOption
+	UpdatePolicy []gax.CallOption
+	DeletePolicy []gax.CallOption
+	GetOperation []gax.CallOption
 }
 
 func defaultPoliciesGRPCClientOptions() []option.ClientOption {
@@ -120,8 +119,7 @@ func defaultPoliciesCallOptions() *PoliciesCallOptions {
 				})
 			}),
 		},
-		ListApplicablePolicies: []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -138,7 +136,6 @@ type internalPoliciesClient interface {
 	UpdatePolicyOperation(name string) *UpdatePolicyOperation
 	DeletePolicy(context.Context, *iampb.DeletePolicyRequest, ...gax.CallOption) (*DeletePolicyOperation, error)
 	DeletePolicyOperation(name string) *DeletePolicyOperation
-	ListApplicablePolicies(context.Context, *iampb.ListApplicablePoliciesRequest, ...gax.CallOption) *PolicyIterator
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -213,8 +210,7 @@ func (c *PoliciesClient) CreatePolicyOperation(name string) *CreatePolicyOperati
 //
 // To update a policy, you should use a read-modify-write loop:
 //
-// Use GetPolicy to read the current
-// version of the policy.
+// Use GetPolicy to read the current version of the policy.
 //
 // Modify the policy as needed.
 //
@@ -240,20 +236,6 @@ func (c *PoliciesClient) DeletePolicy(ctx context.Context, req *iampb.DeletePoli
 // The name must be that of a previously created DeletePolicyOperation, possibly from a different process.
 func (c *PoliciesClient) DeletePolicyOperation(name string) *DeletePolicyOperation {
 	return c.internalClient.DeletePolicyOperation(name)
-}
-
-// ListApplicablePolicies retrieves all the policies that are attached to the specified resource,
-// or anywhere in the ancestry of the resource. For example, for a project
-// this endpoint would return all the denyPolicy kind policies attached to
-// the project, its parent folder (if any), and its parent organization (if
-// any).
-// The endpoint requires the same permissions that it would take to call
-// ListPolicies or GetPolicy.
-//
-// The main reason to use this endpoint is as a policy admin to debug access
-// issues for a resource.
-func (c *PoliciesClient) ListApplicablePolicies(ctx context.Context, req *iampb.ListApplicablePoliciesRequest, opts ...gax.CallOption) *PolicyIterator {
-	return c.internalClient.ListApplicablePolicies(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -498,51 +480,6 @@ func (c *policiesGRPCClient) DeletePolicy(ctx context.Context, req *iampb.Delete
 	return &DeletePolicyOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
-}
-
-func (c *policiesGRPCClient) ListApplicablePolicies(ctx context.Context, req *iampb.ListApplicablePoliciesRequest, opts ...gax.CallOption) *PolicyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attachment_point", url.QueryEscape(req.GetAttachmentPoint())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListApplicablePolicies[0:len((*c.CallOptions).ListApplicablePolicies):len((*c.CallOptions).ListApplicablePolicies)], opts...)
-	it := &PolicyIterator{}
-	req = proto.Clone(req).(*iampb.ListApplicablePoliciesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.Policy, string, error) {
-		resp := &iampb.ListApplicablePoliciesResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.policiesClient.ListApplicablePolicies(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetPolicies(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 func (c *policiesGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {

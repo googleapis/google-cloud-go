@@ -1,5 +1,26 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.5.1...containeranalysis/v0.6.0) (2022-09-26)
+
+
+### Features
+
+* **containeranalysis:** Rewrite beta methods in terms of new stub location ([#6738](https://github.com/googleapis/google-cloud-go/issues/6738)) ([85f3ae2](https://github.com/googleapis/google-cloud-go/commit/85f3ae20a18b0a85157d5aedd1ffc5cf2c5714ce))
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.5.0...containeranalysis/v0.5.1) (2022-09-23)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Move grafeas stubs to proper folder ([#6732](https://github.com/googleapis/google-cloud-go/issues/6732)) ([16b5fd7](https://github.com/googleapis/google-cloud-go/commit/16b5fd7c5e4ddd8028feca60c5780ca1d1af8532))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.4.0...containeranalysis/v0.5.0) (2022-09-22)
+
+
+### Features
+
+* **containeranalysis:** Generate container stubs for betas ([#6722](https://github.com/googleapis/google-cloud-go/issues/6722)) ([3f1232b](https://github.com/googleapis/google-cloud-go/commit/3f1232b2aeaedfecfec3df0fa85c2f70227af2b1))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.3.0...containeranalysis/v0.4.0) (2022-06-29)
 
 

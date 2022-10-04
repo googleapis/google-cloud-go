@@ -433,7 +433,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 					resultFDP.TypeName = proto.String(normName)
 				} else {
 					if visitedTypes.contains(msgFullName) {
-						return nil, fmt.Errorf("recursize type not supported: %s", inField.FullName())
+						return nil, fmt.Errorf("recursive type not supported: %s", inField.FullName())
 					}
 					visitedTypes.add(msgFullName)
 					dp, err := normalizeDescriptorInternal(inField.Message(), visitedTypes, enumTypes, structTypes, root)

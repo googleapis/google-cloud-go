@@ -943,6 +943,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			// Store the content from the first Recv in the
 			// client buffer for reading later.
 			leftovers: msg.GetChecksummedData().GetContent(),
+			settings:  s,
 		},
 	}
 
@@ -964,6 +965,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 }
 
 func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	s := callSettings(c.settings, opts...)
+
 	var offset int64
 	errorf := params.setError
 	progress := params.progress
@@ -971,6 +974,10 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 	pr, pw := io.Pipe()
 	gw := newGRPCWriter(c, params, pr)
+	gw.settings = s
+	if s.userProject != "" {
+		gw.ctx = setUserProjectMetadata(gw.ctx, s.userProject)
+	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
@@ -1315,6 +1322,7 @@ type gRPCReader struct {
 	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
 	leftovers  []byte
 	cancel     context.CancelFunc
+	settings   *settings
 }
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
@@ -1390,7 +1398,11 @@ func (r *gRPCReader) Close() error {
 // an attempt to reopen the stream.
 func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
-	if err != nil && ShouldRetry(err) {
+	var shouldRetry = ShouldRetry
+	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
+		shouldRetry = r.settings.retry.shouldRetry
+	}
+	if err != nil && shouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
@@ -1454,6 +1466,7 @@ type gRPCWriter struct {
 	attrs         *ObjectAttrs
 	conds         *Conditions
 	encryptionKey []byte
+	settings      *settings
 
 	sendCRC32C bool
 
@@ -1471,21 +1484,27 @@ func (w *gRPCWriter) startResumableUpload() error {
 	if err != nil {
 		return err
 	}
-	upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-		WriteObjectSpec: spec,
-	})
-
-	w.upid = upres.GetUploadId()
-	return err
+	return run(w.ctx, func() error {
+		upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
+			WriteObjectSpec: spec,
+		})
+		w.upid = upres.GetUploadId()
+		return err
+	}, w.settings.retry, w.settings.idempotent, setRetryHeaderGRPC(w.ctx))
 }
 
 // queryProgress is a helper that queries the status of the resumable upload
 // associated with the given upload ID.
 func (w *gRPCWriter) queryProgress() (int64, error) {
-	q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+	var persistedSize int64
+	err := run(w.ctx, func() error {
+		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+		persistedSize = q.GetPersistedSize()
+		return err
+	}, w.settings.retry, true, setRetryHeaderGRPC(w.ctx))
 
 	// q.GetCommittedSize() will return 0 if q is nil.
-	return q.GetPersistedSize(), err
+	return persistedSize, err
 }
 
 // uploadBuffer opens a Write stream and uploads the buffer at the given offset (if
@@ -1500,6 +1519,10 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 	var err error
 	var finishWrite bool
 	var sent, limit int = 0, maxPerMessageWriteSize
+	var shouldRetry = ShouldRetry
+	if w.settings.retry != nil && w.settings.retry.shouldRetry != nil {
+		shouldRetry = w.settings.retry.shouldRetry
+	}
 	offset := start
 	toWrite := w.buf[:recvd]
 	for {
@@ -1553,8 +1576,16 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// on the *last* message of the stream (instead of the first).
 			if w.sendCRC32C {
 				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C:  proto.Uint32(w.attrs.CRC32C),
-					Md5Hash: w.attrs.MD5,
+					Crc32C: proto.Uint32(w.attrs.CRC32C),
+				}
+			}
+			if len(w.attrs.MD5) != 0 {
+				if cs := req.GetObjectChecksums(); cs == nil {
+					req.ObjectChecksums = &storagepb.ObjectChecksums{
+						Md5Hash: w.attrs.MD5,
+					}
+				} else {
+					cs.Md5Hash = w.attrs.MD5
 				}
 			}
 		}
@@ -1570,7 +1601,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// resend the entire buffer via a new stream.
 			// If not retriable, falling through will return the error received
 			// from closing the stream.
-			if ShouldRetry(err) {
+			if shouldRetry(err) {
 				sent = 0
 				finishWrite = false
 				// TODO: Add test case for failure modes of querying progress.
@@ -1601,7 +1632,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// resend the entire buffer via a new stream.
 		// If not retriable, falling through will return the error received
 		// from closing the stream.
-		if ShouldRetry(err) {
+		if shouldRetry(err) {
 			sent = 0
 			finishWrite = false
 			offset, err = w.determineOffset(start)
