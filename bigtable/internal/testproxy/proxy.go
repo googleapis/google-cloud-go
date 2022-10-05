@@ -333,6 +333,21 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 	return f
 }
 
+// statusFromError converts an error into a Status code.
+func statusFromError(err error) *statpb.Status {
+	st := &statpb.Status{
+		Code:    int32(codes.Internal),
+		Message: err.Error(),
+	}
+	if s, ok := stat.FromError(err); ok {
+		st = &statpb.Status{
+			Code:    s.Proto().Code,
+			Message: s.Message(),
+		}
+	}
+	return st
+}
+
 // testClient contains a bigtable.Client object, cancel functions for the calls
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
@@ -614,7 +629,69 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 // BulkMutateRows responds to the BulkMutateRows RPC. This method applies a
 // series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "BulkMutateRows not implemented")
+	s.clientsLock.Lock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.Unlock()
+
+	if !exists {
+		log.Printf("received invalid client ID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("missing inner request to BulkMutateRows: %v", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to BulkMutateRows() is missing inner request")
+	}
+
+	mrs := rrq.Entries
+	t := btc.c.Open(rrq.TableName)
+
+	keys := make([]string, len(mrs))
+	muts := make([]*bigtable.Mutation, len(mrs))
+
+	for i, mr := range mrs {
+
+		key := string(mr.RowKey)
+		m := mutationFromProto(mr.Mutations)
+
+		// A little tricky here ... each key corresponds to a single Mutation
+		// object, where the indices of each slice must be sync'ed.
+		keys[i] = key
+		muts[i] = m
+	}
+
+	res := &pb.MutateRowsResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	errs, err := t.ApplyBulk(ctx, keys, muts)
+	if err != nil {
+		log.Printf("received error from Table.ApplyBulk(): %v", err)
+		res.Status = statusFromError(err)
+	}
+
+	var entries []*btpb.MutateRowsResponse_Entry
+
+	// Iterate over any errors returned, matching indices with errors. If
+	// errs is nil, this block is skipped.
+	for i, e := range errs {
+		var me *btpb.MutateRowsResponse_Entry
+		if e != nil {
+			st := statusFromError(err)
+			me = &btpb.MutateRowsResponse_Entry{
+				Index:  int64(i),
+				Status: st,
+			}
+			entries = append(entries, me)
+		}
+	}
+
+	res.Entry = entries
+	return res, nil
 }
 
 // CheckAndMutateRow responds to the CheckAndMutateRow RPC. This method applies

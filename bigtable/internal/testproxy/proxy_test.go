@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/bigtable/bttest"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -222,5 +223,44 @@ func TestReadRow(t *testing.T) {
 	row := resp.Row
 	if string(row.Key) != "row" {
 		t.Errorf("testproxy test: ReadRow() returned wrong row")
+	}
+}
+
+func TestBulkMutateRows(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.MutateRowsRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.MutateRowsRequest{
+			TableName: tableName,
+			Entries: []*btpb.MutateRowsRequest_Entry{
+				{
+					RowKey: []byte(rowKey),
+					Mutations: []*btpb.Mutation{
+						{
+							Mutation: &btpb.Mutation_SetCell_{
+								SetCell: &btpb.Mutation_SetCell{
+									ColumnQualifier: []byte("coll2"),
+									FamilyName:      "cf0",
+									Value:           []byte("bulked up mutant!"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.BulkMutateRows(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: BulkMutateRows returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: BulkMutateRows() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if len(resp.Entry) != 0 {
+		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entry)
 	}
 }
