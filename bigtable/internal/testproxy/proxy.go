@@ -337,11 +337,11 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 func statusFromError(err error) *statpb.Status {
 	st := &statpb.Status{
 		Code:    int32(codes.Internal),
-		Message: err.Error(),
+		Message: fmt.Sprintf("%v", err),
 	}
 	if s, ok := stat.FromError(err); ok {
 		st = &statpb.Status{
-			Code:    s.Proto().Code,
+			Code:    int32(s.Code()),
 			Message: s.Message(),
 		}
 	}
