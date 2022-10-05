@@ -663,9 +663,12 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	}
 
 	if err != nil {
-		res.Status = &statpb.Status{
-			Code: 0, // TODO(fix this)
+		st, ok := stat.FromError(err)
+		if !ok {
+			res.Status.Code = int32(codes.Internal)
+			return res, nil
 		}
+		res.Status.Code = st.Proto().GetCode()
 	}
 
 	res.Row = rowsPb
