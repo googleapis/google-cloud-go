@@ -119,7 +119,7 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	if retentionCfg.Period != nil {
 		period, err := ptypes.Duration(retentionCfg.Period)
 		if err != nil {
-			return nil, fmt.Errorf("pubsublite: invalid retention period in topic config: %v", err)
+			return nil, fmt.Errorf("pubsublite: invalid retention period in topic config: %w", err)
 		}
 		topic.RetentionDuration = period
 	}
