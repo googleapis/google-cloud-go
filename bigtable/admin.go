@@ -294,12 +294,12 @@ type UpdateTableConf struct {
 	deletionProtection DeletionProtection
 }
 
-// NewUpdateTable updates a table with the given table ID and deletion protection parameter.
+// UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
 func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
 	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection})
 }
 
-// UpdateTable updates a table in the instance from the given configuration.
+// updateTableWithConf updates a table in the instance from the given configuration.
 // only deletion protection can be updated at this period.
 // table ID is required.
 func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
