@@ -928,15 +928,15 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				defer r.Close()
 
 				if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
-					t.Fatalf("StartOffset mismatch, got %d want %d", got, want)
+					t.Errorf("StartOffset mismatch, got %d want %d", got, want)
 				}
 
 				gotBuf := &bytes.Buffer{}
 				nr, _ := io.Copy(gotBuf, r)
 				if got, want := nr, int64(5); got != want {
-					t.Fatalf("Body length mismatch, got %d want %d", got, want)
+					t.Errorf("Body length mismatch, got %d want %d", got, want)
 				} else if diff := cmp.Diff(gotBuf.String(), string(wantBuf)); diff != "" {
-					t.Fatalf("Content read does not match - got(-),want(+):\n%s", diff)
+					t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
 				}
 			})
 		}
