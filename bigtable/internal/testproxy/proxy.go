@@ -656,14 +656,14 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	})
 
 	res := &pb.RowsResult{
-		Status: &status.Status{
+		Status: &statpb.Status{
 			Code: int32(codes.OK),
 		},
 		Row: []*btpb.Row{},
 	}
 
 	if err != nil {
-		res.Status = &status.Status{
+		res.Status = &statpb.Status{
 			Code: 0, // TODO(fix this)
 		}
 	}
