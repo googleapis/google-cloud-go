@@ -32,6 +32,7 @@ import (
 	gauth "golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
@@ -550,7 +551,52 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // ReadRow responds to the ReadRow RPC. This method gets all of the column
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadRow not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	tName := req.TableName
+	t := btc.c.Open(tName)
+
+	res := &pb.RowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+		Row: &btpb.Row{},
+	}
+
+	if btc.perOperationTimeout != nil {
+		ct, _ := context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+		ctx = ct
+	}
+
+	r, err := t.ReadRow(ctx, req.RowKey)
+	if err != nil {
+		if st, ok := stat.FromError(err); ok {
+			res.Status = &statpb.Status{
+				Code:    st.Proto().Code,
+				Message: st.Message(),
+			}
+		}
+		return res, nil
+	}
+
+	if r == nil {
+		return res, nil
+	}
+
+	pbRow, err := rowToProto(r)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Row = pbRow
+	return res, nil
 }
 
 // ReadRows responds to the ReadRows RPC. This method gets all of the column
