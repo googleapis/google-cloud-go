@@ -249,3 +249,23 @@ func TestReadRows(t *testing.T) {
 
 	}
 }
+
+func TestMutateRow(t *testing.T) {
+	t.Skip()
+}
+
+func TestBulkMutateRows(t *testing.T) {
+	t.Skip()
+}
+
+func TestCheckAndMutateRow(t *testing.T) {
+	t.Skip()
+}
+
+func TestSampleRowKeys(t *testing.T) {
+	t.Skip()
+}
+
+func TestReadModifyWriteRow(t *testing.T) {
+	t.Skip()
+}
