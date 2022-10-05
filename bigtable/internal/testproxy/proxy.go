@@ -84,10 +84,18 @@ func rowToProto(btRow bigtable.Row) (*btpb.Row, error) {
 // rowSetFromProto translates a Bigtable v2.RowSet object to a Bigtable.RowSet
 // object.
 func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
+
+	rowKeys := rs.GetRowKeys()
+	rowRanges := rs.GetRowRanges()
+
+	if len(rowKeys) == 0 && len(rowRanges) == 0 {
+		return nil
+	}
+
 	rowRangeList := make(bigtable.RowRangeList, 0)
 
 	// Convert all rowKeys into single-row RowRanges
-	if rowKeys := rs.GetRowKeys(); len(rowKeys) > 0 {
+	if len(rowKeys) > 0 {
 		for _, b := range rowKeys {
 
 			// Find the next highest key using byte operations
@@ -103,7 +111,7 @@ func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
 		}
 	}
 
-	if rowRanges := rs.GetRowRanges(); len(rowRanges) > 0 {
+	if len(rowRanges) > 0 {
 		for _, rrs := range rowRanges {
 			var start, end string
 			var rr bigtable.RowRange
@@ -612,7 +620,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	}
 
 	rrq := req.GetRequest()
-	lim := req.GetCancelAfterRows()
 
 	if rrq == nil {
 		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
@@ -621,21 +628,21 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	t := btc.c.Open(rrq.TableName)
 
 	rowPbs := rrq.Rows
-	var rs bigtable.RowSet
+	rs := rowSetFromProto(rowPbs)
 
 	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
 	// provided for ReadRows. Use InfiniteRange() to get the full table.
-	if len(rowPbs.GetRowKeys()) == 0 && len(rowPbs.GetRowRanges()) == 0 {
+	if rs == nil {
 		// Should be lowest possible key value, an empty byte array
-		rs = bigtable.InfiniteRange(string([]byte{}))
-	} else {
-		rs = rowSetFromProto(rowPbs)
+		rs = bigtable.InfiniteRange("")
 	}
 
 	var c int32
-	rowsPb := make([]*btpb.Row, 0)
+	var rowsPb []*btpb.Row
 
-	t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+	lim := req.GetCancelAfterRows()
+	err := t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+
 		c++
 		if c == lim {
 			return false
@@ -652,8 +659,16 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		Status: &status.Status{
 			Code: int32(codes.OK),
 		},
-		Row: rowsPb,
+		Row: []*btpb.Row{},
 	}
+
+	if err != nil {
+		res.Status = &status.Status{
+			Code: 0, // TODO(fix this)
+		}
+	}
+
+	res.Row = rowsPb
 
 	return res, nil
 }
