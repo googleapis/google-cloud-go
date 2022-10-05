@@ -28,6 +28,7 @@ import (
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 )
@@ -81,7 +82,6 @@ func populateTable(bts *bttest.Server) error {
 		}
 	}
 
-	// Create rows
 	dataClient, err := bigtable.NewClient(ctx, "client", "instance",
 		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
@@ -184,6 +184,7 @@ func TestCreateAndRemoveClient(t *testing.T) {
 	}
 
 	_, err := client.CreateClient(ctx, req)
+
 	if err != nil {
 		t.Fatalf("testproxy test: CreateClient() failed: %v", err)
 	}
@@ -197,5 +198,29 @@ func TestCreateAndRemoveClient(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("testproxy test: RemoveClient() failed: %v", err)
+	}
+}
+
+func TestReadRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.ReadRowRequest{
+		TableName: tableName,
+		ClientId:  testProxyClient,
+		RowKey:    rowKey,
+	}
+
+	resp, err := client.ReadRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: ReadRow() failed: %v", err)
+	}
+
+	stat := resp.Status.Code
+	if stat != int32(codes.OK) {
+		t.Errorf("testproxy test: ReadRow() didn't return OK")
+	}
+
+	row := resp.Row
+	if string(row.Key) != "row" {
+		t.Errorf("testproxy test: ReadRow() returned wrong row")
 	}
 }
