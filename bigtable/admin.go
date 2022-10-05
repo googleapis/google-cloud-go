@@ -275,15 +275,15 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
-// set to true to make the table protected against data loss
-// i.e. deleting the table, the column families in the table,
-// and the instance containing the table would be prohibited
+// DeletionProtection indicates whether the table is protected against data loss
+// i.e. when set to protected, deleting the table, the column families in the table,
+// and the instance containing the table would be prohibited.
 type DeletionProtection int
 
 const (
-	UnSet DeletionProtection = 0
-	True                     = 1
-	False                    = 2
+	None DeletionProtection = iota
+	Protected
+	Unprotected
 )
 
 // UpdateTableConf contains all of the information necessary to update a table with column families.
@@ -307,17 +307,20 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 		return errors.New("TableID is required")
 	}
 
-	if conf.deletionProtection == UnSet {
+	if conf.deletionProtection == None {
 		return errors.New("deletion protection is required")
 	}
 
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
-	updateMask := &field_mask.FieldMask{}
-	updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{
+			"deletion_protection",
+		},
+	}
 
 	deletionProtection := true
-	if conf.deletionProtection == False {
+	if conf.deletionProtection == Unprotected {
 		deletionProtection = false
 	}
 
