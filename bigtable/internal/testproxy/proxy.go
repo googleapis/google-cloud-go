@@ -633,9 +633,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	var c int32
 	var rowsPb []*btpb.Row
 	lim := req.GetCancelAfterRows()
-
-	log.Printf("row set: %v\n", rs)
-
 	err := t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 
 		c++
