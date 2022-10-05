@@ -1577,7 +1577,7 @@ var attrToProtoFieldMap = map[string]string{
 	"Owner":                   "owner",
 	"CustomerKeySHA256":       "customer_encryption",
 	"CustomTime":              "custom_time",
-	// TODO(noahdietz): No such field on the Object proto, but is it an HTTP-specific thing?
+	// MediaLink was explicitly excluded from the proto as it is an HTTP-ism.
 	// "MediaLink":               "mediaLink",
 }
 
