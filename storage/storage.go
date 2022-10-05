@@ -1484,15 +1484,11 @@ type Query struct {
 	// object will be included in the results.
 	Versions bool
 
-	// fieldSelection is used to select only specific fields to be returned by
-	// the query. It's used internally and is populated for the user by
-	// calling Query.SetAttrSelection
-	fieldSelection string
-
-	// protoFieldSelection is used to select only specific fields to be returned by
-	// the query. It's used internally and is populated for the user by
-	// calling Query.SetAttrSelection. It takes precedent over Projection.
-	protoFieldSelection *fieldmaskpb.FieldMask
+	// attrSelection is used to select only specific fields to be returned by
+	// the query. It is set by the user calling calling SetAttrSelection. These
+	// are used by toFieldMask and toFieldSelection for gRPC and HTTP/JSON
+	// clients repsectively.
+	attrSelection []string
 
 	// StartOffset is used to filter results to objects whose names are
 	// lexicographically equal to or after startOffset. If endOffset is also set,
@@ -1593,20 +1589,42 @@ var attrToProtoFieldMap = map[string]string{
 // optimization; for more information, see
 // https://cloud.google.com/storage/docs/json_api/v1/how-tos/performance
 func (q *Query) SetAttrSelection(attrs []string) error {
-	fieldSet := make(map[string]bool)
-	protoFieldPaths := make([]string, 0, len(attrs))
-
+	// Validate selections.
 	for _, attr := range attrs {
-		field, ok := attrToFieldMap[attr]
-		if !ok {
+		// If the attr is acceptable for one of the two sets, then it is OK.
+		// If it is not acceptable for either, then return an error.
+		// The respective masking implementations ignore unknown attrs which
+		// makes switching between transports a little easier.
+		_, okJSON := attrToFieldMap[attr]
+		_, okGRPC := attrToProtoFieldMap[attr]
+
+		if !okJSON && !okGRPC {
 			return fmt.Errorf("storage: attr %v is not valid", attr)
-		}
-		fieldSet[field] = true
-		if pf, ok := attrToProtoFieldMap[attr]; ok {
-			protoFieldPaths = append(protoFieldPaths, pf)
 		}
 	}
 
+	q.attrSelection = attrs
+
+	return nil
+}
+
+func (q *Query) toFieldSelection() string {
+	if q == nil || len(q.attrSelection) == 0 {
+		return ""
+	}
+	fieldSet := make(map[string]bool)
+
+	for _, attr := range q.attrSelection {
+		field, ok := attrToFieldMap[attr]
+		if !ok {
+			// Future proofing, skip unknown fields, let SetAttrSelection handle
+			// error modes.
+			continue
+		}
+		fieldSet[field] = true
+	}
+
+	var s string
 	if len(fieldSet) > 0 {
 		var b bytes.Buffer
 		b.WriteString("prefixes,items(")
@@ -1619,28 +1637,39 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 			b.WriteString(field)
 		}
 		b.WriteString(")")
-		q.fieldSelection = b.String()
+		s = b.String()
 	}
-	if len(protoFieldPaths) > 0 {
-		q.protoFieldSelection = &fieldmaskpb.FieldMask{Paths: protoFieldPaths}
-	}
-	return nil
+	return s
 }
 
 func (q *Query) toFieldMask() *fieldmaskpb.FieldMask {
+	// The default behavior with no Query is ProjectionDefault (i.e. ProjectionFull).
 	if q == nil {
-		return nil
+		return &fieldmaskpb.FieldMask{Paths: []string{"*"}}
 	}
 
-	// SetAttrSelection wins over Projection.
-	if q.protoFieldSelection != nil {
-		return q.protoFieldSelection
+	// User selected attributes via q.SetAttrSeleciton. This takes precedence
+	// over the Projection.
+	if numSelected := len(q.attrSelection); numSelected > 0 {
+		protoFieldPaths := make([]string, 0, numSelected)
+
+		for _, attr := range q.attrSelection {
+			pf, ok := attrToProtoFieldMap[attr]
+			if !ok {
+				// Future proofing, skip unknown fields, let SetAttrSelection
+				// handle error modes.
+				continue
+			}
+			protoFieldPaths = append(protoFieldPaths, pf)
+		}
+
+		return &fieldmaskpb.FieldMask{Paths: protoFieldPaths}
 	}
 
 	// ProjectDefault == ProjectionFull which means all fields.
 	fm := &fieldmaskpb.FieldMask{Paths: []string{"*"}}
 	if q.Projection == ProjectionNoACL {
-		paths := make([]string, 0, len(attrToProtoFieldMap)-1)
+		paths := make([]string, 0, len(attrToProtoFieldMap)-2) // omitting two fields
 		for _, f := range attrToProtoFieldMap {
 			// Skip the acl and owner fields for "NoACL".
 			if f == "acl" || f == "owner" {

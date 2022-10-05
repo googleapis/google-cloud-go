@@ -386,8 +386,8 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		Versions:                 it.query.Versions,
 		LexicographicStart:       it.query.StartOffset,
 		LexicographicEnd:         it.query.EndOffset,
-		ReadMask:                 it.query.toFieldMask(),
 		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
+		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)

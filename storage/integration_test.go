@@ -2102,9 +2102,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 		EndOffset:   "obj2",
 	}
 	var selectedAttrs []string
-	// Iterate over proto fields instead because it doesn't have MediaLink.
-	// TODO(noahdietz): figure out how to handle this better.
-	for k := range attrToProtoFieldMap {
+	for k := range attrToFieldMap {
 		selectedAttrs = append(selectedAttrs, k)
 	}
 	query.SetAttrSelection(selectedAttrs)
