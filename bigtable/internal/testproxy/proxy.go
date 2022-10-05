@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	"crypto/x509"
-	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
@@ -84,26 +83,24 @@ func rowToProto(btRow bigtable.Row) (*btpb.Row, error) {
 // rowSetFromProto translates a Bigtable v2.RowSet object to a Bigtable.RowSet
 // object.
 func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
-	rowRangeList := make(bigtable.RowRangeList, 0)
+	rowKeys := rs.GetRowKeys()
+	rowRanges := rs.GetRowRanges()
 
-	// Convert all rowKeys into single-row RowRanges
-	if rowKeys := rs.GetRowKeys(); len(rowKeys) > 0 {
-		for _, b := range rowKeys {
-
-			// Find the next highest key using byte operations
-			// This allows us to create a RowRange of 1 rowKey
-			e := binary.BigEndian.Uint64(b)
-			e++
-
-			s := binary.Size(e)
-			bOut := make([]byte, s)
-			binary.BigEndian.PutUint64(bOut, e)
-
-			rowRangeList = append(rowRangeList, bigtable.NewRange(string(b), string(bOut)))
-		}
+	if len(rowKeys) == 0 && len(rowRanges) == 0 {
+		return nil
 	}
 
-	if rowRanges := rs.GetRowRanges(); len(rowRanges) > 0 {
+	// Convert all rowKeys into single-row RowRanges
+	if len(rowKeys) > 0 {
+		var rowList bigtable.RowList
+		for _, b := range rowKeys {
+			rowList = append(rowList, string(b))
+		}
+		return rowList
+	}
+
+	if len(rowRanges) > 0 {
+		rowRangeList := make(bigtable.RowRangeList, 0)
 		for _, rrs := range rowRanges {
 			var start, end string
 			var rr bigtable.RowRange
@@ -129,8 +126,9 @@ func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
 
 			rowRangeList = append(rowRangeList, rr)
 		}
+		return rowRangeList
 	}
-	return rowRangeList
+	return nil
 }
 
 // mutationFromProto translates a slice of Bigtable v2.Mutation objects into
