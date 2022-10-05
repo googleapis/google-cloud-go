@@ -766,6 +766,11 @@
                 "DeleteFeature"
               ]
             },
+            "DeleteFeatureValues": {
+              "methods": [
+                "DeleteFeatureValues"
+              ]
+            },
             "DeleteFeaturestore": {
               "methods": [
                 "DeleteFeaturestore"
@@ -919,6 +924,11 @@
             "DeleteFeature": {
               "methods": [
                 "DeleteFeature"
+              ]
+            },
+            "DeleteFeatureValues": {
+              "methods": [
+                "DeleteFeatureValues"
               ]
             },
             "DeleteFeaturestore": {
@@ -1987,6 +1997,11 @@
                 "QueryExecutionInputsAndOutputs"
               ]
             },
+            "RemoveContextChildren": {
+              "methods": [
+                "RemoveContextChildren"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -2195,6 +2210,11 @@
             "QueryExecutionInputsAndOutputs": {
               "methods": [
                 "QueryExecutionInputsAndOutputs"
+              ]
+            },
+            "RemoveContextChildren": {
+              "methods": [
+                "RemoveContextChildren"
               ]
             },
             "SetIamPolicy": {

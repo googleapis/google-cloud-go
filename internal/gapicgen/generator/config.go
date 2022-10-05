@@ -400,15 +400,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "ga",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/secrets/v1beta1",
-		Pkg:                   "secretmanager",
-		ImportPath:            "cloud.google.com/go/secretmanager/apiv1beta1",
-		GRPCServiceConfigPath: "secretmanager_grpc_service_config.json",
-		ApiServiceConfigPath:  "secretmanager_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/osconfig/v1",
 		Pkg:                   "osconfig",
 		ImportPath:            "cloud.google.com/go/osconfig/apiv1",
@@ -512,7 +503,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/cloud/recaptchaenterprise/v1beta1",
 		Pkg:                   "recaptchaenterprise",
-		ImportPath:            "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
+		ImportPath:            "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
 		GRPCServiceConfigPath: "recaptchaenterprise_grpc_service_config.json",
 		ApiServiceConfigPath:  "recaptchaenterprise_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
@@ -775,7 +766,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/cloud/vision/v1p1beta1",
 		Pkg:                   "vision",
-		ImportPath:            "cloud.google.com/go/vision/apiv1p1beta1",
+		ImportPath:            "cloud.google.com/go/vision/v2/apiv1p1beta1",
 		GRPCServiceConfigPath: "vision_grpc_service_config.json",
 		ApiServiceConfigPath:  "vision_v1p1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
@@ -1743,6 +1734,34 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "publicca_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
 		// GA after 2022/10/10
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/edgecontainer/v1",
+		Pkg:                   "edgecontainer",
+		ImportPath:            "cloud.google.com/go/edgecontainer/apiv1",
+		GRPCServiceConfigPath: "edgecontainer_grpc_service_config.json",
+		ApiServiceConfigPath:  "edgecontainer_v1.yaml",
+		// GA after 2022/10/19
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/bigquery/datapolicies/v1beta1",
+		Pkg:                   "datapolicies",
+		ImportPath:            "cloud.google.com/go/bigquery/datapolicies/apiv1beta1",
+		GRPCServiceConfigPath: "datapolicies_v1beta1_grpc_service_config.json",
+		ApiServiceConfigPath:  "bigquerydatapolicy_v1beta1.yaml",
+		Transports:            []string{"grpc", "rest"},
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/bigquery/analyticshub/v1",
+		Pkg:                   "analyticshub",
+		ImportPath:            "cloud.google.com/go/bigquery/analyticshub/apiv1",
+		GRPCServiceConfigPath: "analyticshub_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "analyticshub_v1.yaml",
+		Transports:            []string{"grpc", "rest"},
+		// GA after 2022/10/20
 		ReleaseLevel: "beta",
 	},
 

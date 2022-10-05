@@ -22,7 +22,7 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1beta3"
-	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1beta3"
+	"cloud.google.com/go/documentai/apiv1beta3/documentaipb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &documentaipb.DeleteProcessorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DeleteProcessorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#DeleteProcessorRequest.
 	}
 	op, err := c.DeleteProcessor(ctx, req)
 	if err != nil {

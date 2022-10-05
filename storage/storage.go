@@ -33,6 +33,7 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -186,22 +187,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	// RawService should be created with the chosen endpoint to take account of user override.
 	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	if err != nil {
-		return nil, fmt.Errorf("storage client: %v", err)
+		return nil, fmt.Errorf("storage client: %w", err)
 	}
 	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
-		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
+		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
 	tc, err := newHTTPStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
-		return nil, fmt.Errorf("storage: %v", err)
+		return nil, fmt.Errorf("storage: %w", err)
 	}
 
 	return &Client{
@@ -1088,11 +1089,6 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 
 // toProtoObject copies the editable attributes from o to the proto library's Object type.
 func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
-	checksums := &storagepb.ObjectChecksums{Md5Hash: o.MD5}
-	if o.CRC32C > 0 {
-		checksums.Crc32C = proto.Uint32(o.CRC32C)
-	}
-
 	// For now, there are only globally unique buckets, and "_" is the alias
 	// project ID for such buckets. If the bucket is not provided, like in the
 	// destination ObjectAttrs of a Copy, do not attempt to format it.
@@ -1121,7 +1117,6 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		KmsKey:              o.KMSKeyName,
 		Generation:          o.Generation,
 		Size:                o.Size,
-		Checksums:           checksums,
 	}
 }
 
@@ -2000,6 +1995,24 @@ func bucketResourceName(p, b string) string {
 func parseBucketName(b string) string {
 	sep := strings.LastIndex(b, "/")
 	return b[sep+1:]
+}
+
+// parseProjectNumber consume the given resource name and parses out the project
+// number if one is present i.e. it is not a project ID.
+func parseProjectNumber(r string) uint64 {
+	projectID := regexp.MustCompile(`projects\/([0-9]+)\/?`)
+	if matches := projectID.FindStringSubmatch(r); len(matches) > 0 {
+		// Capture group follows the matched segment. For example:
+		// input: projects/123/bars/456
+		// output: [projects/123/, 123]
+		number, err := strconv.ParseUint(matches[1], 10, 64)
+		if err != nil {
+			return 0
+		}
+		return number
+	}
+
+	return 0
 }
 
 // toProjectResource accepts a project ID and formats it as a Project resource

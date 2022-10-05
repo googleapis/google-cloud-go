@@ -20,7 +20,7 @@ import (
 	"context"
 
 	language "cloud.google.com/go/language/apiv1beta2"
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
+	languagepb "cloud.google.com/go/language/apiv1beta2/languagepb"
 )
 
 func ExampleNewClient() {
@@ -72,7 +72,7 @@ func ExampleClient_AnalyzeSentiment() {
 
 	req := &languagepb.AnalyzeSentimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeSentimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeSentimentRequest.
 	}
 	resp, err := c.AnalyzeSentiment(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExampleClient_AnalyzeEntities() {
 
 	req := &languagepb.AnalyzeEntitiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeEntitiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeEntitiesRequest.
 	}
 	resp, err := c.AnalyzeEntities(ctx, req)
 	if err != nil {
@@ -122,7 +122,7 @@ func ExampleClient_AnalyzeEntitySentiment() {
 
 	req := &languagepb.AnalyzeEntitySentimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeEntitySentimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeEntitySentimentRequest.
 	}
 	resp, err := c.AnalyzeEntitySentiment(ctx, req)
 	if err != nil {
@@ -147,7 +147,7 @@ func ExampleClient_AnalyzeSyntax() {
 
 	req := &languagepb.AnalyzeSyntaxRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeSyntaxRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnalyzeSyntaxRequest.
 	}
 	resp, err := c.AnalyzeSyntax(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleClient_ClassifyText() {
 
 	req := &languagepb.ClassifyTextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#ClassifyTextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#ClassifyTextRequest.
 	}
 	resp, err := c.ClassifyText(ctx, req)
 	if err != nil {
@@ -197,7 +197,7 @@ func ExampleClient_AnnotateText() {
 
 	req := &languagepb.AnnotateTextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnnotateTextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/language/apiv1beta2/languagepb#AnnotateTextRequest.
 	}
 	resp, err := c.AnnotateText(ctx, req)
 	if err != nil {

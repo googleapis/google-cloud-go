@@ -59,7 +59,7 @@
 //
 //	req := &datalabelingpb.CreateDatasetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateDatasetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateDatasetRequest.
 //	}
 //	resp, err := c.CreateDataset(ctx, req)
 //	if err != nil {

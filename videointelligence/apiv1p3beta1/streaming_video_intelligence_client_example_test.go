@@ -21,7 +21,7 @@ import (
 	"io"
 
 	videointelligence "cloud.google.com/go/videointelligence/apiv1p3beta1"
-	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1p3beta1"
+	videointelligencepb "cloud.google.com/go/videointelligence/apiv1p3beta1/videointelligencepb"
 )
 
 func ExampleNewStreamingVideoIntelligenceClient() {

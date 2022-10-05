@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
-	dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
+	"cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataqnapb.GetQuestionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetQuestionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#GetQuestionRequest.
 	}
 	resp, err := c.GetQuestion(ctx, req)
 	if err != nil {

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.16.0...dialogflow/v1.16.1) (2022-09-28)
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** revert removal of LRO mixin ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.15.0...dialogflow/v1.16.0) (2022-09-21)
+
+
+### Features
+
+* **dialogflow:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.14.0...dialogflow/v1.15.0) (2022-09-19)
+
+
+### Features
+
+* **dialogflow:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.13.0...dialogflow/v1.14.0) (2022-09-15)
 
 

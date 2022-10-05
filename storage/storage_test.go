@@ -1872,7 +1872,6 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 		CustomTime:          timestamppb.New(now),
 		EventBasedHold:      proto.Bool(false),
 		Generation:          7,
-		Checksums:           &storagepb.ObjectChecksums{Md5Hash: []byte("14683cba444dbcc6db297645e683f5c1")},
 		Name:                "foo.mp4",
 		RetentionExpireTime: timestamppb.New(now),
 		Size:                1 << 20,
@@ -1888,7 +1887,6 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 		Deleted:                 now,
 		EventBasedHold:          false,
 		Generation:              7,
-		MD5:                     []byte("14683cba444dbcc6db297645e683f5c1"),
 		Name:                    "foo.mp4",
 		RetentionExpirationTime: now,
 		Size:                    1 << 20,
@@ -2338,6 +2336,24 @@ func TestSignedURLOptionsClone(t *testing.T) {
 
 	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
 		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
+	}
+}
+
+func TestParseProjectNumber(t *testing.T) {
+	for _, tst := range []struct {
+		input string
+		want  uint64
+	}{
+		{"projects/123", 123},
+		{"projects/123/foos/456", 123},
+		{"projects/abc-123/foos/456", 0},
+		{"projects/abc-123", 0},
+		{"projects/abc", 0},
+		{"projects/abc/foos", 0},
+	} {
+		if got := parseProjectNumber(tst.input); got != tst.want {
+			t.Errorf("For %q: got %v, expected %v", tst.input, got, tst.want)
+		}
 	}
 }
 

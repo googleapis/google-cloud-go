@@ -1,5 +1,19 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/mediatranslation/v0.5.0...mediatranslation/v0.6.0) (2022-09-21)
+
+
+### Features
+
+* **mediatranslation:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/mediatranslation/v0.4.0...mediatranslation/v0.5.0) (2022-09-19)
+
+
+### Features
+
+* **mediatranslation:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/mediatranslation/v0.3.0...mediatranslation/v0.4.0) (2022-09-15)
 
 

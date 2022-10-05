@@ -22,8 +22,8 @@ import (
 	"context"
 
 	domains "cloud.google.com/go/domains/apiv1beta1"
+	"cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"google.golang.org/api/iterator"
-	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &domainspb.ListRegistrationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ListRegistrationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ListRegistrationsRequest.
 	}
 	it := c.ListRegistrations(ctx, req)
 	for {

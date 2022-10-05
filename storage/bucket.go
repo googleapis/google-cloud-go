@@ -170,7 +170,7 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 // for this method.
 //
 // [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
-// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return SignedURL(b.name, object, opts)
@@ -212,7 +212,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 // to be non-nil. You may need to set the GoogleAccessID and PrivateKey fields
 // in some cases. Read more on the [automatic detection of credentials] for this method.
 //
-// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return GenerateSignedPostPolicyV4(b.name, object, opts)
@@ -298,18 +298,18 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 		// circumventing the cost of recreating the auth/transport layer
 		svc, err := iamcredentials.NewService(ctx, option.WithHTTPClient(b.c.hc))
 		if err != nil {
-			return nil, fmt.Errorf("unable to create iamcredentials client: %v", err)
+			return nil, fmt.Errorf("unable to create iamcredentials client: %w", err)
 		}
 
 		resp, err := svc.Projects.ServiceAccounts.SignBlob(fmt.Sprintf("projects/-/serviceAccounts/%s", email), &iamcredentials.SignBlobRequest{
 			Payload: base64.StdEncoding.EncodeToString(in),
 		}).Do()
 		if err != nil {
-			return nil, fmt.Errorf("unable to sign bytes: %v", err)
+			return nil, fmt.Errorf("unable to sign bytes: %w", err)
 		}
 		out, err := base64.StdEncoding.DecodeString(resp.SignedBlob)
 		if err != nil {
-			return nil, fmt.Errorf("unable to base64 decode response: %v", err)
+			return nil, fmt.Errorf("unable to base64 decode response: %w", err)
 		}
 		return out, nil
 	}
@@ -775,6 +775,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		LocationType:             b.GetLocationType(),
 		RPO:                      toRPOFromProto(b),
 		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
+		ProjectNumber:            parseProjectNumber(b.GetProject()), // this can return 0 the project resource name is ID based
 	}
 }
 
@@ -1345,8 +1346,14 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 	if rp == nil {
 		return nil
 	}
+	// RetentionPeriod must be greater than 0, so if it is 0, the user left it
+	// unset, and so we should not send it in the request i.e. nil is sent.
+	var period *int64
+	if rp.RetentionPeriod != 0 {
+		period = proto.Int64(int64(rp.RetentionPeriod / time.Second))
+	}
 	return &storagepb.Bucket_RetentionPolicy{
-		RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
+		RetentionPeriod: period,
 	}
 }
 

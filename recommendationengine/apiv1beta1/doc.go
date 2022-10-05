@@ -61,7 +61,7 @@
 //
 //	req := &recommendationenginepb.CreateCatalogItemRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#CreateCatalogItemRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#CreateCatalogItemRequest.
 //	}
 //	resp, err := c.CreateCatalogItem(ctx, req)
 //	if err != nil {

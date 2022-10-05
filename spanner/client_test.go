@@ -1608,6 +1608,24 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 	}
 }
 
+func TestClient_ApplyAtLeastOnce_NonRetryableInternalErrors(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.Internal, "grpc: error while marshaling: string field contains invalid UTF-8")},
+		})
+	_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("Error mismatch:\ngot: %v\nwant: %v", err, codes.Internal)
+	}
+}
+
 func TestClient_Apply_ApplyOptions(t *testing.T) {
 	t.Parallel()
 
@@ -3279,7 +3297,8 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	defer cancel()
 	sp.close(ctx)
 
-	if w, g := context.DeadlineExceeded, ctx.Err(); w != g {
-		t.Fatalf("context error mismatch\nWant: %v\nGot: %v", w, g)
+	// session pool close does not trigger any request to backend
+	if ctx.Err() != nil {
+		t.Fatalf("context error mismatch\nWant: nil\nGot: %v", ctx.Err())
 	}
 }
