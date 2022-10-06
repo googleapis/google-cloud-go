@@ -30,8 +30,28 @@ import (
 type mockTableAdminClock struct {
 	btapb.BigtableTableAdminClient
 
+	createTableReq   *btapb.CreateTableRequest
+	getTableReq      *btapb.GetTableRequest
 	updateTableReq   *btapb.UpdateTableRequest
+	createTableResp  *btapb.Table
+	getTableResp     *btapb.Table
+	createTableError error
+	getTableError    error
 	updateTableError error
+}
+
+func (c *mockTableAdminClock) CreateTable(
+	ctx context.Context, in *btapb.CreateTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.createTableReq = in
+	return c.createTableResp, c.createTableError
+}
+
+func (c *mockTableAdminClock) GetTable(
+	ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.getTableReq = in
+	return c.getTableResp, c.getTableError
 }
 
 func (c *mockTableAdminClock) UpdateTable(
@@ -56,7 +76,26 @@ func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminCli
 	return c
 }
 
-func TestTableAdmin_UpdateTable(t *testing.T) {
+func TestTableAdmin_CreateTableFromConf(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the deletion protection updates correctly
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Errorf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, true) {
+		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithDeletionProtection(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 	deletionProtection := Protected
@@ -64,7 +103,7 @@ func TestTableAdmin_UpdateTable(t *testing.T) {
 	// Check if the deletion protection updates correctly
 	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
 	if err != nil {
-		t.Errorf("UpdateTable failed: %v", err)
+		t.Errorf("UpdateTableWithDeletionProtection failed: %v", err)
 	}
 	updateTableReq := mock.updateTableReq
 	if !cmp.Equal(updateTableReq.Table.Name, "My-table") {
