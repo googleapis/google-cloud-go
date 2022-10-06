@@ -30,6 +30,7 @@ import (
 	"time"
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
+	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 	"cloud.google.com/go/httpreplay"
@@ -54,6 +55,7 @@ var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client                 *Client
+	bqStorageClient        *bqStorage.BigQueryReadClient
 	storageClient          *storage.Client
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
@@ -118,6 +120,10 @@ func initIntegrationTest() func() {
 			log.Fatal(err)
 		}
 		client, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
+		bqStorageClient, err = bqStorage.NewBigQueryReadClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -203,6 +209,10 @@ func initIntegrationTest() func() {
 		client, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
+		}
+		bqStorageClient, err = bqStorage.NewBigQueryReadClient(ctx, bqOpts...)
+		if err != nil {
+			log.Fatalf("NewBigQueryReadClient: %v", err)
 		}
 		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
@@ -2547,6 +2557,67 @@ func TestIntegration_ReadNullIntoStruct(t *testing.T) {
 	if err := it.Next(&s); err == nil {
 		t.Fatal("got nil, want error")
 	}
+}
+
+func TestIntegration_ReadQueryStorageAPI(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := "`bigquery-public-data.usa_names.usa_1910_current`"
+	sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s where state = "WA"`, table)
+	q := client.Query(sql)
+	q.StorageClient = bqStorageClient
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	type S struct {
+		Name   string
+		Number int
+		State  string
+		Nested struct {
+			Name string
+			N    int
+		}
+	}
+	i := 0
+	start := time.Now()
+	for {
+		var s S
+		err := it.Next(&s)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+		i++
+		fmt.Printf("got data: %v - %d of %d\n", s, i, it.TotalRows)
+	}
+	diff := time.Now().Sub(start).Milliseconds()
+	t.Logf("took %d ms with storage API (%d rows)", diff, it.TotalRows)
+
+	/*q = client.Query(sql)
+	it, err = q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	start = time.Now()
+	for {
+		var s S
+		err := it.Next(&s)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to fetch via query API: %v", err)
+		}
+		// i++
+		// fmt.Printf("got data: %v - %d of %d\n", s, i, it.TotalRows)
+	}
+	diff = time.Now().Sub(start).Milliseconds()
+	t.Logf("took %d ms without storage API (%d rows)", diff, it.TotalRows)*/
 }
 
 const (

@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"time"
 
+	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/uid"
 	bq "google.golang.org/api/bigquery/v2"
@@ -149,6 +150,8 @@ type QueryConfig struct {
 	// Experimental: this option is experimental and may be modified or removed in future versions,
 	// regardless of any other documented package stability guarantees.
 	JobTimeout time.Duration
+
+	StorageClient *bqStorage.BigQueryReadClient
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -380,6 +383,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 		if err != nil {
 			return nil, err
 		}
+		job.sc = q.StorageClient
 		return job.Read(ctx)
 	}
 	// we have a config, run on fastPath.
@@ -421,6 +425,9 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 // user's Query configuration.  If all the options set on the job are supported on the
 // faster query path, this method returns a QueryRequest suitable for execution.
 func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
+	if q.StorageClient != nil {
+		return nil, fmt.Errorf("Use storage API")
+	}
 	// This is a denylist of settings which prevent us from composing an equivalent
 	// bq.QueryRequest due to differences between configuration parameters accepted
 	// by jobs.insert vs jobs.query.
