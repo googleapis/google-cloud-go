@@ -244,12 +244,14 @@ func TestBulkMutateRows(t *testing.T) {
 									Value:           []byte("bulked up mutant!"),
 								},
 							},
-   				},
+						},
+					},
+				},
 			},
 		},
 	}
-              
-  resp, err := client.BulkMutateRows(ctx, req)
+
+	resp, err := client.BulkMutateRows(ctx, req)
 	if err != nil {
 		t.Fatalf("testproxy test: BulkMutateRows returned error: %v", err)
 	}
@@ -260,6 +262,8 @@ func TestBulkMutateRows(t *testing.T) {
 
 	if len(resp.Entry) != 0 {
 		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entry)
+	}
+}
 
 func TestMutateRow(t *testing.T) {
 	ctx := context.Background()
