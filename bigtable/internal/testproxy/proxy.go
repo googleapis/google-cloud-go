@@ -615,7 +615,74 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // ReadRows responds to the ReadRows RPC. This method gets all of the column
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadRows not implemented")
+	s.clientsLock.Lock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.Unlock()
+
+	if !exists {
+		log.Printf("bad client ID: %v\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+
+	if rrq == nil {
+		log.Printf("missing inner request: %v\n", rrq)
+		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
+
+	}
+
+	t := btc.c.Open(rrq.TableName)
+
+	rowPbs := rrq.Rows
+	rs := rowSetFromProto(rowPbs)
+
+	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
+	// provided for ReadRows. Use InfiniteRange() to get the full table.
+	if rs == nil {
+		// Should be lowest possible key value, an empty byte array
+		rs = bigtable.InfiniteRange("")
+	}
+
+	var c int32
+	var rowsPb []*btpb.Row
+	lim := req.GetCancelAfterRows()
+	err := t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+
+		c++
+		if c == lim {
+			return false
+		}
+		rpb, err := rowToProto(r)
+		if err != nil {
+			return false
+		}
+		rowsPb = append(rowsPb, rpb)
+		return true
+	})
+
+	res := &pb.RowsResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+		Row: []*btpb.Row{},
+	}
+
+	if err != nil {
+		log.Printf("error from Table.ReadRows: %v\n", err)
+		if st, ok := stat.FromError(err); ok {
+			res.Status = &statpb.Status{
+				Code:    st.Proto().Code,
+				Message: st.Message(),
+			}
+		}
+		return res, nil
+	}
+
+	res.Row = rowsPb
+
+	return res, nil
 }
 
 // MutateRow responds to the MutateRow RPC. This methods applies a series of
