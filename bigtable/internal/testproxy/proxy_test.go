@@ -226,6 +226,7 @@ func TestReadRow(t *testing.T) {
 	}
 }
 
+
 func TestMutateRow(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.MutateRowRequest{
@@ -256,3 +257,44 @@ func TestMutateRow(t *testing.T) {
 		t.Errorf("testproxy test: MutateRow() didn't return OK; got %v", resp.Status.Code)
 	}
 }
+
+func TestReadRows(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.ReadRowsRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.ReadRowsRequest{
+			TableName: tableName,
+		},
+	}
+
+	resp, err := client.ReadRows(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: ReadRows returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if len(resp.Row) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Row))
+
+	}
+}
+
+func TestBulkMutateRows(t *testing.T) {
+	t.Skip()
+}
+
+func TestCheckAndMutateRow(t *testing.T) {
+	t.Skip()
+}
+
+func TestSampleRowKeys(t *testing.T) {
+	t.Skip()
+}
+
+func TestReadModifyWriteRow(t *testing.T) {
+	t.Skip()
+}
+

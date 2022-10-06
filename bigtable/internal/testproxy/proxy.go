@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	"crypto/x509"
-	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
@@ -84,26 +83,24 @@ func rowToProto(btRow bigtable.Row) (*btpb.Row, error) {
 // rowSetFromProto translates a Bigtable v2.RowSet object to a Bigtable.RowSet
 // object.
 func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
-	rowRangeList := make(bigtable.RowRangeList, 0)
+	rowKeys := rs.GetRowKeys()
+	rowRanges := rs.GetRowRanges()
 
-	// Convert all rowKeys into single-row RowRanges
-	if rowKeys := rs.GetRowKeys(); len(rowKeys) > 0 {
-		for _, b := range rowKeys {
-
-			// Find the next highest key using byte operations
-			// This allows us to create a RowRange of 1 rowKey
-			e := binary.BigEndian.Uint64(b)
-			e++
-
-			s := binary.Size(e)
-			bOut := make([]byte, s)
-			binary.BigEndian.PutUint64(bOut, e)
-
-			rowRangeList = append(rowRangeList, bigtable.NewRange(string(b), string(bOut)))
-		}
+	if len(rowKeys) == 0 && len(rowRanges) == 0 {
+		return nil
 	}
 
-	if rowRanges := rs.GetRowRanges(); len(rowRanges) > 0 {
+	// Convert all rowKeys into a RowList
+	if len(rowKeys) > 0 {
+		var rowList bigtable.RowList
+		for _, b := range rowKeys {
+			rowList = append(rowList, string(b))
+		}
+		return rowList
+	}
+
+	if len(rowRanges) > 0 {
+		rowRangeList := make(bigtable.RowRangeList, 0)
 		for _, rrs := range rowRanges {
 			var start, end string
 			var rr bigtable.RowRange
@@ -129,8 +126,9 @@ func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
 
 			rowRangeList = append(rowRangeList, rr)
 		}
+		return rowRangeList
 	}
-	return rowRangeList
+	return nil
 }
 
 // mutationFromProto translates a slice of Bigtable v2.Mutation objects into
@@ -612,7 +610,74 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // ReadRows responds to the ReadRows RPC. This method gets all of the column
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadRows not implemented")
+	s.clientsLock.Lock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.Unlock()
+
+	if !exists {
+		log.Printf("bad client ID: %v\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+
+	if rrq == nil {
+		log.Printf("missing inner request: %v\n", rrq)
+		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
+
+	}
+
+	t := btc.c.Open(rrq.TableName)
+
+	rowPbs := rrq.Rows
+	rs := rowSetFromProto(rowPbs)
+
+	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
+	// provided for ReadRows. Use InfiniteRange() to get the full table.
+	if rs == nil {
+		// Should be lowest possible key value, an empty byte array
+		rs = bigtable.InfiniteRange("")
+	}
+
+	var c int32
+	var rowsPb []*btpb.Row
+	lim := req.GetCancelAfterRows()
+	err := t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+
+		c++
+		if c == lim {
+			return false
+		}
+		rpb, err := rowToProto(r)
+		if err != nil {
+			return false
+		}
+		rowsPb = append(rowsPb, rpb)
+		return true
+	})
+
+	res := &pb.RowsResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+		Row: []*btpb.Row{},
+	}
+
+	if err != nil {
+		log.Printf("error from Table.ReadRows: %v\n", err)
+		if st, ok := stat.FromError(err); ok {
+			res.Status = &statpb.Status{
+				Code:    st.Proto().Code,
+				Message: st.Message(),
+			}
+		}
+		return res, nil
+	}
+
+	res.Row = rowsPb
+
+	return res, nil
 }
 
 // MutateRow responds to the MutateRow RPC. This methods applies a series of
