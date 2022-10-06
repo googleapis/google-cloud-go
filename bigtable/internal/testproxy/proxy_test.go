@@ -321,10 +321,6 @@ func TestReadRows(t *testing.T) {
 	}
 }
 
-func TestBulkMutateRows(t *testing.T) {
-	t.Skip()
-}
-
 func TestCheckAndMutateRow(t *testing.T) {
 	t.Skip()
 }
