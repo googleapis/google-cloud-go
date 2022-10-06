@@ -16,7 +16,7 @@
 
 package speech_v1
 
-// [START speech_v1_generated_Adaptation_CreateCustomClass_sync]
+// [START speech_v1_config_Adaptation_CreateCustomClass_Basic_sync]
 import (
 	"context"
 	"fmt"
@@ -27,6 +27,8 @@ import (
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
+// Custom Class Creation
+// Shows how to create a custom class
 func createCustomClass(w io.Writer, parent, customClassId string) (*speechpb.CustomClass, error) {
 	// The custom class parent element
 	// parent = "projects/[PROJECT]/locations/us"
@@ -70,4 +72,4 @@ func createCustomClass(w io.Writer, parent, customClassId string) (*speechpb.Cus
 	return createdCustomClass, nil
 }
 
-// [END speech_v1_generated_Adaptation_CreateCustomClass_sync]
+// [END speech_v1_config_Adaptation_CreateCustomClass_Basic_sync]
