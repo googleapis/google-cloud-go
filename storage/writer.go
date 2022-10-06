@@ -176,7 +176,6 @@ func (w *Writer) openWriter() (err error) {
 
 	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist == true)
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
-	go w.monitorCancel()
 	params := &openWriterParams{
 		ctx:                w.ctx,
 		chunkSize:          w.ChunkSize,
@@ -196,6 +195,7 @@ func (w *Writer) openWriter() (err error) {
 		return err
 	}
 	w.opened = true
+	go w.monitorCancel()
 
 	return nil
 }
