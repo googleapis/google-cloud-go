@@ -1089,7 +1089,7 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		if ok {
 			x, err := strconv.ParseInt(sv.StringValue, 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("bad int64 string %q: %v", sv.StringValue, err)
+				return nil, fmt.Errorf("bad int64 string %q: %w", sv.StringValue, err)
 			}
 			return x, nil
 		}
@@ -1116,7 +1116,7 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 			s := sv.StringValue
 			d, err := parseAsDate(s)
 			if err != nil {
-				return nil, fmt.Errorf("bad DATE string %q: %v", s, err)
+				return nil, fmt.Errorf("bad DATE string %q: %w", s, err)
 			}
 			return d, nil
 		}
@@ -1130,7 +1130,7 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 			}
 			t, err := parseAsTimestamp(s)
 			if err != nil {
-				return nil, fmt.Errorf("bad TIMESTAMP string %q: %v", s, err)
+				return nil, fmt.Errorf("bad TIMESTAMP string %q: %w", s, err)
 			}
 			return t, nil
 		}
