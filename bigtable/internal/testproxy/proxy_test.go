@@ -244,14 +244,12 @@ func TestBulkMutateRows(t *testing.T) {
 									Value:           []byte("bulked up mutant!"),
 								},
 							},
-						},
-					},
-				},
+   				},
 			},
 		},
 	}
-
-	resp, err := client.BulkMutateRows(ctx, req)
+              
+  resp, err := client.BulkMutateRows(ctx, req)
 	if err != nil {
 		t.Fatalf("testproxy test: BulkMutateRows returned error: %v", err)
 	}
@@ -262,6 +260,36 @@ func TestBulkMutateRows(t *testing.T) {
 
 	if len(resp.Entry) != 0 {
 		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entry)
+
+func TestMutateRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.MutateRowRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.MutateRowRequest{
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
+			Mutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("mutant!"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.MutateRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: MutateRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: MutateRow() didn't return OK; got %v", resp.Status.Code)
+
 	}
 }
 
@@ -287,10 +315,6 @@ func TestReadRows(t *testing.T) {
 		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Row))
 
 	}
-}
-
-func TestMutateRow(t *testing.T) {
-	t.Skip()
 }
 
 func TestBulkMutateRows(t *testing.T) {

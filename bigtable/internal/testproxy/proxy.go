@@ -590,12 +590,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
-		if st, ok := stat.FromError(err); ok {
-			res.Status = &statpb.Status{
-				Code:    st.Proto().Code,
-				Message: st.Message(),
-			}
-		}
+		res.Status = statusFromError(err)
 		return res, nil
 	}
 
@@ -688,7 +683,39 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 // MutateRow responds to the MutateRow RPC. This methods applies a series of
 // changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "MutateRow not implemented")
+	s.clientsLock.Lock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.Unlock()
+
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to MutateRow() is missing inner request")
+	}
+
+	mPbs := rrq.Mutations
+	m := mutationFromProto(mPbs)
+
+	t := btc.c.Open(rrq.TableName)
+	row := rrq.RowKey
+
+	res := &pb.MutateRowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	err := t.Apply(ctx, string(row), m)
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	return res, nil
 }
 
 // BulkMutateRows responds to the BulkMutateRows RPC. This method applies a
