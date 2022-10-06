@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/bigtable/bttest"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -223,4 +224,75 @@ func TestReadRow(t *testing.T) {
 	if string(row.Key) != "row" {
 		t.Errorf("testproxy test: ReadRow() returned wrong row")
 	}
+}
+
+func TestMutateRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.MutateRowRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.MutateRowRequest{
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
+			Mutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("mutant!"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.MutateRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: MutateRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: MutateRow() didn't return OK; got %v", resp.Status.Code)
+	}
+}
+
+func TestReadRows(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.ReadRowsRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.ReadRowsRequest{
+			TableName: tableName,
+		},
+	}
+
+	resp, err := client.ReadRows(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: ReadRows returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if len(resp.Row) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Row))
+
+	}
+}
+
+func TestBulkMutateRows(t *testing.T) {
+	t.Skip()
+}
+
+func TestCheckAndMutateRow(t *testing.T) {
+	t.Skip()
+}
+
+func TestSampleRowKeys(t *testing.T) {
+	t.Skip()
+}
+
+func TestReadModifyWriteRow(t *testing.T) {
+	t.Skip()
 }
