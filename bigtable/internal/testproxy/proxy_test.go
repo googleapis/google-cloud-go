@@ -226,7 +226,6 @@ func TestReadRow(t *testing.T) {
 	}
 }
 
-
 func TestMutateRow(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.MutateRowRequest{
@@ -297,4 +296,3 @@ func TestSampleRowKeys(t *testing.T) {
 func TestReadModifyWriteRow(t *testing.T) {
 	t.Skip()
 }
-
