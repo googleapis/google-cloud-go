@@ -13,9 +13,6 @@ require (
 	google.golang.org/protobuf v1.28.1
 )
 
-// TODO(telpirion): Remove line below when ready to run integration tests
-//replace google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959 => /Users/erschmid/Git/googleapis/go-genproto
-
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
