@@ -727,7 +727,8 @@ type readSettings struct {
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-// Once set, all subsequent reads from the client use these options.
+// The client uses this value for subsequent reads, unless additional ReadOptions
+// are provided.
 func (c *Client) WithReadOptions(ro ...ReadOption) {
 	for _, r := range ro {
 		switch o := r.(type) {
