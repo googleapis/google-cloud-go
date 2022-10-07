@@ -649,7 +649,7 @@ func (ec evalContext) coerceString(target spansql.Expr, slit spansql.StringLiter
 	case spansql.Date:
 		d, err := parseAsDate(string(slit))
 		if err != nil {
-			return nil, fmt.Errorf("coercing string literal %q to DATE: %v", slit, err)
+			return nil, fmt.Errorf("coercing string literal %q to DATE: %w", slit, err)
 		}
 		return coercedValue{
 			val:  d,
@@ -658,7 +658,7 @@ func (ec evalContext) coerceString(target spansql.Expr, slit spansql.StringLiter
 	case spansql.Timestamp:
 		t, err := parseAsTimestamp(string(slit))
 		if err != nil {
-			return nil, fmt.Errorf("coercing string literal %q to TIMESTAMP: %v", slit, err)
+			return nil, fmt.Errorf("coercing string literal %q to TIMESTAMP: %w", slit, err)
 		}
 		return coercedValue{
 			val:  t,
@@ -758,7 +758,7 @@ func paramAsInteger(p spansql.Param, params queryParams) (int64, error) {
 	case string:
 		x, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			return 0, fmt.Errorf("bad int64 string %q: %v", v, err)
+			return 0, fmt.Errorf("bad int64 string %q: %w", v, err)
 		}
 		return x, nil
 	}
