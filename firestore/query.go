@@ -1056,7 +1056,6 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 
 func (*btreeDocumentIterator) stop() {}
 
-
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
 func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
@@ -1139,4 +1138,3 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 
 // AggregationResult contains the results of an aggregation query.
 type AggregationResult map[string]interface{}
-
