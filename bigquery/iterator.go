@@ -39,7 +39,7 @@ import (
 
 // Construct a RowIterator.
 func newRowIterator(ctx context.Context, src *rowSource, pf pageFetcher) *RowIterator {
-	if src.storage != nil {
+	if src != nil && src.storage != nil {
 		return newStorageAPIRowIterator(ctx, src)
 	}
 	it := &RowIterator{
@@ -285,6 +285,7 @@ func (it *streamIterator) setup() error {
 		}
 		qcfg := cfg.(*QueryConfig)
 		if qcfg.Dst == nil {
+			// TODO: script job ?
 			return fmt.Errorf("nil job destination table")
 		}
 		table = qcfg.Dst
@@ -320,7 +321,7 @@ func (it *streamIterator) start() error {
 	}
 
 	if len(session.GetStreams()) == 0 {
-		it.errs <- err
+		it.errs <- iterator.Done
 		return nil
 	}
 
