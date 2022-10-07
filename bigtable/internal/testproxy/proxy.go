@@ -847,7 +847,47 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 // SampleRowKeys responds to the SampleRowKeys RPC. This method gets a sampling
 // of the keys available in a table.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "SampleRowKeys not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("received invalid client ID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("missing inner request to SampleRowKeys: %v\n", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to SampleRowKeys() is missing inner request")
+	}
+
+	res := &pb.SampleRowKeysResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	keys, err := t.SampleRowKeys(ctx)
+	if err != nil {
+		log.Printf("received error from Table.SampleRowKeys(): %v\n", err)
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	sk := make([]*btpb.SampleRowKeysResponse, 0)
+	for _, k := range keys {
+		s := &btpb.SampleRowKeysResponse{
+			RowKey: []byte(k),
+		}
+		sk = append(sk, s)
+	}
+
+	res.Sample = sk
+
+	return res, nil
 }
 
 // ReadModifyWriteRow responds to the ReadModifyWriteRow RPC. This method
