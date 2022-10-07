@@ -48,6 +48,7 @@ func TestClientCollectionAndDoc(t *testing.T) {
 			path:         "projects/projectID/databases/(default)/documents/X",
 			parentPath:   db + "/documents",
 		},
+		readSettings: &readSettings{},
 	}
 	if !testEqual(coll1, wantc1) {
 		t.Fatalf("got\n%+v\nwant\n%+v", coll1, wantc1)
