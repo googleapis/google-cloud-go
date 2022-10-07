@@ -374,6 +374,35 @@ func TestSampleRowKeys(t *testing.T) {
 	t.Skip()
 }
 
-func TestReadModifyWriteRow(t *testing.T) {
-	t.Skip()
+func TestReadWriteRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.ReadModifyWriteRowRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.ReadModifyWriteRowRequest{
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
+			Rules: []*btpb.ReadModifyWriteRule{
+				{
+					Rule: &btpb.ReadModifyWriteRule_AppendValue{
+						AppendValue: []byte("appended!"),
+					},
+					FamilyName:      "cf0",
+					ColumnQualifier: []byte("coll1"),
+				},
+			},
+		},
+	}
+
+	resp, err := client.ReadModifyWriteRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: ReadModifyWriteRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: ReadModifyWriteRow() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if string(resp.Row.Key) != rowKey {
+		t.Errorf("testproxy test: ReadModifyWriteRow() returned wrong results; got: %v", resp.Row.Key)
+	}
 }
