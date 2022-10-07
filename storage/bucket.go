@@ -1373,7 +1373,7 @@ func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) 
 }
 
 func toRetentionPolicyFromProto(rp *storagepb.Bucket_RetentionPolicy) *RetentionPolicy {
-	if rp == nil || rp.EffectiveTime.AsTime().Unix() == 0 {
+	if rp == nil || rp.GetEffectiveTime().AsTime().Unix() == 0 {
 		return nil
 	}
 	return &RetentionPolicy{
