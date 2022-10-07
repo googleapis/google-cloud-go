@@ -22,7 +22,6 @@ import (
 	"io"
 	"reflect"
 	"sync"
-	"time"
 
 	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"github.com/apache/arrow/go/v10/arrow"
@@ -397,11 +396,6 @@ func (it *streamIterator) next() error {
 		return iterator.Done
 	}
 	select {
-	case <-time.After(500 * time.Millisecond):
-		if len(it.rowIt.rows) > 0 {
-			return nil
-		}
-		return fmt.Errorf("timeout for fetching data")
 	case <-it.more:
 		for range it.more {
 		}

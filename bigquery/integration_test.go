@@ -2581,7 +2581,7 @@ func TestIntegration_ReadQueryStorageAPI(t *testing.T) {
 			N    int
 		}
 	}
-	i := 0
+	// i := 0
 	start := time.Now()
 	for {
 		var s S
@@ -2592,8 +2592,8 @@ func TestIntegration_ReadQueryStorageAPI(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to fetch via storage API: %v", err)
 		}
-		i++
-		fmt.Printf("got data: %v - %d of %d\n", s, i, it.TotalRows)
+		// i++
+		// fmt.Printf("got data: %v - %d of %d\n", s, i, it.TotalRows)
 	}
 	diff := time.Now().Sub(start).Milliseconds()
 	t.Logf("took %d ms with storage API (%d rows)", diff, it.TotalRows)
