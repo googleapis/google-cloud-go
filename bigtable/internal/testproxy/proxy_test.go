@@ -322,7 +322,52 @@ func TestReadRows(t *testing.T) {
 }
 
 func TestCheckAndMutateRow(t *testing.T) {
-	t.Skip()
+	ctx := context.Background()
+	req := &pb.CheckAndMutateRowRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.CheckAndMutateRowRequest{
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
+			PredicateFilter: &btpb.RowFilter{
+				Filter: &btpb.RowFilter_PassAllFilter{},
+			},
+			TrueMutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("check success"),
+						},
+					},
+				},
+			},
+			FalseMutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("check failed!"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.CheckAndMutateRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: CheckAndMutateRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: CheckAndMutateRow() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if resp.Result.PredicateMatched != true {
+		t.Errorf("testproxy test: CheckAndMutateRow() returned wrong results; got: %v", resp.Result.PredicateMatched)
+	}
 }
 
 func TestSampleRowKeys(t *testing.T) {
