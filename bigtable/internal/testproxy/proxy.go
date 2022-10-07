@@ -491,8 +491,9 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 // a reference to individual clients instances (stored in a testClient object).
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
+	clientsLock sync.RWMutex           // clientsLock prevents simultaneous mutation of the clientIDs map
 	clientIDs   map[string]*testClient // clientIDs has all of the bigtable.Client objects under test
-	clientsLock sync.RWMutex
+
 }
 
 // CreateClient responds to the CreateClient RPC. This method adds a new client
@@ -610,9 +611,9 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // ReadRows responds to the ReadRows RPC. This method gets all of the column
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
-	s.clientsLock.Lock()
+	s.clientsLock.RLock()
 	btc, exists := s.clientIDs[req.ClientId]
-	s.clientsLock.Unlock()
+	s.clientsLock.RUnlock()
 
 	if !exists {
 		log.Printf("bad client ID: %v\n", req.ClientId)
@@ -683,9 +684,9 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 // MutateRow responds to the MutateRow RPC. This methods applies a series of
 // changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
-	s.clientsLock.Lock()
+	s.clientsLock.RLock()
 	btc, exists := s.clientIDs[req.ClientId]
-	s.clientsLock.Unlock()
+	s.clientsLock.RUnlock()
 
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
@@ -721,9 +722,9 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 // BulkMutateRows responds to the BulkMutateRows RPC. This method applies a
 // series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
-	s.clientsLock.Lock()
+	s.clientsLock.RLock()
 	btc, exists := s.clientIDs[req.ClientId]
-	s.clientsLock.Unlock()
+	s.clientsLock.RUnlock()
 
 	if !exists {
 		log.Printf("received invalid client ID: %s\n", req.ClientId)
@@ -789,7 +790,58 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 // CheckAndMutateRow responds to the CheckAndMutateRow RPC. This method applies
 // one mutation if a condition is true and another mutation if it is false.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "CheckAndMutateRow not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("received invalid ClientID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("request to CheckAndMutateRow is missing inner request: received: %v", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to CheckAndMutateRow() is missing inner request")
+	}
+
+	trueMuts := mutationFromProto(rrq.TrueMutations)
+	falseMuts := mutationFromProto(rrq.FalseMutations)
+
+	rfPb := rrq.PredicateFilter
+	f := bigtable.PassAllFilter()
+
+	if rfPb != nil {
+		f = *filterFromProto(rfPb)
+	}
+
+	c := bigtable.NewCondMutation(f, trueMuts, falseMuts)
+
+	res := &pb.CheckAndMutateRowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	rowKey := string(rrq.RowKey)
+
+	var matched bool
+	ao := bigtable.GetCondMutationResult(&matched)
+
+	err := t.Apply(ctx, rowKey, c, ao)
+	if err != nil {
+		log.Printf("received error from Table.Apply: %v", err)
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	res.Result = &btpb.CheckAndMutateRowResponse{
+		PredicateMatched: matched,
+	}
+
+	return res, nil
 }
 
 // SampleRowKeys responds to the SampleRowKeys RPC. This method gets a sampling
