@@ -986,6 +986,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		Website:               ua.Website.toProtoBucketWebsite(),
 		IamConfig:             bktIAM,
 		Rpo:                   ua.RPO.String(),
+		Autoclass:             ua.Autoclass.toProtoBucketAutoclass(),
 	}
 }
 
@@ -1101,6 +1102,10 @@ type BucketAttrsToUpdate struct {
 	// more information.
 	RPO RPO
 
+	// If set, updates the autoclass configuration of the bucket.
+	// See <TBD> for more information.
+	Autoclass *Autoclass
+
 	// acl is the list of access control rules on the bucket.
 	// It is unexported and only used internally by the gRPC client.
 	// Library users should use ACLHandle methods directly.
@@ -1212,6 +1217,11 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 			rb.Website = nil
 		} else {
 			rb.Website = ua.Website.toRawBucketWebsite()
+		}
+	}
+	if ua.Autoclass != nil {
+		rb.Autoclass = &raw.BucketAutoclass{
+			Enabled: ua.Autoclass.Enabled,
 		}
 	}
 	if ua.PredefinedACL != "" {

@@ -60,6 +60,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &Autoclass{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -163,6 +164,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &raw.BucketAutoclass{Enabled: true},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -391,6 +393,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass: "NEARLINE",
+		Autoclass:    &Autoclass{Enabled: false},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -434,6 +437,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:    "NEARLINE",
+		Autoclass:       &raw.BucketAutoclass{Enabled: false},
 		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -638,6 +642,10 @@ func TestNewBucket(t *testing.T) {
 		Logging:       &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ProjectNumber: 123231313,
+		Autoclass: &raw.BucketAutoclass{
+			Enabled:    true,
+			ToggleTime: "2017-10-23T04:05:06Z",
+		},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -688,6 +696,10 @@ func TestNewBucket(t *testing.T) {
 		DefaultObjectACL: nil,
 		LocationType:     "dual-region",
 		ProjectNumber:    123231313,
+		Autoclass: &Autoclass{
+			Enabled:    true,
+			ToggleTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
