@@ -733,7 +733,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 
 	rrq := req.GetRequest()
 	if rrq == nil {
-		log.Printf("missing inner request to BulkMutateRows: %v", req)
+		log.Printf("missing inner request to BulkMutateRows: %v\n", req)
 		return nil, stat.Error(codes.InvalidArgument, "request to BulkMutateRows() is missing inner request")
 	}
 
@@ -801,7 +801,57 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 // ReadModifyWriteRow responds to the ReadModifyWriteRow RPC. This method
 // applies a non-idempotent change to a row.
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadModifyWriteRow not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("received invalid client ID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("missing inner request to ReadModifyWriteRow: %v\n", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to CheckAndMutateRow() is missing inner request")
+	}
+
+	rpb := rrq.Rules
+	rmw := bigtable.NewReadModifyWrite()
+
+	for _, rp := range rpb {
+		switch r := rp.Rule; r.(type) {
+		case *btpb.ReadModifyWriteRule_AppendValue:
+			av := r.(*btpb.ReadModifyWriteRule_AppendValue)
+			rmw.AppendValue(rp.FamilyName, string(rp.ColumnQualifier), av.AppendValue)
+		case *btpb.ReadModifyWriteRule_IncrementAmount:
+			ia := r.(*btpb.ReadModifyWriteRule_IncrementAmount)
+			rmw.Increment(rp.FamilyName, string(rp.ColumnQualifier), ia.IncrementAmount)
+		}
+	}
+
+	res := &pb.RowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	k := string(rrq.RowKey)
+	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
+	if err != nil {
+		return nil, err
+	}
+
+	rp, err := rowToProto(r)
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	res.Row = rp
+	return res, nil
 }
 
 func (s *goTestProxyServer) mustEmbedUnimplementedCloudBigtableV2TestProxyServer() {}
