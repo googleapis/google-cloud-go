@@ -18,13 +18,12 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
+	"go/doc"
 	"go/printer"
 	"go/scanner"
 	"go/token"
 	"strconv"
 	"strings"
-
-	"cloud.google.com/go/third_party/go/doc"
 )
 
 // PrintType returns a string representation of the decl.

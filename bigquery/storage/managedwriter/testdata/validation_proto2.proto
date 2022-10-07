@@ -15,6 +15,10 @@
 syntax = "proto2";
 
 package testdata;
+
+// Source protos located in github.com/googleapis/googleapis
+import "google/cloud/bigquery/storage/v1/annotations.proto";
+
 option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
 
 
@@ -120,4 +124,12 @@ message ValidationP2PackedRepeated {
     repeated sfixed64 sfixed64_repeated = 11 [packed = true];
     repeated bool bool_repeated = 12 [packed = true];
     repeated Proto2ExampleEnum enum_repeated = 13 [packed = true];
+}
+
+// Validating the behavior of column annotations to remap from a given
+// proto field name to a custom BigQuery column name.
+message ValidationP2ColumnAnnotations {
+    optional string first = 1;
+    optional string second = 2 [(google.cloud.bigquery.storage.v1.column_name) = "特別コラム"];
+    optional string third = 3 [(google.cloud.bigquery.storage.v1.column_name) = "second"];
 }

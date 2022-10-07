@@ -8,7 +8,9 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.1.2
 	github.com/google/go-cmp v0.5.8
+	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20220824184156-0ba36e446d93
 	github.com/googleapis/gax-go/v2 v2.5.1
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
 	google.golang.org/api v0.96.0
 	google.golang.org/genproto v0.0.0-20220926220553-6981cbe3cfce
 	google.golang.org/grpc v1.49.0
@@ -29,7 +31,6 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
-	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect

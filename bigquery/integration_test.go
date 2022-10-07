@@ -197,7 +197,7 @@ func initIntegrationTest() func() {
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
 			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
-			connOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
+			connOpts = append(connOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
