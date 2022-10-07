@@ -873,12 +873,12 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 	rmw := bigtable.NewReadModifyWrite()
 
 	for _, rp := range rpb {
-		switch r := rp.Rule; r.(type) {
+		switch r := rp.Rule.(type) {
 		case *btpb.ReadModifyWriteRule_AppendValue:
-			av := r.(*btpb.ReadModifyWriteRule_AppendValue)
+			av := r
 			rmw.AppendValue(rp.FamilyName, string(rp.ColumnQualifier), av.AppendValue)
 		case *btpb.ReadModifyWriteRule_IncrementAmount:
-			ia := r.(*btpb.ReadModifyWriteRule_IncrementAmount)
+			ia := r
 			rmw.Increment(rp.FamilyName, string(rp.ColumnQualifier), ia.IncrementAmount)
 		}
 	}
