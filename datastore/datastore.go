@@ -729,11 +729,12 @@ type readSettings struct {
 // e.g. at what time snapshot to read the documents.
 // The client uses this value for subsequent reads, unless additional ReadOptions
 // are provided.
-func (c *Client) WithReadOptions(ro ...ReadOption) {
+func (c *Client) WithReadOptions(ro ...ReadOption) *Client {
 	for _, r := range ro {
 		switch o := r.(type) {
 		case docReadTime:
 			o.apply(c.readSettings)
 		}
 	}
+	return c
 }
