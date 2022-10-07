@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.16.0...dialogflow/v1.16.1) (2022-09-28)
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** revert removal of LRO mixin ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.15.0...dialogflow/v1.16.0) (2022-09-21)
 
 
