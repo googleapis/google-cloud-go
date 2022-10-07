@@ -14,7 +14,7 @@ require (
 )
 
 // TODO(telpirion): Remove line below when ready to run integration tests
-replace google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959 => "/Users/erschmid/Git/googleapis/go-genproto"
+replace google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959 => /Users/erschmid/Git/googleapis/go-genproto
 
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
