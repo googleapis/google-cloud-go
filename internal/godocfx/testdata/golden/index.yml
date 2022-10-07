@@ -8,7 +8,7 @@ items:
     information about Google Cloud Storage is available at\n<a href=\"https://cloud.google.com/storage/docs\">https://cloud.google.com/storage/docs</a>.\n<p>See
     <a href=\"https://pkg.go.dev/cloud.google.com/go\">https://pkg.go.dev/cloud.google.com/go</a>
     for authentication, timeouts,\nconnection pooling and similar aspects of this
-    package.\n<h3 id=\"hdr-Creating_a_Client\">Creating a Client</h3>\n<p>To start
+    package.\n<h2 id=\"hdr-Creating_a_Client\">Creating a Client</h2>\n<p>To start
     working with this package, create a <a href=\"#Client\">Client</a>:\n<pre class=\"prettyprint\">ctx
     := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil
     {\n    // TODO: Handle error.\n}\n</pre>\n<p>The client will use your default
@@ -26,7 +26,7 @@ items:
     {\n    // TODO: Handle error.\n}\n\n// This request is now directed to http://localhost:9000/storage/v1/b\n//
     instead of https://storage.googleapis.com/storage/v1/b\nif err := client.Bucket(&quot;my-bucket&quot;).Create(ctx,
     projectID, nil); err != nil {\n    // TODO: Handle error.\n}\n</pre>\n<p>Please
-    note that there is no official emulator for Cloud Storage.\n<h3 id=\"hdr-Buckets\">Buckets</h3>\n<p>A
+    note that there is no official emulator for Cloud Storage.\n<h2 id=\"hdr-Buckets\">Buckets</h2>\n<p>A
     Google Cloud Storage bucket is a collection of objects. To work with a\nbucket,
     make a bucket handle:\n<pre class=\"prettyprint\">bkt := client.Bucket(bucketName)\n</pre>\n<p>A
     handle is a reference to a bucket. You can have a handle even if the\nbucket doesn&apos;t
@@ -41,7 +41,7 @@ items:
     class=\"prettyprint\">attrs, err := bkt.Attrs(ctx)\nif err != nil {\n    // TODO:
     Handle error.\n}\nfmt.Printf(&quot;bucket %s, created at %s, is located in %s
     with storage class %s\\n&quot;,\n    attrs.Name, attrs.Created, attrs.Location,
-    attrs.StorageClass)\n</pre>\n<h3 id=\"hdr-Objects\">Objects</h3>\n<p>An object
+    attrs.StorageClass)\n</pre>\n<h2 id=\"hdr-Objects\">Objects</h2>\n<p>An object
     holds arbitrary data as a sequence of bytes, like a file. You\nrefer to objects
     using a handle, just as with buckets, but unlike buckets\nyou don&apos;t explicitly
     create an object. Instead, the first time you write\nto an object it will be created.
@@ -58,8 +58,8 @@ items:
     also have attributes, which you can fetch with <a href=\"#ObjectHandle.Attrs\">ObjectHandle.Attrs</a>:\n<pre
     class=\"prettyprint\">objAttrs, err := obj.Attrs(ctx)\nif err != nil {\n    //
     TODO: Handle error.\n}\nfmt.Printf(&quot;object %s has size %d and can be read
-    using %s\\n&quot;,\n    objAttrs.Name, objAttrs.Size, objAttrs.MediaLink)\n</pre>\n<h3
-    id=\"hdr-Listing_objects\">Listing objects</h3>\n<p>Listing objects in a bucket
+    using %s\\n&quot;,\n    objAttrs.Name, objAttrs.Size, objAttrs.MediaLink)\n</pre>\n<h2
+    id=\"hdr-Listing_objects\">Listing objects</h2>\n<p>Listing objects in a bucket
     is done with the <a href=\"#BucketHandle.Objects\">BucketHandle.Objects</a> method:\n<pre
     class=\"prettyprint\">query := &amp;storage.Query{Prefix: &quot;&quot;}\n\nvar
     names []string\nit := bkt.Objects(ctx, query)\nfor {\n    attrs, err := it.Next()\n
@@ -74,7 +74,7 @@ items:
     using <a href=\"#Query.SetAttrSelection\">Query.SetAttrSelection</a> may speed
     up the listing process:\n<pre class=\"prettyprint\">query := &amp;storage.Query{Prefix:
     &quot;&quot;}\nquery.SetAttrSelection([]string{&quot;Name&quot;})\n\n// ... as
-    before\n</pre>\n<h3 id=\"hdr-ACLs\">ACLs</h3>\n<p>Both objects and buckets have
+    before\n</pre>\n<h2 id=\"hdr-ACLs\">ACLs</h2>\n<p>Both objects and buckets have
     ACLs (Access Control Lists). An ACL is a list of\nACLRules, each of which specifies
     the role of a user, group or project. ACLs\nare suitable for fine-grained control,
     but you may prefer using IAM to control\naccess at the project level (see <a href=\"https://cloud.google.com/storage/docs/access-control/iam\">Cloud
@@ -83,7 +83,7 @@ items:
     class=\"prettyprint\">acls, err := obj.ACL().List(ctx)\nif err != nil {\n    //
     TODO: Handle error.\n}\nfor _, rule := range acls {\n    fmt.Printf(&quot;%s has
     role %s\\n&quot;, rule.Entity, rule.Role)\n}\n</pre>\n<p>You can also set and
-    delete ACLs.\n<h3 id=\"hdr-Conditions\">Conditions</h3>\n<p>Every object has a
+    delete ACLs.\n<h2 id=\"hdr-Conditions\">Conditions</h2>\n<p>Every object has a
     generation and a metageneration. The generation changes\nwhenever the content
     changes, and the metageneration changes whenever the\nmetadata changes. <a href=\"#Conditions\">Conditions</a>
     let you check these values before an operation;\nthe operation only executes if
@@ -92,7 +92,7 @@ items:
     objAttrs. Now\nyou want to write to that object, but only if its contents haven&apos;t
     changed\nsince you read it. Here is how to express that:\n<pre class=\"prettyprint\">w
     = obj.If(storage.Conditions{GenerationMatch: objAttrs.Generation}).NewWriter(ctx)\n//
-    Proceed with writing as above.\n</pre>\n<h3 id=\"hdr-Signed_URLs\">Signed URLs</h3>\n<p>You
+    Proceed with writing as above.\n</pre>\n<h2 id=\"hdr-Signed_URLs\">Signed URLs</h2>\n<p>You
     can obtain a URL that lets anyone read or write an object for a limited time.\nSigning
     a URL requires credentials authorized to sign a URL. To use the same\nauthentication
     that was used when instantiating the Storage client, use\n<a href=\"#BucketHandle.SignedURL\">BucketHandle.SignedURL</a>.\n<pre
@@ -100,8 +100,8 @@ items:
     opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</pre>\n<p>You
     can also sign a URL without creating a client. See the documentation of\n<a href=\"#SignedURL\">SignedURL</a>
     for details.\n<pre class=\"prettyprint\">url, err := storage.SignedURL(bucketName,
-    &quot;shared-object&quot;, opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</pre>\n<h3
-    id=\"hdr-Post_Policy_V4_Signed_Request\">Post Policy V4 Signed Request</h3>\n<p>A
+    &quot;shared-object&quot;, opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</pre>\n<h2
+    id=\"hdr-Post_Policy_V4_Signed_Request\">Post Policy V4 Signed Request</h2>\n<p>A
     type of signed request that allows uploads through HTML forms directly to Cloud
     Storage with\ntemporary permission. Conditions can be applied to restrict how
     the HTML form is used and exercised\nby a user.\n<p>For more information, please
@@ -109,8 +109,8 @@ items:
     POST Object docs</a> as well\nas the documentation of <a href=\"#BucketHandle.GenerateSignedPostPolicyV4\">BucketHandle.GenerateSignedPostPolicyV4</a>.\n<pre
     class=\"prettyprint\">pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName,
     opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;URL: %s\\nFields;
-    %v\\n&quot;, pv4.URL, pv4.Fields)\n</pre>\n<h3 id=\"hdr-Credential_requirements_for_signing\">Credential
-    requirements for signing</h3>\n<p>If the GoogleAccessID and PrivateKey option
+    %v\\n&quot;, pv4.URL, pv4.Fields)\n</pre>\n<h2 id=\"hdr-Credential_requirements_for_signing\">Credential
+    requirements for signing</h2>\n<p>If the GoogleAccessID and PrivateKey option
     fields are not provided, they will\nbe automatically detected by <a href=\"#BucketHandle.SignedURL\">BucketHandle.SignedURL</a>
     and\n<a href=\"#BucketHandle.GenerateSignedPostPolicyV4\">BucketHandle.GenerateSignedPostPolicyV4</a>
     if any of the following are true:\n<ul>\n<li>you are authenticated to the Storage
@@ -127,13 +127,13 @@ items:
     generate the signature, you must have:\n<ul>\n<li>iam.serviceAccounts.signBlob
     permissions on the GoogleAccessID service\naccount, and\n<li>the <a href=\"https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview\">IAM
     Service Account Credentials API</a> enabled (unless authenticating\nwith a downloaded
-    private key).\n</ul>\n<h3 id=\"hdr-Errors\">Errors</h3>\n<p>Errors returned by
+    private key).\n</ul>\n<h2 id=\"hdr-Errors\">Errors</h2>\n<p>Errors returned by
     this client are often of the type <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>.\nThese
     errors can be introspected for more information by using <a href=\"/errors#As\">errors.As</a>\nwith
     the richer <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>
     type. For example:\n<pre class=\"prettyprint\">var e &#42;googleapi.Error\nif
-    ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</pre>\n<h3
-    id=\"hdr-Retrying_failed_requests\">Retrying failed requests</h3>\n<p>Methods
+    ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</pre>\n<h2
+    id=\"hdr-Retrying_failed_requests\">Retrying failed requests</h2>\n<p>Methods
     in this package may retry calls that fail with transient errors.\nRetrying continues
     indefinitely unless the controlling context is canceled, the\nclient is closed,
     or a non-transient error is received. To stop retries from\ncontinuing, use context
