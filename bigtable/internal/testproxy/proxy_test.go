@@ -326,7 +326,26 @@ func TestCheckAndMutateRow(t *testing.T) {
 }
 
 func TestSampleRowKeys(t *testing.T) {
-	t.Skip()
+	ctx := context.Background()
+	req := &pb.SampleRowKeysRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.SampleRowKeysRequest{
+			TableName: tableName,
+		},
+	}
+
+	resp, err := client.SampleRowKeys(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: SampleRowKeys() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: SampleRowKeys() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if len(resp.Sample) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Sample))
+	}
 }
 
 func TestReadModifyWriteRow(t *testing.T) {
