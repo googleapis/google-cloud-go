@@ -884,51 +884,54 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(skipGRPC("b/250958907"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	objName := uidSpace.New()
-	obj := bkt.Object(objName)
-	contents := []byte("Hello, world this is a range request")
+		objName := uidSpace.New()
+		obj := bkt.Object(objName)
+		contents := []byte("Hello, world this is a range request")
 
-	w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
-	if _, err := w.Write(contents); err != nil {
-		t.Errorf("Failed to write contents: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Errorf("Failed to close writer: %v", err)
-	}
+		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			t.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("Failed to close writer: %v", err)
+		}
 
-	last5s := []struct {
-		name   string
-		start  int64
-		length int64
-	}{
-		{name: "negative offset", start: -5, length: -1},
-		{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
-		{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
-	}
+		last5s := []struct {
+			name   string
+			start  int64
+			length int64
+		}{
+			{name: "negative offset", start: -5, length: -1},
+			{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
+			{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+		}
 
-	for _, last5 := range last5s {
-		t.Run(last5.name, func(t *testing.T) {
-			r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
-			if err != nil {
-				t.Fatalf("Failed to make range read: %v", err)
-			}
-			defer r.Close()
+		for _, last5 := range last5s {
+			t.Run(last5.name, func(t *testing.T) {
+				wantBuf := contents[len(contents)-5:]
+				r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
+				if err != nil {
+					t.Fatalf("Failed to make range read: %v", err)
+				}
+				defer r.Close()
 
-			if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
-				t.Fatalf("StartOffset mismatch, got %d want %d", got, want)
-			}
+				if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+					t.Errorf("StartOffset mismatch, got %d want %d", got, want)
+				}
 
-			nr, _ := io.Copy(ioutil.Discard, r)
-			if got, want := nr, int64(5); got != want {
-				t.Fatalf("Body length mismatch, got %d want %d", got, want)
-			}
-		})
-	}
+				gotBuf := &bytes.Buffer{}
+				nr, _ := io.Copy(gotBuf, r)
+				if got, want := nr, int64(5); got != want {
+					t.Errorf("Body length mismatch, got %d want %d", got, want)
+				} else if diff := cmp.Diff(gotBuf.String(), string(wantBuf)); diff != "" {
+					t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
+				}
+			})
+		}
+	})
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
@@ -3423,199 +3426,195 @@ func TestIntegration_CancelWrite(t *testing.T) {
 }
 
 func TestIntegration_UpdateCORS(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-
-	initialSettings := []CORS{
-		{
-			MaxAge:          time.Hour,
-			Methods:         []string{"POST"},
-			Origins:         []string{"some-origin.com"},
-			ResponseHeaders: []string{"foo-bar"},
-		},
-	}
-
-	for _, test := range []struct {
-		input []CORS
-		want  []CORS
-	}{
-		{
-			input: []CORS{
-				{
-					MaxAge:          time.Hour,
-					Methods:         []string{"GET"},
-					Origins:         []string{"*"},
-					ResponseHeaders: []string{"some-header"},
-				},
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		initialSettings := []CORS{
+			{
+				MaxAge:          time.Hour,
+				Methods:         []string{"POST"},
+				Origins:         []string{"some-origin.com"},
+				ResponseHeaders: []string{"foo-bar"},
 			},
-			want: []CORS{
-				{
-					MaxAge:          time.Hour,
-					Methods:         []string{"GET"},
-					Origins:         []string{"*"},
-					ResponseHeaders: []string{"some-header"},
-				},
-			},
-		},
-		{
-			input: []CORS{},
-			want:  nil,
-		},
-		{
-			input: nil,
-			want: []CORS{
-				{
-					MaxAge:          time.Hour,
-					Methods:         []string{"POST"},
-					Origins:         []string{"some-origin.com"},
-					ResponseHeaders: []string{"foo-bar"},
-				},
-			},
-		},
-	} {
-		bkt := client.Bucket(uidSpace.New())
-		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
-		defer h.mustDeleteBucket(bkt)
-		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
-		attrs := h.mustBucketAttrs(bkt)
-		if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
-			t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
 		}
-	}
+
+		for _, test := range []struct {
+			desc  string
+			input []CORS
+			want  []CORS
+		}{
+			{
+				desc: "set new values",
+				input: []CORS{
+					{
+						MaxAge:          time.Hour,
+						Methods:         []string{"GET"},
+						Origins:         []string{"*"},
+						ResponseHeaders: []string{"some-header"},
+					},
+				},
+				want: []CORS{
+					{
+						MaxAge:          time.Hour,
+						Methods:         []string{"GET"},
+						Origins:         []string{"*"},
+						ResponseHeaders: []string{"some-header"},
+					},
+				},
+			},
+			{
+				desc:  "set to empty to remove existing policies",
+				input: []CORS{},
+				want:  nil,
+			},
+			{
+				desc:  "do not set to keep existing policies",
+				input: nil,
+				want: []CORS{
+					{
+						MaxAge:          time.Hour,
+						Methods:         []string{"POST"},
+						Origins:         []string{"some-origin.com"},
+						ResponseHeaders: []string{"foo-bar"},
+					},
+				},
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				h := testHelper{t}
+
+				bkt := client.Bucket(prefix + uidSpace.New())
+				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
+				defer h.mustDeleteBucket(bkt)
+				// Set VersioningEnabled so that we don't send an empty update/patch request, which is invalid for gRPC
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				attrs := h.mustBucketAttrs(bkt)
+				if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
+					t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
+				}
+			})
+		}
+	})
 }
 
 func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
-	defer h.mustDeleteBucket(bkt)
-	attrs := h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != false {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
-	}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
+		defer h.mustDeleteBucket(bkt)
+		attrs := h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != false {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, false)
+		}
 
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{DefaultEventBasedHold: true}, attrs.MetaGeneration)
-	attrs = h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != true {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
-	}
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{DefaultEventBasedHold: true}, attrs.MetaGeneration)
+		attrs = h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != true {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+		}
 
-	// Omitting it should leave the value unchanged.
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RequesterPays: true}, attrs.MetaGeneration)
-	attrs = h.mustBucketAttrs(bkt)
-	if attrs.DefaultEventBasedHold != true {
-		t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
-	}
+		// Omitting it should leave the value unchanged.
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RequesterPays: true}, attrs.MetaGeneration)
+		attrs = h.mustBucketAttrs(bkt)
+		if attrs.DefaultEventBasedHold != true {
+			t.Errorf("got=%v, want=%v", attrs.DefaultEventBasedHold, true)
+		}
+	})
 }
 
 func TestIntegration_UpdateEventBasedHold(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
-	obj := bkt.Object("some-obj")
-	h.mustWrite(obj.NewWriter(ctx), randomContents())
+		obj := client.Bucket(bucket).Object("some-obj")
+		h.mustWrite(obj.NewWriter(ctx), randomContents())
 
-	defer func() {
-		h.mustUpdateObject(obj, ObjectAttrsToUpdate{EventBasedHold: false}, h.mustObjectAttrs(obj).Metageneration)
-		h.mustDeleteObject(obj)
-		h.mustDeleteBucket(bkt)
-	}()
+		defer func() {
+			h.mustUpdateObject(obj, ObjectAttrsToUpdate{EventBasedHold: false}, h.mustObjectAttrs(obj).Metageneration)
+			h.mustDeleteObject(obj)
+		}()
 
-	attrs := h.mustObjectAttrs(obj)
-	if attrs.EventBasedHold != false {
-		t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, false)
-	}
+		attrs := h.mustObjectAttrs(obj)
+		if attrs.EventBasedHold != false {
+			t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, false)
+		}
 
-	h.mustUpdateObject(obj, ObjectAttrsToUpdate{EventBasedHold: true}, attrs.Metageneration)
-	attrs = h.mustObjectAttrs(obj)
-	if attrs.EventBasedHold != true {
-		t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, true)
-	}
+		h.mustUpdateObject(obj, ObjectAttrsToUpdate{EventBasedHold: true}, attrs.Metageneration)
+		attrs = h.mustObjectAttrs(obj)
+		if attrs.EventBasedHold != true {
+			t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, true)
+		}
 
-	// Omitting it should leave the value unchanged.
-	h.mustUpdateObject(obj, ObjectAttrsToUpdate{ContentType: "foo"}, attrs.Metageneration)
-	attrs = h.mustObjectAttrs(obj)
-	if attrs.EventBasedHold != true {
-		t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, true)
-	}
+		// Omitting it should leave the value unchanged.
+		h.mustUpdateObject(obj, ObjectAttrsToUpdate{ContentType: "foo"}, attrs.Metageneration)
+		attrs = h.mustObjectAttrs(obj)
+		if attrs.EventBasedHold != true {
+			t.Fatalf("got=%v, want=%v", attrs.EventBasedHold, true)
+		}
+	})
 }
 
 func TestIntegration_UpdateTemporaryHold(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{})
-	obj := bkt.Object("some-obj")
-	h.mustWrite(obj.NewWriter(ctx), randomContents())
+		obj := client.Bucket(bucket).Object("updatetemporaryhold-obj")
+		h.mustWrite(obj.NewWriter(ctx), randomContents())
 
-	defer func() {
-		h.mustUpdateObject(obj, ObjectAttrsToUpdate{TemporaryHold: false}, h.mustObjectAttrs(obj).Metageneration)
-		h.mustDeleteObject(obj)
-		h.mustDeleteBucket(bkt)
-	}()
+		defer func() {
+			h.mustUpdateObject(obj, ObjectAttrsToUpdate{TemporaryHold: false}, h.mustObjectAttrs(obj).Metageneration)
+			h.mustDeleteObject(obj)
+		}()
 
-	attrs := h.mustObjectAttrs(obj)
-	if attrs.TemporaryHold != false {
-		t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, false)
-	}
+		attrs := h.mustObjectAttrs(obj)
+		if attrs.TemporaryHold != false {
+			t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, false)
+		}
 
-	h.mustUpdateObject(obj, ObjectAttrsToUpdate{TemporaryHold: true}, attrs.Metageneration)
-	attrs = h.mustObjectAttrs(obj)
-	if attrs.TemporaryHold != true {
-		t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, true)
-	}
+		h.mustUpdateObject(obj, ObjectAttrsToUpdate{TemporaryHold: true}, attrs.Metageneration)
+		attrs = h.mustObjectAttrs(obj)
+		if attrs.TemporaryHold != true {
+			t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, true)
+		}
 
-	// Omitting it should leave the value unchanged.
-	h.mustUpdateObject(obj, ObjectAttrsToUpdate{ContentType: "foo"}, attrs.Metageneration)
-	attrs = h.mustObjectAttrs(obj)
-	if attrs.TemporaryHold != true {
-		t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, true)
-	}
+		// Omitting it should leave the value unchanged.
+		h.mustUpdateObject(obj, ObjectAttrsToUpdate{ContentType: "foo"}, attrs.Metageneration)
+		attrs = h.mustObjectAttrs(obj)
+		if attrs.TemporaryHold != true {
+			t.Fatalf("got=%v, want=%v", attrs.TemporaryHold, true)
+		}
+	})
 }
 
 func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
-	obj := bkt.Object("some-obj")
-	h.mustWrite(obj.NewWriter(ctx), randomContents())
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
+		obj := bkt.Object("some-obj")
+		h.mustWrite(obj.NewWriter(ctx), randomContents())
 
-	defer func() {
-		t.Helper()
-		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}}, h.mustBucketAttrs(bkt).MetaGeneration)
+		defer func() {
+			t.Helper()
+			h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}}, h.mustBucketAttrs(bkt).MetaGeneration)
 
-		// RetentionPeriod of less than a day is explicitly called out
-		// as best effort and not guaranteed, so let's log problems deleting
-		// objects instead of failing.
-		if err := obj.Delete(context.Background()); err != nil {
-			t.Logf("object delete: %v", err)
+			// RetentionPeriod of less than a day is explicitly called out
+			// as best effort and not guaranteed, so let's log problems deleting
+			// objects instead of failing.
+			if err := obj.Delete(context.Background()); err != nil {
+				t.Logf("object delete: %v", err)
+			}
+			if err := bkt.Delete(context.Background()); err != nil {
+				t.Logf("bucket delete: %v", err)
+			}
+		}()
+
+		attrs := h.mustObjectAttrs(obj)
+		if attrs.RetentionExpirationTime == (time.Time{}) {
+			t.Fatalf("got=%v, wanted a non-zero value", attrs.RetentionExpirationTime)
 		}
-		if err := bkt.Delete(context.Background()); err != nil {
-			t.Logf("bucket delete: %v", err)
-		}
-	}()
-
-	attrs := h.mustObjectAttrs(obj)
-	if attrs.RetentionExpirationTime == (time.Time{}) {
-		t.Fatalf("got=%v, wanted a non-zero value", attrs.RetentionExpirationTime)
-	}
+	})
 }
 
 func TestIntegration_CustomTime(t *testing.T) {

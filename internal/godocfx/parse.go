@@ -620,18 +620,21 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 }
 
 func toHTML(p *doc.Package, s string) string {
-	buf := &bytes.Buffer{}
-	// First, convert to Markdown.
-	buf.Write(p.HTML(s))
+	printer := p.Printer()
+
+	// Set the default heading level to 2 so we go from H1 to H2.
+	printer.HeadingLevel = 2
+
+	html := printer.HTML(p.Parser().Parse(s))
 
 	// Replace * with &#42; to avoid confusing the DocFX Markdown processor,
 	// which sometimes interprets * as <em>.
-	b := bytes.ReplaceAll(buf.Bytes(), []byte("*"), []byte("&#42;"))
+	html = bytes.ReplaceAll(html, []byte("*"), []byte("&#42;"))
 
 	// Add prettyprint class to all pre elements.
-	b = bytes.ReplaceAll(b, []byte("<pre>"), []byte("<pre class=\"prettyprint\">"))
+	html = bytes.ReplaceAll(html, []byte("<pre>"), []byte("<pre class=\"prettyprint\">"))
 
-	return string(b)
+	return string(html)
 }
 
 func hasPrefix(s string, prefixes []string) bool {
