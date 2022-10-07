@@ -28,10 +28,11 @@ func TestDoc(t *testing.T) {
 	coll := testClient.Collection("C")
 	got := coll.Doc("d")
 	want := &DocumentRef{
-		Parent:    coll,
-		ID:        "d",
-		Path:      "projects/projectID/databases/(default)/documents/C/d",
-		shortPath: "C/d",
+		Parent:       coll,
+		ID:           "d",
+		Path:         "projects/projectID/databases/(default)/documents/C/d",
+		shortPath:    "C/d",
+		readSettings: &readSettings{},
 	}
 	if !testEqual(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)

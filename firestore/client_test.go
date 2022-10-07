@@ -27,8 +27,9 @@ import (
 )
 
 var testClient = &Client{
-	projectID:  "projectID",
-	databaseID: "(default)",
+	projectID:    "projectID",
+	databaseID:   "(default)",
+	readSettings: &readSettings{},
 }
 
 func TestClientCollectionAndDoc(t *testing.T) {

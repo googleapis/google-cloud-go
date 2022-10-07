@@ -87,6 +87,7 @@ func TestCreateFromProtoValue(t *testing.T) {
 						path:         "projects/P/databases/D/documents/c",
 					},
 				},
+				readSettings: &readSettings{},
 			},
 		},
 	} {
@@ -536,8 +537,11 @@ func TestPathToDoc(t *testing.T) {
 						path:         "projects/P/databases/D/documents/c1",
 					},
 				},
+				readSettings: &readSettings{},
 			},
+			readSettings: &readSettings{},
 		},
+		readSettings: &readSettings{},
 	}
 	if !testEqual(got, want) {
 		t.Errorf("\ngot  %+v\nwant %+v", got, want)
