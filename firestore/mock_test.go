@@ -206,6 +206,27 @@ func (s *mockServer) RunQuery(req *pb.RunQueryRequest, qs pb.Firestore_RunQueryS
 	return nil
 }
 
+func (s *mockServer) RunAggregationQuery(req *pb.RunAggregationQueryRequest, qs pb.Firestore_RunAggregationQueryServer) error {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return err
+	}
+	responses := res.([]interface{})
+	for _, res := range responses {
+		switch res := res.(type) {
+		case *pb.RunAggregationQueryResponse:
+			if err := qs.Send(res); err != nil {
+				return err
+			}
+		case error:
+			return res
+		default:
+			return fmt.Errorf("bad response type in RunAggregationQuery: %+v", res)
+		}
+	}
+	return nil
+}
+
 func (s *mockServer) BeginTransaction(_ context.Context, req *pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
 	res, err := s.popRPC(req)
 	if err != nil {

@@ -308,6 +308,14 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 	return q.fromProto(&runQueryRequest)
 }
 
+// NewAggregationQuery returns an AggregationQuery with this query as its
+// base query.
+func (q *Query) NewAggregationQuery() *AggregationQuery {
+	return &AggregationQuery{
+		query: q,
+	}
+}
+
 // fromProto creates a new Query object from a RunQueryRequest. This can be used
 // in combination with ToProto to serialize Query objects. This could be useful,
 // for instance, if executing a query formed in one process in another.
@@ -1048,6 +1056,7 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 
 func (*btreeDocumentIterator) stop() {}
 
+
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
 func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
@@ -1059,3 +1068,75 @@ func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
 	}
 	return q
 }
+
+// AggregationQuery allows for generating aggregation results of an underlying
+// basic query. A single AggregationQuery can contain multiple aggregations.
+type AggregationQuery struct {
+	// aggregateQueries contains all of the queries for this request.
+	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation
+	// query contains a reference pointer to the underlying structured query.
+	query *Query
+}
+
+// WithCount specifies that the aggregation query provide a count of results
+// returned by the underlying Query.
+func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
+	aq := &pb.StructuredAggregationQuery_Aggregation{
+		Alias:    alias,
+		Operator: &pb.StructuredAggregationQuery_Aggregation_Count_{},
+	}
+
+	a.aggregateQueries = append(a.aggregateQueries, aq)
+
+	return a
+}
+
+// Get retrieves the aggregation query results from the service.
+func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
+
+	client := a.query.c.c
+	q, err := a.query.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	req := &pb.RunAggregationQueryRequest{
+		Parent: a.query.parentPath,
+		QueryType: &pb.RunAggregationQueryRequest_StructuredAggregationQuery{
+			StructuredAggregationQuery: &pb.StructuredAggregationQuery{
+				QueryType: &pb.StructuredAggregationQuery_StructuredQuery{
+					StructuredQuery: q,
+				},
+				Aggregations: a.aggregateQueries,
+			},
+		},
+	}
+	ctx = withResourceHeader(ctx, a.query.c.path())
+	stream, err := client.RunAggregationQuery(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make(AggregationResult)
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		f := res.Result.AggregateFields
+
+		for k, v := range f {
+			resp[k] = v
+		}
+	}
+	return resp, nil
+}
+
+// AggregationResult contains the results of an aggregation query.
+type AggregationResult map[string]interface{}
+
