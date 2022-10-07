@@ -54,10 +54,10 @@ const DetectProjectID = "*detect-project-id*"
 
 // A Client provides access to the Firestore service.
 type Client struct {
-	c          *vkit.Client
-	projectID  string
-	databaseID string       // A client is tied to a single database.
-	readOption *ReadOptions // readOption allows setting a snapshot time to read the database
+	c            *vkit.Client
+	projectID    string
+	databaseID   string        // A client is tied to a single database.
+	readSettings *readSettings // readSettings allows setting a snapshot time to read the database
 }
 
 // NewClient creates a new Firestore client that uses the given project.
@@ -96,9 +96,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	vc.SetGoogleClientInfo("gccl", internal.Version)
 	c := &Client{
-		c:          vc,
-		projectID:  projectID,
-		databaseID: "(default)", // always "(default)", for now
+		c:            vc,
+		projectID:    projectID,
+		databaseID:   "(default)", // always "(default)", for now
+		readSettings: &readSettings{},
 	}
 	return c, nil
 }
@@ -204,7 +205,7 @@ func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*Docum
 	return c.getAll(ctx, docRefs, nil, nil)
 }
 
-func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, ro readOptionable) (_ []*DocumentSnapshot, err error) {
+func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, rs *readSettings) (_ []*DocumentSnapshot, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -225,7 +226,7 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	// Note that transaction ID and other consistency selectors are mutually exclusive.
 	// We respect the transaction first, any read options passed by the caller second,
 	// and any read options stored in the client third.
-	if rt, hasOpts := parseReadTime(c, ro); hasOpts {
+	if rt, hasOpts := parseReadTime(c, rs); hasOpts {
 		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
 	}
 
@@ -319,8 +320,13 @@ func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (c *Client) WithReadOptions(opts ReadOptions) *Client {
-	c.readOption = &opts
+func (c *Client) WithReadOptions(opts ...ReadOption) *Client {
+	for _, ro := range opts {
+		switch r := ro.(type) {
+		case readTime:
+			r.apply(c.readSettings)
+		}
+	}
 	return c
 }
 
@@ -400,24 +406,38 @@ func (ec emulatorCreds) RequireTransportSecurity() bool {
 	return false
 }
 
-// ReadOptions provides specific instructions for how to access documents in the database.
-// Currently, only ReadTime is supported.
-type ReadOptions struct {
-	ReadTime time.Time // ReadTime specifies the time at which to capture a "snapshot" of the documents in the database.
+// ReadTime specifies a time-specific snapshot of the database to read.
+func ReadTime(t time.Time) ReadOption {
+	var rt readTime
+	rt.Time = t
+	return rt
 }
 
-// ReadOptionable interface allows for abstraction of computing read time settings.
-type readOptionable interface {
-	getReadOptions() *ReadOptions
+type readTime struct {
+	time.Time
+}
+
+func (rt readTime) apply(rs *readSettings) {
+	rs.readTime = rt.Time
+}
+
+// ReadOption interface allows for abstraction of computing read time settings.
+type ReadOption interface {
+	apply(*readSettings)
+}
+
+// readSettings contains the ReadOptions for a read operation
+type readSettings struct {
+	readTime time.Time
 }
 
 // parseReadTime ensures that fallback order of read options is respected.
 // First, if a ReadOption is set on the readOptionable
-func parseReadTime(c *Client, ro readOptionable) (*timestamppb.Timestamp, bool) {
-	if ro != nil && ro.getReadOptions() != nil {
-		return &timestamppb.Timestamp{Seconds: int64(ro.getReadOptions().ReadTime.Unix())}, true
-	} else if c.readOption != nil {
-		return &timestamppb.Timestamp{Seconds: int64(c.readOption.ReadTime.Unix())}, true
+func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
+	if rs != nil && !rs.readTime.IsZero() {
+		return &timestamppb.Timestamp{Seconds: int64(rs.readTime.Unix())}, true
+	} else if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+		return &timestamppb.Timestamp{Seconds: int64(c.readSettings.readTime.Unix())}, true
 	}
 	return nil, false
 }

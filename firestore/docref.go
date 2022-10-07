@@ -49,15 +49,16 @@ type DocumentRef struct {
 	ID string
 
 	// The options (only read time currently supported) for reading this document
-	readOption *ReadOptions
+	readSettings *readSettings
 }
 
 func newDocRef(parent *CollectionRef, id string) *DocumentRef {
 	return &DocumentRef{
-		Parent:    parent,
-		ID:        id,
-		Path:      parent.Path + "/" + id,
-		shortPath: parent.selfPath + "/" + id,
+		Parent:       parent,
+		ID:           id,
+		Path:         parent.Path + "/" + id,
+		shortPath:    parent.selfPath + "/" + id,
+		readSettings: &readSettings{},
 	}
 }
 
@@ -81,7 +82,7 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 		return nil, errNilDocRef
 	}
 
-	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d)
+	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d.readSettings)
 	if err != nil {
 		return nil, err
 	}
@@ -807,7 +808,7 @@ type DocumentSnapshotIterator struct {
 // Next is not expected to return iterator.Done unless it is called after Stop.
 // Rarely, networking issues may also cause iterator.Done to be returned.
 func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
-	btree, _, readTime, err := it.ws.nextSnapshot()
+	btree, _, rt, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
 			err = iterator.Done
@@ -816,7 +817,7 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 		return nil, err
 	}
 	if btree.Len() == 0 { // document deleted
-		return &DocumentSnapshot{Ref: it.docref, ReadTime: readTime}, nil
+		return &DocumentSnapshot{Ref: it.docref, ReadTime: rt}, nil
 	}
 	snap, _ := btree.At(0)
 	return snap.(*DocumentSnapshot), nil
@@ -831,12 +832,12 @@ func (it *DocumentSnapshotIterator) Stop() {
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (d *DocumentRef) WithReadOptions(opts ReadOptions) *DocumentRef {
-	d.readOption = &opts
+func (d *DocumentRef) WithReadOptions(opts ...ReadOption) *DocumentRef {
+	for _, ro := range opts {
+		switch r := ro.(type) {
+		case readTime:
+			r.apply(d.readSettings)
+		}
+	}
 	return d
-}
-
-// getReadOptions gets the readOption field
-func (d *DocumentRef) getReadOptions() *ReadOptions {
-	return d.readOption
 }

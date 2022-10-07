@@ -34,7 +34,7 @@ type Transaction struct {
 	maxAttempts    int
 	readOnly       bool
 	readAfterWrite bool
-	readOption     *ReadOptions
+	readSettings   *readSettings
 }
 
 // A TransactionOption is an option passed to Client.Transaction.
@@ -99,9 +99,10 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	}
 	db := c.path()
 	t := &Transaction{
-		c:           c,
-		ctx:         withResourceHeader(ctx, db),
-		maxAttempts: DefaultTransactionMaxAttempts,
+		c:            c,
+		ctx:          withResourceHeader(ctx, db),
+		maxAttempts:  DefaultTransactionMaxAttempts,
+		readSettings: &readSettings{},
 	}
 	for _, opt := range opts {
 		opt.config(t)
@@ -221,7 +222,7 @@ func (t *Transaction) GetAll(drs []*DocumentRef) ([]*DocumentSnapshot, error) {
 		t.readAfterWrite = true
 		return nil, errReadAfterWrite
 	}
-	return t.c.getAll(t.ctx, drs, t.id, t)
+	return t.c.getAll(t.ctx, drs, t.id, t.readSettings)
 }
 
 // A Queryer is a Query or a CollectionRef. CollectionRefs act as queries whose
@@ -239,7 +240,7 @@ func (t *Transaction) Documents(q Queryer) *DocumentIterator {
 	}
 	query := q.query()
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(t.ctx, query, t.id, t.readOption), q: query,
+		iter: newQueryDocumentIterator(t.ctx, query, t.id, t.readSettings), q: query,
 	}
 }
 
@@ -251,7 +252,7 @@ func (t *Transaction) DocumentRefs(cr *CollectionRef) *DocumentRefIterator {
 		t.readAfterWrite = true
 		return &DocumentRefIterator{err: errReadAfterWrite}
 	}
-	return newDocumentRefIterator(t.ctx, cr, t.id, t)
+	return newDocumentRefIterator(t.ctx, cr, t.id, t.readSettings)
 }
 
 // Create adds a Create operation to the Transaction.
@@ -291,12 +292,12 @@ func (t *Transaction) addWrites(ws []*pb.Write, err error) error {
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (t *Transaction) WithReadOptions(opts ReadOptions) *Transaction {
-	t.readOption = &opts
+func (t *Transaction) WithReadOptions(opts ...ReadOption) *Transaction {
+	for _, ro := range opts {
+		switch r := ro.(type) {
+		case readTime:
+			r.apply(t.readSettings)
+		}
+	}
 	return t
-}
-
-// getReadOptions gets the readOption field
-func (t *Transaction) getReadOptions() *ReadOptions {
-	return t.readOption
 }

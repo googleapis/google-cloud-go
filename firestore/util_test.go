@@ -50,7 +50,7 @@ func mustTimestampProto(t time.Time) *tspb.Timestamp {
 
 var cmpOpts = []cmp.Option{
 	cmp.AllowUnexported(DocumentRef{}, CollectionRef{}, DocumentSnapshot{},
-		Query{}, filter{}, order{}, fpv{}),
+		Query{}, filter{}, order{}, fpv{}, readTime{}, readSettings{}),
 	cmpopts.IgnoreTypes(Client{}, &Client{}),
 }
 

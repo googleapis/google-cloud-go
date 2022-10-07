@@ -534,7 +534,7 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
 		docref := c.Collection("C").Doc("a")
-		tx.WithReadOptions(ReadOptions{ReadTime: tm}).Get(docref)
+		tx.WithReadOptions(ReadTime(tm)).Get(docref)
 		return nil
 	}); err != nil {
 		t.Fatal(err)

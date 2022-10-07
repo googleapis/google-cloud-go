@@ -57,7 +57,7 @@ type Query struct {
 
 	// readOptions specifies constraints for reading results from the query
 	// e.g. read time
-	readOptions *ReadOptions
+	readSettings *readSettings
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -783,7 +783,7 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil, q.readOptions), q: &q,
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil, q.readSettings), q: &q,
 	}
 }
 
@@ -888,17 +888,17 @@ type queryDocumentIterator struct {
 	q            *Query
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
-	readOptions  *ReadOptions // readOptions, if any
+	readSettings *readSettings // readOptions, if any
 }
 
-func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, opts *ReadOptions) *queryDocumentIterator {
+func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *readSettings) *queryDocumentIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	return &queryDocumentIterator{
-		ctx:         ctx,
-		cancel:      cancel,
-		q:           q,
-		tid:         tid,
-		readOptions: opts,
+		ctx:          ctx,
+		cancel:       cancel,
+		q:            q,
+		tid:          tid,
+		readSettings: rs,
 	}
 }
 
@@ -918,7 +918,7 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 		}
 
 		// Respect transactions first and read options (read time) second
-		if rt, hasOpts := parseReadTime(client, it); hasOpts {
+		if rt, hasOpts := parseReadTime(client, it.readSettings); hasOpts {
 			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: rt}
 		}
 		if it.tid != nil {
@@ -1050,17 +1050,12 @@ func (*btreeDocumentIterator) stop() {}
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
-func (q *Query) WithReadOptions(opts ReadOptions) *Query {
-	q.readOptions = &opts
+func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
+	for _, ro := range opts {
+		switch r := ro.(type) {
+		case readTime:
+			r.apply(q.readSettings)
+		}
+	}
 	return q
-}
-
-// getReadOptions gets the readOption field
-func (q *Query) getReadOptions() *ReadOptions {
-	return q.readOptions
-}
-
-// getReadOptions gets the readOption field
-func (q *queryDocumentIterator) getReadOptions() *ReadOptions {
-	return q.readOptions
 }

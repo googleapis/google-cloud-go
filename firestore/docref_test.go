@@ -374,7 +374,7 @@ func TestDocRef_WithReadOptions(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		_, err = dr.WithReadOptions(ReadOptions{ReadTime: tm}).Get(ctx)
+		_, err = dr.WithReadOptions(ReadTime(tm)).Get(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}

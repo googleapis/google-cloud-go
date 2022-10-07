@@ -344,7 +344,7 @@ func TestClient_WithReadOptions(t *testing.T) {
 		},
 	})
 
-	_, err := c.WithReadOptions(ReadOptions{ReadTime: tm}).GetAll(ctx, []*DocumentRef{
+	_, err := c.WithReadOptions(ReadTime(tm)).GetAll(ctx, []*DocumentRef{
 		dr,
 	})
 

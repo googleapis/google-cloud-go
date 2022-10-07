@@ -127,7 +127,7 @@ func TestCollRef_WithReadOptions(t *testing.T) {
 		},
 	})
 
-	_, err := c.Collection("myCollection").WithReadOptions(ReadOptions{ReadTime: tm}).DocumentRefs(ctx).GetAll()
+	_, err := c.Collection("myCollection").WithReadOptions(ReadTime(tm)).DocumentRefs(ctx).GetAll()
 	if err == nil {
 		t.Fatal(err)
 	}
