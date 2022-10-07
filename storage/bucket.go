@@ -907,23 +907,27 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 	if ua.RequesterPays != nil {
 		bb = &storagepb.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
 	}
+
 	var bktIAM *storagepb.Bucket_IamConfig
-	var ublaEnabled bool
-	var bktPolicyOnlyEnabled bool
-	if ua.UniformBucketLevelAccess != nil {
-		ublaEnabled = optional.ToBool(ua.UniformBucketLevelAccess.Enabled)
-	}
-	if ua.BucketPolicyOnly != nil {
-		bktPolicyOnlyEnabled = optional.ToBool(ua.BucketPolicyOnly.Enabled)
-	}
-	if ublaEnabled || bktPolicyOnlyEnabled {
-		bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
-			Enabled: true,
+	if ua.UniformBucketLevelAccess != nil || ua.BucketPolicyOnly != nil || ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
+		bktIAM = &storagepb.Bucket_IamConfig{}
+
+		if ua.BucketPolicyOnly != nil {
+			bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled: optional.ToBool(ua.BucketPolicyOnly.Enabled),
+			}
+		}
+		if ua.UniformBucketLevelAccess != nil { //takes precedence over BucketPolicyOnly
+			bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled: optional.ToBool(ua.UniformBucketLevelAccess.Enabled),
+			}
+		}
+
+		if ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
+			bktIAM.PublicAccessPrevention = ua.PublicAccessPrevention.String()
 		}
 	}
-	if ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
-		bktIAM.PublicAccessPrevention = ua.PublicAccessPrevention.String()
-	}
+
 	var defaultHold bool
 	if ua.DefaultEventBasedHold != nil {
 		defaultHold = optional.ToBool(ua.DefaultEventBasedHold)
