@@ -8,13 +8,13 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/googleapis/gax-go/v2 v2.5.1
 	google.golang.org/api v0.96.0
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
+	google.golang.org/genproto v0.0.0-20220930163606-c98284e70a91
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
 
 // TODO(telpirion): Remove line below when ready to run integration tests
-replace google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959 => /Users/erschmid/Git/googleapis/go-genproto
+//replace google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959 => /Users/erschmid/Git/googleapis/go-genproto
 
 require (
 	cloud.google.com/go/compute v1.7.0 // indirect
