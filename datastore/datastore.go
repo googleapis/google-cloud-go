@@ -55,10 +55,10 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	connPool gtransport.ConnPool
-	client   pb.DatastoreClient
-	dataset  string // Called dataset by the datastore API, synonym for project ID.
-	readTime time.Time
+	connPool     gtransport.ConnPool
+	client       pb.DatastoreClient
+	dataset      string // Called dataset by the datastore API, synonym for project ID.
+	readSettings *readSettings
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -353,10 +353,10 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	}
 
 	var opts *pb.ReadOptions
-	if !c.readTime.IsZero() {
+	if !c.readSettings.readTime.IsZero() {
 		opts = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
-				ReadTime: timestamppb.New(c.readTime),
+				ReadTime: timestamppb.New(c.readSettings.readTime),
 			},
 		}
 	}
@@ -385,10 +385,10 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	var opts *pb.ReadOptions
-	if !c.readTime.IsZero() {
+	if !c.readSettings.readTime.IsZero() {
 		opts = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
-				ReadTime: timestamppb.New(c.readTime),
+				ReadTime: timestamppb.New(c.readSettings.readTime),
 			},
 		}
 	}
@@ -702,15 +702,37 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 	return ret, nil
 }
 
-// ReadOptions provides specific instructions for how to access documents in the database.
+// ReadTime specifies a snapshot (time) of the database to read.
+func ReadTime(t time.Time) ReadOption {
+	return docReadTime{t}
+}
+
+type docReadTime struct {
+	time.Time
+}
+
+func (drt docReadTime) apply(rs *readSettings) {
+	rs.readTime = drt.Time
+}
+
+// ReadOption provides specific instructions for how to access documents in the database.
 // Currently, only ReadTime is supported.
-type ReadOptions struct {
-	ReadTime time.Time
+type ReadOption interface {
+	apply(*readSettings)
+}
+
+type readSettings struct {
+	readTime time.Time
 }
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
 // Once set, all subsequent reads from the client use these options.
-func (c *Client) WithReadOptions(ro ReadOptions) {
-	c.readTime = ro.ReadTime
+func (c *Client) WithReadOptions(ro ...ReadOption) {
+	for _, r := range ro {
+		switch o := r.(type) {
+		case docReadTime:
+			o.apply(c.readSettings)
+		}
+	}
 }

@@ -3289,7 +3289,8 @@ func TestDeferred(t *testing.T) {
 		},
 	}
 	client := &Client{
-		client: fakeClient,
+		client:       fakeClient,
+		readSettings: &readSettings{},
 	}
 
 	ctx := context.Background()
@@ -3381,7 +3382,8 @@ func TestKeyLoaderEndToEnd(t *testing.T) {
 		},
 	}
 	client := &Client{
-		client: fakeClient,
+		client:       fakeClient,
+		readSettings: &readSettings{},
 	}
 
 	ctx := context.Background()
@@ -3447,7 +3449,8 @@ func TestDeferredMissing(t *testing.T) {
 		},
 	}
 	client := &Client{
-		client: fakeClient,
+		client:       fakeClient,
+		readSettings: &readSettings{},
 	}
 
 	ctx := context.Background()
@@ -3484,7 +3487,7 @@ func TestDeferredMissing(t *testing.T) {
 }
 
 func TestGetWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Get(context.Background(), nil, []Property{})
 	if err != ErrInvalidKey {
 		t.Fatalf("want ErrInvalidKey, got %v", err)
@@ -3492,7 +3495,7 @@ func TestGetWithNilKey(t *testing.T) {
 }
 
 func TestGetMultiWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	dest := make([]PropertyList, 1)
 	err := client.GetMulti(context.Background(), []*Key{nil}, dest)
 	if me, ok := err.(MultiError); !ok {
@@ -3503,7 +3506,7 @@ func TestGetMultiWithNilKey(t *testing.T) {
 }
 
 func TestGetWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Get(context.Background(), &Key{Kind: "testKind"}, []Property{})
 	if err == nil {
 		t.Fatalf("want err, got nil")
@@ -3511,7 +3514,7 @@ func TestGetWithIncompleteKey(t *testing.T) {
 }
 
 func TestGetMultiWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	dest := make([]PropertyList, 1)
 	err := client.GetMulti(context.Background(), []*Key{{Kind: "testKind"}}, dest)
 	if me, ok := err.(MultiError); !ok {
@@ -3522,7 +3525,7 @@ func TestGetMultiWithIncompleteKey(t *testing.T) {
 }
 
 func TestDeleteWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Delete(context.Background(), nil)
 	if err != ErrInvalidKey {
 		t.Fatalf("want ErrInvalidKey, got %v", err)
@@ -3530,7 +3533,7 @@ func TestDeleteWithNilKey(t *testing.T) {
 }
 
 func TestDeleteMultiWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.DeleteMulti(context.Background(), []*Key{nil})
 	if me, ok := err.(MultiError); !ok {
 		t.Fatalf("want MultiError, got %v", err)
@@ -3540,7 +3543,7 @@ func TestDeleteMultiWithNilKey(t *testing.T) {
 }
 
 func TestDeleteWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Delete(context.Background(), &Key{Kind: "testKind"})
 	if err == nil {
 		t.Fatalf("want err, got nil")
@@ -3548,7 +3551,7 @@ func TestDeleteWithIncompleteKey(t *testing.T) {
 }
 
 func TestDeleteMultiWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.DeleteMulti(context.Background(), []*Key{{Kind: "testKind"}})
 	if me, ok := err.(MultiError); !ok {
 		t.Fatalf("want MultiError, got %v", err)
