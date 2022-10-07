@@ -444,6 +444,11 @@ type BucketAttrs struct {
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
+
+	// Autoclass holds the bucket's autoclass configuration. If enabled,
+	// allows for the automatic selection of the best storage class
+	// based on object access patterns. See <TBD> for more information.
+	Autoclass *Autoclass
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -710,6 +715,19 @@ type CustomPlacementConfig struct {
 	DataLocations []string
 }
 
+// Autoclass holds the bucket's autoclass configuration. If enabled,
+// allows for the automatic selection of the best storage class
+// based on object access patterns. See <TODO> for more information.
+type Autoclass struct {
+	// Enabled specifies whether the autoclass feature is enabled
+	// on the bucket.
+	Enabled bool
+	// ToggleTime is the time from which Autoclass was last toggled.
+	// If Autoclass is enabled when the bucket is created, the ToggleTime
+	// is set to the bucket creation time. This field is read-only.
+	ToggleTime time.Time
+}
+
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -744,6 +762,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
 		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
+		Autoclass:                toAutoclass(b.Autoclass),
 	}, nil
 }
 
@@ -776,6 +795,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		RPO:                      toRPOFromProto(b),
 		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
 		ProjectNumber:            parseProjectNumber(b.GetProject()), // this can return 0 the project resource name is ID based
+		Autoclass:                toAutoclassFromProto(b.GetAutoclass()),
 	}
 }
 
@@ -830,6 +850,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		IamConfiguration:      bktIAM,
 		Rpo:                   b.RPO.String(),
 		CustomPlacementConfig: b.CustomPlacementConfig.toRawCustomPlacement(),
+		Autoclass:             b.Autoclass.toRawBucketAutoclass(),
 	}
 }
 
@@ -889,6 +910,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 		IamConfig:             bktIAM,
 		Rpo:                   b.RPO.String(),
 		CustomPlacementConfig: b.CustomPlacementConfig.toProtoCustomPlacement(),
+		Autoclass:             b.Autoclass.toProtoBucketAutoclass(),
 	}
 }
 
@@ -1890,6 +1912,52 @@ func customPlacementFromProto(c *storagepb.Bucket_CustomPlacementConfig) *Custom
 		return nil
 	}
 	return &CustomPlacementConfig{DataLocations: c.GetDataLocations()}
+}
+
+func (a *Autoclass) toRawBucketAutoclass() *raw.BucketAutoclass {
+	if a == nil {
+		return nil
+	}
+	// Excluding read only field ToggleTime.
+	return &raw.BucketAutoclass{
+		Enabled: a.Enabled,
+	}
+}
+
+func (a *Autoclass) toProtoBucketAutoclass() *storagepb.Bucket_Autoclass {
+	if a == nil {
+		return nil
+	}
+	// Excluding read only field ToggleTime.
+	return &storagepb.Bucket_Autoclass{
+		Enabled: a.Enabled,
+	}
+}
+
+func toAutoclass(a *raw.BucketAutoclass) *Autoclass {
+	if a == nil {
+		return nil
+	}
+	t, err := time.Parse(time.RFC3339, a.ToggleTime)
+	if err != nil {
+		return &Autoclass{
+			Enabled: a.Enabled,
+		}
+	}
+	return &Autoclass{
+		Enabled:    a.Enabled,
+		ToggleTime: t,
+	}
+}
+
+func toAutoclassFromProto(a *storagepb.Bucket_Autoclass) *Autoclass {
+	if a == nil {
+		return nil
+	}
+	return &Autoclass{
+		Enabled:    a.GetEnabled(),
+		ToggleTime: a.GetToggleTime().AsTime(),
+	}
 }
 
 // Objects returns an iterator over the objects in the bucket that match the
