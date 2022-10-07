@@ -280,6 +280,9 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 // and the instance containing the table would be prohibited.
 type DeletionProtection int
 
+// None indicates that deletion protection is unset
+// Protected indicates that deletion protection is enabled
+// Unprotected indicates that deletion protection is disabled
 const (
 	None DeletionProtection = iota
 	Protected
