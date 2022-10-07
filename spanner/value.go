@@ -818,7 +818,7 @@ func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 	var v interface{}
 	err := json.Unmarshal(payload, &v)
 	if err != nil {
-		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %s", string(payload), err)
+		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %w", string(payload), err)
 	}
 	n.Value = v
 	n.Valid = true
