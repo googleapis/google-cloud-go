@@ -226,6 +226,77 @@ func TestReadRow(t *testing.T) {
 	}
 }
 
+func TestBulkMutateRows(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.MutateRowsRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.MutateRowsRequest{
+			TableName: tableName,
+			Entries: []*btpb.MutateRowsRequest_Entry{
+				{
+					RowKey: []byte(rowKey),
+					Mutations: []*btpb.Mutation{
+						{
+							Mutation: &btpb.Mutation_SetCell_{
+								SetCell: &btpb.Mutation_SetCell{
+									ColumnQualifier: []byte("coll2"),
+									FamilyName:      "cf0",
+									Value:           []byte("bulked up mutant!"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.BulkMutateRows(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: BulkMutateRows returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: BulkMutateRows() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if len(resp.Entry) != 0 {
+		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entry)
+	}
+}
+
+func TestMutateRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.MutateRowRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.MutateRowRequest{
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
+			Mutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("mutant!"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.MutateRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: MutateRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: MutateRow() didn't return OK; got %v", resp.Status.Code)
+
+	}
+}
+
 func TestReadRows(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.ReadRowsRequest{
@@ -250,22 +321,107 @@ func TestReadRows(t *testing.T) {
 	}
 }
 
-func TestMutateRow(t *testing.T) {
-	t.Skip()
-}
-
-func TestBulkMutateRows(t *testing.T) {
-	t.Skip()
-}
-
 func TestCheckAndMutateRow(t *testing.T) {
-	t.Skip()
+	ctx := context.Background()
+	req := &pb.CheckAndMutateRowRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.CheckAndMutateRowRequest{
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
+			PredicateFilter: &btpb.RowFilter{
+				Filter: &btpb.RowFilter_PassAllFilter{},
+			},
+			TrueMutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("check success"),
+						},
+					},
+				},
+			},
+			FalseMutations: []*btpb.Mutation{
+				{
+					Mutation: &btpb.Mutation_SetCell_{
+						SetCell: &btpb.Mutation_SetCell{
+							ColumnQualifier: []byte("coll1"),
+							FamilyName:      "cf0",
+							Value:           []byte("check failed!"),
+						},
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := client.CheckAndMutateRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: CheckAndMutateRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: CheckAndMutateRow() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if resp.Result.PredicateMatched != true {
+		t.Errorf("testproxy test: CheckAndMutateRow() returned wrong results; got: %v", resp.Result.PredicateMatched)
+	}
 }
 
 func TestSampleRowKeys(t *testing.T) {
-	t.Skip()
+	ctx := context.Background()
+	req := &pb.SampleRowKeysRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.SampleRowKeysRequest{
+			TableName: tableName,
+		},
+	}
+
+	resp, err := client.SampleRowKeys(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: SampleRowKeys() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: SampleRowKeys() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if len(resp.Sample) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Sample))
+	}
 }
 
-func TestReadModifyWriteRow(t *testing.T) {
-	t.Skip()
+func TestReadWriteRow(t *testing.T) {
+	ctx := context.Background()
+	req := &pb.ReadModifyWriteRowRequest{
+		ClientId: testProxyClient,
+		Request: &btpb.ReadModifyWriteRowRequest{
+			TableName: tableName,
+			RowKey:    []byte(rowKey),
+			Rules: []*btpb.ReadModifyWriteRule{
+				{
+					Rule: &btpb.ReadModifyWriteRule_AppendValue{
+						AppendValue: []byte("appended!"),
+					},
+					FamilyName:      "cf0",
+					ColumnQualifier: []byte("coll1"),
+				},
+			},
+		},
+	}
+
+	resp, err := client.ReadModifyWriteRow(ctx, req)
+	if err != nil {
+		t.Fatalf("testproxy test: ReadModifyWriteRow() returned error: %v", err)
+	}
+
+	if resp.Status.Code != int32(codes.OK) {
+		t.Errorf("testproxy test: ReadModifyWriteRow() didn't return OK; got %v", resp.Status.Code)
+	}
+
+	if string(resp.Row.Key) != rowKey {
+		t.Errorf("testproxy test: ReadModifyWriteRow() returned wrong results; got: %v", resp.Row.Key)
+	}
 }

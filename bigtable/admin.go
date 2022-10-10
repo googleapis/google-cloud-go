@@ -275,6 +275,73 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
+// DeletionProtection indicates whether the table is protected against data loss
+// i.e. when set to protected, deleting the table, the column families in the table,
+// and the instance containing the table would be prohibited.
+type DeletionProtection int
+
+// None indicates that deletion protection is unset
+// Protected indicates that deletion protection is enabled
+// Unprotected indicates that deletion protection is disabled
+const (
+	None DeletionProtection = iota
+	Protected
+	Unprotected
+)
+
+// UpdateTableConf contains all of the information necessary to update a table with column families.
+type UpdateTableConf struct {
+	tableID string
+	// deletionProtection can be unset, true or false
+	// set to true to make the table protected against data loss
+	deletionProtection DeletionProtection
+}
+
+// UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
+func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection})
+}
+
+// updateTableWithConf updates a table in the instance from the given configuration.
+// only deletion protection can be updated at this period.
+// table ID is required.
+func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
+	if conf.tableID == "" {
+		return errors.New("TableID is required")
+	}
+
+	if conf.deletionProtection == None {
+		return errors.New("deletion protection is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{
+			"deletion_protection",
+		},
+	}
+
+	deletionProtection := true
+	if conf.deletionProtection == Unprotected {
+		deletionProtection = false
+	}
+
+	req := &btapb.UpdateTableRequest{
+		Table: &btapb.Table{
+			Name:               conf.tableID,
+			DeletionProtection: deletionProtection,
+		},
+		UpdateMask: updateMask,
+	}
+	lro, err := ac.tClient.UpdateTable(ctx, req)
+	if err != nil {
+		return err
+	}
+	// ignore the response table proto by passing in nil
+	return longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
+}
+
 // DeleteTable deletes a table and all of its data.
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
