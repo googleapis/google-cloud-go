@@ -3115,8 +3115,64 @@ func TestGetWithReadTime(t *testing.T) {
 
 	ctx := context.Background()
 	client.WithReadOptions(ReadTime(time.Now()))
-	dst := &PropertyList{}
+	dst := &Ent{}
 	err := client.Get(ctx, k, dst)
+	if err != nil {
+		t.Fatalf("Get() with ReadTime failed: %v\n", err)
+	}
+}
+
+func TestGetMultiWithReadTime(t *testing.T) {
+	type Ent struct {
+		A int
+		B string
+	}
+
+	k := []*Key{
+		NameKey("testKind", "testReadTime", nil),
+		NameKey("testKind", "testReadTime2", nil),
+	}
+
+	e := &pb.Entity{
+		Key: keyToProto(k[0]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
+		},
+	}
+	e2 := &pb.Entity{
+		Key: keyToProto(k[1]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
+		},
+	}
+
+	fakeClient := &fakeDatastoreClient{
+		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
+			return &pb.LookupResponse{
+				Found: []*pb.EntityResult{
+					{
+						Entity:  e,
+						Version: 1,
+					}, {
+						Entity:  e2,
+						Version: 1,
+					},
+				},
+			}, nil
+		},
+	}
+
+	client := &Client{
+		client:       fakeClient,
+		readSettings: &readSettings{},
+	}
+
+	ctx := context.Background()
+	client.WithReadOptions(ReadTime(time.Now()))
+	dst := make([]*Ent, len(k))
+	err := client.GetMulti(ctx, k, dst)
 	if err != nil {
 		t.Fatalf("Get() with ReadTime failed: %v\n", err)
 	}
