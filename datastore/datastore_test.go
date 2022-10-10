@@ -3081,6 +3081,47 @@ func TestPutMultiTypes(t *testing.T) {
 	}
 }
 
+func TestGetWithReadTime(t *testing.T) {
+	type Ent struct {
+		A int
+		B string
+	}
+
+	k := NameKey("testKind", "testReadTime", nil)
+	e := &pb.Entity{
+		Key: keyToProto(k),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
+		},
+	}
+	fakeClient := &fakeDatastoreClient{
+		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
+			return &pb.LookupResponse{
+				Found: []*pb.EntityResult{
+					{
+						Entity:  e,
+						Version: 1,
+					},
+				},
+			}, nil
+		},
+	}
+
+	client := &Client{
+		client:       fakeClient,
+		readSettings: &readSettings{},
+	}
+
+	ctx := context.Background()
+	client.WithReadOptions(ReadTime(time.Now()))
+	dst := &PropertyList{}
+	err := client.Get(ctx, k, dst)
+	if err != nil {
+		t.Fatalf("Get() with ReadTime failed: %v\n", err)
+	}
+}
+
 func TestNoIndexOnSliceProperties(t *testing.T) {
 	// Check that ExcludeFromIndexes is set on the inner elements,
 	// rather than the top-level ArrayValue value.
@@ -3455,7 +3496,7 @@ func TestDeferredMissing(t *testing.T) {
 
 	ctx := context.Background()
 
-	dst := make([]Ent, len(keys))
+	dst := make([]Ent, 1)
 	err := client.GetMulti(ctx, keys, dst)
 	errs, ok := err.(MultiError)
 	if !ok {
