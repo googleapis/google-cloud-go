@@ -447,7 +447,7 @@ type BucketAttrs struct {
 
 	// Autoclass holds the bucket's autoclass configuration. If enabled,
 	// allows for the automatic selection of the best storage class
-	// based on object access patterns. See <TBD> for more information.
+	// based on object access patterns.
 	Autoclass *Autoclass
 }
 
@@ -717,7 +717,8 @@ type CustomPlacementConfig struct {
 
 // Autoclass holds the bucket's autoclass configuration. If enabled,
 // allows for the automatic selection of the best storage class
-// based on object access patterns. See <TODO> for more information.
+// based on object access patterns. See
+// https://cloud.google.com/storage/docs/using-autoclass for more information.
 type Autoclass struct {
 	// Enabled specifies whether the autoclass feature is enabled
 	// on the bucket.
