@@ -49,14 +49,12 @@ func mustTimestampProto(t time.Time) *tspb.Timestamp {
 }
 
 var cmpOpts = []cmp.Option{
-	cmp.AllowUnexported(DocumentRef{}, CollectionRef{}, DocumentSnapshot{},
-		Query{}, filter{}, order{}, fpv{}),
+	cmp.AllowUnexported(DocumentSnapshot{},
+		Query{}, filter{}, order{}, fpv{}, DocumentRef{}, CollectionRef{}, Query{}),
 	cmpopts.IgnoreTypes(Client{}, &Client{}),
-	cmpopts.IgnoreFields(Client{}, "readSettings"),
-	cmpopts.IgnoreFields(CollectionRef{}, "readSettings"),
-	cmpopts.IgnoreFields(DocumentRef{}, "readSettings"),
-	cmpopts.IgnoreFields(queryDocumentIterator{}, "readSettings"),
-	cmpopts.IgnoreFields(Transaction{}, "readSettings"),
+	cmp.Comparer(func(*readSettings, *readSettings) bool {
+		return true // Don't try to compare two readSettings pointer types
+	}),
 }
 
 // testEqual implements equality for Firestore tests.
