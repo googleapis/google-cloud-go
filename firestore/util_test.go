@@ -52,7 +52,11 @@ var cmpOpts = []cmp.Option{
 	cmp.AllowUnexported(DocumentRef{}, CollectionRef{}, DocumentSnapshot{},
 		Query{}, filter{}, order{}, fpv{}),
 	cmpopts.IgnoreTypes(Client{}, &Client{}),
-	cmpopts.IgnoreUnexported(readTime{}, readSettings{}),
+	cmpopts.IgnoreFields(Client{}, "readSettings"),
+	cmpopts.IgnoreFields(CollectionRef{}, "readSettings"),
+	cmpopts.IgnoreFields(DocumentRef{}, "readSettings"),
+	cmpopts.IgnoreFields(queryDocumentIterator{}, "readSettings"),
+	cmpopts.IgnoreFields(Transaction{}, "readSettings"),
 }
 
 // testEqual implements equality for Firestore tests.

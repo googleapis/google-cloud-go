@@ -55,10 +55,11 @@ func TestClientCollectionAndDoc(t *testing.T) {
 	}
 	doc1 := testClient.Doc("X/a")
 	wantd1 := &DocumentRef{
-		Parent:    coll1,
-		ID:        "a",
-		Path:      "projects/projectID/databases/(default)/documents/X/a",
-		shortPath: "X/a",
+		Parent:       coll1,
+		ID:           "a",
+		Path:         "projects/projectID/databases/(default)/documents/X/a",
+		shortPath:    "X/a",
+		readSettings: &readSettings{},
 	}
 
 	if !testEqual(doc1, wantd1) {
