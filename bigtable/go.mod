@@ -11,7 +11,7 @@ require (
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20220824184156-0ba36e446d93
 	github.com/googleapis/gax-go/v2 v2.5.1
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
-	google.golang.org/api v0.96.0
+	google.golang.org/api v0.98.0
 	google.golang.org/genproto v0.0.0-20220926220553-6981cbe3cfce
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
