@@ -3552,7 +3552,7 @@ func TestDeferredMissing(t *testing.T) {
 
 	ctx := context.Background()
 
-	dst := make([]Ent, 1)
+	dst := make([]Ent, len(keys))
 	err := client.GetMulti(ctx, keys, dst)
 	errs, ok := err.(MultiError)
 	if !ok {
