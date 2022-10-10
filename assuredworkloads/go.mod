@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.104.0
 	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.5.1
-	google.golang.org/api v0.96.0
+	google.golang.org/api v0.98.0
 	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
