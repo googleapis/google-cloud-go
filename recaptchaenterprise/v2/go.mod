@@ -6,8 +6,8 @@ require (
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.5.1
-	google.golang.org/api v0.96.0
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
+	google.golang.org/api v0.98.0
+	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
