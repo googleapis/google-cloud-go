@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.0.0...certificatemanager/v1.1.0) (2022-10-10)
+
+
+### Features
+
+* **certificatemanager:** added support for Private Trust to Certificate Manager API ([92b2f99](https://github.com/googleapis/google-cloud-go/commit/92b2f991244687c662e9e07801e1fae9bcea9a8b))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v0.2.1...certificatemanager/v1.0.0) (2022-09-19)
 
 

@@ -216,6 +216,9 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 // and the instance containing the table would be prohibited.
 type DeletionProtection int
 
+// None indicates that deletion protection is unset
+// Protected indicates that deletion protection is enabled
+// Unprotected indicates that deletion protection is disabled
 const (
 	None DeletionProtection = iota
 	Protected
@@ -300,8 +303,8 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 // UpdateTableConf contains all of the information necessary to update a table with column families.
 type UpdateTableConf struct {
 	tableID string
-	// deletionProtection can be none, protected or unprotected
-	// set to protected to make the table protected against data loss
+	// deletionProtection can be unset, true or false
+	// set to true to make the table protected against data loss
 	deletionProtection DeletionProtection
 }
 
