@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/googleapis/gax-go/v2 v2.5.1
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
+	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
 )
 
 require (
