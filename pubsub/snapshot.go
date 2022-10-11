@@ -43,17 +43,15 @@ func (s *Snapshot) ID() string {
 	return s.name[slash+1:]
 }
 
-// SetLabels replaces the current set of labels completely with the new set.
+// SetLabels set or replaces the labels on a given snapshot.
 func (s *Snapshot) SetLabels(ctx context.Context, label map[string]string) (*SnapshotConfig, error) {
-	var fields []string
-	fields = append(fields, "labels")
 	sc, err := s.c.subc.UpdateSnapshot(ctx, &pb.UpdateSnapshotRequest{
 		Snapshot: &pb.Snapshot{
 			Name:   s.name,
 			Labels: label,
 		},
 		UpdateMask: &fmpb.FieldMask{
-			Paths: fields,
+			Paths: []string{"labels"},
 		},
 	})
 	if err != nil {
