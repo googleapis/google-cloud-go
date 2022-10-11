@@ -4,8 +4,8 @@ go 1.17
 
 require (
 	cloud.google.com/go/translate v1.2.0
-	google.golang.org/api v0.96.0
-	google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006
+	google.golang.org/api v0.98.0
+	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
 	google.golang.org/grpc v1.49.0
 )
 
