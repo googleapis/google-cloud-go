@@ -763,7 +763,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
 		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
-		Autoclass:                toAutoclass(b.Autoclass),
+		Autoclass:                toAutoclassFromRaw(b.Autoclass),
 	}, nil
 }
 
@@ -851,7 +851,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		IamConfiguration:      bktIAM,
 		Rpo:                   b.RPO.String(),
 		CustomPlacementConfig: b.CustomPlacementConfig.toRawCustomPlacement(),
-		Autoclass:             b.Autoclass.toRawBucketAutoclass(),
+		Autoclass:             b.Autoclass.toRawAutoclass(),
 	}
 }
 
@@ -911,7 +911,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 		IamConfig:             bktIAM,
 		Rpo:                   b.RPO.String(),
 		CustomPlacementConfig: b.CustomPlacementConfig.toProtoCustomPlacement(),
-		Autoclass:             b.Autoclass.toProtoBucketAutoclass(),
+		Autoclass:             b.Autoclass.toProtoAutoclass(),
 	}
 }
 
@@ -987,7 +987,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		Website:               ua.Website.toProtoBucketWebsite(),
 		IamConfig:             bktIAM,
 		Rpo:                   ua.RPO.String(),
-		Autoclass:             ua.Autoclass.toProtoBucketAutoclass(),
+		Autoclass:             ua.Autoclass.toProtoAutoclass(),
 	}
 }
 
@@ -1104,7 +1104,7 @@ type BucketAttrsToUpdate struct {
 	RPO RPO
 
 	// If set, updates the autoclass configuration of the bucket.
-	// See <TBD> for more information.
+	// See https://cloud.google.com/storage/docs/using-autoclass for more information.
 	Autoclass *Autoclass
 
 	// acl is the list of access control rules on the bucket.
@@ -1222,7 +1222,8 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	}
 	if ua.Autoclass != nil {
 		rb.Autoclass = &raw.BucketAutoclass{
-			Enabled: ua.Autoclass.Enabled,
+			Enabled:         ua.Autoclass.Enabled,
+			ForceSendFields: []string{"Enabled"},
 		}
 	}
 	if ua.PredefinedACL != "" {
@@ -1925,7 +1926,7 @@ func customPlacementFromProto(c *storagepb.Bucket_CustomPlacementConfig) *Custom
 	return &CustomPlacementConfig{DataLocations: c.GetDataLocations()}
 }
 
-func (a *Autoclass) toRawBucketAutoclass() *raw.BucketAutoclass {
+func (a *Autoclass) toRawAutoclass() *raw.BucketAutoclass {
 	if a == nil {
 		return nil
 	}
@@ -1935,7 +1936,7 @@ func (a *Autoclass) toRawBucketAutoclass() *raw.BucketAutoclass {
 	}
 }
 
-func (a *Autoclass) toProtoBucketAutoclass() *storagepb.Bucket_Autoclass {
+func (a *Autoclass) toProtoAutoclass() *storagepb.Bucket_Autoclass {
 	if a == nil {
 		return nil
 	}
@@ -1945,10 +1946,11 @@ func (a *Autoclass) toProtoBucketAutoclass() *storagepb.Bucket_Autoclass {
 	}
 }
 
-func toAutoclass(a *raw.BucketAutoclass) *Autoclass {
+func toAutoclassFromRaw(a *raw.BucketAutoclass) *Autoclass {
 	if a == nil {
 		return nil
 	}
+	// Parse and return Autoclass.ToggleTime only if available.
 	t, err := time.Parse(time.RFC3339, a.ToggleTime)
 	if err != nil {
 		return &Autoclass{

@@ -437,7 +437,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:    "NEARLINE",
-		Autoclass:       &raw.BucketAutoclass{Enabled: false},
+		Autoclass:       &raw.BucketAutoclass{Enabled: false, ForceSendFields: []string{"Enabled"}},
 		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
