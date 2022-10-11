@@ -21,6 +21,7 @@ import (
 	"time"
 
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -42,11 +43,32 @@ func (s *Snapshot) ID() string {
 	return s.name[slash+1:]
 }
 
+// SetLabels replaces the current set of labels completely with the new set.
+func (s *Snapshot) SetLabels(ctx context.Context, label map[string]string) (*SnapshotConfig, error) {
+	var fields []string
+	fields = append(fields, "labels")
+	sc, err := s.c.subc.UpdateSnapshot(ctx, &pb.UpdateSnapshotRequest{
+		Snapshot: &pb.Snapshot{
+			Name:   s.name,
+			Labels: label,
+		},
+		UpdateMask: &fmpb.FieldMask{
+			Paths: fields,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return toSnapshotConfig(sc, s.c)
+}
+
 // SnapshotConfig contains the details of a Snapshot.
 type SnapshotConfig struct {
 	*Snapshot
 	Topic      *Topic
 	Expiration time.Time
+	// The set of labels for the snapshot.
+	Labels map[string]string
 }
 
 // Snapshot creates a reference to a snapshot.
@@ -151,5 +173,6 @@ func toSnapshotConfig(snap *pb.Snapshot, c *Client) (*SnapshotConfig, error) {
 		Snapshot:   &Snapshot{c: c, name: snap.Name},
 		Topic:      newTopic(c, snap.Topic),
 		Expiration: exp,
+		Labels:     snap.Labels,
 	}, nil
 }
