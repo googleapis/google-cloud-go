@@ -43,7 +43,7 @@ func (s *Snapshot) ID() string {
 	return s.name[slash+1:]
 }
 
-// SetLabels set or replaces the labels on a given snapshot.
+// SetLabels sets or replaces the labels on a given snapshot.
 func (s *Snapshot) SetLabels(ctx context.Context, label map[string]string) (*SnapshotConfig, error) {
 	sc, err := s.c.subc.UpdateSnapshot(ctx, &pb.UpdateSnapshotRequest{
 		Snapshot: &pb.Snapshot{
