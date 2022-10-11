@@ -344,8 +344,8 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		req.EndOffset(it.query.EndOffset)
 		req.Versions(it.query.Versions)
 		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
-		if len(it.query.fieldSelection) > 0 {
-			req.Fields("nextPageToken", googleapi.Field(it.query.fieldSelection))
+		if selection := it.query.toFieldSelection(); selection != "" {
+			req.Fields("nextPageToken", googleapi.Field(selection))
 		}
 		req.PageToken(pageToken)
 		if s.userProject != "" {

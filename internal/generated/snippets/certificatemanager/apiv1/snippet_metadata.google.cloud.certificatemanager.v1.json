@@ -103,6 +103,52 @@
       ]
     },
     {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateIssuanceConfig_sync",
+      "title": "certificatemanager CreateCertificateIssuanceConfig Sample",
+      "description": "CreateCertificateIssuanceConfig creates a new CertificateIssuanceConfig in a given project and location.",
+      "file": "Client/CreateCertificateIssuanceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCertificateIssuanceConfig",
+        "fullName": "google.cloud.certificatemanager.v1.Client.CreateCertificateIssuanceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.CreateCertificateIssuanceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateCertificateIssuanceConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateCertificateIssuanceConfig",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateCertificateIssuanceConfig",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateCertificateMap_sync",
       "title": "certificatemanager CreateCertificateMap Sample",
       "description": "CreateCertificateMap creates a new CertificateMap in a given project and location.",
@@ -271,6 +317,52 @@
         "method": {
           "shortName": "DeleteCertificate",
           "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificate",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteCertificateIssuanceConfig_sync",
+      "title": "certificatemanager DeleteCertificateIssuanceConfig Sample",
+      "description": "DeleteCertificateIssuanceConfig deletes a single CertificateIssuanceConfig.",
+      "file": "Client/DeleteCertificateIssuanceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCertificateIssuanceConfig",
+        "fullName": "google.cloud.certificatemanager.v1.Client.DeleteCertificateIssuanceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.DeleteCertificateIssuanceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCertificateIssuanceConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteCertificateIssuanceConfig",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteCertificateIssuanceConfig",
           "service": {
             "shortName": "CertificateManager",
             "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
@@ -516,6 +608,52 @@
       ]
     },
     {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateIssuanceConfig_sync",
+      "title": "certificatemanager GetCertificateIssuanceConfig Sample",
+      "description": "GetCertificateIssuanceConfig gets details of a single CertificateIssuanceConfig.",
+      "file": "Client/GetCertificateIssuanceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCertificateIssuanceConfig",
+        "fullName": "google.cloud.certificatemanager.v1.Client.GetCertificateIssuanceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.GetCertificateIssuanceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "certificatemanagerpb.CertificateIssuanceConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetCertificateIssuanceConfig",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetCertificateIssuanceConfig",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "certificatemanager_v1_generated_CertificateManager_GetCertificateMap_sync",
       "title": "certificatemanager GetCertificateMap Sample",
       "description": "GetCertificateMap gets details of a single CertificateMap.",
@@ -741,6 +879,52 @@
         {
           "start": 18,
           "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateIssuanceConfigs_sync",
+      "title": "certificatemanager ListCertificateIssuanceConfigs Sample",
+      "description": "ListCertificateIssuanceConfigs lists CertificateIssuanceConfigs in a given project and location.",
+      "file": "Client/ListCertificateIssuanceConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCertificateIssuanceConfigs",
+        "fullName": "google.cloud.certificatemanager.v1.Client.ListCertificateIssuanceConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.ListCertificateIssuanceConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CertificateIssuanceConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListCertificateIssuanceConfigs",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListCertificateIssuanceConfigs",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
           "type": "FULL"
         }
       ]
