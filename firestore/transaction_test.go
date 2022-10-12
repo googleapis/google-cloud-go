@@ -24,6 +24,7 @@ import (
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestRunTransaction(t *testing.T) {
@@ -509,7 +510,9 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	const db = "projects/projectID/databases/(default)"
 	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := &timestamppb.Timestamp{Nanos: int32(tm.UnixNano())}
 	tid := []byte{1}
+
 	beginReq := &pb.BeginTransactionRequest{Database: db}
 	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
 
@@ -521,7 +524,7 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 			Database:    db,
 			Transaction: tid,
 		},
-		&pb.CommitResponse{CommitTime: aTimestamp3},
+		&pb.CommitResponse{CommitTime: ts},
 	)
 
 	srv.addRPC(
@@ -529,7 +532,7 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 			Database:    db,
 			Transaction: tid,
 		},
-		&pb.CommitResponse{CommitTime: aTimestamp3},
+		&pb.CommitResponse{CommitTime: ts},
 	)
 
 	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
