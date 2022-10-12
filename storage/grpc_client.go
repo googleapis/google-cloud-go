@@ -246,7 +246,8 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetBucketRequest{
-		Name: bucketResourceName(globalProjectAlias, bucket),
+		Name:     bucketResourceName(globalProjectAlias, bucket),
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
 		return nil, err
@@ -500,10 +501,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
 	}
 
-	var paths []string
-	fieldMask := &fieldmaskpb.FieldMask{
-		Paths: paths,
-	}
+	fieldMask := &fieldmaskpb.FieldMask{Paths: nil}
 	if uattrs.EventBasedHold != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "event_based_hold")
 	}
@@ -530,7 +528,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	}
 	// Note: This API currently does not support entites using project ID.
 	// Use project numbers in ACL entities. Pending b/233617896.
-	if uattrs.ACL != nil {
+	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
