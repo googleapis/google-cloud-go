@@ -35,7 +35,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
-	firestore "google.golang.org/genproto/googleapis/firestore/v1beta1"
+	firestorev1 "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -1818,7 +1818,7 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	if !ok {
 		t.Errorf("key %s not in response %v", alias, ar)
 	}
-	cv := count.(*firestore.Value)
+	cv := count.(*firestorev1.Value)
 	if cv.GetIntegerValue() != 2 {
 		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
 	}
