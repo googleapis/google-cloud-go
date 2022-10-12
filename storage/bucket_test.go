@@ -725,16 +725,18 @@ func TestNewBucketFromProto(t *testing.T) {
 		StorageClass: "class",
 		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
 			RetentionPeriod: proto.Int64(int64(3)),
+			EffectiveTime:   toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 		},
 		IamConfig: &storagepb.Bucket_IamConfig{
 			UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
-				Enabled: true,
+				Enabled:  true,
+				LockTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 			},
 			PublicAccessPrevention: "enforced",
 		},
 		Rpo:            rpoAsyncTurbo,
 		Metageneration: int64(39),
-		CreateTime:     toProtoTimestamp(time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)),
+		CreateTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 		Labels:         map[string]string{"label": "value"},
 		Cors: []*storagepb.Bucket_Cors{
 			{
@@ -747,7 +749,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC))},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -767,14 +769,14 @@ func TestNewBucketFromProto(t *testing.T) {
 		StorageClass:     "class",
 		RetentionPolicy: &RetentionPolicy{
 			RetentionPeriod: 3 * time.Second,
-			EffectiveTime:   time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC),
+			EffectiveTime:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 		},
-		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
-		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
+		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
 		PublicAccessPrevention:   PublicAccessPreventionEnforced,
 		RPO:                      RPOAsyncTurbo,
 		MetaGeneration:           39,
-		Created:                  time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC),
+		Created:                  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 		Labels:                   map[string]string{"label": "value"},
 		CORS: []CORS{
 			{
@@ -787,7 +789,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
