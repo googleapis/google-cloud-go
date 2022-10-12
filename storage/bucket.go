@@ -917,7 +917,10 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 				Enabled: optional.ToBool(ua.BucketPolicyOnly.Enabled),
 			}
 		}
-		if ua.UniformBucketLevelAccess != nil { //takes precedence over BucketPolicyOnly
+
+		if ua.UniformBucketLevelAccess != nil {
+			// UniformBucketLevelAccess takes precedence over BucketPolicyOnly,
+			// so Enabled will be overriden here if both are set
 			bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
 				Enabled: optional.ToBool(ua.UniformBucketLevelAccess.Enabled),
 			}
