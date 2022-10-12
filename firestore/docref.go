@@ -834,10 +834,7 @@ func (it *DocumentSnapshotIterator) Stop() {
 // e.g. at what time snapshot to read the documents.
 func (d *DocumentRef) WithReadOptions(opts ...ReadOption) *DocumentRef {
 	for _, ro := range opts {
-		switch r := ro.(type) {
-		case readTime:
-			r.apply(d.readSettings)
-		}
+		ro.apply(d.readSettings)
 	}
 	return d
 }

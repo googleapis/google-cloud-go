@@ -425,7 +425,6 @@ type readSettings struct {
 }
 
 // parseReadTime ensures that fallback order of read options is respected.
-// First, if a ReadOption is set on the readOptionable
 func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
 	if rs != nil && !rs.readTime.IsZero() {
 		return &timestamppb.Timestamp{Seconds: int64(rs.readTime.Unix())}, true
