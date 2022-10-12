@@ -434,6 +434,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
 	}
+	ti.DeletionProtection = res.DeletionProtection
 	return ti, nil
 }
 
