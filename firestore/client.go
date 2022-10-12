@@ -322,10 +322,7 @@ func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 // e.g. at what time snapshot to read the documents.
 func (c *Client) WithReadOptions(opts ...ReadOption) *Client {
 	for _, ro := range opts {
-		switch r := ro.(type) {
-		case readTime:
-			r.apply(c.readSettings)
-		}
+		ro.apply(c.readSettings)
 	}
 	return c
 }
@@ -408,17 +405,13 @@ func (ec emulatorCreds) RequireTransportSecurity() bool {
 
 // ReadTime specifies a time-specific snapshot of the database to read.
 func ReadTime(t time.Time) ReadOption {
-	var rt readTime
-	rt.Time = t
-	return rt
+	return readTime(t)
 }
 
-type readTime struct {
-	time.Time
-}
+type readTime time.Time
 
 func (rt readTime) apply(rs *readSettings) {
-	rs.readTime = rt.Time
+	rs.readTime = time.Time(rt)
 }
 
 // ReadOption interface allows for abstraction of computing read time settings.
@@ -436,7 +429,8 @@ type readSettings struct {
 func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
 	if rs != nil && !rs.readTime.IsZero() {
 		return &timestamppb.Timestamp{Seconds: int64(rs.readTime.Unix())}, true
-	} else if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+	}
+	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
 		return &timestamppb.Timestamp{Seconds: int64(c.readSettings.readTime.Unix())}, true
 	}
 	return nil, false

@@ -294,10 +294,7 @@ func (t *Transaction) addWrites(ws []*pb.Write, err error) error {
 // e.g. at what time snapshot to read the documents.
 func (t *Transaction) WithReadOptions(opts ...ReadOption) *Transaction {
 	for _, ro := range opts {
-		switch r := ro.(type) {
-		case readTime:
-			r.apply(t.readSettings)
-		}
+		ro.apply(t.readSettings)
 	}
 	return t
 }

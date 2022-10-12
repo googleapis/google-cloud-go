@@ -147,10 +147,7 @@ func uniqueID() string {
 // e.g. at what time snapshot to read the documents.
 func (c *CollectionRef) WithReadOptions(opts ...ReadOption) *CollectionRef {
 	for _, ro := range opts {
-		switch r := ro.(type) {
-		case readTime:
-			r.apply(c.readSettings)
-		}
+		ro.apply(c.readSettings)
 	}
 	return c
 }

@@ -1060,10 +1060,7 @@ func (*btreeDocumentIterator) stop() {}
 // e.g. at what time snapshot to read the documents.
 func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
 	for _, ro := range opts {
-		switch r := ro.(type) {
-		case readTime:
-			r.apply(q.readSettings)
-		}
+		ro.apply(q.readSettings)
 	}
 	return q
 }
