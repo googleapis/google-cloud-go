@@ -2466,40 +2466,38 @@ func TestIntegration_ACL(t *testing.T) {
 }
 
 func TestIntegration_ValidObjectNames(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	bkt := client.Bucket(bucketName)
-
-	validNames := []string{
-		"gopher",
-		"Гоферови",
-		"a",
-		strings.Repeat("a", 1024),
-	}
-	for _, name := range validNames {
-		if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
-			t.Errorf("Object %q write failed: %v. Want success", name, err)
-			continue
+		validNames := []string{
+			"gopher",
+			"Гоферови",
+			"a",
+			strings.Repeat("a", 1024),
 		}
-		defer bkt.Object(name).Delete(ctx)
-	}
-
-	invalidNames := []string{
-		"",                        // Too short.
-		strings.Repeat("a", 1025), // Too long.
-		"new\nlines",
-		"bad\xffunicode",
-	}
-	for _, name := range invalidNames {
-		// Invalid object names will either cause failure during Write or Close.
-		if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
-			continue
+		for _, name := range validNames {
+			if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
+				t.Errorf("Object %q write failed: %v. Want success", name, err)
+				continue
+			}
+			defer bkt.Object(name).Delete(ctx)
 		}
-		defer bkt.Object(name).Delete(ctx)
-		t.Errorf("%q should have failed. Didn't", name)
-	}
+
+		invalidNames := []string{
+			"",                        // Too short.
+			strings.Repeat("a", 1025), // Too long.
+			"new\nlines",
+			"bad\xffunicode",
+		}
+		for _, name := range invalidNames {
+			// Invalid object names will either cause failure during Write or Close.
+			if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
+				continue
+			}
+			defer bkt.Object(name).Delete(ctx)
+			t.Errorf("%q should have failed. Didn't", name)
+		}
+	})
 }
 
 func TestIntegration_WriterContentType(t *testing.T) {
@@ -2548,25 +2546,24 @@ func TestIntegration_WriterContentType(t *testing.T) {
 
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
 
-	obj := client.Bucket(bucketName).Object("zero")
+		obj := client.Bucket(bucket).Object("zero")
 
-	// Check writing it works as expected.
-	w := obj.NewWriter(ctx)
-	if err := w.Close(); err != nil {
-		t.Fatalf("Writer.Close: %v", err)
-	}
-	defer obj.Delete(ctx)
+		// Check writing it works as expected.
+		w := obj.NewWriter(ctx)
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
+		defer obj.Delete(ctx)
 
-	// Check we can read it too.
-	body := h.mustRead(obj)
-	if len(body) != 0 {
-		t.Errorf("Body is %v, want empty []byte{}", body)
-	}
+		// Check we can read it too.
+		body := h.mustRead(obj)
+		if len(body) != 0 {
+			t.Errorf("Body is %v, want empty []byte{}", body)
+		}
+	})
 }
 
 func TestIntegration_Encryption(t *testing.T) {
@@ -2875,54 +2872,53 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 }
 
 func TestIntegration_BucketIAM(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(bkt)
-	// This bucket is unique to this test run. So we don't have
-	// to worry about other runs interfering with our IAM policy
-	// changes.
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
+		// This bucket is unique to this test run. So we don't have
+		// to worry about other runs interfering with our IAM policy
+		// changes.
 
-	member := "projectViewer:" + testutil.ProjID()
-	role := iam.RoleName("roles/storage.objectViewer")
-	// Get the bucket's IAM policy.
-	policy, err := bkt.IAM().Policy(ctx)
-	if err != nil {
-		t.Fatalf("Getting policy: %v", err)
-	}
-	// The member should not have the role.
-	if policy.HasRole(member, role) {
-		t.Errorf("member %q has role %q", member, role)
-	}
-	// Change the policy.
-	policy.Add(member, role)
-	if err := bkt.IAM().SetPolicy(ctx, policy); err != nil {
-		t.Fatalf("SetPolicy: %v", err)
-	}
-	// Confirm that the binding was added.
-	policy, err = bkt.IAM().Policy(ctx)
-	if err != nil {
-		t.Fatalf("Getting policy: %v", err)
-	}
-	if !policy.HasRole(member, role) {
-		t.Errorf("member %q does not have role %q", member, role)
-	}
+		member := "projectViewer:" + testutil.ProjID()
+		role := iam.RoleName("roles/storage.objectViewer")
+		// Get the bucket's IAM policy.
+		policy, err := bkt.IAM().Policy(ctx)
+		if err != nil {
+			t.Fatalf("Getting policy: %v", err)
+		}
+		// The member should not have the role.
+		if policy.HasRole(member, role) {
+			t.Errorf("member %q has role %q", member, role)
+		}
+		// Change the policy.
+		policy.Add(member, role)
+		if err := bkt.IAM().SetPolicy(ctx, policy); err != nil {
+			t.Fatalf("SetPolicy: %v", err)
+		}
+		// Confirm that the binding was added.
+		policy, err = bkt.IAM().Policy(ctx)
+		if err != nil {
+			t.Fatalf("Getting policy: %v", err)
+		}
+		if !policy.HasRole(member, role) {
+			t.Errorf("member %q does not have role %q", member, role)
+		}
 
-	// Check TestPermissions.
-	// This client should have all these permissions (and more).
-	perms := []string{"storage.buckets.get", "storage.buckets.delete"}
-	got, err := bkt.IAM().TestPermissions(ctx, perms)
-	if err != nil {
-		t.Fatalf("TestPermissions: %v", err)
-	}
-	sort.Strings(perms)
-	sort.Strings(got)
-	if !testutil.Equal(got, perms) {
-		t.Errorf("got %v, want %v", got, perms)
-	}
+		// Check TestPermissions.
+		// This client should have all these permissions (and more).
+		perms := []string{"storage.buckets.get", "storage.buckets.delete"}
+		got, err := bkt.IAM().TestPermissions(ctx, perms)
+		if err != nil {
+			t.Fatalf("TestPermissions: %v", err)
+		}
+		sort.Strings(perms)
+		sort.Strings(got)
+		if !testutil.Equal(got, perms) {
+			t.Errorf("got %v, want %v", got, perms)
+		}
+	})
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
@@ -3428,36 +3424,35 @@ func TestIntegration_ReadCRC(t *testing.T) {
 
 func TestIntegration_CancelWrite(t *testing.T) {
 	// Verify that canceling the writer's context immediately stops uploading an object.
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	cctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	obj := bkt.Object("cancel-write")
-	w := obj.NewWriter(cctx)
-	w.ChunkSize = googleapi.MinUploadChunkSize
-	buf := make([]byte, w.ChunkSize)
-	// Write the first chunk. This is read in its entirety before sending the request
-	// (see google.golang.org/api/gensupport.PrepareUpload), so we expect it to return
-	// without error.
-	_, err := w.Write(buf)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// Now cancel the context.
-	cancel()
-	// The next Write should return context.Canceled.
-	_, err = w.Write(buf)
-	if !errors.Is(err, context.Canceled) {
-		t.Fatalf("got %v, wanted context.Canceled", err)
-	}
-	// The Close should too.
-	err = w.Close()
-	if !errors.Is(err, context.Canceled) {
-		t.Fatalf("got %v, wanted context.Canceled", err)
-	}
+		cctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		obj := bkt.Object("cancel-write")
+		w := obj.NewWriter(cctx)
+		w.ChunkSize = googleapi.MinUploadChunkSize
+		buf := make([]byte, w.ChunkSize)
+		// Write the first chunk. This is read in its entirety before sending the request
+		// (see google.golang.org/api/gensupport.PrepareUpload), so we expect it to return
+		// without error.
+		_, err := w.Write(buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// Now cancel the context.
+		cancel()
+		// The next Write should return context.Canceled.
+		_, err = w.Write(buf)
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("got %v, wanted context.Canceled", err)
+		}
+		// The Close should too.
+		err = w.Close()
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("got %v, wanted context.Canceled", err)
+		}
+	})
 }
 
 func TestIntegration_UpdateCORS(t *testing.T) {
