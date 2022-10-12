@@ -607,94 +607,85 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	// Insert an object with custom ACL.
-	o := bkt.Object("bucketPolicyOnly")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
+
+		// Insert an object with custom ACL.
+		o := bkt.Object("bucketPolicyOnly")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		aclEntity := ACLEntity("user-test@example.com")
+		err := a.Set(ctx, aclEntity, RoleReader)
+		if err != nil {
+			t.Fatalf("set ACL failed: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	aclEntity := ACLEntity("user-test@example.com")
-	err := a.Set(ctx, aclEntity, RoleReader)
-	if err != nil {
-		t.Fatalf("set ACL failed: %v", err)
-	}
 
-	// Enable BucketPolicyOnly.
-	ua := BucketAttrsToUpdate{BucketPolicyOnly: &BucketPolicyOnly{Enabled: true}}
-	attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
-	if got, want := attrs.BucketPolicyOnly.Enabled, true; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-	if got := attrs.BucketPolicyOnly.LockedTime; got.IsZero() {
-		t.Fatal("got a zero time value, want a populated value")
-	}
+		// Enable BucketPolicyOnly.
+		ua := BucketAttrsToUpdate{BucketPolicyOnly: &BucketPolicyOnly{Enabled: true}}
+		attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
+		if got, want := attrs.BucketPolicyOnly.Enabled, true; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
+		if got := attrs.BucketPolicyOnly.LockedTime; got.IsZero() {
+			t.Fatal("got a zero time value, want a populated value")
+		}
 
-	// Confirm BucketAccessControl returns error, since we cannot get legacy ACL
-	// for a bucket that has uniform bucket-level access.
+		// Confirm BucketAccessControl returns error, since we cannot get legacy ACL
+		// for a bucket that has uniform bucket-level access.
 
-	// Metadata updates may be delayed up to 10s. Since we expect an error from
-	// this call, we retry on a nil error until we get the non-retryable error
-	// that we are expecting.
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
-	_, err = b.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected bucket ACL list to fail")
-	}
+		// Metadata updates may be delayed up to 10s. Since we expect an error from
+		// this call, we retry on a nil error until we get the non-retryable error
+		// that we are expecting.
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
+		_, err = b.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
 
-	// Confirm ObjectAccessControl returns error, for same reason as above.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected object ACL list to fail")
-	}
+		// Confirm ObjectAccessControl returns error, for same reason as above.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected object ACL list to fail")
+		}
 
-	// Disable BucketPolicyOnly.
-	ua = BucketAttrsToUpdate{BucketPolicyOnly: &BucketPolicyOnly{Enabled: false}}
-	attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
-	if got, want := attrs.BucketPolicyOnly.Enabled, false; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
+		// Disable BucketPolicyOnly.
+		ua = BucketAttrsToUpdate{BucketPolicyOnly: &BucketPolicyOnly{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.BucketPolicyOnly.Enabled, false; got != want {
+			t.Fatalf("attrs.BucketPolicyOnly.Enabled: got %v, want %v", got, want)
+		}
 
-	// Check that the object ACLs are the same.
+		// Check that the object ACL rules are the same.
 
-	// Metadata updates may be delayed up to 10s. Before that, we can get a 400
-	// indicating that uniform bucket-level access is still enabled.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-	acls, err := retryObj.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.List: object ACL list failed: %v", err)
-	}
+		// Metadata updates may be delayed up to 10s. Before that, we can get a 400
+		// indicating that uniform bucket-level access is still enabled.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+		acl, err := retryObj.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
 
-	if !containsACL(acls, aclEntity, RoleReader) {
-		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
-	}
-}
-
-func retryOnNilAndTransientErrs(err error) bool {
-	return err == nil || ShouldRetry(err)
-}
-func retryOnTransient400and403(err error) bool {
-	var e *googleapi.Error
-	var ae *apierror.APIError
-	return ShouldRetry(err) ||
-		/* http */ errors.As(err, &e) && (e.Code == 400 || e.Code == 403) ||
-		/* grpc */ errors.As(err, &ae) && (ae.GRPCStatus().Code() == codes.InvalidArgument || ae.GRPCStatus().Code() == codes.PermissionDenied)
+		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+		}
+	})
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
@@ -758,18 +749,18 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 
-	// Check that the object ACLs are the same.
+	// Check that the object ACL is the same.
 	// We retry on 400 to account for propagation delay in metadata update.
 	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
 	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-	acls, err := retryObj.ACL().List(ctxWithTimeout)
+	acl, err := retryObj.ACL().List(ctxWithTimeout)
 	cancelCtx()
 	if err != nil {
 		t.Errorf("ACL.List: object ACL list failed: %v", err)
 	}
 
-	if !containsACL(acls, aclEntity, RoleReader) {
-		t.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+	if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+		t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
 	}
 }
 
@@ -2433,119 +2424,121 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 }
 
 func TestIntegration_ACL(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(bucketName)
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
 
-	entity := ACLEntity("domain-google.com")
-	rule := ACLRule{Entity: entity, Role: RoleReader, Domain: "google.com"}
-	if err := bkt.DefaultObjectACL().Set(ctx, entity, RoleReader); err != nil {
-		t.Errorf("Can't put default ACL rule for the bucket, errored with %v", err)
-	}
+		entity := ACLEntity("domain-google.com")
+		rule := ACLRule{Entity: entity, Role: RoleReader, Domain: "google.com"}
 
-	acl, err := bkt.DefaultObjectACL().List(ctx)
-	if err != nil {
-		t.Errorf("DefaultObjectACL.List for bucket %q: %v", bucketName, err)
-	} else if !hasRule(acl, rule) {
-		t.Errorf("default ACL missing %#v", rule)
-	}
-	name := "acl1"
-	o := bkt.Object(name)
-	c := randomContents()
-
-	// Retry to account for propagation delay in metadata update.
-	err = retry(ctx, func() error {
-		if err := writeObject(ctx, o, "", c); err != nil {
-			return fmt.Errorf("Write for %v failed with %v", name, err)
+		if err := bkt.DefaultObjectACL().Set(ctx, entity, RoleReader); err != nil {
+			t.Errorf("Can't put default ACL rule for the bucket, errored with %v", err)
 		}
-		acl, err = o.ACL().List(ctx)
-		return err
-	}, func() error {
-		if !hasRule(acl, rule) {
-			return fmt.Errorf("hasRule: object ACL missing %+v", rule)
+
+		acl, err := bkt.DefaultObjectACL().List(ctx)
+		if err != nil {
+			t.Errorf("DefaultObjectACL.List for bucket %q: %v", bucketName, err)
 		}
-		return nil
+		if !containsACLRule(acl, testACLRule(rule)) {
+			t.Fatalf("default ACL rule missing; want: %#v, got rules: %+v", rule, acl)
+		}
+
+		o := bkt.Object("acl1")
+		defer h.mustDeleteObject(o)
+
+		// Retry to account for propagation delay in metadata update.
+		err = retry(ctx, func() error {
+			if err := writeObject(ctx, o, "", randomContents()); err != nil {
+				return fmt.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+			}
+			acl, err = o.ACL().List(ctx)
+			return err
+		}, func() error {
+			if !containsACLRule(acl, testACLRule(rule)) {
+				return fmt.Errorf("object ACL rule missing %+v from ACL \n%+v", rule, acl)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Error(err)
+		}
+
+		if err := o.ACL().Delete(ctx, entity); err != nil {
+			t.Errorf("object ACL: could not delete entity %s", entity)
+		}
+		// Delete the default ACL rule. We can't move this code earlier in the
+		// test, because the test depends on the fact that the object ACL inherits
+		// it.
+		if err := bkt.DefaultObjectACL().Delete(ctx, entity); err != nil {
+			t.Errorf("default ACL: could not delete entity %s", entity)
+		}
+
+		entity2 := AllAuthenticatedUsers
+		rule2 := ACLRule{Entity: entity2, Role: RoleReader}
+		if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
+			t.Errorf("Error while putting bucket ACL rule: %v", err)
+		}
+
+		var bACL []ACLRule
+		ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+		defer cancel()
+
+		// Retry to account for propagation delay in metadata update.
+		err = retry(ctx, func() error {
+			bACL, err = bkt.ACL().List(ctxWithTimeout)
+			return err
+		}, func() error {
+			if !containsACLRule(bACL, testACLRule(rule2)) {
+				return fmt.Errorf("bucket ACL missing %+v", rule2)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Error(err)
+		}
+
+		if err := bkt.ACL().Delete(ctx, entity2); err != nil {
+			t.Errorf("Error while deleting bucket ACL rule: %v", err)
+		}
 	})
-	if err != nil {
-		t.Error(err)
-	}
-
-	if err := o.ACL().Delete(ctx, entity); err != nil {
-		t.Errorf("object ACL: could not delete entity %s", entity)
-	}
-	// Delete the default ACL rule. We can't move this code earlier in the
-	// test, because the test depends on the fact that the object ACL inherits
-	// it.
-	if err := bkt.DefaultObjectACL().Delete(ctx, entity); err != nil {
-		t.Errorf("default ACL: could not delete entity %s", entity)
-	}
-
-	entity2 := AllAuthenticatedUsers
-	rule2 := ACLRule{Entity: entity2, Role: RoleReader}
-	if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
-		t.Errorf("Error while putting bucket ACL rule: %v", err)
-	}
-
-	var bACL []ACLRule
-	ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
-	defer cancel()
-
-	// Retry to account for propagation delay in metadata update.
-	err = retry(ctx, func() error {
-		bACL, err = bkt.ACL().List(ctxWithTimeout)
-		return err
-	}, func() error {
-		if !hasRule(bACL, rule2) {
-			return fmt.Errorf("hasRule: bucket ACL missing %+v", rule2)
-		}
-		return nil
-	})
-	if err != nil {
-		t.Error(err)
-	}
-
-	if err := bkt.ACL().Delete(ctx, entity2); err != nil {
-		t.Errorf("Error while deleting bucket ACL rule: %v", err)
-	}
 }
 
 func TestIntegration_ValidObjectNames(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	bkt := client.Bucket(bucketName)
-
-	validNames := []string{
-		"gopher",
-		"Гоферови",
-		"a",
-		strings.Repeat("a", 1024),
-	}
-	for _, name := range validNames {
-		if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
-			t.Errorf("Object %q write failed: %v. Want success", name, err)
-			continue
+		validNames := []string{
+			"gopher",
+			"Гоферови",
+			"a",
+			strings.Repeat("a", 1024),
 		}
-		defer bkt.Object(name).Delete(ctx)
-	}
-
-	invalidNames := []string{
-		"",                        // Too short.
-		strings.Repeat("a", 1025), // Too long.
-		"new\nlines",
-		"bad\xffunicode",
-	}
-	for _, name := range invalidNames {
-		// Invalid object names will either cause failure during Write or Close.
-		if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
-			continue
+		for _, name := range validNames {
+			if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
+				t.Errorf("Object %q write failed: %v. Want success", name, err)
+				continue
+			}
+			defer bkt.Object(name).Delete(ctx)
 		}
-		defer bkt.Object(name).Delete(ctx)
-		t.Errorf("%q should have failed. Didn't", name)
-	}
+
+		invalidNames := []string{
+			"",                        // Too short.
+			strings.Repeat("a", 1025), // Too long.
+			"new\nlines",
+			"bad\xffunicode",
+		}
+		for _, name := range invalidNames {
+			// Invalid object names will either cause failure during Write or Close.
+			if err := writeObject(ctx, bkt.Object(name), "", []byte("data")); err != nil {
+				continue
+			}
+			defer bkt.Object(name).Delete(ctx)
+			t.Errorf("%q should have failed. Didn't", name)
+		}
+	})
 }
 
 func TestIntegration_WriterContentType(t *testing.T) {
@@ -2594,25 +2587,24 @@ func TestIntegration_WriterContentType(t *testing.T) {
 
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
 
-	obj := client.Bucket(bucketName).Object("zero")
+		obj := client.Bucket(bucket).Object("zero")
 
-	// Check writing it works as expected.
-	w := obj.NewWriter(ctx)
-	if err := w.Close(); err != nil {
-		t.Fatalf("Writer.Close: %v", err)
-	}
-	defer obj.Delete(ctx)
+		// Check writing it works as expected.
+		w := obj.NewWriter(ctx)
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
+		defer obj.Delete(ctx)
 
-	// Check we can read it too.
-	body := h.mustRead(obj)
-	if len(body) != 0 {
-		t.Errorf("Body is %v, want empty []byte{}", body)
-	}
+		// Check we can read it too.
+		body := h.mustRead(obj)
+		if len(body) != 0 {
+			t.Errorf("Body is %v, want empty []byte{}", body)
+		}
+	})
 }
 
 func TestIntegration_Encryption(t *testing.T) {
@@ -2921,54 +2913,53 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 }
 
 func TestIntegration_BucketIAM(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(bkt)
-	// This bucket is unique to this test run. So we don't have
-	// to worry about other runs interfering with our IAM policy
-	// changes.
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		h := testHelper{t}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
+		// This bucket is unique to this test run. So we don't have
+		// to worry about other runs interfering with our IAM policy
+		// changes.
 
-	member := "projectViewer:" + testutil.ProjID()
-	role := iam.RoleName("roles/storage.objectViewer")
-	// Get the bucket's IAM policy.
-	policy, err := bkt.IAM().Policy(ctx)
-	if err != nil {
-		t.Fatalf("Getting policy: %v", err)
-	}
-	// The member should not have the role.
-	if policy.HasRole(member, role) {
-		t.Errorf("member %q has role %q", member, role)
-	}
-	// Change the policy.
-	policy.Add(member, role)
-	if err := bkt.IAM().SetPolicy(ctx, policy); err != nil {
-		t.Fatalf("SetPolicy: %v", err)
-	}
-	// Confirm that the binding was added.
-	policy, err = bkt.IAM().Policy(ctx)
-	if err != nil {
-		t.Fatalf("Getting policy: %v", err)
-	}
-	if !policy.HasRole(member, role) {
-		t.Errorf("member %q does not have role %q", member, role)
-	}
+		member := "projectViewer:" + testutil.ProjID()
+		role := iam.RoleName("roles/storage.objectViewer")
+		// Get the bucket's IAM policy.
+		policy, err := bkt.IAM().Policy(ctx)
+		if err != nil {
+			t.Fatalf("Getting policy: %v", err)
+		}
+		// The member should not have the role.
+		if policy.HasRole(member, role) {
+			t.Errorf("member %q has role %q", member, role)
+		}
+		// Change the policy.
+		policy.Add(member, role)
+		if err := bkt.IAM().SetPolicy(ctx, policy); err != nil {
+			t.Fatalf("SetPolicy: %v", err)
+		}
+		// Confirm that the binding was added.
+		policy, err = bkt.IAM().Policy(ctx)
+		if err != nil {
+			t.Fatalf("Getting policy: %v", err)
+		}
+		if !policy.HasRole(member, role) {
+			t.Errorf("member %q does not have role %q", member, role)
+		}
 
-	// Check TestPermissions.
-	// This client should have all these permissions (and more).
-	perms := []string{"storage.buckets.get", "storage.buckets.delete"}
-	got, err := bkt.IAM().TestPermissions(ctx, perms)
-	if err != nil {
-		t.Fatalf("TestPermissions: %v", err)
-	}
-	sort.Strings(perms)
-	sort.Strings(got)
-	if !testutil.Equal(got, perms) {
-		t.Errorf("got %v, want %v", got, perms)
-	}
+		// Check TestPermissions.
+		// This client should have all these permissions (and more).
+		perms := []string{"storage.buckets.get", "storage.buckets.delete"}
+		got, err := bkt.IAM().TestPermissions(ctx, perms)
+		if err != nil {
+			t.Fatalf("TestPermissions: %v", err)
+		}
+		sort.Strings(perms)
+		sort.Strings(got)
+		if !testutil.Equal(got, perms) {
+			t.Errorf("got %v, want %v", got, perms)
+		}
+	})
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
@@ -3474,36 +3465,35 @@ func TestIntegration_ReadCRC(t *testing.T) {
 
 func TestIntegration_CancelWrite(t *testing.T) {
 	// Verify that canceling the writer's context immediately stops uploading an object.
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	cctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	obj := bkt.Object("cancel-write")
-	w := obj.NewWriter(cctx)
-	w.ChunkSize = googleapi.MinUploadChunkSize
-	buf := make([]byte, w.ChunkSize)
-	// Write the first chunk. This is read in its entirety before sending the request
-	// (see google.golang.org/api/gensupport.PrepareUpload), so we expect it to return
-	// without error.
-	_, err := w.Write(buf)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// Now cancel the context.
-	cancel()
-	// The next Write should return context.Canceled.
-	_, err = w.Write(buf)
-	if !errors.Is(err, context.Canceled) {
-		t.Fatalf("got %v, wanted context.Canceled", err)
-	}
-	// The Close should too.
-	err = w.Close()
-	if !errors.Is(err, context.Canceled) {
-		t.Fatalf("got %v, wanted context.Canceled", err)
-	}
+		cctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		obj := bkt.Object("cancel-write")
+		w := obj.NewWriter(cctx)
+		w.ChunkSize = googleapi.MinUploadChunkSize
+		buf := make([]byte, w.ChunkSize)
+		// Write the first chunk. This is read in its entirety before sending the request
+		// (see google.golang.org/api/gensupport.PrepareUpload), so we expect it to return
+		// without error.
+		_, err := w.Write(buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// Now cancel the context.
+		cancel()
+		// The next Write should return context.Canceled.
+		_, err = w.Write(buf)
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("got %v, wanted context.Canceled", err)
+		}
+		// The Close should too.
+		err = w.Close()
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("got %v, wanted context.Canceled", err)
+		}
+	})
 }
 
 func TestIntegration_UpdateCORS(t *testing.T) {
@@ -3699,180 +3689,185 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_CustomTime(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 
-	// Create object with CustomTime.
-	bkt := client.Bucket(bucketName)
-	obj := bkt.Object("custom-time-obj")
-	w := obj.NewWriter(ctx)
-	ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
-	w.ObjectAttrs.CustomTime = ct
-	h.mustWrite(w, randomContents())
+		// Create object with CustomTime.
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("custom-time-obj")
+		w := obj.NewWriter(ctx)
+		ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
+		w.ObjectAttrs.CustomTime = ct
+		h.mustWrite(w, randomContents())
 
-	// Validate that CustomTime has been set
-	checkCustomTime := func(want time.Time) error {
-		attrs, err := obj.Attrs(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to get object attrs: %v", err)
+		// Validate that CustomTime has been set
+		checkCustomTime := func(want time.Time) error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("failed to get object attrs: %v", err)
+			}
+			if got := attrs.CustomTime; got != want {
+				return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+			}
+			return nil
 		}
-		if got := attrs.CustomTime; got != want {
-			return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+
+		if err := checkCustomTime(ct); err != nil {
+			t.Fatalf("checking CustomTime: %v", err)
 		}
-		return nil
-	}
 
-	if err := checkCustomTime(ct); err != nil {
-		t.Fatalf("checking CustomTime: %v", err)
-	}
+		// Update CustomTime to the future should succeed.
+		laterTime := ct.Add(10 * time.Hour)
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
+			t.Fatalf("updating CustomTime: %v", err)
+		}
 
-	// Update CustomTime to the future should succeed.
-	laterTime := ct.Add(10 * time.Hour)
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
-		t.Fatalf("updating CustomTime: %v", err)
-	}
+		// Update CustomTime to the past should give error.
+		earlierTime := ct.Add(5 * time.Hour)
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
+			t.Fatalf("backdating CustomTime: expected error, got none")
+		}
 
-	// Update CustomTime to the past should give error.
-	earlierTime := ct.Add(5 * time.Hour)
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
-		t.Fatalf("backdating CustomTime: expected error, got none")
-	}
-
-	// Zero value for CustomTime should be ignored.
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {
-		t.Fatalf("empty update: %v", err)
-	}
-	if err := checkCustomTime(laterTime); err != nil {
-		t.Fatalf("after sending zero value: %v", err)
-	}
+		// Zero value for CustomTime should be ignored. Set TemporaryHold so that
+		// we don't send an empty update request, which is invalid for gRPC.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{TemporaryHold: false}); err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if err := checkCustomTime(laterTime); err != nil {
+			t.Fatalf("after sending zero value: %v", err)
+		}
+	})
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		initial := &RetentionPolicy{RetentionPeriod: time.Minute}
 
-	initial := &RetentionPolicy{RetentionPeriod: time.Minute}
+		for _, test := range []struct {
+			desc  string
+			input *RetentionPolicy
+			want  *RetentionPolicy
+		}{
+			{
+				desc:  "update",
+				input: &RetentionPolicy{RetentionPeriod: time.Hour},
+				want:  &RetentionPolicy{RetentionPeriod: time.Hour},
+			},
+			{
+				desc:  "update even with timestamp (EffectiveTime should be ignored)",
+				input: &RetentionPolicy{RetentionPeriod: time.Hour, EffectiveTime: time.Now()},
+				want:  &RetentionPolicy{RetentionPeriod: time.Hour},
+			},
+			{
+				desc:  "remove",
+				input: &RetentionPolicy{},
+				want:  nil,
+			},
+			{
+				desc:  "remove even with timestamp (EffectiveTime should be ignored)",
+				input: &RetentionPolicy{EffectiveTime: time.Now().Add(time.Hour)},
+				want:  nil,
+			},
+			{
+				desc:  "ignore",
+				input: nil,
+				want:  initial,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				h := testHelper{t}
+				bkt := client.Bucket(prefix + uidSpace.New())
+				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
+				defer h.mustDeleteBucket(bkt)
+				// Set VersioningEnabled so that we don't send an empty update request, which is invalid for gRPC
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
 
-	for _, test := range []struct {
-		input *RetentionPolicy
-		want  *RetentionPolicy
-	}{
-		{ // Update
-			input: &RetentionPolicy{RetentionPeriod: time.Hour},
-			want:  &RetentionPolicy{RetentionPeriod: time.Hour},
-		},
-		{ // Update even with timestamp (EffectiveTime should be ignored)
-			input: &RetentionPolicy{RetentionPeriod: time.Hour, EffectiveTime: time.Now()},
-			want:  &RetentionPolicy{RetentionPeriod: time.Hour},
-		},
-		{ // Remove
-			input: &RetentionPolicy{},
-			want:  nil,
-		},
-		{ // Remove even with timestamp (EffectiveTime should be ignored)
-			input: &RetentionPolicy{EffectiveTime: time.Now()},
-			want:  nil,
-		},
-		{ // Ignore
-			input: nil,
-			want:  initial,
-		},
-	} {
-		bkt := client.Bucket(uidSpace.New())
-		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
-		defer h.mustDeleteBucket(bkt)
-		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
-		attrs := h.mustBucketAttrs(bkt)
-		if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
-			// Should be set by the server and parsed by the client
-			t.Fatal("EffectiveTime should be set, but it was not")
+				attrs := h.mustBucketAttrs(bkt)
+				if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
+					// Should be set by the server and parsed by the client
+					t.Fatal("EffectiveTime should be set, but it was not")
+				}
+				if diff := testutil.Diff(attrs.RetentionPolicy, test.want, cmpopts.IgnoreTypes(time.Time{})); diff != "" {
+					t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
+				}
+			})
 		}
-		if diff := testutil.Diff(attrs.RetentionPolicy, test.want, cmpopts.IgnoreTypes(time.Time{})); diff != "" {
-			t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
-		}
-	}
+	})
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 25 * time.Hour}})
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 25 * time.Hour}})
+		defer h.mustDeleteBucket(bkt)
 
-	o := bkt.Object("some-object")
-	if err := writeObject(ctx, o, "text/plain", []byte("hello world")); err != nil {
-		t.Fatal(err)
-	}
+		o := bkt.Object("some-object")
+		if err := writeObject(ctx, o, "text/plain", []byte("hello world")); err != nil {
+			t.Fatal(err)
+		}
 
-	if err := o.Delete(ctx); err == nil {
-		t.Fatal("expected to err deleting an object in a bucket with retention period, but got nil")
-	}
+		if err := o.Delete(ctx); err == nil {
+			t.Fatal("expected to err deleting an object in a bucket with retention period, but got nil")
+		}
 
-	// Remove the retention period
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}}, h.mustBucketAttrs(bkt).MetaGeneration)
+		// Remove the retention period
+		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}}, h.mustBucketAttrs(bkt).MetaGeneration)
 
-	// Delete with retry, as bucket metadata changes
-	// can take some time to propagate.
-	retry := func(err error) bool { return err != nil }
-	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
-	defer cancel()
+		// Delete with retry, as bucket metadata changes
+		// can take some time to propagate.
+		retry := func(err error) bool { return err != nil }
+		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+		defer cancel()
 
-	o = o.Retryer(WithErrorFunc(retry), WithPolicy(RetryAlways))
-	if err := o.Delete(ctx); err != nil {
-		t.Fatalf("object delete: %v", err)
-	}
-	h.mustDeleteBucket(bkt)
+		o = o.Retryer(WithErrorFunc(retry), WithPolicy(RetryAlways))
+		if err := o.Delete(ctx); err != nil {
+			t.Fatalf("object delete: %v", err)
+		}
+	})
 }
 
 func TestIntegration_LockBucket(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25}})
-	attrs := h.mustBucketAttrs(bkt)
-	if attrs.RetentionPolicy.IsLocked {
-		t.Fatal("Expected bucket to begin unlocked, but it was not")
-	}
-	err := bkt.If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
-	if err != nil {
-		t.Fatal("could not lock", err)
-	}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25}})
+		attrs := h.mustBucketAttrs(bkt)
+		if attrs.RetentionPolicy.IsLocked {
+			t.Fatal("Expected bucket to begin unlocked, but it was not")
+		}
+		err := bkt.If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
+		if err != nil {
+			t.Fatal("could not lock", err)
+		}
 
-	attrs = h.mustBucketAttrs(bkt)
-	if !attrs.RetentionPolicy.IsLocked {
-		t.Fatal("Expected bucket to be locked, but it was not")
-	}
+		attrs = h.mustBucketAttrs(bkt)
+		if !attrs.RetentionPolicy.IsLocked {
+			t.Fatal("Expected bucket to be locked, but it was not")
+		}
 
-	_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
-	if err == nil {
-		t.Fatal("Expected error updating locked bucket, got nil")
-	}
+		_, err = bkt.Update(ctx, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour}})
+		if err == nil {
+			t.Fatal("Expected error updating locked bucket, got nil")
+		}
+	})
 }
 
 func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-		RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25},
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 25},
+		})
+		err := bkt.LockRetentionPolicy(ctx)
+		if err == nil {
+			t.Fatal("expected error locking bucket without metageneration condition, got nil")
+		}
 	})
-	err := bkt.LockRetentionPolicy(ctx)
-	if err == nil {
-		t.Fatal("expected error locking bucket without metageneration condition, got nil")
-	}
 }
 
 func TestIntegration_KMS(t *testing.T) {
@@ -3966,94 +3961,100 @@ func TestIntegration_KMS(t *testing.T) {
 }
 
 func TestIntegration_PredefinedACLs(t *testing.T) {
-	check := func(msg string, rs []ACLRule, i int, wantEntity ACLEntity, wantRole ACLRole) {
-		if i >= len(rs) {
-			t.Errorf("%s: no rule at index %d", msg, i)
-			return
-		}
-		got := rs[i]
-		if got.Entity != wantEntity || got.Role != wantRole {
-			t.Errorf("%s[%d]: got %+v, want Entity %s and Role %s",
-				msg, i, got, wantEntity, wantRole)
-		}
-	}
-	checkPrefix := func(msg string, rs []ACLRule, i int, wantPrefix string, wantRole ACLRole) {
-		if i >= len(rs) {
-			t.Errorf("%s: no rule at index %d", msg, i)
-			return
-		}
-		got := rs[i]
-		if !strings.HasPrefix(string(got.Entity), wantPrefix) || got.Role != wantRole {
-			t.Errorf("%s[%d]: got %+v, want Entity %s... and Role %s",
-				msg, i, got, wantPrefix, wantRole)
-		}
-	}
+	projectOwners := prefixRoleACL{prefix: "project-owners", role: RoleOwner}
+	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
+	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
 
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-		PredefinedACL:              "authenticatedRead",
-		PredefinedDefaultObjectACL: "publicRead",
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			PredefinedACL:              "authenticatedRead",
+			PredefinedDefaultObjectACL: "publicRead",
+		})
+		defer h.mustDeleteBucket(bkt)
+		attrs := h.mustBucketAttrs(bkt)
+
+		if acl, want := attrs.ACL, projectOwners; !containsACLRule(acl, want) {
+			t.Fatalf("Bucket.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+		if acl, want := attrs.ACL, authenticatedRead; !containsACLRule(acl, want) {
+			t.Fatalf("Bucket.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+		if acl := attrs.DefaultObjectACL; !containsACLRule(acl, entityRoleACL{AllUsers, RoleReader}) {
+			t.Fatalf("DefaultObjectACL: expected acl to contain: %+v, got acl: %+v", entityRoleACL{AllUsers, RoleReader}, acl)
+		}
+
+		// Bucket update
+		attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{
+			PredefinedACL:              "private",
+			PredefinedDefaultObjectACL: "authenticatedRead",
+		}, attrs.MetaGeneration)
+		if acl, want := attrs.ACL, projectOwners; !containsACLRule(acl, want) {
+			t.Fatalf("Bucket.ACL update: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+		if acl, want := attrs.DefaultObjectACL, authenticatedRead; !containsACLRule(acl, want) {
+			t.Fatalf("DefaultObjectACL update: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+
+		// Object creation
+		obj := bkt.Object("private")
+		w := obj.NewWriter(ctx)
+		w.PredefinedACL = "authenticatedRead"
+		h.mustWrite(w, []byte("hello"))
+		defer h.mustDeleteObject(obj)
+		if acl, want := w.Attrs().ACL, userOwner; !containsACLRule(acl, want) {
+			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+		if acl, want := w.Attrs().ACL, authenticatedRead; !containsACLRule(acl, want) {
+			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+
+		// Object update
+		oattrs := h.mustUpdateObject(obj, ObjectAttrsToUpdate{PredefinedACL: "private"}, h.mustObjectAttrs(obj).Metageneration)
+		if acl, want := oattrs.ACL, userOwner; !containsACLRule(acl, want) {
+			t.Fatalf("Object.ACL update: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+		if got := len(oattrs.ACL); got != 1 {
+			t.Errorf("got %d ACL rules, want 1", got)
+		}
+
+		// Copy
+		dst := bkt.Object("dst")
+		copier := dst.CopierFrom(obj)
+		copier.PredefinedACL = "publicRead"
+		oattrs, err := copier.Run(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer h.mustDeleteObject(dst)
+		// The copied object still retains the "private" ACL of the source object.
+		if acl, want := oattrs.ACL, userOwner; !containsACLRule(acl, want) {
+			t.Fatalf("copy dest: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+		if !containsACLRule(oattrs.ACL, entityRoleACL{AllUsers, RoleReader}) {
+			t.Fatalf("copy dest: expected acl to contain: %+v, got acl: %+v", entityRoleACL{AllUsers, RoleReader}, oattrs.ACL)
+		}
+
+		// Compose
+		comp := bkt.Object("comp")
+
+		composer := comp.ComposerFrom(obj, dst)
+		composer.PredefinedACL = "authenticatedRead"
+		oattrs, err = composer.Run(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer h.mustDeleteObject(comp)
+		// The composed object still retains the "private" ACL.
+		if acl, want := oattrs.ACL, userOwner; !containsACLRule(acl, want) {
+			t.Fatalf("compose: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
+		if acl, want := oattrs.ACL, authenticatedRead; !containsACLRule(acl, want) {
+			t.Fatalf("compose: expected acl to contain: %+v, got acl: %+v", want, acl)
+		}
 	})
-	defer h.mustDeleteBucket(bkt)
-	attrs := h.mustBucketAttrs(bkt)
-	checkPrefix("Bucket.ACL", attrs.ACL, 0, "project-owners", RoleOwner)
-	check("Bucket.ACL", attrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
-	check("DefaultObjectACL", attrs.DefaultObjectACL, 0, AllUsers, RoleReader)
-
-	// Bucket update
-	attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{
-		PredefinedACL:              "private",
-		PredefinedDefaultObjectACL: "authenticatedRead",
-	}, attrs.MetaGeneration)
-	checkPrefix("Bucket.ACL update", attrs.ACL, 0, "project-owners", RoleOwner)
-	check("DefaultObjectACL update", attrs.DefaultObjectACL, 0, AllAuthenticatedUsers, RoleReader)
-
-	// Object creation
-	obj := bkt.Object("private")
-	w := obj.NewWriter(ctx)
-	w.PredefinedACL = "authenticatedRead"
-	h.mustWrite(w, []byte("hello"))
-	defer h.mustDeleteObject(obj)
-	checkPrefix("Object.ACL", w.Attrs().ACL, 0, "user", RoleOwner)
-	check("Object.ACL", w.Attrs().ACL, 1, AllAuthenticatedUsers, RoleReader)
-
-	// Object update
-	oattrs := h.mustUpdateObject(obj, ObjectAttrsToUpdate{PredefinedACL: "private"}, h.mustObjectAttrs(obj).Metageneration)
-	checkPrefix("Object.ACL update", oattrs.ACL, 0, "user", RoleOwner)
-	if got := len(oattrs.ACL); got != 1 {
-		t.Errorf("got %d ACLs, want 1", got)
-	}
-
-	// Copy
-	dst := bkt.Object("dst")
-	copier := dst.CopierFrom(obj)
-	copier.PredefinedACL = "publicRead"
-	oattrs, err := copier.Run(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer h.mustDeleteObject(dst)
-	// The copied object still retains the "private" ACL of the source object.
-	checkPrefix("Copy dest", oattrs.ACL, 0, "user", RoleOwner)
-	check("Copy dest", oattrs.ACL, 1, AllUsers, RoleReader)
-
-	// Compose
-	comp := bkt.Object("comp")
-	composer := comp.ComposerFrom(obj, dst)
-	composer.PredefinedACL = "authenticatedRead"
-	oattrs, err = composer.Run(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer h.mustDeleteObject(comp)
-	// The composed object still retains the "private" ACL.
-	checkPrefix("Copy dest", oattrs.ACL, 0, "user", RoleOwner)
-	check("Copy dest", oattrs.ACL, 1, AllAuthenticatedUsers, RoleReader)
 }
 
 func TestIntegration_ServiceAccount(t *testing.T) {
@@ -5096,18 +5097,37 @@ func keyFileEmail(filename string) (string, error) {
 	return v.ClientEmail, nil
 }
 
-func containsACL(acls []ACLRule, e ACLEntity, r ACLRole) bool {
-	for _, a := range acls {
-		if a.Entity == e && a.Role == r {
-			return true
-		}
-	}
-	return false
+type comparableACL interface {
+	equals(ACLRule) bool
 }
 
-func hasRule(acl []ACLRule, rule ACLRule) bool {
-	for _, r := range acl {
-		if cmp.Equal(r, rule) {
+type testACLRule ACLRule
+
+func (acl testACLRule) equals(a ACLRule) bool {
+	return cmp.Equal(a, ACLRule(acl))
+}
+
+type entityRoleACL struct {
+	entity ACLEntity
+	role   ACLRole
+}
+
+func (er entityRoleACL) equals(a ACLRule) bool {
+	return a.Entity == er.entity && a.Role == er.role
+}
+
+type prefixRoleACL struct {
+	prefix string
+	role   ACLRole
+}
+
+func (pr prefixRoleACL) equals(a ACLRule) bool {
+	return strings.HasPrefix(string(a.Entity), pr.prefix) && a.Role == pr.role
+}
+
+func containsACLRule(acl []ACLRule, want comparableACL) bool {
+	for _, acl := range acl {
+		if want.equals(acl) {
 			return true
 		}
 	}
@@ -5137,6 +5157,17 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+}
+
+func retryOnNilAndTransientErrs(err error) bool {
+	return err == nil || ShouldRetry(err)
+}
+func retryOnTransient400and403(err error) bool {
+	var e *googleapi.Error
+	var ae *apierror.APIError
+	return ShouldRetry(err) ||
+		/* http */ errors.As(err, &e) && (e.Code == 400 || e.Code == 403) ||
+		/* grpc */ errors.As(err, &ae) && (ae.GRPCStatus().Code() == codes.InvalidArgument || ae.GRPCStatus().Code() == codes.PermissionDenied)
 }
 
 func skipGRPC(reason string) context.Context {
