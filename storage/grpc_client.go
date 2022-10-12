@@ -381,14 +381,14 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		it.query = *q
 	}
 	req := &storagepb.ListObjectsRequest{
-		Parent:             bucketResourceName(globalProjectAlias, bucket),
-		Prefix:             it.query.Prefix,
-		Delimiter:          it.query.Delimiter,
-		Versions:           it.query.Versions,
-		LexicographicStart: it.query.StartOffset,
-		LexicographicEnd:   it.query.EndOffset,
-		// TODO(noahietz): Convert a projection to a FieldMask.
-		// ReadMask: q.Projection,
+		Parent:                   bucketResourceName(globalProjectAlias, bucket),
+		Prefix:                   it.query.Prefix,
+		Delimiter:                it.query.Delimiter,
+		Versions:                 it.query.Versions,
+		LexicographicStart:       it.query.StartOffset,
+		LexicographicEnd:         it.query.EndOffset,
+		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
+		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -410,6 +410,12 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		for _, obj := range objects {
 			b := newObjectFromProto(obj)
 			it.items = append(it.items, b)
+		}
+
+		// Response is always non-nil after a successful request.
+		res := gitr.Response.(*storagepb.ListObjectsResponse)
+		for _, prefix := range res.GetPrefixes() {
+			it.items = append(it.items, &ObjectAttrs{Prefix: prefix})
 		}
 
 		return token, nil
@@ -448,8 +454,9 @@ func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object str
 func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetObjectRequest{
-		Bucket:   bucketResourceName(globalProjectAlias, bucket),
-		Object:   object,
+		Bucket: bucketResourceName(globalProjectAlias, bucket),
+		Object: object,
+		// ProjectionFull by default.
 		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyCondsProto("grpcStorageClient.GetObject", gen, conds, req); err != nil {
