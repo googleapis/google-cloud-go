@@ -121,9 +121,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	return &Client{
-		connPool: connPool,
-		client:   newDatastoreClient(connPool, projectID),
-		dataset:  projectID,
+		connPool:     connPool,
+		client:       newDatastoreClient(connPool, projectID),
+		dataset:      projectID,
+		readSettings: &readSettings{},
 	}, nil
 }
 
@@ -704,15 +705,13 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 
 // ReadTime specifies a snapshot (time) of the database to read.
 func ReadTime(t time.Time) ReadOption {
-	return docReadTime{t}
+	return docReadTime(t)
 }
 
-type docReadTime struct {
-	time.Time
-}
+type docReadTime time.Time
 
 func (drt docReadTime) apply(rs *readSettings) {
-	rs.readTime = drt.Time
+	rs.readTime = time.Time(drt)
 }
 
 // ReadOption provides specific instructions for how to access documents in the database.
@@ -731,10 +730,7 @@ type readSettings struct {
 // are provided.
 func (c *Client) WithReadOptions(ro ...ReadOption) *Client {
 	for _, r := range ro {
-		switch o := r.(type) {
-		case docReadTime:
-			o.apply(c.readSettings)
-		}
+		r.apply(c.readSettings)
 	}
 	return c
 }
