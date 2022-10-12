@@ -1148,6 +1148,55 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 }
 
+func TestIntegration_Table(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID:            myTableName,
+		DeletionProtection: Protected,
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Errorf("create table from config: %v", err)
+	}
+
+	table, err := adminClient.getTable(ctx, myTableName, btapb.Table_FULL)
+
+	if table.DeletionProtection != true {
+		t.Errorf("Table Deletion Protection is wrong: %v", err)
+	}
+
+	updateTblConf := UpdateTableConf{
+		tableID:            myTableName,
+		deletionProtection: Unprotected,
+	}
+	if err := adminClient.updateTableWithConf(ctx, &updateTblConf); err != nil {
+		t.Errorf("update table from config: %v", err)
+	}
+
+	table, err = adminClient.getTable(ctx, myTableName, btapb.Table_FULL)
+	if table.DeletionProtection != false {
+		t.Errorf("Table Deletion Protection is wrong: %v", err)
+	}
+	deleteTable(ctx, t, adminClient, myTableName)
+}
+
 func TestIntegration_Admin(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
