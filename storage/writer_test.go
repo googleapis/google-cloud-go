@@ -146,18 +146,11 @@ func TestRaceOnCancelBeforeWrite(t *testing.T) {
 	cancel()
 	writer := client.Bucket("foo").Object("bar").NewWriter(ctx)
 	writer.ChunkSize = googleapi.MinUploadChunkSize
+	writer.Write([]byte("data"))
 
-	// Writer.Write should not return an error because data does not fill the
-	// buffer. Since the Writer is lazy about sending a request to GCS, nothing
-	// happens until the buffer fills or Writer.Close is called.
-	_, err := writer.Write([]byte("data"))
-	if err != nil {
-		t.Errorf("Writer.Write: %v", err)
-	}
 	// We expect Close to return a context cancelled error, and the Writer should
 	// not open the pipe and avoid triggering a race condition.
-	err = writer.Close()
-	if !errors.Is(err, context.Canceled) {
+	if err := writer.Close(); !errors.Is(err, context.Canceled) {
 		t.Errorf("Writer.Close: got %v, want %v", err, context.Canceled)
 	}
 }
