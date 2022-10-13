@@ -190,6 +190,9 @@ func (w *Writer) openWriter() (err error) {
 		progress:           w.progress,
 		setObj:             func(o *ObjectAttrs) { w.obj = o },
 	}
+	if err := w.ctx.Err(); err != nil {
+		return err // short-circuit
+	}
 	w.pw, err = w.o.c.tc.OpenWriter(params, opts...)
 	if err != nil {
 		return err
