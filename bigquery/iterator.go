@@ -15,32 +15,18 @@
 package bigquery
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"reflect"
-	"sync"
-
-	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
-	"github.com/apache/arrow/go/v10/arrow"
-	"github.com/apache/arrow/go/v10/arrow/ipc"
-	"github.com/apache/arrow/go/v10/arrow/memory"
-	gax "github.com/googleapis/gax-go/v2"
 
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
-	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	"google.golang.org/grpc"
 )
 
 // Construct a RowIterator.
 func newRowIterator(ctx context.Context, src *rowSource, pf pageFetcher) *RowIterator {
-	if src != nil && src.storage != nil {
-		return newStorageAPIRowIterator(ctx, src)
-	}
 	it := &RowIterator{
 		ctx: ctx,
 		src: src,
@@ -175,6 +161,33 @@ func (it *RowIterator) Next(dst interface{}) error {
 	return vl.Load(row, it.Schema)
 }
 
+// ResolveValueLoader returns a ValueLoader from the destination type and table schema
+func ResolveValueLoader(dst interface{}, schema Schema) (ValueLoader, error) {
+	var vl ValueLoader
+	switch dst := dst.(type) {
+	case ValueLoader:
+		vl = dst
+	case *[]Value:
+		vl = (*valueList)(dst)
+	case *map[string]Value:
+		vl = (*valueMap)(dst)
+	default:
+		if !isStructPtr(dst) {
+			return nil, fmt.Errorf("bigquery: cannot convert %T to ValueLoader (need pointer to []Value, map[string]Value, or struct)", dst)
+		}
+	}
+	if vl == nil {
+		structLoader := structLoader{}
+		// This can only happen if dst is a pointer to a struct. We couldn't
+		// set vl above because we need the schema.
+		if err := structLoader.set(dst, schema); err != nil {
+			return nil, err
+		}
+		vl = &structLoader
+	}
+	return vl, nil
+}
+
 func isStructPtr(x interface{}) bool {
 	t := reflect.TypeOf(x)
 	return t.Kind() == reflect.Ptr && t.Elem().Kind() == reflect.Struct
@@ -196,217 +209,6 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 	return res.pageToken, nil
 }
 
-type streamIterator struct {
-	done bool
-	more chan struct{}
-	errs chan error
-	wg   sync.WaitGroup
-
-	ctx context.Context
-	src *rowSource
-
-	table   *Table
-	tableID string
-
-	parser *arrowParser
-
-	rowsLock sync.Mutex
-	rowIt    *RowIterator
-}
-
-func newStorageAPIRowIterator(ctx context.Context, src *rowSource) *RowIterator {
-	it := &RowIterator{
-		ctx: ctx,
-		src: src,
-	}
-
-	streamIt := &streamIterator{
-		ctx:   ctx,
-		src:   src,
-		rowIt: it,
-		more:  make(chan struct{}, 0),
-		errs:  make(chan error, 0),
-	}
-	it.nextFunc = func() error {
-		if err := streamIt.next(); err != nil {
-			return err
-		}
-		return nil
-	}
-	return it
-}
-
-type arrowParser struct {
-	mem            *memory.GoAllocator
-	tableSchema    Schema
-	rawArrowSchema []byte
-	arrowSchema    *arrow.Schema
-}
-
-func newArrowParserFromSession(session *bqStoragepb.ReadSession, schema Schema) (*arrowParser, error) {
-	arrowSerializedSchema := session.GetArrowSchema().GetSerializedSchema()
-	mem := memory.NewGoAllocator()
-	buf := bytes.NewBuffer(arrowSerializedSchema)
-	r, err := ipc.NewReader(buf, ipc.WithAllocator(mem))
-	if err != nil {
-		return nil, err
-	}
-
-	p := &arrowParser{
-		mem:            mem,
-		tableSchema:    schema,
-		rawArrowSchema: arrowSerializedSchema,
-		arrowSchema:    r.Schema(),
-	}
-	return p, nil
-}
-
-func (it *streamIterator) init() error {
-	if it.parser == nil { // Not initialized
-		err := it.setup()
-		if err != nil {
-			return err
-		}
-		err = it.start()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (it *streamIterator) setup() error {
-	table := it.src.t
-	if it.src.j != nil {
-		cfg, err := it.src.j.Config()
-		if err != nil {
-			return err
-		}
-		qcfg := cfg.(*QueryConfig)
-		if qcfg.Dst == nil {
-			// TODO: script job ?
-			return fmt.Errorf("nil job destination table")
-		}
-		table = qcfg.Dst
-	}
-	tableID, err := table.Identifier(StorageAPIResourceID)
-	if err != nil {
-		return err
-	}
-	it.table = table
-	it.tableID = tableID
-	return nil
-}
-
-func (it *streamIterator) start() error {
-	tableReadOptions := &bqStoragepb.ReadSession_TableReadOptions{
-		SelectedFields: []string{},
-	}
-	createReadSessionRequest := &bqStoragepb.CreateReadSessionRequest{
-		Parent: fmt.Sprintf("projects/%s", it.table.ProjectID),
-		ReadSession: &bqStoragepb.ReadSession{
-			Table:       it.tableID,
-			DataFormat:  bqStoragepb.DataFormat_ARROW,
-			ReadOptions: tableReadOptions,
-		},
-		MaxStreamCount: 4, // TODO: control when to open multiple streams
-	}
-	rpcOpts := gax.WithGRPCOptions(
-		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size
-	)
-	session, err := it.src.storage.CreateReadSession(it.ctx, createReadSessionRequest, rpcOpts)
-	if err != nil {
-		return err
-	}
-
-	if len(session.GetStreams()) == 0 {
-		it.errs <- iterator.Done
-		return nil
-	}
-
-	meta, err := it.table.Metadata(it.ctx)
-	if err != nil {
-		return err
-	}
-	schema := meta.Schema
-
-	parser, err := newArrowParserFromSession(session, schema)
-	if err != nil {
-		return err
-	}
-	it.parser = parser
-
-	go func() {
-		it.wg.Wait()
-		close(it.more)
-		it.done = true
-	}()
-
-	for _, readStream := range session.GetStreams() {
-		it.wg.Add(1)
-		go it.processStream(readStream)
-	}
-	return nil
-}
-
-func (it *streamIterator) processStream(stream *bqStoragepb.ReadStream) {
-	var offset int64
-	for {
-		rowStream, err := it.src.storage.ReadRows(it.ctx, &bqStoragepb.ReadRowsRequest{
-			ReadStream: stream.Name,
-			Offset:     offset,
-		})
-		if err != nil {
-			it.errs <- err
-		}
-		for {
-			r, err := rowStream.Recv()
-			if err == io.EOF {
-				it.wg.Done()
-				return
-			}
-			if err != nil {
-				it.errs <- err
-			}
-			rc := r.GetRowCount()
-			if rc > 0 {
-				offset += rc
-				arrowRecords := r.GetArrowRecordBatch()
-				rows, err := it.parser.convertArrowRows(arrowRecords)
-				if err != nil {
-					it.errs <- err
-				}
-				it.rowsLock.Lock()
-				it.rowIt.rows = append(it.rowIt.rows, rows...)
-				it.rowsLock.Unlock()
-				it.more <- struct{}{}
-			}
-		}
-	}
-}
-
-func (it *streamIterator) next() error {
-	if err := it.init(); err != nil {
-		return err
-	}
-	if len(it.rowIt.rows) > 0 {
-		return nil
-	}
-	if it.done {
-		return iterator.Done
-	}
-	select {
-	case <-it.more:
-		for range it.more {
-		}
-		return nil
-	case err := <-it.errs:
-		return err
-	case <-it.ctx.Done():
-		return it.ctx.Err()
-	}
-}
-
 // rowSource represents one of the multiple sources of data for a row iterator.
 // Rows can be read directly from a BigQuery table or from a job reference.
 // If a job is present, that's treated as the authoritative source.
@@ -422,9 +224,8 @@ func (it *streamIterator) next() error {
 //     want to retain the data unnecessarily, and we expect that the backend
 //     can always provide them if needed.
 type rowSource struct {
-	j       *Job
-	t       *Table
-	storage *bqStorage.BigQueryReadClient
+	j *Job
+	t *Table
 
 	cachedRows      []*bq.TableRow
 	cachedSchema    *bq.TableSchema

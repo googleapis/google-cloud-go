@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"time"
 
-	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
@@ -32,7 +31,6 @@ import (
 // A Job represents an operation which has been submitted to BigQuery for processing.
 type Job struct {
 	c          *Client
-	sc         *bqStorage.BigQueryReadClient
 	projectID  string
 	jobID      string
 	location   string
@@ -329,9 +327,8 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 		projectID: j.projectID,
 		jobID:     j.jobID,
 		location:  j.location,
-		config:    j.config,
 	}
-	it := newRowIterator(ctx, &rowSource{j: itJob, storage: j.sc}, pf)
+	it := newRowIterator(ctx, &rowSource{j: itJob}, pf)
 	it.Schema = schema
 	it.TotalRows = totalRows
 	return it, nil

@@ -2559,67 +2559,6 @@ func TestIntegration_ReadNullIntoStruct(t *testing.T) {
 	}
 }
 
-func TestIntegration_ReadQueryStorageAPI(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx := context.Background()
-	table := "`bigquery-public-data.usa_names.usa_1910_current`"
-	sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s where state = "WA"`, table)
-	q := client.Query(sql)
-	q.StorageClient = bqStorageClient
-	it, err := q.Read(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	type S struct {
-		Name   string
-		Number int
-		State  string
-		Nested struct {
-			Name string
-			N    int
-		}
-	}
-	// i := 0
-	start := time.Now()
-	for {
-		var s S
-		err := it.Next(&s)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("failed to fetch via storage API: %v", err)
-		}
-		// i++
-		// fmt.Printf("got data: %v - %d of %d\n", s, i, it.TotalRows)
-	}
-	diff := time.Now().Sub(start).Milliseconds()
-	t.Logf("took %d ms with storage API (%d rows)", diff, it.TotalRows)
-
-	/*q = client.Query(sql)
-	it, err = q.Read(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	start = time.Now()
-	for {
-		var s S
-		err := it.Next(&s)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("failed to fetch via query API: %v", err)
-		}
-		// i++
-		// fmt.Printf("got data: %v - %d of %d\n", s, i, it.TotalRows)
-	}
-	diff = time.Now().Sub(start).Milliseconds()
-	t.Logf("took %d ms without storage API (%d rows)", diff, it.TotalRows)*/
-}
-
 const (
 	stdName    = "`bigquery-public-data.samples.shakespeare`"
 	legacyName = "[bigquery-public-data:samples.shakespeare]"
