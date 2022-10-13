@@ -1148,7 +1148,7 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 }
 
-func TestIntegration_Table(t *testing.T) {
+func TestIntegration_TableDeletionProtection(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -1168,7 +1168,11 @@ func TestIntegration_Table(t *testing.T) {
 	defer adminClient.Close()
 
 	tblConf := TableConf{
-		TableID:            myTableName,
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
 		DeletionProtection: Protected,
 	}
 
@@ -1177,9 +1181,19 @@ func TestIntegration_Table(t *testing.T) {
 	}
 
 	table, err := adminClient.getTable(ctx, myTableName, btapb.Table_FULL)
+	fmt.Println(table)
+	fmt.Println("*****")
 
 	if table.DeletionProtection != true {
 		t.Errorf("Table Deletion Protection is wrong: %v", err)
+	}
+
+	// Check if the deletion protection works properly
+	if err = adminClient.DeleteColumnFamily(ctx, tblConf.TableID, "fam1"); err == nil {
+		t.Errorf("deletetion protection does not work properly while deleting the column family: %v", err)
+	}
+	if err = adminClient.DeleteTable(ctx, tblConf.TableID); err == nil {
+		t.Errorf("deletetion protection does not work properly while deleting the table: %v", err)
 	}
 
 	updateTblConf := UpdateTableConf{
@@ -1194,7 +1208,13 @@ func TestIntegration_Table(t *testing.T) {
 	if table.DeletionProtection != false {
 		t.Errorf("Table Deletion Protection is wrong: %v", err)
 	}
-	deleteTable(ctx, t, adminClient, myTableName)
+
+	if err := adminClient.DeleteColumnFamily(ctx, tblConf.TableID, "fam1"); err != nil {
+		t.Errorf("delete column family does not work properly while deletion protection bit is disabled: %v", err)
+	}
+	if err = adminClient.DeleteTable(ctx, tblConf.TableID); err != nil {
+		t.Errorf("deleting the table does not work properly while deletion protection bit is disabled: %v", err)
+	}
 }
 
 func TestIntegration_Admin(t *testing.T) {
