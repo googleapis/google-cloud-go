@@ -31,12 +31,9 @@ type mockTableAdminClock struct {
 	btapb.BigtableTableAdminClient
 
 	createTableReq   *btapb.CreateTableRequest
-	getTableReq      *btapb.GetTableRequest
 	updateTableReq   *btapb.UpdateTableRequest
 	createTableResp  *btapb.Table
-	getTableResp     *btapb.Table
 	createTableError error
-	getTableError    error
 	updateTableError error
 }
 
@@ -45,13 +42,6 @@ func (c *mockTableAdminClock) CreateTable(
 ) (*btapb.Table, error) {
 	c.createTableReq = in
 	return c.createTableResp, c.createTableError
-}
-
-func (c *mockTableAdminClock) GetTable(
-	ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption,
-) (*btapb.Table, error) {
-	c.getTableReq = in
-	return c.getTableResp, c.getTableError
 }
 
 func (c *mockTableAdminClock) UpdateTable(
