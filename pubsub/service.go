@@ -15,6 +15,7 @@
 package pubsub
 
 import (
+	"fmt"
 	"math"
 	"strings"
 	"time"
@@ -104,7 +105,9 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	if s.Code() == codes.Internal && strings.Contains(s.Message(), "string field contains invalid UTF-8") {
 		return 0, false
 	}
-	return r.defaultRetryer.Retry(err)
+	t, f := r.defaultRetryer.Retry(err)
+	fmt.Printf("t: %v, f: %t\n", t, f)
+	return t, f
 }
 
 var (

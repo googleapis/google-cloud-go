@@ -99,7 +99,8 @@ type messageIterator struct {
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
 
-	pendingMessages map[string]*Message
+	otelMu         sync.RWMutex
+	activeContexts map[string]context.Context
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -145,7 +146,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pendingAcks:        map[string]*AckResult{},
 		pendingNacks:       map[string]*AckResult{},
 		pendingModAcks:     map[string]*AckResult{},
-		pendingMessages:    map[string]*Message{},
+		activeContexts:     map[string]context.Context{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -269,7 +270,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Lock()
 	for _, m := range msgs {
 		ackID := msgAckID(m)
-		it.pendingMessages[ackID] = m
+		ctx := context.Background()
+		if m.Attributes != nil {
+			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(m))
+		}
+		it.otelMu.Lock()
+		it.activeContexts[ackID] = ctx
+		it.otelMu.Unlock()
 		addRecv(m.ID, ackID, now)
 		it.keepAliveDeadlines[ackID] = maxExt
 		// Don't change the mod-ack if the message is going to be nacked. This is
@@ -435,7 +442,7 @@ func (it *messageIterator) handleKeepAlives() {
 			// statements with range clause", note 3, and stated explicitly at
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
-			delete(it.pendingMessages, id)
+			delete(it.activeContexts, id)
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
 			it.pendingModAcks[id] = newSuccessAckResult()
@@ -450,11 +457,9 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
-		msg := it.pendingMessages[ackID]
-		ctx := context.Background()
-		if msg.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
-		}
+		it.otelMu.RLock()
+		ctx := it.activeContexts[ackID]
+		it.otelMu.RUnlock()
 		_, ackSpan := tracer().Start(ctx, ackSpanName)
 		defer ackSpan.End()
 	}
@@ -504,11 +509,9 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
-		msg := it.pendingMessages[ackID]
-		ctx := context.Background()
-		if msg.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
-		}
+		it.otelMu.RLock()
+		ctx := it.activeContexts[ackID]
+		it.otelMu.RUnlock()
 		var spanName string
 		isNack := deadline == 0
 		if isNack {
@@ -520,6 +523,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 		if !isNack {
 			span.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
 				attribute.Bool(initialModackAttribute, isReceipt))
+			span.SetAttributes(attribute.Int(numBatchedMessagesAttribute, len(m)))
 		}
 		defer span.End()
 	}

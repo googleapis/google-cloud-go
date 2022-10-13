@@ -1154,6 +1154,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					ctx := context.Background()
 					if msg.Attributes != nil {
 						ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
+						// remove googclient before handing off to client.
+						delete(msg.Attributes, "googclient_traceparent")
 					}
 					ctx, fcSpan := tracer().Start(ctx, subscriberFlowControlSpanName)
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
