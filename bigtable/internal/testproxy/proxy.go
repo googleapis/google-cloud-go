@@ -353,6 +353,7 @@ type testClient struct {
 	c                   *bigtable.Client   // c stores the Bigtable client under test
 	appProfileID        string             // appProfileID is currently unused
 	perOperationTimeout *duration.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
+	isOpen              bool               // isOpen indicates whether this client is open for new requests
 }
 
 // credentialsBundle implements credentials.Bundle interface
@@ -493,7 +494,17 @@ type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
 	clientsLock sync.RWMutex           // clientsLock prevents simultaneous mutation of the clientIDs map
 	clientIDs   map[string]*testClient // clientIDs has all of the bigtable.Client objects under test
+}
 
+func (s *goTestProxyServer) client(clientID string) (*testClient, bool) {
+	client, ok := s.clientIDs[clientID]
+	if !ok {
+		return nil, false
+	}
+	if !client.isOpen {
+		return nil, false
+	}
+	return client, true
 }
 
 // CreateClient responds to the CreateClient RPC. This method adds a new client
@@ -536,9 +547,27 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		c:                   c,
 		appProfileID:        req.AppProfileId,
 		perOperationTimeout: req.PerOperationTimeout,
+		isOpen:              true,
 	}
 
 	return &pb.CreateClientResponse{}, nil
+}
+
+// CloseClient responds to the CloseClient RPC. This method closes an existing
+// client, making it inaccessible to new requests.
+func (s *goTestProxyServer) CloseClient(ctx context.Context, req *pb.CloseClientRequest) (*pb.CloseClientResponse, error) {
+	clientID := req.ClientId
+	s.clientsLock.Lock()
+	defer s.clientsLock.Unlock()
+
+	btc, exists := s.clientIDs[clientID]
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+	btc.isOpen = false
+
+	return &pb.CloseClientResponse{}, nil
 }
 
 // RemoveClient responds to the RemoveClient RPC. This method removes an
@@ -549,7 +578,7 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	s.clientsLock.Lock()
 	defer s.clientsLock.Unlock()
 
-	btc, exists := s.clientIDs[clientID]
+	btc, exists := s.client(clientID)
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
@@ -566,7 +595,7 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.clientIDs[req.ClientId]
+	btc, exists := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
 	if !exists {
@@ -612,7 +641,7 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.clientIDs[req.ClientId]
+	btc, exists := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
 	if !exists {
@@ -685,7 +714,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 // changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.clientIDs[req.ClientId]
+	btc, exists := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
 	if !exists {
@@ -723,7 +752,7 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 // series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.clientIDs[req.ClientId]
+	btc, exists := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
 	if !exists {
@@ -791,7 +820,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 // one mutation if a condition is true and another mutation if it is false.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.clientIDs[req.ClientId]
+	btc, exists := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
 	if !exists {
@@ -848,7 +877,7 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 // of the keys available in a table.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.clientIDs[req.ClientId]
+	btc, exists := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
 	if !exists {
@@ -894,7 +923,7 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 // applies a non-idempotent change to a row.
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.clientIDs[req.ClientId]
+	btc, exists := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
 	if !exists {
