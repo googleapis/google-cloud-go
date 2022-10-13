@@ -2156,230 +2156,215 @@ func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
 }
 
 func TestIntegration_SignedURL(t *testing.T) {
-	if testing.Short() { // do not test during replay
-		t.Skip("Integration tests skipped in short mode")
-	}
-	// To test SignedURL, we need a real user email and private key. Extract them
-	// from the JSON key file.
-	jwtConf, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if jwtConf == nil {
-		t.Skip("JSON key file is not present")
-	}
-
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	bkt := client.Bucket(bucketName)
-	obj := "signedURL"
-	contents := []byte("This is a test of SignedURL.\n")
-	md5 := "Jyxvgwm9n2MsrGTMPbMeYA==" // base64-encoded MD5 of contents
-	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
-		t.Fatalf("writing: %v", err)
-	}
-	for _, test := range []struct {
-		desc    string
-		opts    SignedURLOptions
-		headers map[string][]string
-		fail    bool
-	}{
-		{
-			desc: "basic v2",
-		},
-		{
-			desc: "basic v4",
-			opts: SignedURLOptions{Scheme: SigningSchemeV4},
-		},
-		{
-			desc:    "MD5 sent and matches",
-			opts:    SignedURLOptions{MD5: md5},
-			headers: map[string][]string{"Content-MD5": {md5}},
-		},
-		{
-			desc: "MD5 not sent",
-			opts: SignedURLOptions{MD5: md5},
-			fail: true,
-		},
-		{
-			desc:    "Content-Type sent and matches",
-			opts:    SignedURLOptions{ContentType: "text/plain"},
-			headers: map[string][]string{"Content-Type": {"text/plain"}},
-		},
-		{
-			desc:    "Content-Type sent but does not match",
-			opts:    SignedURLOptions{ContentType: "text/plain"},
-			headers: map[string][]string{"Content-Type": {"application/json"}},
-			fail:    true,
-		},
-		{
-			desc: "Canonical headers sent and match",
-			opts: SignedURLOptions{Headers: []string{
-				" X-Goog-Foo: Bar baz ",
-				"X-Goog-Novalue", // ignored: no value
-				"X-Google-Foo",   // ignored: wrong prefix
-			}},
-			headers: map[string][]string{"X-Goog-foo": {"Bar baz  "}},
-		},
-		{
-			desc:    "Canonical headers sent but don't match",
-			opts:    SignedURLOptions{Headers: []string{" X-Goog-Foo: Bar baz"}},
-			headers: map[string][]string{"X-Goog-Foo": {"bar baz"}},
-			fail:    true,
-		},
-	} {
-		opts := test.opts
-		opts.GoogleAccessID = jwtConf.Email
-		opts.PrivateKey = jwtConf.PrivateKey
-		opts.Method = "GET"
-		opts.Expires = time.Now().Add(time.Hour)
-
-		u, err := bkt.SignedURL(obj, &opts)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		// To test SignedURL, we need a real user email and private key. Extract them
+		// from the JSON key file.
+		jwtConf, err := testutil.JWTConfig()
 		if err != nil {
-			t.Errorf("%s: SignedURL: %v", test.desc, err)
-			continue
+			t.Fatal(err)
+		}
+		if jwtConf == nil {
+			t.Skip("JSON key file is not present")
 		}
 
-		err = verifySignedURL(u, test.headers, contents)
-		if err != nil && !test.fail {
-			t.Errorf("%s: wanted success but got error:\n%v", test.desc, err)
-		} else if err == nil && test.fail {
-			t.Errorf("%s: wanted failure but test succeeded", test.desc)
+		bkt := client.Bucket(bucket)
+		obj := "signedURL"
+		contents := []byte("This is a test of SignedURL.\n")
+		md5 := "Jyxvgwm9n2MsrGTMPbMeYA==" // base64-encoded MD5 of contents
+		if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
+			t.Fatalf("writing: %v", err)
 		}
-	}
+		for _, test := range []struct {
+			desc    string
+			opts    SignedURLOptions
+			headers map[string][]string
+			fail    bool
+		}{
+			{
+				desc: "basic v2",
+			},
+			{
+				desc: "basic v4",
+				opts: SignedURLOptions{Scheme: SigningSchemeV4},
+			},
+			{
+				desc:    "MD5 sent and matches",
+				opts:    SignedURLOptions{MD5: md5},
+				headers: map[string][]string{"Content-MD5": {md5}},
+			},
+			{
+				desc: "MD5 not sent",
+				opts: SignedURLOptions{MD5: md5},
+				fail: true,
+			},
+			{
+				desc:    "Content-Type sent and matches",
+				opts:    SignedURLOptions{ContentType: "text/plain"},
+				headers: map[string][]string{"Content-Type": {"text/plain"}},
+			},
+			{
+				desc:    "Content-Type sent but does not match",
+				opts:    SignedURLOptions{ContentType: "text/plain"},
+				headers: map[string][]string{"Content-Type": {"application/json"}},
+				fail:    true,
+			},
+			{
+				desc: "Canonical headers sent and match",
+				opts: SignedURLOptions{Headers: []string{
+					" X-Goog-Foo: Bar baz ",
+					"X-Goog-Novalue", // ignored: no value
+					"X-Google-Foo",   // ignored: wrong prefix
+				}},
+				headers: map[string][]string{"X-Goog-foo": {"Bar baz  "}},
+			},
+			{
+				desc:    "Canonical headers sent but don't match",
+				opts:    SignedURLOptions{Headers: []string{" X-Goog-Foo: Bar baz"}},
+				headers: map[string][]string{"X-Goog-Foo": {"bar baz"}},
+				fail:    true,
+			},
+		} {
+			opts := test.opts
+			opts.GoogleAccessID = jwtConf.Email
+			opts.PrivateKey = jwtConf.PrivateKey
+			opts.Method = "GET"
+			opts.Expires = time.Now().Add(time.Hour)
+
+			u, err := bkt.SignedURL(obj, &opts)
+			if err != nil {
+				t.Errorf("%s: SignedURL: %v", test.desc, err)
+				continue
+			}
+
+			err = verifySignedURL(u, test.headers, contents)
+			if err != nil && !test.fail {
+				t.Errorf("%s: wanted success but got error:\n%v", test.desc, err)
+			} else if err == nil && test.fail {
+				t.Errorf("%s: wanted failure but test succeeded", test.desc)
+			}
+		}
+	})
+
 }
 
 func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
-	if testing.Short() { // do not test during replay
-		t.Skip("Integration tests skipped in short mode")
-	}
-	// To test SignedURL, we need a real user email and private key. Extract
-	// them from the JSON key file.
-	jwtConf, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if jwtConf == nil {
-		t.Skip("JSON key file is not present")
-	}
-
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	bkt := client.Bucket(bucketName)
-
-	// TODO(deklerk): document how these were generated and their significance
-	encryptionKey := "AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI="
-	encryptionKeySha256 := "QlCdVONb17U1aCTAjrFvMbnxW/Oul8VAvnG1875WJ3k="
-	headers := map[string][]string{
-		"x-goog-encryption-algorithm":  {"AES256"},
-		"x-goog-encryption-key":        {encryptionKey},
-		"x-goog-encryption-key-sha256": {encryptionKeySha256},
-	}
-	contents := []byte(`{"message":"encryption with csek works"}`)
-	tests := []struct {
-		desc string
-		opts *SignedURLOptions
-	}{
-		{
-			desc: "v4 URL with customer supplied encryption keys for PUT",
-			opts: &SignedURLOptions{
-				Method: "PUT",
-				Headers: []string{
-					"x-goog-encryption-algorithm:AES256",
-					"x-goog-encryption-key:AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI=",
-					"x-goog-encryption-key-sha256:QlCdVONb17U1aCTAjrFvMbnxW/Oul8VAvnG1875WJ3k=",
-				},
-				Scheme: SigningSchemeV4,
-			},
-		},
-		{
-			desc: "v4 URL with customer supplied encryption keys for GET",
-			opts: &SignedURLOptions{
-				Method: "GET",
-				Headers: []string{
-					"x-goog-encryption-algorithm:AES256",
-					fmt.Sprintf("x-goog-encryption-key:%s", encryptionKey),
-					fmt.Sprintf("x-goog-encryption-key-sha256:%s", encryptionKeySha256),
-				},
-				Scheme: SigningSchemeV4,
-			},
-		},
-	}
-	defer func() {
-		// Delete encrypted object.
-		err := bkt.Object("csek.json").Delete(ctx)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		// To test SignedURL, we need a real user email and private key. Extract
+		// them from the JSON key file.
+		jwtConf, err := testutil.JWTConfig()
 		if err != nil {
-			log.Printf("failed to deleted encrypted file: %v", err)
+			t.Fatal(err)
 		}
-	}()
-
-	for _, test := range tests {
-		opts := test.opts
-		opts.GoogleAccessID = jwtConf.Email
-		opts.PrivateKey = jwtConf.PrivateKey
-		opts.Expires = time.Now().Add(time.Hour)
-
-		u, err := bkt.SignedURL("csek.json", test.opts)
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
+		if jwtConf == nil {
+			t.Skip("JSON key file is not present")
 		}
 
-		if test.opts.Method == "PUT" {
-			if _, err := putURL(u, headers, bytes.NewReader(contents)); err != nil {
+		bkt := client.Bucket(bucket)
+
+		encryptionKey := "AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI="
+		encryptionKeySha256 := "QlCdVONb17U1aCTAjrFvMbnxW/Oul8VAvnG1875WJ3k="
+		headers := map[string][]string{
+			"x-goog-encryption-algorithm":  {"AES256"},
+			"x-goog-encryption-key":        {encryptionKey},
+			"x-goog-encryption-key-sha256": {encryptionKeySha256},
+		}
+		contents := []byte(`{"message":"encryption with csek works"}`)
+		tests := []struct {
+			desc string
+			opts *SignedURLOptions
+		}{
+			{
+				desc: "v4 URL with customer supplied encryption keys for PUT",
+				opts: &SignedURLOptions{
+					Method: "PUT",
+					Headers: []string{
+						"x-goog-encryption-algorithm:AES256",
+						"x-goog-encryption-key:AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI=",
+						"x-goog-encryption-key-sha256:QlCdVONb17U1aCTAjrFvMbnxW/Oul8VAvnG1875WJ3k=",
+					},
+					Scheme: SigningSchemeV4,
+				},
+			},
+			{
+				desc: "v4 URL with customer supplied encryption keys for GET",
+				opts: &SignedURLOptions{
+					Method: "GET",
+					Headers: []string{
+						"x-goog-encryption-algorithm:AES256",
+						fmt.Sprintf("x-goog-encryption-key:%s", encryptionKey),
+						fmt.Sprintf("x-goog-encryption-key-sha256:%s", encryptionKeySha256),
+					},
+					Scheme: SigningSchemeV4,
+				},
+			},
+		}
+		defer func() {
+			// Delete encrypted object.
+			err := bkt.Object("csek.json").Delete(ctx)
+			if err != nil {
+				log.Printf("failed to deleted encrypted file: %v", err)
+			}
+		}()
+
+		for _, test := range tests {
+			opts := test.opts
+			opts.GoogleAccessID = jwtConf.Email
+			opts.PrivateKey = jwtConf.PrivateKey
+			opts.Expires = time.Now().Add(time.Hour)
+
+			u, err := bkt.SignedURL("csek.json", test.opts)
+			if err != nil {
 				t.Fatalf("%s: %v", test.desc, err)
 			}
-		}
 
-		if test.opts.Method == "GET" {
-			if err := verifySignedURL(u, headers, contents); err != nil {
-				t.Fatalf("%s: %v", test.desc, err)
+			if test.opts.Method == "PUT" {
+				if _, err := putURL(u, headers, bytes.NewReader(contents)); err != nil {
+					t.Fatalf("%s: %v", test.desc, err)
+				}
+			}
+
+			if test.opts.Method == "GET" {
+				if err := verifySignedURL(u, headers, contents); err != nil {
+					t.Fatalf("%s: %v", test.desc, err)
+				}
 			}
 		}
-	}
+	})
+
 }
 
 func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
-	if testing.Short() { // do not test during replay
-		t.Skip("Integration tests skipped in short mode")
-	}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		// To test SignedURL, we need a real user email and private key. Extract them
+		// from the JSON key file.
+		jwtConf, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if jwtConf == nil {
+			t.Skip("JSON key file is not present")
+		}
 
-	// To test SignedURL, we need a real user email and private key. Extract them
-	// from the JSON key file.
-	jwtConf, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if jwtConf == nil {
-		t.Skip("JSON key file is not present")
-	}
+		opts := &SignedURLOptions{
+			Scheme:         SigningSchemeV4,
+			Method:         "GET",
+			GoogleAccessID: jwtConf.Email,
+			PrivateKey:     jwtConf.PrivateKey,
+			Expires:        time.Now().Add(time.Hour),
+		}
 
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+		bkt := client.Bucket(bucket)
+		u, err := bkt.SignedURL("", opts)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	opts := &SignedURLOptions{
-		Scheme:         SigningSchemeV4,
-		Method:         "GET",
-		GoogleAccessID: jwtConf.Email,
-		PrivateKey:     jwtConf.PrivateKey,
-		Expires:        time.Now().Add(time.Hour),
-	}
-
-	bkt := client.Bucket(bucketName)
-	u, err := bkt.SignedURL("", opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Should be some ListBucketResult response.
-	_, err = getURL(u, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+		// Should be some ListBucketResult response.
+		_, err = getURL(u, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
 }
 
 func TestIntegration_ACL(t *testing.T) {
@@ -4404,74 +4389,103 @@ func TestIntegration_Scopes(t *testing.T) {
 
 }
 
-func TestIntegration_SignedURL_Bucket(t *testing.T) {
+func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 	ctx := context.Background()
 
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
-
-	// We explictly send the key to the client to sign with the private key
-	clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
-	defer clientWithCredentials.Close()
-
-	// Create another client to test the sign byte function as well
-
-	scopes := []string{ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"}
-	ts := testutil.TokenSource(ctx, scopes...)
-	if ts == nil {
-		t.Fatalf("Cannot get token source to create client")
-	}
-	clientWithoutPrivateKey := testConfig(ctx, t, option.WithTokenSource(ts))
-	defer clientWithoutPrivateKey.Close()
-
-	jwt, err := testutil.JWTConfig()
+	// By default we are authed with a token source, so don't have the context to
+	// read some of the fields from the keyfile.
+	// Here we explicitly send the key to the client.
+	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
 	if err != nil {
 		t.Fatalf("unable to find test credentials: %v", err)
 	}
 
-	// We can use any client to create the object
-	obj := "testBucketSignedURL"
-	contents := []byte("test")
-	if err := writeObject(ctx, clientWithoutPrivateKey.Bucket(bucketName).Object(obj), "text/plain", contents); err != nil {
-		t.Fatalf("writing: %v", err)
-	}
-
-	for _, test := range []struct {
-		desc   string
-		opts   SignedURLOptions
-		client *Client
-	}{
-		{
-			desc: "signing with the private key",
-			opts: SignedURLOptions{
-				Method:  "GET",
-				Expires: time.Now().Add(30 * time.Second),
-			},
-			client: clientWithCredentials,
-		},
-		{
-			desc: "signing with the default sign bytes func",
-			opts: SignedURLOptions{
-				Method:         "GET",
-				Expires:        time.Now().Add(30 * time.Second),
-				GoogleAccessID: jwt.Email,
-			},
-			client: clientWithoutPrivateKey,
-		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			bkt := test.client.Bucket(bucketName)
-			url, err := bkt.SignedURL(obj, &test.opts)
-			if err != nil {
-				t.Fatalf("unable to create signed URL: %v", err)
+	multiTransportTest(skipGRPC("creds capture logic must be implemented for gRPC constructor"),
+		t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithCredentials *Client) {
+			h := testHelper{t}
+			obj := uidSpace.New()
+			o := clientWithCredentials.Bucket(bucket).Object(obj)
+			contents := []byte("test")
+			if err := writeObject(ctx, o, "text/plain", contents); err != nil {
+				t.Fatalf("writing: %v", err)
 			}
+			defer h.mustDeleteObject(o)
 
-			if err := verifySignedURL(url, nil, contents); err != nil {
-				t.Fatalf("problem with the signed URL: %v", err)
+			for _, test := range []struct {
+				desc   string
+				opts   SignedURLOptions
+				client *Client
+			}{
+				{
+					desc: "signing with the private key",
+					opts: SignedURLOptions{
+						Method:  "GET",
+						Expires: time.Now().Add(30 * time.Second),
+					},
+					client: clientWithCredentials,
+				},
+			} {
+				t.Run(test.desc, func(t *testing.T) {
+					bkt := test.client.Bucket(bucket)
+					url, err := bkt.SignedURL(obj, &test.opts)
+					if err != nil {
+						t.Fatalf("unable to create signed URL: %v", err)
+					}
+
+					if err := verifySignedURL(url, nil, contents); err != nil {
+						t.Fatalf("problem with the signed URL: %v", err)
+					}
+				})
 			}
-		})
-	}
+		}, option.WithCredentials(creds))
+}
+
+func TestIntegration_SignedURL_Default(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, clientWithoutPrivateKey *Client) {
+		h := testHelper{t}
+
+		jwt, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatalf("unable to find test credentials: %v", err)
+		}
+
+		obj := uidSpace.New()
+		o := clientWithoutPrivateKey.Bucket(bucket).Object(obj)
+		contents := []byte("test")
+		if err := writeObject(ctx, o, "text/plain", contents); err != nil {
+			t.Fatalf("writing: %v", err)
+		}
+		defer h.mustDeleteObject(o)
+
+		for _, test := range []struct {
+			desc   string
+			opts   SignedURLOptions
+			client *Client
+		}{
+			{
+				desc: "signing with the default sign bytes func",
+				opts: SignedURLOptions{
+					Method:         "GET",
+					Expires:        time.Now().Add(30 * time.Second),
+					GoogleAccessID: jwt.Email,
+				},
+				client: clientWithoutPrivateKey,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				bkt := test.client.Bucket(bucket)
+				url, err := bkt.SignedURL(obj, &test.opts)
+				if err != nil {
+					t.Fatalf("unable to create signed URL: %v", err)
+				}
+
+				if err := verifySignedURL(url, nil, contents); err != nil {
+					t.Fatalf("problem with the signed URL: %v", err)
+				}
+			})
+		}
+	})
+
 }
 
 func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
