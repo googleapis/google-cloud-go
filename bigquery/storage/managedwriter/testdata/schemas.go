@@ -257,4 +257,19 @@ var (
 			Repeated: true,
 		},
 	}
+
+	ValidationColumnAnnotations bigquery.Schema = bigquery.Schema{
+		{
+			Name: "first",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "second",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "特別コラム",
+			Type: bigquery.StringFieldType,
+		},
+	}
 )
