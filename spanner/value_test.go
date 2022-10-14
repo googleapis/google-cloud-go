@@ -32,6 +32,7 @@ import (
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
@@ -255,7 +256,14 @@ func TestEncodeValue(t *testing.T) {
 		Author: "JK Rowling",
 		Genre:  pb.Genre_CLASSICAL,
 	}
-	bookProtoEnum := pb.Genre_COUNTRY
+	bookProtoMsg1 := &pb.Book{
+		Isbn:   1,
+		Title:  "New Arrival",
+		Author: "Ron",
+		Genre:  pb.Genre_ROCK,
+	}
+	bookProtoEnum := pb.Genre_CLASSICAL
+	bookProtoEnum1 := pb.Genre_ROCK
 
 	var (
 		tString       = stringType()
@@ -473,6 +481,8 @@ func TestEncodeValue(t *testing.T) {
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
 		{bookProtoEnum, enumProto(bookProtoEnum), tProtoEnum, "Proto Enum"},
 		{bookProtoMsg, messageProto(bookProtoMsg), tProtoMessage, "Proto Message"},
+		{[]protoreflect.Enum{bookProtoEnum, bookProtoEnum1}, listProto(enumProto(bookProtoEnum), enumProto(bookProtoEnum1)), listType(tProtoEnum), "[]protoreflect.Enum"},
+		{[]proto.Message{bookProtoMsg, bookProtoMsg1}, listProto(messageProto(bookProtoMsg), messageProto(bookProtoMsg1)), listType(tProtoMessage), "[]proto.Message"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
