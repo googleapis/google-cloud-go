@@ -874,10 +874,10 @@ func TestIntegration_Autoclass(t *testing.T) {
 	var toggleTime time.Time
 	if attrs != nil && attrs.Autoclass != nil {
 		if got, want := attrs.Autoclass.Enabled, true; got != want {
-			t.Fatalf("attr.Autoclass.Enabled = %v, want %v", got, want)
+			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
 		}
 		if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
-			t.Fatal("got a zero time value, want a populated value")
+			t.Error("got a zero time value, want a populated value")
 		}
 	}
 
@@ -885,14 +885,14 @@ func TestIntegration_Autoclass(t *testing.T) {
 	ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
 	attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
 	if got, want := attrs.Autoclass.Enabled, false; got != want {
-		t.Fatalf("attr.Autoclass.Enabled = %v, want %v", got, want)
+		t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
 	}
 	latestToggleTime := attrs.Autoclass.ToggleTime
 	if latestToggleTime.IsZero() {
-		t.Fatal("got a zero time value, want a populated value")
+		t.Error("got a zero time value, want a populated value")
 	}
 	if latestToggleTime.Before(toggleTime) {
-		t.Fatal("latestToggleTime should be newer than bucket creation toggleTime")
+		t.Error("latestToggleTime should be newer than bucket creation toggleTime")
 	}
 }
 

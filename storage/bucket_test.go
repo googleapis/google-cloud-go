@@ -722,6 +722,7 @@ func TestNewBucketFromProto(t *testing.T) {
 			{Entity: "allUsers", Role: "READER"},
 		},
 		Location:     "loc",
+		LocationType: "region",
 		StorageClass: "class",
 		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
 			RetentionPeriod: proto.Int64(int64(3)),
@@ -766,6 +767,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		ACL:              []ACLRule{{Entity: "bob@example.com", Role: RoleOwner}},
 		DefaultObjectACL: []ACLRule{{Entity: AllUsers, Role: RoleReader}},
 		Location:         "loc",
+		LocationType:     "region",
 		StorageClass:     "class",
 		RetentionPolicy: &RetentionPolicy{
 			RetentionPeriod: 3 * time.Second,
@@ -800,6 +802,11 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			}},
 		},
+		// Populated with default values.
+		CustomPlacementConfig: nil,
+		VersioningEnabled:     false,
+		RequesterPays:         false,
+		ProjectNumber:         0,
 	}
 	got := newBucketFromProto(pb)
 	if diff := testutil.Diff(got, want); diff != "" {
@@ -814,7 +821,6 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		ACL:  []ACLRule{{Entity: "bob@example.com", Role: RoleOwner, Domain: "d", Email: "e"}},
 		DefaultObjectACL: []ACLRule{{Entity: AllUsers, Role: RoleReader, EntityID: "eid",
 			ProjectTeam: &ProjectTeam{ProjectNumber: "17", Team: "t"}}},
-		Etag:         "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 		Location:     "loc",
 		StorageClass: "class",
 		RetentionPolicy: &RetentionPolicy{
@@ -825,10 +831,8 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		PublicAccessPrevention:   PublicAccessPreventionEnforced,
 		VersioningEnabled:        false,
 		RPO:                      RPOAsyncTurbo,
-		// should be ignored:
-		MetaGeneration: 39,
-		Created:        time.Now(),
-		Labels:         map[string]string{"label": "value"},
+		Created:                  time.Now(),
+		Labels:                   map[string]string{"label": "value"},
 		CORS: []CORS{
 			{
 				MaxAge:          time.Hour,
@@ -851,15 +855,18 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 				},
 			}},
 		},
+		// Below fields should be ignored.
+		MetaGeneration: 39,
+		Etag:           "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 	}
 	got := attrs.toProtoBucket()
 	want := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
-			{Entity: "bob@example.com", Role: "OWNER"}, // other fields ignored on create/update
+			{Entity: "bob@example.com", Role: "OWNER"},
 		},
 		DefaultObjectAcl: []*storagepb.ObjectAccessControl{
-			{Entity: "allUsers", Role: "READER"}, // other fields ignored on create/update
+			{Entity: "allUsers", Role: "READER"},
 		},
 		Location:     "loc",
 		StorageClass: "class",

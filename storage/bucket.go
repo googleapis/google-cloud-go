@@ -737,10 +737,6 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if err != nil {
 		return nil, err
 	}
-	ac, err := toAutoclassFromRaw(b.Autoclass)
-	if err != nil {
-		return nil, err
-	}
 	return &BucketAttrs{
 		Name:                     b.Name,
 		Location:                 b.Location,
@@ -767,7 +763,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
 		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
-		Autoclass:                ac,
+		Autoclass:                toAutoclassFromRaw(b.Autoclass),
 	}, nil
 }
 
@@ -1957,19 +1953,21 @@ func (a *Autoclass) toProtoAutoclass() *storagepb.Bucket_Autoclass {
 	}
 }
 
-func toAutoclassFromRaw(a *raw.BucketAutoclass) (*Autoclass, error) {
+func toAutoclassFromRaw(a *raw.BucketAutoclass) *Autoclass {
 	if a == nil || a.ToggleTime == "" {
-		return nil, nil
+		return nil
 	}
-	// Return Autoclass only if a valid ToggleTime is available.
+	// Return Autoclass.ToggleTime only if parsed with a valid value.
 	t, err := time.Parse(time.RFC3339, a.ToggleTime)
 	if err != nil {
-		return nil, err
+		return &Autoclass{
+			Enabled: a.Enabled,
+		}
 	}
 	return &Autoclass{
 		Enabled:    a.Enabled,
 		ToggleTime: t,
-	}, nil
+	}
 }
 
 func toAutoclassFromProto(a *storagepb.Bucket_Autoclass) *Autoclass {
