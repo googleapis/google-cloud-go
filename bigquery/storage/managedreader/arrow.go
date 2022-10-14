@@ -16,9 +16,12 @@ package managedreader
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
+	"math/big"
 
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/civil"
 	"github.com/apache/arrow/go/v10/arrow"
 	"github.com/apache/arrow/go/v10/arrow/array"
 	"github.com/apache/arrow/go/v10/arrow/ipc"
@@ -92,27 +95,87 @@ func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *bigquery.F
 		return nil, nil
 	}
 	switch ft.(type) {
-	case *arrow.StringType:
-		arr := col.(*array.String)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", arr.Value(i)), fs.Type, fs.Schema)
+	case *arrow.BooleanType:
+		v := col.(*array.Boolean).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
 	case *arrow.Int8Type:
-		arr := col.(*array.Int8)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", arr.Value(i)), fs.Type, fs.Schema)
+		v := col.(*array.Int8).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
 	case *arrow.Int16Type:
-		arr := col.(*array.Int16)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", arr.Value(i)), fs.Type, fs.Schema)
+		v := col.(*array.Int16).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
 	case *arrow.Int32Type:
-		arr := col.(*array.Int32)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", arr.Value(i)), fs.Type, fs.Schema)
+		v := col.(*array.Int32).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
 	case *arrow.Int64Type:
-		arr := col.(*array.Int64)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", arr.Value(i)), fs.Type, fs.Schema)
+		v := col.(*array.Int64).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+	case *arrow.Float16Type:
+		v := col.(*array.Float16).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v.Float32()), fs.Type, fs.Schema)
+	case *arrow.Float32Type:
+		v := col.(*array.Float32).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+	case *arrow.Float64Type:
+		v := col.(*array.Float64).Value(i)
+		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+	case *arrow.BinaryType:
+		v := col.(*array.Binary).Value(i)
+		encoded := base64.StdEncoding.EncodeToString(v)
+		return bigquery.ConvertValue(encoded, fs.Type, fs.Schema)
+	case *arrow.StringType:
+		v := col.(*array.String).Value(i)
+		return bigquery.ConvertValue(v, fs.Type, fs.Schema)
 	case *arrow.Date32Type:
-		arr := col.(*array.Date32)
-		return bigquery.ConvertValue(arr.Value(i).FormattedString(), fs.Type, fs.Schema)
+		v := col.(*array.Date32).Value(i)
+		return bigquery.ConvertValue(v.FormattedString(), fs.Type, fs.Schema)
 	case *arrow.Date64Type:
-		arr := col.(*array.Date64)
-		return bigquery.ConvertValue(arr.Value(i).FormattedString(), fs.Type, fs.Schema)
+		v := col.(*array.Date64).Value(i)
+		return bigquery.ConvertValue(v.FormattedString(), fs.Type, fs.Schema)
+	case *arrow.TimestampType:
+		v := col.(*array.Timestamp).Value(i)
+		dft := ft.(*arrow.TimestampType)
+		t := v.ToTime(dft.Unit)
+		if dft.TimeZone == "" { // Datetime
+			return bigquery.Value(civil.DateTimeOf(t)), nil
+		}
+		return bigquery.Value(t.UTC()), nil // Timestamp
+	case *arrow.Time32Type:
+		v := col.(*array.Time32).Value(i)
+		return bigquery.ConvertValue(v.FormattedString(arrow.Microsecond), fs.Type, fs.Schema)
+	case *arrow.Time64Type:
+		v := col.(*array.Time64).Value(i)
+		return bigquery.ConvertValue(v.FormattedString(arrow.Microsecond), fs.Type, fs.Schema)
+	case *arrow.Decimal128Type:
+		dft := ft.(*arrow.Decimal128Type)
+		v := col.(*array.Decimal128).Value(i)
+		rat := big.NewRat(1, 1)
+		rat.Num().SetBytes(v.BigInt().Bytes())
+		d := rat.Denom()
+		d.Exp(big.NewInt(10), big.NewInt(int64(dft.Scale)), nil)
+		return bigquery.Value(rat), nil
+	case *arrow.Decimal256Type:
+		dft := ft.(*arrow.Decimal256Type)
+		v := col.(*array.Decimal256).Value(i)
+		rat := big.NewRat(1, 1)
+		rat.Num().SetBytes(v.BigInt().Bytes())
+		d := rat.Denom()
+		d.Exp(big.NewInt(10), big.NewInt(int64(dft.Scale)), nil)
+		return bigquery.Value(rat), nil
+	case *arrow.ListType:
+		arr := col.(*array.List)
+		dft := ft.(*arrow.ListType)
+		values := []bigquery.Value{}
+		start, end := arr.ValueOffsets(i)
+		slice := array.NewSlice(arr.ListValues(), start, end)
+		for j := 0; j < slice.Len(); j++ {
+			v, err := convertArrowValue(slice, j, dft.Elem(), fs)
+			if err != nil {
+				return nil, err
+			}
+			values = append(values, v)
+		}
+		return values, nil
 	case *arrow.StructType:
 		arr := col.(*array.Struct)
 		nestedValues := []bigquery.Value{}

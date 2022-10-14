@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"runtime"
 	"sync"
 
 	"cloud.google.com/go/bigquery"
@@ -26,7 +25,6 @@ import (
 	"google.golang.org/api/iterator"
 	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 
-	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"google.golang.org/grpc"
 )
 
@@ -36,8 +34,7 @@ type RowIterator interface {
 	TotalRows() uint64
 }
 
-// Upgrade row iterator to use Storage API
-func Upgrade(ctx context.Context, storageClient *bqStorage.BigQueryReadClient, q *bigquery.Query) (RowIterator, error) {
+func newQueryRowIterator(ctx context.Context, client *Client, q *bigquery.Query) (RowIterator, error) {
 	job, err := q.Run(ctx)
 	if err != nil {
 		return nil, err
@@ -50,7 +47,7 @@ func Upgrade(ctx context.Context, storageClient *bqStorage.BigQueryReadClient, q
 		ctx:       ctx,
 		job:       job,
 		totalRows: rowIt.TotalRows,
-		storage:   storageClient,
+		client:    client,
 		rows:      make(chan []bigquery.Value, 0),
 		errs:      make(chan error, 0),
 	}
@@ -62,8 +59,8 @@ type streamIterator struct {
 	errs chan error
 	wg   sync.WaitGroup
 
-	ctx     context.Context
-	storage *bqStorage.BigQueryReadClient
+	ctx    context.Context
+	client *Client
 
 	job     *bigquery.Job
 	table   *bigquery.Table
@@ -124,12 +121,12 @@ func (it *streamIterator) start() error {
 			DataFormat:  bqStoragepb.DataFormat_ARROW,
 			ReadOptions: tableReadOptions,
 		},
-		MaxStreamCount: int32(runtime.GOMAXPROCS(0)), // TODO: control when to open multiple streams
+		MaxStreamCount: 0, // TODO: control when to open multiple streams
 	}
 	rpcOpts := gax.WithGRPCOptions(
 		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size
 	)
-	session, err := it.storage.CreateReadSession(it.ctx, createReadSessionRequest, rpcOpts)
+	session, err := it.client.createReadSession(it.ctx, createReadSessionRequest, rpcOpts)
 	if err != nil {
 		return err
 	}
@@ -167,7 +164,7 @@ func (it *streamIterator) start() error {
 func (it *streamIterator) processStream(stream *bqStoragepb.ReadStream) {
 	var offset int64
 	for {
-		rowStream, err := it.storage.ReadRows(it.ctx, &bqStoragepb.ReadRowsRequest{
+		rowStream, err := it.client.readRows(it.ctx, &bqStoragepb.ReadRowsRequest{
 			ReadStream: stream.Name,
 			Offset:     offset,
 		})

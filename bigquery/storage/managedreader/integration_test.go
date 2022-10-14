@@ -20,12 +20,14 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/big"
 	"os"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -38,11 +40,12 @@ const replayFilename = "bigquery.replay"
 var record = flag.Bool("record", false, "record RPCs")
 
 var (
-	client                                     *bigquery.Client
-	bqStorageClient                            *bqStorage.BigQueryReadClient
-	dataset                                    *bigquery.Dataset
-	testTableExpiration                        time.Time
-	datasetIDs, tableIDs, modelIDs, routineIDs *uid.Space
+	client               *bigquery.Client
+	mrClient             *Client
+	bqStorageClient      *bqStorage.BigQueryReadClient
+	dataset              *bigquery.Dataset
+	testTableExpiration  time.Time
+	datasetIDs, tableIDs *uid.Space
 )
 
 // Note: integration tests cannot be run in parallel, because TestIntegration_Location
@@ -96,7 +99,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		bqStorageClient, err = bqStorage.NewBigQueryReadClient(ctx, option.WithHTTPClient(hc))
+		mrClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -156,6 +159,10 @@ func initIntegrationTest() func() {
 		var err error
 		client, err = bigquery.NewClient(ctx, projID, bqOpts...)
 		if err != nil {
+			log.Fatalf("bigquery.NewClient: %v", err)
+		}
+		mrClient, err = NewClient(ctx, projID, bqOpts...)
+		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
 		bqStorageClient, err = bqStorage.NewBigQueryReadClient(ctx, bqOpts...)
@@ -174,8 +181,6 @@ func initTestState(client *bigquery.Client, t time.Time) func() {
 	opts := &uid.Options{Sep: '_', Time: t}
 	datasetIDs = uid.NewSpace("dataset", opts)
 	tableIDs = uid.NewSpace("table", opts)
-	modelIDs = uid.NewSpace("model", opts)
-	routineIDs = uid.NewSpace("routine", opts)
 	testTableExpiration = t.Add(2 * time.Hour).Round(time.Second)
 	// For replayability, seed the random source with t.
 	bigquery.Seed(t.UnixNano())
@@ -193,16 +198,191 @@ func initTestState(client *bigquery.Client, t time.Time) func() {
 	}
 }
 
-func TestIntegration_ReadQueryStorageAPI(t *testing.T) {
+func TestIntegration_StorageReadBasicTypes(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	ms, err := mrClient.NewManagedStream()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	d := civil.Date{Year: 2016, Month: 3, Day: 20}
+	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
+	rtm := tm
+	rtm.Nanosecond = 3000 // round to microseconds
+	dtm := civil.DateTime{Date: d, Time: tm}
+	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
+	rat := big.NewRat(13, 10)
+	bigRat := big.NewRat(12345, 10e10)
+	type ss struct {
+		String string
+	}
+
+	type s struct {
+		Timestamp      time.Time
+		StringArray    []string
+		SubStruct      ss
+		SubStructArray []ss
+	}
+	testCases := []struct {
+		query      string
+		parameters []bigquery.QueryParameter
+		wantRow    []bigquery.Value
+		wantConfig interface{}
+	}{
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: 1}},
+			[]bigquery.Value{int64(1)},
+			int64(1),
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: 1.3}},
+			[]bigquery.Value{1.3},
+			1.3,
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: rat}},
+			[]bigquery.Value{rat},
+			rat,
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: &bigquery.QueryParameterValue{
+				Type: bigquery.StandardSQLDataType{
+					TypeKind: "BIGNUMERIC",
+				},
+				Value: bigquery.BigNumericString(bigRat),
+			}}},
+			[]bigquery.Value{bigRat},
+			bigRat,
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: true}},
+			[]bigquery.Value{true},
+			true,
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: "ABC"}},
+			[]bigquery.Value{"ABC"},
+			"ABC",
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: []byte("foo")}},
+			[]bigquery.Value{[]byte("foo")},
+			[]byte("foo"),
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: ts}},
+			[]bigquery.Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: []time.Time{ts, ts}}},
+			[]bigquery.Value{[]bigquery.Value{ts, ts}},
+			[]interface{}{ts, ts},
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: dtm}},
+			[]bigquery.Value{civil.DateTime{Date: d, Time: rtm}},
+			civil.DateTime{Date: d, Time: rtm},
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: d}},
+			[]bigquery.Value{d},
+			d,
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: tm}},
+			[]bigquery.Value{rtm},
+			rtm,
+		},
+		{
+			"SELECT @val",
+			[]bigquery.QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
+			[]bigquery.Value{[]bigquery.Value{ts, []bigquery.Value{"a", "b"}, []bigquery.Value{"c"}, []bigquery.Value{[]bigquery.Value{"d"}, []bigquery.Value{"e"}}}},
+			map[string]interface{}{
+				"Timestamp":   ts,
+				"StringArray": []interface{}{"a", "b"},
+				"SubStruct":   map[string]interface{}{"String": "c"},
+				"SubStructArray": []interface{}{
+					map[string]interface{}{"String": "d"},
+					map[string]interface{}{"String": "e"},
+				},
+			},
+		},
+		{
+			"SELECT @val.Timestamp, @val.SubStruct.String",
+			[]bigquery.QueryParameter{{Name: "val", Value: s{Timestamp: ts, SubStruct: ss{"a"}}}},
+			[]bigquery.Value{ts, "a"},
+			map[string]interface{}{
+				"Timestamp":      ts,
+				"SubStruct":      map[string]interface{}{"String": "a"},
+				"StringArray":    nil,
+				"SubStructArray": nil,
+			},
+		},
+	}
+	for _, c := range testCases {
+		q := client.Query(c.query)
+		q.Parameters = c.parameters
+		it, err := ms.ReadQuery(ctx, q)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = checkRead(it, c.wantRow)
+		if err != nil {
+			t.Fatalf("error on query `%s`[%v]: %v", c.query, c.parameters, err)
+		}
+	}
+}
+
+func checkRead(it RowIterator, expectedRow []bigquery.Value) error {
+	for {
+		var outRow []bigquery.Value
+		err := it.Next(&outRow)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("failed to fetch via storage API: %v", err)
+		}
+		if len(outRow) != len(expectedRow) {
+			return fmt.Errorf("expected %d columns, but got %d", len(expectedRow), len(outRow))
+		}
+		if !testutil.Equal(outRow, expectedRow) {
+			return fmt.Errorf("got %v, want %v", outRow, expectedRow)
+		}
+	}
+	return nil
+}
+
+func TestIntegration_StorageReadQuery(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
 	table := "`bigquery-public-data.usa_names.usa_1910_current`"
-	sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s where state = "CA"`, table)
+	sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s where state = "FL"`, table)
 	q := client.Query(sql)
-	// q.StorageClient = bqStorageClient
-	it, err := Upgrade(ctx, bqStorageClient, q)
+
+	ms, err := mrClient.NewManagedStream()
+	if err != nil {
+		t.Fatal(err)
+	}
+	it, err := ms.ReadQuery(ctx, q)
 	if err != nil {
 		t.Fatal(err)
 	}
