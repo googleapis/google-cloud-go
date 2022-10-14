@@ -80,6 +80,9 @@ Messages are published to topics. Pub/Sub Lite topics may be created like so:
 	  // TODO: Handle error.
 	}
 
+Close must be called to release resources when an AdminClient is no longer
+required.
+
 See https://cloud.google.com/pubsub/lite/docs/topics for more information about
 how Pub/Sub Lite topics are configured.
 
