@@ -126,6 +126,7 @@ func (c *Copier) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 		if err != nil {
 			return nil, err
 		}
+		c.RewriteToken = res.token
 		req.token = res.token
 		if c.ProgressFunc != nil {
 			c.ProgressFunc(uint64(res.written), uint64(res.size))
