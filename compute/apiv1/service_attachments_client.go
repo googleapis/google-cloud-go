@@ -113,7 +113,8 @@ func (c *ServiceAttachmentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ServiceAttachmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -243,7 +244,7 @@ func (c *serviceAttachmentsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *serviceAttachmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

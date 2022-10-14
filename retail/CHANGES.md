@@ -1,5 +1,34 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.8.0...retail/v1.9.0) (2022-09-21)
+
+
+### Features
+
+* **retail:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.7.0...retail/v1.8.0) (2022-09-19)
+
+
+### Features
+
+* **retail:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.6.0...retail/v1.7.0) (2022-09-15)
+
+
+### Features
+
+* **retail/apiv2alpha:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **retail/apiv2beta:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.5.0...retail/v1.6.0) (2022-09-06)
+
+
+### Features
+
+* **retail:** release Control and ServingConfig serivces to v2 version feat: release AttributesConfig APIs to v2 version feat: release CompletionConfig APIs to v2 version feat: add local inventories info to the Product resource docs: Improved documentation for Fullfillment and Inventory API in ProductService docs: minor documentation format and typo fixes ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.4.0...retail/v1.5.0) (2022-08-02)
 
 

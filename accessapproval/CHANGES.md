@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/accessapproval/v1.3.0...accessapproval/v1.3.1) (2022-09-06)
+
+
+### Documentation
+
+* **accessapproval:** added Cloud Dataproc and Secret Manager to the list of supported services ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/accessapproval/v1.2.0...accessapproval/v1.3.0) (2022-05-24)
 
 

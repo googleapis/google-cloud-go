@@ -165,7 +165,8 @@ func (c *EkmClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *EkmClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -286,7 +287,8 @@ func NewEkmClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient,
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ekmGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

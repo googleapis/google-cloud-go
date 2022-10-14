@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/compute/metadata"
@@ -159,22 +160,17 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 }
 
 // SignedURL returns a URL for the specified object. Signed URLs allow anyone
-// access to a restricted resource for a limited time without needing a
-// Google account or signing in. For more information about signed URLs, see
-// https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+// access to a restricted resource for a limited time without needing a Google
+// account or signing in.
+// For more information about signed URLs, see "[Overview of access control]."
 //
-// This method only requires the Method and Expires fields in the specified
-// SignedURLOptions opts to be non-nil. If not provided, it attempts to fill the
-// GoogleAccessID and PrivateKey from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
-// If you are authenticating with a custom HTTP client, Service Account based
-// auto-detection will be hindered.
+// This method requires the Method and Expires fields in the specified
+// SignedURLOptions to be non-nil. You may need to set the GoogleAccessID and
+// PrivateKey fields in some cases. Read more on the [automatic detection of credentials]
+// for this method.
 //
-// If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
-// This requires the IAM Service Account Credentials API to be enabled
-// (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
-// and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-// If you do not want these fields set for you, you may pass them in through opts or use
-// SignedURL(bucket, name string, opts *SignedURLOptions) instead.
+// [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return SignedURL(b.name, object, opts)
@@ -212,18 +208,11 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 // GenerateSignedPostPolicyV4 generates a PostPolicyV4 value from bucket, object and opts.
 // The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
 //
-// This method only requires the Expires field in the specified PostPolicyV4Options
-// to be non-nil. If not provided, it attempts to fill the GoogleAccessID and PrivateKey
-// from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
-// If you are authenticating with a custom HTTP client, Service Account based
-// auto-detection will be hindered.
+// This method requires the Expires field in the specified PostPolicyV4Options
+// to be non-nil. You may need to set the GoogleAccessID and PrivateKey fields
+// in some cases. Read more on the [automatic detection of credentials] for this method.
 //
-// If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
-// This requires the IAM Service Account Credentials API to be enabled
-// (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
-// and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-// If you do not want these fields set for you, you may pass them in through opts or use
-// GenerateSignedPostPolicyV4(bucket, name string, opts *PostPolicyV4Options) instead.
+// [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return GenerateSignedPostPolicyV4(b.name, object, opts)
@@ -263,17 +252,27 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 
 	if b.c.creds != nil && len(b.c.creds.JSON) > 0 {
 		var sa struct {
-			ClientEmail string `json:"client_email"`
-		}
-		err := json.Unmarshal(b.c.creds.JSON, &sa)
-		if err == nil && sa.ClientEmail != "" {
-			return sa.ClientEmail, nil
-		} else if err != nil {
-			returnErr = err
-		} else {
-			returnErr = errors.New("storage: empty client email in credentials")
+			ClientEmail        string `json:"client_email"`
+			SAImpersonationURL string `json:"service_account_impersonation_url"`
+			CredType           string `json:"type"`
 		}
 
+		err := json.Unmarshal(b.c.creds.JSON, &sa)
+		if err != nil {
+			returnErr = err
+		} else if sa.CredType == "impersonated_service_account" {
+			start, end := strings.LastIndex(sa.SAImpersonationURL, "/"), strings.LastIndex(sa.SAImpersonationURL, ":")
+
+			if end <= start {
+				returnErr = errors.New("error parsing impersonated service account credentials")
+			} else {
+				return sa.SAImpersonationURL[start+1 : end], nil
+			}
+		} else if sa.CredType == "service_account" && sa.ClientEmail != "" {
+			return sa.ClientEmail, nil
+		} else {
+			returnErr = errors.New("unable to parse credentials; only service_account and impersonated_service_account credentials are supported")
+		}
 	}
 
 	// Don't error out if we can't unmarshal, fallback to GCE check.
@@ -284,11 +283,11 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		} else if err != nil {
 			returnErr = err
 		} else {
-			returnErr = errors.New("got empty email from GCE metadata service")
+			returnErr = errors.New("empty email from GCE metadata service")
 		}
 
 	}
-	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %v", returnErr)
+	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %w. Please provide the GoogleAccessID or use a supported means for autodetecting it (see https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4])", returnErr)
 }
 
 func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
@@ -299,18 +298,18 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 		// circumventing the cost of recreating the auth/transport layer
 		svc, err := iamcredentials.NewService(ctx, option.WithHTTPClient(b.c.hc))
 		if err != nil {
-			return nil, fmt.Errorf("unable to create iamcredentials client: %v", err)
+			return nil, fmt.Errorf("unable to create iamcredentials client: %w", err)
 		}
 
 		resp, err := svc.Projects.ServiceAccounts.SignBlob(fmt.Sprintf("projects/-/serviceAccounts/%s", email), &iamcredentials.SignBlobRequest{
 			Payload: base64.StdEncoding.EncodeToString(in),
 		}).Do()
 		if err != nil {
-			return nil, fmt.Errorf("unable to sign bytes: %v", err)
+			return nil, fmt.Errorf("unable to sign bytes: %w", err)
 		}
 		out, err := base64.StdEncoding.DecodeString(resp.SignedBlob)
 		if err != nil {
-			return nil, fmt.Errorf("unable to base64 decode response: %v", err)
+			return nil, fmt.Errorf("unable to base64 decode response: %w", err)
 		}
 		return out, nil
 	}
@@ -776,6 +775,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		LocationType:             b.GetLocationType(),
 		RPO:                      toRPOFromProto(b),
 		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
+		ProjectNumber:            parseProjectNumber(b.GetProject()), // this can return 0 the project resource name is ID based
 	}
 }
 
@@ -907,23 +907,30 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 	if ua.RequesterPays != nil {
 		bb = &storagepb.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
 	}
+
 	var bktIAM *storagepb.Bucket_IamConfig
-	var ublaEnabled bool
-	var bktPolicyOnlyEnabled bool
-	if ua.UniformBucketLevelAccess != nil {
-		ublaEnabled = optional.ToBool(ua.UniformBucketLevelAccess.Enabled)
-	}
-	if ua.BucketPolicyOnly != nil {
-		bktPolicyOnlyEnabled = optional.ToBool(ua.BucketPolicyOnly.Enabled)
-	}
-	if ublaEnabled || bktPolicyOnlyEnabled {
-		bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
-			Enabled: true,
+	if ua.UniformBucketLevelAccess != nil || ua.BucketPolicyOnly != nil || ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
+		bktIAM = &storagepb.Bucket_IamConfig{}
+
+		if ua.BucketPolicyOnly != nil {
+			bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled: optional.ToBool(ua.BucketPolicyOnly.Enabled),
+			}
+		}
+
+		if ua.UniformBucketLevelAccess != nil {
+			// UniformBucketLevelAccess takes precedence over BucketPolicyOnly,
+			// so Enabled will be overriden here if both are set
+			bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled: optional.ToBool(ua.UniformBucketLevelAccess.Enabled),
+			}
+		}
+
+		if ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
+			bktIAM.PublicAccessPrevention = ua.PublicAccessPrevention.String()
 		}
 	}
-	if ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
-		bktIAM.PublicAccessPrevention = ua.PublicAccessPrevention.String()
-	}
+
 	var defaultHold bool
 	if ua.DefaultEventBasedHold != nil {
 		defaultHold = optional.ToBool(ua.DefaultEventBasedHold)
@@ -1346,8 +1353,14 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 	if rp == nil {
 		return nil
 	}
+	// RetentionPeriod must be greater than 0, so if it is 0, the user left it
+	// unset, and so we should not send it in the request i.e. nil is sent.
+	var period *int64
+	if rp.RetentionPeriod != 0 {
+		period = proto.Int64(int64(rp.RetentionPeriod / time.Second))
+	}
 	return &storagepb.Bucket_RetentionPolicy{
-		RetentionPeriod: int64(rp.RetentionPeriod / time.Second),
+		RetentionPeriod: period,
 	}
 }
 
@@ -1367,7 +1380,7 @@ func toRetentionPolicy(rp *raw.BucketRetentionPolicy) (*RetentionPolicy, error) 
 }
 
 func toRetentionPolicyFromProto(rp *storagepb.Bucket_RetentionPolicy) *RetentionPolicy {
-	if rp == nil {
+	if rp == nil || rp.GetEffectiveTime().AsTime().Unix() == 0 {
 		return nil
 	}
 	return &RetentionPolicy{

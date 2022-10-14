@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.3.0...storagetransfer/v1.4.0) (2022-09-15)
+
+
+### Features
+
+* **storagetransfer:** add default retry configuration feat: add DeleteTransferJob operation feat: add AWS S3 compatible data source ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.2.0...storagetransfer/v1.3.0) (2022-04-06)
 
 

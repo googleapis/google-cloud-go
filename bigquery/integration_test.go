@@ -29,6 +29,7 @@ import (
 	"testing"
 	"time"
 
+	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 	"cloud.google.com/go/httpreplay"
@@ -40,6 +41,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -53,6 +55,7 @@ var record = flag.Bool("record", false, "record RPCs")
 var (
 	client                 *Client
 	storageClient          *storage.Client
+	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
 	dataset                *Dataset
 	otherDataset           *Dataset
@@ -122,6 +125,10 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		connectionsClient, err = connection.NewClient(ctx, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx)
 		if err != nil {
 			log.Fatal(err)
@@ -139,6 +146,7 @@ func initIntegrationTest() func() {
 		}
 		client = nil
 		storageClient = nil
+		connectionsClient = nil
 		return func() {}
 
 	default: // Run integration tests against a real backend.
@@ -149,7 +157,8 @@ func initIntegrationTest() func() {
 		}
 		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
 		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
-		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform"))}
+		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, datacatalog.DefaultAuthScopes()...))}
+		connOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, connection.DefaultAuthScopes()...))}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -188,6 +197,7 @@ func initIntegrationTest() func() {
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
 			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
 			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
+			connOpts = append(connOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
@@ -201,6 +211,10 @@ func initIntegrationTest() func() {
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
 		if err != nil {
 			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
+		}
+		connectionsClient, err = connection.NewClient(ctx, connOpts...)
+		if err != nil {
+			log.Fatalf("connection.NewService: %v", err)
 		}
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }
@@ -1392,6 +1406,100 @@ func TestIntegration_Load(t *testing.T) {
 
 }
 
+func TestIntegration_LoadWithReferenceSchemaFile(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	formats := []DataFormat{Avro, Parquet}
+	for _, format := range formats {
+		ctx := context.Background()
+		table := dataset.Table(tableIDs.New())
+		defer table.Delete(ctx)
+
+		expectedSchema := Schema{
+			{Name: "username", Type: StringFieldType, Required: false},
+			{Name: "tweet", Type: StringFieldType, Required: false},
+			{Name: "timestamp", Type: StringFieldType, Required: false},
+			{Name: "likes", Type: IntegerFieldType, Required: false},
+		}
+		ext := strings.ToLower(string(format))
+		sourceURIs := []string{
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/b-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/c-twitter." + ext,
+		}
+		referenceURI := "gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext
+		source := NewGCSReference(sourceURIs...)
+		source.SourceFormat = format
+		loader := table.LoaderFrom(source)
+		loader.ReferenceFileSchemaURI = referenceURI
+		job, err := loader.Run(ctx)
+		if err != nil {
+			t.Fatalf("loader.Run: %v", err)
+		}
+		err = wait(ctx, job)
+		if err != nil {
+			t.Fatalf("wait: %v", err)
+		}
+		metadata, err := table.Metadata(ctx)
+		if err != nil {
+			t.Fatalf("table.Metadata: %v", err)
+		}
+		diff := testutil.Diff(expectedSchema, metadata.Schema)
+		if diff != "" {
+			t.Errorf("got=-, want=+:\n%s", diff)
+		}
+	}
+}
+
+func TestIntegration_ExternalTableWithReferenceSchemaFile(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	formats := []DataFormat{Avro, Parquet}
+	for _, format := range formats {
+		ctx := context.Background()
+		externalTable := dataset.Table(tableIDs.New())
+		defer externalTable.Delete(ctx)
+
+		expectedSchema := Schema{
+			{Name: "username", Type: StringFieldType, Required: false},
+			{Name: "tweet", Type: StringFieldType, Required: false},
+			{Name: "timestamp", Type: StringFieldType, Required: false},
+			{Name: "likes", Type: IntegerFieldType, Required: false},
+		}
+		ext := strings.ToLower(string(format))
+		sourceURIs := []string{
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/b-twitter." + ext,
+			"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/c-twitter." + ext,
+		}
+		referenceURI := "gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter." + ext
+
+		err := externalTable.Create(ctx, &TableMetadata{
+			ExternalDataConfig: &ExternalDataConfig{
+				SourceFormat:           format,
+				SourceURIs:             sourceURIs,
+				ReferenceFileSchemaURI: referenceURI,
+			},
+		})
+		if err != nil {
+			t.Fatalf("table.Create: %v", err)
+		}
+
+		metadata, err := externalTable.Metadata(ctx)
+		if err != nil {
+			t.Fatalf("table.Metadata: %v", err)
+		}
+		diff := testutil.Diff(expectedSchema, metadata.Schema)
+		if diff != "" {
+			t.Errorf("got=-, want=+:\n%s", diff)
+		}
+	}
+}
+
 func TestIntegration_DML(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -1807,6 +1915,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
+	bigRat := big.NewRat(12345, 10e10)
 
 	type ss struct {
 		String string
@@ -1827,73 +1936,73 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}{
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", 1}},
+			[]QueryParameter{{Name: "val", Value: 1}},
 			[]Value{int64(1)},
 			int64(1),
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", 1.3}},
+			[]QueryParameter{{Name: "val", Value: 1.3}},
 			[]Value{1.3},
 			1.3,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", rat}},
+			[]QueryParameter{{Name: "val", Value: rat}},
 			[]Value{rat},
 			rat,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", true}},
+			[]QueryParameter{{Name: "val", Value: true}},
 			[]Value{true},
 			true,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", "ABC"}},
+			[]QueryParameter{{Name: "val", Value: "ABC"}},
 			[]Value{"ABC"},
 			"ABC",
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", []byte("foo")}},
+			[]QueryParameter{{Name: "val", Value: []byte("foo")}},
 			[]Value{[]byte("foo")},
 			[]byte("foo"),
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", ts}},
+			[]QueryParameter{{Name: "val", Value: ts}},
 			[]Value{ts},
 			ts,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", []time.Time{ts, ts}}},
+			[]QueryParameter{{Name: "val", Value: []time.Time{ts, ts}}},
 			[]Value{[]Value{ts, ts}},
 			[]interface{}{ts, ts},
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", dtm}},
+			[]QueryParameter{{Name: "val", Value: dtm}},
 			[]Value{civil.DateTime{Date: d, Time: rtm}},
 			civil.DateTime{Date: d, Time: rtm},
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", d}},
+			[]QueryParameter{{Name: "val", Value: d}},
 			[]Value{d},
 			d,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", tm}},
+			[]QueryParameter{{Name: "val", Value: tm}},
 			[]Value{rtm},
 			rtm,
 		},
 		{
 			"SELECT @val",
-			[]QueryParameter{{"val", s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
+			[]QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
 			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
 			map[string]interface{}{
 				"Timestamp":   ts,
@@ -1907,13 +2016,154 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		},
 		{
 			"SELECT @val.Timestamp, @val.SubStruct.String",
-			[]QueryParameter{{"val", s{Timestamp: ts, SubStruct: ss{"a"}}}},
+			[]QueryParameter{{Name: "val", Value: s{Timestamp: ts, SubStruct: ss{"a"}}}},
 			[]Value{ts, "a"},
 			map[string]interface{}{
 				"Timestamp":      ts,
 				"SubStruct":      map[string]interface{}{"String": "a"},
 				"StringArray":    nil,
 				"SubStructArray": nil,
+			},
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "BIGNUMERIC",
+						},
+						Value: BigNumericString(bigRat),
+					},
+				},
+			},
+			[]Value{bigRat},
+			bigRat,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						ArrayValue: []QueryParameterValue{
+							{Value: "a"},
+							{Value: "b"},
+						},
+						Type: StandardSQLDataType{
+							ArrayElementType: &StandardSQLDataType{
+								TypeKind: "STRING",
+							},
+						},
+					},
+				},
+			},
+			[]Value{[]Value{"a", "b"}},
+			[]interface{}{"a", "b"},
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						StructValue: map[string]QueryParameterValue{
+							"Timestamp": {
+								Value: ts,
+							},
+							"BigNumericArray": {
+								ArrayValue: []QueryParameterValue{
+									{Value: BigNumericString(bigRat)},
+									{Value: BigNumericString(rat)},
+								},
+							},
+							"ArraySingleValueStruct": {
+								ArrayValue: []QueryParameterValue{
+									{StructValue: map[string]QueryParameterValue{
+										"Number": {
+											Value: int64(42),
+										},
+									}},
+									{StructValue: map[string]QueryParameterValue{
+										"Number": {
+											Value: int64(43),
+										},
+									}},
+								},
+							},
+							"SubStruct": {
+								StructValue: map[string]QueryParameterValue{
+									"String": {
+										Value: "c",
+									},
+								},
+							},
+						},
+						Type: StandardSQLDataType{
+							StructType: &StandardSQLStructType{
+								Fields: []*StandardSQLField{
+									{
+										Name: "Timestamp",
+										Type: &StandardSQLDataType{
+											TypeKind: "TIMESTAMP",
+										},
+									},
+									{
+										Name: "BigNumericArray",
+										Type: &StandardSQLDataType{
+											ArrayElementType: &StandardSQLDataType{
+												TypeKind: "BIGNUMERIC",
+											},
+										},
+									},
+									{
+										Name: "ArraySingleValueStruct",
+										Type: &StandardSQLDataType{
+											ArrayElementType: &StandardSQLDataType{
+												StructType: &StandardSQLStructType{
+													Fields: []*StandardSQLField{
+														{
+															Name: "Number",
+															Type: &StandardSQLDataType{
+																TypeKind: "INT64",
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+									{
+										Name: "SubStruct",
+										Type: &StandardSQLDataType{
+											StructType: &StandardSQLStructType{
+												Fields: []*StandardSQLField{
+													{
+														Name: "String",
+														Type: &StandardSQLDataType{
+															TypeKind: "STRING",
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			[]Value{[]Value{ts, []Value{bigRat, rat}, []Value{[]Value{int64(42)}, []Value{int64(43)}}, []Value{"c"}}},
+			map[string]interface{}{
+				"Timestamp":       ts,
+				"BigNumericArray": []interface{}{bigRat, rat},
+				"ArraySingleValueStruct": []interface{}{
+					map[string]interface{}{"Number": int64(42)},
+					map[string]interface{}{"Number": int64(43)},
+				},
+				"SubStruct": map[string]interface{}{"String": "c"},
 			},
 		},
 	}
@@ -1940,6 +2190,102 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		if !testutil.Equal(got, c.wantConfig) {
 			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
 				c.parameters[0].Value, got, c.wantConfig)
+		}
+	}
+}
+
+// This test can be merged with the TestIntegration_QueryParameters as soon as support for explicit typed query parameter lands.
+// To test timestamps with different formats, we need to be able to specify the type explicitly.
+func TestIntegration_TimestampFormat(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	ts := time.Date(2020, 10, 15, 15, 04, 05, 0, time.UTC)
+
+	testCases := []struct {
+		query      string
+		parameters []*bq.QueryParameter
+		wantRow    []Value
+		wantConfig interface{}
+	}{
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(timestampFormat),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(time.RFC3339Nano),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(time.RFC3339),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+	}
+	for _, c := range testCases {
+		q := client.Query(c.query)
+		bqJob, err := q.newJob()
+		if err != nil {
+			t.Fatal(err)
+		}
+		bqJob.Configuration.Query.QueryParameters = c.parameters
+
+		job, err := q.client.insertJob(ctx, bqJob, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if job.LastStatus() == nil {
+			t.Error("no LastStatus")
+		}
+		it, err := job.Read(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
+		config, err := job.Config()
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := config.(*QueryConfig).Parameters[0].Value
+		if !testutil.Equal(got, c.wantConfig) {
+			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
+				c.parameters[0].ParameterValue.Value, got, c.wantConfig)
 		}
 	}
 }

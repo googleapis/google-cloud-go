@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"runtime"
 	"testing"
 	"time"
@@ -25,6 +26,7 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -92,10 +94,16 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	}
 }
 
+type testRecvResponse struct {
+	resp *storagepb.AppendRowsResponse
+	err  error
+}
+
 type testAppendRowsClient struct {
 	storagepb.BigQueryWrite_AppendRowsClient
 	openCount int
 	requests  []*storagepb.AppendRowsRequest
+	responses []*testRecvResponse
 	sendF     func(*storagepb.AppendRowsRequest) error
 	recvF     func() (*storagepb.AppendRowsResponse, error)
 	closeF    func() error
@@ -300,7 +308,46 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 	if ct := ms.fc.count(); ct != wantCount {
 		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
 	}
+}
 
+func TestManagedStream_ContextExpiry(t *testing.T) {
+	// Issue: retaining error from append as stream error
+	// https://github.com/googleapis/google-cloud-go/issues/6657
+	ctx := context.Background()
+
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(0, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append is intentionally slow.
+				return nil
+			}, nil),
+	}
+	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
+		Name: proto.String("testDescriptor"),
+	}
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	// Create a context and immediately cancel it.
+	cancelCtx, cancel := context.WithCancel(ctx)
+	cancel()
+
+	// First, append with an invalid context.
+	pw := newPendingWrite(cancelCtx, fakeData)
+	err := ms.appendWithRetry(pw)
+	if err != context.Canceled {
+		t.Errorf("expected cancelled context error, got: %v", err)
+	}
+
+	// a second append with a valid context should succeed
+	_, err = ms.AppendRows(ctx, fakeData)
+	if err != nil {
+		t.Errorf("expected second append to succeed, but failed: %v", err)
+	}
 }
 
 func TestManagedStream_AppendDeadlocks(t *testing.T) {
@@ -367,14 +414,14 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		}
 
 		// first append
-		pw := newPendingWrite([][]byte{[]byte("foo")})
-		gotErr := ms.appendWithRetry(tc.ctx, pw)
+		pw := newPendingWrite(tc.ctx, [][]byte{[]byte("foo")})
+		gotErr := ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
 		// second append
-		pw = newPendingWrite([][]byte{[]byte("bar")})
-		gotErr = ms.appendWithRetry(tc.ctx, pw)
+		pw = newPendingWrite(tc.ctx, [][]byte{[]byte("bar")})
+		gotErr = ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
@@ -424,6 +471,52 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 	}
 }
 
+// Ensures we don't lose track of channels/connections during reconnects.
+// https://github.com/googleapis/google-cloud-go/issues/6766
+func TestManagedStream_LeakingReconnect(t *testing.T) {
+
+	ctx := context.Background()
+
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(10, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append always reports EOF on send.
+				return io.EOF
+			}, nil),
+	}
+	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
+		Name: proto.String("testDescriptor"),
+	}
+
+	var chans []chan *pendingWrite
+
+	for i := 0; i < 10; i++ {
+		_, ch, err := ms.getStream(nil, true)
+		if err != nil {
+			t.Fatalf("failed openWithRetry(%d): %v", i, err)
+		}
+		chans = append(chans, ch)
+	}
+	var closedCount int
+	for _, ch := range chans {
+		select {
+		case _, ok := <-ch:
+			if !ok {
+				closedCount = closedCount + 1
+			}
+		case <-time.After(time.Second):
+			// we blocked, likely indicative that the channel is open.
+			continue
+		}
+	}
+	if wantClosed := len(chans) - 1; wantClosed != closedCount {
+		t.Errorf("closed count mismatch, got %d want %d", closedCount, wantClosed)
+	}
+}
+
 // Ensures we're propagating call options as expected.
 // Background: https://github.com/googleapis/google-cloud-go/issues/6487
 func TestOpenCallOptionPropagation(t *testing.T) {
@@ -443,4 +536,200 @@ func TestOpenCallOptionPropagation(t *testing.T) {
 		}),
 	}
 	ms.openWithRetry()
+}
+
+// This test evaluates how the receiver deals with a pending write.
+func TestManagedStream_Receiver(t *testing.T) {
+
+	var customErr = fmt.Errorf("foo")
+
+	testCases := []struct {
+		description       string
+		recvResp          []*testRecvResponse
+		wantFinalErr      error
+		wantTotalAttempts int
+	}{
+		{
+			description: "no errors",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantTotalAttempts: 1,
+		},
+		{
+			description: "recv err w/io.EOF",
+			recvResp: []*testRecvResponse{
+				{
+					resp: nil,
+					err:  io.EOF,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantTotalAttempts: 2,
+		},
+		{
+			description: "recv err retried and then failed",
+			recvResp: []*testRecvResponse{
+				{
+					resp: nil,
+					err:  io.EOF,
+				},
+				{
+					resp: nil,
+					err:  customErr,
+				},
+			},
+			wantTotalAttempts: 2,
+			wantFinalErr:      customErr,
+		},
+		{
+			description: "recv err w/ custom error",
+			recvResp: []*testRecvResponse{
+				{
+					resp: nil,
+					err:  customErr,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantTotalAttempts: 1,
+			wantFinalErr:      customErr,
+		},
+
+		{
+			description: "resp embeds Unavailable",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{
+						Response: &storagepb.AppendRowsResponse_Error{
+							Error: &statuspb.Status{
+								Code:    int32(codes.Unavailable),
+								Message: "foo",
+							},
+						},
+					},
+					err: nil,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantTotalAttempts: 2,
+		},
+		{
+			description: "resp embeds generic ResourceExhausted",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{
+						Response: &storagepb.AppendRowsResponse_Error{
+							Error: &statuspb.Status{
+								Code:    int32(codes.ResourceExhausted),
+								Message: "foo",
+							},
+						},
+					},
+					err: nil,
+				},
+			},
+			wantTotalAttempts: 1,
+		},
+		{
+			description: "resp embeds throughput ResourceExhausted",
+			recvResp: []*testRecvResponse{
+				{
+					resp: &storagepb.AppendRowsResponse{
+						Response: &storagepb.AppendRowsResponse_Error{
+							Error: &statuspb.Status{
+								Code:    int32(codes.ResourceExhausted),
+								Message: "Exceeds 'AppendRows throughput' quota for stream blah",
+							},
+						},
+					},
+					err: nil,
+				},
+				{
+					resp: &storagepb.AppendRowsResponse{},
+					err:  nil,
+				},
+			},
+			wantTotalAttempts: 2,
+		},
+		{
+			description: "retriable failures until max attempts",
+			recvResp: []*testRecvResponse{
+				{
+					err: io.EOF,
+				},
+				{
+					err: io.EOF,
+				},
+				{
+					err: io.EOF,
+				},
+				{
+					err: io.EOF,
+				},
+			},
+			wantTotalAttempts: 4,
+			wantFinalErr:      io.EOF,
+		},
+	}
+
+	for _, tc := range testCases {
+		ctx, cancel := context.WithCancel(context.Background())
+
+		testArc := &testAppendRowsClient{
+			responses: tc.recvResp,
+		}
+
+		ms := &ManagedStream{
+			ctx: ctx,
+			open: openTestArc(testArc, nil,
+				func() (*storagepb.AppendRowsResponse, error) {
+					if len(testArc.responses) == 0 {
+						panic("out of responses")
+					}
+					curResp := testArc.responses[0]
+					testArc.responses = testArc.responses[1:]
+					return curResp.resp, curResp.err
+				},
+			),
+			streamSettings: defaultStreamSettings(),
+			fc:             newFlowController(0, 0),
+			retry:          newStatelessRetryer(),
+		}
+		// use openWithRetry to get the reference to the channel and add our test pending write.
+		_, ch, _ := ms.openWithRetry()
+		pw := newPendingWrite(ctx, [][]byte{[]byte("foo")})
+		pw.attemptCount = 1 // we're injecting directly, but attribute this as a single attempt.
+		ch <- pw
+
+		// Wait until the write is marked done.
+		<-pw.result.Ready()
+
+		// Check retry count is as expected.
+		gotTotalAttempts, err := pw.result.TotalAttempts(ctx)
+		if err != nil {
+			t.Errorf("failed to get total appends: %v", err)
+		}
+		if gotTotalAttempts != tc.wantTotalAttempts {
+			t.Errorf("%s: got %d total attempts, want %d attempts", tc.description, gotTotalAttempts, tc.wantTotalAttempts)
+		}
+
+		// Check that the write got the expected final result.
+		if gotFinalErr := pw.result.err; !errors.Is(gotFinalErr, tc.wantFinalErr) {
+			t.Errorf("%s: got final error %v, wanted final error %v", tc.description, gotFinalErr, tc.wantFinalErr)
+		}
+		ms.Close()
+		cancel()
+	}
 }

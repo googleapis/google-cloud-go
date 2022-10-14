@@ -180,7 +180,8 @@ func (c *ErrorStatsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ErrorStatsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -261,7 +262,8 @@ func NewErrorStatsClient(ctx context.Context, opts ...option.ClientOption) (*Err
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *errorStatsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -346,7 +348,7 @@ func (c *errorStatsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *errorStatsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -487,11 +489,12 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *clouderr
 		if req.GetAlignment() != 0 {
 			params.Add("alignment", fmt.Sprintf("%v", req.GetAlignment()))
 		}
-		if req.GetAlignmentTime().GetNanos() != 0 {
-			params.Add("alignmentTime.nanos", fmt.Sprintf("%v", req.GetAlignmentTime().GetNanos()))
-		}
-		if req.GetAlignmentTime().GetSeconds() != 0 {
-			params.Add("alignmentTime.seconds", fmt.Sprintf("%v", req.GetAlignmentTime().GetSeconds()))
+		if req.GetAlignmentTime() != nil {
+			alignmentTime, err := protojson.Marshal(req.GetAlignmentTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("alignmentTime", string(alignmentTime))
 		}
 		if req.GetGroupId() != nil {
 			params.Add("groupId", fmt.Sprintf("%v", req.GetGroupId()))
@@ -517,11 +520,12 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *clouderr
 		if req.GetTimeRange().GetPeriod() != 0 {
 			params.Add("timeRange.period", fmt.Sprintf("%v", req.GetTimeRange().GetPeriod()))
 		}
-		if req.GetTimedCountDuration().GetNanos() != 0 {
-			params.Add("timedCountDuration.nanos", fmt.Sprintf("%v", req.GetTimedCountDuration().GetNanos()))
-		}
-		if req.GetTimedCountDuration().GetSeconds() != 0 {
-			params.Add("timedCountDuration.seconds", fmt.Sprintf("%v", req.GetTimedCountDuration().GetSeconds()))
+		if req.GetTimedCountDuration() != nil {
+			timedCountDuration, err := protojson.Marshal(req.GetTimedCountDuration())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("timedCountDuration", string(timedCountDuration))
 		}
 
 		baseUrl.RawQuery = params.Encode()

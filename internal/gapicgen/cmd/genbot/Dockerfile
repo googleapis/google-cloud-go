@@ -27,7 +27,7 @@ RUN go install github.com/golang/protobuf/protoc-gen-go@v1.5.2 && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest && \
     go install honnef.co/go/tools/cmd/staticcheck@latest && \
-    go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.32.0
+    go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.33.1
 ENV PATH="${PATH}:/root/go/bin"
 
 # Source: http://debuggable.com/posts/disable-strict-host-checking-for-git-clone:49896ff3-0ac0-4263-9703-1eae4834cda3
@@ -36,9 +36,7 @@ RUN mkdir /root/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" 
 RUN echo -e '#!/bin/bash\n\
     set -ex\n\
     cd internal/gapicgen\n\
-    go run cloud.google.com/go/internal/gapicgen/cmd/genbot\n\
-    go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
-    ' >> /run.sh
+    go run cloud.google.com/go/internal/gapicgen/cmd/genbot' >> /run.sh
 RUN chmod a+x /run.sh
 
 WORKDIR /google-cloud-go

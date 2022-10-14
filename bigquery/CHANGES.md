@@ -1,6 +1,62 @@
 # Changes
 
 
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.41.0...bigquery/v1.42.0) (2022-09-21)
+
+
+### Features
+
+* **bigquery/analyticshub:** Start generating apiv1 ([#6707](https://github.com/googleapis/google-cloud-go/issues/6707)) ([feb7d7d](https://github.com/googleapis/google-cloud-go/commit/feb7d7d4b85d51aef6798d87a6ba8e9c536d040c))
+* **bigquery/datapolicies:** Start generating apiv1beta1 ([#6697](https://github.com/googleapis/google-cloud-go/issues/6697)) ([f5443e8](https://github.com/googleapis/google-cloud-go/commit/f5443e81ae14e6aed2befe03c0df611bf5533b1f))
+* **bigquery/reservation/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **bigquery/storage/managedwriter:** Define append retry predicate ([#6650](https://github.com/googleapis/google-cloud-go/issues/6650)) ([478b8dd](https://github.com/googleapis/google-cloud-go/commit/478b8dd4e0d722cbf02fa2e216929eb561694fe0))
+* **bigquery/storage:** add proto annotation for non-ascii field mapping ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+* **bigquery:** Add reference file schema option for federated formats ([#6693](https://github.com/googleapis/google-cloud-go/issues/6693)) ([3d26091](https://github.com/googleapis/google-cloud-go/commit/3d26091bb8861ccfcc8d0a1727f8bbb9014ef866))
+* **bigquery:** Add support for explicit query parameter type ([#6596](https://github.com/googleapis/google-cloud-go/issues/6596)) ([d59b5b2](https://github.com/googleapis/google-cloud-go/commit/d59b5b2da7d1caa6622aec84b4004cf02fb4b066)), refs [#4704](https://github.com/googleapis/google-cloud-go/issues/4704)
+
+
+### Bug Fixes
+
+* **bigquery/connection:** integrate  gapic-generator-python-1.4.1 and enable more py_test targets ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.40.0...bigquery/v1.41.0) (2022-09-14)
+
+
+### Features
+
+* **bigquery/storage:** add location to WriteStream and add WriteStreamView support ([6a0080a](https://github.com/googleapis/google-cloud-go/commit/6a0080ad69398c572d856886293e19c79cf0fc0e))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Fix incorrect error retention ([#6659](https://github.com/googleapis/google-cloud-go/issues/6659)) ([dc02bca](https://github.com/googleapis/google-cloud-go/commit/dc02bca4ac14acb4f536f078a7d8f209626340bb))
+* **bigquery:** Parse timestamp query parameter with RFC3339 ([#6653](https://github.com/googleapis/google-cloud-go/issues/6653)) ([aabd2d6](https://github.com/googleapis/google-cloud-go/commit/aabd2d61c81ed598755656b4e7c3fd84dcd3b2d4))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.39.0...bigquery/v1.40.0) (2022-09-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bigquery/dataexchange:** update BigQuery Analytics Hub API v1beta1 client BREAKING CHANGE: refresh current dataexchange/v1beta1/* directory to include recent change in protos. Removed common directory and use local enum Category fix!: refactor references to Category message docs: improve proto documentation.
+
+### Features
+
+* **bigquery/dataexchange:** update BigQuery Analytics Hub API v1beta1 client BREAKING CHANGE: refresh current dataexchange/v1beta1/* directory to include recent change in protos. Removed common directory and use local enum Category fix!: refactor references to Category message docs: improve proto documentation. ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+* **bigquery/storage/managedwriter:** Augment reconnection logic ([#6609](https://github.com/googleapis/google-cloud-go/issues/6609)) ([6b0ac0c](https://github.com/googleapis/google-cloud-go/commit/6b0ac0c400d2d5b26689176c71cc6db1db9b283f))
+* **bigquery:** Add trace instrumentation support for individual rpcs ([#6493](https://github.com/googleapis/google-cloud-go/issues/6493)) ([eedc632](https://github.com/googleapis/google-cloud-go/commit/eedc6327b845850d9d6109014a5d531dfbfa7d04))
+* **bigquery:** Improve error when reading null values ([#6566](https://github.com/googleapis/google-cloud-go/issues/6566)) ([e9a94c2](https://github.com/googleapis/google-cloud-go/commit/e9a94c2e52ca3d07bc15030cf411f7e1c5235d39)), refs [#2612](https://github.com/googleapis/google-cloud-go/issues/2612)
+
+
+### Documentation
+
+* **bigquery:** Add numeric and bignumeric to RowIterator docs ([#6560](https://github.com/googleapis/google-cloud-go/issues/6560)) ([bea4028](https://github.com/googleapis/google-cloud-go/commit/bea4028a5fde6e790f70b0a98c33b81b3ad4023e))
+
+
+### Miscellaneous Chores
+
+* **bigquery:** Release 1.40.0 ([#6635](https://github.com/googleapis/google-cloud-go/issues/6635)) ([628deae](https://github.com/googleapis/google-cloud-go/commit/628deae4e0e0f4f1ae7e99433eefdc8f7cc41b41))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.38.0...bigquery/v1.39.0) (2022-08-23)
 
 

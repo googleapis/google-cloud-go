@@ -184,7 +184,8 @@ func (c *MetricClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MetricClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -312,7 +313,8 @@ func NewMetricClient(ctx context.Context, opts ...option.ClientOption) (*MetricC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *metricGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

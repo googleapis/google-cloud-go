@@ -20,14 +20,19 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewTestCasesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewTestCasesClient() {
 
 func ExampleNewTestCasesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -52,6 +62,11 @@ func ExampleNewTestCasesRESTClient() {
 
 func ExampleTestCasesClient_ListTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,7 +75,7 @@ func ExampleTestCasesClient_ListTestCases() {
 
 	req := &cxpb.ListTestCasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListTestCasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListTestCasesRequest.
 	}
 	it := c.ListTestCases(ctx, req)
 	for {
@@ -78,6 +93,11 @@ func ExampleTestCasesClient_ListTestCases() {
 
 func ExampleTestCasesClient_BatchDeleteTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +106,7 @@ func ExampleTestCasesClient_BatchDeleteTestCases() {
 
 	req := &cxpb.BatchDeleteTestCasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#BatchDeleteTestCasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#BatchDeleteTestCasesRequest.
 	}
 	err = c.BatchDeleteTestCases(ctx, req)
 	if err != nil {
@@ -96,6 +116,11 @@ func ExampleTestCasesClient_BatchDeleteTestCases() {
 
 func ExampleTestCasesClient_GetTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,7 +129,7 @@ func ExampleTestCasesClient_GetTestCase() {
 
 	req := &cxpb.GetTestCaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetTestCaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetTestCaseRequest.
 	}
 	resp, err := c.GetTestCase(ctx, req)
 	if err != nil {
@@ -116,6 +141,11 @@ func ExampleTestCasesClient_GetTestCase() {
 
 func ExampleTestCasesClient_CreateTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -124,7 +154,7 @@ func ExampleTestCasesClient_CreateTestCase() {
 
 	req := &cxpb.CreateTestCaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateTestCaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CreateTestCaseRequest.
 	}
 	resp, err := c.CreateTestCase(ctx, req)
 	if err != nil {
@@ -136,6 +166,11 @@ func ExampleTestCasesClient_CreateTestCase() {
 
 func ExampleTestCasesClient_UpdateTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,7 +179,7 @@ func ExampleTestCasesClient_UpdateTestCase() {
 
 	req := &cxpb.UpdateTestCaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateTestCaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#UpdateTestCaseRequest.
 	}
 	resp, err := c.UpdateTestCase(ctx, req)
 	if err != nil {
@@ -156,6 +191,11 @@ func ExampleTestCasesClient_UpdateTestCase() {
 
 func ExampleTestCasesClient_RunTestCase() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,7 +204,7 @@ func ExampleTestCasesClient_RunTestCase() {
 
 	req := &cxpb.RunTestCaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#RunTestCaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#RunTestCaseRequest.
 	}
 	op, err := c.RunTestCase(ctx, req)
 	if err != nil {
@@ -181,6 +221,11 @@ func ExampleTestCasesClient_RunTestCase() {
 
 func ExampleTestCasesClient_BatchRunTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -189,7 +234,7 @@ func ExampleTestCasesClient_BatchRunTestCases() {
 
 	req := &cxpb.BatchRunTestCasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#BatchRunTestCasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#BatchRunTestCasesRequest.
 	}
 	op, err := c.BatchRunTestCases(ctx, req)
 	if err != nil {
@@ -206,6 +251,11 @@ func ExampleTestCasesClient_BatchRunTestCases() {
 
 func ExampleTestCasesClient_CalculateCoverage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -214,7 +264,7 @@ func ExampleTestCasesClient_CalculateCoverage() {
 
 	req := &cxpb.CalculateCoverageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CalculateCoverageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CalculateCoverageRequest.
 	}
 	resp, err := c.CalculateCoverage(ctx, req)
 	if err != nil {
@@ -226,6 +276,11 @@ func ExampleTestCasesClient_CalculateCoverage() {
 
 func ExampleTestCasesClient_ImportTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -234,7 +289,7 @@ func ExampleTestCasesClient_ImportTestCases() {
 
 	req := &cxpb.ImportTestCasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ImportTestCasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ImportTestCasesRequest.
 	}
 	op, err := c.ImportTestCases(ctx, req)
 	if err != nil {
@@ -251,6 +306,11 @@ func ExampleTestCasesClient_ImportTestCases() {
 
 func ExampleTestCasesClient_ExportTestCases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -259,7 +319,7 @@ func ExampleTestCasesClient_ExportTestCases() {
 
 	req := &cxpb.ExportTestCasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ExportTestCasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ExportTestCasesRequest.
 	}
 	op, err := c.ExportTestCases(ctx, req)
 	if err != nil {
@@ -276,6 +336,11 @@ func ExampleTestCasesClient_ExportTestCases() {
 
 func ExampleTestCasesClient_ListTestCaseResults() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -284,7 +349,7 @@ func ExampleTestCasesClient_ListTestCaseResults() {
 
 	req := &cxpb.ListTestCaseResultsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListTestCaseResultsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListTestCaseResultsRequest.
 	}
 	it := c.ListTestCaseResults(ctx, req)
 	for {
@@ -302,6 +367,11 @@ func ExampleTestCasesClient_ListTestCaseResults() {
 
 func ExampleTestCasesClient_GetTestCaseResult() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -310,7 +380,7 @@ func ExampleTestCasesClient_GetTestCaseResult() {
 
 	req := &cxpb.GetTestCaseResultRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetTestCaseResultRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetTestCaseResultRequest.
 	}
 	resp, err := c.GetTestCaseResult(ctx, req)
 	if err != nil {
@@ -322,6 +392,11 @@ func ExampleTestCasesClient_GetTestCaseResult() {
 
 func ExampleTestCasesClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -342,6 +417,11 @@ func ExampleTestCasesClient_GetLocation() {
 
 func ExampleTestCasesClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -368,6 +448,11 @@ func ExampleTestCasesClient_ListLocations() {
 
 func ExampleTestCasesClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -386,6 +471,11 @@ func ExampleTestCasesClient_CancelOperation() {
 
 func ExampleTestCasesClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -406,6 +496,11 @@ func ExampleTestCasesClient_GetOperation() {
 
 func ExampleTestCasesClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -171,7 +171,7 @@ have been finalized, meaning they'll no longer allow further data writes.
 	// table atomically.
 	resp, err := client.BatchCommitWriteStreams(ctx, req)
 
-# Error Handling
+# Error Handling and Automatic Retries
 
 Like other Google Cloud services, this API relies on common components that can provide an
 enhanced set of errors when communicating about the results of API interactions.
@@ -199,5 +199,17 @@ An example of accessing the structured error details:
 			}
 		}
 	}
+
+This library supports the ability to retry failed append requests, but this functionality is not
+enabled by default.  You can enable it via the EnableWriteRetries option when constructing a new
+managed stream.  Use of automatic retries can impact correctness when attempting certain exactly-once
+write patterns, but is generally recommended for workloads that only need at-least-once writing.
+
+With write retries enabled, failed writes will be automatically attempted a finite number of times
+(currently 4) if the failure is considered retriable.
+
+In support of the retry changes, the AppendResult returned as part of an append call now includes
+TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
+Values larger than 1 are indicative of a specific append being enqueued multiple times.
 */
 package managedwriter

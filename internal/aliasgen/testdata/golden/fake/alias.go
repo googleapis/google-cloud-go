@@ -17,7 +17,9 @@
 // Package fake aliases all exported identifiers in package
 // "cloud.google.com/go/internal/aliasgen/testdata/fakepb".
 //
-// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
+// Deprecated: Please use types in: cloud.google.com/go/internal/aliasgen/testdata/fakepb.
+// Please read https://github.com/googleapis/google-cloud-go/blob/main/migration.md
+// for more details.
 package fake
 
 import (
@@ -84,11 +86,11 @@ type ListFoosResponse = src.ListFoosResponse
 type UnimplementedFooServiceServer = src.UnimplementedFooServiceServer
 
 // Deprecated: Please use funcs in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
-func NewFooServiceClient(cc grpc.ClientConnInterface) fakepb.FooServiceClient {
+func NewFooServiceClient(cc grpc.ClientConnInterface) FooServiceClient {
 	return src.NewFooServiceClient(cc)
 }
 
 // Deprecated: Please use funcs in: cloud.google.com/go/internal/aliasgen/testdata/fakepb
-func RegisterFooServiceServer(s *grpc.Server, srv fakepb.FooServiceServer) {
+func RegisterFooServiceServer(s *grpc.Server, srv FooServiceServer) {
 	src.RegisterFooServiceServer(s, srv)
 }
