@@ -231,7 +231,6 @@ func TestReadQueryOptions(t *testing.T) {
 				jobID:     queryJob.jobID,
 				projectID: queryJob.projectID,
 				location:  queryJob.location,
-				config:    queryJob.config,
 			},
 		},
 		pageSize:  5,
