@@ -10,14 +10,29 @@
         "grpc": {
           "libraryClient": "RevisionsClient",
           "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteRevision": {
               "methods": [
                 "DeleteRevision"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetRevision": {
               "methods": [
                 "GetRevision"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListRevisions": {
@@ -39,6 +54,11 @@
                 "CreateService"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteService": {
               "methods": [
                 "DeleteService"
@@ -49,9 +69,19 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetService": {
               "methods": [
                 "GetService"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServices": {
