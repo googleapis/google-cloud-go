@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.5.0...dlp/v1.5.1) (2022-10-14)
+
+
+### Bug Fixes
+
+* **dlp:** deprecate extra field to avoid confusion ([8388f87](https://github.com/googleapis/google-cloud-go/commit/8388f877b5682c96e9476863ca761b975cbe4131))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.4.0...dlp/v1.5.0) (2022-09-15)
 
 
