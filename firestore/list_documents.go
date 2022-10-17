@@ -33,7 +33,7 @@ type DocumentRefIterator struct {
 	err      error
 }
 
-func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte) *DocumentRefIterator {
+func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte, rs *readSettings) *DocumentRefIterator {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.ListDocuments")
 	defer func() { trace.EndSpan(ctx, nil) }()
 
@@ -44,8 +44,14 @@ func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte) 
 		ShowMissing:  true,
 		Mask:         &pb.DocumentMask{}, // empty mask: we want only the ref
 	}
+
+	// Transactions and ReadTime are mutually exclusive; Transactions should be
+	// respected before read time.
+	if rt, hasOpts := parseReadTime(client, rs); hasOpts {
+		req.ConsistencySelector = &pb.ListDocumentsRequest_ReadTime{ReadTime: rt}
+	}
 	if tid != nil {
-		req.ConsistencySelector = &pb.ListDocumentsRequest_Transaction{tid}
+		req.ConsistencySelector = &pb.ListDocumentsRequest_Transaction{Transaction: tid}
 	}
 	it := &DocumentRefIterator{
 		client: client,
