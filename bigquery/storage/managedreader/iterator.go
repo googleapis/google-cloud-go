@@ -88,6 +88,7 @@ type streamIterator struct {
 
 	rows      chan []bigquery.Value
 	totalRows uint64
+	ordered   bool
 }
 
 func (it *streamIterator) init() error {
@@ -106,6 +107,7 @@ func (it *streamIterator) init() error {
 
 func (it *streamIterator) setup() error {
 	table := it.table
+	isOrdered := false
 	if it.job != nil {
 		cfg, err := it.job.Config()
 		if err != nil {
@@ -116,6 +118,7 @@ func (it *streamIterator) setup() error {
 			// TODO: script job ?
 			return fmt.Errorf("nil job destination table")
 		}
+		isOrdered = haveOrderedResults(qcfg.Q)
 		table = qcfg.Dst
 	}
 	tableID, err := table.Identifier(bigquery.StorageAPIResourceID)
@@ -124,6 +127,7 @@ func (it *streamIterator) setup() error {
 	}
 	it.table = table
 	it.tableID = tableID
+	it.ordered = isOrdered
 	return nil
 }
 
@@ -132,6 +136,9 @@ func (it *streamIterator) start() error {
 		SelectedFields: []string{},
 	}
 	maxStreamCount := it.ms.streamSettings.MaxStreamCount
+	if it.ordered {
+		maxStreamCount = 1
+	}
 	createReadSessionRequest := &bqStoragepb.CreateReadSessionRequest{
 		Parent: fmt.Sprintf("projects/%s", it.table.ProjectID),
 		ReadSession: &bqStoragepb.ReadSession{
