@@ -2153,47 +2153,47 @@ func TestIntegration_ValidObjectNames(t *testing.T) {
 }
 
 func TestIntegration_WriterContentType(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	obj := client.Bucket(bucketName).Object("content")
-	testCases := []struct {
-		content           string
-		setType, wantType string
-	}{
-		{
-			content:  "It was the best of times, it was the worst of times.",
-			wantType: "text/plain; charset=utf-8",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			wantType: "text/html; charset=utf-8",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			setType:  "text/html",
-			wantType: "text/html",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			setType:  "image/jpeg",
-			wantType: "image/jpeg",
-		},
-	}
-	for i, tt := range testCases {
-		if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
-			t.Errorf("writing #%d: %v", i, err)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		obj := client.Bucket(bucket).Object("content")
+		testCases := []struct {
+			content           string
+			setType, wantType string
+		}{
+			{
+				// Sniffed content type.
+				content:  "It was the best of times, it was the worst of times.",
+				wantType: "text/plain; charset=utf-8",
+			},
+			{
+				// Sniffed content type.
+				content:  "<html><head><title>My first page</title></head></html>",
+				wantType: "text/html; charset=utf-8",
+			},
+			{
+				content:  "<html><head><title>My first page</title></head></html>",
+				setType:  "text/html",
+				wantType: "text/html",
+			},
+			{
+				content:  "<html><head><title>My first page</title></head></html>",
+				setType:  "image/jpeg",
+				wantType: "image/jpeg",
+			},
 		}
-		attrs, err := obj.Attrs(ctx)
-		if err != nil {
-			t.Errorf("obj.Attrs: %v", err)
-			continue
+		for i, tt := range testCases {
+			if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
+				t.Errorf("writing #%d: %v", i, err)
+			}
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				t.Errorf("obj.Attrs: %v", err)
+				continue
+			}
+			if got := attrs.ContentType; got != tt.wantType {
+				t.Errorf("Content-Type = %q; want %q\nContent: %q\nSet Content-Type: %q", got, tt.wantType, tt.content, tt.setType)
+			}
 		}
-		if got := attrs.ContentType; got != tt.wantType {
-			t.Errorf("Content-Type = %q; want %q\nContent: %q\nSet Content-Type: %q", got, tt.wantType, tt.content, tt.setType)
-		}
-	}
+	})
 }
 
 func TestIntegration_ZeroSizedObject(t *testing.T) {
