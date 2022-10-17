@@ -1148,6 +1148,8 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 }
 
+// testing if deletionProtection works properly e.g. when set to Protected, column family and table cannot be deleted;
+// then update the deletionProtection to Unprotected and check if deleting the column family and table works properly.
 func TestIntegration_TableDeletionProtection(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1167,7 +1169,7 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	tblConf := TableConf{
+	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
 			"fam1": MaxVersionsPolicy(1),
@@ -1176,42 +1178,49 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		DeletionProtection: Protected,
 	}
 
-	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
-		t.Errorf("create table from config: %v", err)
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Errorf("Create table from config: %v", err)
 	}
 
-	table, err := adminClient.getTable(ctx, myTableName, btapb.Table_FULL)
+	table, err := adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Errorf("Getting table info: %v", err)
+	}
 
-	if table.DeletionProtection != true {
-		t.Errorf("Table Deletion Protection is wrong: %v", err)
+	if table.DeletionProtection != Protected {
+		t.Errorf("Expect table deletion protection to be enabled for table: %v", myTableName)
 	}
 
 	// Check if the deletion protection works properly
-	if err = adminClient.DeleteColumnFamily(ctx, tblConf.TableID, "fam1"); err == nil {
-		t.Errorf("deletetion protection does not work properly while deleting the column family: %v", err)
+	if err = adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err == nil {
+		t.Errorf("We shouldn't be able to delete the column family fam1 when the deletion protection is enabled for table %v", myTableName)
 	}
-	if err = adminClient.DeleteTable(ctx, tblConf.TableID); err == nil {
-		t.Errorf("deletetion protection does not work properly while deleting the table: %v", err)
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err == nil {
+		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
 	}
 
-	updateTblConf := UpdateTableConf{
+	updateTableConf := UpdateTableConf{
 		tableID:            myTableName,
 		deletionProtection: Unprotected,
 	}
-	if err := adminClient.updateTableWithConf(ctx, &updateTblConf); err != nil {
-		t.Errorf("update table from config: %v", err)
+	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
+		t.Errorf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.getTable(ctx, myTableName, btapb.Table_FULL)
-	if table.DeletionProtection != false {
-		t.Errorf("Table Deletion Protection is wrong: %v", err)
+	table, err = adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Errorf("Getting table info: %v", err)
 	}
 
-	if err := adminClient.DeleteColumnFamily(ctx, tblConf.TableID, "fam1"); err != nil {
-		t.Errorf("delete column family does not work properly while deletion protection bit is disabled: %v", err)
+	if table.DeletionProtection != Unprotected {
+		t.Errorf("Expect table deletion protection to be disabled for table: %v", myTableName)
 	}
-	if err = adminClient.DeleteTable(ctx, tblConf.TableID); err != nil {
-		t.Errorf("deleting the table does not work properly while deletion protection bit is disabled: %v", err)
+
+	if err := adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err != nil {
+		t.Errorf("Delete column family does not work properly while deletion protection bit is disabled: %v", err)
+	}
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
+		t.Errorf("Deleting the table does not work properly while deletion protection bit is disabled: %v", err)
 	}
 }
 
