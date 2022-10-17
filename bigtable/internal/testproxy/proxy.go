@@ -560,7 +560,7 @@ func (s *goTestProxyServer) CloseClient(ctx context.Context, req *pb.CloseClient
 	s.clientsLock.Lock()
 	defer s.clientsLock.Unlock()
 
-	btc, exists := s.clientIDs[clientID]
+	btc, exists := s.client(clientID)
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
@@ -578,13 +578,15 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	s.clientsLock.Lock()
 	defer s.clientsLock.Unlock()
 
-	btc, exists := s.client(clientID)
+	// RemoveClient can ignore whether the client accepts new requests
+	btc, exists := s.clientIDs[clientID]
 	if !exists {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
 
 	// this closes every ClientConn in the pool.
+	btc.isOpen = false
 	btc.c.Close()
 	delete(s.clientIDs, clientID)
 
