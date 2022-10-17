@@ -76,10 +76,10 @@ func TestTableAdmin_CreateTableFromConf_DeletionProtection_Protected(t *testing.
 	}
 	createTableReq := mock.createTableReq
 	if !cmp.Equal(createTableReq.TableId, "My-table") {
-		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
 	}
 	if !cmp.Equal(createTableReq.Table.DeletionProtection, true) {
-		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, true)
 	}
 }
 
@@ -94,10 +94,10 @@ func TestTableAdmin_CreateTableFromConf_DeletionProtection_Unprotected(t *testin
 	}
 	createTableReq := mock.createTableReq
 	if !cmp.Equal(createTableReq.TableId, "My-table") {
-		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
 	}
 	if !cmp.Equal(createTableReq.Table.DeletionProtection, false) {
-		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, false)
 	}
 }
 
