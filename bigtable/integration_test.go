@@ -1179,12 +1179,12 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	}
 
 	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
-		t.Errorf("Create table from config: %v", err)
+		t.Fatalf("Create table from config: %v", err)
 	}
 
 	table, err := adminClient.TableInfo(ctx, myTableName)
 	if err != nil {
-		t.Errorf("Getting table info: %v", err)
+		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Protected {
@@ -1204,12 +1204,12 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		deletionProtection: Unprotected,
 	}
 	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
-		t.Errorf("Update table from config: %v", err)
+		t.Fatalf("Update table from config: %v", err)
 	}
 
 	table, err = adminClient.TableInfo(ctx, myTableName)
 	if err != nil {
-		t.Errorf("Getting table info: %v", err)
+		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Unprotected {
