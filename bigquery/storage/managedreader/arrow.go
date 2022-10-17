@@ -90,6 +90,7 @@ func (ap *arrowParser) convertArrowRows(recordBatch *bqStoragepb.ArrowRecordBatc
 
 // convertArrow gets row value in the given column and converts to a Value.
 // Arrow is a colunar storage, so we navigate first by column and get the row value.
+// More details on conversions can be seen here: https://cloud.google.com/bigquery/docs/reference/storage#arrow_schema_details
 func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *bigquery.FieldSchema) (bigquery.Value, error) {
 	if !col.IsValid(i) {
 		return nil, nil

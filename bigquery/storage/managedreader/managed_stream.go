@@ -20,16 +20,14 @@ import (
 	"cloud.google.com/go/bigquery"
 )
 
-// ManagedStream is the abstraction over a single write stream.
+// ManagedStream is the abstraction over a storage API read session.
 type ManagedStream struct {
 	streamSettings *streamSettings
 	c              *Client
 }
-
-// streamSettings govern behavior of the append stream RPCs.
 type streamSettings struct {
-	// MaxStreamCount governs how many unacknowledged
-	// append writes can be outstanding into the system.
+	// MaxStreamCount governs how many parallel streams
+	// can be opened.
 	MaxStreamCount int
 }
 
@@ -41,5 +39,15 @@ func defaultStreamSettings() *streamSettings {
 
 // ReadQuery creates a read stream for a given query.
 func (ms *ManagedStream) ReadQuery(ctx context.Context, query *bigquery.Query) (RowIterator, error) {
-	return newQueryRowIterator(ctx, ms.c, query)
+	return newQueryRowIterator(ctx, ms, query)
+}
+
+// ReadJobResults creates a read stream for a given job.
+func (ms *ManagedStream) ReadJobResults(ctx context.Context, job *bigquery.Job) (RowIterator, error) {
+	return newJobRowIterator(ctx, ms, job)
+}
+
+// ReadTable creates a read stream for a given table.
+func (ms *ManagedStream) ReadTable(ctx context.Context, table *bigquery.Table) (RowIterator, error) {
+	return newTableRowIterator(ctx, ms, table)
 }

@@ -16,7 +16,6 @@ package managedreader
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -28,16 +27,11 @@ import (
 	"cloud.google.com/go/bigquery"
 	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/civil"
-	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
-
-const replayFilename = "bigquery.replay"
-
-var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client               *bigquery.Client
@@ -74,46 +68,7 @@ func initIntegrationTest() func() {
 	flag.Parse() // needed for testing.Short()
 	projID := testutil.ProjID()
 	switch {
-	case testing.Short() && *record:
-		log.Fatal("cannot combine -short and -record")
-		return func() {}
-
-	case testing.Short() && httpreplay.Supported() && testutil.CanReplay(replayFilename) && projID != "":
-		// go test -short with a replay file will replay the integration tests if the
-		// environment variables are set.
-		log.Printf("replaying from %s", replayFilename)
-		httpreplay.DebugHeaders()
-		replayer, err := httpreplay.NewReplayer(replayFilename)
-		if err != nil {
-			log.Fatal(err)
-		}
-		var t time.Time
-		if err := json.Unmarshal(replayer.Initial(), &t); err != nil {
-			log.Fatal(err)
-		}
-		hc, err := replayer.Client(ctx) // no creds needed
-		if err != nil {
-			log.Fatal(err)
-		}
-		client, err = bigquery.NewClient(ctx, projID, option.WithHTTPClient(hc))
-		if err != nil {
-			log.Fatal(err)
-		}
-		mrClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
-		if err != nil {
-			log.Fatal(err)
-		}
-		cleanup := initTestState(client, t)
-		return func() {
-			cleanup()
-			_ = replayer.Close() // No actionable error returned.
-		}
-
 	case testing.Short():
-		// go test -short without a replay file skips the integration tests.
-		if testutil.CanReplay(replayFilename) && projID != "" {
-			log.Print("replay not supported for Go versions before 1.8")
-		}
 		client = nil
 		return func() {}
 
@@ -124,38 +79,9 @@ func initIntegrationTest() func() {
 			return func() {}
 		}
 		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
+		bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
 		cleanup := func() {}
 		now := time.Now().UTC()
-		if *record {
-			if !httpreplay.Supported() {
-				log.Print("record not supported for Go versions before 1.8")
-			} else {
-				nowBytes, err := json.Marshal(now)
-				if err != nil {
-					log.Fatal(err)
-				}
-				recorder, err := httpreplay.NewRecorder(replayFilename, nowBytes)
-				if err != nil {
-					log.Fatalf("could not record: %v", err)
-				}
-				log.Printf("recording to %s", replayFilename)
-				hc, err := recorder.Client(ctx, bqOpts...)
-				if err != nil {
-					log.Fatal(err)
-				}
-				bqOpts = append(bqOpts, option.WithHTTPClient(hc))
-				cleanup = func() {
-					if err := recorder.Close(); err != nil {
-						log.Printf("saving recording: %v", err)
-					}
-				}
-			}
-		} else {
-			// When we're not recording, do http header checking.
-			// We can't check universally because option.WithHTTPClient is
-			// incompatible with gRPC options.
-			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
-		}
 		var err error
 		client, err = bigquery.NewClient(ctx, projID, bqOpts...)
 		if err != nil {
@@ -349,24 +275,91 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	}
 }
 
-func checkRead(it RowIterator, expectedRow []bigquery.Value) error {
-	for {
-		var outRow []bigquery.Value
-		err := it.Next(&outRow)
-		if err == iterator.Done {
-			break
-		}
+func checkRowsRead(it RowIterator, expectedRows [][]bigquery.Value) error {
+	for _, row := range expectedRows {
+		err := checkRead(it, row)
 		if err != nil {
-			return fmt.Errorf("failed to fetch via storage API: %v", err)
-		}
-		if len(outRow) != len(expectedRow) {
-			return fmt.Errorf("expected %d columns, but got %d", len(expectedRow), len(outRow))
-		}
-		if !testutil.Equal(outRow, expectedRow) {
-			return fmt.Errorf("got %v, want %v", outRow, expectedRow)
+			return err
 		}
 	}
 	return nil
+}
+
+func checkRead(it RowIterator, expectedRow []bigquery.Value) error {
+	var outRow []bigquery.Value
+	err := it.Next(&outRow)
+	if err == iterator.Done {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("failed to fetch via storage API: %v", err)
+	}
+	if len(outRow) != len(expectedRow) {
+		return fmt.Errorf("expected %d columns, but got %d", len(expectedRow), len(outRow))
+	}
+	if !testutil.Equal(outRow, expectedRow) {
+		return fmt.Errorf("got %v, want %v", outRow, expectedRow)
+	}
+	return nil
+}
+
+func TestIntegration_ReadFromSources(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	ms, err := mrClient.NewManagedStream(WithMaxStreamCount(1)) // limit to one stream as results are ordered
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	dstTable := dataset.Table(tableIDs.New())
+	sql := `SELECT 1 as num, 'one' as str 
+UNION ALL 
+SELECT 2 as num, 'two' as str 
+UNION ALL 
+SELECT 3 as num, 'three' as str 
+ORDER BY num`
+	q := client.Query(sql)
+	q.Dst = dstTable
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := status.Err(); err != nil {
+		t.Fatal(err)
+	}
+	expectedRows := [][]bigquery.Value{
+		{int64(1), "one"},
+		{int64(2), "two"},
+		{int64(3), "three"},
+	}
+	tableRowIt, err := ms.ReadTable(ctx, dstTable)
+	if err != nil {
+		t.Fatalf("ReadTable(table): %v", err)
+	}
+	if err = checkRowsRead(tableRowIt, expectedRows); err != nil {
+		t.Fatalf("checkRowsRead(table): %v", err)
+	}
+	jobRowIt, err := ms.ReadJobResults(ctx, job)
+	if err != nil {
+		t.Fatalf("ReadJobResults(job): %v", err)
+	}
+	if err = checkRowsRead(jobRowIt, expectedRows); err != nil {
+		t.Fatalf("checkRowsRead(job): %v", err)
+	}
+	q.Dst = nil
+	qRowIt, err := ms.ReadQuery(ctx, q)
+	if err != nil {
+		t.Fatalf("ReadQuery(query): %v", err)
+	}
+	if err = checkRowsRead(qRowIt, expectedRows); err != nil {
+		t.Fatalf("checkRowsRead(query): %v", err)
+	}
 }
 
 func TestIntegration_StorageReadQuery(t *testing.T) {

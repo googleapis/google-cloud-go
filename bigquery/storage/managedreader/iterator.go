@@ -34,11 +34,15 @@ type RowIterator interface {
 	TotalRows() uint64
 }
 
-func newQueryRowIterator(ctx context.Context, client *Client, q *bigquery.Query) (RowIterator, error) {
+func newQueryRowIterator(ctx context.Context, ms *ManagedStream, q *bigquery.Query) (RowIterator, error) {
 	job, err := q.Run(ctx)
 	if err != nil {
 		return nil, err
 	}
+	return newJobRowIterator(ctx, ms, job)
+}
+
+func newJobRowIterator(ctx context.Context, ms *ManagedStream, job *bigquery.Job) (RowIterator, error) {
 	rowIt, err := job.Read(ctx)
 	if err != nil {
 		return nil, err
@@ -47,11 +51,24 @@ func newQueryRowIterator(ctx context.Context, client *Client, q *bigquery.Query)
 		ctx:       ctx,
 		job:       job,
 		totalRows: rowIt.TotalRows,
-		client:    client,
+		ms:        ms,
 		rows:      make(chan []bigquery.Value, 0),
 		errs:      make(chan error, 0),
 	}
-	return it, err
+	return it, nil
+}
+
+func newTableRowIterator(ctx context.Context, ms *ManagedStream, table *bigquery.Table) (RowIterator, error) {
+	rowIt := table.Read(ctx)
+	it := &streamIterator{
+		ctx:       ctx,
+		table:     table,
+		totalRows: rowIt.TotalRows,
+		ms:        ms,
+		rows:      make(chan []bigquery.Value, 0),
+		errs:      make(chan error, 0),
+	}
+	return it, nil
 }
 
 type streamIterator struct {
@@ -59,8 +76,8 @@ type streamIterator struct {
 	errs chan error
 	wg   sync.WaitGroup
 
-	ctx    context.Context
-	client *Client
+	ctx context.Context
+	ms  *ManagedStream
 
 	job     *bigquery.Job
 	table   *bigquery.Table
@@ -114,6 +131,7 @@ func (it *streamIterator) start() error {
 	tableReadOptions := &bqStoragepb.ReadSession_TableReadOptions{
 		SelectedFields: []string{},
 	}
+	maxStreamCount := it.ms.streamSettings.MaxStreamCount
 	createReadSessionRequest := &bqStoragepb.CreateReadSessionRequest{
 		Parent: fmt.Sprintf("projects/%s", it.table.ProjectID),
 		ReadSession: &bqStoragepb.ReadSession{
@@ -121,12 +139,12 @@ func (it *streamIterator) start() error {
 			DataFormat:  bqStoragepb.DataFormat_ARROW,
 			ReadOptions: tableReadOptions,
 		},
-		MaxStreamCount: 0, // TODO: control when to open multiple streams
+		MaxStreamCount: int32(maxStreamCount),
 	}
 	rpcOpts := gax.WithGRPCOptions(
 		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size
 	)
-	session, err := it.client.createReadSession(it.ctx, createReadSessionRequest, rpcOpts)
+	session, err := it.ms.c.createReadSession(it.ctx, createReadSessionRequest, rpcOpts)
 	if err != nil {
 		return err
 	}
@@ -164,7 +182,7 @@ func (it *streamIterator) start() error {
 func (it *streamIterator) processStream(stream *bqStoragepb.ReadStream) {
 	var offset int64
 	for {
-		rowStream, err := it.client.readRows(it.ctx, &bqStoragepb.ReadRowsRequest{
+		rowStream, err := it.ms.c.readRows(it.ctx, &bqStoragepb.ReadRowsRequest{
 			ReadStream: stream.Name,
 			Offset:     offset,
 		})
