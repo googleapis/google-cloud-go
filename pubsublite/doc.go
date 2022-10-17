@@ -80,6 +80,9 @@ Messages are published to topics. Pub/Sub Lite topics may be created like so:
 	  // TODO: Handle error.
 	}
 
+Close must be called to release resources when an AdminClient is no longer
+required.
+
 See https://cloud.google.com/pubsub/lite/docs/topics for more information about
 how Pub/Sub Lite topics are configured.
 
@@ -121,6 +124,10 @@ to the service and close gRPC streams. The PublisherClient can no longer be used
 after it has been stopped or has terminated due to a permanent error.
 
 	publisher.Stop()
+
+PublisherClients are expected to be long-lived and used for the duration of the
+application, rather than for publishing small batches of messages. Stop must be
+called to release resources when a PublisherClient is no longer required.
 
 See https://cloud.google.com/pubsub/lite/docs/publishing for more information
 about publishing.
