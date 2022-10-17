@@ -387,7 +387,9 @@ type TableInfo struct {
 	Families    []string
 	FamilyInfos []FamilyInfo
 	// DeletionProtection indicates whether the table is protected against data loss
-	DeletionProtection bool
+	// DeletionProtection could be None depending on the table view
+	// for example when using NAME_ONLY, the response does not contain DeletionProtection and the value should be None
+	DeletionProtection DeletionProtection
 }
 
 // FamilyInfo represents information about a column family.
@@ -436,8 +438,13 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
 	}
-	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is used
-	ti.DeletionProtection = res.DeletionProtection
+	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is being used in this function
+	// but when using NAME_ONLY, the response does not contain DeletionProtection and it could be nil
+	if res.DeletionProtection == true {
+		ti.DeletionProtection = Protected
+	} else {
+		ti.DeletionProtection = Unprotected
+	}
 	return ti, nil
 }
 
