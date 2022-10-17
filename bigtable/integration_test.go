@@ -1181,8 +1181,6 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	}
 
 	table, err := adminClient.getTable(ctx, myTableName, btapb.Table_FULL)
-	fmt.Println(table)
-	fmt.Println("*****")
 
 	if table.DeletionProtection != true {
 		t.Errorf("Table Deletion Protection is wrong: %v", err)

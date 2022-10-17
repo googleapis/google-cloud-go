@@ -33,7 +33,6 @@ type mockTableAdminClock struct {
 	createTableReq   *btapb.CreateTableRequest
 	updateTableReq   *btapb.UpdateTableRequest
 	createTableResp  *btapb.Table
-	createTableError error
 	updateTableError error
 }
 
@@ -41,7 +40,7 @@ func (c *mockTableAdminClock) CreateTable(
 	ctx context.Context, in *btapb.CreateTableRequest, opts ...grpc.CallOption,
 ) (*btapb.Table, error) {
 	c.createTableReq = in
-	return c.createTableResp, c.createTableError
+	return c.createTableResp, nil
 }
 
 func (c *mockTableAdminClock) UpdateTable(
@@ -69,9 +68,9 @@ func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminCli
 func TestTableAdmin_CreateTableFromConf(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
-	deletionProtection := Protected
 
 	// Check if the deletion protection updates correctly
+	deletionProtection := Protected
 	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
 	if err != nil {
 		t.Errorf("CreateTableFromConf failed: %v", err)
@@ -96,7 +95,7 @@ func TestTableAdmin_UpdateTableWithDeletionProtection(t *testing.T) {
 		t.Errorf("UpdateTableWithDeletionProtection failed: %v", err)
 	}
 	updateTableReq := mock.updateTableReq
-	if !cmp.Equal(updateTableReq.Table.Name, "My-table") {
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
 		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
 	}
 	if !cmp.Equal(updateTableReq.Table.DeletionProtection, true) {

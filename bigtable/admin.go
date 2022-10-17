@@ -262,6 +262,8 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		reqSplits = append(reqSplits, &btapb.CreateTableRequest_Split{Key: []byte(split)})
 	}
 	var tbl btapb.Table
+	// we'd rather not set anything explicitly if users don't specify a value and let the server set the default value.
+	// if DeletionProtection is not set, currently the API will default it to false.
 	if conf.DeletionProtection == Protected {
 		tbl.DeletionProtection = true
 	} else if conf.DeletionProtection == Unprotected {
@@ -337,10 +339,10 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 	if conf.deletionProtection == Unprotected {
 		deletionProtection = false
 	}
-
+	prefix := ac.instancePrefix()
 	req := &btapb.UpdateTableRequest{
 		Table: &btapb.Table{
-			Name:               conf.tableID,
+			Name:               prefix + "/tables/" + conf.tableID,
 			DeletionProtection: deletionProtection,
 		},
 		UpdateMask: updateMask,
@@ -434,6 +436,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
 	}
+	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is used
 	ti.DeletionProtection = res.DeletionProtection
 	return ti, nil
 }
