@@ -3557,6 +3557,42 @@ func TestDeleteMultiWithIncompleteKey(t *testing.T) {
 	}
 }
 
+func TestBasicGet(t *testing.T) {
+	cl, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	type testEnt struct {
+		A string
+	}
+
+	key := NameKey("foo", "bar", nil)
+
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId:  "projectID",
+		DatabaseId: "",
+		Keys: []*pb.Key{
+			keyToProto(key),
+		},
+	}, &pb.LookupResponse{
+		Found: []*pb.EntityResult{
+			{
+				Entity: &pb.Entity{
+					Key: keyToProto(key),
+					Properties: map[string]*pb.Value{
+						"A": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
+					},
+				},
+			},
+		},
+	})
+
+	dst := &testEnt{}
+	err := cl.Get(context.Background(), key, dst)
+	if err != nil {
+		t.Fatalf("datastore: test failed to get entity: %v", err)
+	}
+}
+
 type fakeDatastoreClient struct {
 	pb.DatastoreClient
 
