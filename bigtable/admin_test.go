@@ -69,7 +69,6 @@ func TestTableAdmin_CreateTableFromConf_DeletionProtection_Protected(t *testing.
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	// Check if the deletion protection updates correctly
 	deletionProtection := Protected
 	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
 	if err != nil {
@@ -88,7 +87,6 @@ func TestTableAdmin_CreateTableFromConf_DeletionProtection_Unprotected(t *testin
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	// Check if the deletion protection updates correctly
 	deletionProtection := Unprotected
 	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
 	if err != nil {
