@@ -18,6 +18,10 @@ assign_issues_by:
   to:
   - hongalex
 - labels:
+  - 'api: pubsublite'
+  to:
+  - tmdiep
+- labels:
   - 'api: spanner'
   to:
   - rahul2393
