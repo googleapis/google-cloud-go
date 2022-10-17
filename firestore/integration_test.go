@@ -1862,7 +1862,7 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 	}
 
 	for _, d := range ds {
-		if d.ReadTime.UnixNano() != tm.UnixNano() {
+		if !tm.Equal(d.ReadTime) {
 			t.Errorf("wanted read time: %v; got: %v",
 				tm.UnixNano(), d.ReadTime.UnixNano())
 		}
