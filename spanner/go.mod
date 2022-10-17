@@ -1,17 +1,17 @@
 module cloud.google.com/go/spanner
 
-go 1.17
+go 1.19
 
 require (
 	cloud.google.com/go v0.104.0
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-cmp v0.5.8
-	github.com/googleapis/gax-go/v2 v2.5.1
+	github.com/google/go-cmp v0.5.9
+	github.com/googleapis/gax-go/v2 v2.6.0
 	go.opencensus.io v0.23.0
-	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f
-	google.golang.org/api v0.98.0
+	golang.org/x/xerrors 04be3eba64a2
+	google.golang.org/api v0.99.0
 	google.golang.org/genproto v0.0.0-20221014173430-6e2ab493f96b
-	google.golang.org/grpc v1.50.0
+	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 )
 

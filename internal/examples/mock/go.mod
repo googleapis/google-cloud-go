@@ -1,9 +1,9 @@
 module cloud.google.com/go/internal/examples/mock
 
-go 1.17
+go 1.19
 
 require (
-	github.com/googleapis/gax-go/v2 v2.5.1
+	github.com/googleapis/gax-go/v2 v2.6.0
 	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
 )
 

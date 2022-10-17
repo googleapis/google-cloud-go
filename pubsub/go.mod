@@ -1,21 +1,21 @@
 module cloud.google.com/go/pubsub
 
-go 1.17
+go 1.19
 
 require (
 	cloud.google.com/go v0.104.0
-	cloud.google.com/go/iam v0.3.0
+	cloud.google.com/go/iam v0.5.0
 	cloud.google.com/go/kms v1.4.0
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-cmp v0.5.8
-	github.com/googleapis/gax-go/v2 v2.5.1
+	github.com/google/go-cmp v0.5.9
+	github.com/googleapis/gax-go/v2 v2.6.0
 	go.opencensus.io v0.23.0
-	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
-	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
-	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
-	google.golang.org/api v0.98.0
+	golang.org/x/oauth2 6fdb5e3db783
+	golang.org/x/sync 8fcdb60fdcc0
+	golang.org/x/time f3bd1da661af
+	google.golang.org/api v0.99.0
 	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
-	google.golang.org/grpc v1.49.0
+	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 )
 
