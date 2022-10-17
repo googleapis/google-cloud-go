@@ -65,7 +65,7 @@ func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminCli
 	return c
 }
 
-func TestTableAdmin_CreateTableFromConf(t *testing.T) {
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Protected(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
@@ -80,6 +80,25 @@ func TestTableAdmin_CreateTableFromConf(t *testing.T) {
 		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
 	}
 	if !cmp.Equal(createTableReq.Table.DeletionProtection, true) {
+		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Unprotected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	// Check if the deletion protection updates correctly
+	deletionProtection := Unprotected
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Errorf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, false) {
 		t.Errorf("CreateTableRequest does not match, TableID: %v", createTableReq.Table.Name)
 	}
 }
