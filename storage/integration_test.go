@@ -4087,7 +4087,6 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		obj := bkt.Object("reader-cancel-obj")
 
 		minObjectSize := 2500000 // 2.5 Mb
-		var objectSize int
 
 		w := obj.NewWriter(ctx)
 		c := randomContents()
@@ -4097,7 +4096,6 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 				t.Fatalf("w.Write: %v", err)
 			}
 			written += n
-			objectSize = written
 		}
 
 		if err := w.Close(); err != nil {
@@ -4124,23 +4122,10 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 
 		cancel()
 
-		// Read the object 1KB a time. We cannot guarantee that Reads will return a
-		// context canceled error immediately, but they should always do so before we
-		// reach EOF.
-		var readErr error
-		for read := 0; read < objectSize; {
-			buf := make([]byte, 1000)
-			var n int
-			n, readErr = r.Read(buf)
-			if readErr != nil {
-				if errors.Is(readErr, context.Canceled) || status.Code(readErr) == codes.Canceled {
-					return
-				}
-				break
-			}
-			read += n
+		_, err = io.Copy(io.Discard, r)
+		if err == nil || !errors.Is(err, context.Canceled) && !(status.Code(err) == codes.Canceled) {
+			t.Fatalf("r.Read: got error %v, want context.Canceled", err)
 		}
-		t.Fatalf("r.Read: got %v, want context.Canceled", readErr)
 	})
 }
 
