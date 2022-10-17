@@ -1,5 +1,12 @@
 # Changes
 
+## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.2.0...recaptchaenterprise/v2.3.0) (2022-10-14)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** add RetrieveLegacySecretKey method feat: add annotation reasons REFUND, REFUND_FRAUD, TRANSACTION_ACCEPTED, TRANSACTION_DECLINED and SOCIAL_SPAM ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
 ## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.1.0...recaptchaenterprise/v2.2.0) (2022-09-21)
 
 
