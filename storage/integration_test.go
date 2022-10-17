@@ -1928,6 +1928,7 @@ func TestIntegration_Copy(t *testing.T) {
 		if err := bucket2.Create(ctx, testutil.ProjID(), nil); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
+		defer bucket2.Delete(ctx)
 
 		// Write object to copy
 		obj := bucketFrom.Object("copy-object-original")
