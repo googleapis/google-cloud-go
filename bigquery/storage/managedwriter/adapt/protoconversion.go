@@ -63,6 +63,27 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 	storagepb.TableFieldSchema_TIMESTAMP:  descriptorpb.FieldDescriptorProto_TYPE_INT64,
 }
 
+// Primitive types which can leverage packed encoding when repeated/arrays.
+//
+// Note: many/most of these aren't used when doing schema to proto conversion, but
+// are included for completeness.
+var packedTypes = []descriptorpb.FieldDescriptorProto_Type{
+	descriptorpb.FieldDescriptorProto_TYPE_INT32,
+	descriptorpb.FieldDescriptorProto_TYPE_INT64,
+	descriptorpb.FieldDescriptorProto_TYPE_UINT32,
+	descriptorpb.FieldDescriptorProto_TYPE_UINT64,
+	descriptorpb.FieldDescriptorProto_TYPE_SINT32,
+	descriptorpb.FieldDescriptorProto_TYPE_SINT64,
+	descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
+	descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
+	descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
+	descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
+	descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
+	descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
+	descriptorpb.FieldDescriptorProto_TYPE_BOOL,
+	descriptorpb.FieldDescriptorProto_TYPE_ENUM,
+}
+
 // For TableFieldSchema OPTIONAL mode, we use the wrapper types to allow for the
 // proper representation of NULL values, as proto3 semantics would just use default value.
 var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
@@ -85,7 +106,7 @@ var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 
 // dependencyCache is used to reduce the number of unique messages we generate by caching based on the tableschema.
 //
-// keys are based on the base64-encoded serialized tableschema value.
+// Keys are based on the base64-encoded serialized tableschema value.
 type dependencyCache map[string]protoreflect.MessageDescriptor
 
 func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.MessageDescriptor {
@@ -143,7 +164,7 @@ func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope stri
 	return storageSchemaToDescriptorInternal(inSchema, scope, &dc, true)
 }
 
-// internal implementation of the conversion code.
+// Internal implementation of the conversion code.
 func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.MessageDescriptor, error) {
 	if inSchema == nil {
 		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
@@ -170,11 +191,11 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 						break
 					}
 				}
-				// if dep is missing, add to current dependencies
+				// If dep is missing, add to current dependencies.
 				if !haveDep {
 					deps = append(deps, foundDesc.ParentFile())
 				}
-				// construct field descriptor for the message
+				// Construct field descriptor for the message.
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), useProto3)
 				if err != nil {
 					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %w", err))
@@ -265,33 +286,68 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 //
 // Messages are always nullable, and repeated fields are as well.
 func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) (*descriptorpb.FieldDescriptorProto, error) {
+
 	name := strings.ToLower(field.GetName())
+	var fdp *descriptorpb.FieldDescriptorProto
+
 	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
-		return &descriptorpb.FieldDescriptorProto{
+		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(scope),
 			Label:    convertModeToLabel(field.GetMode(), useProto3),
-		}, nil
-	}
+		}
+	} else {
+		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
+		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
+			outType := bqTypeToFieldTypeMap[field.GetType()]
+			fdp = &descriptorpb.FieldDescriptorProto{
+				Name:   proto.String(name),
+				Number: proto.Int32(idx),
+				Type:   outType.Enum(),
+				Label:  convertModeToLabel(field.GetMode(), useProto3),
+			}
 
-	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
-	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
-		return &descriptorpb.FieldDescriptorProto{
-			Name:   proto.String(name),
-			Number: proto.Int32(idx),
-			Type:   bqTypeToFieldTypeMap[field.GetType()].Enum(),
-			Label:  convertModeToLabel(field.GetMode(), useProto3),
-		}, nil
+			// Special case: proto2 repeated fields may benefit from using packed annotation.
+			if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !useProto3 {
+				for _, v := range packedTypes {
+					if outType == v {
+						fdp.Options = &descriptorpb.FieldOptions{
+							Packed: proto.Bool(true),
+						}
+						break
+					}
+				}
+			}
+		} else {
+			// For NULLABLE proto3 fields, use a wrapper type.
+			fdp = &descriptorpb.FieldDescriptorProto{
+				Name:     proto.String(name),
+				Number:   proto.Int32(idx),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			}
+		}
 	}
-	// For NULLABLE proto3 fields, use a wrapper type.
-	return &descriptorpb.FieldDescriptorProto{
-		Name:     proto.String(name),
-		Number:   proto.Int32(idx),
-		Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-		TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
-		Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
-	}, nil
+	if nameRequiresAnnotation(name) {
+		// Use a prefix + base64 encoded name when annotations bear the actual name.
+		// Base 64 standard encoding may also contain certain characters (+,/,=) which
+		// we remove from the generated name.
+		encoded := strings.Trim(base64.StdEncoding.EncodeToString([]byte(name)), "+/=")
+		fdp.Name = proto.String(fmt.Sprintf("col_%s", encoded))
+		opts := fdp.GetOptions()
+		if opts == nil {
+			fdp.Options = &descriptorpb.FieldOptions{}
+		}
+		proto.SetExtension(fdp.Options, storagepb.E_ColumnName, name)
+	}
+	return fdp, nil
+}
+
+// nameRequiresAnnotation determines whether a field name requires unicode-annotation.
+func nameRequiresAnnotation(in string) bool {
+	return !protoreflect.Name(in).IsValid()
 }
 
 // NormalizeDescriptor builds a self-contained DescriptorProto suitable for communicating schema
@@ -377,7 +433,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 					resultFDP.TypeName = proto.String(normName)
 				} else {
 					if visitedTypes.contains(msgFullName) {
-						return nil, fmt.Errorf("recursize type not supported: %s", inField.FullName())
+						return nil, fmt.Errorf("recursive type not supported: %s", inField.FullName())
 					}
 					visitedTypes.add(msgFullName)
 					dp, err := normalizeDescriptorInternal(inField.Message(), visitedTypes, enumTypes, structTypes, root)
@@ -445,7 +501,7 @@ func normalizeName(in string) string {
 	return strings.Replace(in, ".", "_", -1)
 }
 
-// these types don't get normalized into the fully-contained structure.
+// These types don't get normalized into the fully-contained structure.
 var normalizationSkipList = []string{
 	/*
 		TODO: when backend supports resolving well known types, this list should be enabled.

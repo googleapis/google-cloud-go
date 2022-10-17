@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,7 +29,29 @@ import (
 
 func ExampleNewMigrationClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewMigrationRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewMigrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewMigrationClient() {
 
 func ExampleMigrationClient_SearchMigratableResources() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +76,7 @@ func ExampleMigrationClient_SearchMigratableResources() {
 
 	req := &aiplatformpb.SearchMigratableResourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#SearchMigratableResourcesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#SearchMigratableResourcesRequest.
 	}
 	it := c.SearchMigratableResources(ctx, req)
 	for {
@@ -67,6 +94,11 @@ func ExampleMigrationClient_SearchMigratableResources() {
 
 func ExampleMigrationClient_BatchMigrateResources() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -75,7 +107,7 @@ func ExampleMigrationClient_BatchMigrateResources() {
 
 	req := &aiplatformpb.BatchMigrateResourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#BatchMigrateResourcesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#BatchMigrateResourcesRequest.
 	}
 	op, err := c.BatchMigrateResources(ctx, req)
 	if err != nil {
@@ -92,6 +124,11 @@ func ExampleMigrationClient_BatchMigrateResources() {
 
 func ExampleMigrationClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,6 +149,11 @@ func ExampleMigrationClient_GetLocation() {
 
 func ExampleMigrationClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,6 +180,11 @@ func ExampleMigrationClient_ListLocations() {
 
 func ExampleMigrationClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,6 +205,11 @@ func ExampleMigrationClient_GetIamPolicy() {
 
 func ExampleMigrationClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -178,6 +230,11 @@ func ExampleMigrationClient_SetIamPolicy() {
 
 func ExampleMigrationClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -198,6 +255,11 @@ func ExampleMigrationClient_TestIamPermissions() {
 
 func ExampleMigrationClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -216,6 +278,11 @@ func ExampleMigrationClient_CancelOperation() {
 
 func ExampleMigrationClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -234,6 +301,11 @@ func ExampleMigrationClient_DeleteOperation() {
 
 func ExampleMigrationClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -254,6 +326,11 @@ func ExampleMigrationClient_GetOperation() {
 
 func ExampleMigrationClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -280,6 +357,11 @@ func ExampleMigrationClient_ListOperations() {
 
 func ExampleMigrationClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

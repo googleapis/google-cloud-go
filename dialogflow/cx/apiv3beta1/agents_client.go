@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -344,7 +344,8 @@ func (c *AgentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AgentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -388,10 +389,10 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgentReq
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: ExportAgentResponse
+//	response: ExportAgentResponse
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	return c.internalClient.ExportAgent(ctx, req, opts...)
 }
@@ -411,11 +412,11 @@ func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -550,7 +551,8 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *agentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -649,7 +651,7 @@ func (c *agentsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *agentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1235,8 +1237,12 @@ func (c *agentsRESTClient) UpdateAgent(ctx context.Context, req *cxpb.UpdateAgen
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetAgent().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1327,10 +1333,10 @@ func (c *agentsRESTClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgen
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: ExportAgentResponse
+//	response: ExportAgentResponse
 func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1402,11 +1408,11 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgen
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training

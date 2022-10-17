@@ -221,7 +221,8 @@ func (c *InstancesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *InstancesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -246,7 +247,7 @@ func (c *InstancesClient) AttachDisk(ctx context.Context, req *computepb.AttachD
 	return c.internalClient.AttachDisk(ctx, req, opts...)
 }
 
-// BulkInsert creates multiple instances. Count specifies the number of instances to create.
+// BulkInsert creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.
 func (c *InstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
@@ -531,7 +532,7 @@ func (c *instancesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *instancesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -871,7 +872,7 @@ func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.Att
 	return op, nil
 }
 
-// BulkInsert creates multiple instances. Count specifies the number of instances to create.
+// BulkInsert creates multiple instances. Count specifies the number of instances to create. For more information, see About bulk creation of VMs.
 func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()

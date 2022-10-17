@@ -93,7 +93,8 @@ func (c *SystemPolicyClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *SystemPolicyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -163,7 +164,8 @@ func NewSystemPolicyClient(ctx context.Context, opts ...option.ClientOption) (*S
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *systemPolicyGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

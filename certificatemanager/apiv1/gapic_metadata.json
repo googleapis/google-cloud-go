@@ -20,6 +20,11 @@
                 "CreateCertificate"
               ]
             },
+            "CreateCertificateIssuanceConfig": {
+              "methods": [
+                "CreateCertificateIssuanceConfig"
+              ]
+            },
             "CreateCertificateMap": {
               "methods": [
                 "CreateCertificateMap"
@@ -38,6 +43,11 @@
             "DeleteCertificate": {
               "methods": [
                 "DeleteCertificate"
+              ]
+            },
+            "DeleteCertificateIssuanceConfig": {
+              "methods": [
+                "DeleteCertificateIssuanceConfig"
               ]
             },
             "DeleteCertificateMap": {
@@ -65,6 +75,11 @@
                 "GetCertificate"
               ]
             },
+            "GetCertificateIssuanceConfig": {
+              "methods": [
+                "GetCertificateIssuanceConfig"
+              ]
+            },
             "GetCertificateMap": {
               "methods": [
                 "GetCertificateMap"
@@ -88,6 +103,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListCertificateIssuanceConfigs": {
+              "methods": [
+                "ListCertificateIssuanceConfigs"
               ]
             },
             "ListCertificateMapEntries": {

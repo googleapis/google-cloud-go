@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	osloginpb "cloud.google.com/go/oslogin/apiv1beta/osloginpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -33,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
-	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1beta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -228,7 +228,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud OS Login API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud OS Login API
+// # Cloud OS Login API
 //
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
@@ -257,7 +257,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -319,7 +320,7 @@ type gRPCClient struct {
 // NewClient creates a new os login service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud OS Login API
+// # Cloud OS Login API
 //
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
@@ -359,7 +360,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -396,7 +398,7 @@ type restClient struct {
 
 // NewRESTClient creates a new os login service rest client.
 //
-// Cloud OS Login API
+// # Cloud OS Login API
 //
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
@@ -446,7 +448,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -847,8 +849,12 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

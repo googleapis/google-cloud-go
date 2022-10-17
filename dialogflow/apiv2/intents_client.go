@@ -212,7 +212,8 @@ func (c *IntentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IntentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -260,10 +261,10 @@ func (c *IntentsClient) DeleteIntent(ctx context.Context, req *dialogflowpb.Dele
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: BatchUpdateIntentsResponse
+//	response: BatchUpdateIntentsResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -284,11 +285,11 @@ func (c *IntentsClient) BatchUpdateIntentsOperation(name string) *BatchUpdateInt
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -410,7 +411,8 @@ func NewIntentsClient(ctx context.Context, opts ...option.ClientOption) (*Intent
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *intentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

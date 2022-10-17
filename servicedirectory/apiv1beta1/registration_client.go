@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -533,18 +533,18 @@ type internalRegistrationClient interface {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 type RegistrationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegistrationClient
@@ -570,7 +570,8 @@ func (c *RegistrationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegistrationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -693,18 +694,18 @@ type registrationGRPCClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := defaultRegistrationGRPCClientOptions()
 	if newRegistrationClientHook != nil {
@@ -741,7 +742,8 @@ func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *registrationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -781,18 +783,18 @@ type registrationRESTClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := append(defaultRegistrationRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -839,7 +841,7 @@ func (c *registrationRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *registrationRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1523,8 +1525,12 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetNamespace().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1837,8 +1843,12 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetService().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2151,8 +2161,12 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetEndpoint().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

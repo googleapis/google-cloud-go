@@ -23,6 +23,10 @@ import (
 	"cloud.google.com/go/bigquery/storage/managedwriter/adapt"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protodesc"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/dynamicpb"
 )
 
 func TestValidation_Values(t *testing.T) {
@@ -210,6 +214,195 @@ func TestValidation_Values(t *testing.T) {
 				withNullCount("enum_field", 1),
 			},
 		},
+		{
+			description: "proto2 unpacked repeated non-empty",
+			tableSchema: testdata.ValidationRepeatedSchema,
+			inputRow: &testdata.ValidationP2UnpackedRepeated{
+				Id:               proto.Int64(2022),
+				DoubleRepeated:   []float64{1.1, 2.2, 3.3},
+				FloatRepeated:    []float32{-4.4, -5.5, -6.6, -7.7},
+				Int32Repeated:    []int32{2, 4, 6, 6, 10},
+				Int64Repeated:    []int64{100, 200, 300, 300, 300, 600, 700},
+				Uint32Repeated:   []uint32{8675309, 8675309, 8675309, 8675309, 8675309, 8675309, 8675309},
+				Sint32Repeated:   []int32{-1, -2, -3, 4, 5, 6},
+				Sint64Repeated:   []int64{2},
+				Fixed32Repeated:  []uint32{},
+				Sfixed32Repeated: []int32{-88, 100, -99, -88},
+				Sfixed64Repeated: []int64{88, -100, 99, -2020},
+				BoolRepeated:     []bool{true, true, false, true},
+				EnumRepeated:     []testdata.Proto2ExampleEnum{testdata.Proto2ExampleEnum_P2_OTHER_THING, testdata.Proto2ExampleEnum_P2_THIRD_THING, testdata.Proto2ExampleEnum_P2_OTHER_THING},
+			},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+
+				withArrayLength("double_repeated", 3, 1),
+				withArrayLength("float_repeated", 4, 1),
+				withArrayLength("int32_repeated", 5, 1),
+				withArrayLength("int64_repeated", 7, 1),
+				withArrayLength("uint32_repeated", 7, 1),
+				withArrayLength("sint32_repeated", 6, 1),
+				withArrayLength("sint64_repeated", 1, 1),
+				withArrayLength("fixed32_repeated", 0, 1),
+				withArrayLength("sfixed32_repeated", 4, 1),
+				withArrayLength("sfixed64_repeated", 4, 1),
+				withArrayLength("bool_repeated", 4, 1),
+				withArrayLength("enum_repeated", 3, 1),
+
+				withDistinctArrayValues("double_repeated", 3, 1),
+				withDistinctArrayValues("float_repeated", 4, 1),
+				withDistinctArrayValues("int32_repeated", 4, 1),
+				withDistinctArrayValues("int64_repeated", 5, 1),
+				withDistinctArrayValues("uint32_repeated", 1, 1),
+				withDistinctArrayValues("sint32_repeated", 6, 1),
+				withDistinctArrayValues("sint64_repeated", 1, 1),
+				withDistinctArrayValues("fixed32_repeated", 0, 1),
+				withDistinctArrayValues("sfixed32_repeated", 3, 1),
+				withDistinctArrayValues("sfixed64_repeated", 4, 1),
+				withDistinctArrayValues("bool_repeated", 2, 1),
+				withDistinctArrayValues("enum_repeated", 2, 1),
+
+				withFloatArraySum("double_repeated", 6.6, 1),
+				withFloatArraySum("float_repeated", -24.2, 1),
+
+				withIntegerArraySum("int32_repeated", 28, 1),
+				withIntegerArraySum("int64_repeated", 2500, 1),
+				withIntegerArraySum("uint32_repeated", 60727163, 1),
+				withIntegerArraySum("sint32_repeated", 9, 1),
+				withIntegerArraySum("sint64_repeated", 2, 1),
+				withIntegerArraySum("enum_repeated", 7, 1),
+			},
+		},
+		{
+			description: "proto2 packed repeated non-empty",
+			tableSchema: testdata.ValidationRepeatedSchema,
+			inputRow: &testdata.ValidationP2PackedRepeated{
+				Id:               proto.Int64(2022),
+				DoubleRepeated:   []float64{1.1, 2.2, 3.3},
+				FloatRepeated:    []float32{-4.4, -5.5, -6.6, -7.7},
+				Int32Repeated:    []int32{2, 4, 6, 6, 10},
+				Int64Repeated:    []int64{100, 200, 300, 300, 300, 600, 700},
+				Uint32Repeated:   []uint32{8675309, 8675309, 8675309, 8675309, 8675309, 8675309, 8675309},
+				Sint32Repeated:   []int32{-1, -2, -3, 4, 5, 6},
+				Sint64Repeated:   []int64{2},
+				Fixed32Repeated:  []uint32{},
+				Sfixed32Repeated: []int32{-88, 100, -99, -88},
+				Sfixed64Repeated: []int64{88, -100, 99, -2020},
+				BoolRepeated:     []bool{true, true, false, true},
+				EnumRepeated:     []testdata.Proto2ExampleEnum{testdata.Proto2ExampleEnum_P2_OTHER_THING, testdata.Proto2ExampleEnum_P2_THIRD_THING, testdata.Proto2ExampleEnum_P2_OTHER_THING},
+			},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+
+				withArrayLength("double_repeated", 3, 1),
+				withArrayLength("float_repeated", 4, 1),
+				withArrayLength("int32_repeated", 5, 1),
+				withArrayLength("int64_repeated", 7, 1),
+				withArrayLength("uint32_repeated", 7, 1),
+				withArrayLength("sint32_repeated", 6, 1),
+				withArrayLength("sint64_repeated", 1, 1),
+				withArrayLength("fixed32_repeated", 0, 1),
+				withArrayLength("sfixed32_repeated", 4, 1),
+				withArrayLength("sfixed64_repeated", 4, 1),
+				withArrayLength("bool_repeated", 4, 1),
+				withArrayLength("enum_repeated", 3, 1),
+
+				withDistinctArrayValues("double_repeated", 3, 1),
+				withDistinctArrayValues("float_repeated", 4, 1),
+				withDistinctArrayValues("int32_repeated", 4, 1),
+				withDistinctArrayValues("int64_repeated", 5, 1),
+				withDistinctArrayValues("uint32_repeated", 1, 1),
+				withDistinctArrayValues("sint32_repeated", 6, 1),
+				withDistinctArrayValues("sint64_repeated", 1, 1),
+				withDistinctArrayValues("fixed32_repeated", 0, 1),
+				withDistinctArrayValues("sfixed32_repeated", 3, 1),
+				withDistinctArrayValues("sfixed64_repeated", 4, 1),
+				withDistinctArrayValues("bool_repeated", 2, 1),
+				withDistinctArrayValues("enum_repeated", 2, 1),
+
+				withFloatArraySum("double_repeated", 6.6, 1),
+				withFloatArraySum("float_repeated", -24.2, 1),
+
+				withIntegerArraySum("int32_repeated", 28, 1),
+				withIntegerArraySum("int64_repeated", 2500, 1),
+				withIntegerArraySum("uint32_repeated", 60727163, 1),
+				withIntegerArraySum("sint32_repeated", 9, 1),
+				withIntegerArraySum("sint64_repeated", 2, 1),
+				withIntegerArraySum("enum_repeated", 7, 1),
+			},
+		},
+		{
+			description: "proto3 packed repeated non-empty",
+			tableSchema: testdata.ValidationRepeatedSchema,
+			inputRow: &testdata.ValidationP3PackedRepeated{
+				Id:               proto.Int64(2022),
+				DoubleRepeated:   []float64{1.1, 2.2, 3.3},
+				FloatRepeated:    []float32{-4.4, -5.5, -6.6, -7.7},
+				Int32Repeated:    []int32{2, 4, 6, 6, 10},
+				Int64Repeated:    []int64{100, 200, 300, 300, 300, 600, 700},
+				Uint32Repeated:   []uint32{8675309, 8675309, 8675309, 8675309, 8675309, 8675309, 8675309},
+				Sint32Repeated:   []int32{-1, -2, -3, 4, 5, 6},
+				Sint64Repeated:   []int64{2},
+				Fixed32Repeated:  []uint32{},
+				Sfixed32Repeated: []int32{-88, 100, -99, -88},
+				Sfixed64Repeated: []int64{88, -100, 99, -2020},
+				BoolRepeated:     []bool{true, true, false, true},
+				EnumRepeated:     []testdata.Proto3ExampleEnum{testdata.Proto3ExampleEnum_P3_OTHER_THING, testdata.Proto3ExampleEnum_P3_THIRD_THING, testdata.Proto3ExampleEnum_P3_OTHER_THING},
+			},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+
+				withArrayLength("double_repeated", 3, 1),
+				withArrayLength("float_repeated", 4, 1),
+				withArrayLength("int32_repeated", 5, 1),
+				withArrayLength("int64_repeated", 7, 1),
+				withArrayLength("uint32_repeated", 7, 1),
+				withArrayLength("sint32_repeated", 6, 1),
+				withArrayLength("sint64_repeated", 1, 1),
+				withArrayLength("fixed32_repeated", 0, 1),
+				withArrayLength("sfixed32_repeated", 4, 1),
+				withArrayLength("sfixed64_repeated", 4, 1),
+				withArrayLength("bool_repeated", 4, 1),
+				withArrayLength("enum_repeated", 3, 1),
+
+				withDistinctArrayValues("double_repeated", 3, 1),
+				withDistinctArrayValues("float_repeated", 4, 1),
+				withDistinctArrayValues("int32_repeated", 4, 1),
+				withDistinctArrayValues("int64_repeated", 5, 1),
+				withDistinctArrayValues("uint32_repeated", 1, 1),
+				withDistinctArrayValues("sint32_repeated", 6, 1),
+				withDistinctArrayValues("sint64_repeated", 1, 1),
+				withDistinctArrayValues("fixed32_repeated", 0, 1),
+				withDistinctArrayValues("sfixed32_repeated", 3, 1),
+				withDistinctArrayValues("sfixed64_repeated", 4, 1),
+				withDistinctArrayValues("bool_repeated", 2, 1),
+				withDistinctArrayValues("enum_repeated", 2, 1),
+
+				withFloatArraySum("double_repeated", 6.6, 1),
+				withFloatArraySum("float_repeated", -24.2, 1),
+
+				withIntegerArraySum("int32_repeated", 28, 1),
+				withIntegerArraySum("int64_repeated", 2500, 1),
+				withIntegerArraySum("uint32_repeated", 60727163, 1),
+				withIntegerArraySum("sint32_repeated", 9, 1),
+				withIntegerArraySum("sint64_repeated", 2, 1),
+				withIntegerArraySum("enum_repeated", 7, 1),
+			},
+		},
+		{
+			description: "proto2 w/column annotations",
+			tableSchema: testdata.ValidationColumnAnnotations,
+			inputRow: &testdata.ValidationP2ColumnAnnotations{
+				First:  proto.String("first_val"),
+				Second: proto.String("second_val"),
+				Third:  proto.String("third_val"),
+			},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+				withStringValueCount("first", "first_val", 1),
+				withStringValueCount("second", "third_val", 1),
+				withStringValueCount("特別コラム", "second_val", 1),
+			},
+		},
 	}
 
 	// Common setup.
@@ -217,7 +410,7 @@ func TestValidation_Values(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east4")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
@@ -269,5 +462,79 @@ func TestValidation_Values(t *testing.T) {
 		}
 		// Validate table.
 		validateTableConstraints(ctx, t, bqClient, testTable, tc.description, tc.constraints...)
+	}
+}
+
+func TestValidationRoundtripRepeated(t *testing.T) {
+	// This test exists to confirm packed values are backwards compatible.
+	// We create a message using a packed descriptor, and normalize it which
+	// loses the packed option, and confirm we can decode the values using the
+	// normalized descriptor.
+	input := &testdata.ValidationP3PackedRepeated{
+		Id:            proto.Int64(2022),
+		Int64Repeated: []int64{1, 2, 4, -88},
+	}
+	b, err := proto.Marshal(input)
+	if err != nil {
+		t.Fatalf("proto.Marshal: %v", err)
+	}
+
+	// Verify original packed option (proto3 is default packed)
+	origDescriptor := input.ProtoReflect().Descriptor()
+	origFD := origDescriptor.Fields().ByName(protoreflect.Name("int64_repeated"))
+	if !origFD.IsPacked() {
+		t.Errorf("expected original field to be packed, wasn't")
+	}
+
+	// Normalize and use it to get a new descriptor.
+	normalized, err := adapt.NormalizeDescriptor(input.ProtoReflect().Descriptor())
+	if err != nil {
+		t.Fatalf("NormalizeDescriptor: %v", err)
+	}
+	fdp := &descriptorpb.FileDescriptorProto{
+		MessageType: []*descriptorpb.DescriptorProto{normalized},
+		Name:        proto.String("lookup"),
+		Syntax:      proto.String("proto2"),
+	}
+	fds := &descriptorpb.FileDescriptorSet{
+		File: []*descriptorpb.FileDescriptorProto{fdp},
+	}
+	files, err := protodesc.NewFiles(fds)
+	if err != nil {
+		t.Fatalf("protodesc.NewFiles: %v", err)
+	}
+	found, err := files.FindDescriptorByName("testdata_ValidationP3PackedRepeated")
+	if err != nil {
+		t.Fatalf("FindDescriptorByName: %v", err)
+	}
+	md := found.(protoreflect.MessageDescriptor)
+
+	// Use the new, normalized descriptor to unmarshal the bytes and verify.
+	msg := dynamicpb.NewMessage(md)
+	if err := proto.Unmarshal(b, msg); err != nil {
+		t.Fatalf("Unmarshal: %v", err)
+	}
+
+	//
+	int64FD := msg.Descriptor().Fields().ByName(protoreflect.Name("int64_repeated")) // int64_repeated again
+	if int64FD == nil {
+		t.Fatalf("failed to get field")
+	}
+	if int64FD.IsPacked() {
+		t.Errorf("expected normalized descriptor to be un-packed, but it was packed")
+	}
+	// Ensure we got the expected values out the other side.
+	list := msg.Get(int64FD).List()
+	wantLen := 4
+	if list.Len() != wantLen {
+		t.Errorf("wanted %d values, got %d", wantLen, list.Len())
+	}
+	// Confirm the same values out the other side.
+	wantVals := []int64{1, 2, 4, -88}
+	for i := 0; i < list.Len(); i++ {
+		got := list.Get(i).Int()
+		if got != wantVals[i] {
+			t.Errorf("expected elem %d to be %d, was %d", i, wantVals[i], got)
+		}
 	}
 }

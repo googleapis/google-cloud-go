@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	osconfigpb "cloud.google.com/go/osconfig/apiv1alpha/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -407,7 +407,7 @@ type internalOsConfigZonalClient interface {
 // OsConfigZonalClient is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -441,7 +441,8 @@ func (c *OsConfigZonalClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *OsConfigZonalClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -605,7 +606,7 @@ type osConfigZonalGRPCClient struct {
 // NewOsConfigZonalClient creates a new os config zonal service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -656,7 +657,8 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *osConfigZonalGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -698,7 +700,7 @@ type osConfigZonalRESTClient struct {
 
 // NewOsConfigZonalRESTClient creates a new os config zonal service rest client.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -758,7 +760,7 @@ func (c *osConfigZonalRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *osConfigZonalRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1315,8 +1317,12 @@ func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignment(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetOsPolicyAssignment().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

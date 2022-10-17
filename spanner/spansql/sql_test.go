@@ -656,6 +656,66 @@ func TestSQL(t *testing.T) {
 			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
 			reparseQuery,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						If{
+							Expr:       ComparisonOp{LHS: IntegerLiteral(1), Op: Lt, RHS: IntegerLiteral(2)},
+							TrueResult: True,
+							ElseResult: False,
+						},
+					},
+				},
+			},
+			`SELECT IF(1 < 2, TRUE, FALSE)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						IfNull{
+							Expr:       IntegerLiteral(10),
+							NullResult: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT IFNULL(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						NullIf{
+							Expr:        IntegerLiteral(10),
+							ExprToMatch: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT NULLIF(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Coalesce{
+							ExprList: []Expr{
+								StringLiteral("A"),
+								Null,
+								StringLiteral("C"),
+							},
+						},
+					},
+				},
+			},
+			`SELECT COALESCE("A", NULL, "C")`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()

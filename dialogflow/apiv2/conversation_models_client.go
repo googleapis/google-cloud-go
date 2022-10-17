@@ -240,7 +240,8 @@ func (c *ConversationModelsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ConversationModelsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -251,9 +252,9 @@ func (c *ConversationModelsClient) Connection() *grpc.ClientConn {
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: CreateConversationModelOperationMetadata
+//	metadata: CreateConversationModelOperationMetadata
 //
-//   response: ConversationModel
+//	response: ConversationModel
 func (c *ConversationModelsClient) CreateConversationModel(ctx context.Context, req *dialogflowpb.CreateConversationModelRequest, opts ...gax.CallOption) (*CreateConversationModelOperation, error) {
 	return c.internalClient.CreateConversationModel(ctx, req, opts...)
 }
@@ -280,10 +281,10 @@ func (c *ConversationModelsClient) ListConversationModels(ctx context.Context, r
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: DeleteConversationModelOperationMetadata
+//	metadata: DeleteConversationModelOperationMetadata
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *ConversationModelsClient) DeleteConversationModel(ctx context.Context, req *dialogflowpb.DeleteConversationModelRequest, opts ...gax.CallOption) (*DeleteConversationModelOperation, error) {
 	return c.internalClient.DeleteConversationModel(ctx, req, opts...)
 }
@@ -303,10 +304,10 @@ func (c *ConversationModelsClient) DeleteConversationModelOperation(name string)
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: DeployConversationModelOperationMetadata
+//	metadata: DeployConversationModelOperationMetadata
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *ConversationModelsClient) DeployConversationModel(ctx context.Context, req *dialogflowpb.DeployConversationModelRequest, opts ...gax.CallOption) (*DeployConversationModelOperation, error) {
 	return c.internalClient.DeployConversationModel(ctx, req, opts...)
 }
@@ -320,17 +321,17 @@ func (c *ConversationModelsClient) DeployConversationModelOperation(name string)
 // UndeployConversationModel undeploys a model. If the model is not deployed this method has no effect.
 // If the model is currently being used:
 //
-//   For article suggestion, article suggestion will fallback to the default
-//   model if model is undeployed.
+//	For article suggestion, article suggestion will fallback to the default
+//	model if model is undeployed.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: UndeployConversationModelOperationMetadata
+//	metadata: UndeployConversationModelOperationMetadata
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *ConversationModelsClient) UndeployConversationModel(ctx context.Context, req *dialogflowpb.UndeployConversationModelRequest, opts ...gax.CallOption) (*UndeployConversationModelOperation, error) {
 	return c.internalClient.UndeployConversationModel(ctx, req, opts...)
 }
@@ -469,7 +470,8 @@ func NewConversationModelsClient(ctx context.Context, opts ...option.ClientOptio
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *conversationModelsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

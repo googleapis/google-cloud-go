@@ -41,12 +41,67 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CatalogClient",
+          "rpcs": {
+            "CreateCatalogItem": {
+              "methods": [
+                "CreateCatalogItem"
+              ]
+            },
+            "DeleteCatalogItem": {
+              "methods": [
+                "DeleteCatalogItem"
+              ]
+            },
+            "GetCatalogItem": {
+              "methods": [
+                "GetCatalogItem"
+              ]
+            },
+            "ImportCatalogItems": {
+              "methods": [
+                "ImportCatalogItems"
+              ]
+            },
+            "ListCatalogItems": {
+              "methods": [
+                "ListCatalogItems"
+              ]
+            },
+            "UpdateCatalogItem": {
+              "methods": [
+                "UpdateCatalogItem"
+              ]
+            }
+          }
         }
       }
     },
     "PredictionApiKeyRegistry": {
       "clients": {
         "grpc": {
+          "libraryClient": "PredictionApiKeyRegistryClient",
+          "rpcs": {
+            "CreatePredictionApiKeyRegistration": {
+              "methods": [
+                "CreatePredictionApiKeyRegistration"
+              ]
+            },
+            "DeletePredictionApiKeyRegistration": {
+              "methods": [
+                "DeletePredictionApiKeyRegistration"
+              ]
+            },
+            "ListPredictionApiKeyRegistrations": {
+              "methods": [
+                "ListPredictionApiKeyRegistrations"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "PredictionApiKeyRegistryClient",
           "rpcs": {
             "CreatePredictionApiKeyRegistration": {
@@ -79,12 +134,52 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "PredictionClient",
+          "rpcs": {
+            "Predict": {
+              "methods": [
+                "Predict"
+              ]
+            }
+          }
         }
       }
     },
     "UserEventService": {
       "clients": {
         "grpc": {
+          "libraryClient": "UserEventClient",
+          "rpcs": {
+            "CollectUserEvent": {
+              "methods": [
+                "CollectUserEvent"
+              ]
+            },
+            "ImportUserEvents": {
+              "methods": [
+                "ImportUserEvents"
+              ]
+            },
+            "ListUserEvents": {
+              "methods": [
+                "ListUserEvents"
+              ]
+            },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
+              ]
+            },
+            "WriteUserEvent": {
+              "methods": [
+                "WriteUserEvent"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "UserEventClient",
           "rpcs": {
             "CollectUserEvent": {

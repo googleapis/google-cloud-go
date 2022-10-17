@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2",
-    "version": "1.11.0",
+    "version": "1.16.1",
     "language": "GO",
     "apis": [
       {
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -96,7 +96,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -104,7 +104,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Agents_ExportAgent_sync",
       "title": "dialogflow ExportAgent Sample",
-      "description": "ExportAgent exports the specified agent to a ZIP file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: ExportAgentResponse",
+      "description": "ExportAgent exports the specified agent to a ZIP file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: ExportAgentResponse",
       "file": "AgentsClient/ExportAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -142,7 +142,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -334,7 +334,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Agents_ImportAgent_sync",
       "title": "dialogflow ImportAgent Sample",
-      "description": "ImportAgent imports the specified agent from a ZIP file.\n\nUploads new intents and entity types without deleting the existing ones.\nIntents and entity types with the same name are replaced with the new\nversions from ImportAgentRequest. After the import, the imported draft\nagent will be trained automatically (unless disabled in agent settings).\nHowever, once the import is done, training may not be completed yet. Please\ncall TrainAgent and wait for the operation it returns in order to train\nexplicitly.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nThe operation only tracks when importing is complete, not when it is done\ntraining.\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "ImportAgent imports the specified agent from a ZIP file.\n\nUploads new intents and entity types without deleting the existing ones.\nIntents and entity types with the same name are replaced with the new\nversions from ImportAgentRequest. After the import, the imported draft\nagent will be trained automatically (unless disabled in agent settings).\nHowever, once the import is done, training may not be completed yet. Please\ncall TrainAgent and wait for the operation it returns in order to train\nexplicitly.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nThe operation only tracks when importing is complete, not when it is done\ntraining.\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "AgentsClient/ImportAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -472,7 +472,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Agents_RestoreAgent_sync",
       "title": "dialogflow RestoreAgent Sample",
-      "description": "RestoreAgent restores the specified agent from a ZIP file.\n\nReplaces the current agent version with a new one. All the intents and\nentity types in the older version are deleted. After the restore, the\nrestored draft agent will be trained automatically (unless disabled in\nagent settings). However, once the restore is done, training may not be\ncompleted yet. Please call TrainAgent and wait for the operation it\nreturns in order to train explicitly.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nThe operation only tracks when restoring is complete, not when it is done\ntraining.\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "RestoreAgent restores the specified agent from a ZIP file.\n\nReplaces the current agent version with a new one. All the intents and\nentity types in the older version are deleted. After the restore, the\nrestored draft agent will be trained automatically (unless disabled in\nagent settings). However, once the restore is done, training may not be\ncompleted yet. Please call TrainAgent and wait for the operation it\nreturns in order to train explicitly.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nThe operation only tracks when restoring is complete, not when it is done\ntraining.\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "AgentsClient/RestoreAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -610,7 +610,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Agents_TrainAgent_sync",
       "title": "dialogflow TrainAgent Sample",
-      "description": "TrainAgent trains the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "TrainAgent trains the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "AgentsClient/TrainAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -739,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -831,7 +831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -877,7 +877,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -923,7 +923,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -969,7 +969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1014,7 +1014,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1060,7 +1060,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1105,7 +1105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1150,7 +1150,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1196,7 +1196,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1242,7 +1242,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1288,7 +1288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1334,7 +1334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1380,7 +1380,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1426,7 +1426,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1472,7 +1472,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1517,7 +1517,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1525,7 +1525,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationDatasets_CreateConversationDataset_sync",
       "title": "dialogflow CreateConversationDataset Sample",
-      "description": "CreateConversationDataset creates a new conversation dataset.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: CreateConversationDatasetOperationMetadata\n\n  response: ConversationDataset",
+      "description": "CreateConversationDataset creates a new conversation dataset.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: CreateConversationDatasetOperationMetadata\n\n\tresponse: ConversationDataset",
       "file": "ConversationDatasetsClient/CreateConversationDataset/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1563,7 +1563,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1571,7 +1571,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationDatasets_DeleteConversationDataset_sync",
       "title": "dialogflow DeleteConversationDataset Sample",
-      "description": "DeleteConversationDataset deletes the specified conversation dataset.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: DeleteConversationDatasetOperationMetadata\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
+      "description": "DeleteConversationDataset deletes the specified conversation dataset.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: DeleteConversationDatasetOperationMetadata\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
       "file": "ConversationDatasetsClient/DeleteConversationDataset/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1609,7 +1609,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -1655,7 +1655,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1701,7 +1701,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1747,7 +1747,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1755,7 +1755,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationDatasets_ImportConversationData_sync",
       "title": "dialogflow ImportConversationData Sample",
-      "description": "ImportConversationData import data into the specified conversation dataset. Note that it\nis not allowed to import data to a conversation dataset that\nalready has data in it.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: ImportConversationDataOperationMetadata\n\n  response: ImportConversationDataOperationResponse",
+      "description": "ImportConversationData import data into the specified conversation dataset. Note that it\nis not allowed to import data to a conversation dataset that\nalready has data in it.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: ImportConversationDataOperationMetadata\n\n\tresponse: ImportConversationDataOperationResponse",
       "file": "ConversationDatasetsClient/ImportConversationData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1793,7 +1793,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1839,7 +1839,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1885,7 +1885,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1931,7 +1931,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1976,7 +1976,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1984,7 +1984,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationModels_CreateConversationModel_sync",
       "title": "dialogflow CreateConversationModel Sample",
-      "description": "CreateConversationModel creates a model.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: CreateConversationModelOperationMetadata\n\n  response: ConversationModel",
+      "description": "CreateConversationModel creates a model.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: CreateConversationModelOperationMetadata\n\n\tresponse: ConversationModel",
       "file": "ConversationModelsClient/CreateConversationModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2022,7 +2022,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2068,7 +2068,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2076,7 +2076,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationModels_DeleteConversationModel_sync",
       "title": "dialogflow DeleteConversationModel Sample",
-      "description": "DeleteConversationModel deletes a model.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: DeleteConversationModelOperationMetadata\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
+      "description": "DeleteConversationModel deletes a model.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: DeleteConversationModelOperationMetadata\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
       "file": "ConversationModelsClient/DeleteConversationModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2114,7 +2114,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -2122,7 +2122,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationModels_DeployConversationModel_sync",
       "title": "dialogflow DeployConversationModel Sample",
-      "description": "DeployConversationModel deploys a model. If a model is already deployed, deploying it\nhas no effect. A model can only serve prediction requests after it gets\ndeployed. For article suggestion, custom model will not be used unless\nit is deployed.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: DeployConversationModelOperationMetadata\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
+      "description": "DeployConversationModel deploys a model. If a model is already deployed, deploying it\nhas no effect. A model can only serve prediction requests after it gets\ndeployed. For article suggestion, custom model will not be used unless\nit is deployed.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: DeployConversationModelOperationMetadata\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
       "file": "ConversationModelsClient/DeployConversationModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2160,7 +2160,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -2206,7 +2206,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2252,7 +2252,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2298,7 +2298,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2344,7 +2344,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2390,7 +2390,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2436,7 +2436,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2482,7 +2482,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2528,7 +2528,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2536,7 +2536,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationModels_UndeployConversationModel_sync",
       "title": "dialogflow UndeployConversationModel Sample",
-      "description": "UndeployConversationModel undeploys a model. If the model is not deployed this method has no effect.\nIf the model is currently being used: \n\n  For article suggestion, article suggestion will fallback to the default\n  model if model is undeployed.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: UndeployConversationModelOperationMetadata\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
+      "description": "UndeployConversationModel undeploys a model. If the model is not deployed this method has no effect.\nIf the model is currently being used: \n\n\tFor article suggestion, article suggestion will fallback to the default\n\tmodel if model is undeployed.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: UndeployConversationModelOperationMetadata\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
       "file": "ConversationModelsClient/UndeployConversationModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2574,7 +2574,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -2619,7 +2619,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -2627,7 +2627,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_ClearSuggestionFeatureConfig_sync",
       "title": "dialogflow ClearSuggestionFeatureConfig Sample",
-      "description": "ClearSuggestionFeatureConfig clears a suggestion feature from a conversation profile for the given\nparticipant role.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: ClearSuggestionFeatureConfigOperationMetadata\n\n  response: ConversationProfile",
+      "description": "ClearSuggestionFeatureConfig clears a suggestion feature from a conversation profile for the given\nparticipant role.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: ClearSuggestionFeatureConfigOperationMetadata\n\n\tresponse: ConversationProfile",
       "file": "ConversationProfilesClient/ClearSuggestionFeatureConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2665,7 +2665,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2711,7 +2711,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2756,7 +2756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -2802,7 +2802,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2848,7 +2848,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2894,7 +2894,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2940,7 +2940,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2986,7 +2986,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3032,7 +3032,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3040,7 +3040,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_SetSuggestionFeatureConfig_sync",
       "title": "dialogflow SetSuggestionFeatureConfig Sample",
-      "description": "SetSuggestionFeatureConfig adds or updates a suggestion feature in a conversation profile.\nIf the conversation profile contains the type of suggestion feature for\nthe participant role, it will update it. Otherwise it will insert the\nsuggestion feature.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: SetSuggestionFeatureConfigOperationMetadata\n\n  response: ConversationProfile\n\nIf a long running operation to add or update suggestion feature\nconfig for the same conversation profile, participant role and suggestion\nfeature type exists, please cancel the existing long running operation\nbefore sending such request, otherwise the request will be rejected.",
+      "description": "SetSuggestionFeatureConfig adds or updates a suggestion feature in a conversation profile.\nIf the conversation profile contains the type of suggestion feature for\nthe participant role, it will update it. Otherwise it will insert the\nsuggestion feature.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: SetSuggestionFeatureConfigOperationMetadata\n\n\tresponse: ConversationProfile\n\nIf a long running operation to add or update suggestion feature\nconfig for the same conversation profile, participant role and suggestion\nfeature type exists, please cancel the existing long running operation\nbefore sending such request, otherwise the request will be rejected.",
       "file": "ConversationProfilesClient/SetSuggestionFeatureConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3078,7 +3078,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -3124,7 +3124,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3169,7 +3169,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -3215,7 +3215,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3261,7 +3261,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3307,7 +3307,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3353,7 +3353,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3399,7 +3399,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3445,7 +3445,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3491,7 +3491,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3537,7 +3537,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3583,7 +3583,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3628,7 +3628,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -3636,7 +3636,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_CreateDocument_sync",
       "title": "dialogflow CreateDocument Sample",
-      "description": "CreateDocument creates a new document.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: KnowledgeOperationMetadata\n\n  response: Document",
+      "description": "CreateDocument creates a new document.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: KnowledgeOperationMetadata\n\n\tresponse: Document",
       "file": "DocumentsClient/CreateDocument/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3674,7 +3674,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -3682,7 +3682,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_DeleteDocument_sync",
       "title": "dialogflow DeleteDocument Sample",
-      "description": "DeleteDocument deletes the specified document.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: KnowledgeOperationMetadata\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
+      "description": "DeleteDocument deletes the specified document.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: KnowledgeOperationMetadata\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
       "file": "DocumentsClient/DeleteDocument/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3720,7 +3720,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -3728,7 +3728,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_ExportDocument_sync",
       "title": "dialogflow ExportDocument Sample",
-      "description": "ExportDocument exports a smart messaging candidate document into the specified\ndestination.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: KnowledgeOperationMetadata\n\n  response: Document",
+      "description": "ExportDocument exports a smart messaging candidate document into the specified\ndestination.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: KnowledgeOperationMetadata\n\n\tresponse: Document",
       "file": "DocumentsClient/ExportDocument/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3766,7 +3766,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -3812,7 +3812,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3858,7 +3858,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3904,7 +3904,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3912,7 +3912,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_ImportDocuments_sync",
       "title": "dialogflow ImportDocuments Sample",
-      "description": "ImportDocuments creates documents by importing data from external sources.\nDialogflow supports up to 350 documents in each request. If you try to\nimport more, Dialogflow will return an error.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: KnowledgeOperationMetadata\n\n  response: ImportDocumentsResponse",
+      "description": "ImportDocuments creates documents by importing data from external sources.\nDialogflow supports up to 350 documents in each request. If you try to\nimport more, Dialogflow will return an error.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: KnowledgeOperationMetadata\n\n\tresponse: ImportDocumentsResponse",
       "file": "DocumentsClient/ImportDocuments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3950,7 +3950,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -3996,7 +3996,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4042,7 +4042,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4088,7 +4088,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4096,7 +4096,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_ReloadDocument_sync",
       "title": "dialogflow ReloadDocument Sample",
-      "description": "ReloadDocument reloads the specified document from its specified source, content_uri or\ncontent. The previously loaded content of the document will be deleted.\nNote: Even when the content of the document has not changed, there still\nmay be side effects because of internal implementation changes.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: KnowledgeOperationMetadata\n\n  response: Document\n\nNote: The projects.agent.knowledgeBases.documents resource is deprecated;\nonly use projects.knowledgeBases.documents.",
+      "description": "ReloadDocument reloads the specified document from its specified source, content_uri or\ncontent. The previously loaded content of the document will be deleted.\nNote: Even when the content of the document has not changed, there still\nmay be side effects because of internal implementation changes.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: KnowledgeOperationMetadata\n\n\tresponse: Document\n\nNote: The projects.agent.knowledgeBases.documents resource is deprecated;\nonly use projects.knowledgeBases.documents.",
       "file": "DocumentsClient/ReloadDocument/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4134,7 +4134,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -4142,7 +4142,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_UpdateDocument_sync",
       "title": "dialogflow UpdateDocument Sample",
-      "description": "UpdateDocument updates the specified document.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: KnowledgeOperationMetadata\n\n  response: Document",
+      "description": "UpdateDocument updates the specified document.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: KnowledgeOperationMetadata\n\n\tresponse: Document",
       "file": "DocumentsClient/UpdateDocument/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4180,7 +4180,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -4188,7 +4188,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EntityTypes_BatchCreateEntities_sync",
       "title": "dialogflow BatchCreateEntities Sample",
-      "description": "BatchCreateEntities creates multiple new entities in the specified entity type.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "BatchCreateEntities creates multiple new entities in the specified entity type.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "EntityTypesClient/BatchCreateEntities/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4226,7 +4226,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -4234,7 +4234,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EntityTypes_BatchDeleteEntities_sync",
       "title": "dialogflow BatchDeleteEntities Sample",
-      "description": "BatchDeleteEntities deletes entities in the specified entity type.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "BatchDeleteEntities deletes entities in the specified entity type.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "EntityTypesClient/BatchDeleteEntities/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4272,7 +4272,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -4280,7 +4280,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EntityTypes_BatchDeleteEntityTypes_sync",
       "title": "dialogflow BatchDeleteEntityTypes Sample",
-      "description": "BatchDeleteEntityTypes deletes entity types in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "BatchDeleteEntityTypes deletes entity types in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "EntityTypesClient/BatchDeleteEntityTypes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4318,7 +4318,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -4326,7 +4326,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EntityTypes_BatchUpdateEntities_sync",
       "title": "dialogflow BatchUpdateEntities Sample",
-      "description": "BatchUpdateEntities updates or creates multiple entities in the specified entity type. This\nmethod does not affect entities in the entity type that aren’t explicitly\nspecified in the request.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "BatchUpdateEntities updates or creates multiple entities in the specified entity type. This\nmethod does not affect entities in the entity type that aren’t explicitly\nspecified in the request.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "EntityTypesClient/BatchUpdateEntities/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4364,7 +4364,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -4372,7 +4372,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EntityTypes_BatchUpdateEntityTypes_sync",
       "title": "dialogflow BatchUpdateEntityTypes Sample",
-      "description": "BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: BatchUpdateEntityTypesResponse\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: BatchUpdateEntityTypesResponse\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "EntityTypesClient/BatchUpdateEntityTypes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4410,7 +4410,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -4455,7 +4455,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -4501,7 +4501,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4546,7 +4546,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -4592,7 +4592,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4638,7 +4638,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4684,7 +4684,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4730,7 +4730,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4776,7 +4776,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4822,7 +4822,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4868,7 +4868,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4913,7 +4913,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -4959,7 +4959,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5004,7 +5004,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5050,7 +5050,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5096,7 +5096,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5142,7 +5142,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5188,7 +5188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5234,7 +5234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5280,7 +5280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5326,7 +5326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5372,7 +5372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5417,7 +5417,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5463,7 +5463,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5509,7 +5509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5555,7 +5555,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5601,7 +5601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5647,7 +5647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5693,7 +5693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5701,7 +5701,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Intents_BatchDeleteIntents_sync",
       "title": "dialogflow BatchDeleteIntents Sample",
-      "description": "BatchDeleteIntents deletes intents in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: An Empty\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "BatchDeleteIntents deletes intents in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "IntentsClient/BatchDeleteIntents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5739,7 +5739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 55,
           "type": "FULL"
         }
       ]
@@ -5747,7 +5747,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Intents_BatchUpdateIntents_sync",
       "title": "dialogflow BatchUpdateIntents Sample",
-      "description": "BatchUpdateIntents updates/Creates multiple intents in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n  metadata: An empty Struct\n  message (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n  response: BatchUpdateIntentsResponse\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
+      "description": "BatchUpdateIntents updates/Creates multiple intents in the specified agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/es/docs/how/long-running-operations).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: BatchUpdateIntentsResponse\n\nNote: You should always train an agent prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/es/docs/training).",
       "file": "IntentsClient/BatchUpdateIntents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5785,7 +5785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -5830,7 +5830,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5876,7 +5876,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5921,7 +5921,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -5967,7 +5967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6013,7 +6013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6059,7 +6059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6105,7 +6105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6151,7 +6151,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6197,7 +6197,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6243,7 +6243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6288,7 +6288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -6334,7 +6334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6379,7 +6379,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -6425,7 +6425,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6471,7 +6471,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6517,7 +6517,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6563,7 +6563,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6609,7 +6609,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6655,7 +6655,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6701,7 +6701,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6747,7 +6747,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6792,7 +6792,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -6838,7 +6838,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6884,7 +6884,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6930,7 +6930,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6976,7 +6976,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7022,7 +7022,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7068,7 +7068,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7114,7 +7114,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7160,7 +7160,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7206,7 +7206,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7252,7 +7252,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7298,7 +7298,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7343,7 +7343,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -7389,7 +7389,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7434,7 +7434,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -7480,7 +7480,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7526,7 +7526,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7572,7 +7572,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7618,7 +7618,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7664,7 +7664,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7710,7 +7710,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7756,7 +7756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7801,7 +7801,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -7847,7 +7847,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7893,7 +7893,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7939,7 +7939,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7985,7 +7985,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8031,7 +8031,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8072,7 +8072,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 63,
+          "end": 68,
           "type": "FULL"
         }
       ]
@@ -8117,7 +8117,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -8163,7 +8163,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8208,7 +8208,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -8254,7 +8254,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8300,7 +8300,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8346,7 +8346,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8392,7 +8392,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8438,7 +8438,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8484,7 +8484,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8530,7 +8530,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]

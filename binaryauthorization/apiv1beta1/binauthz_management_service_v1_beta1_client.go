@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -238,9 +238,9 @@ type internalBinauthzManagementServiceV1Beta1Client interface {
 //
 // This API implements a REST model with the following objects:
 //
-//   Policy
+//	Policy
 //
-//   Attestor
+//	Attestor
 type BinauthzManagementServiceV1Beta1Client struct {
 	// The internal transport-dependent client.
 	internalClient internalBinauthzManagementServiceV1Beta1Client
@@ -266,7 +266,8 @@ func (c *BinauthzManagementServiceV1Beta1Client) setGoogleClientInfo(keyval ...s
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BinauthzManagementServiceV1Beta1Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -351,9 +352,9 @@ type binauthzManagementServiceV1Beta1GRPCClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//   Policy
+//	Policy
 //
-//   Attestor
+//	Attestor
 func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementServiceV1Beta1Client, error) {
 	clientOpts := defaultBinauthzManagementServiceV1Beta1GRPCClientOptions()
 	if newBinauthzManagementServiceV1Beta1ClientHook != nil {
@@ -390,7 +391,8 @@ func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...opti
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *binauthzManagementServiceV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -432,9 +434,9 @@ type binauthzManagementServiceV1Beta1RESTClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//   Policy
+//	Policy
 //
-//   Attestor
+//	Attestor
 func NewBinauthzManagementServiceV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementServiceV1Beta1Client, error) {
 	clientOpts := append(defaultBinauthzManagementServiceV1Beta1RESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -481,7 +483,7 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *binauthzManagementServiceV1Beta1RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

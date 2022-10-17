@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	osconfigpb "cloud.google.com/go/osconfig/apiv1beta/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -493,7 +493,7 @@ type internalClient interface {
 // Client is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// OS Config API
+// # OS Config API
 //
 // The OS Config service is a server-side component that you can use to
 // manage package installations and patch jobs for virtual machine instances.
@@ -522,7 +522,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -645,7 +646,7 @@ type gRPCClient struct {
 // NewClient creates a new os config service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// OS Config API
+// # OS Config API
 //
 // The OS Config service is a server-side component that you can use to
 // manage package installations and patch jobs for virtual machine instances.
@@ -685,7 +686,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -722,7 +724,7 @@ type restClient struct {
 
 // NewRESTClient creates a new os config service rest client.
 //
-// OS Config API
+// # OS Config API
 //
 // The OS Config service is a server-side component that you can use to
 // manage package installations and patch jobs for virtual machine instances.
@@ -772,7 +774,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1865,8 +1867,12 @@ func (c *restClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetPatchDeployment().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2257,8 +2263,12 @@ func (c *restClient) UpdateGuestPolicy(ctx context.Context, req *osconfigpb.Upda
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetGuestPolicy().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

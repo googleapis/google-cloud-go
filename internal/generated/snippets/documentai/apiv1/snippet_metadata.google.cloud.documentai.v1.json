@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1",
-    "version": "1.4.0",
+    "version": "1.8.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,788 @@
       "segments": [
         {
           "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_CancelOperation_sync",
+      "title": "documentai CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DocumentProcessorClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.CancelOperation",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_CreateProcessor_sync",
+      "title": "documentai CreateProcessor Sample",
+      "description": "CreateProcessor creates a processor from the type processor that the user chose.\nThe processor will be at “ENABLED” state by default after its creation.",
+      "file": "DocumentProcessorClient/CreateProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateProcessor",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.CreateProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.CreateProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.Processor",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "CreateProcessor",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.CreateProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
           "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_DeleteProcessor_sync",
+      "title": "documentai DeleteProcessor Sample",
+      "description": "DeleteProcessor deletes the processor, unloads all deployed model artifacts if it was\nenabled and then deletes all artifacts associated with this processor.",
+      "file": "DocumentProcessorClient/DeleteProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteProcessor",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.DeleteProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.DeleteProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteProcessorOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "DeleteProcessor",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.DeleteProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_DeleteProcessorVersion_sync",
+      "title": "documentai DeleteProcessorVersion Sample",
+      "description": "DeleteProcessorVersion deletes the processor version, all artifacts under the processor version\nwill be deleted.",
+      "file": "DocumentProcessorClient/DeleteProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteProcessorVersion",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.DeleteProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.DeleteProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteProcessorVersionOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "DeleteProcessorVersion",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.DeleteProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 55,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_DeployProcessorVersion_sync",
+      "title": "documentai DeployProcessorVersion Sample",
+      "description": "DeployProcessorVersion deploys the processor version.",
+      "file": "DocumentProcessorClient/DeployProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeployProcessorVersion",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.DeployProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.DeployProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeployProcessorVersionOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "DeployProcessorVersion",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.DeployProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_DisableProcessor_sync",
+      "title": "documentai DisableProcessor Sample",
+      "description": "DisableProcessor disables a processor",
+      "file": "DocumentProcessorClient/DisableProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableProcessor",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.DisableProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.DisableProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisableProcessorOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "DisableProcessor",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.DisableProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_EnableProcessor_sync",
+      "title": "documentai EnableProcessor Sample",
+      "description": "EnableProcessor enables a processor",
+      "file": "DocumentProcessorClient/EnableProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableProcessor",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.EnableProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.EnableProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnableProcessorOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "EnableProcessor",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.EnableProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_FetchProcessorTypes_sync",
+      "title": "documentai FetchProcessorTypes Sample",
+      "description": "FetchProcessorTypes fetches processor types. Note that we do not use ListProcessorTypes here\nbecause it is not paginated.",
+      "file": "DocumentProcessorClient/FetchProcessorTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchProcessorTypes",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.FetchProcessorTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.FetchProcessorTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.FetchProcessorTypesResponse",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "FetchProcessorTypes",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.FetchProcessorTypes",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_GetLocation_sync",
+      "title": "documentai GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DocumentProcessorClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.GetLocation",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_GetOperation_sync",
+      "title": "documentai GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DocumentProcessorClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.GetOperation",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_GetProcessor_sync",
+      "title": "documentai GetProcessor Sample",
+      "description": "GetProcessor gets a processor detail.",
+      "file": "DocumentProcessorClient/GetProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProcessor",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.GetProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.GetProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.Processor",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "GetProcessor",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.GetProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_GetProcessorVersion_sync",
+      "title": "documentai GetProcessorVersion Sample",
+      "description": "GetProcessorVersion gets a processor version detail.",
+      "file": "DocumentProcessorClient/GetProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProcessorVersion",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.GetProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.GetProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.ProcessorVersion",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "GetProcessorVersion",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.GetProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_ListLocations_sync",
+      "title": "documentai ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DocumentProcessorClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.ListLocations",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_ListOperations_sync",
+      "title": "documentai ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DocumentProcessorClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.ListOperations",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_ListProcessorTypes_sync",
+      "title": "documentai ListProcessorTypes Sample",
+      "description": "ListProcessorTypes lists the processor types that exist.",
+      "file": "DocumentProcessorClient/ListProcessorTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProcessorTypes",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.ListProcessorTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ListProcessorTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProcessorTypeIterator",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ListProcessorTypes",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_ListProcessorVersions_sync",
+      "title": "documentai ListProcessorVersions Sample",
+      "description": "ListProcessorVersions lists all versions of a processor.",
+      "file": "DocumentProcessorClient/ListProcessorVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProcessorVersions",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.ListProcessorVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ListProcessorVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProcessorVersionIterator",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ListProcessorVersions",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.ListProcessorVersions",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_ListProcessors_sync",
+      "title": "documentai ListProcessors Sample",
+      "description": "ListProcessors lists all processors which belong to this project.",
+      "file": "DocumentProcessorClient/ListProcessors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProcessors",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.ListProcessors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ListProcessorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProcessorIterator",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ListProcessors",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.ListProcessors",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -98,7 +879,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -144,7 +925,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_SetDefaultProcessorVersion_sync",
+      "title": "documentai SetDefaultProcessorVersion Sample",
+      "description": "SetDefaultProcessorVersion set the default (active) version of a Processor that will be used in\nProcessDocument and\nBatchProcessDocuments.",
+      "file": "DocumentProcessorClient/SetDefaultProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetDefaultProcessorVersion",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.SetDefaultProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.SetDefaultProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SetDefaultProcessorVersionOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "SetDefaultProcessorVersion",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.SetDefaultProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_UndeployProcessorVersion_sync",
+      "title": "documentai UndeployProcessorVersion Sample",
+      "description": "UndeployProcessorVersion undeploys the processor version.",
+      "file": "DocumentProcessorClient/UndeployProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeployProcessorVersion",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.UndeployProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.UndeployProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeployProcessorVersionOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "UndeployProcessorVersion",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.UndeployProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 57,
           "type": "FULL"
         }
       ]

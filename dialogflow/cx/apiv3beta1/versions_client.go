@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -298,7 +298,8 @@ func (c *VersionsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *VersionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -319,9 +320,9 @@ func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionReq
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: CreateVersionOperationMetadata
+//	metadata: CreateVersionOperationMetadata
 //
-//   response: Version
+//	response: Version
 func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	return c.internalClient.CreateVersion(ctx, req, opts...)
 }
@@ -348,11 +349,11 @@ func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVers
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	return c.internalClient.LoadVersion(ctx, req, opts...)
 }
@@ -475,7 +476,8 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *versionsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -574,7 +576,7 @@ func (c *versionsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *versionsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1038,9 +1040,9 @@ func (c *versionsRESTClient) GetVersion(ctx context.Context, req *cxpb.GetVersio
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: CreateVersionOperationMetadata
+//	metadata: CreateVersionOperationMetadata
 //
-//   response: Version
+//	response: Version
 func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVersion()
@@ -1120,8 +1122,12 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *cxpb.Update
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetVersion().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1212,11 +1218,11 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *cxpb.Delete
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *versionsRESTClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

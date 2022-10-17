@@ -224,7 +224,7 @@ type internalClient interface {
 // Client is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// OS Config API
+// # OS Config API
 //
 // The OS Config service is a server-side component that you can use to
 // manage package installations and patch jobs for virtual machine instances.
@@ -253,7 +253,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -345,7 +346,7 @@ type gRPCClient struct {
 // NewClient creates a new os config service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// OS Config API
+// # OS Config API
 //
 // The OS Config service is a server-side component that you can use to
 // manage package installations and patch jobs for virtual machine instances.
@@ -385,7 +386,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

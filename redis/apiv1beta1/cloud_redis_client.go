@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	redispb "cloud.google.com/go/redis/apiv1beta1/redispb"
 	anypb "github.com/golang/protobuf/ptypes/any"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -134,26 +134,26 @@ type internalCloudRedisClient interface {
 // CloudRedisClient is a client for interacting with Google Cloud Memorystore for Redis API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Configures and manages Cloud Memorystore for Redis instances
+// # Configures and manages Cloud Memorystore for Redis instances
 //
-// Google Cloud Memorystore for Redis v1beta1
+// # Google Cloud Memorystore for Redis v1beta1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of Redis instances, named: /instances/*
+//	Each location has a collection of Redis instances, named: /instances/*
 //
-//   As such, Redis instances are resources of the form:
-//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//	As such, Redis instances are resources of the form:
+//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//   projects/redpepper-1290/locations/us-central1/instances/my-redis
+//	projects/redpepper-1290/locations/us-central1/instances/my-redis
 type CloudRedisClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudRedisClient
@@ -184,7 +184,8 @@ func (c *CloudRedisClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudRedisClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -194,7 +195,7 @@ func (c *CloudRedisClient) Connection() *grpc.ClientConn {
 //
 // The location should have the following format:
 //
-//   projects/{project_id}/locations/{location_id}
+//	projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
@@ -361,26 +362,26 @@ type cloudRedisGRPCClient struct {
 // NewCloudRedisClient creates a new cloud redis client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Configures and manages Cloud Memorystore for Redis instances
+// # Configures and manages Cloud Memorystore for Redis instances
 //
-// Google Cloud Memorystore for Redis v1beta1
+// # Google Cloud Memorystore for Redis v1beta1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of Redis instances, named: /instances/*
+//	Each location has a collection of Redis instances, named: /instances/*
 //
-//   As such, Redis instances are resources of the form:
-//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//	As such, Redis instances are resources of the form:
+//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//   projects/redpepper-1290/locations/us-central1/instances/my-redis
+//	projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
 	clientOpts := defaultCloudRedisGRPCClientOptions()
 	if newCloudRedisClientHook != nil {
@@ -428,7 +429,8 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudRedisGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -470,26 +472,26 @@ type cloudRedisRESTClient struct {
 
 // NewCloudRedisRESTClient creates a new cloud redis rest client.
 //
-// Configures and manages Cloud Memorystore for Redis instances
+// # Configures and manages Cloud Memorystore for Redis instances
 //
-// Google Cloud Memorystore for Redis v1beta1
+// # Google Cloud Memorystore for Redis v1beta1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//   The service works with a collection of cloud projects, named: /projects/*
+//	The service works with a collection of cloud projects, named: /projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
+//	Each project has a collection of available locations, named: /locations/*
 //
-//   Each location has a collection of Redis instances, named: /instances/*
+//	Each location has a collection of Redis instances, named: /instances/*
 //
-//   As such, Redis instances are resources of the form:
-//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//	As such, Redis instances are resources of the form:
+//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//   projects/redpepper-1290/locations/us-central1/instances/my-redis
+//	projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
 	clientOpts := append(defaultCloudRedisRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -546,7 +548,7 @@ func (c *cloudRedisRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *cloudRedisRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -831,7 +833,7 @@ func (c *cloudRedisGRPCClient) RescheduleMaintenance(ctx context.Context, req *r
 //
 // The location should have the following format:
 //
-//   projects/{project_id}/locations/{location_id}
+//	projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
@@ -1129,8 +1131,12 @@ func (c *cloudRedisRESTClient) UpdateInstance(ctx context.Context, req *redispb.
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetInstance().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

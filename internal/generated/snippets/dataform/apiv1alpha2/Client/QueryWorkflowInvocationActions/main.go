@@ -22,12 +22,17 @@ import (
 	"context"
 
 	dataform "cloud.google.com/go/dataform/apiv1alpha2"
+	"cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
 	"google.golang.org/api/iterator"
-	dataformpb "google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataform.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &dataformpb.QueryWorkflowInvocationActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataform/v1alpha2#QueryWorkflowInvocationActionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1alpha2/dataformpb#QueryWorkflowInvocationActionsRequest.
 	}
 	it := c.QueryWorkflowInvocationActions(ctx, req)
 	for {

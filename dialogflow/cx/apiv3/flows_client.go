@@ -252,7 +252,8 @@ func (c *FlowsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FlowsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -297,11 +298,11 @@ func (c *FlowsClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowReques
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -335,10 +336,10 @@ func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.Get
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: ImportFlowResponse
+//	response: ImportFlowResponse
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -359,10 +360,10 @@ func (c *FlowsClient) ImportFlowOperation(name string) *ImportFlowOperation {
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: ExportFlowResponse
+//	response: ExportFlowResponse
 //
 // Note that resources (e.g. intents, entities, webhooks) that the flow
 // references will also be exported.
@@ -483,7 +484,8 @@ func NewFlowsClient(ctx context.Context, opts ...option.ClientOption) (*FlowsCli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *flowsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

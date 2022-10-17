@@ -154,7 +154,8 @@ func (c *RealmsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RealmsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -284,7 +285,8 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *realmsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

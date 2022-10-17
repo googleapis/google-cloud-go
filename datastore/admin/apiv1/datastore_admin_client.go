@@ -127,7 +127,7 @@ type internalDatastoreAdminClient interface {
 // DatastoreAdminClient is a client for interacting with Cloud Datastore API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
@@ -205,7 +205,8 @@ func (c *DatastoreAdminClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DatastoreAdminClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -349,7 +350,7 @@ type datastoreAdminGRPCClient struct {
 // NewDatastoreAdminClient creates a new datastore admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
@@ -445,7 +446,8 @@ func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *datastoreAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

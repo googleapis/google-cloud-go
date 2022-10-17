@@ -55,6 +55,7 @@ type CallOptions struct {
 	GetDatacenterConnector    []gax.CallOption
 	CreateDatacenterConnector []gax.CallOption
 	DeleteDatacenterConnector []gax.CallOption
+	UpgradeAppliance          []gax.CallOption
 	CreateMigratingVm         []gax.CallOption
 	ListMigratingVms          []gax.CallOption
 	GetMigratingVm            []gax.CallOption
@@ -114,6 +115,7 @@ func defaultCallOptions() *CallOptions {
 		GetDatacenterConnector:    []gax.CallOption{},
 		CreateDatacenterConnector: []gax.CallOption{},
 		DeleteDatacenterConnector: []gax.CallOption{},
+		UpgradeAppliance:          []gax.CallOption{},
 		CreateMigratingVm:         []gax.CallOption{},
 		ListMigratingVms:          []gax.CallOption{},
 		GetMigratingVm:            []gax.CallOption{},
@@ -172,6 +174,8 @@ type internalClient interface {
 	CreateDatacenterConnectorOperation(name string) *CreateDatacenterConnectorOperation
 	DeleteDatacenterConnector(context.Context, *vmmigrationpb.DeleteDatacenterConnectorRequest, ...gax.CallOption) (*DeleteDatacenterConnectorOperation, error)
 	DeleteDatacenterConnectorOperation(name string) *DeleteDatacenterConnectorOperation
+	UpgradeAppliance(context.Context, *vmmigrationpb.UpgradeApplianceRequest, ...gax.CallOption) (*UpgradeApplianceOperation, error)
+	UpgradeApplianceOperation(name string) *UpgradeApplianceOperation
 	CreateMigratingVm(context.Context, *vmmigrationpb.CreateMigratingVmRequest, ...gax.CallOption) (*CreateMigratingVmOperation, error)
 	CreateMigratingVmOperation(name string) *CreateMigratingVmOperation
 	ListMigratingVms(context.Context, *vmmigrationpb.ListMigratingVmsRequest, ...gax.CallOption) *MigratingVmIterator
@@ -256,7 +260,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -375,6 +380,18 @@ func (c *Client) DeleteDatacenterConnector(ctx context.Context, req *vmmigration
 // The name must be that of a previously created DeleteDatacenterConnectorOperation, possibly from a different process.
 func (c *Client) DeleteDatacenterConnectorOperation(name string) *DeleteDatacenterConnectorOperation {
 	return c.internalClient.DeleteDatacenterConnectorOperation(name)
+}
+
+// UpgradeAppliance upgrades the appliance relate to this DatacenterConnector to the in-place
+// updateable version.
+func (c *Client) UpgradeAppliance(ctx context.Context, req *vmmigrationpb.UpgradeApplianceRequest, opts ...gax.CallOption) (*UpgradeApplianceOperation, error) {
+	return c.internalClient.UpgradeAppliance(ctx, req, opts...)
+}
+
+// UpgradeApplianceOperation returns a new UpgradeApplianceOperation from a given name.
+// The name must be that of a previously created UpgradeApplianceOperation, possibly from a different process.
+func (c *Client) UpgradeApplianceOperation(name string) *UpgradeApplianceOperation {
+	return c.internalClient.UpgradeApplianceOperation(name)
 }
 
 // CreateMigratingVm creates a new MigratingVm in a given Source.
@@ -736,7 +753,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -1143,6 +1161,30 @@ func (c *gRPCClient) DeleteDatacenterConnector(ctx context.Context, req *vmmigra
 		return nil, err
 	}
 	return &DeleteDatacenterConnectorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpgradeAppliance(ctx context.Context, req *vmmigrationpb.UpgradeApplianceRequest, opts ...gax.CallOption) (*UpgradeApplianceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "datacenter_connector", url.QueryEscape(req.GetDatacenterConnector())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpgradeAppliance[0:len((*c.CallOptions).UpgradeAppliance):len((*c.CallOptions).UpgradeAppliance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpgradeAppliance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpgradeApplianceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -3663,6 +3705,75 @@ func (op *UpdateTargetProjectOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateTargetProjectOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpgradeApplianceOperation manages a long-running operation from UpgradeAppliance.
+type UpgradeApplianceOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpgradeApplianceOperation returns a new UpgradeApplianceOperation from a given name.
+// The name must be that of a previously created UpgradeApplianceOperation, possibly from a different process.
+func (c *gRPCClient) UpgradeApplianceOperation(name string) *UpgradeApplianceOperation {
+	return &UpgradeApplianceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpgradeApplianceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.UpgradeApplianceResponse, error) {
+	var resp vmmigrationpb.UpgradeApplianceResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpgradeApplianceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmmigrationpb.UpgradeApplianceResponse, error) {
+	var resp vmmigrationpb.UpgradeApplianceResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpgradeApplianceOperation) Metadata() (*vmmigrationpb.OperationMetadata, error) {
+	var meta vmmigrationpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpgradeApplianceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpgradeApplianceOperation) Name() string {
 	return op.lro.Name()
 }
 

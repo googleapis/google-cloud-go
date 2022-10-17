@@ -27,6 +27,11 @@ import (
 
 func ExampleNewKeyManagementClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewKeyManagementClient() {
 
 func ExampleKeyManagementClient_ListKeyRings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,6 +75,11 @@ func ExampleKeyManagementClient_ListKeyRings() {
 
 func ExampleKeyManagementClient_ListCryptoKeys() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,6 +106,11 @@ func ExampleKeyManagementClient_ListCryptoKeys() {
 
 func ExampleKeyManagementClient_ListCryptoKeyVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,6 +137,11 @@ func ExampleKeyManagementClient_ListCryptoKeyVersions() {
 
 func ExampleKeyManagementClient_ListImportJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,6 +168,11 @@ func ExampleKeyManagementClient_ListImportJobs() {
 
 func ExampleKeyManagementClient_GetKeyRing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,6 +193,11 @@ func ExampleKeyManagementClient_GetKeyRing() {
 
 func ExampleKeyManagementClient_GetCryptoKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,6 +218,11 @@ func ExampleKeyManagementClient_GetCryptoKey() {
 
 func ExampleKeyManagementClient_GetCryptoKeyVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +243,11 @@ func ExampleKeyManagementClient_GetCryptoKeyVersion() {
 
 func ExampleKeyManagementClient_GetPublicKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -223,6 +268,11 @@ func ExampleKeyManagementClient_GetPublicKey() {
 
 func ExampleKeyManagementClient_GetImportJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,6 +293,11 @@ func ExampleKeyManagementClient_GetImportJob() {
 
 func ExampleKeyManagementClient_CreateKeyRing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -263,6 +318,11 @@ func ExampleKeyManagementClient_CreateKeyRing() {
 
 func ExampleKeyManagementClient_CreateCryptoKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -283,6 +343,11 @@ func ExampleKeyManagementClient_CreateCryptoKey() {
 
 func ExampleKeyManagementClient_CreateCryptoKeyVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -303,6 +368,11 @@ func ExampleKeyManagementClient_CreateCryptoKeyVersion() {
 
 func ExampleKeyManagementClient_ImportCryptoKeyVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -323,6 +393,11 @@ func ExampleKeyManagementClient_ImportCryptoKeyVersion() {
 
 func ExampleKeyManagementClient_CreateImportJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -343,6 +418,11 @@ func ExampleKeyManagementClient_CreateImportJob() {
 
 func ExampleKeyManagementClient_UpdateCryptoKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -363,6 +443,11 @@ func ExampleKeyManagementClient_UpdateCryptoKey() {
 
 func ExampleKeyManagementClient_UpdateCryptoKeyVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -383,6 +468,11 @@ func ExampleKeyManagementClient_UpdateCryptoKeyVersion() {
 
 func ExampleKeyManagementClient_UpdateCryptoKeyPrimaryVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -403,6 +493,11 @@ func ExampleKeyManagementClient_UpdateCryptoKeyPrimaryVersion() {
 
 func ExampleKeyManagementClient_DestroyCryptoKeyVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -423,6 +518,11 @@ func ExampleKeyManagementClient_DestroyCryptoKeyVersion() {
 
 func ExampleKeyManagementClient_RestoreCryptoKeyVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -443,6 +543,11 @@ func ExampleKeyManagementClient_RestoreCryptoKeyVersion() {
 
 func ExampleKeyManagementClient_Encrypt() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -463,6 +568,11 @@ func ExampleKeyManagementClient_Encrypt() {
 
 func ExampleKeyManagementClient_Decrypt() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -483,6 +593,11 @@ func ExampleKeyManagementClient_Decrypt() {
 
 func ExampleKeyManagementClient_AsymmetricSign() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -503,6 +618,11 @@ func ExampleKeyManagementClient_AsymmetricSign() {
 
 func ExampleKeyManagementClient_AsymmetricDecrypt() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -523,6 +643,11 @@ func ExampleKeyManagementClient_AsymmetricDecrypt() {
 
 func ExampleKeyManagementClient_MacSign() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -543,6 +668,11 @@ func ExampleKeyManagementClient_MacSign() {
 
 func ExampleKeyManagementClient_MacVerify() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -563,6 +693,11 @@ func ExampleKeyManagementClient_MacVerify() {
 
 func ExampleKeyManagementClient_GenerateRandomBytes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -583,6 +718,11 @@ func ExampleKeyManagementClient_GenerateRandomBytes() {
 
 func ExampleKeyManagementClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -603,6 +743,11 @@ func ExampleKeyManagementClient_GetIamPolicy() {
 
 func ExampleKeyManagementClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -623,6 +768,11 @@ func ExampleKeyManagementClient_SetIamPolicy() {
 
 func ExampleKeyManagementClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

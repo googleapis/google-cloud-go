@@ -173,7 +173,8 @@ func (c *FoldersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FoldersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -217,16 +218,16 @@ func (c *FoldersClient) SearchFolders(ctx context.Context, req *resourcemanagerp
 // In order to succeed, the addition of this new folder must not violate
 // the folder naming, height, or fanout constraints.
 //
-//   The folder’s display_name must be distinct from all other folders that
-//   share its parent.
+//	The folder’s display_name must be distinct from all other folders that
+//	share its parent.
 //
-//   The addition of the folder must not cause the active folder hierarchy
-//   to exceed a height of 10. Note, the full active + deleted folder hierarchy
-//   is allowed to reach a height of 20; this provides additional headroom when
-//   moving folders that contain deleted folders.
+//	The addition of the folder must not cause the active folder hierarchy
+//	to exceed a height of 10. Note, the full active + deleted folder hierarchy
+//	is allowed to reach a height of 20; this provides additional headroom when
+//	moving folders that contain deleted folders.
 //
-//   The addition of the folder must not cause the total number of folders
-//   under its parent to exceed 300.
+//	The addition of the folder must not cause the total number of folders
+//	under its parent to exceed 300.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -442,7 +443,8 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *foldersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

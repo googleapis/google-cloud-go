@@ -450,7 +450,6 @@ func TestQueryToProto(t *testing.T) {
 		got, err := test.in.toProto()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
-			continue
 		}
 		test.want.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
 		if !testEqual(got, test.want) {
@@ -468,13 +467,11 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 		proto, err := test.in.Serialize()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
-			continue
 		}
 		fmt.Printf("proto: %v\n", proto)
 		got, err := Query{c: c}.Deserialize(proto)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
-			continue
 		}
 
 		want := test.in
@@ -925,4 +922,36 @@ func (b byQuery) Less(i, j int) bool {
 		panic(err)
 	}
 	return c < 0
+}
+
+func TestAggregationQuery(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(nil, []interface{}{
+		&pb.RunAggregationQueryResponse{
+			Result: &pb.AggregationResult{
+				AggregateFields: map[string]*pb.Value{
+					"testAlias": intval(1),
+				},
+			},
+		},
+	})
+
+	q := c.Collection("coll1").Where("f", "==", 2)
+	ar, err := q.NewAggregationQuery().WithCount("testAlias").Get(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, ok := ar["testAlias"]
+	if !ok {
+		t.Errorf("aggregation query key not found")
+	}
+
+	cv := count.(*pb.Value)
+	if cv.GetIntegerValue() != 1 {
+		t.Errorf("got: %v\nwant: %v\n; result: %v\n", cv.GetIntegerValue(), 1, count)
+	}
 }

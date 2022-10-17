@@ -146,7 +146,8 @@ func (c *InstanceGroupManagersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *InstanceGroupManagersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -206,7 +207,7 @@ func (c *InstanceGroupManagersClient) ListErrors(ctx context.Context, req *compu
 	return c.internalClient.ListErrors(ctx, req, opts...)
 }
 
-// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported.
+// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The pageToken query parameter is supported only in the alpha and beta API and only if the group’s listManagedInstancesResults field is set to PAGINATED.
 func (c *InstanceGroupManagersClient) ListManagedInstances(ctx context.Context, req *computepb.ListManagedInstancesInstanceGroupManagersRequest, opts ...gax.CallOption) *ManagedInstanceIterator {
 	return c.internalClient.ListManagedInstances(ctx, req, opts...)
 }
@@ -331,7 +332,7 @@ func (c *instanceGroupManagersRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *instanceGroupManagersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1191,7 +1192,7 @@ func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *c
 	return it
 }
 
-// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported.
+// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The pageToken query parameter is supported only in the alpha and beta API and only if the group’s listManagedInstancesResults field is set to PAGINATED.
 func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Context, req *computepb.ListManagedInstancesInstanceGroupManagersRequest, opts ...gax.CallOption) *ManagedInstanceIterator {
 	it := &ManagedInstanceIterator{}
 	req = proto.Clone(req).(*computepb.ListManagedInstancesInstanceGroupManagersRequest)

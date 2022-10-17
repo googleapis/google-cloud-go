@@ -135,7 +135,8 @@ func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PredictionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -149,11 +150,11 @@ func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.Predic
 //
 // The response includes the following HTTP headers:
 //
-//   X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this
-//   prediction.
+//	X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this
+//	prediction.
 //
-//   X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel
-//   that served this prediction.
+//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel
+//	that served this prediction.
 func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	return c.internalClient.RawPredict(ctx, req, opts...)
 }
@@ -302,7 +303,8 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

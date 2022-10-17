@@ -1,5 +1,26 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.6.0...dataflow/v0.7.0) (2022-09-21)
+
+
+### Features
+
+* **dataflow:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.5.1...dataflow/v0.6.0) (2022-09-19)
+
+
+### Features
+
+* **dataflow:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.5.0...dataflow/v0.5.1) (2022-07-12)
+
+
+### Documentation
+
+* **dataflow:** corrected the Dataflow job name regex ([1732e43](https://github.com/googleapis/google-cloud-go/commit/1732e4334c84019d93775d861be5c0008e3f5245))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.4.0...dataflow/v0.5.0) (2022-06-29)
 
 

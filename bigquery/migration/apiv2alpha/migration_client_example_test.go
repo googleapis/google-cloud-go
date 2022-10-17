@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateMigrationWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,6 +68,11 @@ func ExampleClient_CreateMigrationWorkflow() {
 
 func ExampleClient_GetMigrationWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,6 +93,11 @@ func ExampleClient_GetMigrationWorkflow() {
 
 func ExampleClient_ListMigrationWorkflows() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,6 +124,11 @@ func ExampleClient_ListMigrationWorkflows() {
 
 func ExampleClient_DeleteMigrationWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -122,6 +147,11 @@ func ExampleClient_DeleteMigrationWorkflow() {
 
 func ExampleClient_StartMigrationWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -140,6 +170,11 @@ func ExampleClient_StartMigrationWorkflow() {
 
 func ExampleClient_GetMigrationSubtask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -160,6 +195,11 @@ func ExampleClient_GetMigrationSubtask() {
 
 func ExampleClient_ListMigrationSubtasks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

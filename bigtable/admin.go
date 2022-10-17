@@ -83,7 +83,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
@@ -273,6 +273,73 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
+}
+
+// DeletionProtection indicates whether the table is protected against data loss
+// i.e. when set to protected, deleting the table, the column families in the table,
+// and the instance containing the table would be prohibited.
+type DeletionProtection int
+
+// None indicates that deletion protection is unset
+// Protected indicates that deletion protection is enabled
+// Unprotected indicates that deletion protection is disabled
+const (
+	None DeletionProtection = iota
+	Protected
+	Unprotected
+)
+
+// UpdateTableConf contains all of the information necessary to update a table with column families.
+type UpdateTableConf struct {
+	tableID string
+	// deletionProtection can be unset, true or false
+	// set to true to make the table protected against data loss
+	deletionProtection DeletionProtection
+}
+
+// UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
+func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection})
+}
+
+// updateTableWithConf updates a table in the instance from the given configuration.
+// only deletion protection can be updated at this period.
+// table ID is required.
+func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
+	if conf.tableID == "" {
+		return errors.New("TableID is required")
+	}
+
+	if conf.deletionProtection == None {
+		return errors.New("deletion protection is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{
+			"deletion_protection",
+		},
+	}
+
+	deletionProtection := true
+	if conf.deletionProtection == Unprotected {
+		deletionProtection = false
+	}
+
+	req := &btapb.UpdateTableRequest{
+		Table: &btapb.Table{
+			Name:               conf.tableID,
+			DeletionProtection: deletionProtection,
+		},
+		UpdateMask: updateMask,
+	}
+	lro, err := ac.tClient.UpdateTable(ctx, req)
+	if err != nil {
+		return err
+	}
+	// ignore the response table proto by passing in nil
+	return longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
 }
 
 // DeleteTable deletes a table and all of its data.
@@ -496,7 +563,7 @@ func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotI
 		for _, s := range resp.Snapshots {
 			snapshotInfo, err := newSnapshotInfo(s)
 			if err != nil {
-				return "", fmt.Errorf("failed to parse snapshot proto %v", err)
+				return "", fmt.Errorf("failed to parse snapshot proto %w", err)
 			}
 			it.items = append(it.items, snapshotInfo)
 		}
@@ -518,12 +585,12 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 
 	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid createTime: %v", err)
+		return nil, fmt.Errorf("invalid createTime: %w", err)
 	}
 
 	deleteTime, err := ptypes.Timestamp(snapshot.DeleteTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid deleteTime: %v", err)
+		return nil, fmt.Errorf("invalid deleteTime: %w", err)
 	}
 
 	return &SnapshotInfo{
@@ -722,7 +789,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
@@ -927,12 +994,12 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 // UpdateInstanceWithClusters updates an instance and its clusters. Updateable
 // fields are instance display name, instance type and cluster size.
 // The provided InstanceWithClustersConfig is used as follows:
-// - InstanceID is required
-// - DisplayName and InstanceType are updated only if they are not empty
-// - ClusterID is required for any provided cluster
-// - All other cluster fields are ignored except for NumNodes and
-//   AutoscalingConfig, which if set will be updated. If both are provided,
-//   AutoscalingConfig takes precedence.
+//   - InstanceID is required
+//   - DisplayName and InstanceType are updated only if they are not empty
+//   - ClusterID is required for any provided cluster
+//   - All other cluster fields are ignored except for NumNodes and
+//     AutoscalingConfig, which if set will be updated. If both are provided,
+//     AutoscalingConfig takes precedence.
 //
 // This method may return an error after partially succeeding, for example if the instance is updated
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
@@ -962,7 +1029,7 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 		if clusterErr != nil {
 			if updatedInstance {
 				// We updated the instance, so note that in the error message.
-				return fmt.Errorf("UpdateCluster %q failed %v; however UpdateInstance succeeded",
+				return fmt.Errorf("UpdateCluster %q failed %w; however UpdateInstance succeeded",
 					cluster.ClusterID, clusterErr)
 			}
 			return err
@@ -1062,6 +1129,12 @@ type AutoscalingConfig struct {
 	// CPUTargetPercent sets the CPU utilization target for your cluster's
 	// workload.
 	CPUTargetPercent int
+	// StorageUtilizationPerNode sets the storage usage target, in GB, for
+	// each node in a cluster. This number is limited between 2560 (2.5TiB) and
+	// 5120 (5TiB) for a SSD cluster and between 8192 (8TiB) and 16384 (16 TiB)
+	// for an HDD cluster. If set to zero, the default values are used:
+	// 2560 for SSD and 8192 for HDD.
+	StorageUtilizationPerNode int
 }
 
 func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
@@ -1074,7 +1147,8 @@ func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
 			MaxServeNodes: int32(a.MaxNodes),
 		},
 		AutoscalingTargets: &btapb.AutoscalingTargets{
-			CpuUtilizationPercent: int32(a.CPUTargetPercent),
+			CpuUtilizationPercent:        int32(a.CPUTargetPercent),
+			StorageUtilizationGibPerNode: int32(a.StorageUtilizationPerNode),
 		},
 	}
 }
@@ -1340,9 +1414,10 @@ func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) *AutoscalingConfig {
 		return nil
 	}
 	return &AutoscalingConfig{
-		MinNodes:         int(got.AutoscalingLimits.MinServeNodes),
-		MaxNodes:         int(got.AutoscalingLimits.MaxServeNodes),
-		CPUTargetPercent: int(got.AutoscalingTargets.CpuUtilizationPercent),
+		MinNodes:                  int(got.AutoscalingLimits.MinServeNodes),
+		MaxNodes:                  int(got.AutoscalingLimits.MaxServeNodes),
+		CPUTargetPercent:          int(got.AutoscalingTargets.CpuUtilizationPercent),
+		StorageUtilizationPerNode: int(got.AutoscalingTargets.StorageUtilizationGibPerNode),
 	}
 }
 
@@ -1600,19 +1675,19 @@ func max(x, y int) int {
 // UpdateInstanceAndSyncClusters updates an instance and its clusters, and will synchronize the
 // clusters in the instance with the provided clusters, creating and deleting them as necessary.
 // The provided InstanceWithClustersConfig is used as follows:
-// - InstanceID is required
-// - DisplayName and InstanceType are updated only if they are not empty
-// - ClusterID is required for any provided cluster
-// - Any cluster present in conf.Clusters but not part of the instance will be created using CreateCluster
-//   and the given ClusterConfig.
-// - Any cluster missing from conf.Clusters but present in the instance will be removed from the instance
-//   using DeleteCluster.
-// - Any cluster in conf.Clusters that also exists in the instance will be
-//   updated either to contain the provided number of nodes or to use the
-//   provided autoscaling config. If both the number of nodes and autoscaling
-//   are configured, autoscaling takes precedence. If the number of nodes is zero
-//   and autoscaling is not provided in InstanceWithClustersConfig, the cluster
-//   is not updated.
+//   - InstanceID is required
+//   - DisplayName and InstanceType are updated only if they are not empty
+//   - ClusterID is required for any provided cluster
+//   - Any cluster present in conf.Clusters but not part of the instance will be created using CreateCluster
+//     and the given ClusterConfig.
+//   - Any cluster missing from conf.Clusters but present in the instance will be removed from the instance
+//     using DeleteCluster.
+//   - Any cluster in conf.Clusters that also exists in the instance will be
+//     updated either to contain the provided number of nodes or to use the
+//     provided autoscaling config. If both the number of nodes and autoscaling
+//     are configured, autoscaling takes precedence. If the number of nodes is zero
+//     and autoscaling is not provided in InstanceWithClustersConfig, the cluster
+//     is not updated.
 //
 // This method may return an error after partially succeeding, for example if the instance is updated
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
@@ -1671,7 +1746,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 				cluster.NumNodes)
 		}
 		if updateErr != nil {
-			return results, fmt.Errorf("UpdateCluster %q failed %v; Progress: %v",
+			return results, fmt.Errorf("UpdateCluster %q failed %w; Progress: %v",
 				cluster.ClusterID, updateErr, results)
 		}
 		results.UpdatedClusters = append(results.UpdatedClusters, cluster.ClusterID)
@@ -1705,7 +1780,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 			clusterToDelete := nextDeletion.Value.(string)
 			err = iac.DeleteCluster(ctx, conf.InstanceID, clusterToDelete)
 			if err != nil {
-				return results, fmt.Errorf("DeleteCluster %q failed %v; Progress: %v",
+				return results, fmt.Errorf("DeleteCluster %q failed %w; Progress: %v",
 					clusterToDelete, err, results)
 			}
 			results.DeletedClusters = append(results.DeletedClusters, clusterToDelete)
@@ -1721,7 +1796,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 			clusterToCreate.InstanceID = conf.InstanceID
 			err = iac.CreateCluster(ctx, &clusterToCreate)
 			if err != nil {
-				return results, fmt.Errorf("CreateCluster %v failed %v; Progress: %v",
+				return results, fmt.Errorf("CreateCluster %v failed %w; Progress: %v",
 					clusterToCreate, err, results)
 			}
 			results.CreatedClusters = append(results.CreatedClusters, clusterToCreate.ClusterID)
@@ -1821,7 +1896,7 @@ func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupItera
 		for _, s := range resp.Backups {
 			backupInfo, err := newBackupInfo(s)
 			if err != nil {
-				return "", fmt.Errorf("failed to parse backup proto %v", err)
+				return "", fmt.Errorf("failed to parse backup proto %w", err)
 			}
 			it.items = append(it.items, backupInfo)
 		}
@@ -1844,17 +1919,17 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 
 	startTime, err := ptypes.Timestamp(backup.StartTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid startTime: %v", err)
+		return nil, fmt.Errorf("invalid startTime: %w", err)
 	}
 
 	endTime, err := ptypes.Timestamp(backup.EndTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid endTime: %v", err)
+		return nil, fmt.Errorf("invalid endTime: %w", err)
 	}
 
 	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid expireTime: %v", err)
+		return nil, fmt.Errorf("invalid expireTime: %w", err)
 	}
 	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{

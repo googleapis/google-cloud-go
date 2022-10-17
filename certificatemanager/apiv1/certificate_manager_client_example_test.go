@@ -28,6 +28,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListCertificates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,6 +76,11 @@ func ExampleClient_ListCertificates() {
 
 func ExampleClient_GetCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,6 +101,11 @@ func ExampleClient_GetCertificate() {
 
 func ExampleClient_CreateCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -111,6 +131,11 @@ func ExampleClient_CreateCertificate() {
 
 func ExampleClient_UpdateCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -136,6 +161,11 @@ func ExampleClient_UpdateCertificate() {
 
 func ExampleClient_DeleteCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -159,6 +189,11 @@ func ExampleClient_DeleteCertificate() {
 
 func ExampleClient_ListCertificateMaps() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -185,6 +220,11 @@ func ExampleClient_ListCertificateMaps() {
 
 func ExampleClient_GetCertificateMap() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -205,6 +245,11 @@ func ExampleClient_GetCertificateMap() {
 
 func ExampleClient_CreateCertificateMap() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,6 +275,11 @@ func ExampleClient_CreateCertificateMap() {
 
 func ExampleClient_UpdateCertificateMap() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -255,6 +305,11 @@ func ExampleClient_UpdateCertificateMap() {
 
 func ExampleClient_DeleteCertificateMap() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -278,6 +333,11 @@ func ExampleClient_DeleteCertificateMap() {
 
 func ExampleClient_ListCertificateMapEntries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -304,6 +364,11 @@ func ExampleClient_ListCertificateMapEntries() {
 
 func ExampleClient_GetCertificateMapEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -324,6 +389,11 @@ func ExampleClient_GetCertificateMapEntry() {
 
 func ExampleClient_CreateCertificateMapEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -349,6 +419,11 @@ func ExampleClient_CreateCertificateMapEntry() {
 
 func ExampleClient_UpdateCertificateMapEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -374,6 +449,11 @@ func ExampleClient_UpdateCertificateMapEntry() {
 
 func ExampleClient_DeleteCertificateMapEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -397,6 +477,11 @@ func ExampleClient_DeleteCertificateMapEntry() {
 
 func ExampleClient_ListDnsAuthorizations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -423,6 +508,11 @@ func ExampleClient_ListDnsAuthorizations() {
 
 func ExampleClient_GetDnsAuthorization() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -443,6 +533,11 @@ func ExampleClient_GetDnsAuthorization() {
 
 func ExampleClient_CreateDnsAuthorization() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -468,6 +563,11 @@ func ExampleClient_CreateDnsAuthorization() {
 
 func ExampleClient_UpdateDnsAuthorization() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -493,6 +593,11 @@ func ExampleClient_UpdateDnsAuthorization() {
 
 func ExampleClient_DeleteDnsAuthorization() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -514,8 +619,127 @@ func ExampleClient_DeleteDnsAuthorization() {
 	}
 }
 
+func ExampleClient_ListCertificateIssuanceConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.ListCertificateIssuanceConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#ListCertificateIssuanceConfigsRequest.
+	}
+	it := c.ListCertificateIssuanceConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetCertificateIssuanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.GetCertificateIssuanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#GetCertificateIssuanceConfigRequest.
+	}
+	resp, err := c.GetCertificateIssuanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateCertificateIssuanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.CreateCertificateIssuanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#CreateCertificateIssuanceConfigRequest.
+	}
+	op, err := c.CreateCertificateIssuanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteCertificateIssuanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.DeleteCertificateIssuanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#DeleteCertificateIssuanceConfigRequest.
+	}
+	op, err := c.DeleteCertificateIssuanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -536,6 +760,11 @@ func ExampleClient_GetLocation() {
 
 func ExampleClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -562,6 +791,11 @@ func ExampleClient_ListLocations() {
 
 func ExampleClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -580,6 +814,11 @@ func ExampleClient_CancelOperation() {
 
 func ExampleClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -598,6 +837,11 @@ func ExampleClient_DeleteOperation() {
 
 func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -618,6 +862,11 @@ func ExampleClient_GetOperation() {
 
 func ExampleClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

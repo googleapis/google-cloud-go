@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 
 	"cloud.google.com/go/internal/trace"
@@ -26,6 +27,7 @@ import (
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -44,10 +46,21 @@ const (
 	// This is only used for the gRPC client.
 	defaultConnPoolSize = 4
 
+	// maxPerMessageWriteSize is the maximum amount of content that can be sent
+	// per WriteObjectRequest message. A buffer reaching this amount will
+	// precipitate a flush of the buffer. It is only used by the gRPC Writer
+	// implementation.
+	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
+
 	// globalProjectAlias is the project ID alias used for global buckets.
 	//
 	// This is only used for the gRPC API.
 	globalProjectAlias = "_"
+
+	// msgEntityNotSupported indicates ACL entites using project ID are not currently supported.
+	//
+	// This is only used for the gRPC API.
+	msgEntityNotSupported = "The gRPC API currently does not support ACL entities using project ID, use project numbers instead"
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -76,6 +89,9 @@ func defaultGRPCOptions() []option.ClientOption {
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
 		)
+	} else {
+		// Only enable DirectPath when the emulator is not being targeted.
+		defaults = append(defaults, internaloption.EnableDirectPath(true))
 	}
 
 	return defaults
@@ -128,10 +144,10 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 	return resp.EmailAddress, err
 }
 
-func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
+func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
-
+	b.Name = bucket
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
 	if b.GetLocation() == "" && b.GetLifecycle() != nil {
@@ -139,11 +155,13 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 	}
 
 	req := &storagepb.CreateBucketRequest{
-		Parent:                     toProjectResource(project),
-		Bucket:                     b,
-		BucketId:                   b.GetName(),
-		PredefinedAcl:              attrs.PredefinedACL,
-		PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
+		Parent:   toProjectResource(project),
+		Bucket:   b,
+		BucketId: b.GetName(),
+	}
+	if attrs != nil {
+		req.PredefinedAcl = attrs.PredefinedACL
+		req.PredefinedDefaultObjectAcl = attrs.PredefinedDefaultObjectACL
 	}
 
 	var battrs *BucketAttrs
@@ -228,7 +246,8 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetBucketRequest{
-		Name: bucketResourceName(globalProjectAlias, bucket),
+		Name:     bucketResourceName(globalProjectAlias, bucket),
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
 		return nil, err
@@ -310,6 +329,8 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		// In cases where PredefinedDefaultObjectACL is set, DefaultObjectAcl is cleared.
 		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
 	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	if uattrs.acl != nil {
 		// In cases where acl is set by UpdateBucketACL method.
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
@@ -360,14 +381,14 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		it.query = *q
 	}
 	req := &storagepb.ListObjectsRequest{
-		Parent:             bucketResourceName(globalProjectAlias, bucket),
-		Prefix:             it.query.Prefix,
-		Delimiter:          it.query.Delimiter,
-		Versions:           it.query.Versions,
-		LexicographicStart: it.query.StartOffset,
-		LexicographicEnd:   it.query.EndOffset,
-		// TODO(noahietz): Convert a projection to a FieldMask.
-		// ReadMask: q.Projection,
+		Parent:                   bucketResourceName(globalProjectAlias, bucket),
+		Prefix:                   it.query.Prefix,
+		Delimiter:                it.query.Delimiter,
+		Versions:                 it.query.Versions,
+		LexicographicStart:       it.query.StartOffset,
+		LexicographicEnd:         it.query.EndOffset,
+		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
+		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -389,6 +410,12 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		for _, obj := range objects {
 			b := newObjectFromProto(obj)
 			it.items = append(it.items, b)
+		}
+
+		// Response is always non-nil after a successful request.
+		res := gitr.Response.(*storagepb.ListObjectsResponse)
+		for _, prefix := range res.GetPrefixes() {
+			it.items = append(it.items, &ObjectAttrs{Prefix: prefix})
 		}
 
 		return token, nil
@@ -429,6 +456,8 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string
 	req := &storagepb.GetObjectRequest{
 		Bucket: bucketResourceName(globalProjectAlias, bucket),
 		Object: object,
+		// ProjectionFull by default.
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyCondsProto("grpcStorageClient.GetObject", gen, conds, req); err != nil {
 		return nil, err
@@ -459,7 +488,8 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	s := callSettings(c.settings, opts...)
 	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, bucket), object)
 	req := &storagepb.UpdateObjectRequest{
-		Object: o,
+		Object:        o,
+		PredefinedAcl: uattrs.PredefinedACL,
 	}
 	if err := applyCondsProto("grpcStorageClient.UpdateObject", gen, conds, req); err != nil {
 		return nil, err
@@ -471,10 +501,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
 	}
 
-	var paths []string
-	fieldMask := &fieldmaskpb.FieldMask{
-		Paths: paths,
-	}
+	fieldMask := &fieldmaskpb.FieldMask{Paths: nil}
 	if uattrs.EventBasedHold != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "event_based_hold")
 	}
@@ -499,8 +526,11 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if !uattrs.CustomTime.IsZero() {
 		fieldMask.Paths = append(fieldMask.Paths, "custom_time")
 	}
-
-	// TODO(cathyo): Handle ACL and PredefinedACL. Pending b/233617896.
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
+	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
+		fieldMask.Paths = append(fieldMask.Paths, "acl")
+	}
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
 
 	req.UpdateMask = fieldMask
@@ -528,11 +558,21 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 		return err
 	}
 	// Delete the entity and copy other remaining ACL entities.
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
+	// Return error if entity is not found or a project ID is used.
+	invalidEntity := true
 	var acl []ACLRule
 	for _, a := range attrs.DefaultObjectACL {
 		if a.Entity != entity {
 			acl = append(acl, a)
 		}
+		if a.Entity == entity {
+			invalidEntity = false
+		}
+	}
+	if invalidEntity {
+		return fmt.Errorf("storage: entity %v was not found on bucket %v, got %v. %v", entity, bucket, attrs.DefaultObjectACL, msgEntityNotSupported)
 	}
 	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -541,6 +581,7 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 	}
 	return nil
 }
+
 func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
 	if err != nil {
@@ -548,8 +589,25 @@ func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	}
 	return attrs.DefaultObjectACL, nil
 }
-func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+
+func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve BucketAttrs.
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
+	var acl []ACLRule
+	aclRule := ACLRule{Entity: entity, Role: role}
+	acl = append(attrs.DefaultObjectACL, aclRule)
+	uattrs := &BucketAttrsToUpdate{defaultObjectACL: acl}
+	// Call UpdateBucket with a MetagenerationMatch precondition set.
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Bucket ACL methods.
@@ -562,11 +620,21 @@ func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 		return err
 	}
 	// Delete the entity and copy other remaining ACL entities.
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
+	// Return error if entity is not found or a project ID is used.
+	invalidEntity := true
 	var acl []ACLRule
 	for _, a := range attrs.ACL {
 		if a.Entity != entity {
 			acl = append(acl, a)
 		}
+		if a.Entity == entity {
+			invalidEntity = false
+		}
+	}
+	if invalidEntity {
+		return fmt.Errorf("storage: entity %v was not found on bucket %v, got %v. %v", entity, bucket, attrs.ACL, msgEntityNotSupported)
 	}
 	uattrs := &BucketAttrsToUpdate{acl: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
@@ -575,6 +643,7 @@ func (c *grpcStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 	}
 	return nil
 }
+
 func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
 	if err != nil {
@@ -583,29 +652,58 @@ func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	return attrs.ACL, nil
 }
 
-func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	// There is no separate API for PATCH in gRPC.
 	// Make a GET call first to retrieve BucketAttrs.
 	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
 	var acl []ACLRule
 	aclRule := ACLRule{Entity: entity, Role: role}
 	acl = append(attrs.ACL, aclRule)
 	uattrs := &BucketAttrsToUpdate{acl: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
-	_, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...)
-	if err != nil {
-		return nil, err
+	if _, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...); err != nil {
+		return err
 	}
-	return &aclRule, err
+	return nil
 }
 
 // Object ACL methods.
 
 func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error {
-	return errMethodNotSupported
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve ObjectAttrs.
+	attrs, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Delete the entity and copy other remaining ACL entities.
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
+	// Return error if entity is not found or a project ID is used.
+	invalidEntity := true
+	var acl []ACLRule
+	for _, a := range attrs.ACL {
+		if a.Entity != entity {
+			acl = append(acl, a)
+		}
+		if a.Entity == entity {
+			invalidEntity = false
+		}
+	}
+	if invalidEntity {
+		return fmt.Errorf("storage: entity %v was not found on bucket %v, got %v. %v", entity, bucket, attrs.ACL, msgEntityNotSupported)
+	}
+	uattrs := &ObjectAttrsToUpdate{ACL: acl}
+	// Call UpdateObject with the specified metageneration.
+	if _, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 
 // ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
@@ -618,30 +716,137 @@ func (c *grpcStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 	return o.ACL, nil
 }
 
-func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
+	// There is no separate API for PATCH in gRPC.
+	// Make a GET call first to retrieve ObjectAttrs.
+	attrs, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	if err != nil {
+		return err
+	}
+	// Note: This API currently does not support entites using project ID.
+	// Use project numbers in ACL entities. Pending b/233617896.
+	var acl []ACLRule
+	aclRule := ACLRule{Entity: entity, Role: role}
+	acl = append(attrs.ACL, aclRule)
+	uattrs := &ObjectAttrsToUpdate{ACL: acl}
+	// Call UpdateObject with the specified metageneration.
+	if _, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Media operations.
 
 func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+
+	dstObjPb := req.dstObject.attrs.toProtoObject(req.dstBucket)
+	dstObjPb.Name = req.dstObject.name
+	if err := applyCondsProto("ComposeObject destination", defaultGen, req.dstObject.conds, dstObjPb); err != nil {
+		return nil, err
+	}
+	if req.sendCRC32C {
+		dstObjPb.Checksums.Crc32C = &req.dstObject.attrs.CRC32C
+	}
+
+	srcs := []*storagepb.ComposeObjectRequest_SourceObject{}
+	for _, src := range req.srcs {
+		srcObjPb := &storagepb.ComposeObjectRequest_SourceObject{Name: src.name}
+		if err := applyCondsProto("ComposeObject source", src.gen, src.conds, srcObjPb); err != nil {
+			return nil, err
+		}
+		srcs = append(srcs, srcObjPb)
+	}
+
+	rawReq := &storagepb.ComposeObjectRequest{
+		Destination:   dstObjPb,
+		SourceObjects: srcs,
+	}
+	if req.predefinedACL != "" {
+		rawReq.DestinationPredefinedAcl = req.predefinedACL
+	}
+	if req.dstObject.encryptionKey != nil {
+		rawReq.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstObject.encryptionKey)
+	}
+
+	var obj *storagepb.Object
+	var err error
+	if err := run(ctx, func() error {
+		obj, err = c.raw.ComposeObject(ctx, rawReq, s.gax...)
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx)); err != nil {
+		return nil, err
+	}
+
+	return newObjectFromProto(obj), nil
 }
 func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	obj := req.dstObject.attrs.toProtoObject("")
+	call := &storagepb.RewriteObjectRequest{
+		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcObject.bucket),
+		SourceObject:             req.srcObject.name,
+		RewriteToken:             req.token,
+		DestinationBucket:        bucketResourceName(globalProjectAlias, req.dstObject.bucket),
+		DestinationName:          req.dstObject.name,
+		Destination:              obj,
+		DestinationKmsKey:        req.dstObject.keyName,
+		DestinationPredefinedAcl: req.predefinedACL,
+	}
+
+	// The userProject, whether source or destination project, is decided by the code calling the interface.
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+	if err := applyCondsProto("Copy destination", defaultGen, req.dstObject.conds, call); err != nil {
+		return nil, err
+	}
+	if err := applySourceCondsProto(req.srcObject.gen, req.srcObject.conds, call); err != nil {
+		return nil, err
+	}
+
+	if len(req.dstObject.encryptionKey) > 0 {
+		call.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstObject.encryptionKey)
+	}
+	if len(req.srcObject.encryptionKey) > 0 {
+		srcParams := toProtoCommonObjectRequestParams(req.srcObject.encryptionKey)
+		call.CopySourceEncryptionAlgorithm = srcParams.GetEncryptionAlgorithm()
+		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
+		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
+	}
+	var res *storagepb.RewriteResponse
+	var err error
+
+	retryCall := func() error { res, err = c.raw.RewriteObject(ctx, call, s.gax...); return err }
+
+	if err := run(ctx, retryCall, s.retry, s.idempotent, setRetryHeaderGRPC(ctx)); err != nil {
+		return nil, err
+	}
+
+	r := &rewriteObjectResponse{
+		done:     res.GetDone(),
+		written:  res.GetTotalBytesRewritten(),
+		size:     res.GetObjectSize(),
+		token:    res.GetRewriteToken(),
+		resource: newObjectFromProto(res.GetResource()),
+	}
+
+	return r, nil
 }
 
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if params.conds != nil {
-		if err := params.conds.validate("grpcStorageClient.NewRangeReader"); err != nil {
-			return nil, err
-		}
-	}
-
 	s := callSettings(c.settings, opts...)
+
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
 
 	// A negative length means "read to the end of the object", but the
 	// read_limit field it corresponds to uses zero to mean the same thing. Thus
@@ -696,6 +901,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			}
 
 			msg, err = stream.Recv()
+			// These types of errors show up on the Recv call, rather than the
+			// initialization of the stream via ReadObject above.
+			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+				return ErrObjectNotExist
+			}
 
 			return err
 		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
@@ -739,6 +949,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			// Store the content from the first Recv in the
 			// client buffer for reading later.
 			leftovers: msg.GetChecksummedData().GetContent(),
+			settings:  s,
 		},
 	}
 
@@ -760,6 +971,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 }
 
 func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	s := callSettings(c.settings, opts...)
+
 	var offset int64
 	errorf := params.setError
 	progress := params.progress
@@ -767,6 +980,10 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 	pr, pw := io.Pipe()
 	gw := newGRPCWriter(c, params, pr)
+	gw.settings = s
+	if s.userProject != "" {
+		gw.ctx = setUserProjectMetadata(gw.ctx, s.userProject)
+	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
@@ -1111,6 +1328,7 @@ type gRPCReader struct {
 	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
 	leftovers  []byte
 	cancel     context.CancelFunc
+	settings   *settings
 }
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
@@ -1186,6 +1404,10 @@ func (r *gRPCReader) Close() error {
 // an attempt to reopen the stream.
 func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
+	var shouldRetry = ShouldRetry
+	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
+		shouldRetry = r.settings.retry.shouldRetry
+	}
 	if err != nil && shouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
@@ -1250,6 +1472,7 @@ type gRPCWriter struct {
 	attrs         *ObjectAttrs
 	conds         *Conditions
 	encryptionKey []byte
+	settings      *settings
 
 	sendCRC32C bool
 
@@ -1267,21 +1490,27 @@ func (w *gRPCWriter) startResumableUpload() error {
 	if err != nil {
 		return err
 	}
-	upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-		WriteObjectSpec: spec,
-	})
-
-	w.upid = upres.GetUploadId()
-	return err
+	return run(w.ctx, func() error {
+		upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
+			WriteObjectSpec: spec,
+		})
+		w.upid = upres.GetUploadId()
+		return err
+	}, w.settings.retry, w.settings.idempotent, setRetryHeaderGRPC(w.ctx))
 }
 
 // queryProgress is a helper that queries the status of the resumable upload
 // associated with the given upload ID.
 func (w *gRPCWriter) queryProgress() (int64, error) {
-	q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+	var persistedSize int64
+	err := run(w.ctx, func() error {
+		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+		persistedSize = q.GetPersistedSize()
+		return err
+	}, w.settings.retry, true, setRetryHeaderGRPC(w.ctx))
 
 	// q.GetCommittedSize() will return 0 if q is nil.
-	return q.GetPersistedSize(), err
+	return persistedSize, err
 }
 
 // uploadBuffer opens a Write stream and uploads the buffer at the given offset (if
@@ -1296,6 +1525,10 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 	var err error
 	var finishWrite bool
 	var sent, limit int = 0, maxPerMessageWriteSize
+	var shouldRetry = ShouldRetry
+	if w.settings.retry != nil && w.settings.retry.shouldRetry != nil {
+		shouldRetry = w.settings.retry.shouldRetry
+	}
 	offset := start
 	toWrite := w.buf[:recvd]
 	for {
@@ -1326,7 +1559,8 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// The first message on the WriteObject stream must either be the
 		// Object or the Resumable Upload ID.
 		if first {
-			w.stream, err = w.c.raw.WriteObject(w.ctx)
+			ctx := gapic.InsertMetadata(w.ctx, metadata.Pairs("x-goog-request-params", "bucket="+url.QueryEscape(w.bucket)))
+			w.stream, err = w.c.raw.WriteObject(ctx)
 			if err != nil {
 				return nil, 0, false, err
 			}
@@ -1348,8 +1582,16 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// on the *last* message of the stream (instead of the first).
 			if w.sendCRC32C {
 				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C:  proto.Uint32(w.attrs.CRC32C),
-					Md5Hash: w.attrs.MD5,
+					Crc32C: proto.Uint32(w.attrs.CRC32C),
+				}
+			}
+			if len(w.attrs.MD5) != 0 {
+				if cs := req.GetObjectChecksums(); cs == nil {
+					req.ObjectChecksums = &storagepb.ObjectChecksums{
+						Md5Hash: w.attrs.MD5,
+					}
+				} else {
+					cs.Md5Hash = w.attrs.MD5
 				}
 			}
 		}
@@ -1459,8 +1701,8 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 	spec := &storagepb.WriteObjectSpec{
 		Resource: attrs.toProtoObject(w.bucket),
 	}
-	// WriteObject doesn't support the generation condition, so use -1.
-	if err := applyCondsProto("WriteObject", -1, w.conds, spec); err != nil {
+	// WriteObject doesn't support the generation condition, so use default.
+	if err := applyCondsProto("WriteObject", defaultGen, w.conds, spec); err != nil {
 		return nil, err
 	}
 	return spec, nil

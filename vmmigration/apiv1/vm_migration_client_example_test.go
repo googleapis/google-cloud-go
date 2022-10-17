@@ -26,6 +26,11 @@ import (
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListSources() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -64,6 +74,11 @@ func ExampleClient_ListSources() {
 
 func ExampleClient_GetSource() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +99,11 @@ func ExampleClient_GetSource() {
 
 func ExampleClient_CreateSource() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleClient_CreateSource() {
 
 func ExampleClient_UpdateSource() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +159,11 @@ func ExampleClient_UpdateSource() {
 
 func ExampleClient_DeleteSource() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,6 +187,11 @@ func ExampleClient_DeleteSource() {
 
 func ExampleClient_FetchInventory() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -177,6 +212,11 @@ func ExampleClient_FetchInventory() {
 
 func ExampleClient_ListUtilizationReports() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +243,11 @@ func ExampleClient_ListUtilizationReports() {
 
 func ExampleClient_GetUtilizationReport() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -223,6 +268,11 @@ func ExampleClient_GetUtilizationReport() {
 
 func ExampleClient_CreateUtilizationReport() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -248,6 +298,11 @@ func ExampleClient_CreateUtilizationReport() {
 
 func ExampleClient_DeleteUtilizationReport() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -271,6 +326,11 @@ func ExampleClient_DeleteUtilizationReport() {
 
 func ExampleClient_ListDatacenterConnectors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -297,6 +357,11 @@ func ExampleClient_ListDatacenterConnectors() {
 
 func ExampleClient_GetDatacenterConnector() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -317,6 +382,11 @@ func ExampleClient_GetDatacenterConnector() {
 
 func ExampleClient_CreateDatacenterConnector() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -342,6 +412,11 @@ func ExampleClient_CreateDatacenterConnector() {
 
 func ExampleClient_DeleteDatacenterConnector() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -363,8 +438,43 @@ func ExampleClient_DeleteDatacenterConnector() {
 	}
 }
 
+func ExampleClient_UpgradeAppliance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmmigration.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmmigrationpb.UpgradeApplianceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vmmigration/v1#UpgradeApplianceRequest.
+	}
+	op, err := c.UpgradeAppliance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateMigratingVm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -390,6 +500,11 @@ func ExampleClient_CreateMigratingVm() {
 
 func ExampleClient_ListMigratingVms() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -416,6 +531,11 @@ func ExampleClient_ListMigratingVms() {
 
 func ExampleClient_GetMigratingVm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -436,6 +556,11 @@ func ExampleClient_GetMigratingVm() {
 
 func ExampleClient_UpdateMigratingVm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -461,6 +586,11 @@ func ExampleClient_UpdateMigratingVm() {
 
 func ExampleClient_DeleteMigratingVm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -484,6 +614,11 @@ func ExampleClient_DeleteMigratingVm() {
 
 func ExampleClient_StartMigration() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -509,6 +644,11 @@ func ExampleClient_StartMigration() {
 
 func ExampleClient_ResumeMigration() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -534,6 +674,11 @@ func ExampleClient_ResumeMigration() {
 
 func ExampleClient_PauseMigration() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -559,6 +704,11 @@ func ExampleClient_PauseMigration() {
 
 func ExampleClient_FinalizeMigration() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -584,6 +734,11 @@ func ExampleClient_FinalizeMigration() {
 
 func ExampleClient_CreateCloneJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -609,6 +764,11 @@ func ExampleClient_CreateCloneJob() {
 
 func ExampleClient_CancelCloneJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -634,6 +794,11 @@ func ExampleClient_CancelCloneJob() {
 
 func ExampleClient_ListCloneJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -660,6 +825,11 @@ func ExampleClient_ListCloneJobs() {
 
 func ExampleClient_GetCloneJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -680,6 +850,11 @@ func ExampleClient_GetCloneJob() {
 
 func ExampleClient_CreateCutoverJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -705,6 +880,11 @@ func ExampleClient_CreateCutoverJob() {
 
 func ExampleClient_CancelCutoverJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -730,6 +910,11 @@ func ExampleClient_CancelCutoverJob() {
 
 func ExampleClient_ListCutoverJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -756,6 +941,11 @@ func ExampleClient_ListCutoverJobs() {
 
 func ExampleClient_GetCutoverJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -776,6 +966,11 @@ func ExampleClient_GetCutoverJob() {
 
 func ExampleClient_ListGroups() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -802,6 +997,11 @@ func ExampleClient_ListGroups() {
 
 func ExampleClient_GetGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -822,6 +1022,11 @@ func ExampleClient_GetGroup() {
 
 func ExampleClient_CreateGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -847,6 +1052,11 @@ func ExampleClient_CreateGroup() {
 
 func ExampleClient_UpdateGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -872,6 +1082,11 @@ func ExampleClient_UpdateGroup() {
 
 func ExampleClient_DeleteGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -895,6 +1110,11 @@ func ExampleClient_DeleteGroup() {
 
 func ExampleClient_AddGroupMigration() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -920,6 +1140,11 @@ func ExampleClient_AddGroupMigration() {
 
 func ExampleClient_RemoveGroupMigration() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -945,6 +1170,11 @@ func ExampleClient_RemoveGroupMigration() {
 
 func ExampleClient_ListTargetProjects() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -971,6 +1201,11 @@ func ExampleClient_ListTargetProjects() {
 
 func ExampleClient_GetTargetProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -991,6 +1226,11 @@ func ExampleClient_GetTargetProject() {
 
 func ExampleClient_CreateTargetProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1016,6 +1256,11 @@ func ExampleClient_CreateTargetProject() {
 
 func ExampleClient_UpdateTargetProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1041,6 +1286,11 @@ func ExampleClient_UpdateTargetProject() {
 
 func ExampleClient_DeleteTargetProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vmmigration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -21,12 +21,34 @@ import (
 	"io"
 
 	videointelligence "cloud.google.com/go/videointelligence/apiv1p3beta1"
-	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1p3beta1"
+	videointelligencepb "cloud.google.com/go/videointelligence/apiv1p3beta1/videointelligencepb"
 )
 
 func ExampleNewStreamingVideoIntelligenceClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := videointelligence.NewStreamingVideoIntelligenceClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewStreamingVideoIntelligenceRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := videointelligence.NewStreamingVideoIntelligenceRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewStreamingVideoIntelligenceClient() {
 
 func ExampleStreamingVideoIntelligenceClient_StreamingAnnotateVideo() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := videointelligence.NewStreamingVideoIntelligenceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

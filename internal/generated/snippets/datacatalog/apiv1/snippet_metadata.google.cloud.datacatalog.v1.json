@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/apiv1",
-    "version": "1.3.0",
+    "version": "1.6.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_CreateEntryGroup_sync",
       "title": "datacatalog CreateEntryGroup Sample",
-      "description": "CreateEntryGroup creates an entry group.\n\nAn entry group contains logically related entries together with Cloud\nIdentity and Access Management (at /data-catalog/docs/concepts/iam) policies.\nThese policies specify users who can create, edit, and view entries\nwithin entry groups.\n\nData Catalog automatically creates entry groups with names that start with\nthe @ symbol for the following resources: \n\n  BigQuery entries (@bigquery)\n\n  Pub/Sub topics (@pubsub)\n\n  Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})\n\nYou can create your own entry groups for Cloud Storage fileset entries\nand custom entries together with the corresponding IAM policies.\nUser-created entry groups can’t contain the @ symbol, it is reserved\nfor automatically created groups.\n\nEntry groups, like entries, can be searched.\n\nA maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nYou must enable the Data Catalog API in the project identified by\nthe parent parameter. For more information, see Data Catalog resource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "CreateEntryGroup creates an entry group.\n\nAn entry group contains logically related entries together with Cloud\nIdentity and Access Management (at /data-catalog/docs/concepts/iam) policies.\nThese policies specify users who can create, edit, and view entries\nwithin entry groups.\n\nData Catalog automatically creates entry groups with names that start with\nthe @ symbol for the following resources: \n\n\tBigQuery entries (@bigquery)\n\n\tPub/Sub topics (@pubsub)\n\n\tDataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})\n\nYou can create your own entry groups for Cloud Storage fileset entries\nand custom entries together with the corresponding IAM policies.\nUser-created entry groups can’t contain the @ symbol, it is reserved\nfor automatically created groups.\n\nEntry groups, like entries, can be searched.\n\nA maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nYou must enable the Data Catalog API in the project identified by\nthe parent parameter. For more information, see Data Catalog resource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/CreateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_CreateTag_sync",
       "title": "datacatalog CreateTag Sample",
-      "description": "CreateTag creates a tag and assigns it to: \n\n  An Entry if the method name is\n  projects.locations.entryGroups.entries.tags.create.\n\n  Or EntryGroupif the method\n  name is projects.locations.entryGroups.tags.create.\n\nNote: The project identified by the parent parameter for the [tag]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))\nand the [tag template]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters))\nused to create the tag must be in the same organization.",
+      "description": "CreateTag creates a tag and assigns it to: \n\n\tAn Entry if the method name is\n\tprojects.locations.entryGroups.entries.tags.create.\n\n\tOr EntryGroupif the method\n\tname is projects.locations.entryGroups.tags.create.\n\nNote: The project identified by the parent parameter for the [tag]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))\nand the [tag template]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters))\nused to create the tag must be in the same organization.",
       "file": "Client/CreateTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -371,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -416,7 +416,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -461,7 +461,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -507,7 +507,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -553,7 +553,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -561,7 +561,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_GetIamPolicy_sync",
       "title": "datacatalog GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a resource.\n\nMay return: \n\n  ANOT_FOUND error if the resource doesn’t exist or you don’t have the\n  permission to view it.\n\n  An empty policy if the resource exists but doesn’t have a set policy.\n\nSupported resources are: \n\n  Tag templates\n\n  Entry groups\n\nNote: This method doesn’t get policies from Google Cloud Platform\nresources ingested into Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n  datacatalog.tagTemplates.getIamPolicy to get policies on tag\n  templates.\n\n  datacatalog.entryGroups.getIamPolicy to get policies on entry groups.",
+      "description": "GetIamPolicy gets the access control policy for a resource.\n\nMay return: \n\n\tANOT_FOUND error if the resource doesn’t exist or you don’t have the\n\tpermission to view it.\n\n\tAn empty policy if the resource exists but doesn’t have a set policy.\n\nSupported resources are: \n\n\tTag templates\n\n\tEntry groups\n\nNote: This method doesn’t get policies from Google Cloud Platform\nresources ingested into Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n\tdatacatalog.tagTemplates.getIamPolicy to get policies on tag\n\ttemplates.\n\n\tdatacatalog.entryGroups.getIamPolicy to get policies on entry groups.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -599,7 +599,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -645,7 +645,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -691,7 +691,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -737,7 +737,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -783,7 +783,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -829,7 +829,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -875,7 +875,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -921,7 +921,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -967,7 +967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1013,7 +1013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1059,7 +1059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1067,7 +1067,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_SetIamPolicy_sync",
       "title": "datacatalog SetIamPolicy Sample",
-      "description": "SetIamPolicy sets an access control policy for a resource. Replaces any existing\npolicy.\n\nSupported resources are: \n\n  Tag templates\n\n  Entry groups\n\nNote: This method sets policies only within Data Catalog and can’t be\nused to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources synced with the Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n  datacatalog.tagTemplates.setIamPolicy to set policies on tag\n  templates.\n\n  datacatalog.entryGroups.setIamPolicy to set policies on entry groups.",
+      "description": "SetIamPolicy sets an access control policy for a resource. Replaces any existing\npolicy.\n\nSupported resources are: \n\n\tTag templates\n\n\tEntry groups\n\nNote: This method sets policies only within Data Catalog and can’t be\nused to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources synced with the Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n\tdatacatalog.tagTemplates.setIamPolicy to set policies on tag\n\ttemplates.\n\n\tdatacatalog.entryGroups.setIamPolicy to set policies on entry groups.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1105,7 +1105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1151,7 +1151,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1159,7 +1159,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_TestIamPermissions_sync",
       "title": "datacatalog TestIamPermissions Sample",
-      "description": "TestIamPermissions gets your permissions on a resource.\n\nReturns an empty set of permissions if the resource doesn’t exist.\n\nSupported resources are: \n\n  Tag templates\n\n  Entry groups\n\nNote: This method gets policies only within Data Catalog and can’t be\nused to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources ingested into Data Catalog.\n\nNo Google IAM permissions are required to call this method.",
+      "description": "TestIamPermissions gets your permissions on a resource.\n\nReturns an empty set of permissions if the resource doesn’t exist.\n\nSupported resources are: \n\n\tTag templates\n\n\tEntry groups\n\nNote: This method gets policies only within Data Catalog and can’t be\nused to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources ingested into Data Catalog.\n\nNo Google IAM permissions are required to call this method.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1197,7 +1197,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1243,7 +1243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1289,7 +1289,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1335,7 +1335,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1381,7 +1381,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1427,7 +1427,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1473,7 +1473,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1519,7 +1519,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1565,7 +1565,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1573,7 +1573,7 @@
     {
       "regionTag": "datacatalog_v1_generated_PolicyTagManager_DeletePolicyTag_sync",
       "title": "datacatalog DeletePolicyTag Sample",
-      "description": "DeletePolicyTag deletes a policy tag together with the following: \n\n  All of its descendant policy tags, if any\n\n  Policies associated with the policy tag and its descendants\n\n  References from BigQuery table schema of the policy tag and its\n  descendants",
+      "description": "DeletePolicyTag deletes a policy tag together with the following: \n\n\tAll of its descendant policy tags, if any\n\n\tPolicies associated with the policy tag and its descendants\n\n\tReferences from BigQuery table schema of the policy tag and its\n\tdescendants",
       "file": "PolicyTagManagerClient/DeletePolicyTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1610,7 +1610,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1655,7 +1655,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 50,
           "type": "FULL"
         }
       ]
@@ -1701,7 +1701,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1747,7 +1747,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1793,7 +1793,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1839,7 +1839,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1885,7 +1885,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1931,7 +1931,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1977,7 +1977,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2023,7 +2023,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2069,7 +2069,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2115,7 +2115,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2161,7 +2161,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2169,7 +2169,7 @@
     {
       "regionTag": "datacatalog_v1_generated_PolicyTagManagerSerialization_ReplaceTaxonomy_sync",
       "title": "datacatalog ReplaceTaxonomy Sample",
-      "description": "ReplaceTaxonomy replaces (updates) a taxonomy and all its policy tags.\n\nThe taxonomy and its entire hierarchy of policy tags must be\nrepresented literally by SerializedTaxonomy and the nested\nSerializedPolicyTag messages.\n\nThis operation automatically does the following: \n\n  Deletes the existing policy tags that are missing from the\n  SerializedPolicyTag.\n\n  Creates policy tags that don’t have resource names. They are considered\n  new.\n\n  Updates policy tags with valid resources names accordingly.",
+      "description": "ReplaceTaxonomy replaces (updates) a taxonomy and all its policy tags.\n\nThe taxonomy and its entire hierarchy of policy tags must be\nrepresented literally by SerializedTaxonomy and the nested\nSerializedPolicyTag messages.\n\nThis operation automatically does the following: \n\n\tDeletes the existing policy tags that are missing from the\n\tSerializedPolicyTag.\n\n\tCreates policy tags that don’t have resource names. They are considered\n\tnew.\n\n\tUpdates policy tags with valid resources names accordingly.",
       "file": "PolicyTagManagerSerializationClient/ReplaceTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2207,7 +2207,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 52,
           "type": "FULL"
         }
       ]

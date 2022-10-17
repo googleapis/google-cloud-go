@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,7 +29,29 @@ import (
 
 func ExampleNewSpecialistPoolClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewSpecialistPoolRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewSpecialistPoolRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewSpecialistPoolClient() {
 
 func ExampleSpecialistPoolClient_CreateSpecialistPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +76,7 @@ func ExampleSpecialistPoolClient_CreateSpecialistPool() {
 
 	req := &aiplatformpb.CreateSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateSpecialistPoolRequest.
 	}
 	op, err := c.CreateSpecialistPool(ctx, req)
 	if err != nil {
@@ -66,6 +93,11 @@ func ExampleSpecialistPoolClient_CreateSpecialistPool() {
 
 func ExampleSpecialistPoolClient_GetSpecialistPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -74,7 +106,7 @@ func ExampleSpecialistPoolClient_GetSpecialistPool() {
 
 	req := &aiplatformpb.GetSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetSpecialistPoolRequest.
 	}
 	resp, err := c.GetSpecialistPool(ctx, req)
 	if err != nil {
@@ -86,6 +118,11 @@ func ExampleSpecialistPoolClient_GetSpecialistPool() {
 
 func ExampleSpecialistPoolClient_ListSpecialistPools() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -94,7 +131,7 @@ func ExampleSpecialistPoolClient_ListSpecialistPools() {
 
 	req := &aiplatformpb.ListSpecialistPoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListSpecialistPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListSpecialistPoolsRequest.
 	}
 	it := c.ListSpecialistPools(ctx, req)
 	for {
@@ -112,6 +149,11 @@ func ExampleSpecialistPoolClient_ListSpecialistPools() {
 
 func ExampleSpecialistPoolClient_DeleteSpecialistPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -120,7 +162,7 @@ func ExampleSpecialistPoolClient_DeleteSpecialistPool() {
 
 	req := &aiplatformpb.DeleteSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteSpecialistPoolRequest.
 	}
 	op, err := c.DeleteSpecialistPool(ctx, req)
 	if err != nil {
@@ -135,6 +177,11 @@ func ExampleSpecialistPoolClient_DeleteSpecialistPool() {
 
 func ExampleSpecialistPoolClient_UpdateSpecialistPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,7 +190,7 @@ func ExampleSpecialistPoolClient_UpdateSpecialistPool() {
 
 	req := &aiplatformpb.UpdateSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateSpecialistPoolRequest.
 	}
 	op, err := c.UpdateSpecialistPool(ctx, req)
 	if err != nil {
@@ -160,6 +207,11 @@ func ExampleSpecialistPoolClient_UpdateSpecialistPool() {
 
 func ExampleSpecialistPoolClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,6 +232,11 @@ func ExampleSpecialistPoolClient_GetLocation() {
 
 func ExampleSpecialistPoolClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -206,6 +263,11 @@ func ExampleSpecialistPoolClient_ListLocations() {
 
 func ExampleSpecialistPoolClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -226,6 +288,11 @@ func ExampleSpecialistPoolClient_GetIamPolicy() {
 
 func ExampleSpecialistPoolClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -246,6 +313,11 @@ func ExampleSpecialistPoolClient_SetIamPolicy() {
 
 func ExampleSpecialistPoolClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -266,6 +338,11 @@ func ExampleSpecialistPoolClient_TestIamPermissions() {
 
 func ExampleSpecialistPoolClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -284,6 +361,11 @@ func ExampleSpecialistPoolClient_CancelOperation() {
 
 func ExampleSpecialistPoolClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -302,6 +384,11 @@ func ExampleSpecialistPoolClient_DeleteOperation() {
 
 func ExampleSpecialistPoolClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -322,6 +409,11 @@ func ExampleSpecialistPoolClient_GetOperation() {
 
 func ExampleSpecialistPoolClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -348,6 +440,11 @@ func ExampleSpecialistPoolClient_ListOperations() {
 
 func ExampleSpecialistPoolClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewSpecialistPoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

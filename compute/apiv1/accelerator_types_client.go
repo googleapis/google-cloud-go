@@ -68,7 +68,7 @@ type internalAcceleratorTypesClient interface {
 // AcceleratorTypesClient is a client for interacting with Google Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 type AcceleratorTypesClient struct {
@@ -96,7 +96,8 @@ func (c *AcceleratorTypesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AcceleratorTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -133,7 +134,7 @@ type acceleratorTypesRESTClient struct {
 
 // NewAcceleratorTypesRESTClient creates a new accelerator types rest client.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AcceleratorTypesClient, error) {
@@ -182,7 +183,7 @@ func (c *acceleratorTypesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *acceleratorTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

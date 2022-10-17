@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -129,15 +129,15 @@ type internalClient interface {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -163,7 +163,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -254,15 +255,15 @@ type gRPCClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -299,7 +300,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -339,15 +341,15 @@ type restClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -394,7 +396,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1294,8 +1296,12 @@ func (c *restClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetRow().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))

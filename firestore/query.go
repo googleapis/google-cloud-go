@@ -211,14 +211,16 @@ func (q Query) LimitToLast(n int) Query {
 //
 // Otherwise, StartAt should be called with one field value for each OrderBy clause,
 // in the order that they appear. For example, in
-//   q.OrderBy("X", Asc).OrderBy("Y", Desc).StartAt(1, 2)
+//
+//	q.OrderBy("X", Asc).OrderBy("Y", Desc).StartAt(1, 2)
+//
 // results will begin at the first document where X = 1 and Y = 2.
 //
 // If an OrderBy call uses the special DocumentID field path, the corresponding value
 // should be the document ID relative to the query's collection. For example, to
 // start at the document "NewYork" in the "States" collection, write
 //
-//   client.Collection("States").OrderBy(DocumentID, firestore.Asc).StartAt("NewYork")
+//	client.Collection("States").OrderBy(DocumentID, firestore.Asc).StartAt("NewYork")
 //
 // Calling StartAt overrides a previous call to StartAt or StartAfter.
 func (q Query) StartAt(docSnapshotOrFieldValues ...interface{}) Query {
@@ -300,6 +302,14 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 		return q, err
 	}
 	return q.fromProto(&runQueryRequest)
+}
+
+// NewAggregationQuery returns an AggregationQuery with this query as its
+// base query.
+func (q *Query) NewAggregationQuery() *AggregationQuery {
+	return &AggregationQuery{
+		query: q,
+	}
 }
 
 // fromProto creates a new Query object from a RunQueryRequest. This can be used
@@ -1034,3 +1044,74 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 }
 
 func (*btreeDocumentIterator) stop() {}
+
+// AggregationQuery allows for generating aggregation results of an underlying
+// basic query. A single AggregationQuery can contain multiple aggregations.
+type AggregationQuery struct {
+	// aggregateQueries contains all of the queries for this request.
+	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation
+	// query contains a reference pointer to the underlying structured query.
+	query *Query
+}
+
+// WithCount specifies that the aggregation query provide a count of results
+// returned by the underlying Query.
+func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
+	aq := &pb.StructuredAggregationQuery_Aggregation{
+		Alias:    alias,
+		Operator: &pb.StructuredAggregationQuery_Aggregation_Count_{},
+	}
+
+	a.aggregateQueries = append(a.aggregateQueries, aq)
+
+	return a
+}
+
+// Get retrieves the aggregation query results from the service.
+func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
+
+	client := a.query.c.c
+	q, err := a.query.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	req := &pb.RunAggregationQueryRequest{
+		Parent: a.query.parentPath,
+		QueryType: &pb.RunAggregationQueryRequest_StructuredAggregationQuery{
+			StructuredAggregationQuery: &pb.StructuredAggregationQuery{
+				QueryType: &pb.StructuredAggregationQuery_StructuredQuery{
+					StructuredQuery: q,
+				},
+				Aggregations: a.aggregateQueries,
+			},
+		},
+	}
+	ctx = withResourceHeader(ctx, a.query.c.path())
+	stream, err := client.RunAggregationQuery(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make(AggregationResult)
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		f := res.Result.AggregateFields
+
+		for k, v := range f {
+			resp[k] = v
+		}
+	}
+	return resp, nil
+}
+
+// AggregationResult contains the results of an aggregation query.
+type AggregationResult map[string]interface{}

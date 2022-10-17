@@ -138,7 +138,8 @@ func (c *PolicyTagManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PolicyTagManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -181,12 +182,12 @@ func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datac
 
 // DeletePolicyTag deletes a policy tag together with the following:
 //
-//   All of its descendant policy tags, if any
+//	All of its descendant policy tags, if any
 //
-//   Policies associated with the policy tag and its descendants
+//	Policies associated with the policy tag and its descendants
 //
-//   References from BigQuery table schema of the policy tag and its
-//   descendants
+//	References from BigQuery table schema of the policy tag and its
+//	descendants
 func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeletePolicyTag(ctx, req, opts...)
 }
@@ -288,7 +289,8 @@ func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption)
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *policyTagManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

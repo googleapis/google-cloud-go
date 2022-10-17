@@ -20,8 +20,8 @@ import (
 	"context"
 
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
+	gkehubpb "cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
 	"google.golang.org/api/iterator"
-	gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,6 +29,11 @@ import (
 
 func ExampleNewGkeHubMembershipClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewGkeHubMembershipClient() {
 
 func ExampleNewGkeHubMembershipRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -53,6 +63,11 @@ func ExampleNewGkeHubMembershipRESTClient() {
 
 func ExampleGkeHubMembershipClient_ListMemberships() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,7 +76,7 @@ func ExampleGkeHubMembershipClient_ListMemberships() {
 
 	req := &gkehubpb.ListMembershipsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ListMembershipsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#ListMembershipsRequest.
 	}
 	it := c.ListMemberships(ctx, req)
 	for {
@@ -79,6 +94,11 @@ func ExampleGkeHubMembershipClient_ListMemberships() {
 
 func ExampleGkeHubMembershipClient_GetMembership() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,7 +107,7 @@ func ExampleGkeHubMembershipClient_GetMembership() {
 
 	req := &gkehubpb.GetMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GetMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#GetMembershipRequest.
 	}
 	resp, err := c.GetMembership(ctx, req)
 	if err != nil {
@@ -99,6 +119,11 @@ func ExampleGkeHubMembershipClient_GetMembership() {
 
 func ExampleGkeHubMembershipClient_CreateMembership() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,7 +132,7 @@ func ExampleGkeHubMembershipClient_CreateMembership() {
 
 	req := &gkehubpb.CreateMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#CreateMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#CreateMembershipRequest.
 	}
 	op, err := c.CreateMembership(ctx, req)
 	if err != nil {
@@ -124,6 +149,11 @@ func ExampleGkeHubMembershipClient_CreateMembership() {
 
 func ExampleGkeHubMembershipClient_DeleteMembership() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +162,7 @@ func ExampleGkeHubMembershipClient_DeleteMembership() {
 
 	req := &gkehubpb.DeleteMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#DeleteMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#DeleteMembershipRequest.
 	}
 	op, err := c.DeleteMembership(ctx, req)
 	if err != nil {
@@ -147,6 +177,11 @@ func ExampleGkeHubMembershipClient_DeleteMembership() {
 
 func ExampleGkeHubMembershipClient_UpdateMembership() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -155,7 +190,7 @@ func ExampleGkeHubMembershipClient_UpdateMembership() {
 
 	req := &gkehubpb.UpdateMembershipRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#UpdateMembershipRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#UpdateMembershipRequest.
 	}
 	op, err := c.UpdateMembership(ctx, req)
 	if err != nil {
@@ -172,6 +207,11 @@ func ExampleGkeHubMembershipClient_UpdateMembership() {
 
 func ExampleGkeHubMembershipClient_GenerateConnectManifest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,7 +220,7 @@ func ExampleGkeHubMembershipClient_GenerateConnectManifest() {
 
 	req := &gkehubpb.GenerateConnectManifestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GenerateConnectManifestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#GenerateConnectManifestRequest.
 	}
 	resp, err := c.GenerateConnectManifest(ctx, req)
 	if err != nil {
@@ -192,6 +232,11 @@ func ExampleGkeHubMembershipClient_GenerateConnectManifest() {
 
 func ExampleGkeHubMembershipClient_ValidateExclusivity() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -200,7 +245,7 @@ func ExampleGkeHubMembershipClient_ValidateExclusivity() {
 
 	req := &gkehubpb.ValidateExclusivityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ValidateExclusivityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#ValidateExclusivityRequest.
 	}
 	resp, err := c.ValidateExclusivity(ctx, req)
 	if err != nil {
@@ -212,6 +257,11 @@ func ExampleGkeHubMembershipClient_ValidateExclusivity() {
 
 func ExampleGkeHubMembershipClient_GenerateExclusivityManifest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -220,7 +270,7 @@ func ExampleGkeHubMembershipClient_GenerateExclusivityManifest() {
 
 	req := &gkehubpb.GenerateExclusivityManifestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GenerateExclusivityManifestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#GenerateExclusivityManifestRequest.
 	}
 	resp, err := c.GenerateExclusivityManifest(ctx, req)
 	if err != nil {
@@ -232,6 +282,11 @@ func ExampleGkeHubMembershipClient_GenerateExclusivityManifest() {
 
 func ExampleGkeHubMembershipClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -252,6 +307,11 @@ func ExampleGkeHubMembershipClient_GetLocation() {
 
 func ExampleGkeHubMembershipClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -278,6 +338,11 @@ func ExampleGkeHubMembershipClient_ListLocations() {
 
 func ExampleGkeHubMembershipClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -298,6 +363,11 @@ func ExampleGkeHubMembershipClient_GetIamPolicy() {
 
 func ExampleGkeHubMembershipClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -318,6 +388,11 @@ func ExampleGkeHubMembershipClient_SetIamPolicy() {
 
 func ExampleGkeHubMembershipClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -338,6 +413,11 @@ func ExampleGkeHubMembershipClient_TestIamPermissions() {
 
 func ExampleGkeHubMembershipClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -356,6 +436,11 @@ func ExampleGkeHubMembershipClient_CancelOperation() {
 
 func ExampleGkeHubMembershipClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -374,6 +459,11 @@ func ExampleGkeHubMembershipClient_DeleteOperation() {
 
 func ExampleGkeHubMembershipClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -394,6 +484,11 @@ func ExampleGkeHubMembershipClient_GetOperation() {
 
 func ExampleGkeHubMembershipClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

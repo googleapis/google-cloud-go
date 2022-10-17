@@ -212,7 +212,8 @@ func (c *VersionsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *VersionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -233,9 +234,9 @@ func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionReq
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: CreateVersionOperationMetadata
+//	metadata: CreateVersionOperationMetadata
 //
-//   response: Version
+//	response: Version
 func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	return c.internalClient.CreateVersion(ctx, req, opts...)
 }
@@ -262,11 +263,11 @@ func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVers
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	return c.internalClient.LoadVersion(ctx, req, opts...)
 }
@@ -389,7 +390,8 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *versionsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

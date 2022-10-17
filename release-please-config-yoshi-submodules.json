@@ -21,6 +21,12 @@
         "apigeeconnect": {
             "component": "apigeeconnect"
         },
+        "apigeeregistry": {
+            "component": "apigeeregistry"
+        },
+        "apikeys": {
+            "component": "apikeys"
+        },
         "appengine": {
             "component": "appengine"
         },
@@ -44,6 +50,9 @@
         },
         "batch": {
             "component": "batch"
+        },
+        "beyondcorp": {
+            "component": "beyondcorp"
         },
         "billing": {
             "component": "billing"
@@ -119,6 +128,9 @@
         },
         "domains": {
             "component": "domains"
+        },
+        "edgecontainer": {
+            "component": "edgecontainer"
         },
         "essentialcontacts": {
             "component": "essentialcontacts"
@@ -321,5 +333,6 @@
         "workflows": {
             "component": "workflows"
         }
-    }
+    },
+    "plugins": ["sentence-case"]
 }

@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	lifesciencespb "cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	lifesciencespb "google.golang.org/genproto/googleapis/cloud/lifesciences/v2beta"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -116,7 +116,8 @@ func (c *WorkflowsServiceV2BetaClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -137,7 +138,7 @@ func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//   lifesciences.workflows.run
+//	lifesciences.workflows.run
 func (c *WorkflowsServiceV2BetaClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	return c.internalClient.RunPipeline(ctx, req, opts...)
 }
@@ -225,7 +226,8 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *workflowsServiceV2BetaGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -325,7 +327,7 @@ func (c *workflowsServiceV2BetaRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *workflowsServiceV2BetaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -369,7 +371,7 @@ func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req 
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//   lifesciences.workflows.run
+//	lifesciences.workflows.run
 func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

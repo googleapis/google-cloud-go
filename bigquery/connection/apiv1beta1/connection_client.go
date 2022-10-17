@@ -203,7 +203,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -249,7 +250,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any
 // existing policy.
 //
-// Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -325,7 +326,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -409,7 +411,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -732,8 +734,12 @@ func (c *restClient) ListConnections(ctx context.Context, req *connectionpb.List
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/connections", req.GetParent())
 
 	params := url.Values{}
-	if req.GetMaxResults().GetValue() != 0 {
-		params.Add("maxResults.value", fmt.Sprintf("%v", req.GetMaxResults().GetValue()))
+	if req.GetMaxResults() != nil {
+		maxResults, err := protojson.Marshal(req.GetMaxResults())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("maxResults", string(maxResults))
 	}
 	if req.GetPageToken() != "" {
 		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
@@ -803,8 +809,12 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *connectionpb.Upd
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -995,7 +1005,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any
 // existing policy.
 //
-// Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

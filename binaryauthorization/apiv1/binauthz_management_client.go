@@ -160,9 +160,9 @@ type internalBinauthzManagementClient interface {
 //
 // This API implements a REST model with the following objects:
 //
-//   Policy
+//	Policy
 //
-//   Attestor
+//	Attestor
 type BinauthzManagementClient struct {
 	// The internal transport-dependent client.
 	internalClient internalBinauthzManagementClient
@@ -188,7 +188,8 @@ func (c *BinauthzManagementClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BinauthzManagementClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -273,9 +274,9 @@ type binauthzManagementGRPCClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//   Policy
+//	Policy
 //
-//   Attestor
+//	Attestor
 func NewBinauthzManagementClient(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementClient, error) {
 	clientOpts := defaultBinauthzManagementGRPCClientOptions()
 	if newBinauthzManagementClientHook != nil {
@@ -312,7 +313,8 @@ func NewBinauthzManagementClient(ctx context.Context, opts ...option.ClientOptio
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *binauthzManagementGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -228,7 +228,8 @@ func (c *DocumentsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DocumentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -249,9 +250,9 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
 	return c.internalClient.CreateDocument(ctx, req, opts...)
 }
@@ -270,9 +271,9 @@ func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: ImportDocumentsResponse
+//	response: ImportDocumentsResponse
 func (c *DocumentsClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	return c.internalClient.ImportDocuments(ctx, req, opts...)
 }
@@ -289,10 +290,10 @@ func (c *DocumentsClient) ImportDocumentsOperation(name string) *ImportDocuments
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	return c.internalClient.DeleteDocument(ctx, req, opts...)
 }
@@ -309,9 +310,9 @@ func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
 	return c.internalClient.UpdateDocument(ctx, req, opts...)
 }
@@ -331,9 +332,9 @@ func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -354,9 +355,9 @@ func (c *DocumentsClient) ReloadDocumentOperation(name string) *ReloadDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: KnowledgeOperationMetadata
+//	metadata: KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) ExportDocument(ctx context.Context, req *dialogflowpb.ExportDocumentRequest, opts ...gax.CallOption) (*ExportDocumentOperation, error) {
 	return c.internalClient.ExportDocument(ctx, req, opts...)
 }
@@ -474,7 +475,8 @@ func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*Docu
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *documentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

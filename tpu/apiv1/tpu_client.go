@@ -108,7 +108,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud TPU API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Manages TPU nodes and other resources
+// # Manages TPU nodes and other resources
 //
 // TPU API v1
 type Client struct {
@@ -141,7 +141,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -259,7 +260,7 @@ type gRPCClient struct {
 // NewClient creates a new tpu client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Manages TPU nodes and other resources
+// # Manages TPU nodes and other resources
 //
 // TPU API v1
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -309,7 +310,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
