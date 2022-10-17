@@ -1,5 +1,17 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.2...pubsublite/v1.4.0) (2022-10-17)
+
+
+### Features
+
+* **pubsublite:** Add export config protos to API ([41ab4ec](https://github.com/googleapis/google-cloud-go/commit/41ab4ec00552931b12f61a9fcb27b36a7c0b5d77))
+
+
+### Bug Fixes
+
+* **pubsublite:** set pubsublite back to grpc-only instead of grpc+rest ([199b725](https://github.com/googleapis/google-cloud-go/commit/199b7250f474b1a6f53dcf0aac0c2966f4987b68))
+
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.1...pubsublite/v1.3.2) (2022-06-15)
 
 
