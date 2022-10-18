@@ -27,7 +27,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.2.0
 	cloud.google.com/go/clouddms v1.2.0
 	cloud.google.com/go/cloudtasks v1.6.0
-	cloud.google.com/go/compute v1.9.0
+	cloud.google.com/go/compute v1.10.0
 	cloud.google.com/go/contactcenterinsights v1.2.2
 	cloud.google.com/go/container v1.3.1
 	cloud.google.com/go/containeranalysis v0.6.0
@@ -58,7 +58,7 @@ require (
 	cloud.google.com/go/gkehub v0.10.0
 	cloud.google.com/go/gkemulticloud v0.2.0
 	cloud.google.com/go/gsuiteaddons v1.2.0
-	cloud.google.com/go/iam v0.3.0
+	cloud.google.com/go/iam v0.5.0
 	cloud.google.com/go/iap v1.3.0
 	cloud.google.com/go/ids v1.0.0
 	cloud.google.com/go/iot v1.2.0
@@ -83,7 +83,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.6.0
 	cloud.google.com/go/policytroubleshooter v1.2.0
 	cloud.google.com/go/privatecatalog v0.6.0
-	cloud.google.com/go/pubsub v1.24.1-0.20220812182604-346d154f8951
+	cloud.google.com/go/pubsub v1.25.1
 	cloud.google.com/go/pubsublite v1.3.2
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/recommendationengine v0.6.0
@@ -119,8 +119,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.2.0
 	cloud.google.com/go/workflows v1.7.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.98.0
-	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
+	google.golang.org/api v0.99.0
+	google.golang.org/genproto v0.0.0-20221014213838-99cd37c6964a
 )
 
 require (
@@ -133,16 +133,16 @@ require (
 	cloud.google.com/go/recaptchaenterprise/v2 v2.2.0 // indirect
 	cloud.google.com/go/vision/v2 v2.3.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
-	github.com/googleapis/gax-go/v2 v2.5.1 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.6.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
-	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
-	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/net v0.0.0-20221012135044-0b7e1fb9d458 // indirect
+	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
+	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
+	golang.org/x/text v0.3.8 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.49.0 // indirect
+	google.golang.org/grpc v1.50.1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 )
 
