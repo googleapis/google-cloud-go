@@ -934,390 +934,55 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 	})
 }
 
-func TestIntegration_ObjectReadGRPC(t *testing.T) {
-	t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
-	ctx := context.Background()
-
-	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
-
-	content := []byte("Hello, world this is a grpc request")
-
-	// Upload test data.
-	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucketName).Object(name)
-	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		if err := ho.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
-		}
-	}()
-
-	obj := gc.Bucket(grpcBucketName).Object(name)
-
-	r, err := obj.NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer r.Close()
-
-	if size := r.Size(); size != int64(len(content)) {
-		t.Errorf("got size = %v, want %v", size, len(content))
-	}
-	if rem := r.Remain(); rem != int64(len(content)) {
-		t.Errorf("got %v bytes remaining, want %v", rem, len(content))
-	}
-
-	b := new(bytes.Buffer)
-	b.Grow(len(content))
-
-	n, err := io.Copy(b, r)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if n == 0 {
-		t.Fatal("Expected to have read more than 0 bytes")
-	}
-
-	got := b.String()
-	want := string(content)
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("got(-),want(+):\n%s", diff)
-	}
-
-	if rem := r.Remain(); rem != 0 {
-		t.Errorf("got %v bytes remaining, want 0", rem)
-	}
-}
-
 func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
-	ctx := context.Background()
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+		// Use a larger blob to test chunking logic. This is a little over 5MB.
+		content := bytes.Repeat([]byte("a"), 5<<20)
 
-	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
-
-	// Use a larger blob to test chunking logic. This is a little over 5MB.
-	content := bytes.Repeat([]byte("a"), 5<<20)
-
-	// Upload test data.
-	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucketName).Object(name)
-	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		if err := ho.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Upload test data.
+		name := uidSpace.New()
+		obj := client.Bucket(bucket).Object(name)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
 		}
-	}()
+		defer h.mustDeleteObject(obj)
 
-	obj := gc.Bucket(grpcBucketName).Object(name)
-
-	r, err := obj.NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer r.Close()
-
-	if size := r.Size(); size != int64(len(content)) {
-		t.Errorf("got size = %v, want %v", size, len(content))
-	}
-	if rem := r.Remain(); rem != int64(len(content)) {
-		t.Errorf("got %v bytes remaining, want %v", rem, len(content))
-	}
-
-	bufSize := len(content)
-	buf := make([]byte, bufSize)
-
-	// Read in smaller chunks, offset to provoke reading across a Recv boundary.
-	chunk := 4<<10 + 1234
-	offset := 0
-	for {
-		end := math.Min(float64(offset+chunk), float64(bufSize))
-		n, err := r.Read(buf[offset:int(end)])
-		if err == io.EOF {
-			break
-		}
+		r, err := obj.NewReader(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
-		offset += n
-	}
+		defer r.Close()
 
-	if rem := r.Remain(); rem != 0 {
-		t.Errorf("got %v bytes remaining, want 0", rem)
-	}
-
-	// TODO: Verify content with the checksums.
-}
-
-func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
-	ctx := context.Background()
-
-	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
-
-	content := []byte("Hello, world this is a grpc request")
-
-	// Upload test data.
-	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucketName).Object(name)
-	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		if err := ho.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		if size := r.Size(); size != int64(len(content)) {
+			t.Errorf("got size = %v, want %v", size, len(content))
 		}
-	}()
-
-	obj := gc.Bucket(grpcBucketName).Object(name)
-
-	offset := 7
-	// Using a negative offset to start reading relative to the end of the
-	// object, and length to indicate reading to the end.
-	r, err := obj.NewRangeReader(ctx, int64(offset*-1), -1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer r.Close()
-
-	if size := r.Size(); size != int64(len(content)) {
-		t.Errorf("got size = %v, want %v", size, len(content))
-	}
-	if rem := r.Remain(); rem != int64(offset) {
-		t.Errorf("got %v bytes remaining, want %v", rem, offset)
-	}
-
-	b := new(bytes.Buffer)
-	b.Grow(offset)
-
-	n, err := io.Copy(b, r)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if n == 0 {
-		t.Fatal("Expected to have read more than 0 bytes")
-	}
-
-	got := b.String()
-	want := string(content[len(content)-offset:])
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("got(-),want(+):\n%s", diff)
-	}
-
-	if rem := r.Remain(); rem != 0 {
-		t.Errorf("got %v bytes remaining, want 0", rem)
-	}
-}
-
-func TestIntegration_ObjectReadPartialContentGRPC(t *testing.T) {
-	ctx := context.Background()
-
-	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
-
-	content := []byte("Hello, world this is a grpc request")
-
-	// Upload test data.
-	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucketName).Object(name)
-	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		if err := ho.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		if rem := r.Remain(); rem != int64(len(content)) {
+			t.Errorf("got %v bytes remaining, want %v", rem, len(content))
 		}
-	}()
 
-	obj := gc.Bucket(grpcBucketName).Object(name)
+		bufSize := len(content)
+		buf := make([]byte, bufSize)
 
-	offset := 5
-	length := 5
-	// Using a negative offset to start reading relative to the end of the
-	// object, and length to indicate reading to the end.
-	r, err := obj.NewRangeReader(ctx, int64(offset), int64(length))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer r.Close()
-
-	b := new(bytes.Buffer)
-	b.Grow(offset)
-
-	n, err := io.Copy(b, r)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if n == 0 {
-		t.Fatal("Expected to have read more than 0 bytes")
-	}
-
-	got := b.String()
-	want := string(content[offset : offset+length])
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("got(-),want(+):\n%s", diff)
-	}
-}
-
-func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
-	ctx := context.Background()
-
-	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
-	h := testHelper{t}
-
-	o := hc.Bucket(grpcBucketName).Object("condread")
-	defer o.Delete(ctx)
-
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("foo"))
-
-	gen := wc.Attrs().Generation
-	metaGen := wc.Attrs().Metageneration
-
-	obj := gc.Bucket(grpcBucketName).Object(o.ObjectName())
-
-	if _, err := obj.Generation(gen + 1).NewReader(ctx); err == nil {
-		t.Fatalf("Unexpected successful download with nonexistent Generation")
-	}
-	if _, err := obj.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
-		t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
-	}
-	if _, err := obj.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
-		t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
-	}
-	if _, err := obj.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
-		t.Fatalf("Download failed: %v", err)
-	}
-}
-
-func TestIntegration_SimpleWriteGRPC(t *testing.T) {
-	ctx := context.Background()
-
-	// Create an HTTP client to read test data and a gRPC client to test write
-	// with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
-
-	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	defer func() {
-		if err := hobj.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Read in smaller chunks, offset to provoke reading across a Recv boundary.
+		chunk := 4<<10 + 1234
+		offset := 0
+		for {
+			end := math.Min(float64(offset+chunk), float64(bufSize))
+			n, err := r.Read(buf[offset:int(end)])
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			offset += n
 		}
-	}()
 
-	content := []byte("Hello, world this is a grpc request")
-	crc32c := crc32.Checksum(content, crc32cTable)
-	w := gobj.NewWriter(ctx)
-	w.ProgressFunc = func(p int64) {
-		t.Logf("%s: committed %d\n", t.Name(), p)
-	}
-	w.SendCRC32C = true
-	w.CRC32C = crc32c
-	got, err := w.Write(content)
-	if err != nil {
-		t.Fatalf("Writer.Write: %v", err)
-	}
-	// Flush the buffer to finish the upload.
-	if err := w.Close(); err != nil {
-		t.Fatalf("Writer.Close: %v", err)
-	}
-
-	want := len(content)
-	if got != want {
-		t.Errorf("While writing got: %d want %d", got, want)
-	}
-
-	// Use HTTP client to read back the Object for verification.
-	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hr.Close()
-
-	buf := make([]byte, want)
-	b := bytes.NewBuffer(buf)
-	gotr, err := io.Copy(b, hr)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if gotr != int64(want) {
-		t.Errorf("While reading got: %d want %d", gotr, want)
-	}
-}
-
-func TestIntegration_CancelWriteGRPC(t *testing.T) {
-	ctx := context.Background()
-
-	// Create an HTTP client to verify test and a gRPC client to test writing.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
-
-	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	defer func() {
-		// As insurance attempt to delete the object, ignore the error if it
-		// doesn't exist, because it wasn't made.
-		hobj.Delete(ctx)
-	}()
-
-	cctx, cancel := context.WithCancel(ctx)
-
-	w := gobj.NewWriter(cctx)
-	// Set a chunk size and send that amount of data to provoke a network call
-	// on the next Write that would fail due to context cancelation.
-	w.ChunkSize = googleapi.MinUploadChunkSize
-	content := make([]byte, w.ChunkSize)
-	_, err := w.Write(content)
-	if err != nil {
-		t.Fatalf("Writer.Write: %v", err)
-	}
-	// Cancel the Writer context before flushing.
-	// TODO: Add a test that writes at least a chunk before canceling part way through.
-	cancel()
-
-	// The next Write should return context.Canceled.
-	_, err = w.Write(content)
-	if !errors.Is(err, context.Canceled) {
-		t.Fatalf("On Write: got %v, wanted context.Canceled", err)
-	}
-	// The Close should too.
-	err = w.Close()
-	if !errors.Is(err, context.Canceled) {
-		t.Fatalf("On Close: got %v, wanted context.Canceled", err)
-	}
-
-	// Use HTTP client to ensure the object wasn't written.
-	if attrs, err := hc.Bucket(grpcBucketName).Object(name).Attrs(ctx); err == nil {
-		t.Fatalf("Expected Object to not be written, but got attrs: %+v", attrs)
-	}
+		if rem := r.Remain(); rem != 0 {
+			t.Errorf("got %v bytes remaining, want 0", rem)
+		}
+	})
 }
 
 func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
@@ -1371,67 +1036,54 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	})
 }
 
-func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
-	ctx := context.Background()
+func TestIntegration_MultiChunkWrite(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+		obj := client.Bucket(bucket).Object(uidSpace.New()).Retryer(WithPolicy(RetryAlways))
+		defer h.mustDeleteObject(obj)
 
-	// Create an HTTP client to read test data and a gRPC client to test write
-	// with.
-	hc := testConfig(ctx, t)
-	defer hc.Close()
-	gc := testConfigGRPC(ctx, t)
-	defer gc.Close()
+		// Use a larger blob to test multi-message logic. This is a little over 5MB.
+		content := bytes.Repeat([]byte("a"), 5<<20)
+		crc32c := crc32.Checksum(content, crc32cTable)
 
-	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
-	defer func() {
-		if err := hobj.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		w := obj.NewWriter(ctx)
+		w.SendCRC32C = true
+		w.CRC32C = crc32c
+		// Use a 1 MB chunk size.
+		w.ChunkSize = 1 << 20
+		w.ProgressFunc = func(p int64) {
+			t.Logf("%s: committed %d\n", t.Name(), p)
 		}
-	}()
+		got, err := w.Write(content)
+		if err != nil {
+			t.Fatalf("Writer.Write: %v", err)
+		}
+		// Flush the buffer to finish the upload.
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
 
-	// Use a larger blob to test multi-message logic. This is a little over 5MB.
-	content := bytes.Repeat([]byte("a"), 5<<20)
-	crc32c := crc32.Checksum(content, crc32cTable)
+		want := len(content)
+		if got != want {
+			t.Errorf("While writing got: %d want %d", got, want)
+		}
 
-	w := gobj.NewWriter(ctx)
-	w.SendCRC32C = true
-	w.CRC32C = crc32c
-	// Use a 1 MB chunk size.
-	w.ChunkSize = 1 << 20
-	w.ProgressFunc = func(p int64) {
-		t.Logf("%s: committed %d\n", t.Name(), p)
-	}
-	got, err := w.Write(content)
-	if err != nil {
-		t.Fatalf("Writer.Write: %v", err)
-	}
-	// Flush the buffer to finish the upload.
-	if err := w.Close(); err != nil {
-		t.Fatalf("Writer.Close: %v", err)
-	}
+		r, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer r.Close()
 
-	want := len(content)
-	if got != want {
-		t.Errorf("While writing got: %d want %d", got, want)
-	}
-
-	// Use HTTP client to read back the Object for verification.
-	hr, err := hobj.NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hr.Close()
-
-	buf := make([]byte, want+4<<10)
-	b := bytes.NewBuffer(buf)
-	gotr, err := io.Copy(b, hr)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if gotr != int64(want) {
-		t.Errorf("While reading got: %d want %d", gotr, want)
-	}
+		buf := make([]byte, want+4<<10)
+		b := bytes.NewBuffer(buf)
+		gotr, err := io.Copy(b, r)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if gotr != int64(want) {
+			t.Errorf("While reading got: %d want %d", gotr, want)
+		}
+	})
 }
 
 func TestIntegration_ConditionalDownload(t *testing.T) {
@@ -2501,47 +2153,47 @@ func TestIntegration_ValidObjectNames(t *testing.T) {
 }
 
 func TestIntegration_WriterContentType(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	obj := client.Bucket(bucketName).Object("content")
-	testCases := []struct {
-		content           string
-		setType, wantType string
-	}{
-		{
-			content:  "It was the best of times, it was the worst of times.",
-			wantType: "text/plain; charset=utf-8",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			wantType: "text/html; charset=utf-8",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			setType:  "text/html",
-			wantType: "text/html",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			setType:  "image/jpeg",
-			wantType: "image/jpeg",
-		},
-	}
-	for i, tt := range testCases {
-		if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
-			t.Errorf("writing #%d: %v", i, err)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		obj := client.Bucket(bucket).Object("content")
+		testCases := []struct {
+			content           string
+			setType, wantType string
+		}{
+			{
+				// Sniffed content type.
+				content:  "It was the best of times, it was the worst of times.",
+				wantType: "text/plain; charset=utf-8",
+			},
+			{
+				// Sniffed content type.
+				content:  "<html><head><title>My first page</title></head></html>",
+				wantType: "text/html; charset=utf-8",
+			},
+			{
+				content:  "<html><head><title>My first page</title></head></html>",
+				setType:  "text/html",
+				wantType: "text/html",
+			},
+			{
+				content:  "<html><head><title>My first page</title></head></html>",
+				setType:  "image/jpeg",
+				wantType: "image/jpeg",
+			},
 		}
-		attrs, err := obj.Attrs(ctx)
-		if err != nil {
-			t.Errorf("obj.Attrs: %v", err)
-			continue
+		for i, tt := range testCases {
+			if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
+				t.Errorf("writing #%d: %v", i, err)
+			}
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				t.Errorf("obj.Attrs: %v", err)
+				continue
+			}
+			if got := attrs.ContentType; got != tt.wantType {
+				t.Errorf("Content-Type = %q; want %q\nContent: %q\nSet Content-Type: %q", got, tt.wantType, tt.content, tt.setType)
+			}
 		}
-		if got := attrs.ContentType; got != tt.wantType {
-			t.Errorf("Content-Type = %q; want %q\nContent: %q\nSet Content-Type: %q", got, tt.wantType, tt.content, tt.setType)
-		}
-	}
+	})
 }
 
 func TestIntegration_ZeroSizedObject(t *testing.T) {
