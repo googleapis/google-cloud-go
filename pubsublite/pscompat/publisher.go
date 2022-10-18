@@ -54,6 +54,11 @@ var (
 // PublisherClient is a Pub/Sub Lite client to publish messages to a given
 // topic. A PublisherClient is safe to use from multiple goroutines.
 //
+// PublisherClients are expected to be long-lived and used for the duration of
+// the application, rather than for publishing small batches of messages. Stop
+// must be called to release resources when a PublisherClient is no longer
+// required.
+//
 // See https://cloud.google.com/pubsub/lite/docs/publishing for more information
 // about publishing.
 type PublisherClient struct {

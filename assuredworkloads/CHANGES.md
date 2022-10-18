@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.6.0...assuredworkloads/v1.7.0) (2022-10-14)
+
+
+### Features
+
+* **assuredworkloads:** add apis for AssuredWorkload monitoring feature and to restrict allowed resources ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.5.0...assuredworkloads/v1.6.0) (2022-09-21)
 
 

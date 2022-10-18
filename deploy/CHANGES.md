@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.2.1...deploy/v1.3.0) (2022-10-14)
+
+
+### Features
+
+* **deploy:** Publish new JobRun resource and associated methods for Google Cloud Deploy ([ce3f945](https://github.com/googleapis/google-cloud-go/commit/ce3f9458e511eca0910992763232abbcd64698f1))
+
+
+### Bug Fixes
+
+* **deploy:** Fix resource annotations for Cloud Deploy to use common resource name for locations ([ce3f945](https://github.com/googleapis/google-cloud-go/commit/ce3f9458e511eca0910992763232abbcd64698f1))
+
 ## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.2.0...deploy/v1.2.1) (2022-07-12)
 
 

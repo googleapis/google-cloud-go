@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	"crypto/x509"
-	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
@@ -32,6 +31,7 @@ import (
 	gauth "golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
@@ -83,26 +83,24 @@ func rowToProto(btRow bigtable.Row) (*btpb.Row, error) {
 // rowSetFromProto translates a Bigtable v2.RowSet object to a Bigtable.RowSet
 // object.
 func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
-	rowRangeList := make(bigtable.RowRangeList, 0)
+	rowKeys := rs.GetRowKeys()
+	rowRanges := rs.GetRowRanges()
 
-	// Convert all rowKeys into single-row RowRanges
-	if rowKeys := rs.GetRowKeys(); len(rowKeys) > 0 {
-		for _, b := range rowKeys {
-
-			// Find the next highest key using byte operations
-			// This allows us to create a RowRange of 1 rowKey
-			e := binary.BigEndian.Uint64(b)
-			e++
-
-			s := binary.Size(e)
-			bOut := make([]byte, s)
-			binary.BigEndian.PutUint64(bOut, e)
-
-			rowRangeList = append(rowRangeList, bigtable.NewRange(string(b), string(bOut)))
-		}
+	if len(rowKeys) == 0 && len(rowRanges) == 0 {
+		return nil
 	}
 
-	if rowRanges := rs.GetRowRanges(); len(rowRanges) > 0 {
+	// Convert all rowKeys into single-row RowRanges
+	if len(rowKeys) > 0 {
+		var rowList bigtable.RowList
+		for _, b := range rowKeys {
+			rowList = append(rowList, string(b))
+		}
+		return rowList
+	}
+
+	if len(rowRanges) > 0 {
+		rowRangeList := make(bigtable.RowRangeList, 0)
 		for _, rrs := range rowRanges {
 			var start, end string
 			var rr bigtable.RowRange
@@ -128,8 +126,9 @@ func rowSetFromProto(rs *btpb.RowSet) bigtable.RowSet {
 
 			rowRangeList = append(rowRangeList, rr)
 		}
+		return rowRangeList
 	}
-	return rowRangeList
+	return nil
 }
 
 // mutationFromProto translates a slice of Bigtable v2.Mutation objects into
@@ -332,6 +331,21 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 	return f
 }
 
+// statusFromError converts an error into a Status code.
+func statusFromError(err error) *statpb.Status {
+	st := &statpb.Status{
+		Code:    int32(codes.Internal),
+		Message: fmt.Sprintf("%v", err),
+	}
+	if s, ok := stat.FromError(err); ok {
+		st = &statpb.Status{
+			Code:    int32(s.Code()),
+			Message: s.Message(),
+		}
+	}
+	return st
+}
+
 // testClient contains a bigtable.Client object, cancel functions for the calls
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
@@ -477,8 +491,9 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 // a reference to individual clients instances (stored in a testClient object).
 type goTestProxyServer struct {
 	pb.UnimplementedCloudBigtableV2TestProxyServer
+	clientsLock sync.RWMutex           // clientsLock prevents simultaneous mutation of the clientIDs map
 	clientIDs   map[string]*testClient // clientIDs has all of the bigtable.Client objects under test
-	clientsLock sync.RWMutex
+
 }
 
 // CreateClient responds to the CreateClient RPC. This method adds a new client
@@ -550,43 +565,385 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // ReadRow responds to the ReadRow RPC. This method gets all of the column
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadRow not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	tName := req.TableName
+	t := btc.c.Open(tName)
+
+	res := &pb.RowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+		Row: &btpb.Row{},
+	}
+
+	if btc.perOperationTimeout != nil {
+		ct, _ := context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
+		ctx = ct
+	}
+
+	r, err := t.ReadRow(ctx, req.RowKey)
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	if r == nil {
+		return res, nil
+	}
+
+	pbRow, err := rowToProto(r)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Row = pbRow
+	return res, nil
 }
 
 // ReadRows responds to the ReadRows RPC. This method gets all of the column
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadRows not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("bad client ID: %v\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+
+	if rrq == nil {
+		log.Printf("missing inner request: %v\n", rrq)
+		return nil, stat.Error(codes.InvalidArgument, "request to ReadRows() is missing inner request")
+
+	}
+
+	t := btc.c.Open(rrq.TableName)
+
+	rowPbs := rrq.Rows
+	rs := rowSetFromProto(rowPbs)
+
+	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
+	// provided for ReadRows. Use InfiniteRange() to get the full table.
+	if rs == nil {
+		// Should be lowest possible key value, an empty byte array
+		rs = bigtable.InfiniteRange("")
+	}
+
+	var c int32
+	var rowsPb []*btpb.Row
+	lim := req.GetCancelAfterRows()
+	err := t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+
+		c++
+		if c == lim {
+			return false
+		}
+		rpb, err := rowToProto(r)
+		if err != nil {
+			return false
+		}
+		rowsPb = append(rowsPb, rpb)
+		return true
+	})
+
+	res := &pb.RowsResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+		Row: []*btpb.Row{},
+	}
+
+	if err != nil {
+		log.Printf("error from Table.ReadRows: %v\n", err)
+		if st, ok := stat.FromError(err); ok {
+			res.Status = &statpb.Status{
+				Code:    st.Proto().Code,
+				Message: st.Message(),
+			}
+		}
+		return res, nil
+	}
+
+	res.Row = rowsPb
+
+	return res, nil
 }
 
 // MutateRow responds to the MutateRow RPC. This methods applies a series of
 // changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "MutateRow not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		return nil, stat.Error(codes.InvalidArgument, "request to MutateRow() is missing inner request")
+	}
+
+	mPbs := rrq.Mutations
+	m := mutationFromProto(mPbs)
+
+	t := btc.c.Open(rrq.TableName)
+	row := rrq.RowKey
+
+	res := &pb.MutateRowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	err := t.Apply(ctx, string(row), m)
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	return res, nil
 }
 
 // BulkMutateRows responds to the BulkMutateRows RPC. This method applies a
 // series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "BulkMutateRows not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("received invalid client ID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("missing inner request to BulkMutateRows: %v\n", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to BulkMutateRows() is missing inner request")
+	}
+
+	mrs := rrq.Entries
+	t := btc.c.Open(rrq.TableName)
+
+	keys := make([]string, len(mrs))
+	muts := make([]*bigtable.Mutation, len(mrs))
+
+	for i, mr := range mrs {
+
+		key := string(mr.RowKey)
+		m := mutationFromProto(mr.Mutations)
+
+		// A little tricky here ... each key corresponds to a single Mutation
+		// object, where the indices of each slice must be sync'ed.
+		keys[i] = key
+		muts[i] = m
+	}
+
+	res := &pb.MutateRowsResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	errs, err := t.ApplyBulk(ctx, keys, muts)
+	if err != nil {
+		log.Printf("received error from Table.ApplyBulk(): %v", err)
+		res.Status = statusFromError(err)
+	}
+
+	var entries []*btpb.MutateRowsResponse_Entry
+
+	// Iterate over any errors returned, matching indices with errors. If
+	// errs is nil, this block is skipped.
+	for i, e := range errs {
+		var me *btpb.MutateRowsResponse_Entry
+		if e != nil {
+			st := statusFromError(err)
+			me = &btpb.MutateRowsResponse_Entry{
+				Index:  int64(i),
+				Status: st,
+			}
+			entries = append(entries, me)
+		}
+	}
+
+	res.Entry = entries
+	return res, nil
 }
 
 // CheckAndMutateRow responds to the CheckAndMutateRow RPC. This method applies
 // one mutation if a condition is true and another mutation if it is false.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "CheckAndMutateRow not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("received invalid ClientID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("request to CheckAndMutateRow is missing inner request: received: %v", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to CheckAndMutateRow() is missing inner request")
+	}
+
+	trueMuts := mutationFromProto(rrq.TrueMutations)
+	falseMuts := mutationFromProto(rrq.FalseMutations)
+
+	rfPb := rrq.PredicateFilter
+	f := bigtable.PassAllFilter()
+
+	if rfPb != nil {
+		f = *filterFromProto(rfPb)
+	}
+
+	c := bigtable.NewCondMutation(f, trueMuts, falseMuts)
+
+	res := &pb.CheckAndMutateRowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	rowKey := string(rrq.RowKey)
+
+	var matched bool
+	ao := bigtable.GetCondMutationResult(&matched)
+
+	err := t.Apply(ctx, rowKey, c, ao)
+	if err != nil {
+		log.Printf("received error from Table.Apply: %v", err)
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	res.Result = &btpb.CheckAndMutateRowResponse{
+		PredicateMatched: matched,
+	}
+
+	return res, nil
 }
 
 // SampleRowKeys responds to the SampleRowKeys RPC. This method gets a sampling
 // of the keys available in a table.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "SampleRowKeys not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("received invalid client ID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("missing inner request to SampleRowKeys: %v\n", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to SampleRowKeys() is missing inner request")
+	}
+
+	res := &pb.SampleRowKeysResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	keys, err := t.SampleRowKeys(ctx)
+	if err != nil {
+		log.Printf("received error from Table.SampleRowKeys(): %v\n", err)
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	sk := make([]*btpb.SampleRowKeysResponse, 0)
+	for _, k := range keys {
+		s := &btpb.SampleRowKeysResponse{
+			RowKey: []byte(k),
+		}
+		sk = append(sk, s)
+	}
+
+	res.Sample = sk
+
+	return res, nil
 }
 
 // ReadModifyWriteRow responds to the ReadModifyWriteRow RPC. This method
 // applies a non-idempotent change to a row.
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
-	return nil, stat.Error(codes.Unimplemented, "ReadModifyWriteRow not implemented")
+	s.clientsLock.RLock()
+	btc, exists := s.clientIDs[req.ClientId]
+	s.clientsLock.RUnlock()
+
+	if !exists {
+		log.Printf("received invalid client ID: %s\n", req.ClientId)
+		return nil, stat.Error(codes.InvalidArgument,
+			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	}
+
+	rrq := req.GetRequest()
+	if rrq == nil {
+		log.Printf("missing inner request to ReadModifyWriteRow: %v\n", req)
+		return nil, stat.Error(codes.InvalidArgument, "request to CheckAndMutateRow() is missing inner request")
+	}
+
+	rpb := rrq.Rules
+	rmw := bigtable.NewReadModifyWrite()
+
+	for _, rp := range rpb {
+		switch r := rp.Rule.(type) {
+		case *btpb.ReadModifyWriteRule_AppendValue:
+			av := r
+			rmw.AppendValue(rp.FamilyName, string(rp.ColumnQualifier), av.AppendValue)
+		case *btpb.ReadModifyWriteRule_IncrementAmount:
+			ia := r
+			rmw.Increment(rp.FamilyName, string(rp.ColumnQualifier), ia.IncrementAmount)
+		}
+	}
+
+	res := &pb.RowResult{
+		Status: &statpb.Status{
+			Code: int32(codes.OK),
+		},
+	}
+
+	t := btc.c.Open(rrq.TableName)
+	k := string(rrq.RowKey)
+	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
+	if err != nil {
+		return nil, err
+	}
+
+	rp, err := rowToProto(r)
+	if err != nil {
+		res.Status = statusFromError(err)
+		return res, nil
+	}
+
+	res.Row = rp
+	return res, nil
 }
 
 func (s *goTestProxyServer) mustEmbedUnimplementedCloudBigtableV2TestProxyServer() {}

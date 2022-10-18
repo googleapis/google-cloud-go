@@ -601,8 +601,7 @@ func TestRoutingPublisherStartStop(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
-	pub.Stop()
-	barrier.Release()
+	barrier.ReleaseAfter(func() { pub.Stop() })
 
 	if gotErr := pub.WaitStopped(); gotErr != nil {
 		t.Errorf("Stop() got err: (%v)", gotErr)
