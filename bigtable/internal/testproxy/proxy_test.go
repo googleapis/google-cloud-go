@@ -194,7 +194,6 @@ func TestCreateAndRemoveClient(t *testing.T) {
 
 	_, err = client.RemoveClient(ctx, &pb.RemoveClientRequest{
 		ClientId:  cid,
-		CancelAll: true,
 	})
 
 	if err != nil {
