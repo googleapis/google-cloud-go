@@ -25,10 +25,14 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type mockServer struct {
@@ -42,6 +46,27 @@ type mockServer struct {
 type reqItem struct {
 	wantReq proto.Message
 	adjust  func(gotReq proto.Message)
+}
+
+func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
+	srv, cleanup, err := newMockServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock())
+	if err != nil {
+		t.Fatal(err)
+	}
+	client, err := NewClient(context.Background(), "projectID", option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return client, srv, func() {
+		client.Close()
+		conn.Close()
+		cleanup()
+	}
 }
 
 func newMockServer() (_ *mockServer, cleanup func(), _ error) {
