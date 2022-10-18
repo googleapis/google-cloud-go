@@ -838,4 +838,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/maps/routing/v2": {
+		ImportPath: "cloud.google.com/go/maps/routing/apiv2/routingpb",
+		Status:     StatusMigrated,
+	},
 }

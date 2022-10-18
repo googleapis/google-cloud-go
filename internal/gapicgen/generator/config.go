@@ -1705,8 +1705,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v2beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
-		// GA after 2022/10/01
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/iam/v2",
@@ -1724,8 +1723,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "publicca_v1beta1_grpc_service_config.json",
 		ApiServiceConfigPath:  "publicca_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
-		// GA after 2022/10/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/edgecontainer/v1",
@@ -1771,7 +1769,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
 		ApiServiceConfigPath:  "dataform_v1beta1.yaml",
 		Transports:            []string{"grpc", "rest"},
-		// GA after 2022/11/18
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/maps/routing/v2",
+		Pkg:                   "routing",
+		ImportPath:            "cloud.google.com/go/maps/routing/apiv2",
+		GRPCServiceConfigPath: "library_grpc_service_config.json",
+		ApiServiceConfigPath:  "routes_v2.yaml",
+		// GA after 2022/12/10
 		ReleaseLevel: "beta",
 	},
 	{
