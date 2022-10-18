@@ -961,6 +961,11 @@ func errBadEncoding(v *proto3.Value, err error) error {
 	return spannerErrorf(codes.FailedPrecondition, "%v wasn't correctly encoded: <%v>", v, err)
 }
 
+// errNotAPointer returns error for decoding a non pointer type.
+func errNotAPointer(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "destination %T must be a pointer", dst)
+}
+
 func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
 	if p == nil {
 		return errNilDst(p)
@@ -1855,7 +1860,6 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if isNull {
 			return errDstNotForNull(ptr)
 		}
-
 		x, err := getStringValue(v)
 		if err != nil {
 			return err
@@ -1863,6 +1867,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		y, err := strconv.ParseInt(x, 10, 64)
 		if err != nil {
 			return errBadEncoding(v, err)
+		}
+		if reflect.ValueOf(p).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
 		}
 		reflect.ValueOf(p).Elem().SetInt(y)
 	case proto.Message:
@@ -3606,7 +3613,9 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		return nil, nil, errEncoderUnsupportedType(v)
 	case protoreflect.Enum:
 		// TODO: here nil check not needed because a enum variable always has a default value. Recheck
-		pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
+		if v != nil {
+			pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
+		}
 		pt = enumType()
 	case proto.Message:
 		if v != nil {

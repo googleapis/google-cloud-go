@@ -139,11 +139,11 @@ func enumType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_ENUM}
 }
 
-func enumProto(e protoreflect.Enum) *proto3.Value {
-	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: strconv.FormatInt(int64(e.Number()), 10)}}
-}
-
 func messageProto(m proto.Message) *proto3.Value {
 	var b, _ = proto.Marshal(m)
 	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: base64.StdEncoding.EncodeToString(b)}}
+}
+
+func enumProto(e protoreflect.Enum) *proto3.Value {
+	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: strconv.FormatInt(int64(e.Number()), 10)}}
 }

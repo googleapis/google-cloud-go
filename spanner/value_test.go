@@ -1811,7 +1811,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
 		// PROTO MESSAGE AND PROTO ENUM
 		{desc: "decode PROTO to proto.Message", proto: messageProto(&protoMessage), protoType: protoType(), want: protoMessage},
-		{desc: "decode ENUM to *enum", proto: enumProto(pb.Genre_COUNTRY), protoType: enumType(), want: enumValue},
+		{desc: "decode ENUM to protoreflect.Enum", proto: enumProto(pb.Genre_COUNTRY), protoType: enumType(), want: enumValue},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1859,7 +1859,7 @@ func TestDecodeValue(t *testing.T) {
 				t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got_, got_, want_, want_)
 			}
 			if diff := cmp.Diff(got, test.want, protocmp.Transform()); diff != "" {
-				t.Errorf("unexpected difference:\n%v", diff)
+				t.Errorf("unexpected difference in proto message :\n%v", diff)
 			}
 		default:
 			if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
