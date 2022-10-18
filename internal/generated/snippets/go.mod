@@ -13,8 +13,8 @@ require (
 	cloud.google.com/go/appengine v1.3.0
 	cloud.google.com/go/area120 v0.6.0
 	cloud.google.com/go/artifactregistry v1.7.0
-	cloud.google.com/go/asset v1.7.0
-	cloud.google.com/go/assuredworkloads v1.6.0
+	cloud.google.com/go/asset v1.8.0
+	cloud.google.com/go/assuredworkloads v1.7.0
 	cloud.google.com/go/automl v1.6.0
 	cloud.google.com/go/baremetalsolution v0.2.0
 	cloud.google.com/go/batch v0.1.0
@@ -42,7 +42,7 @@ require (
 	cloud.google.com/go/datastore v1.8.0
 	cloud.google.com/go/datastream v1.3.0
 	cloud.google.com/go/deploy v1.2.1
-	cloud.google.com/go/dialogflow v1.16.1
+	cloud.google.com/go/dialogflow v1.17.0
 	cloud.google.com/go/dlp v1.4.0
 	cloud.google.com/go/documentai v1.8.0
 	cloud.google.com/go/domains v0.7.0
@@ -120,17 +120,17 @@ require (
 	cloud.google.com/go/workflows v1.7.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.99.0
-	google.golang.org/genproto v0.0.0-20221014213838-99cd37c6964a
+	google.golang.org/genproto v0.0.0-20221018143404-92eef740a0dc
 )
 
 require (
 	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/edgecontainer v0.1.0
+	cloud.google.com/go/edgecontainer v0.2.0
 )
 
 require (
-	cloud.google.com/go/recaptchaenterprise/v2 v2.2.0 // indirect
+	cloud.google.com/go/recaptchaenterprise/v2 v2.3.0 // indirect
 	cloud.google.com/go/vision/v2 v2.3.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
@@ -142,7 +142,7 @@ require (
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.50.0 // indirect
+	google.golang.org/grpc v1.50.1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 )
 
