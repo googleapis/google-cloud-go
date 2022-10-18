@@ -691,7 +691,11 @@ func parseReadOptions(q *Query) (*pb.ReadOptions, error) {
 		}, nil
 	}
 
-	return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
+	if q.eventual {
+		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
+	}
+
+	return nil, nil
 }
 
 // Iterator is the result of running a query.
