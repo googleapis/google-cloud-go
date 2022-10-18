@@ -193,7 +193,7 @@ func TestCreateAndRemoveClient(t *testing.T) {
 	t.Log("testproxy test: client created successfully in test proxy")
 
 	_, err = client.RemoveClient(ctx, &pb.RemoveClientRequest{
-		ClientId:  cid,
+		ClientId: cid,
 	})
 
 	if err != nil {
