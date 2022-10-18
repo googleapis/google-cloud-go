@@ -1,11 +1,11 @@
 module cloud.google.com/go/kms
 
-go 1.17
+go 1.19
 
 require (
 	cloud.google.com/go v0.104.0
-	cloud.google.com/go/iam v0.3.0
-	github.com/googleapis/gax-go/v2 v2.5.1
+	cloud.google.com/go/iam v0.5.0
+	github.com/googleapis/gax-go/v2 v2.6.0
 	google.golang.org/api v0.99.0
 	google.golang.org/genproto v0.0.0-20221018143404-92eef740a0dc
 	google.golang.org/grpc v1.50.1

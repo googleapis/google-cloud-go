@@ -3,14 +3,13 @@ module cloud.google.com/go/internal/gapicgen
 go 1.19
 
 require (
-	cloud.google.com/go v0.104.0
 	cloud.google.com/go/internal/aliasfix v0.0.0
-	cloud.google.com/go/internal/aliasgen v0.0.0-20220902151655-a6004e762f78
-	cloud.google.com/go/internal/godocfx v0.0.0-20220625055333-3f8d1627b9c2
+	cloud.google.com/go/internal/aliasgen v0.0.0-20221014201223-53a0f9dc7e78
+	cloud.google.com/go/internal/godocfx v0.0.0-20221014201223-53a0f9dc7e78
 	github.com/google/go-github/v35 v35.3.0
-	github.com/shurcooL/githubv4 v0.0.0-20220520033151-0b4e3294ff00
-	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
+	github.com/shurcooL/githubv4 v0.0.0-20220922232305-70b4d362a8cb
+	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
+	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10
 	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
 	google.golang.org/protobuf v1.28.1
