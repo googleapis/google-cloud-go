@@ -802,11 +802,6 @@ func TestNewBucketFromProto(t *testing.T) {
 				},
 			}},
 		},
-		// Populated with default values.
-		CustomPlacementConfig: nil,
-		VersioningEnabled:     false,
-		RequesterPays:         false,
-		ProjectNumber:         0,
 	}
 	got := newBucketFromProto(pb)
 	if diff := testutil.Diff(got, want); diff != "" {
