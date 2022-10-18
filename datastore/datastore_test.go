@@ -3085,7 +3085,7 @@ func TestGetWithReadTime(t *testing.T) {
 	type ent struct {
 		A int
 	}
-
+	tm := time.Now()
 	k := NameKey("testKind", "testReadTime", nil)
 	e := &pb.Entity{
 		Key: keyToProto(k),
@@ -3094,7 +3094,12 @@ func TestGetWithReadTime(t *testing.T) {
 		},
 	}
 	fakeClient := &fakeDatastoreClient{
-		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
+		lookup: func(req *pb.LookupRequest) (*pb.LookupResponse, error) {
+			if !req.ReadOptions.GetReadTime().AsTime().Equal(tm) {
+				return nil, fmt.Errorf("read time mismatch: expected %v, got %v", tm,
+					req.ReadOptions.GetReadTime())
+			}
+
 			return &pb.LookupResponse{
 				Found: []*pb.EntityResult{
 					{
@@ -3112,7 +3117,7 @@ func TestGetWithReadTime(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	client.WithReadOptions(ReadTime(time.Now()))
+	client.WithReadOptions(ReadTime(tm))
 	dst := &ent{}
 	err := client.Get(ctx, k, dst)
 	if err != nil {
@@ -3125,6 +3130,7 @@ func TestGetMultiWithReadTime(t *testing.T) {
 		A int
 	}
 
+	tm := time.Now()
 	k := []*Key{
 		NameKey("testKind", "testReadTime", nil),
 		NameKey("testKind", "testReadTime2", nil),
@@ -3144,7 +3150,13 @@ func TestGetMultiWithReadTime(t *testing.T) {
 	}
 
 	fakeClient := &fakeDatastoreClient{
-		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
+		lookup: func(req *pb.LookupRequest) (*pb.LookupResponse, error) {
+
+			if !req.ReadOptions.GetReadTime().AsTime().Equal(tm) {
+				return nil, fmt.Errorf("read time mismatch: expected %v, got %v", tm,
+					req.ReadOptions.GetReadTime())
+			}
+
 			return &pb.LookupResponse{
 				Found: []*pb.EntityResult{
 					{
@@ -3165,7 +3177,7 @@ func TestGetMultiWithReadTime(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	client.WithReadOptions(ReadTime(time.Now()))
+	client.WithReadOptions(ReadTime(tm))
 	dst := make([]*ent, len(k))
 	err := client.GetMulti(ctx, k, dst)
 	if err != nil {
