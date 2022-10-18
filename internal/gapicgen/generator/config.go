@@ -1764,6 +1764,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/10/20
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/speech/v2",
+		Pkg:                   "speech",
+		ImportPath:            "cloud.google.com/go/speech/apiv2",
+		GRPCServiceConfigPath: "speech_grpc_service_config.json",
+		ApiServiceConfigPath:  "speech_v2.yaml",
+		// GA after 2022/11/18
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
