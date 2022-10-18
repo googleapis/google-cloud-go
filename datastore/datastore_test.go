@@ -3082,9 +3082,8 @@ func TestPutMultiTypes(t *testing.T) {
 }
 
 func TestGetWithReadTime(t *testing.T) {
-	type Ent struct {
+	type ent struct {
 		A int
-		B string
 	}
 
 	k := NameKey("testKind", "testReadTime", nil)
@@ -3092,7 +3091,6 @@ func TestGetWithReadTime(t *testing.T) {
 		Key: keyToProto(k),
 		Properties: map[string]*pb.Value{
 			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
-			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
 		},
 	}
 	fakeClient := &fakeDatastoreClient{
@@ -3115,7 +3113,7 @@ func TestGetWithReadTime(t *testing.T) {
 
 	ctx := context.Background()
 	client.WithReadOptions(ReadTime(time.Now()))
-	dst := &Ent{}
+	dst := &ent{}
 	err := client.Get(ctx, k, dst)
 	if err != nil {
 		t.Fatalf("Get() with ReadTime failed: %v\n", err)
@@ -3123,9 +3121,8 @@ func TestGetWithReadTime(t *testing.T) {
 }
 
 func TestGetMultiWithReadTime(t *testing.T) {
-	type Ent struct {
+	type ent struct {
 		A int
-		B string
 	}
 
 	k := []*Key{
@@ -3137,14 +3134,12 @@ func TestGetMultiWithReadTime(t *testing.T) {
 		Key: keyToProto(k[0]),
 		Properties: map[string]*pb.Value{
 			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
-			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
 		},
 	}
 	e2 := &pb.Entity{
 		Key: keyToProto(k[1]),
 		Properties: map[string]*pb.Value{
 			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
-			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
 		},
 	}
 
@@ -3171,7 +3166,7 @@ func TestGetMultiWithReadTime(t *testing.T) {
 
 	ctx := context.Background()
 	client.WithReadOptions(ReadTime(time.Now()))
-	dst := make([]*Ent, len(k))
+	dst := make([]*ent, len(k))
 	err := client.GetMulti(ctx, k, dst)
 	if err != nil {
 		t.Fatalf("Get() with ReadTime failed: %v\n", err)
