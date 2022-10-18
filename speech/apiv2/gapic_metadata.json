@@ -1,0 +1,153 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.speech.v2",
+  "libraryPackage": "cloud.google.com/go/speech/apiv2",
+  "services": {
+    "Speech": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchRecognize": {
+              "methods": [
+                "BatchRecognize"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCustomClass": {
+              "methods": [
+                "CreateCustomClass"
+              ]
+            },
+            "CreatePhraseSet": {
+              "methods": [
+                "CreatePhraseSet"
+              ]
+            },
+            "CreateRecognizer": {
+              "methods": [
+                "CreateRecognizer"
+              ]
+            },
+            "DeleteCustomClass": {
+              "methods": [
+                "DeleteCustomClass"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePhraseSet": {
+              "methods": [
+                "DeletePhraseSet"
+              ]
+            },
+            "DeleteRecognizer": {
+              "methods": [
+                "DeleteRecognizer"
+              ]
+            },
+            "GetConfig": {
+              "methods": [
+                "GetConfig"
+              ]
+            },
+            "GetCustomClass": {
+              "methods": [
+                "GetCustomClass"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPhraseSet": {
+              "methods": [
+                "GetPhraseSet"
+              ]
+            },
+            "GetRecognizer": {
+              "methods": [
+                "GetRecognizer"
+              ]
+            },
+            "ListCustomClasses": {
+              "methods": [
+                "ListCustomClasses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPhraseSets": {
+              "methods": [
+                "ListPhraseSets"
+              ]
+            },
+            "ListRecognizers": {
+              "methods": [
+                "ListRecognizers"
+              ]
+            },
+            "Recognize": {
+              "methods": [
+                "Recognize"
+              ]
+            },
+            "StreamingRecognize": {
+              "methods": [
+                "StreamingRecognize"
+              ]
+            },
+            "UndeleteCustomClass": {
+              "methods": [
+                "UndeleteCustomClass"
+              ]
+            },
+            "UndeletePhraseSet": {
+              "methods": [
+                "UndeletePhraseSet"
+              ]
+            },
+            "UndeleteRecognizer": {
+              "methods": [
+                "UndeleteRecognizer"
+              ]
+            },
+            "UpdateConfig": {
+              "methods": [
+                "UpdateConfig"
+              ]
+            },
+            "UpdateCustomClass": {
+              "methods": [
+                "UpdateCustomClass"
+              ]
+            },
+            "UpdatePhraseSet": {
+              "methods": [
+                "UpdatePhraseSet"
+              ]
+            },
+            "UpdateRecognizer": {
+              "methods": [
+                "UpdateRecognizer"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
