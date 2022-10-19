@@ -566,6 +566,15 @@
     "release_level": "alpha",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/dataform/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/dataform/apiv1beta1",
+    "description": "Dataform API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/dataform/latest/apiv1beta1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/datafusion/apiv1": {
     "distribution_name": "cloud.google.com/go/datafusion/apiv1",
     "description": "Cloud Data Fusion API",
