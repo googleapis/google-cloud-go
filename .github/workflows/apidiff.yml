@@ -12,7 +12,7 @@ jobs:
         ref: main
     - name: Get main commit
       id: main
-      run: echo "::set-output name=hash::$(git rev-parse HEAD)"
+      run: echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
     - uses: actions/checkout@v3
     - name: Get changed directories
       id: changed_dirs
@@ -21,10 +21,10 @@ jobs:
         dirs=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD | xargs -r -L1 dirname | uniq | grep -v -e 'internal' -e '\.')
         if [ -z "$dirs" ]
         then
-          echo "::set-output name=changed::{\"changed\":[]}"
+          echo "changed={\"changed\":[]}" >> $GITHUB_OUTPUT
         else
           for d in $dirs; do list=${list},\"${d}\"; done
-          echo "::set-output name=changed::{\"changed\":[${list#,}]}"
+          echo "changed={\"changed\":[${list#,}]}" >> $GITHUB_OUTPUT
         fi
     outputs:
       changed_dirs: ${{ steps.changed_dirs.outputs.changed }}
@@ -48,7 +48,7 @@ jobs:
       id: baseline
       run: |
         export CHANGED=${{ matrix.changed }}
-        echo ::set-output name=pkg::"${CHANGED//\//_}_pkg.main"
+        echo pkg="${CHANGED//\//_}_pkg.main" >> $GITHUB_OUTPUT
     - name: Create Go package baseline
       run: cd {{ matrix.changed }} && apidiff -w ${{ steps.baseline.outputs.pkg }} .
     - name: Upload baseline package data
