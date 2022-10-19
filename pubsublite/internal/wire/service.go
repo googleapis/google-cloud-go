@@ -155,6 +155,21 @@ func (as *abstractService) unsafeUpdateStatus(targetStatus serviceStatus, err er
 	return true
 }
 
+type closeable interface {
+	Close() error
+}
+
+type apiClients []closeable
+
+func (ac apiClients) Close() (retErr error) {
+	for _, c := range ac {
+		if err := c.Close(); retErr == nil {
+			retErr = err
+		}
+	}
+	return
+}
+
 var errChildServiceStarted = errors.New("pubsublite: dependent service must not be started")
 
 // compositeService can be embedded into other structs to manage child services.
@@ -172,6 +187,9 @@ type compositeService struct {
 	dependencies map[serviceHandle]service
 	// Removed dependencies that are in the process of terminating.
 	removed map[serviceHandle]service
+
+	// Dependencies to close when the compositeService has terminated.
+	toClose closeable
 
 	abstractService
 }
@@ -267,6 +285,9 @@ func (cs *compositeService) unsafeUpdateStatus(targetStatus serviceStatus, err e
 			close(cs.waitStarted)
 		}
 		if targetStatus == serviceTerminated {
+			if cs.toClose != nil {
+				cs.toClose.Close()
+			}
 			close(cs.waitTerminated)
 		}
 	}
@@ -316,40 +337,4 @@ func (cs *compositeService) onServiceStatusChange(handle serviceHandle, status s
 	case numStarted == len(cs.dependencies):
 		cs.unsafeUpdateStatus(serviceActive, err)
 	}
-}
-
-type apiClient interface {
-	Close() error
-}
-
-type apiClients []apiClient
-
-func (ac apiClients) Close() (retErr error) {
-	for _, c := range ac {
-		if err := c.Close(); retErr == nil {
-			retErr = err
-		}
-	}
-	return
-}
-
-// A compositeService that handles closing API clients on shutdown.
-type apiClientService struct {
-	clients apiClients
-
-	compositeService
-}
-
-func (acs *apiClientService) WaitStarted() error {
-	err := acs.compositeService.WaitStarted()
-	if err != nil {
-		acs.WaitStopped()
-	}
-	return err
-}
-
-func (acs *apiClientService) WaitStopped() error {
-	err := acs.compositeService.WaitStopped()
-	acs.clients.Close()
-	return err
 }

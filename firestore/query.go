@@ -54,6 +54,10 @@ type Query struct {
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
 	allDescendants bool
+
+	// readOptions specifies constraints for reading results from the query
+	// e.g. read time
+	readSettings *readSettings
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -787,7 +791,7 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil), q: &q,
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil, q.readSettings), q: &q,
 	}
 }
 
@@ -892,15 +896,17 @@ type queryDocumentIterator struct {
 	q            *Query
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
+	readSettings *readSettings // readOptions, if any
 }
 
-func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryDocumentIterator {
+func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *readSettings) *queryDocumentIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	return &queryDocumentIterator{
-		ctx:    ctx,
-		cancel: cancel,
-		q:      q,
-		tid:    tid,
+		ctx:          ctx,
+		cancel:       cancel,
+		q:            q,
+		tid:          tid,
+		readSettings: rs,
 	}
 }
 
@@ -916,10 +922,15 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 		}
 		req := &pb.RunQueryRequest{
 			Parent:    it.q.parentPath,
-			QueryType: &pb.RunQueryRequest_StructuredQuery{sq},
+			QueryType: &pb.RunQueryRequest_StructuredQuery{StructuredQuery: sq},
+		}
+
+		// Respect transactions first and read options (read time) second
+		if rt, hasOpts := parseReadTime(client, it.readSettings); hasOpts {
+			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: rt}
 		}
 		if it.tid != nil {
-			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{it.tid}
+			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{Transaction: it.tid}
 		}
 		it.streamClient, err = client.c.RunQuery(it.ctx, req)
 		if err != nil {
@@ -1044,6 +1055,15 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 }
 
 func (*btreeDocumentIterator) stop() {}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
+	for _, ro := range opts {
+		ro.apply(q.readSettings)
+	}
+	return q
+}
 
 // AggregationQuery allows for generating aggregation results of an underlying
 // basic query. A single AggregationQuery can contain multiple aggregations.
