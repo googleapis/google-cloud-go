@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  setup:
+  scan_changes:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -24,6 +24,7 @@ jobs:
         if [ -z "$dirs" ]
         then
           echo "changed={\"changed\":[]}" >> $GITHUB_OUTPUT
+          echo "No changes worth diffing!"
         else
           for d in $dirs; do list=${list},\"${d}\"; done
           echo "changed={\"changed\":[${list#,}]}" >> $GITHUB_OUTPUT
@@ -31,12 +32,12 @@ jobs:
     outputs:
       changed_dirs: ${{ steps.changed_dirs.outputs.changed }}
   apidiff:
-    needs: setup
+    needs: scan_changes
     runs-on: ubuntu-latest
     if: "!contains(github.event.pull_request.labels.*.name, 'breaking change allowed')"
     continue-on-error: true
     strategy:
-      matrix: ${{ fromJson(needs.setup.outputs.changed_dirs) }}
+      matrix: ${{ fromJson(needs.scan_changes.outputs.changed_dirs) }}
     steps:
     - uses: actions/setup-go@v3
       with:
