@@ -54,7 +54,7 @@ jobs:
         export CHANGED=${{ matrix.changed }}
         echo pkg="${CHANGED//\//_}_pkg.main" >> $GITHUB_OUTPUT
     - name: Create Go package baseline
-      run: cd {{ matrix.changed }} && apidiff -w ${{ steps.baseline.outputs.pkg }} .
+      run: cd ${{ matrix.changed }} && apidiff -w ${{ steps.baseline.outputs.pkg }} .
     - name: Upload baseline package data
       uses: actions/upload-artifact@v3
       with:
@@ -68,7 +68,7 @@ jobs:
         name: ${{ steps.baseline.outputs.pkg }}
     - name: Compare regenerated code to baseline
       run: |
-        cd {{ matrix.changed }} && apidiff -incompatible ${{ steps.baseline.outputs.pkg }} . > diff.txt
+        cd ${{ matrix.changed }} && apidiff -incompatible ${{ steps.baseline.outputs.pkg }} . > diff.txt
         cat diff.txt && ! [ -s diff.txt ]
     - name: Add breaking change label
       if: ${{ failure() && !github.event.pull_request.head.repo.fork }}
