@@ -14,7 +14,7 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -p | projectID | a project ID | * |
 | -creds | path to credentials file | any path | from environment |
 | -o | file to output results to | any file path | `res.csv` |
-| -api | which API to use | `JSON`: use JSON to upload and XML to download <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `MIXED`: select an API at random for each upload/download  | `MIXED` |
+| -api | which API to use | `JSON`: use JSON to upload and XML to download <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `MIXED`: select an API at random for each upload/download  <br> `DirectPath`: use GRPC with direct path | `MIXED` |
 | -r | bucket region for benchmarks | any GCS region | `US-WEST1` |
 | -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
 | -t | timeout (maximum time running benchmarks) <br> the program may run for longer while it finishes running processes | any [time.Duration](https://pkg.go.dev/time#Duration) | `1h` |

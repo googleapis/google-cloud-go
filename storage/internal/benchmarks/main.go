@@ -65,7 +65,6 @@ type benchmarkOptions struct {
 	numWorkers    int
 	connPoolSize  int
 	useDefaults   bool
-	directPath    bool
 }
 
 func (b benchmarkOptions) String() string {
@@ -81,7 +80,6 @@ func (b benchmarkOptions) String() string {
 		fmt.Sprintf("read size:\t\t%d - %d bytes (app buffer for downloads)", b.minReadSize, b.maxReadSize),
 		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
 		fmt.Sprintf("connection pool size:\t%d (GRPC)", b.connPoolSize),
-		fmt.Sprintf("directpath:\t\t%t (GRPC)", b.directPath),
 		fmt.Sprintf("num workers:\t\t%d (max number of concurrent benchmark runs at a time)", b.numWorkers),
 		fmt.Sprintf("force garbage collection:%t", b.forceGC),
 	}
@@ -116,7 +114,6 @@ func parseFlags() {
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.IntVar(&opts.connPoolSize, "conn_pool", 4, "GRPC connection pool size")
 	flag.BoolVar(&opts.useDefaults, "defaults", false, "use default client configuration")
-	flag.BoolVar(&opts.directPath, "directpath", false, "use direct path")
 
 	flag.StringVar(&projectID, "p", projectID, "projectID")
 	flag.StringVar(&credentialsFile, "creds", credentialsFile, "path to credentials file")
@@ -156,10 +153,14 @@ func main() {
 	defer file.Close()
 
 	// Enable direct path
-	if opts.directPath {
+	if opts.api == directPath {
 		if err := os.Setenv("GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS", "true"); err != nil {
 			log.Fatalf("error setting direct path env var: %v", err)
 		}
+	}
+
+	if err := opts.api.validateAPI(); err != nil {
+		log.Fatal(err)
 	}
 
 	// Print benchmarking options
@@ -290,7 +291,6 @@ func (br *benchmarkResult) csv() []string {
 		strconv.FormatBool(br.params.crc32cEnabled),
 		strconv.FormatBool(br.params.md5Enabled),
 		string(br.params.api),
-		strconv.FormatBool(opts.directPath),
 		strconv.FormatInt(br.elapsedTime.Microseconds(), 10),
 		"-1", // TODO: record cpu time
 		status,
@@ -311,7 +311,7 @@ func (br *benchmarkResult) csv() []string {
 
 var csvHeaders = []string{
 	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName", "DirectPath",
+	"Crc32cEnabled", "MD5Enabled", "ApiName",
 	"ElapsedTimeUs", "CpuTimeUs", "Status",
 	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
 	"StartTime", "EndTime", "NumWorkers",
@@ -321,11 +321,21 @@ var csvHeaders = []string{
 type benchmarkAPI string
 
 const (
-	jsonAPI   benchmarkAPI = "JSON"
-	xmlAPI    benchmarkAPI = "XML"
-	grpcAPI   benchmarkAPI = "GRPC"
-	mixedAPIs benchmarkAPI = "MIXED"
+	jsonAPI    benchmarkAPI = "JSON"
+	xmlAPI     benchmarkAPI = "XML"
+	grpcAPI    benchmarkAPI = "GRPC"
+	mixedAPIs  benchmarkAPI = "MIXED"
+	directPath benchmarkAPI = "DirectPath"
 )
+
+func (api benchmarkAPI) validateAPI() error {
+	switch api {
+	case jsonAPI, grpcAPI, xmlAPI, directPath, mixedAPIs:
+		return nil
+	default:
+		return fmt.Errorf("no such api: %s", api)
+	}
+}
 
 func startRecordingResults(f *os.File, g *errgroup.Group) {
 	// buffer channel so we don't block on printing results

@@ -106,15 +106,16 @@ func canUseClientPool(opts *benchmarkOptions) bool {
 
 func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, func() error, error) {
 	noOp := func() error { return nil }
+	grpc := br.params.api == grpcAPI || br.params.api == directPath
 	if canUseClientPool(opts) {
-		if br.params.api == grpcAPI {
+		if grpc {
 			return gRPCClients.Get(), noOp, nil
 		}
 		return httpClients.Get(), noOp, nil
 	}
 
 	// if necessary, create a client
-	if br.params.api == grpcAPI {
+	if grpc {
 		c, err := initializeGRPCClient(ctx, br.params.appBufferSize, br.params.appBufferSize, opts.connPoolSize, false)
 		if err != nil {
 			return nil, noOp, fmt.Errorf("initializeGRPCClient: %w", err)
