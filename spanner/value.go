@@ -1854,6 +1854,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
+		if reflect.ValueOf(p).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
 		if code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
@@ -1867,9 +1870,6 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		y, err := strconv.ParseInt(x, 10, 64)
 		if err != nil {
 			return errBadEncoding(v, err)
-		}
-		if reflect.ValueOf(p).Kind() != reflect.Ptr {
-			return errNotAPointer(p)
 		}
 		reflect.ValueOf(p).Elem().SetInt(y)
 	case proto.Message:
@@ -3612,7 +3612,6 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
 	case protoreflect.Enum:
-		// TODO: here nil check not needed because a enum variable always has a default value. Recheck
 		if v != nil {
 			pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
 		}
