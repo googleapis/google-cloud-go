@@ -18,7 +18,11 @@ jobs:
       id: changed_dirs
       # Ignore changes to the internal and root directories.
       run: |
-        dirs=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD | xargs -r -L1 dirname | uniq | grep -v -e 'internal' -e '\.')
+        tree=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD)
+        echo $tree
+        uniques=$(echo $tree | xargs -r -L1 dirname | uniq)
+        echo $uniques
+        dirs=$(echo $uniques | grep -v -e 'internal' -e '\.')
         if [ -z "$dirs" ]
         then
           echo "changed={\"changed\":[]}" >> $GITHUB_OUTPUT
