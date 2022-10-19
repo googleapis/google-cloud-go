@@ -553,43 +553,38 @@ func TestDeferredMissing(t *testing.T) {
 		Key: keyToProto(keys[1]),
 	}
 
-	client, srv, cleanup := newMock(t)
-	defer cleanup()
+	var count int
+	fakeClient := &fakeDatastoreClient{
+		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
+			count++
 
-	srv.addRPC(&pb.LookupRequest{
-		ProjectId:  "projectID",
-		DatabaseId: "",
-		Keys: []*pb.Key{
-			keyToProto(keys[0]),
-			keyToProto(keys[1]),
-		},
-	}, &pb.LookupResponse{
-		Missing: []*pb.EntityResult{
-			{
-				Entity:  entity1,
-				Version: 1,
-			},
-		},
-		Deferred: []*pb.Key{
-			keyToProto(keys[1]),
-		},
-	})
+			if count == 1 {
+				return &pb.LookupResponse{
+					Missing: []*pb.EntityResult{
+						{
+							Entity:  entity1,
+							Version: 1,
+						},
+					},
+					Deferred: []*pb.Key{
+						keyToProto(keys[1]),
+					},
+				}, nil
+			}
 
-	srv.addRPC(&pb.LookupRequest{
-		ProjectId:  "projectID",
-		DatabaseId: "",
-		Keys: []*pb.Key{
-			keyToProto(keys[1]),
+			return &pb.LookupResponse{
+				Missing: []*pb.EntityResult{
+					{
+						Entity:  entity2,
+						Version: 1,
+					},
+				},
+			}, nil
 		},
-	}, &pb.LookupResponse{
-		Missing: []*pb.EntityResult{
-			{
-				Entity:  entity2,
-				Version: 1,
-			},
-		},
-	})
-
+	}
+	client := &Client{
+		client: fakeClient,
+	}
 	ctx := context.Background()
 
 	dst := make([]ent, len(keys))
@@ -690,41 +685,5 @@ func TestDeleteMultiWithIncompleteKey(t *testing.T) {
 		t.Fatalf("want MultiError, got %v", err)
 	} else if len(me) != 1 || me[0] == nil {
 		t.Fatalf("want MultiError{err}, got %v", me)
-	}
-}
-
-func TestBasicGet(t *testing.T) {
-	cl, srv, cleanup := newMock(t)
-	defer cleanup()
-
-	type testEnt struct {
-		A string
-	}
-
-	key := NameKey("foo", "bar", nil)
-
-	srv.addRPC(&pb.LookupRequest{
-		ProjectId:  "projectID",
-		DatabaseId: "",
-		Keys: []*pb.Key{
-			keyToProto(key),
-		},
-	}, &pb.LookupResponse{
-		Found: []*pb.EntityResult{
-			{
-				Entity: &pb.Entity{
-					Key: keyToProto(key),
-					Properties: map[string]*pb.Value{
-						"A": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
-					},
-				},
-			},
-		},
-	})
-
-	dst := &testEnt{}
-	err := cl.Get(context.Background(), key, dst)
-	if err != nil {
-		t.Fatalf("datastore: test failed to get entity: %v", err)
 	}
 }
