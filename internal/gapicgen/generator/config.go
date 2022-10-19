@@ -1773,6 +1773,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/11/18
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/dataform/v1beta1",
+		Pkg:                   "dataform",
+		ImportPath:            "cloud.google.com/go/dataform/apiv1beta1",
+		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
+		ApiServiceConfigPath:  "dataform_v1beta1.yaml",
+		Transports:            []string{"grpc", "rest"},
+		// GA after 2022/11/18
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
