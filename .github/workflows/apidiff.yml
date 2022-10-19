@@ -19,9 +19,7 @@ jobs:
       # Ignore changes to the internal and root directories.
       run: |
         tree=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD)
-        echo $tree
         uniques=$(echo $tree | xargs -r -L1 dirname | uniq)
-        echo $uniques
         dirs=$(echo $uniques | grep -v -e 'internal' -e '\.')
         if [ -z "$dirs" ]
         then
