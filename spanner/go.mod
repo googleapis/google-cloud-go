@@ -31,3 +31,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
+// To prevent builds from failing as proto changes are not available until Public GA
+// got this by running command "go get github.com/harshachinta/go-genproto@f731337b715dfd3da58e066cc92924507f8f008e"  where last one is commit id
+//replace google.golang.org/genproto v0.0.0-20220920201722-2b89144ce006 => github.com/harshachinta/go-genproto v0.0.0-20221020104338-f731337b715d
