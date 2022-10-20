@@ -29,3 +29,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
+
+replace google.golang.org/genproto => github.com/harshachinta/go-genproto v0.0.0-20221020104338-f731337b715d
