@@ -20,7 +20,7 @@ jobs:
       run: |
         tree=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD)
         uniques=$(echo $tree | xargs -r -L1 dirname | uniq)
-        dirs=$(echo $uniques | grep -v -e 'internal' -e '\.')
+        dirs=$(echo $uniques | grep -v -e 'internal' -e '\.' | cat)
         if [ -z "$dirs" ]
         then
           echo "changed={\"changed\":[]}" >> $GITHUB_OUTPUT
