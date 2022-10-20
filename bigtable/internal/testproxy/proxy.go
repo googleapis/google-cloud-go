@@ -496,6 +496,8 @@ type goTestProxyServer struct {
 	clientIDs   map[string]*testClient // clientIDs has all of the bigtable.Client objects under test
 }
 
+// client retrieves a testClient from the clientIDs map. You must lock clientsLock before calling
+// this method.
 func (s *goTestProxyServer) client(clientID string) (*testClient, bool) {
 	client, ok := s.clientIDs[clientID]
 	if !ok {
