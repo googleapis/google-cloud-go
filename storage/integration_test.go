@@ -60,7 +60,9 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type skipTransportTestKey string
@@ -91,6 +93,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	grpc.EnableTracing = true
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
@@ -2573,259 +2576,348 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	})
 }
 
-func TestIntegration_RequesterPays(t *testing.T) {
-	// This test needs a second project and user (token source) to test
-	// all possibilities. Since we need these things for Firestore already,
-	// we use them here.
-	//
-	// There are up to three entities involved in a requester-pays call:
-	//
-	// 1. The user making the request. Here, we use
-	//    a. The account used to create the token source used for all our
-	//       integration tests (see testutil.TokenSource).
-	//    b. The account used for the Firestore tests.
-	// 2. The project that owns the requester-pays bucket. Here, that
-	//    is the test project ID (see testutil.ProjID).
-	// 3. The project provided as the userProject parameter of the request;
-	//    the project to be billed. This test uses:
-	//    a. The project that owns the requester-pays bucket (same as (2))
-	//    b. Another project (the Firestore project).
-	//
-	// The following must hold for this test to work:
-	// - (1a) must have resourcemanager.projects.createBillingAssignment permission
-	//       (Owner role) on (2) (the project, not the bucket).
-	// - (1b) must NOT have that permission on (2).
-	// - (1b) must have serviceusage.services.use permission (Editor role) on (3b).
-	// - (1b) must NOT have that permission on (3a).
-	// - (1a) must NOT have that permission on (3b).
+func TestIntegration_RequesterPaysOwner(t *testing.T) {
+	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		jwt, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatalf("testutil.JWTConfig: %v", err)
+		}
+		// an account that has permissions on the project that owns the bucket
+		mainUserEmail := jwt.Email
 
+		// the project that owns the requester-pays bucket
+		mainProjectID := testutil.ProjID()
+
+		client.SetRetry(WithPolicy(RetryAlways))
+
+		for _, test := range []struct {
+			desc          string
+			userProject   *string // to set on bucket, nil if it should not be set
+			expectSuccess bool
+		}{
+			{
+				desc:          "user is Owner on the project that owns the bucket",
+				userProject:   nil,
+				expectSuccess: true, // by the rule permitting access by owners of the containing bucket
+			},
+			{
+				desc:          "userProject is unnecessary but allowed",
+				userProject:   &mainProjectID,
+				expectSuccess: true, // by the rule permitting access by owners of the containing bucket
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				h := testHelper{t}
+				ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+				defer cancel()
+
+				printTestCase := func() string {
+					userProject := "none"
+					if test.userProject != nil {
+						userProject = *test.userProject
+					}
+					return fmt.Sprintf("user: %s\n\t\tcontaining project: %s\n\t\tUserProject: %s", mainUserEmail, mainProjectID, userProject)
+				}
+
+				checkforErrors := func(desc string, err error) {
+					if err != nil && test.expectSuccess {
+						t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
+					} else if err == nil && !test.expectSuccess {
+						t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
+					}
+				}
+
+				bucketName := prefix + uidSpace.New()
+				requesterPaysBucket := client.Bucket(bucketName)
+
+				// Create a requester-pays bucket
+				h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
+				t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
+
+				// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
+				// The later write we perform may fail so we always write to the object as the user
+				// with permissions on the containing bucket (mainUser).
+				// The storage service may perform validation in any order (perhaps in parallel),
+				// so if we delete or update an object that doesn't exist and for which we lack permission,
+				// we could see either of those two errors. (See Google-internal bug 78341001.)
+				objectName := "acl-go-test" + uidSpace.New()
+				h.mustWrite(requesterPaysBucket.Object(objectName).NewWriter(ctx), []byte("hello"))
+
+				// Set up the bucket to use depending on the test case
+				bucket := client.Bucket(bucketName)
+				if test.userProject != nil {
+					bucket = bucket.UserProject(*test.userProject)
+				}
+
+				// Get bucket attrs
+				attrs, err := bucket.Attrs(ctx)
+				checkforErrors("get bucket attrs", err)
+				if attrs != nil {
+					if got, want := attrs.RequesterPays, true; got != want {
+						t.Fatalf("attr.RequesterPays = %t, want %t", got, want)
+					}
+				}
+
+				// Bucket ACL operations
+				entity := ACLEntity("domain-google.com")
+
+				checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.ACL().List(ctx)
+				checkforErrors("bucket acl list", err)
+				checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
+
+				// Object operations (except for delete)
+				// Retry to account for propagation delay to objects in metadata update
+				// (we updated the metadata to add the otherUserEmail as owner on the bucket)
+				o := bucket.Object(objectName)
+				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+				defer cancel()
+				// Only retry when we expect success to avoid retrying for 10 seconds
+				// when we know it will fail
+				if test.expectSuccess {
+					o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
+				}
+				checkforErrors("write object", writeObject(ctxWithTimeout, o, "text/plain", []byte("hello")))
+				_, err = readObject(ctx, bucket.Object(objectName))
+				checkforErrors("read object", err)
+				_, err = bucket.Object(objectName).Attrs(ctx)
+				checkforErrors("get object attrs", err)
+				_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+				checkforErrors("update object", err)
+
+				// Object ACL operations
+				checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.Object(objectName).ACL().List(ctx)
+				checkforErrors("object acl list", err)
+				checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
+
+				// Default object ACL operations
+				// Once again, we interleave buckets to avoid rate limits
+				checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.DefaultObjectACL().List(ctx)
+				checkforErrors("default object acl list", err)
+				checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
+
+				// Copy
+				_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
+				checkforErrors("copy", err)
+				// Delete "copy" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("copy"))
+					})
+				}
+
+				// Compose
+				_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
+				checkforErrors("compose", err)
+				// Delete "compose" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("compose"))
+					})
+				}
+
+				// Delete object
+				if err = bucket.Object(objectName).Delete(ctx); err != nil {
+					// We still want to delete object if the test errors
+					h.mustDeleteObject(requesterPaysBucket.Object(objectName))
+				}
+				checkforErrors("delete object", err)
+			})
+		}
+	})
+}
+
+// This test needs a second project and user to test all possibilities. Since we
+// need these things for Firestore already, we use them here.
+//
+// There are up to three entities involved in a requester-pays call:
+//  1. The user making the request. Here, we use the account used for the
+//     Firestore tests. The following must hold for this test to work:
+//     - this user must NOT have resourcemanager.projects.createBillingAssignment
+//     on the project that owns the bucket (2).
+//     - this user must have serviceusage.services.use permission on the Firestore
+//     project (3b).
+//     - this user must NOT have that serviceusage.services.use permission on
+//     the project that owns the bucket (3a).
+//  2. The project that owns the requester-pays bucket. Here, that
+//     is the test project ID (see testutil.ProjID).
+//  3. The project provided as the userProject parameter of the request;
+//     the project to be billed. This test uses:
+//     a. The project that owns the requester-pays bucket (same as (2))
+//     b. Another project (the Firestore project).
+func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 	ctx := context.Background()
 
-	// Start client with mainUserEmail creds
-	mainUserClient := testConfig(ctx, t)
-	defer mainUserClient.Close()
+	// Main project: the project that owns the requester-pays bucket.
+	mainProject := testutil.ProjID()
 
-	// Get user emails from credentials
-	jwt, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatalf("testutil.JWTConfig: %v", err)
+	// Secondary project: a project that does not own the bucket.
+	// The "main" user does not have permission on this.
+	// This project should have billing enabled.
+	secondaryProject := os.Getenv(envFirestoreProjID)
+	if secondaryProject == "" {
+		t.Fatalf("need a second project (env var %s)", envFirestoreProjID)
 	}
-	// 1a. account that has permissions on the project that owns the bucket
-	mainUserEmail := jwt.Email
 
-	// // 1b. account with permissions on the second project but not on the project that owns the bucket
-	otherUserEmail, err := keyFileEmail(os.Getenv(envFirestorePrivateKey))
+	// Secondary email: an account with permissions on the secondary project,
+	// but not on the main project.
+	// We will grant this email permissions to the bucket created under the main
+	// project, but it must provide a user project to make requests
+	// against that bucket (since it's a requester-pays bucket).
+	secondaryUserEmail, err := keyFileEmail(os.Getenv(envFirestorePrivateKey))
 	if err != nil {
 		t.Fatalf("keyFileEmail error getting second account (env var %s): %v", envFirestorePrivateKey, err)
 	}
 
-	// 2. and 3a. the project that owns the requester-pays bucket
-	mainProjectID := testutil.ProjID()
-
-	// 3b. a project that does not own the bucket
-	// main user does not have permission on this
-	otherProjectID := os.Getenv(envFirestoreProjID)
-	if otherProjectID == "" {
-		t.Fatalf("need a second project (env var %s)", envFirestoreProjID)
-	}
-
+	// Token source from secondary email to authenticate to client
 	ts := testutil.TokenSourceEnv(ctx, envFirestorePrivateKey, ScopeFullControl)
 	if ts == nil {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	// Start client with otherUserEmail creds
-	otherUserClient, err := newTestClient(ctx, option.WithTokenSource(ts))
-	if err != nil {
-		t.Fatalf("newTestClient: %v", err)
-	}
-	defer otherUserClient.Close()
+	multiTransportTest(skipGRPC("user project bug: b/254542783 and allowlist issue: b/246634709"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		client.SetRetry(WithPolicy(RetryAlways))
 
-	// Extract the error code from err if it's a googleapi.Error.
-	errCode := func(err error) int {
-		if err == nil {
-			return 0
-		}
-		var e *googleapi.Error
-		if ok := errors.As(err, &e); ok {
-			return e.Code
-		}
-		return -1
-	}
+		for _, test := range []struct {
+			desc              string
+			userProject       *string // to set on bucket, nil if it should not be set
+			expectSuccess     bool
+			wantErrorCode     int
+			wantErrorCodeGRPC codes.Code
+		}{
+			{
+				desc:          "no UserProject",
+				userProject:   nil,
+				expectSuccess: false, // by the standard requester-pays rule
+			},
+			{
+				desc:          "user is an Editor on UserProject",
+				userProject:   &secondaryProject,
+				expectSuccess: true, // by the standard requester-pays rule
+			},
+			{
+				desc:              "user is not an Editor on UserProject",
+				userProject:       &mainProject,
+				expectSuccess:     false, // we cannot use a project we don't have access to for billing
+				wantErrorCode:     403,
+				wantErrorCodeGRPC: codes.PermissionDenied,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				h := testHelper{t}
+				ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+				t.Cleanup(cancel)
 
-	// We hit bucket rate limits with these test, so we retry
-	mainUserClient.SetRetry(WithPolicy(RetryAlways))
-	otherUserClient.SetRetry(WithPolicy(RetryAlways))
-
-	for _, test := range []struct {
-		desc          string
-		client        *Client
-		userProject   *string // to set on bucket, nil if it should not be set
-		expectSuccess bool
-		wantErrorCode int
-	}{
-		{
-			desc:          "user is Owner on the project that owns the bucket",
-			client:        mainUserClient, // main user should be owner on main project
-			userProject:   nil,
-			expectSuccess: true, // by the rule permitting access by owners of the containing bucket
-		},
-		{
-			desc:          "userProject is unnecessary but allowed",
-			client:        mainUserClient,
-			userProject:   &mainProjectID,
-			expectSuccess: true, // by the rule permitting access by owners of the containing bucket
-		},
-		{
-			desc:          "user is not an Owner on the containing project and no UserProject",
-			client:        otherUserClient,
-			userProject:   nil,
-			expectSuccess: false, // by the standard requester-pays rule
-		},
-		{
-			desc:          "user is not an Owner on the containing project but is an Editor on UserProject",
-			client:        otherUserClient,
-			userProject:   &otherProjectID, // the project should have billing enabled
-			expectSuccess: true,            // by the standard requester-pays rule
-		},
-		{
-			desc:          "user is not an Owner on the containing project and is not an Editor on UserProject",
-			client:        otherUserClient,
-			userProject:   &mainProjectID,
-			expectSuccess: false,
-			wantErrorCode: 403,
-		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			h := testHelper{t}
-			ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
-			defer cancel()
-
-			printTestCase := func() string {
-				user := mainUserEmail
-				if test.client == otherUserClient {
-					user = otherUserEmail
+				printTestCase := func() string {
+					userProject := "none"
+					if test.userProject != nil {
+						userProject = *test.userProject
+					}
+					return fmt.Sprintf("user: %s\n\t\tcontaining project: %s\n\t\tUserProject: %s", secondaryUserEmail, mainProject, userProject)
 				}
-				userProject := "none"
+
+				checkforErrors := func(desc string, err error) {
+					errCode := extractErrCode(err)
+					if err != nil && test.expectSuccess {
+						t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
+					} else if err == nil && !test.expectSuccess {
+						t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
+					} else if !test.expectSuccess && test.wantErrorCode != 0 {
+						if (status.Code(err) != codes.OK && status.Code(err) != codes.Unknown && status.Code(err) != test.wantErrorCodeGRPC) || (errCode > 0 && errCode != test.wantErrorCode) {
+							fmt.Println(status.Code(err), "   ", status.Code(err) != test.wantErrorCodeGRPC)
+							t.Errorf("%s: mismatched errors; want error code: %d or grpc error: %s, got error: %v \n\t\t%s\n",
+								desc, test.wantErrorCode, test.wantErrorCodeGRPC, err, printTestCase())
+						}
+					}
+				}
+
+				bucketName := prefix + uidSpace.New()
+				objectName := "acl-go-test" + uidSpace.New()
+
+				setUpRequesterPaysBucket(ctx, t, bucketName, objectName, secondaryUserEmail)
+
+				// Set up the bucket to use depending on the test case
+				bucket := client.Bucket(bucketName)
 				if test.userProject != nil {
-					userProject = *test.userProject
+					bucket = bucket.UserProject(*test.userProject)
 				}
-				return fmt.Sprintf("user: %s\n\t\tcontaining project: %s\n\t\tUserProject: %s", user, mainProjectID, userProject)
-			}
 
-			checkforErrors := func(desc string, err error) {
-				if err != nil && test.expectSuccess {
-					t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
-				} else if err == nil && !test.expectSuccess {
-					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
-				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
-					t.Errorf("%s: mismatched errors; want error code: %d, got error: %v \n\t\t%s\n",
-						desc, test.wantErrorCode, err, printTestCase())
+				// Get bucket attrs
+				attrs, err := bucket.Attrs(ctx)
+				checkforErrors("get bucket attrs", err)
+				if attrs != nil {
+					if got, want := attrs.RequesterPays, true; got != want {
+						t.Fatalf("attr.RequesterPays = %t, want %t", got, want)
+					}
 				}
-			}
 
-			bucketName := uidSpace.New()
-			requesterPaysBucket := mainUserClient.Bucket(bucketName)
+				// Bucket ACL operations
+				entity := ACLEntity("domain-google.com")
 
-			// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
-			h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
-			if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
-				t.Fatalf("set ACL: %v", err)
-			}
-			t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
+				checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.ACL().List(ctx)
+				checkforErrors("bucket acl list", err)
+				checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
 
-			// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
-			// The later write we perform may fail so we always write to the object as the user
-			// with permissions on the containing bucket (mainUser).
-			// The storage service may perform validation in any order (perhaps in parallel),
-			// so if we delete or update an object that doesn't exist and for which we lack permission,
-			// we could see either of those two errors. (See Google-internal bug 78341001.)
-			objectName := "acl-go-test" + uidSpace.New()
-			h.mustWrite(requesterPaysBucket.Object(objectName).NewWriter(ctx), []byte("hello"))
-
-			// Set up the bucket to use depending on the test case
-			bucket := test.client.Bucket(bucketName)
-			if test.userProject != nil {
-				bucket = bucket.UserProject(*test.userProject)
-			}
-
-			// Get bucket attrs
-			attrs, err := bucket.Attrs(ctx)
-			checkforErrors("get bucket attrs", err)
-			if attrs != nil {
-				if got, want := attrs.RequesterPays, true; got != want {
-					t.Fatalf("attr.RequesterPays = %t, want %t", got, want)
+				// Object operations (except for delete)
+				// Retry to account for propagation delay to objects in metadata update
+				// (we updated the metadata to add the otherUserEmail as owner on the bucket)
+				o := bucket.Object(objectName)
+				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+				defer cancel()
+				// Only retry when we expect success to avoid retrying for 10 seconds
+				// when we know it will fail
+				if test.expectSuccess {
+					o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
 				}
-			}
+				checkforErrors("write object", writeObject(ctxWithTimeout, o, "text/plain", []byte("hello")))
+				_, err = readObject(ctx, bucket.Object(objectName))
+				checkforErrors("read object", err)
+				_, err = bucket.Object(objectName).Attrs(ctx)
+				checkforErrors("get object attrs", err)
+				_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+				checkforErrors("update object", err)
 
-			// Bucket ACL operations
-			entity := ACLEntity("domain-google.com")
+				// Object ACL operations
+				checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.Object(objectName).ACL().List(ctx)
+				checkforErrors("object acl list", err)
+				checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
 
-			checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.ACL().List(ctx)
-			checkforErrors("bucket acl list", err)
-			checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
+				// Default object ACL operations
+				// Once again, we interleave buckets to avoid rate limits
+				checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.DefaultObjectACL().List(ctx)
+				checkforErrors("default object acl list", err)
+				checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
-			// Object operations (except for delete)
-			// Retry to account for propagation delay to objects in metadata update
-			// (we updated the metadata to add the otherUserEmail as owner on the bucket)
-			o := bucket.Object(objectName)
-			ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
-			defer cancel()
-			// Only retry when we expect success to avoid retrying for 10 seconds
-			// when we know it will fail
-			if test.expectSuccess {
-				o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
-			}
-			checkforErrors("write object", writeObject(ctxWithTimeout, o, "text/plain", []byte("hello")))
-			_, err = readObject(ctx, bucket.Object(objectName))
-			checkforErrors("read object", err)
-			_, err = bucket.Object(objectName).Attrs(ctx)
-			checkforErrors("get object attrs", err)
-			_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
-			checkforErrors("update object", err)
+				// Copy
+				_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
+				checkforErrors("copy", err)
+				// Delete "copy" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("copy"))
+					})
+				}
 
-			// Object ACL operations
-			checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.Object(objectName).ACL().List(ctx)
-			checkforErrors("object acl list", err)
-			checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
+				// Compose
+				_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
+				checkforErrors("compose", err)
+				// Delete "compose" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("compose"))
+					})
+				}
 
-			// Default object ACL operations
-			// Once again, we interleave buckets to avoid rate limits
-			checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.DefaultObjectACL().List(ctx)
-			checkforErrors("default object acl list", err)
-			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
-
-			// Copy
-			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
-			checkforErrors("copy", err)
-			// Delete "copy" object, if created
-			if err == nil {
-				t.Cleanup(func() {
-					h.mustDeleteObject(bucket.Object("copy"))
-				})
-			}
-
-			// Compose
-			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
-			checkforErrors("compose", err)
-			// Delete "compose" object, if created
-			if err == nil {
-				t.Cleanup(func() {
-					h.mustDeleteObject(bucket.Object("compose"))
-				})
-			}
-
-			// Delete object
-			if err = bucket.Object(objectName).Delete(ctx); err != nil {
-				// We still want to delete object if the test errors
-				h.mustDeleteObject(requesterPaysBucket.Object(objectName))
-			}
-			checkforErrors("delete object", err)
-		})
-	}
+				// Delete object
+				checkforErrors("delete object", bucket.Object(objectName).Delete(ctx))
+			})
+		}
+	}, option.WithTokenSource(ts))
 }
 
 func TestIntegration_Notifications(t *testing.T) {
@@ -4787,4 +4879,43 @@ func skipGRPC(reason string) context.Context {
 
 func skipHTTP(reason string) context.Context {
 	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
+}
+
+// Extract the error code if it's a googleapi.Error
+func extractErrCode(err error) int {
+	if err == nil {
+		return 0
+	}
+	var e *googleapi.Error
+	if errors.As(err, &e) {
+		return e.Code
+	}
+
+	return -1
+}
+
+func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
+	t.Helper()
+	client := testConfig(ctx, t)
+	h := testHelper{t}
+
+	requesterPaysBucket := client.Bucket(bucket)
+
+	// Create a requester-pays bucket.
+	h.mustCreate(requesterPaysBucket, testutil.ProjID(), &BucketAttrs{RequesterPays: true})
+	t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
+
+	// Grant ownership
+	if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+addOwnerEmail), RoleOwner); err != nil {
+		t.Fatalf("set ACL: %v", err)
+	}
+
+	h.mustWrite(requesterPaysBucket.Object(object).NewWriter(ctx), []byte("hello"))
+	t.Cleanup(func() {
+		err := requesterPaysBucket.Object(object).Delete(ctx)
+		if err != nil {
+			// only log because object may be deleted by test
+			t.Logf("could not delete object: %v", err)
+		}
+	})
 }
