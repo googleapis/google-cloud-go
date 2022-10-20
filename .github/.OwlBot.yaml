@@ -1,0 +1,12 @@
+docker:
+  image: postprocessor:latest
+
+# will have a different regex for each client
+deep-copy-regex:
+  - source: /google/cloud/.*/v1/cloud.google.com/go/(.*)
+    dest: /owl-bot-staging/src/$1
+
+# begin-after-commit-hash: db31e3ff07d737b61ce968625aabbf660501688c
+
+# deep-remove-regex:
+#   - /owl-bot-staging

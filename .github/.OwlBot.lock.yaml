@@ -1,0 +1,4 @@
+docker:
+  # digest: sha256:b317576c0e66d348ab6c1ae50dc43405df37f957b58433c988c1e9ca257ba3d4
+  image: postprocessor:latest
+  
