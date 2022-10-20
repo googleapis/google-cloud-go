@@ -895,11 +895,14 @@ func (n NullProto) String() string {
 	if !n.Valid {
 		return nullString
 	}
-	b, err := proto.Marshal(n.ProtoVal)
+	return n.ProtoVal.String()
+
+	// TODO: NullJSON uses the below marshal method to print string. Thats why confused. But if we print string with below code it gives some wierd byte characters.
+	/*b, err := proto.Marshal(n.ProtoVal)
 	if err != nil {
 		return fmt.Sprintf("error: %v", err)
 	}
-	return fmt.Sprintf("%v", string(b))
+	return fmt.Sprintf("%v", string(b))*/
 }
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullProto.
@@ -916,6 +919,11 @@ func (n *NullProto) UnmarshalJSON(payload []byte) error {
 		return fmt.Errorf("payload should not be nil")
 	}
 	if bytes.Equal(payload, jsonNullBytes) {
+		// We can reset ProtoVal, however we need to check for nil. Instead it is fine to just set valid to false, as most methods above do the same.
+		// So removed it from main code
+		if n.ProtoVal != nil {
+			n.ProtoVal.Reset()
+		}
 		n.Valid = false
 		return nil
 	}
@@ -960,6 +968,7 @@ func (n *NullEnum) UnmarshalJSON(payload []byte) error {
 		return fmt.Errorf("payload should not be nil")
 	}
 	if bytes.Equal(payload, jsonNullBytes) {
+		// TODO: Do we need to set 0 or not set anything?
 		reflect.ValueOf(n.EnumVal).Elem().SetInt(0) // set 0 as default value to Enum
 		n.Valid = false
 		return nil
@@ -1066,6 +1075,10 @@ func errDstNotForNull(dst interface{}) error {
 // errBadEncoding returns error for decoding wrongly encoded types.
 func errBadEncoding(v *proto3.Value, err error) error {
 	return spannerErrorf(codes.FailedPrecondition, "%v wasn't correctly encoded: <%v>", v, err)
+}
+
+func errNotAPointer(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "destination %T must be a pointer", dst)
 }
 
 func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
@@ -1971,6 +1984,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if err != nil {
 			return errBadEncoding(v, err)
 		}
+		if reflect.ValueOf(p).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
 		reflect.ValueOf(p).Elem().SetInt(y)
 	case *[]protoreflect.Enum:
 		if p == nil {
@@ -2127,6 +2143,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 	case *NullProto:
 		if p == nil {
 			return errNilDst(p)
+		}
+		if reflect.ValueOf(p.ProtoVal).Kind() != reflect.Ptr {
+			return errNotAPointer(p.ProtoVal)
 		}
 		if code != sppb.TypeCode_PROTO {
 			return errTypeMismatch(code, acode, ptr)
@@ -3905,6 +3924,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		return nil, nil, errEncoderUnsupportedType(v)
 	case protoreflect.Enum:
 		// TODO: here nil check not needed because a enum variable always has a default value. Recheck
+		// TODO:Use this as reference to check ur code for proto col support: https://source.corp.google.com/piper///depot/google3/spanner/go/value.go;l=343?q=%22case%20proto.Message%22%20case:yes&sq=package:piper%20file:%2F%2Fdepot%2Fgoogle3%20-file:google3%2Fexperimental
 		pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
 		pt = enumType()
 	case proto.Message:
