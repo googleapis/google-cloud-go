@@ -65,7 +65,6 @@ for i in $(find . -name go.mod); do
   go mod edit -replace cloud.google.com/go/pubsublite=$gcwd/pubsublite
   go mod edit -replace cloud.google.com/go/spanner=$gcwd/spanner
   go mod edit -replace cloud.google.com/go/storage=$gcwd/storage
-  go mod edit -replace google.golang.org/genproto=github.com/harshachinta/go-genproto@v0.0.0-20221020104338-f731337b715d
   echo "Downloading modules"
   go mod tidy
   echo "Building module $i"
