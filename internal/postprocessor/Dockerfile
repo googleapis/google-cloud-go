@@ -25,12 +25,6 @@ COPY . .
 # go build with no path looks in current directory (/postprocessor) and finds package main
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o post_processor
 
-
-# Use a Docker multi-stage build to create a lean production image.
-# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-
-FROM golang:1.19
-
 # Install dependencies
 
 # Install tools used in build
@@ -39,8 +33,4 @@ RUN go install honnef.co/go/tools/cmd/staticcheck@latest && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest
 
-# Copy the binary to the production image from the builder stage.
-# post_processor is like an app
-COPY --from=builder /postprocessor/post_processor /post_processor
-
-CMD [ "/post_processor"]
+CMD [ "/postprocessor/post_processor"]
