@@ -836,7 +836,7 @@ func (l *Logger) ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 
 func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
-		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
+		return nil, errors.New("logging: Entry.LogName should not be set when writing")
 	}
 	t := e.Timestamp
 	if t.IsZero() {
