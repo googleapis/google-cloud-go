@@ -249,17 +249,13 @@ func TestEncodeValue(t *testing.T) {
 	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
 	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
 
-	singerId1 := int64(1)
-	birthDate1 := "January"
-	nationality1 := "Country1"
-	genre1 := pb.Genre_ROCK
-	singer1ProtoMsg := &pb.SingerInfo{
-		SingerId:    &singerId1,
-		BirthDate:   &birthDate1,
-		Nationality: &nationality1,
-		Genre:       &genre1,
-	}
 	singer1ProtoEnum := pb.Genre_ROCK
+	singer1ProtoMsg := &pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singer1ProtoEnum,
+	}
 
 	var (
 		tString       = stringType()
@@ -1412,17 +1408,13 @@ func TestDecodeValue(t *testing.T) {
 	var dNilPtr *civil.Date
 	d2Value := d2
 
-	singerId1 := int64(1)
-	birthDate1 := "January"
-	nationality1 := "Country1"
-	genre1 := pb.Genre_ROCK
-	singerProtoMsg := pb.SingerInfo{
-		SingerId:    &singerId1,
-		BirthDate:   &birthDate1,
-		Nationality: &nationality1,
-		Genre:       &genre1,
-	}
 	singerEnumValue := pb.Genre_ROCK
+	singerProtoMsg := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerEnumValue,
+	}
 
 	for _, test := range []struct {
 		desc      string

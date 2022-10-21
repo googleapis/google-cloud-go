@@ -16,11 +16,11 @@ limitations under the License.
 
 syntax = "proto2";
 
-package protos;
+package spanner.examples.music;
 option go_package = "./protos";
 
 message SingerInfo {
-  optional int64 singerId = 1;
+  optional int64 singer_id = 1;
   optional string birth_date = 2;
   optional string nationality = 3;
   optional Genre genre = 4;
