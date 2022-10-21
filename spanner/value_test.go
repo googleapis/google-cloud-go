@@ -27,7 +27,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
-	pb "cloud.google.com/go/spanner/testdata"
+	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
@@ -249,13 +249,17 @@ func TestEncodeValue(t *testing.T) {
 	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
 	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
 
-	bookProtoMsg := &pb.Book{
-		Isbn:   0,
-		Title:  "Harry Potter",
-		Author: "JK Rowling",
-		Genre:  pb.Genre_CLASSICAL,
+	singerId1 := int64(1)
+	birthDate1 := "January"
+	nationality1 := "Country1"
+	genre1 := pb.Genre_ROCK
+	singer1ProtoMsg := &pb.SingerInfo{
+		SingerId:    &singerId1,
+		BirthDate:   &birthDate1,
+		Nationality: &nationality1,
+		Genre:       &genre1,
 	}
-	bookProtoEnum := pb.Genre_COUNTRY
+	singer1ProtoEnum := pb.Genre_ROCK
 
 	var (
 		tString       = stringType()
@@ -471,8 +475,9 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
-		{bookProtoEnum, enumProto(bookProtoEnum), tProtoEnum, "Proto Enum"},
-		{bookProtoMsg, messageProto(bookProtoMsg), tProtoMessage, "Proto Message"},
+		// PROTO MESSAGE AND PROTO ENUM
+		{singer1ProtoMsg, messageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
+		{singer1ProtoEnum, enumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1407,13 +1412,17 @@ func TestDecodeValue(t *testing.T) {
 	var dNilPtr *civil.Date
 	d2Value := d2
 
-	enumValue := pb.Genre_COUNTRY
-	protoMessage := pb.Book{
-		Isbn:   0,
-		Title:  "Harry Potter",
-		Author: "JK Rowling",
-		Genre:  pb.Genre_CLASSICAL,
+	singerId1 := int64(1)
+	birthDate1 := "January"
+	nationality1 := "Country1"
+	genre1 := pb.Genre_ROCK
+	singerProtoMsg := pb.SingerInfo{
+		SingerId:    &singerId1,
+		BirthDate:   &birthDate1,
+		Nationality: &nationality1,
+		Genre:       &genre1,
 	}
+	singerEnumValue := pb.Genre_ROCK
 
 	for _, test := range []struct {
 		desc      string
@@ -1810,8 +1819,8 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
 		// PROTO MESSAGE AND PROTO ENUM
-		{desc: "decode PROTO to proto.Message", proto: messageProto(&protoMessage), protoType: protoType(), want: protoMessage},
-		{desc: "decode ENUM to protoreflect.Enum", proto: enumProto(pb.Genre_COUNTRY), protoType: enumType(), want: enumValue},
+		{desc: "decode PROTO to proto.Message", proto: messageProto(&singerProtoMsg), protoType: protoType(), want: singerProtoMsg},
+		{desc: "decode ENUM to protoreflect.Enum", proto: enumProto(pb.Genre_ROCK), protoType: enumType(), want: singerEnumValue},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1847,17 +1856,6 @@ func TestDecodeValue(t *testing.T) {
 		got := reflect.Indirect(gotp).Interface()
 		switch v.(type) {
 		case proto.Message:
-			got_, ok := got.(pb.Book)
-			if !ok {
-				t.Errorf("error converting interface to Book proto : %v", ok)
-			}
-			want_, ok1 := test.want.(pb.Book)
-			if !ok1 {
-				t.Errorf("error converting interface to Book proto : %v", ok1)
-			}
-			if !proto.Equal(&got_, &want_) {
-				t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got_, got_, want_, want_)
-			}
 			if diff := cmp.Diff(got, test.want, protocmp.Transform()); diff != "" {
 				t.Errorf("unexpected difference in proto message :\n%v", diff)
 			}
