@@ -16,7 +16,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"testing"
 )
@@ -69,73 +68,4 @@ func TestCopyBothEncryptionKeys(t *testing.T) {
 	} else if !strings.Contains(err.Error(), "KMS") {
 		t.Errorf(`got %q, want it to contain "KMS"`, err)
 	}
-}
-
-// This test checks that request tokens are properly populated for Copy
-func TestCopyTokens(t *testing.T) {
-	ctx := context.Background()
-
-	expectedTokens := make(chan string, 10)
-	sendTokens := make(chan string, 10)
-
-	client := Client{
-		tc: mockRewriteObject{
-			expectedTokens: expectedTokens,
-			sendTokens:     sendTokens,
-		},
-	}
-
-	expectedTokens <- "" // first token should always be empty
-	sendTokens <- "atoken"
-	expectedTokens <- "atoken"
-	sendTokens <- "last123tokenexpected"
-	expectedTokens <- "last123tokenexpected"
-	sendTokens <- "sendToReqThatFinishes"
-	sendTokens <- "lastTokenToResume"
-
-	close(expectedTokens)
-	close(sendTokens)
-
-	dest := client.Bucket("b").Object("d").Key(testEncryptionKey)
-	c := dest.CopierFrom(client.Bucket("b").Object("s"))
-
-	if _, err := c.Run(ctx); err != nil {
-		t.Fatalf("err %v", err)
-	}
-
-	if got, want := c.RewriteToken, "lastTokenToResume"; got != want {
-		t.Errorf("mismatched token from copier; got: %s, want: %s", got, want)
-	}
-}
-
-type mockRewriteObject struct {
-	storageClient
-	expectedTokens chan string
-	sendTokens     chan string
-}
-
-func (m mockRewriteObject) RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error) {
-	expected, ok := <-m.expectedTokens
-	send := <-m.sendTokens
-	if !ok {
-		return &rewriteObjectResponse{
-			done:     true,
-			written:  1,
-			size:     1,
-			token:    send,
-			resource: nil,
-		}, nil
-	}
-
-	if req.token != expected {
-		return nil, fmt.Errorf("incorrect token from request; got: %s want: %s", req.token, expected)
-	}
-
-	return &rewriteObjectResponse{
-		done:     false,
-		written:  1,
-		size:     1,
-		token:    send,
-		resource: nil,
-	}, nil
 }
