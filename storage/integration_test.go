@@ -1573,25 +1573,51 @@ func TestIntegration_Objects(t *testing.T) {
 func TestIntegration_Copy(t *testing.T) {
 	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		bucketFrom := client.Bucket(bucket)
-		bucket2 := client.Bucket(prefix + uidSpace.New())
-		contents := randomContents()
+		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
+		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
 
 		// Create new bucket
-		if err := bucket2.Create(ctx, testutil.ProjID(), nil); err != nil {
+		if err := bucketInSameRegion.Create(ctx, testutil.ProjID(), nil); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
-		defer bucket2.Delete(ctx)
+		defer bucketInSameRegion.Delete(ctx)
 
-		// Write object to copy
-		obj := bucketFrom.Object("copy-object-original")
-		if err := writeObject(ctx, obj, "text/plain", contents); err != nil {
-			t.Fatalf("writeObject: %v", err)
+		// Create new bucket
+		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
+			t.Fatalf("bucket.Create: %v", err)
 		}
+		defer bucketInDifferentRegion.Delete(ctx)
+
+		// We use a larger object size to trigger multiple rewrite calls
+		minObjectSize := 2500000 // 2.5 Mb
+		obj := bucketFrom.Object("copy-object-original" + uidSpace.New())
+
+		// Create an object to copy from
+		w := obj.NewWriter(ctx)
+		c := randomContents()
+		for written := 0; written < minObjectSize; {
+			n, err := w.Write(c)
+			if err != nil {
+				t.Fatalf("w.Write: %v", err)
+			}
+			written += n
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("w.Close: %v", err)
+		}
+
 		defer func() {
 			if err := obj.Delete(ctx); err != nil {
 				t.Errorf("obj.Delete: %v", err)
 			}
 		}()
+
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("obj.Attrs: %v", err)
+		}
+
+		crc32c := attrs.CRC32C
 
 		for _, test := range []struct {
 			desc        string
@@ -1609,29 +1635,38 @@ func TestIntegration_Copy(t *testing.T) {
 			{
 				desc:     "copy to new bucket",
 				toObj:    "copy-new-bucket",
-				toBucket: bucket2,
+				toBucket: bucketInSameRegion,
 			},
 			{
 				desc:     "copy with attributes",
 				toObj:    "copy-with-attributes",
-				toBucket: bucket2,
+				toBucket: bucketInSameRegion,
 				copierAttrs: &struct{ contentEncoding string }{
 					contentEncoding: "identity",
 				},
 			},
+			{
+				// this test should trigger multiple re-write calls and may fail
+				// with a rate limit error if those calls are stuck in an infinite loop
+				desc:     "copy to new region",
+				toObj:    "copy-new-region",
+				toBucket: bucketInDifferentRegion,
+			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
+				// Copy.
 				copyObj := test.toBucket.Object(test.toObj)
 				copier := copyObj.CopierFrom(obj)
+
+				copier.maxBytesRewrittenPerCall = 1048576
 
 				if attrs := test.copierAttrs; attrs != nil {
 					if attrs.contentEncoding != "" {
 						copier.ContentEncoding = attrs.contentEncoding
-
 					}
 				}
 
-				attrs, err := copier.Run(ctx)
+				attrs, err = copier.Run(ctx)
 				if err != nil {
 					t.Fatalf("Copier.Run failed with %v", err)
 				}
@@ -1654,18 +1689,8 @@ func TestIntegration_Copy(t *testing.T) {
 				}
 
 				// Check the copied contents
-				r, err := copyObj.NewReader(ctx)
-				if err != nil {
-					t.Fatalf("NewReader: %v", err)
-				}
-
-				gotContents := make([]byte, len(contents))
-				_, err = r.Read(gotContents)
-				if err != nil {
-					t.Fatalf("Read: %v", err)
-				}
-				if string(gotContents) != string(contents) {
-					t.Errorf("mismatching contents: got %s, want %s", gotContents, contents)
+				if attrs.CRC32C != crc32c {
+					t.Errorf("mismatching checksum: got %v, want %v", attrs.CRC32C, crc32c)
 				}
 			})
 		}
