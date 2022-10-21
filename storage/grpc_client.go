@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -246,7 +247,8 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetBucketRequest{
-		Name: bucketResourceName(globalProjectAlias, bucket),
+		Name:     bucketResourceName(globalProjectAlias, bucket),
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
 		return nil, err
@@ -500,10 +502,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
 	}
 
-	var paths []string
-	fieldMask := &fieldmaskpb.FieldMask{
-		Paths: paths,
-	}
+	fieldMask := &fieldmaskpb.FieldMask{Paths: nil}
 	if uattrs.EventBasedHold != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "event_based_hold")
 	}
@@ -530,7 +529,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	}
 	// Note: This API currently does not support entites using project ID.
 	// Use project numbers in ACL entities. Pending b/233617896.
-	if uattrs.ACL != nil {
+	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
@@ -1712,7 +1711,12 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
+// Furthermore, if the attrs.ContentType is unset, the first bytes of content
+// will be sniffed for a matching content type.
 func (w *gRPCWriter) read() (int, bool, error) {
+	if w.attrs.ContentType == "" {
+		w.reader, w.attrs.ContentType = gax.DetermineContentType(w.reader)
+	}
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0
 	var err error

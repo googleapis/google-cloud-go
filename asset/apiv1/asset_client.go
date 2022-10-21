@@ -314,14 +314,13 @@ func (c *Client) Connection() *grpc.ClientConn {
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location/BigQuery table. For Cloud Storage location destinations, the
 // output format is newline-delimited JSON. Each line represents a
-// google.cloud.asset.v1.Asset in the JSON
-// format; for BigQuery table destinations, the output table stores the fields
-// in asset Protobuf as columns. This API implements the
-// google.longrunning.Operation API, which
-// allows you to keep track of the export. We recommend intervals of at least
-// 2 seconds with exponential retry to poll the export operation result. For
-// regular-size resource parent, the export operation usually finishes within
-// 5 minutes.
+// google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
+// destinations, the output table stores the fields in asset Protobuf as
+// columns. This API implements the google.longrunning.Operation API,
+// which allows you to keep track of the export. We recommend intervals of at
+// least 2 seconds with exponential retry to poll the export operation result.
+// For regular-size resource parent, the export operation usually finishes
+// within 5 minutes.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	return c.internalClient.ExportAssets(ctx, req, opts...)
 }
@@ -401,12 +400,11 @@ func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPo
 // accesses on which resources, and writes the analysis results to a Google
 // Cloud Storage or a BigQuery destination. For Cloud Storage destination, the
 // output format is the JSON format that represents a
-// AnalyzeIamPolicyResponse.
-// This method implements the
-// google.longrunning.Operation, which allows
-// you to track the operation status. We recommend intervals of at least 2
-// seconds with exponential backoff retry to poll the operation result. The
-// metadata contains the metadata for the long-running operation.
+// AnalyzeIamPolicyResponse. This method implements the
+// google.longrunning.Operation, which allows you to track the operation
+// status. We recommend intervals of at least 2 seconds with exponential
+// backoff retry to poll the operation result. The metadata contains the
+// metadata for the long-running operation.
 func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
 	return c.internalClient.AnalyzeIamPolicyLongrunning(ctx, req, opts...)
 }
