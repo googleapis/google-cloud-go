@@ -65,6 +65,9 @@ func copyFiles(srcPath, dstPath string) error {
 
 	nBytes, err := io.Copy(dst, src)
 	_ = nBytes
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -104,8 +107,7 @@ func main() {
 			dstPath = strings.TrimPrefix(path, fromPrefix)
 		}
 
-		copyErr := copyFiles(srcPath, dstPath)
-		if copyErr != nil {
+		if err := copyFiles(srcPath, dstPath); err != nil {
 			return err
 		}
 
