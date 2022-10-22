@@ -2576,6 +2576,23 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	})
 }
 
+// This test tests only possibilities where the user making the request is an
+// owner on the project that owns the requester pays bucket. Therefore, we don't
+// need a second project for this test.
+//
+// There are up to three entities involved in a requester-pays call:
+//
+//  1. The user making the request. Here, we use the account used as credentials
+//     for most of our integration tests. The following must hold for this test:
+//     - this user must have resourcemanager.projects.createBillingAssignment
+//     permission (Owner role) on (2) (the project, not the bucket)
+//     - this user must NOT have that permission on (3b).
+//  2. The project that owns the requester-pays bucket. Here, that
+//     is the test project ID (see testutil.ProjID).
+//  3. The project provided as the userProject parameter of the request;
+//     the project to be billed. This test uses:
+//     a. The project that owns the requester-pays bucket (same as (2))
+//     b. Another project (the Firestore project).
 func TestIntegration_RequesterPaysOwner(t *testing.T) {
 	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwt, err := testutil.JWTConfig()
@@ -2589,6 +2606,13 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		mainProjectID := testutil.ProjID()
 
 		client.SetRetry(WithPolicy(RetryAlways))
+
+		// Secondary project: a project that does not own the bucket.
+		// The "main" user should not have permission on this.
+		secondaryProject := os.Getenv(envFirestoreProjID)
+		if secondaryProject == "" {
+			t.Fatalf("need a second project (env var %s)", envFirestoreProjID)
+		}
 
 		for _, test := range []struct {
 			desc          string
@@ -2604,6 +2628,11 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 				desc:          "userProject is unnecessary but allowed",
 				userProject:   &mainProjectID,
 				expectSuccess: true, // by the rule permitting access by owners of the containing bucket
+			},
+			{
+				desc:          "cannot use someone else's project for billing",
+				userProject:   &secondaryProject,
+				expectSuccess: false, // we cannot use a project we don't have access to for billing
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
@@ -2748,6 +2777,9 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 //     a. The project that owns the requester-pays bucket (same as (2))
 //     b. Another project (the Firestore project).
 func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
+	if testing.Short() && !replaying {
+		t.Skip("Integration tests skipped in short mode")
+	}
 	ctx := context.Background()
 
 	// Main project: the project that owns the requester-pays bucket.
