@@ -256,6 +256,8 @@ func TestEncodeValue(t *testing.T) {
 		Nationality: proto.String("Country1"),
 		Genre:       &singer1ProtoEnum,
 	}
+	protoMessagefqn := "spanner.examples.music.SingerInfo"
+	protoEnumfqn := "spanner.examples.music.Genre"
 
 	var (
 		tString       = stringType()
@@ -268,8 +270,8 @@ func TestEncodeValue(t *testing.T) {
 		tNumeric      = numericType()
 		tJSON         = jsonType()
 		tPGNumeric    = pgNumericType()
-		tProtoMessage = protoType()
-		tProtoEnum    = enumType()
+		tProtoMessage = protoType(protoMessagefqn)
+		tProtoEnum    = enumType(protoEnumfqn)
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -472,8 +474,8 @@ func TestEncodeValue(t *testing.T) {
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
 		// PROTO MESSAGE AND PROTO ENUM
-		{singer1ProtoMsg, messageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
-		{singer1ProtoEnum, enumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
+		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
+		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1415,6 +1417,8 @@ func TestDecodeValue(t *testing.T) {
 		Nationality: proto.String("Country1"),
 		Genre:       &singerEnumValue,
 	}
+	protoMessagefqn := "spanner.examples.music.SingerInfo"
+	protoEnumfqn := "spanner.examples.music.Genre"
 
 	for _, test := range []struct {
 		desc      string
@@ -1811,8 +1815,8 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
 		// PROTO MESSAGE AND PROTO ENUM
-		{desc: "decode PROTO to proto.Message", proto: messageProto(&singerProtoMsg), protoType: protoType(), want: singerProtoMsg},
-		{desc: "decode ENUM to protoreflect.Enum", proto: enumProto(pb.Genre_ROCK), protoType: enumType(), want: singerEnumValue},
+		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoType(protoMessagefqn), want: singerProtoMsg},
+		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: enumType(protoEnumfqn), want: singerEnumValue},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()

@@ -3612,19 +3612,23 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
 	case protoreflect.Enum:
+		var fullyQualifiedName string
 		if v != nil {
 			pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
+			fullyQualifiedName = string(v.Descriptor().FullName())
 		}
-		pt = enumType()
+		pt = enumType(fullyQualifiedName)
 	case proto.Message:
-		if v != nil {
+		var fullyQualifiedName string
+		if v != nil && proto.MessageReflect(v).IsValid() {
 			bytes, err := proto.Marshal(v)
 			if err != nil {
 				return nil, nil, err
 			}
 			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
+			fullyQualifiedName = string(proto.MessageReflect(v).Descriptor().FullName())
 		}
-		pt = protoType()
+		pt = protoType(fullyQualifiedName)
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
