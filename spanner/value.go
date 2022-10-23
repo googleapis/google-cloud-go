@@ -1944,6 +1944,12 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
+		if p.EnumVal == nil {
+			return errNilDst(p.EnumVal)
+		}
+		if reflect.ValueOf(p.EnumVal).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
 		if code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
@@ -1959,21 +1965,14 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if err != nil {
 			return errBadEncoding(v, err)
 		}
-
-		// If p.EnumVal is a pointer, set the int value directly.
-		if reflect.ValueOf(p.EnumVal).Kind() == reflect.Ptr {
-			reflect.ValueOf(p.EnumVal).Elem().SetInt(y)
-		} else {
-			// If p.EnumVal is not a pointer, then create a new pointer reference of specified type.
-			newProtoEnumInstance := reflect.New(reflect.TypeOf(p.EnumVal))
-			newProtoEnumInstance.Elem().SetInt(y)
-			protoEnum := newProtoEnumInstance.Elem().Interface().(protoreflect.Enum)
-			p.EnumVal = protoEnum
-		}
+		reflect.ValueOf(p.EnumVal).Elem().SetInt(y)
 		p.Valid = true
 	case *NullProto:
 		if p == nil {
 			return errNilDst(p)
+		}
+		if p.ProtoVal == nil {
+			return errNilDst(p.ProtoVal)
 		}
 		if reflect.ValueOf(p.ProtoVal).Kind() != reflect.Ptr {
 			return errNotAPointer(p.ProtoVal)
@@ -3719,12 +3718,12 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		if v.Valid {
 			return encodeValue(v.ProtoVal)
 		}
-		pt = protoType()
+		pt = protoType("")
 	case NullEnum:
 		if v.Valid {
 			return encodeValue(v.EnumVal)
 		}
-		pt = enumType()
+		pt = enumType("")
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.

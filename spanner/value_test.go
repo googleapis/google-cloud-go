@@ -459,6 +459,11 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
+		// PROTO MESSAGE AND PROTO ENUM
+		{NullProto{singer1ProtoMsg, true}, protoMessageProto(singer1ProtoMsg), tProtoMessage, "NullProto with value"},
+		{NullProto{singer1ProtoMsg, false}, nullProto(), protoType(""), "NullProto with null"},
+		{NullEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
+		{NullEnum{singer1ProtoEnum, false}, nullProto(), enumType(""), "NullEnum with null"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1787,6 +1792,11 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of bool to CustomStructToNull", proto: nullProto(), protoType: listType(boolType()), want: customStructToNull{}},
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoType(protoMessagefqn), want: NullProto{&singerProtoMsg, true}},
+		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoType(protoMessagefqn), want: NullProto{}},
+		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: enumType(protoEnumfqn), want: NullEnum{singerEnumValue, true}},
+		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: enumType(protoEnumfqn), want: NullEnum{}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1806,6 +1816,10 @@ func TestDecodeValue(t *testing.T) {
 			nullValue.Time = time.Unix(100, 100)
 		case *NullDate:
 			nullValue.Date = civil.DateOf(time.Unix(100, 200))
+		case *NullProto:
+			nullValue.ProtoVal = &pb.SingerInfo{}
+		case *NullEnum:
+			nullValue.EnumVal = pb.Genre_POP
 		default:
 		}
 		err := decodeValue(test.proto, test.protoType, v)
