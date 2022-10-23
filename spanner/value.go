@@ -1876,6 +1876,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
+		if reflect.ValueOf(p).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
 		if code != sppb.TypeCode_PROTO {
 			return errTypeMismatch(code, acode, ptr)
 		}
@@ -3612,23 +3615,23 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
 	case protoreflect.Enum:
-		var fullyQualifiedName string
+		var protoEnumfqn string
 		if v != nil {
 			pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
-			fullyQualifiedName = string(v.Descriptor().FullName())
+			protoEnumfqn = string(v.Descriptor().FullName())
 		}
-		pt = enumType(fullyQualifiedName)
+		pt = enumType(protoEnumfqn)
 	case proto.Message:
-		var fullyQualifiedName string
+		var protoMessagefqn string
 		if v != nil && proto.MessageReflect(v).IsValid() {
 			bytes, err := proto.Marshal(v)
 			if err != nil {
 				return nil, nil, err
 			}
 			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
-			fullyQualifiedName = string(proto.MessageReflect(v).Descriptor().FullName())
+			protoMessagefqn = string(proto.MessageReflect(v).Descriptor().FullName())
 		}
-		pt = protoType(fullyQualifiedName)
+		pt = protoType(protoMessagefqn)
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
