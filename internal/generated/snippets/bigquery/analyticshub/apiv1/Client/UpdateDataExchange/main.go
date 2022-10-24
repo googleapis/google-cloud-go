@@ -22,7 +22,7 @@ import (
 	"context"
 
 	analyticshub "cloud.google.com/go/bigquery/analyticshub/apiv1"
-	"cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb"
+	analyticshubpb "cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb"
 )
 
 func main() {
