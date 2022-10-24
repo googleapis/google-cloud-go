@@ -74,7 +74,6 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 
 # All packages, including +build tools, are fetched.
 try3 go mod download
-./internal/kokoro/vet.sh
 
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
