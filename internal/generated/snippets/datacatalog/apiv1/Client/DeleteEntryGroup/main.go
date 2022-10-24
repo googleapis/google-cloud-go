@@ -22,6 +22,7 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 

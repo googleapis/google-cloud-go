@@ -22,7 +22,7 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2beta"
-	"cloud.google.com/go/functions/apiv2beta/functionspb"
+	functionspb "cloud.google.com/go/functions/apiv2beta/functionspb"
 )
 
 func main() {
