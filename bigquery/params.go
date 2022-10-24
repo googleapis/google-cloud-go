@@ -384,7 +384,7 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 			prefixes := []string{"*", "[]"} // check pointer and arrays
 			for _, prefix := range prefixes {
 				if strings.TrimPrefix(t.String(), prefix) == strings.TrimPrefix(f.Type.String(), prefix) {
-					return nil, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter due to a cycle detected", t)
+					return nil, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter due to an attribute cycle/recursion detected", t)
 				}
 			}
 			pt, err := paramType(f.Type, v)
