@@ -26,6 +26,11 @@
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := documentai.NewDocumentProcessorClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -41,6 +46,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := documentai.NewDocumentProcessorClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -60,7 +70,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewDocumentProcessorClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

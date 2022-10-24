@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 
+	speechpb "cloud.google.com/go/speech/apiv1p1beta1/speechpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -32,7 +33,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -143,7 +143,8 @@ func (c *AdaptationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AdaptationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -260,7 +261,8 @@ func NewAdaptationClient(ctx context.Context, opts ...option.ClientOption) (*Ada
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *adaptationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -344,7 +346,7 @@ func (c *adaptationRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *adaptationRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -783,8 +785,12 @@ func (c *adaptationRESTClient) UpdatePhraseSet(ctx context.Context, req *speechp
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetPhraseSet().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1084,8 +1090,12 @@ func (c *adaptationRESTClient) UpdateCustomClass(ctx context.Context, req *speec
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetCustomClass().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

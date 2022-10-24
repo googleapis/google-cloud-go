@@ -1,5 +1,26 @@
 # Changes
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.11.0...analytics/v0.12.0) (2022-09-21)
+
+
+### Features
+
+* **analytics:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.10.0...analytics/v0.11.0) (2022-09-19)
+
+
+### Features
+
+* **analytics:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.9.0...analytics/v0.10.0) (2022-09-15)
+
+
+### Features
+
+* **analytics/admin:** Enable REST transport support for Python analytics-admin, media-translation and dataflow clients ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.8.1...analytics/v0.9.0) (2022-08-09)
 
 

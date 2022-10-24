@@ -65,6 +65,11 @@
                 "GetFeed"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetSavedQuery": {
               "methods": [
                 "GetSavedQuery"
@@ -83,6 +88,11 @@
             "ListSavedQueries": {
               "methods": [
                 "ListSavedQueries"
+              ]
+            },
+            "QueryAssets": {
+              "methods": [
+                "QueryAssets"
               ]
             },
             "SearchAllIamPolicies": {

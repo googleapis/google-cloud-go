@@ -19,13 +19,16 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 
 	"cloud.google.com/go/internal/trace"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -43,6 +46,12 @@ const (
 	//
 	// This is only used for the gRPC client.
 	defaultConnPoolSize = 4
+
+	// maxPerMessageWriteSize is the maximum amount of content that can be sent
+	// per WriteObjectRequest message. A buffer reaching this amount will
+	// precipitate a flush of the buffer. It is only used by the gRPC Writer
+	// implementation.
+	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
 
 	// globalProjectAlias is the project ID alias used for global buckets.
 	//
@@ -81,6 +90,9 @@ func defaultGRPCOptions() []option.ClientOption {
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
 		)
+	} else {
+		// Only enable DirectPath when the emulator is not being targeted.
+		defaults = append(defaults, internaloption.EnableDirectPath(true))
 	}
 
 	return defaults
@@ -133,10 +145,10 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 	return resp.EmailAddress, err
 }
 
-func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
+func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
-
+	b.Name = bucket
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
 	if b.GetLocation() == "" && b.GetLifecycle() != nil {
@@ -144,11 +156,13 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 	}
 
 	req := &storagepb.CreateBucketRequest{
-		Parent:                     toProjectResource(project),
-		Bucket:                     b,
-		BucketId:                   b.GetName(),
-		PredefinedAcl:              attrs.PredefinedACL,
-		PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
+		Parent:   toProjectResource(project),
+		Bucket:   b,
+		BucketId: b.GetName(),
+	}
+	if attrs != nil {
+		req.PredefinedAcl = attrs.PredefinedACL
+		req.PredefinedDefaultObjectAcl = attrs.PredefinedDefaultObjectACL
 	}
 
 	var battrs *BucketAttrs
@@ -233,7 +247,8 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetBucketRequest{
-		Name: bucketResourceName(globalProjectAlias, bucket),
+		Name:     bucketResourceName(globalProjectAlias, bucket),
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
 		return nil, err
@@ -367,14 +382,14 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		it.query = *q
 	}
 	req := &storagepb.ListObjectsRequest{
-		Parent:             bucketResourceName(globalProjectAlias, bucket),
-		Prefix:             it.query.Prefix,
-		Delimiter:          it.query.Delimiter,
-		Versions:           it.query.Versions,
-		LexicographicStart: it.query.StartOffset,
-		LexicographicEnd:   it.query.EndOffset,
-		// TODO(noahietz): Convert a projection to a FieldMask.
-		// ReadMask: q.Projection,
+		Parent:                   bucketResourceName(globalProjectAlias, bucket),
+		Prefix:                   it.query.Prefix,
+		Delimiter:                it.query.Delimiter,
+		Versions:                 it.query.Versions,
+		LexicographicStart:       it.query.StartOffset,
+		LexicographicEnd:         it.query.EndOffset,
+		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
+		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -396,6 +411,12 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		for _, obj := range objects {
 			b := newObjectFromProto(obj)
 			it.items = append(it.items, b)
+		}
+
+		// Response is always non-nil after a successful request.
+		res := gitr.Response.(*storagepb.ListObjectsResponse)
+		for _, prefix := range res.GetPrefixes() {
+			it.items = append(it.items, &ObjectAttrs{Prefix: prefix})
 		}
 
 		return token, nil
@@ -436,6 +457,8 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string
 	req := &storagepb.GetObjectRequest{
 		Bucket: bucketResourceName(globalProjectAlias, bucket),
 		Object: object,
+		// ProjectionFull by default.
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyCondsProto("grpcStorageClient.GetObject", gen, conds, req); err != nil {
 		return nil, err
@@ -479,10 +502,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
 	}
 
-	var paths []string
-	fieldMask := &fieldmaskpb.FieldMask{
-		Paths: paths,
-	}
+	fieldMask := &fieldmaskpb.FieldMask{Paths: nil}
 	if uattrs.EventBasedHold != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "event_based_hold")
 	}
@@ -509,7 +529,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	}
 	// Note: This API currently does not support entites using project ID.
 	// Use project numbers in ACL entities. Pending b/233617896.
-	if uattrs.ACL != nil {
+	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
@@ -727,7 +747,7 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 
 	dstObjPb := req.dstObject.attrs.toProtoObject(req.dstBucket)
 	dstObjPb.Name = req.dstObject.name
-	if err := applyCondsProto("ComposeObject destination", -1, req.dstObject.conds, dstObjPb); err != nil {
+	if err := applyCondsProto("ComposeObject destination", defaultGen, req.dstObject.conds, dstObjPb); err != nil {
 		return nil, err
 	}
 	if req.sendCRC32C {
@@ -750,8 +770,8 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	if req.predefinedACL != "" {
 		rawReq.DestinationPredefinedAcl = req.predefinedACL
 	}
-	if req.encryptionKey != nil {
-		rawReq.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.encryptionKey)
+	if req.dstObject.encryptionKey != nil {
+		rawReq.CommonObjectRequestParams = toProtoCommonObjectRequestParams(req.dstObject.encryptionKey)
 	}
 
 	var obj *storagepb.Object
@@ -811,6 +831,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	r := &rewriteObjectResponse{
 		done:     res.GetDone(),
 		written:  res.GetTotalBytesRewritten(),
+		size:     res.GetObjectSize(),
 		token:    res.GetRewriteToken(),
 		resource: newObjectFromProto(res.GetResource()),
 	}
@@ -822,13 +843,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if params.conds != nil {
-		if err := params.conds.validate("grpcStorageClient.NewRangeReader"); err != nil {
-			return nil, err
-		}
-	}
-
 	s := callSettings(c.settings, opts...)
+
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
 
 	// A negative length means "read to the end of the object", but the
 	// read_limit field it corresponds to uses zero to mean the same thing. Thus
@@ -883,6 +902,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			}
 
 			msg, err = stream.Recv()
+			// These types of errors show up on the Recv call, rather than the
+			// initialization of the stream via ReadObject above.
+			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+				return ErrObjectNotExist
+			}
 
 			return err
 		}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
@@ -926,6 +950,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			// Store the content from the first Recv in the
 			// client buffer for reading later.
 			leftovers: msg.GetChecksummedData().GetContent(),
+			settings:  s,
 		},
 	}
 
@@ -947,6 +972,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 }
 
 func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
+	s := callSettings(c.settings, opts...)
+
 	var offset int64
 	errorf := params.setError
 	progress := params.progress
@@ -954,6 +981,10 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 	pr, pw := io.Pipe()
 	gw := newGRPCWriter(c, params, pr)
+	gw.settings = s
+	if s.userProject != "" {
+		gw.ctx = setUserProjectMetadata(gw.ctx, s.userProject)
+	}
 
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
@@ -1298,6 +1329,7 @@ type gRPCReader struct {
 	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
 	leftovers  []byte
 	cancel     context.CancelFunc
+	settings   *settings
 }
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
@@ -1373,6 +1405,10 @@ func (r *gRPCReader) Close() error {
 // an attempt to reopen the stream.
 func (r *gRPCReader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
+	var shouldRetry = ShouldRetry
+	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
+		shouldRetry = r.settings.retry.shouldRetry
+	}
 	if err != nil && shouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
@@ -1437,6 +1473,7 @@ type gRPCWriter struct {
 	attrs         *ObjectAttrs
 	conds         *Conditions
 	encryptionKey []byte
+	settings      *settings
 
 	sendCRC32C bool
 
@@ -1454,21 +1491,27 @@ func (w *gRPCWriter) startResumableUpload() error {
 	if err != nil {
 		return err
 	}
-	upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-		WriteObjectSpec: spec,
-	})
-
-	w.upid = upres.GetUploadId()
-	return err
+	return run(w.ctx, func() error {
+		upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
+			WriteObjectSpec: spec,
+		})
+		w.upid = upres.GetUploadId()
+		return err
+	}, w.settings.retry, w.settings.idempotent, setRetryHeaderGRPC(w.ctx))
 }
 
 // queryProgress is a helper that queries the status of the resumable upload
 // associated with the given upload ID.
 func (w *gRPCWriter) queryProgress() (int64, error) {
-	q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+	var persistedSize int64
+	err := run(w.ctx, func() error {
+		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+		persistedSize = q.GetPersistedSize()
+		return err
+	}, w.settings.retry, true, setRetryHeaderGRPC(w.ctx))
 
 	// q.GetCommittedSize() will return 0 if q is nil.
-	return q.GetPersistedSize(), err
+	return persistedSize, err
 }
 
 // uploadBuffer opens a Write stream and uploads the buffer at the given offset (if
@@ -1483,6 +1526,10 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 	var err error
 	var finishWrite bool
 	var sent, limit int = 0, maxPerMessageWriteSize
+	var shouldRetry = ShouldRetry
+	if w.settings.retry != nil && w.settings.retry.shouldRetry != nil {
+		shouldRetry = w.settings.retry.shouldRetry
+	}
 	offset := start
 	toWrite := w.buf[:recvd]
 	for {
@@ -1513,7 +1560,8 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// The first message on the WriteObject stream must either be the
 		// Object or the Resumable Upload ID.
 		if first {
-			w.stream, err = w.c.raw.WriteObject(w.ctx)
+			ctx := gapic.InsertMetadata(w.ctx, metadata.Pairs("x-goog-request-params", "bucket="+url.QueryEscape(w.bucket)))
+			w.stream, err = w.c.raw.WriteObject(ctx)
 			if err != nil {
 				return nil, 0, false, err
 			}
@@ -1535,8 +1583,16 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// on the *last* message of the stream (instead of the first).
 			if w.sendCRC32C {
 				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C:  proto.Uint32(w.attrs.CRC32C),
-					Md5Hash: w.attrs.MD5,
+					Crc32C: proto.Uint32(w.attrs.CRC32C),
+				}
+			}
+			if len(w.attrs.MD5) != 0 {
+				if cs := req.GetObjectChecksums(); cs == nil {
+					req.ObjectChecksums = &storagepb.ObjectChecksums{
+						Md5Hash: w.attrs.MD5,
+					}
+				} else {
+					cs.Md5Hash = w.attrs.MD5
 				}
 			}
 		}
@@ -1646,8 +1702,8 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 	spec := &storagepb.WriteObjectSpec{
 		Resource: attrs.toProtoObject(w.bucket),
 	}
-	// WriteObject doesn't support the generation condition, so use -1.
-	if err := applyCondsProto("WriteObject", -1, w.conds, spec); err != nil {
+	// WriteObject doesn't support the generation condition, so use default.
+	if err := applyCondsProto("WriteObject", defaultGen, w.conds, spec); err != nil {
 		return nil, err
 	}
 	return spec, nil
@@ -1655,7 +1711,12 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
+// Furthermore, if the attrs.ContentType is unset, the first bytes of content
+// will be sniffed for a matching content type.
 func (w *gRPCWriter) read() (int, bool, error) {
+	if w.attrs.ContentType == "" {
+		w.reader, w.attrs.ContentType = gax.DetermineContentType(w.reader)
+	}
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0
 	var err error

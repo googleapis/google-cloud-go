@@ -75,6 +75,11 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponseErrors = stats.Int64(statsPrefix+"append_response_errors", "Number of append responses with errors attached", stats.UnitDimensionless)
 
+	// AppendRetryCount is a measure of the number of appends that were automatically retried by the library
+	// after receiving a non-successful response.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRetryCount = stats.Int64(statsPrefix+"append_retry_count", "Number of appends that were retried", stats.UnitDimensionless)
+
 	// FlushRequests is a measure of the number of FlushRows requests sent.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	FlushRequests = stats.Int64(statsPrefix+"flush_requests", "Number of FlushRows requests sent", stats.UnitDimensionless)
@@ -114,6 +119,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponseErrorsView *view.View
 
+	// AppendRetryView is a cumulative sum of AppendRetryCount.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRetryView *view.View
+
 	// FlushRequestsView is a cumulative sum of FlushRequests.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	FlushRequestsView *view.View
@@ -130,7 +139,7 @@ func init() {
 
 	AppendResponsesView = createSumView(stats.Measure(AppendResponses), keyStream, keyDataOrigin)
 	AppendResponseErrorsView = createSumView(stats.Measure(AppendResponseErrors), keyStream, keyDataOrigin, keyError)
-
+	AppendRetryView = createSumView(stats.Measure(AppendRetryCount), keyStream, keyDataOrigin)
 	FlushRequestsView = createSumView(stats.Measure(FlushRequests), keyStream, keyDataOrigin)
 
 	DefaultOpenCensusViews = []*view.View{
@@ -144,6 +153,7 @@ func init() {
 
 		AppendResponsesView,
 		AppendResponseErrorsView,
+		AppendRetryView,
 
 		FlushRequestsView,
 	}

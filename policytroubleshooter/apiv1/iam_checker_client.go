@@ -94,7 +94,8 @@ func (c *IamCheckerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IamCheckerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -167,7 +168,8 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *iamCheckerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

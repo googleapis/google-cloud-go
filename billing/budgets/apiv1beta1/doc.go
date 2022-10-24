@@ -28,6 +28,11 @@
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := budgets.NewBudgetClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -43,6 +48,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := budgets.NewBudgetClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -51,7 +61,7 @@
 //
 //	req := &budgetspb.CreateBudgetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1#CreateBudgetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb#CreateBudgetRequest.
 //	}
 //	resp, err := c.CreateBudget(ctx, req)
 //	if err != nil {
@@ -62,7 +72,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewBudgetClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
@@ -74,6 +84,8 @@ package budgets // import "cloud.google.com/go/billing/budgets/apiv1beta1"
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -162,4 +174,23 @@ func versionGo() string {
 		return s
 	}
 	return "UNKNOWN"
+}
+
+// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
+// of receiving an unknown enum value.
+func maybeUnknownEnum(err error) error {
+	if strings.Contains(err.Error(), "invalid value for enum type") {
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+	}
+	return err
+}
+
+// buildHeaders extracts metadata from the outgoing context, joins it with any other
+// given metadata, and converts them into a http.Header.
+func buildHeaders(ctx context.Context, mds ...metadata.MD) http.Header {
+	if cmd, ok := metadata.FromOutgoingContext(ctx); ok {
+		mds = append(mds, cmd)
+	}
+	md := metadata.Join(mds...)
+	return http.Header(md)
 }

@@ -21,14 +21,19 @@ import (
 	"io"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewSessionsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewSessionsClient() {
 
 func ExampleNewSessionsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -53,6 +63,11 @@ func ExampleNewSessionsRESTClient() {
 
 func ExampleSessionsClient_DetectIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,7 +76,7 @@ func ExampleSessionsClient_DetectIntent() {
 
 	req := &cxpb.DetectIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DetectIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#DetectIntentRequest.
 	}
 	resp, err := c.DetectIntent(ctx, req)
 	if err != nil {
@@ -73,6 +88,11 @@ func ExampleSessionsClient_DetectIntent() {
 
 func ExampleSessionsClient_StreamingDetectIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -108,6 +128,11 @@ func ExampleSessionsClient_StreamingDetectIntent() {
 
 func ExampleSessionsClient_MatchIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -116,7 +141,7 @@ func ExampleSessionsClient_MatchIntent() {
 
 	req := &cxpb.MatchIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#MatchIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#MatchIntentRequest.
 	}
 	resp, err := c.MatchIntent(ctx, req)
 	if err != nil {
@@ -128,6 +153,11 @@ func ExampleSessionsClient_MatchIntent() {
 
 func ExampleSessionsClient_FulfillIntent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -136,7 +166,7 @@ func ExampleSessionsClient_FulfillIntent() {
 
 	req := &cxpb.FulfillIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#FulfillIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#FulfillIntentRequest.
 	}
 	resp, err := c.FulfillIntent(ctx, req)
 	if err != nil {
@@ -148,6 +178,11 @@ func ExampleSessionsClient_FulfillIntent() {
 
 func ExampleSessionsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -168,6 +203,11 @@ func ExampleSessionsClient_GetLocation() {
 
 func ExampleSessionsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -194,6 +234,11 @@ func ExampleSessionsClient_ListLocations() {
 
 func ExampleSessionsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -212,6 +257,11 @@ func ExampleSessionsClient_CancelOperation() {
 
 func ExampleSessionsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -232,6 +282,11 @@ func ExampleSessionsClient_GetOperation() {
 
 func ExampleSessionsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -20,13 +20,18 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
+	containeranalysispb "cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb"
 	"google.golang.org/api/iterator"
-	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewContainerAnalysisV1Beta1Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewContainerAnalysisV1Beta1Client() {
 
 func ExampleNewContainerAnalysisV1Beta1RESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -51,6 +61,11 @@ func ExampleNewContainerAnalysisV1Beta1RESTClient() {
 
 func ExampleContainerAnalysisV1Beta1Client_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -71,6 +86,11 @@ func ExampleContainerAnalysisV1Beta1Client_SetIamPolicy() {
 
 func ExampleContainerAnalysisV1Beta1Client_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,6 +111,11 @@ func ExampleContainerAnalysisV1Beta1Client_GetIamPolicy() {
 
 func ExampleContainerAnalysisV1Beta1Client_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -111,6 +136,11 @@ func ExampleContainerAnalysisV1Beta1Client_TestIamPermissions() {
 
 func ExampleContainerAnalysisV1Beta1Client_GetScanConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +149,7 @@ func ExampleContainerAnalysisV1Beta1Client_GetScanConfig() {
 
 	req := &containeranalysispb.GetScanConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#GetScanConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#GetScanConfigRequest.
 	}
 	resp, err := c.GetScanConfig(ctx, req)
 	if err != nil {
@@ -131,6 +161,11 @@ func ExampleContainerAnalysisV1Beta1Client_GetScanConfig() {
 
 func ExampleContainerAnalysisV1Beta1Client_ListScanConfigs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -139,7 +174,7 @@ func ExampleContainerAnalysisV1Beta1Client_ListScanConfigs() {
 
 	req := &containeranalysispb.ListScanConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#ListScanConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#ListScanConfigsRequest.
 	}
 	it := c.ListScanConfigs(ctx, req)
 	for {
@@ -157,6 +192,11 @@ func ExampleContainerAnalysisV1Beta1Client_ListScanConfigs() {
 
 func ExampleContainerAnalysisV1Beta1Client_UpdateScanConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,7 +205,7 @@ func ExampleContainerAnalysisV1Beta1Client_UpdateScanConfig() {
 
 	req := &containeranalysispb.UpdateScanConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#UpdateScanConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#UpdateScanConfigRequest.
 	}
 	resp, err := c.UpdateScanConfig(ctx, req)
 	if err != nil {

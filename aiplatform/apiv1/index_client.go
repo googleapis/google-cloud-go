@@ -48,6 +48,8 @@ type IndexCallOptions struct {
 	ListIndexes        []gax.CallOption
 	UpdateIndex        []gax.CallOption
 	DeleteIndex        []gax.CallOption
+	UpsertDatapoints   []gax.CallOption
+	RemoveDatapoints   []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -79,6 +81,8 @@ func defaultIndexCallOptions() *IndexCallOptions {
 		ListIndexes:        []gax.CallOption{},
 		UpdateIndex:        []gax.CallOption{},
 		DeleteIndex:        []gax.CallOption{},
+		UpsertDatapoints:   []gax.CallOption{},
+		RemoveDatapoints:   []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -105,6 +109,8 @@ type internalIndexClient interface {
 	UpdateIndexOperation(name string) *UpdateIndexOperation
 	DeleteIndex(context.Context, *aiplatformpb.DeleteIndexRequest, ...gax.CallOption) (*DeleteIndexOperation, error)
 	DeleteIndexOperation(name string) *DeleteIndexOperation
+	UpsertDatapoints(context.Context, *aiplatformpb.UpsertDatapointsRequest, ...gax.CallOption) (*aiplatformpb.UpsertDatapointsResponse, error)
+	RemoveDatapoints(context.Context, *aiplatformpb.RemoveDatapointsRequest, ...gax.CallOption) (*aiplatformpb.RemoveDatapointsResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -151,7 +157,8 @@ func (c *IndexClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IndexClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -199,6 +206,16 @@ func (c *IndexClient) DeleteIndex(ctx context.Context, req *aiplatformpb.DeleteI
 // The name must be that of a previously created DeleteIndexOperation, possibly from a different process.
 func (c *IndexClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	return c.internalClient.DeleteIndexOperation(name)
+}
+
+// UpsertDatapoints add/update Datapoints into an Index.
+func (c *IndexClient) UpsertDatapoints(ctx context.Context, req *aiplatformpb.UpsertDatapointsRequest, opts ...gax.CallOption) (*aiplatformpb.UpsertDatapointsResponse, error) {
+	return c.internalClient.UpsertDatapoints(ctx, req, opts...)
+}
+
+// RemoveDatapoints remove Datapoints from an Index.
+func (c *IndexClient) RemoveDatapoints(ctx context.Context, req *aiplatformpb.RemoveDatapointsRequest, opts ...gax.CallOption) (*aiplatformpb.RemoveDatapointsResponse, error) {
+	return c.internalClient.RemoveDatapoints(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -347,7 +364,8 @@ func NewIndexClient(ctx context.Context, opts ...option.ClientOption) (*IndexCli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *indexGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -484,6 +502,40 @@ func (c *indexGRPCClient) DeleteIndex(ctx context.Context, req *aiplatformpb.Del
 	return &DeleteIndexOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *indexGRPCClient) UpsertDatapoints(ctx context.Context, req *aiplatformpb.UpsertDatapointsRequest, opts ...gax.CallOption) (*aiplatformpb.UpsertDatapointsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index", url.QueryEscape(req.GetIndex())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpsertDatapoints[0:len((*c.CallOptions).UpsertDatapoints):len((*c.CallOptions).UpsertDatapoints)], opts...)
+	var resp *aiplatformpb.UpsertDatapointsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.indexClient.UpsertDatapoints(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *indexGRPCClient) RemoveDatapoints(ctx context.Context, req *aiplatformpb.RemoveDatapointsRequest, opts ...gax.CallOption) (*aiplatformpb.RemoveDatapointsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index", url.QueryEscape(req.GetIndex())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RemoveDatapoints[0:len((*c.CallOptions).RemoveDatapoints):len((*c.CallOptions).RemoveDatapoints)], opts...)
+	var resp *aiplatformpb.RemoveDatapointsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.indexClient.RemoveDatapoints(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *indexGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {

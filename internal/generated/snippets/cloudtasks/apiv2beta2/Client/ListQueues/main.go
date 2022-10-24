@@ -22,21 +22,26 @@ import (
 	"context"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta2"
+	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta2/cloudtaskspb"
 	"google.golang.org/api/iterator"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &taskspb.ListQueuesRequest{
+	req := &cloudtaskspb.ListQueuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#ListQueuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta2/cloudtaskspb#ListQueuesRequest.
 	}
 	it := c.ListQueues(ctx, req)
 	for {

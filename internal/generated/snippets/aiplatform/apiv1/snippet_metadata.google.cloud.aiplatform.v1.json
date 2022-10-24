@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.16.0",
+    "version": "1.24.0",
     "language": "GO",
     "apis": [
       {
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -832,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1015,7 +1015,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1061,7 +1061,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1107,7 +1107,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -1152,7 +1152,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1198,7 +1198,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1244,7 +1244,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1290,7 +1290,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1336,7 +1336,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1382,7 +1382,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1428,7 +1428,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1474,7 +1474,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1520,7 +1520,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1566,7 +1566,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1612,7 +1612,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1658,7 +1658,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1704,7 +1704,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1750,7 +1750,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1796,7 +1796,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1842,7 +1842,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1887,7 +1887,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1933,7 +1933,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1979,7 +1979,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2025,7 +2025,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2071,7 +2071,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2117,7 +2117,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2163,7 +2163,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -2208,7 +2208,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2254,7 +2254,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2300,7 +2300,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2346,7 +2346,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2392,7 +2392,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2438,7 +2438,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2484,7 +2484,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2530,7 +2530,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2538,7 +2538,7 @@
     {
       "regionTag": "aiplatform_v1_generated_FeaturestoreService_ImportFeatureValues_sync",
       "title": "aiplatform ImportFeatureValues Sample",
-      "description": "ImportFeatureValues imports Feature values into the Featurestore from a source storage.\n\nThe progress of the import is tracked by the returned operation. The\nimported features are guaranteed to be visible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf an import operation fails, the Feature values returned from\nreads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same import request again and wait till\nthe new operation returned is marked as successfully done.\n\nThere are also scenarios where the caller can cause inconsistency.\n\n  Source data for import contains multiple distinct Feature values for\n  the same entity ID and timestamp.\n\n  Source is modified during an import. This includes adding, updating, or\n  removing source data and/or metadata. Examples of updating metadata\n  include but are not limited to changing storage location, storage class,\n  or retention policy.\n\n  Online serving cluster is under-provisioned.",
+      "description": "ImportFeatureValues imports Feature values into the Featurestore from a source storage.\n\nThe progress of the import is tracked by the returned operation. The\nimported features are guaranteed to be visible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf an import operation fails, the Feature values returned from\nreads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same import request again and wait till\nthe new operation returned is marked as successfully done.\n\nThere are also scenarios where the caller can cause inconsistency.\n\n\tSource data for import contains multiple distinct Feature values for\n\tthe same entity ID and timestamp.\n\n\tSource is modified during an import. This includes adding, updating, or\n\tremoving source data and/or metadata. Examples of updating metadata\n\tinclude but are not limited to changing storage location, storage class,\n\tor retention policy.\n\n\tOnline serving cluster is under-provisioned.",
       "file": "FeaturestoreClient/ImportFeatureValues/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2576,7 +2576,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2622,7 +2622,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2668,7 +2668,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2714,7 +2714,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2760,7 +2760,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2806,7 +2806,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2852,7 +2852,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2898,7 +2898,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2944,7 +2944,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2990,7 +2990,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3036,7 +3036,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3082,7 +3082,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3128,7 +3128,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3173,7 +3173,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3218,7 +3218,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3264,7 +3264,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3310,7 +3310,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3356,7 +3356,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3402,7 +3402,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -3448,7 +3448,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -3494,7 +3494,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3540,7 +3540,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3631,7 +3631,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3677,7 +3677,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3722,7 +3722,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3768,7 +3768,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3814,7 +3814,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -3859,7 +3859,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3905,7 +3905,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3951,7 +3951,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3997,7 +3997,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4043,7 +4043,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4089,7 +4089,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4135,7 +4135,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4171,6 +4171,52 @@
         "method": {
           "shortName": "ListOperations",
           "fullName": "google.cloud.aiplatform.v1.IndexService.ListOperations",
+          "service": {
+            "shortName": "IndexService",
+            "fullName": "google.cloud.aiplatform.v1.IndexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_IndexService_RemoveDatapoints_sync",
+      "title": "aiplatform RemoveDatapoints Sample",
+      "description": "RemoveDatapoints remove Datapoints from an Index.",
+      "file": "IndexClient/RemoveDatapoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveDatapoints",
+        "fullName": "google.cloud.aiplatform.v1.IndexClient.RemoveDatapoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RemoveDatapointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.RemoveDatapointsResponse",
+        "client": {
+          "shortName": "IndexClient",
+          "fullName": "google.cloud.aiplatform.v1.IndexClient"
+        },
+        "method": {
+          "shortName": "RemoveDatapoints",
+          "fullName": "google.cloud.aiplatform.v1.IndexService.RemoveDatapoints",
           "service": {
             "shortName": "IndexService",
             "fullName": "google.cloud.aiplatform.v1.IndexService"
@@ -4227,7 +4273,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4273,7 +4319,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4319,7 +4365,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_IndexService_UpsertDatapoints_sync",
+      "title": "aiplatform UpsertDatapoints Sample",
+      "description": "UpsertDatapoints add/update Datapoints into an Index.",
+      "file": "IndexClient/UpsertDatapoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpsertDatapoints",
+        "fullName": "google.cloud.aiplatform.v1.IndexClient.UpsertDatapoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpsertDatapointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.UpsertDatapointsResponse",
+        "client": {
+          "shortName": "IndexClient",
+          "fullName": "google.cloud.aiplatform.v1.IndexClient"
+        },
+        "method": {
+          "shortName": "UpsertDatapoints",
+          "fullName": "google.cloud.aiplatform.v1.IndexService.UpsertDatapoints",
+          "service": {
+            "shortName": "IndexService",
+            "fullName": "google.cloud.aiplatform.v1.IndexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4365,7 +4457,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4410,7 +4502,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4456,7 +4548,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4502,7 +4594,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -4547,7 +4639,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4593,7 +4685,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -4639,7 +4731,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4685,7 +4777,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4731,7 +4823,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4777,7 +4869,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4823,7 +4915,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4869,7 +4961,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4915,7 +5007,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4961,7 +5053,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5007,7 +5099,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5053,7 +5145,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5099,7 +5191,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -5145,7 +5237,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5191,7 +5283,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5236,7 +5328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5281,7 +5373,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5326,7 +5418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5371,7 +5463,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5416,7 +5508,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5462,7 +5554,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5508,7 +5600,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5554,7 +5646,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5600,7 +5692,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5646,7 +5738,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5692,7 +5784,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -5738,7 +5830,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -5784,7 +5876,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -5830,7 +5922,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -5876,7 +5968,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -5921,7 +6013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5967,7 +6059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6013,7 +6105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6059,7 +6151,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6105,7 +6197,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6151,7 +6243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6197,7 +6289,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6243,7 +6335,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6289,7 +6381,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6335,7 +6427,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6381,7 +6473,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6427,7 +6519,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6473,7 +6565,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6519,7 +6611,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6565,7 +6657,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6611,7 +6703,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6656,7 +6748,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6701,7 +6793,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6747,7 +6839,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6793,7 +6885,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6839,7 +6931,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6885,7 +6977,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -6931,7 +7023,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6977,7 +7069,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7023,7 +7115,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7069,7 +7161,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7114,7 +7206,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7160,7 +7252,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7206,7 +7298,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7252,7 +7344,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7298,7 +7390,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7344,7 +7436,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -7390,7 +7482,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -7436,7 +7528,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -7482,7 +7574,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -7528,7 +7620,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -7573,7 +7665,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7619,7 +7711,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7665,7 +7757,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7711,7 +7803,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7757,7 +7849,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7803,7 +7895,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7849,7 +7941,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7895,7 +7987,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7941,7 +8033,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7987,7 +8079,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8033,7 +8125,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8079,7 +8171,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8125,7 +8217,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8171,7 +8263,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8217,7 +8309,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8263,7 +8355,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8309,7 +8401,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8355,7 +8447,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8401,7 +8493,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8447,7 +8539,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8493,7 +8585,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8539,7 +8631,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_MetadataService_RemoveContextChildren_sync",
+      "title": "aiplatform RemoveContextChildren Sample",
+      "description": "RemoveContextChildren remove a set of children contexts from a parent Context. If any of the\nchild Contexts were NOT added to the parent Context, they are\nsimply skipped.",
+      "file": "MetadataClient/RemoveContextChildren/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveContextChildren",
+        "fullName": "google.cloud.aiplatform.v1.MetadataClient.RemoveContextChildren",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RemoveContextChildrenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.RemoveContextChildrenResponse",
+        "client": {
+          "shortName": "MetadataClient",
+          "fullName": "google.cloud.aiplatform.v1.MetadataClient"
+        },
+        "method": {
+          "shortName": "RemoveContextChildren",
+          "fullName": "google.cloud.aiplatform.v1.MetadataService.RemoveContextChildren",
+          "service": {
+            "shortName": "MetadataService",
+            "fullName": "google.cloud.aiplatform.v1.MetadataService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8585,7 +8723,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8631,7 +8769,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8677,7 +8815,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8723,7 +8861,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8769,7 +8907,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8815,7 +8953,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8861,7 +8999,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -8906,7 +9044,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8951,7 +9089,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8997,7 +9135,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9043,7 +9181,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9089,7 +9227,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9135,7 +9273,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -9181,7 +9319,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -9227,7 +9365,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -9273,7 +9411,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9319,7 +9457,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9365,7 +9503,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9411,7 +9549,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9456,7 +9594,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9502,7 +9640,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -9548,7 +9686,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -9593,7 +9731,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -9639,7 +9777,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -9685,7 +9823,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9731,7 +9869,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9777,7 +9915,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9823,7 +9961,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9869,7 +10007,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9915,7 +10053,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -9961,7 +10099,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10007,7 +10145,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -10053,7 +10191,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -10099,7 +10237,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -10145,7 +10283,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -10191,7 +10329,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -10237,7 +10375,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -10283,7 +10421,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10329,7 +10467,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10375,7 +10513,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10421,7 +10559,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10467,7 +10605,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -10513,7 +10651,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10558,7 +10696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10603,7 +10741,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10648,7 +10786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10694,7 +10832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10740,7 +10878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10785,7 +10923,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -10831,7 +10969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -10877,7 +11015,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -10923,7 +11061,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -10969,7 +11107,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11015,7 +11153,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11061,7 +11199,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11107,7 +11245,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11153,7 +11291,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -11199,7 +11337,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -11245,7 +11383,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -11291,7 +11429,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -11337,7 +11475,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11383,7 +11521,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11429,7 +11567,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11474,7 +11612,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11519,7 +11657,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -11565,7 +11703,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11611,7 +11749,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11657,7 +11795,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11703,7 +11841,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11749,7 +11887,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -11795,7 +11933,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -11841,7 +11979,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11849,7 +11987,7 @@
     {
       "regionTag": "aiplatform_v1_generated_PredictionService_RawPredict_sync",
       "title": "aiplatform RawPredict Sample",
-      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n  X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this\n  prediction.\n\n  X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel\n  that served this prediction.",
+      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n\tX-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this\n\tprediction.\n\n\tX-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel\n\tthat served this prediction.",
       "file": "PredictionClient/RawPredict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11887,7 +12025,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11933,7 +12071,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -11979,7 +12117,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12025,7 +12163,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12070,7 +12208,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12116,7 +12254,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -12161,7 +12299,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12207,7 +12345,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -12253,7 +12391,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12299,7 +12437,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12345,7 +12483,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12391,7 +12529,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12437,7 +12575,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -12483,7 +12621,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -12529,7 +12667,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -12575,7 +12713,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12621,7 +12759,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12667,7 +12805,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -12713,7 +12851,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12759,7 +12897,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12805,7 +12943,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12851,7 +12989,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -12896,7 +13034,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -12942,7 +13080,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -12988,7 +13126,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13034,7 +13172,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13080,7 +13218,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13125,7 +13263,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -13171,7 +13309,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -13217,7 +13355,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -13263,7 +13401,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -13309,7 +13447,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -13355,7 +13493,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -13401,7 +13539,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13447,7 +13585,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13493,7 +13631,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13539,7 +13677,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13585,7 +13723,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13631,7 +13769,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13677,7 +13815,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -13723,7 +13861,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -13769,7 +13907,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -13815,7 +13953,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -13861,7 +13999,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -13907,7 +14045,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -13953,7 +14091,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -14044,7 +14182,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14090,7 +14228,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14136,7 +14274,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14182,7 +14320,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -14228,7 +14366,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14274,7 +14412,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14320,7 +14458,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14366,7 +14504,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14412,7 +14550,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14458,7 +14596,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14504,7 +14642,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14549,7 +14687,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14595,7 +14733,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -14641,7 +14779,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14687,7 +14825,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14733,7 +14871,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14778,7 +14916,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14823,7 +14961,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14868,7 +15006,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -14914,7 +15052,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -14960,7 +15098,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15006,7 +15144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15052,7 +15190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15098,7 +15236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15144,7 +15282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -15190,7 +15328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -15236,7 +15374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15282,7 +15420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -15328,7 +15466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -15374,7 +15512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15420,7 +15558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15466,7 +15604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15512,7 +15650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -15558,7 +15696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -15604,7 +15742,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]

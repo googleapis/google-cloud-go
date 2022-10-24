@@ -20,11 +20,16 @@ import (
 	"context"
 
 	lifesciences "cloud.google.com/go/lifesciences/apiv2beta"
-	lifesciencespb "google.golang.org/genproto/googleapis/cloud/lifesciences/v2beta"
+	lifesciencespb "cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb"
 )
 
 func ExampleNewWorkflowsServiceV2BetaClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := lifesciences.NewWorkflowsServiceV2BetaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewWorkflowsServiceV2BetaClient() {
 
 func ExampleNewWorkflowsServiceV2BetaRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := lifesciences.NewWorkflowsServiceV2BetaRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +59,11 @@ func ExampleNewWorkflowsServiceV2BetaRESTClient() {
 
 func ExampleWorkflowsServiceV2BetaClient_RunPipeline() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := lifesciences.NewWorkflowsServiceV2BetaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,7 +72,7 @@ func ExampleWorkflowsServiceV2BetaClient_RunPipeline() {
 
 	req := &lifesciencespb.RunPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/lifesciences/v2beta#RunPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb#RunPipelineRequest.
 	}
 	op, err := c.RunPipeline(ctx, req)
 	if err != nil {

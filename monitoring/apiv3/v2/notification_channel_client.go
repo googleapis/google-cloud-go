@@ -195,7 +195,8 @@ func (c *NotificationChannelClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *NotificationChannelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -342,7 +343,8 @@ func NewNotificationChannelClient(ctx context.Context, opts ...option.ClientOpti
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *notificationChannelGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

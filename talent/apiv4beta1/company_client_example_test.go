@@ -20,13 +20,18 @@ import (
 	"context"
 
 	talent "cloud.google.com/go/talent/apiv4beta1"
+	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	"google.golang.org/api/iterator"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewCompanyClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewCompanyClient() {
 
 func ExampleNewCompanyRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -51,6 +61,11 @@ func ExampleNewCompanyRESTClient() {
 
 func ExampleCompanyClient_CreateCompany() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -59,7 +74,7 @@ func ExampleCompanyClient_CreateCompany() {
 
 	req := &talentpb.CreateCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#CreateCompanyRequest.
 	}
 	resp, err := c.CreateCompany(ctx, req)
 	if err != nil {
@@ -71,6 +86,11 @@ func ExampleCompanyClient_CreateCompany() {
 
 func ExampleCompanyClient_GetCompany() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -79,7 +99,7 @@ func ExampleCompanyClient_GetCompany() {
 
 	req := &talentpb.GetCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#GetCompanyRequest.
 	}
 	resp, err := c.GetCompany(ctx, req)
 	if err != nil {
@@ -91,6 +111,11 @@ func ExampleCompanyClient_GetCompany() {
 
 func ExampleCompanyClient_UpdateCompany() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -99,7 +124,7 @@ func ExampleCompanyClient_UpdateCompany() {
 
 	req := &talentpb.UpdateCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#UpdateCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#UpdateCompanyRequest.
 	}
 	resp, err := c.UpdateCompany(ctx, req)
 	if err != nil {
@@ -111,6 +136,11 @@ func ExampleCompanyClient_UpdateCompany() {
 
 func ExampleCompanyClient_DeleteCompany() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +149,7 @@ func ExampleCompanyClient_DeleteCompany() {
 
 	req := &talentpb.DeleteCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#DeleteCompanyRequest.
 	}
 	err = c.DeleteCompany(ctx, req)
 	if err != nil {
@@ -129,6 +159,11 @@ func ExampleCompanyClient_DeleteCompany() {
 
 func ExampleCompanyClient_ListCompanies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -137,7 +172,7 @@ func ExampleCompanyClient_ListCompanies() {
 
 	req := &talentpb.ListCompaniesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListCompaniesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#ListCompaniesRequest.
 	}
 	it := c.ListCompanies(ctx, req)
 	for {
@@ -155,6 +190,11 @@ func ExampleCompanyClient_ListCompanies() {
 
 func ExampleCompanyClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

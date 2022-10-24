@@ -15,9 +15,19 @@
                 "CreateInstance"
               ]
             },
+            "CreateInstanceConfig": {
+              "methods": [
+                "CreateInstanceConfig"
+              ]
+            },
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteInstanceConfig": {
+              "methods": [
+                "DeleteInstanceConfig"
               ]
             },
             "GetIamPolicy": {
@@ -33,6 +43,11 @@
             "GetInstanceConfig": {
               "methods": [
                 "GetInstanceConfig"
+              ]
+            },
+            "ListInstanceConfigOperations": {
+              "methods": [
+                "ListInstanceConfigOperations"
               ]
             },
             "ListInstanceConfigs": {
@@ -58,6 +73,11 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateInstanceConfig": {
+              "methods": [
+                "UpdateInstanceConfig"
               ]
             }
           }

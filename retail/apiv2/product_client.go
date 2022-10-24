@@ -280,7 +280,8 @@ func (c *ProductClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ProductClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -368,6 +369,13 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // and
 // ProductService.RemoveFulfillmentPlaces.
 //
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
+//
 // This feature is only available for users who have Retail Search enabled.
 // Please enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
@@ -393,6 +401,13 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 // or
 // ProductService.ListProducts.
 //
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
+//
 // This feature is only available for users who have Retail Search enabled.
 // Please enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
@@ -417,6 +432,13 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 // ProductService.GetProduct
 // or
 // ProductService.ListProducts.
+//
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
 //
 // This feature is only available for users who have Retail Search enabled.
 // Please enable Retail Search on Cloud Console before using this feature.
@@ -450,6 +472,13 @@ func (c *ProductClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFul
 // ProductService.UpdateProduct
 // has no effect on local inventories.
 //
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
+//
 // This feature is only available for users who have Retail Search enabled.
 // Please enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
@@ -479,6 +508,13 @@ func (c *ProductClient) AddLocalInventoriesOperation(name string) *AddLocalInven
 // and
 // ProductService.UpdateProduct
 // has no effect on local inventories.
+//
+// The returned Operations will be obsolete after 1 day, and
+// GetOperation API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the Operations associated with the
+// stale updates will not be marked as done until being
+// obsolete.
 //
 // This feature is only available for users who have Retail Search enabled.
 // Please enable Retail Search on Cloud Console before using this feature.
@@ -582,7 +618,8 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *productGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
