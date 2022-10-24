@@ -23,6 +23,7 @@ import (
 
 	datafusion "cloud.google.com/go/datafusion/apiv1"
 	"google.golang.org/api/iterator"
+
 	datafusionpb "google.golang.org/genproto/googleapis/cloud/datafusion/v1"
 )
 

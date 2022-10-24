@@ -22,6 +22,7 @@ import (
 	"context"
 
 	eventarc "cloud.google.com/go/eventarc/apiv1"
+
 	eventarcpb "google.golang.org/genproto/googleapis/cloud/eventarc/v1"
 )
 

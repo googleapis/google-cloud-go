@@ -22,7 +22,7 @@ import (
 	"context"
 
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
-	"cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
 )
 
 func main() {

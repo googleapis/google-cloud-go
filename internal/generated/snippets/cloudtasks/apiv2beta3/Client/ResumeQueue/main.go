@@ -22,7 +22,7 @@ import (
 	"context"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta3"
-	"cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb"
+	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb"
 )
 
 func main() {

@@ -23,6 +23,7 @@ import (
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
 	"google.golang.org/api/iterator"
+
 	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 )
 

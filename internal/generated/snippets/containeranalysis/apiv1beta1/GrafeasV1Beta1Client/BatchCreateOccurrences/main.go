@@ -22,7 +22,7 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
-	"cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
+	grafeaspb "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
 )
 
 func main() {
