@@ -34,7 +34,7 @@ jobs:
   apidiff:
     needs: scan_changes
     runs-on: ubuntu-latest
-    if: "!contains(github.event.pull_request.labels.*.name, 'breaking change allowed')"
+    if: "needs.scan_changes.outputs.changed_dirs != '[]' && !contains(github.event.pull_request.labels.*.name, 'breaking change allowed')"
     continue-on-error: true
     strategy:
       matrix: ${{ fromJson(needs.scan_changes.outputs.changed_dirs) }}
