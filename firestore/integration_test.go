@@ -1861,6 +1861,8 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
+	t.SkipNow()
 	for _, d := range ds {
 		if !tm.Equal(d.ReadTime) {
 			t.Errorf("wanted read time: %v; got: %v",
