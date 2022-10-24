@@ -67,6 +67,8 @@ If you have been assigned to review this PR, please:
 - Approve and submit this PR if you believe it's ready to ship. That will prompt
 genbot to assign reviewers to the google-cloud-go PR.
 `
+	aliasBranchName  = "regen_alias"
+	aliasCommitTitle = "chore(all): auto-regenerate alias files"
 )
 
 var conventionalCommitScopeRe = regexp.MustCompile(`.*\((.*)\): .*`)
@@ -134,7 +136,13 @@ func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) er
 
 // GetRegenPR finds the first regen pull request with the given status. Accepted
 // statues are: open, closed, or all.
-func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status string) (*PullRequest, error) {
+func (gc *GithubClient) GetRegenPR(ctx context.Context, repo, status string) (*PullRequest, error) {
+	return gc.GetPRWithTitle(ctx, repo, status, "auto-regenerate")
+}
+
+// GetPRWithTitle finds the first pull request with the given status and title.
+// Accepted statues are: open, closed, or all.
+func (gc *GithubClient) GetPRWithTitle(ctx context.Context, repo, status, title string) (*PullRequest, error) {
 	log.Printf("getting %v pull requests with status %q", repo, status)
 
 	// We don't bother paginating, because it hurts our requests quota and makes
@@ -148,7 +156,7 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 		return nil, err
 	}
 	for _, pr := range prs {
-		if !strings.Contains(pr.GetTitle(), "auto-regenerate") {
+		if !strings.Contains(pr.GetTitle(), title) {
 			continue
 		}
 		if pr.GetUser().GetLogin() != gc.Username {
@@ -281,6 +289,46 @@ git push origin $BRANCH_NAME
 	log.Printf("creating google-cloud-go PR... done %s\n", pr.GetHTMLURL())
 
 	return pr.GetNumber(), nil
+}
+
+// CreateAliasPR creates a PR for a given genproto change.
+func (gc *GithubClient) CreateAliasPR(ctx context.Context, genprotoDir string) error {
+	log.Println("creating genproto PR")
+
+	c := execv.Command("/bin/bash", "-c", `
+set -ex
+
+git config credential.helper store # cache creds from ~/.git-credentials
+
+git branch -D $BRANCH_NAME || true
+git push -d origin $BRANCH_NAME || true
+
+git add -A
+git checkout -b $BRANCH_NAME
+git commit -m "$COMMIT_TITLE"
+git push origin $BRANCH_NAME
+`)
+	c.Env = []string{
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
+		fmt.Sprintf("COMMIT_TITLE=%s", aliasCommitTitle),
+		fmt.Sprintf("BRANCH_NAME=%s", aliasBranchName),
+	}
+	c.Dir = genprotoDir
+	if err := c.Run(); err != nil {
+		return err
+	}
+	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
+		Title: github.String(aliasCommitTitle),
+		Head:  github.String(fmt.Sprintf("googleapis:" + aliasBranchName)),
+		Base:  github.String("main"),
+	})
+	if err != nil {
+		return err
+	}
+	log.Printf("creating alias PR: %d\n", pr.GetNumber())
+
+	return nil
 }
 
 // AmendGenprotoPR amends the given genproto PR with a link to the given

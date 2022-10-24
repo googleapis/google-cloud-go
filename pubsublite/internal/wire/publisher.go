@@ -287,16 +287,16 @@ type routingPublisher struct {
 	msgRouter  messageRouter
 	publishers []*singlePartitionPublisher
 
-	apiClientService
+	compositeService
 }
 
 func newRoutingPublisher(allClients apiClients, adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
 	pub := &routingPublisher{
-		apiClientService: apiClientService{clients: allClients},
 		msgRouterFactory: msgRouterFactory,
 		pubFactory:       pubFactory,
 	}
 	pub.init()
+	pub.toClose = allClients
 	pub.partitionWatcher = newPartitionCountWatcher(pubFactory.ctx, adminClient, pubFactory.settings, pubFactory.topicPath, pub.onPartitionCountChanged)
 	pub.unsafeAddServices(pub.partitionWatcher)
 	return pub

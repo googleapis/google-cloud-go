@@ -22,8 +22,8 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
+	grafeaspb "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
 	"google.golang.org/api/iterator"
-	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &grafeaspb.ListNotesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListNotesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#ListNotesRequest.
 	}
 	it := c.ListNotes(ctx, req)
 	for {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
-	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
+	grafeaspb "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &grafeaspb.GetOccurrenceNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetOccurrenceNoteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetOccurrenceNoteRequest.
 	}
 	resp, err := c.GetOccurrenceNote(ctx, req)
 	if err != nil {

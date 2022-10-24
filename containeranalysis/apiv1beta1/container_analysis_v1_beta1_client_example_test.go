@@ -20,8 +20,8 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
+	containeranalysispb "cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb"
 	"google.golang.org/api/iterator"
-	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -149,7 +149,7 @@ func ExampleContainerAnalysisV1Beta1Client_GetScanConfig() {
 
 	req := &containeranalysispb.GetScanConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#GetScanConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#GetScanConfigRequest.
 	}
 	resp, err := c.GetScanConfig(ctx, req)
 	if err != nil {
@@ -174,7 +174,7 @@ func ExampleContainerAnalysisV1Beta1Client_ListScanConfigs() {
 
 	req := &containeranalysispb.ListScanConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#ListScanConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#ListScanConfigsRequest.
 	}
 	it := c.ListScanConfigs(ctx, req)
 	for {
@@ -205,7 +205,7 @@ func ExampleContainerAnalysisV1Beta1Client_UpdateScanConfig() {
 
 	req := &containeranalysispb.UpdateScanConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#UpdateScanConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#UpdateScanConfigRequest.
 	}
 	resp, err := c.UpdateScanConfig(ctx, req)
 	if err != nil {

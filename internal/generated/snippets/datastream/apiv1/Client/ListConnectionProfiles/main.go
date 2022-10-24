@@ -23,6 +23,7 @@ import (
 
 	datastream "cloud.google.com/go/datastream/apiv1"
 	"google.golang.org/api/iterator"
+
 	datastreampb "google.golang.org/genproto/googleapis/cloud/datastream/v1"
 )
 

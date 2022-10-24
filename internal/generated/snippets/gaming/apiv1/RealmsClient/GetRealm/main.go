@@ -22,6 +22,7 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1"
+
 	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )
 

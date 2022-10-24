@@ -1,5 +1,26 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.16.1...dialogflow/v1.17.0) (2022-10-14)
+
+
+### Features
+
+* **dialogflow:** Add Agent Assist Summarization API (https://cloud.google.com/agent-assist/docs/summarization) docs: clarify SuggestionFeature enums which are specific to chat agents ([8388f87](https://github.com/googleapis/google-cloud-go/commit/8388f877b5682c96e9476863ca761b975cbe4131))
+* **dialogflow:** include conversation dataset name to be created with dataset creation metadata docs: clarify SuggestionFeature enums which are specific to chat agents ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
+
+### Documentation
+
+* **dialogflow/cx:** clarified gcs_bucket field of the SecuritySettings message ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+* **dialogflow/cx:** clarified gcs_bucket field of the SecuritySettings message ([8388f87](https://github.com/googleapis/google-cloud-go/commit/8388f877b5682c96e9476863ca761b975cbe4131))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.16.0...dialogflow/v1.16.1) (2022-09-28)
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** revert removal of LRO mixin ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.15.0...dialogflow/v1.16.0) (2022-09-21)
 
 

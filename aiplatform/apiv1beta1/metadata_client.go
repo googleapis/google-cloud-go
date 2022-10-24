@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -67,6 +67,7 @@ type MetadataCallOptions struct {
 	PurgeContexts                    []gax.CallOption
 	AddContextArtifactsAndExecutions []gax.CallOption
 	AddContextChildren               []gax.CallOption
+	RemoveContextChildren            []gax.CallOption
 	QueryContextLineageSubgraph      []gax.CallOption
 	CreateExecution                  []gax.CallOption
 	GetExecution                     []gax.CallOption
@@ -124,6 +125,7 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 		PurgeContexts:                    []gax.CallOption{},
 		AddContextArtifactsAndExecutions: []gax.CallOption{},
 		AddContextChildren:               []gax.CallOption{},
+		RemoveContextChildren:            []gax.CallOption{},
 		QueryContextLineageSubgraph:      []gax.CallOption{},
 		CreateExecution:                  []gax.CallOption{},
 		GetExecution:                     []gax.CallOption{},
@@ -170,6 +172,7 @@ func defaultMetadataRESTCallOptions() *MetadataCallOptions {
 		PurgeContexts:                    []gax.CallOption{},
 		AddContextArtifactsAndExecutions: []gax.CallOption{},
 		AddContextChildren:               []gax.CallOption{},
+		RemoveContextChildren:            []gax.CallOption{},
 		QueryContextLineageSubgraph:      []gax.CallOption{},
 		CreateExecution:                  []gax.CallOption{},
 		GetExecution:                     []gax.CallOption{},
@@ -225,6 +228,7 @@ type internalMetadataClient interface {
 	PurgeContextsOperation(name string) *PurgeContextsOperation
 	AddContextArtifactsAndExecutions(context.Context, *aiplatformpb.AddContextArtifactsAndExecutionsRequest, ...gax.CallOption) (*aiplatformpb.AddContextArtifactsAndExecutionsResponse, error)
 	AddContextChildren(context.Context, *aiplatformpb.AddContextChildrenRequest, ...gax.CallOption) (*aiplatformpb.AddContextChildrenResponse, error)
+	RemoveContextChildren(context.Context, *aiplatformpb.RemoveContextChildrenRequest, ...gax.CallOption) (*aiplatformpb.RemoveContextChildrenResponse, error)
 	QueryContextLineageSubgraph(context.Context, *aiplatformpb.QueryContextLineageSubgraphRequest, ...gax.CallOption) (*aiplatformpb.LineageSubgraph, error)
 	CreateExecution(context.Context, *aiplatformpb.CreateExecutionRequest, ...gax.CallOption) (*aiplatformpb.Execution, error)
 	GetExecution(context.Context, *aiplatformpb.GetExecutionRequest, ...gax.CallOption) (*aiplatformpb.Execution, error)
@@ -423,6 +427,13 @@ func (c *MetadataClient) AddContextArtifactsAndExecutions(ctx context.Context, r
 // error.
 func (c *MetadataClient) AddContextChildren(ctx context.Context, req *aiplatformpb.AddContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.AddContextChildrenResponse, error) {
 	return c.internalClient.AddContextChildren(ctx, req, opts...)
+}
+
+// RemoveContextChildren remove a set of children contexts from a parent Context. If any of the
+// child Contexts were NOT added to the parent Context, they are
+// simply skipped.
+func (c *MetadataClient) RemoveContextChildren(ctx context.Context, req *aiplatformpb.RemoveContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.RemoveContextChildrenResponse, error) {
+	return c.internalClient.RemoveContextChildren(ctx, req, opts...)
 }
 
 // QueryContextLineageSubgraph retrieves Artifacts and Executions within the specified Context, connected
@@ -1213,6 +1224,23 @@ func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplat
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.metadataClient.AddContextChildren(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *metadataGRPCClient) RemoveContextChildren(ctx context.Context, req *aiplatformpb.RemoveContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.RemoveContextChildrenResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RemoveContextChildren[0:len((*c.CallOptions).RemoveContextChildren):len((*c.CallOptions).RemoveContextChildren)], opts...)
+	var resp *aiplatformpb.RemoveContextChildrenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.metadataClient.RemoveContextChildren(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2181,6 +2209,9 @@ func (c *metadataRESTClient) ListArtifacts(ctx context.Context, req *aiplatformp
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2592,6 +2623,9 @@ func (c *metadataRESTClient) ListContexts(ctx context.Context, req *aiplatformpb
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2985,6 +3019,67 @@ func (c *metadataRESTClient) AddContextChildren(ctx context.Context, req *aiplat
 	return resp, nil
 }
 
+// RemoveContextChildren remove a set of children contexts from a parent Context. If any of the
+// child Contexts were NOT added to the parent Context, they are
+// simply skipped.
+func (c *metadataRESTClient) RemoveContextChildren(ctx context.Context, req *aiplatformpb.RemoveContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.RemoveContextChildrenResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:removeContextChildren", req.GetContext())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RemoveContextChildren[0:len((*c.CallOptions).RemoveContextChildren):len((*c.CallOptions).RemoveContextChildren)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RemoveContextChildrenResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // QueryContextLineageSubgraph retrieves Artifacts and Executions within the specified Context, connected
 // by Event edges and returned as a LineageSubgraph.
 func (c *metadataRESTClient) QueryContextLineageSubgraph(ctx context.Context, req *aiplatformpb.QueryContextLineageSubgraphRequest, opts ...gax.CallOption) (*aiplatformpb.LineageSubgraph, error) {
@@ -3183,6 +3278,9 @@ func (c *metadataRESTClient) ListExecutions(ctx context.Context, req *aiplatform
 		params := url.Values{}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
