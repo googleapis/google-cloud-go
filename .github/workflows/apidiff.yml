@@ -21,7 +21,7 @@ jobs:
         dirs=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD | xargs -r -L1 dirname | uniq | grep -v -e 'internal' -e '\.' | cat)
         if [ -z "$dirs" ]
         then
-          echo "changed={\"changed\":[]}" >> $GITHUB_OUTPUT
+          echo "changed=''" >> $GITHUB_OUTPUT
           echo "No changes worth diffing!"
         else
           for d in $dirs; do list=${list},\"${d}\"; done
@@ -32,7 +32,7 @@ jobs:
   apidiff:
     needs: scan_changes
     runs-on: ubuntu-latest
-    if: ${{ needs.scan_changes.outputs.changed_dirs != '[]' && !contains(github.event.pull_request.labels.*.name, 'breaking change allowed') }}
+    if: needs.scan_changes.outputs.changed_dirs != '' && !contains(github.event.pull_request.labels.*.name, 'breaking change allowed')
     continue-on-error: true
     strategy:
       matrix: ${{ fromJson(needs.scan_changes.outputs.changed_dirs) }}
@@ -45,7 +45,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         ref: main
-    - name: Baseline name
+    - name: Create baseline
       id: baseline
       run: |
         export CHANGED=${{ matrix.changed }}
