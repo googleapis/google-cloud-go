@@ -22,7 +22,7 @@ import (
 	"context"
 
 	domains "cloud.google.com/go/domains/apiv1beta1"
-	"cloud.google.com/go/domains/apiv1beta1/domainspb"
+	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 )
 
 func main() {

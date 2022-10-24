@@ -22,7 +22,7 @@ import (
 	"context"
 
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1beta1"
-	"cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb"
+	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb"
 )
 
 func main() {

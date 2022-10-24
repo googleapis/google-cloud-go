@@ -23,6 +23,7 @@ import (
 
 	eventarc "cloud.google.com/go/eventarc/apiv1"
 	"google.golang.org/api/iterator"
+
 	eventarcpb "google.golang.org/genproto/googleapis/cloud/eventarc/v1"
 )
 

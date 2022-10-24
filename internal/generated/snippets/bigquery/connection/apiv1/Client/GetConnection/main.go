@@ -22,6 +22,7 @@ import (
 	"context"
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
+
 	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 )
 
