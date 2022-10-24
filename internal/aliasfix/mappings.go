@@ -826,4 +826,12 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/speech/v2": {
+		ImportPath: "cloud.google.com/go/speech/apiv2/speechpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/cloud/dataform/v1beta1": {
+		ImportPath: "cloud.google.com/go/dataform/apiv1beta1/dataformpb",
+		Status:     StatusMigrated,
+	},
 }
