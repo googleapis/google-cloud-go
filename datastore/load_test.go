@@ -1284,7 +1284,8 @@ func TestKeyLoaderEndToEnd(t *testing.T) {
 		},
 	}
 	client := &Client{
-		client: fakeClient,
+		client:       fakeClient,
+		readSettings: &readSettings{},
 	}
 
 	ctx := context.Background()

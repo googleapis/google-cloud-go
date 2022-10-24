@@ -386,7 +386,7 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	var opts *pb.ReadOptions
-	if !c.readSettings.readTime.IsZero() {
+	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
 		opts = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
 				ReadTime: timestamppb.New(c.readSettings.readTime),
