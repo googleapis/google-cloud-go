@@ -23,6 +23,7 @@ import (
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
 	"google.golang.org/api/iterator"
+
 	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 )
 

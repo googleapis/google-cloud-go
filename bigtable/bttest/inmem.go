@@ -55,6 +55,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"rsc.io/binaryregexp"
 )
 
@@ -146,9 +148,10 @@ func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest)
 	s.mu.Unlock()
 
 	ct := &btapb.Table{
-		Name:           tbl,
-		ColumnFamilies: req.GetTable().GetColumnFamilies(),
-		Granularity:    req.GetTable().GetGranularity(),
+		Name:               tbl,
+		ColumnFamilies:     req.GetTable().GetColumnFamilies(),
+		Granularity:        req.GetTable().GetGranularity(),
+		DeletionProtection: req.GetTable().GetDeletionProtection(),
 	}
 	if ct.Granularity == 0 {
 		ct.Granularity = btapb.Table_MILLIS
@@ -186,8 +189,9 @@ func (s *server) GetTable(ctx context.Context, req *btapb.GetTableRequest) (*bta
 	}
 
 	return &btapb.Table{
-		Name:           tbl,
-		ColumnFamilies: toColumnFamilies(tblIns.columnFamilies()),
+		Name:               tbl,
+		ColumnFamilies:     toColumnFamilies(tblIns.columnFamilies()),
+		DeletionProtection: tblIns.isProtected,
 	}, nil
 }
 
@@ -197,8 +201,57 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 	if _, ok := s.tables[req.Name]; !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
+	if s.tables[req.Name].isProtected {
+		return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
+	}
 	delete(s.tables, req.Name)
 	return &emptypb.Empty{}, nil
+}
+
+func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest) (*longrunning.Operation, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	tbl, ok := s.tables[req.GetTable().GetName()]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "table %q not found", req.GetTable().GetName())
+	}
+	tbl.isProtected = req.GetTable().GetDeletionProtection()
+
+	res := &longrunning.Operation_Response{}
+	lro := &longrunning.Operation{
+		Name:   "projects/my-project/operations/1234",
+		Done:   true,
+		Result: res,
+	}
+
+	a, err := anypb.New(&btapb.UpdateTableMetadata{
+		Name:      req.GetTable().GetName(),
+		StartTime: timestamppb.Now(),
+		EndTime:   timestamppb.Now(),
+	})
+	if err != nil {
+		lro.Result = &longrunning.Operation_Error{
+			Error: &statpb.Status{
+				Code:    int32(codes.Internal),
+				Message: err.Error(),
+			},
+		}
+		return lro, nil
+	}
+	anyTable, err := anypb.New(req.GetTable())
+	if err != nil {
+		lro.Result = &longrunning.Operation_Error{
+			Error: &statpb.Status{
+				Code:    int32(codes.Internal),
+				Message: err.Error(),
+			},
+		}
+		return lro, nil
+	}
+
+	lro.Metadata = a
+	res.Response = anyTable
+	return lro, nil
 }
 
 func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColumnFamiliesRequest) (*btapb.Table, error) {
@@ -225,6 +278,9 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 			tbl.counter++
 			tbl.families[mod.Id] = newcf
 		} else if mod.GetDrop() {
+			if tbl.isProtected {
+				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
+			}
 			if _, ok := tbl.families[mod.Id]; !ok {
 				return nil, fmt.Errorf("can't delete unknown family %q", mod.Id)
 			}
@@ -1206,10 +1262,11 @@ func (s *server) gcloop(done <-chan int) {
 }
 
 type table struct {
-	mu       sync.RWMutex
-	counter  uint64                   // increment by 1 when a new family is created
-	families map[string]*columnFamily // keyed by plain family name
-	rows     *btree.BTree             // indexed by row key
+	mu          sync.RWMutex
+	counter     uint64                   // increment by 1 when a new family is created
+	families    map[string]*columnFamily // keyed by plain family name
+	rows        *btree.BTree             // indexed by row key
+	isProtected bool                     // whether this table has deletion protection
 }
 
 const btreeDegree = 16
@@ -1228,9 +1285,10 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 		}
 	}
 	return &table{
-		families: fams,
-		counter:  c,
-		rows:     btree.New(btreeDegree),
+		families:    fams,
+		counter:     c,
+		rows:        btree.New(btreeDegree),
+		isProtected: ctr.GetTable().GetDeletionProtection(),
 	}
 }
 

@@ -23,6 +23,7 @@ import (
 
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1"
 	"google.golang.org/api/iterator"
+
 	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1"
 )
 

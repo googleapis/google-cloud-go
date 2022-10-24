@@ -22,7 +22,7 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1beta1"
-	"cloud.google.com/go/automl/apiv1beta1/automlpb"
+	automlpb "cloud.google.com/go/automl/apiv1beta1/automlpb"
 )
 
 func main() {

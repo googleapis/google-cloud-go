@@ -22,6 +22,7 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2alpha"
+
 	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha"
 )
 
