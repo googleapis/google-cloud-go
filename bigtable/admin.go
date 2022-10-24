@@ -349,10 +349,15 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 	}
 	lro, err := ac.tClient.UpdateTable(ctx, req)
 	if err != nil {
-		return err
+		return fmt.Errorf("error from update: %w", err)
 	}
-	// ignore the response table proto by passing in nil
-	return longrunning.InternalNewOperation(ac.lroClient, lro).Wait(ctx, nil)
+	var tbl btapb.Table
+	op := longrunning.InternalNewOperation(ac.lroClient, lro)
+	err = op.Wait(ctx, &tbl)
+	if err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
 }
 
 // DeleteTable deletes a table and all of its data.
