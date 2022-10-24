@@ -19,6 +19,10 @@ set -e
 # Display commands being run
 set -x
 
+if [[ $(go version) != *"go1.19"* ]]; then
+  exit 0
+fi
+
 # Fail if a dependency was added without the necessary go.mod/go.sum change
 # being part of the commit.
 go mod tidy
