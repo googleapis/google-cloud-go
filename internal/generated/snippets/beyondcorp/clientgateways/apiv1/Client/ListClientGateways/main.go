@@ -23,6 +23,7 @@ import (
 
 	clientgateways "cloud.google.com/go/beyondcorp/clientgateways/apiv1"
 	"google.golang.org/api/iterator"
+
 	clientgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1"
 )
 

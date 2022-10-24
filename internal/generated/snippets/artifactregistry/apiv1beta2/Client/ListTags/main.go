@@ -22,7 +22,7 @@ import (
 	"context"
 
 	artifactregistry "cloud.google.com/go/artifactregistry/apiv1beta2"
-	"cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb"
+	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb"
 	"google.golang.org/api/iterator"
 )
 

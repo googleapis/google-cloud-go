@@ -22,7 +22,7 @@ import (
 	"context"
 
 	budgets "cloud.google.com/go/billing/budgets/apiv1beta1"
-	"cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb"
+	budgetspb "cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb"
 )
 
 func main() {
