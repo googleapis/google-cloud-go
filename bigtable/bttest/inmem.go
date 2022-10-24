@@ -211,11 +211,10 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest) (*longrunning.Operation, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if _, ok := s.tables[req.GetTable().GetName()]; !ok {
+	tbl, ok := s.tables[req.GetTable().GetName()]
+	if !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.GetTable().GetName())
 	}
-
-	tbl := s.tables[req.GetTable().GetName()]
 	tbl.isProtected = req.GetTable().GetDeletionProtection()
 
 	res := &longrunning.Operation_Response{}
