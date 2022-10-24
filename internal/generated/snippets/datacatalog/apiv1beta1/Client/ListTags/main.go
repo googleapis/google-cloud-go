@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
-	"cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
 	"google.golang.org/api/iterator"
 )
 

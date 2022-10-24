@@ -22,7 +22,7 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1beta3"
-	"cloud.google.com/go/documentai/apiv1beta3/documentaipb"
+	documentaipb "cloud.google.com/go/documentai/apiv1beta3/documentaipb"
 	"google.golang.org/api/iterator"
 )
 

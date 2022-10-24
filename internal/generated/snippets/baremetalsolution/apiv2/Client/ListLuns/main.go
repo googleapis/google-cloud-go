@@ -23,6 +23,7 @@ import (
 
 	baremetalsolution "cloud.google.com/go/baremetalsolution/apiv2"
 	"google.golang.org/api/iterator"
+
 	baremetalsolutionpb "google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2"
 )
 

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	"cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func main() {
