@@ -27,8 +27,6 @@ import (
 
 	"google.golang.org/api/option"
 
-	"github.com/google/go-cmp/cmp"
-
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/iterator"
