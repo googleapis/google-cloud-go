@@ -889,11 +889,6 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 	return values, nil
 }
 
-// ConvertValue converts bigquery api value to a bigquery.Value
-func ConvertValue(val interface{}, typ FieldType, schema Schema) (Value, error) {
-	return convertValue(val, typ, schema)
-}
-
 func convertValue(val interface{}, typ FieldType, schema Schema) (Value, error) {
 	switch val := val.(type) {
 	case nil:
@@ -944,6 +939,11 @@ func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, erro
 		values = append(values, v)
 	}
 	return values, nil
+}
+
+// ParseBasicRawValue parses bigquery basic types from a string to a given Value
+func ParseBasicRawValue(val string, typ FieldType) (Value, error) {
+	return convertBasicType(val, typ)
 }
 
 // convertBasicType returns val as an interface with a concrete type specified by typ.

@@ -98,41 +98,41 @@ func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *bigquery.F
 	switch ft.(type) {
 	case *arrow.BooleanType:
 		v := col.(*array.Boolean).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v), fs.Type)
 	case *arrow.Int8Type:
 		v := col.(*array.Int8).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v), fs.Type)
 	case *arrow.Int16Type:
 		v := col.(*array.Int16).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v), fs.Type)
 	case *arrow.Int32Type:
 		v := col.(*array.Int32).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v), fs.Type)
 	case *arrow.Int64Type:
 		v := col.(*array.Int64).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v), fs.Type)
 	case *arrow.Float16Type:
 		v := col.(*array.Float16).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v.Float32()), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v.Float32()), fs.Type)
 	case *arrow.Float32Type:
 		v := col.(*array.Float32).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v), fs.Type)
 	case *arrow.Float64Type:
 		v := col.(*array.Float64).Value(i)
-		return bigquery.ConvertValue(fmt.Sprintf("%v", v), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(fmt.Sprintf("%v", v), fs.Type)
 	case *arrow.BinaryType:
 		v := col.(*array.Binary).Value(i)
 		encoded := base64.StdEncoding.EncodeToString(v)
-		return bigquery.ConvertValue(encoded, fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(encoded, fs.Type)
 	case *arrow.StringType:
 		v := col.(*array.String).Value(i)
-		return bigquery.ConvertValue(v, fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(v, fs.Type)
 	case *arrow.Date32Type:
 		v := col.(*array.Date32).Value(i)
-		return bigquery.ConvertValue(v.FormattedString(), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(v.FormattedString(), fs.Type)
 	case *arrow.Date64Type:
 		v := col.(*array.Date64).Value(i)
-		return bigquery.ConvertValue(v.FormattedString(), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(v.FormattedString(), fs.Type)
 	case *arrow.TimestampType:
 		v := col.(*array.Timestamp).Value(i)
 		dft := ft.(*arrow.TimestampType)
@@ -143,10 +143,10 @@ func convertArrowValue(col arrow.Array, i int, ft arrow.DataType, fs *bigquery.F
 		return bigquery.Value(t.UTC()), nil // Timestamp
 	case *arrow.Time32Type:
 		v := col.(*array.Time32).Value(i)
-		return bigquery.ConvertValue(v.FormattedString(arrow.Microsecond), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(v.FormattedString(arrow.Microsecond), fs.Type)
 	case *arrow.Time64Type:
 		v := col.(*array.Time64).Value(i)
-		return bigquery.ConvertValue(v.FormattedString(arrow.Microsecond), fs.Type, fs.Schema)
+		return bigquery.ParseBasicRawValue(v.FormattedString(arrow.Microsecond), fs.Type)
 	case *arrow.Decimal128Type:
 		dft := ft.(*arrow.Decimal128Type)
 		v := col.(*array.Decimal128).Value(i)
