@@ -23,6 +23,7 @@ import (
 
 	documentai "cloud.google.com/go/documentai/apiv1"
 	"google.golang.org/api/iterator"
+
 	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1"
 )
 

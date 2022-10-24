@@ -23,6 +23,7 @@ import (
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 	"google.golang.org/api/iterator"
+
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
