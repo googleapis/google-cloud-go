@@ -191,7 +191,7 @@ func (s *server) GetTable(ctx context.Context, req *btapb.GetTableRequest) (*bta
 	return &btapb.Table{
 		Name:               tbl,
 		ColumnFamilies:     toColumnFamilies(tblIns.columnFamilies()),
-		DeletionProtection: tblIns.hasProtection,
+		DeletionProtection: tblIns.isProtected,
 	}, nil
 }
 
@@ -201,7 +201,7 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 	if _, ok := s.tables[req.Name]; !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
-	if s.tables[req.Name].hasProtection {
+	if s.tables[req.Name].isProtected {
 		return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
 	}
 	delete(s.tables, req.Name)
@@ -216,7 +216,7 @@ func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest)
 	}
 
 	tbl := s.tables[req.GetTable().GetName()]
-	tbl.hasProtection = req.GetTable().GetDeletionProtection()
+	tbl.isProtected = req.GetTable().GetDeletionProtection()
 
 	res := &longrunning.Operation_Response{}
 	lro := &longrunning.Operation{
@@ -279,7 +279,7 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 			tbl.counter++
 			tbl.families[mod.Id] = newcf
 		} else if mod.GetDrop() {
-			if tbl.hasProtection {
+			if tbl.isProtected {
 				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
 			}
 			if _, ok := tbl.families[mod.Id]; !ok {
@@ -1263,11 +1263,11 @@ func (s *server) gcloop(done <-chan int) {
 }
 
 type table struct {
-	mu            sync.RWMutex
-	counter       uint64                   // increment by 1 when a new family is created
-	families      map[string]*columnFamily // keyed by plain family name
-	rows          *btree.BTree             // indexed by row key
-	hasProtection bool                     // whether this table has deletion protection
+	mu          sync.RWMutex
+	counter     uint64                   // increment by 1 when a new family is created
+	families    map[string]*columnFamily // keyed by plain family name
+	rows        *btree.BTree             // indexed by row key
+	isProtected bool                     // whether this table has deletion protection
 }
 
 const btreeDegree = 16
@@ -1286,10 +1286,10 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 		}
 	}
 	return &table{
-		families:      fams,
-		counter:       c,
-		rows:          btree.New(btreeDegree),
-		hasProtection: ctr.GetTable().GetDeletionProtection(),
+		families:    fams,
+		counter:     c,
+		rows:        btree.New(btreeDegree),
+		isProtected: ctr.GetTable().GetDeletionProtection(),
 	}
 }
 
