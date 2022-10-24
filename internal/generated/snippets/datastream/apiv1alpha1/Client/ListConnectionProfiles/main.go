@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datastream "cloud.google.com/go/datastream/apiv1alpha1"
-	"cloud.google.com/go/datastream/apiv1alpha1/datastreampb"
+	datastreampb "cloud.google.com/go/datastream/apiv1alpha1/datastreampb"
 	"google.golang.org/api/iterator"
 )
 

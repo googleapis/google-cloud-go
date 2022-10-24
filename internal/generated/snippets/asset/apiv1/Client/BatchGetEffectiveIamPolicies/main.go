@@ -22,6 +22,7 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1"
+
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 )
 

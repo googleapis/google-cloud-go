@@ -22,6 +22,7 @@ import (
 	"context"
 
 	channel "cloud.google.com/go/channel/apiv1"
+
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
