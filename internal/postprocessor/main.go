@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,46 +12,31 @@ import (
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
 )
 
-func copyFiles(srcPath, dstPath string) error {
-	src, err := os.Open(srcPath)
-	if err != nil {
-		return err
-	}
-
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-
-	nBytes, err := io.Copy(dst, src)
-	_ = nBytes
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func main() {
-	localFlag := flag.Bool("local", false, "Local mode set")
+	srcRoot := flag.String("src", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
+	dstRoot := flag.String("dst", "", "Path to clients")
 	flag.Parse()
 
-	var fromPrefix string
+	srcPrefix := *srcRoot
+	dstPrefix := *dstRoot
 
-	if *localFlag {
-		fmt.Println("local flag detected")
-		fromPrefix = "../../owl-bot-staging/src/"
-	} else {
-		fmt.Println("no local flag set")
-		fromPrefix = "owl-bot-staging/src/"
+	log.Println("srcPrefix set to", srcPrefix)
+	log.Println("dstPrefix set to", dstPrefix)
+
+	if err := run(srcPrefix, dstPrefix); err != nil {
+		log.Fatal(err)
 	}
-	fmt.Println("fromPrefix set to", fromPrefix)
 
-	var dstRoot string
+	// TODO: delete owl-bot-staging file
+
+	log.Println("Files copied and formatted from owl-bot-staging to libraries.")
+}
+
+func run(srcPrefix, dstPrefix string) error {
+	var srcPath string
 	var dstPath string
 
-	filepath.WalkDir(fromPrefix, func(path string, d fs.DirEntry, err error) error {
+	filepath.WalkDir(srcPrefix, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -59,14 +44,8 @@ func main() {
 			return nil
 		}
 
-		srcPath := path
-
-		if *localFlag {
-			dstRoot = "../../"
-			dstPath = filepath.Join(dstRoot, strings.TrimPrefix(path, fromPrefix))
-		} else {
-			dstPath = strings.TrimPrefix(path, fromPrefix)
-		}
+		srcPath = path
+		dstPath = filepath.Join(dstPrefix, strings.TrimPrefix(path, srcPrefix))
 
 		if err := copyFiles(srcPath, dstPath); err != nil {
 			return err
@@ -77,6 +56,26 @@ func main() {
 
 	gocmd.ModTidyAll(dstPath)
 	gocmd.Vet(dstPath)
+	return nil
+}
 
-	// TODO: delete owl-bot-staging file
+func copyFiles(srcPath, dstPath string) error {
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
