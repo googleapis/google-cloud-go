@@ -1126,7 +1126,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_BYTES {
+		if code != sppb.TypeCode_BYTES && code != sppb.TypeCode_PROTO {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1166,7 +1166,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_INT64 {
+		if code != sppb.TypeCode_INT64 && code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1185,7 +1185,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_INT64 {
+		if code != sppb.TypeCode_INT64 && code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1857,7 +1857,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if reflect.ValueOf(p).Kind() != reflect.Ptr {
 			return errNotAPointer(p)
 		}
-		if code != sppb.TypeCode_ENUM {
+		if code != sppb.TypeCode_ENUM && code != sppb.TypeCode_INT64 {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1879,7 +1879,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if reflect.ValueOf(p).Kind() != reflect.Ptr {
 			return errNotAPointer(p)
 		}
-		if code != sppb.TypeCode_PROTO {
+		if code != sppb.TypeCode_PROTO && code != sppb.TypeCode_BYTES {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -3940,7 +3940,7 @@ func isSupportedMutationType(v interface{}) bool {
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
 		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,
-		GenericColumnValue:
+		GenericColumnValue, proto.Message, protoreflect.Enum:
 		return true
 	default:
 		// Check if the custom type implements spanner.Encoder interface.
