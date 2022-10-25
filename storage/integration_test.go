@@ -690,170 +690,168 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(bkt)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
 
-	// Insert an object with custom ACL.
-	o := bkt.Object("uniformBucketLevelAccess")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Insert an object with custom ACL.
+		o := bkt.Object("uniformBucketLevelAccess")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		aclEntity := ACLEntity("user-test@example.com")
+		err := a.Set(ctx, aclEntity, RoleReader)
+		if err != nil {
+			t.Fatalf("set ACL failed: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	aclEntity := ACLEntity("user-test@example.com")
-	err := a.Set(ctx, aclEntity, RoleReader)
-	if err != nil {
-		t.Fatalf("set ACL failed: %v", err)
-	}
 
-	// Enable UniformBucketLevelAccess.
-	ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
-	attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-	if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
-		t.Fatal("got a zero time value, want a populated value")
-	}
+		// Enable UniformBucketLevelAccess.
+		ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
+		attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
+		if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
+			t.Fatal("got a zero time value, want a populated value")
+		}
 
-	// Confirm BucketAccessControl returns error.
-	// We retry on nil to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
-	_, err = b.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected bucket ACL list to fail")
-	}
+		// Confirm BucketAccessControl returns error.
+		// We retry on nil to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
+		_, err = b.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
 
-	// Confirm ObjectAccessControl returns error.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected object ACL list to fail")
-	}
+		// Confirm ObjectAccessControl returns error.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected object ACL list to fail")
+		}
 
-	// Disable UniformBucketLevelAccess.
-	ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
-	attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
+		// Disable UniformBucketLevelAccess.
+		ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
 
-	// Check that the object ACL is the same.
-	// We retry on 400 to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-	acl, err := retryObj.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.List: object ACL list failed: %v", err)
-	}
+		// Check that the object ACL is the same.
+		// We retry on 400 to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+		acl, err := retryObj.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
 
-	if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-		t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
-	}
+		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+		}
+	})
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	// Create a bucket with PublicAccessPrevention enforced.
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
-	defer h.mustDeleteBucket(bkt)
+		// Create a bucket with PublicAccessPrevention enforced.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
+		defer h.mustDeleteBucket(bkt)
 
-	// Making bucket public should fail.
-	policy, err := bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
-	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
-		t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
-	}
-
-	// Making object public via ACL should fail.
-	o := bkt.Object("publicAccessPrevention")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Making bucket public should fail.
+		policy, err := bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
-		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
-	}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
+			t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
+		}
 
-	// Update PAP setting to inherited should work and not affect UBLA setting.
-	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
-	if err != nil {
-		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
-	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
-		t.Error("updating PublicAccessPrevention changed UBLA setting")
-	}
+		// Making object public via ACL should fail.
+		o := bkt.Object("publicAccessPrevention")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
+			t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
+		}
 
-	// Now, making object public or making bucket public should succeed. Run with
-	// retry because ACL settings may take time to propagate.
-	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || ShouldRetry(err)
-	}
+		// Update PAP setting to inherited should work and not affect UBLA setting.
+		attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
+		if err != nil {
+			t.Fatalf("updating PublicAccessPrevention failed: %v", err)
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
+		if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
+			t.Error("updating PublicAccessPrevention changed UBLA setting")
+		}
 
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		// Now, making object public or making bucket public should succeed. Run with
+		// retry because ACL settings may take time to propagate.
+		idempotentOrNilRetry := func(err error) bool {
+			return err == nil || ShouldRetry(err)
+		}
 
-	a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
-	a.Set(ctxWithTimeout, AllUsers, RoleReader)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.Set: making object public failed: %v", err)
-	}
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
 
-	policy, err = bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
+		a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
+		err = a.Set(ctxWithTimeout, AllUsers, RoleReader)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.Set: making object public failed: %v", err)
+		}
+
+		policy, err = bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
+		}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
+			t.Errorf("SetPolicy: making bucket public failed: %v", err)
+		}
+
+		// Updating UBLA should not affect PAP setting.
+		attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
+		if err != nil {
+			t.Fatalf("updating UBLA failed: %v", err)
+		}
+		if !attrs.UniformBucketLevelAccess.Enabled {
+			t.Error("updating UBLA: got UBLA not enabled, want enabled")
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
 	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
-		t.Errorf("SetPolicy: making bucket public failed: %v", err)
-	}
-
-	// Updating UBLA should not affect PAP setting.
-	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
-	if err != nil {
-		t.Fatalf("updating UBLA failed: %v", err)
-	}
-	if !attrs.UniformBucketLevelAccess.Enabled {
-		t.Error("updating UBLA: got UBLA not enabled, want enabled")
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
