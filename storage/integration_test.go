@@ -1656,9 +1656,9 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	names := make([]string, len(objects))
 	copy(names, objects)
 	sort.Strings(names)
-	var attrs []*ObjectAttrs
-	for _, name := range names {
-		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(name)))
+	attrs := make([]*ObjectAttrs, len(names))
+	for i, name := range names {
+		attrs[i] = h.mustObjectAttrs(bkt.Object(name))
 	}
 	msg, ok := itesting.TestIterator(attrs,
 		func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
@@ -1676,9 +1676,9 @@ func testObjectIteratorWithOffset(t *testing.T, bkt *BucketHandle, objects []str
 	names := make([]string, len(objects))
 	copy(names, objects)
 	sort.Strings(names)
-	var attrs []*ObjectAttrs
-	for _, name := range names {
-		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(name)))
+	attrs := make([]*ObjectAttrs, len(names))
+	for i, name := range names {
+		attrs[i] = h.mustObjectAttrs(bkt.Object(name))
 	}
 	m := make(map[string][]*ObjectAttrs)
 	for i, name := range names {
@@ -1748,7 +1748,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 		StartOffset: "obj/",
 		EndOffset:   "obj2",
 	}
-	var selectedAttrs []string
+	selectedAttrs := make([]string, 0, len(attrToFieldMap))
 	for k := range attrToFieldMap {
 		selectedAttrs = append(selectedAttrs, k)
 	}

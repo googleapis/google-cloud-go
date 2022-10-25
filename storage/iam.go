@@ -78,13 +78,13 @@ func iamToStoragePolicy(ip *iampb.Policy) *raw.Policy {
 }
 
 func iamToStorageBindings(ibs []*iampb.Binding) []*raw.PolicyBindings {
-	var rbs []*raw.PolicyBindings
-	for _, ib := range ibs {
-		rbs = append(rbs, &raw.PolicyBindings{
+	rbs := make([]*raw.PolicyBindings, len(ibs))
+	for i, ib := range ibs {
+		rbs[i] = &raw.PolicyBindings{
 			Role:      ib.Role,
 			Members:   ib.Members,
 			Condition: iamToStorageCondition(ib.Condition),
-		})
+		}
 	}
 	return rbs
 }
@@ -109,13 +109,13 @@ func iamFromStoragePolicy(rp *raw.Policy) *iampb.Policy {
 }
 
 func iamFromStorageBindings(rbs []*raw.PolicyBindings) []*iampb.Binding {
-	var ibs []*iampb.Binding
-	for _, rb := range rbs {
-		ibs = append(ibs, &iampb.Binding{
+	ibs := make([]*iampb.Binding, len(rbs))
+	for i, rb := range rbs {
+		ibs[i] = &iampb.Binding{
 			Role:      rb.Role,
 			Members:   rb.Members,
 			Condition: iamFromStorageCondition(rb.Condition),
-		})
+		}
 	}
 	return ibs
 }

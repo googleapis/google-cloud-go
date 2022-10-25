@@ -202,7 +202,7 @@ func TestSigningV4Conformance(t *testing.T) {
 }
 
 func headersAsSlice(m map[string]string) []string {
-	var s []string
+	s := make([]string, 0, len(m))
 	for k, v := range m {
 		s = append(s, fmt.Sprintf("%s:%s", k, v))
 	}

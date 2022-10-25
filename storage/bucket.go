@@ -1391,53 +1391,53 @@ func toRetentionPolicyFromProto(rp *storagepb.Bucket_RetentionPolicy) *Retention
 }
 
 func toRawCORS(c []CORS) []*raw.BucketCors {
-	var out []*raw.BucketCors
-	for _, v := range c {
-		out = append(out, &raw.BucketCors{
+	out := make([]*raw.BucketCors, len(c))
+	for i, v := range c {
+		out[i] = &raw.BucketCors{
 			MaxAgeSeconds:  int64(v.MaxAge / time.Second),
 			Method:         v.Methods,
 			Origin:         v.Origins,
 			ResponseHeader: v.ResponseHeaders,
-		})
+		}
 	}
 	return out
 }
 
 func toProtoCORS(c []CORS) []*storagepb.Bucket_Cors {
-	var out []*storagepb.Bucket_Cors
-	for _, v := range c {
-		out = append(out, &storagepb.Bucket_Cors{
+	out := make([]*storagepb.Bucket_Cors, len(c))
+	for i, v := range c {
+		out[i] = &storagepb.Bucket_Cors{
 			MaxAgeSeconds:  int32(v.MaxAge / time.Second),
 			Method:         v.Methods,
 			Origin:         v.Origins,
 			ResponseHeader: v.ResponseHeaders,
-		})
+		}
 	}
 	return out
 }
 
 func toCORS(rc []*raw.BucketCors) []CORS {
-	var out []CORS
-	for _, v := range rc {
-		out = append(out, CORS{
+	out := make([]CORS, len(rc))
+	for i, v := range rc {
+		out[i] = CORS{
 			MaxAge:          time.Duration(v.MaxAgeSeconds) * time.Second,
 			Methods:         v.Method,
 			Origins:         v.Origin,
 			ResponseHeaders: v.ResponseHeader,
-		})
+		}
 	}
 	return out
 }
 
 func toCORSFromProto(rc []*storagepb.Bucket_Cors) []CORS {
-	var out []CORS
-	for _, v := range rc {
-		out = append(out, CORS{
+	out := make([]CORS, len(rc))
+	for i, v := range rc {
+		out[i] = CORS{
 			MaxAge:          time.Duration(v.GetMaxAgeSeconds()) * time.Second,
 			Methods:         v.GetMethod(),
 			Origins:         v.GetOrigin(),
 			ResponseHeaders: v.GetResponseHeader(),
-		})
+		}
 	}
 	return out
 }

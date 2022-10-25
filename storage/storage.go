@@ -501,7 +501,7 @@ func v2SanitizeHeaders(hdrs []string) []string {
 		}
 	}
 
-	var sanitizedHeaders []string
+	sanitizedHeaders := make([]string, 0, len(headerMap))
 	for header, values := range headerMap {
 		// There should be no spaces around the colon separating the header name
 		// from the header value or around the values themselves. The values
@@ -555,7 +555,7 @@ func v4SanitizeHeaders(hdrs []string) []string {
 		}
 	}
 
-	var sanitizedHeaders []string
+	sanitizedHeaders := make([]string, 0, len(headerMap))
 	for header, values := range headerMap {
 		// There should be no spaces around the colon separating the header name
 		// from the header value or around the values themselves. The values
@@ -647,10 +647,10 @@ var utcNow = func() time.Time {
 // extractHeaderNames takes in a series of key:value headers and returns the
 // header names only.
 func extractHeaderNames(kvs []string) []string {
-	var res []string
-	for _, header := range kvs {
+	res := make([]string, len(kvs))
+	for i, header := range kvs {
 		nameValue := strings.Split(header, ":")
-		res = append(res, nameValue[0])
+		res[i] = nameValue[0]
 	}
 	return res
 }
@@ -661,9 +661,9 @@ func extractHeaderNames(kvs []string) []string {
 // url.QueryEncode don't generate an exact match without some additional logic.
 func pathEncodeV4(path string) string {
 	segments := strings.Split(path, "/")
-	var encodedSegments []string
-	for _, s := range segments {
-		encodedSegments = append(encodedSegments, url.QueryEscape(s))
+	encodedSegments := make([]string, len(segments))
+	for i, s := range segments {
+		encodedSegments[i] = url.QueryEscape(s)
 	}
 	encodedStr := strings.Join(encodedSegments, "/")
 	encodedStr = strings.Replace(encodedStr, "+", "%20", -1)
@@ -731,9 +731,9 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 		headersWithValue = append(headersWithValue, "content-md5:"+opts.MD5)
 	}
 	// Trim extra whitespace from headers and replace with a single space.
-	var trimmedHeaders []string
-	for _, h := range headersWithValue {
-		trimmedHeaders = append(trimmedHeaders, strings.Join(strings.Fields(h), " "))
+	trimmedHeaders := make([]string, len(headersWithValue))
+	for i, h := range headersWithValue {
+		trimmedHeaders[i] = strings.Join(strings.Fields(h), " ")
 	}
 	canonicalHeaders := strings.Join(sortHeadersByKey(trimmedHeaders), "\n")
 	fmt.Fprintf(buf, "%s\n\n", canonicalHeaders)
@@ -791,19 +791,19 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 // key.
 func sortHeadersByKey(hdrs []string) []string {
 	headersMap := map[string]string{}
-	var headersKeys []string
-	for _, h := range hdrs {
+	headersKeys := make([]string, len(hdrs))
+	for i, h := range hdrs {
 		parts := strings.Split(h, ":")
 		k := parts[0]
 		v := parts[1]
 		headersMap[k] = v
-		headersKeys = append(headersKeys, k)
+		headersKeys[i] = k
 	}
 	sort.Strings(headersKeys)
-	var sorted []string
-	for _, k := range headersKeys {
+	sorted := make([]string, len(headersKeys))
+	for i, k := range headersKeys {
 		v := headersMap[k]
-		sorted = append(sorted, fmt.Sprintf("%s:%s", k, v))
+		sorted[i] = fmt.Sprintf("%s:%s", k, v)
 	}
 	return sorted
 }
