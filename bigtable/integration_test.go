@@ -2579,9 +2579,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	uniqueID := make([]byte, 4)
-	rand.Read(uniqueID)
-	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
+	diffInstanceId := uid.NewSpace(testEnv.Config().Instance, &uid.Options{})
+	diffInstance := diffInstanceId.New()
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
@@ -2619,7 +2618,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("Failed to generate a unique ID: %v", err)
 	}
 
-	backupName := fmt.Sprintf("mybackup-%x", uniqueID)
+	backupUID := uid.NewSpace("mybackup-", &uid.Options{})
+	backupName := backupUID.New()
 	defer adminClient.DeleteBackup(ctx, sourceCluster, backupName)
 
 	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
