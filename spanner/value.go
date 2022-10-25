@@ -1216,7 +1216,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_BYTES {
+		if code != sppb.TypeCode_BYTES && code != sppb.TypeCode_PROTO {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1275,7 +1275,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_INT64 {
+		if code != sppb.TypeCode_INT64 && code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1950,7 +1950,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if reflect.ValueOf(p.EnumVal).Kind() != reflect.Ptr {
 			return errNotAPointer(p)
 		}
-		if code != sppb.TypeCode_ENUM {
+		if code != sppb.TypeCode_ENUM && code != sppb.TypeCode_INT64 {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1977,7 +1977,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if reflect.ValueOf(p.ProtoVal).Kind() != reflect.Ptr {
 			return errNotAPointer(p.ProtoVal)
 		}
-		if code != sppb.TypeCode_PROTO {
+		if code != sppb.TypeCode_PROTO && code != sppb.TypeCode_BYTES {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
