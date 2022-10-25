@@ -608,6 +608,9 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 		return count > 0, nil
 	case *btpb.RowFilter_CellsPerColumnLimitFilter:
 		lim := int(f.CellsPerColumnLimitFilter)
+		if lim <= 0 {
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'cells_per_column_limit_filter' : argument must be > 0")
+		}
 		for _, fam := range r.families {
 			for col, cs := range fam.cells {
 				if len(cs) > lim {
@@ -645,6 +648,9 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 	case *btpb.RowFilter_CellsPerRowLimitFilter:
 		// Grab the first n cells in the row.
 		lim := int(f.CellsPerRowLimitFilter)
+		if lim <= 0 {
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'cells_per_row_limit_filter' : argument must be > 0")
+		}
 		for _, fam := range r.families {
 			for _, col := range fam.colNames {
 				cs := fam.cells[col]

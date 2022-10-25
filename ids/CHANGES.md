@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/ids/v1.0.0...ids/v1.1.0) (2022-10-25)
+
+
+### Features
+
+* **ids:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/ids/v0.3.0...ids/v1.0.0) (2022-06-29)
 
 
