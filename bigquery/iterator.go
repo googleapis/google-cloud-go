@@ -131,38 +131,25 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // NullDateTime. You can also use a *[]Value or *map[string]Value to read from a
 // table with NULLs.
 func (it *RowIterator) Next(dst interface{}) error {
-	var vl ValueLoader
-	switch dst := dst.(type) {
-	case ValueLoader:
-		vl = dst
-	case *[]Value:
-		vl = (*valueList)(dst)
-	case *map[string]Value:
-		vl = (*valueMap)(dst)
-	default:
-		if !isStructPtr(dst) {
-			return fmt.Errorf("bigquery: cannot convert %T to ValueLoader (need pointer to []Value, map[string]Value, or struct)", dst)
-		}
-	}
 	if err := it.nextFunc(); err != nil {
 		return err
 	}
 	row := it.rows[0]
 	it.rows = it.rows[1:]
 
-	if vl == nil {
-		// This can only happen if dst is a pointer to a struct. We couldn't
-		// set vl above because we need the schema.
-		if err := it.structLoader.set(dst, it.Schema); err != nil {
-			return err
-		}
-		vl = &it.structLoader
+	vl, err := resolveValueLoader(dst, it.Schema, it.structLoader)
+	if err != nil {
+		return err
 	}
 	return vl.Load(row, it.Schema)
 }
 
 // ResolveValueLoader returns a ValueLoader from the destination type and table schema
 func ResolveValueLoader(dst interface{}, schema Schema) (ValueLoader, error) {
+	return resolveValueLoader(dst, schema, structLoader{})
+}
+
+func resolveValueLoader(dst interface{}, schema Schema, sloader structLoader) (ValueLoader, error) {
 	var vl ValueLoader
 	switch dst := dst.(type) {
 	case ValueLoader:
@@ -177,13 +164,12 @@ func ResolveValueLoader(dst interface{}, schema Schema) (ValueLoader, error) {
 		}
 	}
 	if vl == nil {
-		structLoader := structLoader{}
 		// This can only happen if dst is a pointer to a struct. We couldn't
 		// set vl above because we need the schema.
-		if err := structLoader.set(dst, schema); err != nil {
+		if err := sloader.set(dst, schema); err != nil {
 			return nil, err
 		}
-		vl = &structLoader
+		vl = &sloader
 	}
 	return vl, nil
 }
