@@ -173,7 +173,8 @@ func (tl targetLocation) apply(settings *createSubscriptionSettings) {
 }
 
 // StartingOffset specifies the offset at which a newly created subscription
-// will start receiving messages.
+// will start receiving messages. This is equivalent to calling AtTargetLocation
+// with a BacklogLocation and will be removed in the next major version.
 func StartingOffset(location BacklogLocation) CreateSubscriptionOption {
 	return targetLocation{location}
 }

@@ -211,7 +211,7 @@ func ExampleAdminClient_CreateSubscription_exportToPubSub() {
 		ExportConfig: &pubsublite.ExportConfig{
 			DesiredState: pubsublite.ExportActive,
 			// Configure an export subscription to a Pub/Sub topic.
-			Destination: &pubsublite.PubSubConfig{
+			Destination: &pubsublite.PubSubDestinationConfig{
 				Topic: "projects/my-project/topics/destination-pubsub-topic",
 			},
 			// Optional Lite topic to receive messages that cannot be exported to the

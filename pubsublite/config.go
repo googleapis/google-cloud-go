@@ -213,20 +213,20 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 }
 
 // ExportDestinationConfig is the configuration for exporting to a destination.
-// Implemented by *PubSubConfig.
+// Implemented by *PubSubDestinationConfig.
 type ExportDestinationConfig interface {
 	setExportConfig(ec *pb.ExportConfig) string
 }
 
-// PubSubConfig configures messages to be exported to a Pub/Sub topic.
-// Implements the ExportDestinationConfig interface.
-type PubSubConfig struct {
+// PubSubDestinationConfig configures messages to be exported to a Pub/Sub
+// topic. Implements the ExportDestinationConfig interface.
+type PubSubDestinationConfig struct {
 	// The path of a Pub/Sub topic, in the format:
 	// "projects/PROJECT_ID/topics/TOPIC_ID".
 	Topic string
 }
 
-func (pc *PubSubConfig) setExportConfig(ec *pb.ExportConfig) string {
+func (pc *PubSubDestinationConfig) setExportConfig(ec *pb.ExportConfig) string {
 	ec.Destination = &pb.ExportConfig_PubsubConfig{
 		PubsubConfig: &pb.ExportConfig_PubSubConfig{Topic: pc.Topic},
 	}
@@ -322,7 +322,7 @@ func protoToExportConfig(epb *pb.ExportConfig) *ExportConfig {
 		})
 	}
 	if ps := epb.GetPubsubConfig(); ps != nil {
-		ec.Destination = &PubSubConfig{Topic: ps.Topic}
+		ec.Destination = &PubSubDestinationConfig{Topic: ps.Topic}
 	}
 	return ec
 }

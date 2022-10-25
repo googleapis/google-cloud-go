@@ -368,7 +368,7 @@ func TestAdminCreateSubscriptionAtTargetLocation(t *testing.T) {
 		DeliveryRequirement: DeliverImmediately,
 		ExportConfig: &ExportConfig{
 			DesiredState: ExportActive,
-			Destination:  &PubSubConfig{Topic: exportDestinationPath},
+			Destination:  &PubSubDestinationConfig{Topic: exportDestinationPath},
 		},
 	}
 	pausedExportSubscription := SubscriptionConfig{
@@ -377,7 +377,7 @@ func TestAdminCreateSubscriptionAtTargetLocation(t *testing.T) {
 		DeliveryRequirement: DeliverImmediately,
 		ExportConfig: &ExportConfig{
 			DesiredState: ExportPaused,
-			Destination:  &PubSubConfig{Topic: exportDestinationPath},
+			Destination:  &PubSubDestinationConfig{Topic: exportDestinationPath},
 		},
 	}
 

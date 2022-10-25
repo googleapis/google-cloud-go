@@ -321,7 +321,7 @@ func TestSubscriptionConfigToProtoConversion(t *testing.T) {
 							Status:    &status.Status{Code: 2, Message: "error"},
 						},
 					},
-					Destination: &PubSubConfig{
+					Destination: &PubSubDestinationConfig{
 						Topic: "projects/my-proj/topics/destination-topic",
 					},
 				},
@@ -356,7 +356,7 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 				ExportConfig: &ExportConfigToUpdate{
 					DesiredState:    ExportPaused,
 					DeadLetterTopic: "projects/my-proj/topics/updated-dead-letter",
-					Destination: &PubSubConfig{
+					Destination: &PubSubDestinationConfig{
 						Topic: "projects/my-proj/topics/updated-destination",
 					},
 				},
