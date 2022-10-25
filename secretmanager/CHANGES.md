@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.7.0...secretmanager/v1.8.0) (2022-10-25)
+
+
+### Features
+
+* **secretmanager:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.6.0...secretmanager/v1.7.0) (2022-09-21)
 
 
