@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package managedreader
+package reader
 
-// ReadOption are variadic options used to configure a ManagedStream instance.
-type ReadOption func(*ManagedStream)
+// ReadOption are variadic options used to configure a Reader instance.
+type ReadOption func(*Reader)
 
 // WithMaxStreamCount controls how many streams are gonna be opened to read data.
 func WithMaxStreamCount(maxStream int) ReadOption {
-	return func(ms *ManagedStream) {
-		ms.streamSettings.MaxStreamCount = maxStream
+	return func(r *Reader) {
+		r.settings.MaxStreamCount = maxStream
 	}
 }

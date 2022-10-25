@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package managedreader
+package reader
 
 import (
 	"context"
@@ -73,23 +73,23 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// NewManagedStream establishes a new managed stream to read data.
-func (c *Client) NewManagedStream(opts ...ReadOption) (*ManagedStream, error) {
-	return c.buildManagedStream(opts...)
+// NewReader establishes a new reader to fetch data.
+func (c *Client) NewReader(opts ...ReadOption) (*Reader, error) {
+	return c.buildReader(opts...)
 }
 
-func (c *Client) buildManagedStream(opts ...ReadOption) (*ManagedStream, error) {
-	ms := &ManagedStream{
-		streamSettings: defaultStreamSettings(),
-		c:              c,
+func (c *Client) buildReader(opts ...ReadOption) (*Reader, error) {
+	r := &Reader{
+		settings: defaultSettings(),
+		c:        c,
 	}
 
-	// apply writer options
+	// apply read options
 	for _, opt := range opts {
-		opt(ms)
+		opt(r)
 	}
 
-	return ms, nil
+	return r, nil
 }
 
 func (c *Client) createReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {

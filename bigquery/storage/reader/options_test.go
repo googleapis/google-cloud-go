@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package managedreader
+package reader
 
 import (
 	"sync"
@@ -26,31 +26,31 @@ func TestReadOptions(t *testing.T) {
 	testCases := []struct {
 		desc    string
 		options []ReadOption
-		want    *ManagedStream
+		want    *Reader
 	}{
 		{
 			desc:    "WithMaxStreamCount",
 			options: []ReadOption{WithMaxStreamCount(1)},
-			want: func() *ManagedStream {
-				ms := &ManagedStream{
-					streamSettings: defaultStreamSettings(),
+			want: func() *Reader {
+				ms := &Reader{
+					settings: defaultSettings(),
 				}
-				ms.streamSettings.MaxStreamCount = 1
+				ms.settings.MaxStreamCount = 1
 				return ms
 			}(),
 		},
 	}
 
 	for _, tc := range testCases {
-		got := &ManagedStream{
-			streamSettings: defaultStreamSettings(),
+		got := &Reader{
+			settings: defaultSettings(),
 		}
 		for _, o := range tc.options {
 			o(got)
 		}
 
 		if diff := cmp.Diff(got, tc.want,
-			cmp.AllowUnexported(ManagedStream{}, streamSettings{}),
+			cmp.AllowUnexported(Reader{}, settings{}),
 			cmp.AllowUnexported(sync.Mutex{})); diff != "" {
 			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
 		}

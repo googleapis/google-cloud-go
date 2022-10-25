@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package managedreader
+package reader
 
 import (
 	"context"
@@ -20,34 +20,34 @@ import (
 	"cloud.google.com/go/bigquery"
 )
 
-// ManagedStream is the abstraction over a storage API read session.
-type ManagedStream struct {
-	streamSettings *streamSettings
-	c              *Client
+// Reader is the abstraction over a storage API read session.
+type Reader struct {
+	settings *settings
+	c        *Client
 }
-type streamSettings struct {
+type settings struct {
 	// MaxStreamCount governs how many parallel streams
 	// can be opened.
 	MaxStreamCount int
 }
 
-func defaultStreamSettings() *streamSettings {
-	return &streamSettings{
+func defaultSettings() *settings {
+	return &settings{
 		MaxStreamCount: 0,
 	}
 }
 
 // ReadQuery creates a read stream for a given query.
-func (ms *ManagedStream) ReadQuery(ctx context.Context, query *bigquery.Query) (RowIterator, error) {
-	return newQueryRowIterator(ctx, ms, query)
+func (r *Reader) ReadQuery(ctx context.Context, query *bigquery.Query) (RowIterator, error) {
+	return newQueryRowIterator(ctx, r, query)
 }
 
 // ReadJobResults creates a read stream for a given job.
-func (ms *ManagedStream) ReadJobResults(ctx context.Context, job *bigquery.Job) (RowIterator, error) {
-	return newJobRowIterator(ctx, ms, job)
+func (r *Reader) ReadJobResults(ctx context.Context, job *bigquery.Job) (RowIterator, error) {
+	return newJobRowIterator(ctx, r, job)
 }
 
 // ReadTable creates a read stream for a given table.
-func (ms *ManagedStream) ReadTable(ctx context.Context, table *bigquery.Table) (RowIterator, error) {
-	return newTableRowIterator(ctx, ms, table)
+func (r *Reader) ReadTable(ctx context.Context, table *bigquery.Table) (RowIterator, error) {
+	return newTableRowIterator(ctx, r, table)
 }

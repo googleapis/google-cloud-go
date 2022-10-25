@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package managedreader
+package reader
 
 import (
 	"context"
@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -35,8 +34,7 @@ import (
 
 var (
 	client               *bigquery.Client
-	mrClient             *Client
-	bqStorageClient      *bqStorage.BigQueryReadClient
+	storageReadClient    *Client
 	dataset              *bigquery.Dataset
 	testTableExpiration  time.Time
 	datasetIDs, tableIDs *uid.Space
@@ -87,13 +85,9 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("bigquery.NewClient: %v", err)
 		}
-		mrClient, err = NewClient(ctx, projID, bqOpts...)
+		storageReadClient, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
-		}
-		bqStorageClient, err = bqStorage.NewBigQueryReadClient(ctx, bqOpts...)
-		if err != nil {
-			log.Fatalf("NewBigQueryReadClient: %v", err)
 		}
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }
@@ -129,7 +123,7 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ms, err := mrClient.NewManagedStream()
+	r, err := storageReadClient.NewReader()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -264,7 +258,7 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	for _, c := range testCases {
 		q := client.Query(c.query)
 		q.Parameters = c.parameters
-		it, err := ms.ReadQuery(ctx, q)
+		it, err := r.ReadQuery(ctx, q)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -308,7 +302,7 @@ func TestIntegration_ReadFromSources(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ms, err := mrClient.NewManagedStream(WithMaxStreamCount(1)) // limit to one stream as results are ordered
+	r, err := storageReadClient.NewReader(WithMaxStreamCount(1)) // limit to one stream as results are ordered
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -338,14 +332,14 @@ ORDER BY num`
 		{int64(2), "two"},
 		{int64(3), "three"},
 	}
-	tableRowIt, err := ms.ReadTable(ctx, dstTable)
+	tableRowIt, err := r.ReadTable(ctx, dstTable)
 	if err != nil {
 		t.Fatalf("ReadTable(table): %v", err)
 	}
 	if err = checkRowsRead(tableRowIt, expectedRows); err != nil {
 		t.Fatalf("checkRowsRead(table): %v", err)
 	}
-	jobRowIt, err := ms.ReadJobResults(ctx, job)
+	jobRowIt, err := r.ReadJobResults(ctx, job)
 	if err != nil {
 		t.Fatalf("ReadJobResults(job): %v", err)
 	}
@@ -353,7 +347,7 @@ ORDER BY num`
 		t.Fatalf("checkRowsRead(job): %v", err)
 	}
 	q.Dst = nil
-	qRowIt, err := ms.ReadQuery(ctx, q)
+	qRowIt, err := r.ReadQuery(ctx, q)
 	if err != nil {
 		t.Fatalf("ReadQuery(query): %v", err)
 	}
@@ -371,11 +365,11 @@ func TestIntegration_StorageReadQuery(t *testing.T) {
 	sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s where state = "FL"`, table)
 	q := client.Query(sql)
 
-	ms, err := mrClient.NewManagedStream()
+	r, err := storageReadClient.NewReader()
 	if err != nil {
 		t.Fatal(err)
 	}
-	it, err := ms.ReadQuery(ctx, q)
+	it, err := r.ReadQuery(ctx, q)
 	if err != nil {
 		t.Fatal(err)
 	}
