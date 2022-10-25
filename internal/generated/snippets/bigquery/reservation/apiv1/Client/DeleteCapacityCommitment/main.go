@@ -22,6 +22,7 @@ import (
 	"context"
 
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1"
+
 	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
 )
 

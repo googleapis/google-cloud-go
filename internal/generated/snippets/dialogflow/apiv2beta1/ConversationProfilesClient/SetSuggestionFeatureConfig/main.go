@@ -22,6 +22,7 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 )
 

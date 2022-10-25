@@ -1,5 +1,13 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.5.0...webrisk/v1.6.0) (2022-10-25)
+
+
+### Features
+
+* **webrisk:** Add SOCIAL_ENGINEERING_EXTENDED_COVERAGE threat type ([8b203b8](https://github.com/googleapis/google-cloud-go/commit/8b203b8aea4dada5c0846a515b14414cd8c58f78))
+* **webrisk:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.4.0...webrisk/v1.5.0) (2022-09-21)
 
 

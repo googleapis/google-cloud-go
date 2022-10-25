@@ -1,5 +1,12 @@
 # Changes
 
+## [2.4.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.3.0...vision/v2.4.0) (2022-10-25)
+
+
+### Features
+
+* **vision/v2:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.2.0...vision/v2.3.0) (2022-09-21)
 
 

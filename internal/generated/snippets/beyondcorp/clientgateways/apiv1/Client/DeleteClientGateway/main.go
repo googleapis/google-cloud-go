@@ -22,6 +22,7 @@ import (
 	"context"
 
 	clientgateways "cloud.google.com/go/beyondcorp/clientgateways/apiv1"
+
 	clientgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1"
 )
 
