@@ -748,7 +748,9 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 		return nil, err
 	}
 
-	call.MaxBytesRewrittenPerCall(req.maxBytesRewrittenPerCall)
+	if req.maxBytesRewrittenPerCall != 0 {
+		call.MaxBytesRewrittenPerCall(req.maxBytesRewrittenPerCall)
+	}
 
 	var res *raw.RewriteResponse
 	var err error

@@ -1654,7 +1654,6 @@ func TestIntegration_Copy(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				// Copy.
 				copyObj := test.toBucket.Object(test.toObj)
 				copier := copyObj.CopierFrom(obj)
 
