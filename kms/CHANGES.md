@@ -1,5 +1,13 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.4.0...kms/v1.5.0) (2022-10-25)
+
+
+### Features
+
+* **kms:** enable generation of Locations mixin ([caf4afa](https://github.com/googleapis/google-cloud-go/commit/caf4afa139ad7b38b6df3e3b17b8357c81e1fd6c))
+* **kms:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.3.0...kms/v1.4.0) (2022-02-23)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.5.1...dlp/v1.6.0) (2022-10-25)
+
+
+### Features
+
+* **dlp:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.5.0...dlp/v1.5.1) (2022-10-14)
 
 
