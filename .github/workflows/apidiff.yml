@@ -18,7 +18,7 @@ jobs:
       id: changed_dirs
       # Ignore changes to the internal and root directories.
       run: |
-        dirs=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD | grep -v -e 'go\.[mod|sum]' | xargs -r -L1 dirname | uniq | grep -v -e 'internal' -e '\.' | cat)
+        dirs=$(git diff-tree --no-commit-id --name-only --diff-filter=DMR -r ${{ steps.main.outputs.hash }}..HEAD | grep '\.go' | xargs -r -L1 dirname | uniq | grep -v -e 'internal' -e '\.' | cat)
         if [ -z "$dirs" ]
         then
           echo "skip=1" >> $GITHUB_OUTPUT
