@@ -1,5 +1,19 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.2.0...certificatemanager/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **certificatemanager:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.1.0...certificatemanager/v1.2.0) (2022-10-14)
+
+
+### Features
+
+* **certificatemanager:** added support for Private Trust to Certificate Manager API docs: See https://cloud.google.com/certificate-manager/docs/deploy-google-managed-cas ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.0.0...certificatemanager/v1.1.0) (2022-10-10)
 
 

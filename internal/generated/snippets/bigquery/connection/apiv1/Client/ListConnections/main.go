@@ -23,6 +23,7 @@ import (
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"google.golang.org/api/iterator"
+
 	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 )
 

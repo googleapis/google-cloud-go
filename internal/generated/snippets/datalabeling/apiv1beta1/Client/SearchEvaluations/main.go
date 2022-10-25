@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
-	"cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
+	datalabelingpb "cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 	"google.golang.org/api/iterator"
 )
 

@@ -22,6 +22,7 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
+
 	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 )
 

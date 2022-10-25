@@ -1828,3 +1828,50 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
 	}
 }
+
+func TestIntegration_ClientReadTime(t *testing.T) {
+	docs := []*DocumentRef{
+		iColl.NewDoc(),
+		iColl.NewDoc(),
+	}
+
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+	jobs := make([]*BulkWriterJob, 0)
+
+	// Populate the collection
+	f := integrationTestMap
+	for _, d := range docs {
+		j, err := bw.Create(d, f)
+		jobs = append(jobs, j)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	bw.End()
+
+	for _, j := range jobs {
+		_, err := j.Results()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tm := time.Now()
+	c.WithReadOptions(ReadTime(tm))
+
+	ds, err := c.GetAll(ctx, docs)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
+	t.SkipNow()
+	for _, d := range ds {
+		if !tm.Equal(d.ReadTime) {
+			t.Errorf("wanted read time: %v; got: %v",
+				tm.UnixNano(), d.ReadTime.UnixNano())
+		}
+	}
+}
