@@ -131,7 +131,7 @@ func TestTableAdmin_UpdateTable_WithError(t *testing.T) {
 	// Check if the update fails when update table returns an error
 	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
 
-	if fmt.Sprint(err) != "update table failure error" {
+	if fmt.Sprint(err) != "error from update: update table failure error" {
 		t.Fatalf("UpdateTable updated by mistake: %v", err)
 	}
 }
