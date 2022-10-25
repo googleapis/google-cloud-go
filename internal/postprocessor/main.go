@@ -40,6 +40,7 @@ func run(srcPrefix, dstPrefix string) error {
 		if err != nil {
 			return err
 		}
+
 		if d.IsDir() {
 			return nil
 		}
@@ -54,8 +55,10 @@ func run(srcPrefix, dstPrefix string) error {
 		return nil
 	})
 
-	gocmd.ModTidyAll(dstPath)
-	gocmd.Vet(dstPath)
+	if err := gocmd.ModTidyAll("."); err != nil {
+		return err
+	}
+
 	return nil
 }
 
