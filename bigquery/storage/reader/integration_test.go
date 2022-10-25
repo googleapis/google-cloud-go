@@ -420,3 +420,64 @@ func TestIntegration_StorageReadQuery(t *testing.T) {
 	diff = time.Now().Sub(start).Milliseconds()
 	t.Logf("took %d ms without storage API (%d rows)", diff, rowIt.TotalRows)
 }
+
+func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := "`bigquery-public-data.usa_names.usa_1910_current`"
+	sql := fmt.Sprintf(`SELECT name, number, state FROM %s`, table)
+	q := client.Query(sql)
+
+	r, err := storageReadClient.NewReader(WithMaxStreamCount(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	it, err := r.ReadQuery(ctx, q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	type S struct {
+		Name   string
+		Number int
+		State  string
+	}
+	for {
+		var s S
+		err := it.Next(&s)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+	}
+	streamIt := it.(*streamIterator)
+	if streamIt.streamCount == 0 {
+		t.Fatalf("should use more than one stream but found %d", streamIt.streamCount)
+	}
+	t.Logf("number of parallel streams for query `%s`: %d", q.Q, streamIt.streamCount)
+	t.Logf("bytes scanned for query `%s`: %d", q.Q, streamIt.bytesScanned)
+
+	orderedQ := client.Query(sql + " order by name")
+	it, err = r.ReadQuery(ctx, orderedQ)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for {
+		var s S
+		err := it.Next(&s)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+	}
+	streamIt = it.(*streamIterator)
+	if streamIt.streamCount > 1 {
+		t.Fatalf("should use just one stream as is ordered, but found %d", streamIt.streamCount)
+	}
+	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, streamIt.streamCount)
+}
