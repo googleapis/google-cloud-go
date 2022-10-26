@@ -49,7 +49,7 @@ type reqItem struct {
 }
 
 func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
-	srv, cleanup, err := newMockServer()
+	srv, cleanup, err := newMockServer(t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,7 +69,7 @@ func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
 	}
 }
 
-func newMockServer() (_ *mockServer, cleanup func(), _ error) {
+func newMockServer(t *testing.T) (_ *mockServer, cleanup func(), _ error) {
 	srv, err := testutil.NewServer()
 	if err != nil {
 		return nil, func() {}, err
@@ -80,6 +80,9 @@ func newMockServer() (_ *mockServer, cleanup func(), _ error) {
 	srv.Start()
 
 	return mock, func() {
+		if len(mock.reqItems) != 0 {
+			t.Errorf("datastore: not all requests sent: %v", mock.reqItems)
+		}
 		srv.Close()
 	}, nil
 }
