@@ -3617,8 +3617,11 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case protoreflect.Enum:
 		var protoEnumfqn string
 		if v != nil {
-			pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
-			protoEnumfqn = string(v.Descriptor().FullName())
+			rv := reflect.ValueOf(v)
+			if rv.Kind() != reflect.Ptr || !rv.IsNil() {
+				pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
+				protoEnumfqn = string(v.Descriptor().FullName())
+			}
 		}
 		pt = protoEnumType(protoEnumfqn)
 	case proto.Message:
