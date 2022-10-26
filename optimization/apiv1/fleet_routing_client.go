@@ -83,7 +83,7 @@ func defaultFleetRoutingCallOptions() *FleetRoutingCallOptions {
 	}
 }
 
-// internalFleetRoutingClient is an interface that defines the methods availaible from Cloud Optimization API.
+// internalFleetRoutingClient is an interface that defines the methods available from Cloud Optimization API.
 type internalFleetRoutingClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -100,29 +100,29 @@ type internalFleetRoutingClient interface {
 //
 // Validity of certain types of fields:
 //
-//   google.protobuf.Timestamp
+//	google.protobuf.Timestamp
 //
-//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//     seconds must be in [0, 253402300799],
-//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//	  seconds must be in [0, 253402300799],
+//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//     nanos must be unset or set to 0.
+//	  nanos must be unset or set to 0.
 //
-//   google.protobuf.Duration
+//	google.protobuf.Duration
 //
-//     seconds must be in [0, 253402300799],
-//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//	  seconds must be in [0, 253402300799],
+//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//     nanos must be unset or set to 0.
+//	  nanos must be unset or set to 0.
 //
-//   google.type.LatLng
+//	google.type.LatLng
 //
-//     latitude must be in [-90.0, 90.0].
+//	  latitude must be in [-90.0, 90.0].
 //
-//     longitude must be in [-180.0, 180.0].
+//	  longitude must be in [-180.0, 180.0].
 //
-//     at least one of latitude and longitude must be non-zero.
+//	  at least one of latitude and longitude must be non-zero.
 type FleetRoutingClient struct {
 	// The internal transport-dependent client.
 	internalClient internalFleetRoutingClient
@@ -153,7 +153,8 @@ func (c *FleetRoutingClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FleetRoutingClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -228,29 +229,29 @@ type fleetRoutingGRPCClient struct {
 //
 // Validity of certain types of fields:
 //
-//   google.protobuf.Timestamp
+//	google.protobuf.Timestamp
 //
-//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//     seconds must be in [0, 253402300799],
-//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//	  seconds must be in [0, 253402300799],
+//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//     nanos must be unset or set to 0.
+//	  nanos must be unset or set to 0.
 //
-//   google.protobuf.Duration
+//	google.protobuf.Duration
 //
-//     seconds must be in [0, 253402300799],
-//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//	  seconds must be in [0, 253402300799],
+//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//     nanos must be unset or set to 0.
+//	  nanos must be unset or set to 0.
 //
-//   google.type.LatLng
+//	google.type.LatLng
 //
-//     latitude must be in [-90.0, 90.0].
+//	  latitude must be in [-90.0, 90.0].
 //
-//     longitude must be in [-180.0, 180.0].
+//	  longitude must be in [-180.0, 180.0].
 //
-//     at least one of latitude and longitude must be non-zero.
+//	  at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := defaultFleetRoutingGRPCClientOptions()
 	if newFleetRoutingClientHook != nil {
@@ -298,7 +299,8 @@ func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*F
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *fleetRoutingGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

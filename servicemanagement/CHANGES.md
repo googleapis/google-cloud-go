@@ -1,5 +1,20 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.3.1...servicemanagement/v1.4.0) (2022-10-25)
+
+
+### Features
+
+* **servicemanagement:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.3.0...servicemanagement/v1.3.1) (2022-07-12)
+
+
+### Documentation
+
+* **servicemanagement:** fix remaining broken links ([7b1173d](https://github.com/googleapis/google-cloud-go/commit/7b1173d1ffed195c515b907b20dd1f86a9eef13a))
+* **servicemanagement:** Remove redundant "API" in the service name ([57896d1](https://github.com/googleapis/google-cloud-go/commit/57896d1491c04fa53d3f3e2344ef10c3d91c4b65))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.2.0...servicemanagement/v1.3.0) (2022-02-23)
 
 

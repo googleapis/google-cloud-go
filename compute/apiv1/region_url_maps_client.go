@@ -51,7 +51,19 @@ type RegionUrlMapsCallOptions struct {
 	Validate []gax.CallOption
 }
 
-// internalRegionUrlMapsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionUrlMapsRESTCallOptions() *RegionUrlMapsCallOptions {
+	return &RegionUrlMapsCallOptions{
+		Delete:   []gax.CallOption{},
+		Get:      []gax.CallOption{},
+		Insert:   []gax.CallOption{},
+		List:     []gax.CallOption{},
+		Patch:    []gax.CallOption{},
+		Update:   []gax.CallOption{},
+		Validate: []gax.CallOption{},
+	}
+}
+
+// internalRegionUrlMapsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionUrlMapsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -94,7 +106,8 @@ func (c *RegionUrlMapsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionUrlMapsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -147,6 +160,9 @@ type regionUrlMapsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionUrlMapsClient
+	CallOptions **RegionUrlMapsCallOptions
 }
 
 // NewRegionUrlMapsRESTClient creates a new region url maps rest client.
@@ -159,9 +175,11 @@ func NewRegionUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption
 		return nil, err
 	}
 
+	callOpts := defaultRegionUrlMapsRESTCallOptions()
 	c := &regionUrlMapsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -175,7 +193,7 @@ func NewRegionUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption
 	}
 	c.operationClient = opC
 
-	return &RegionUrlMapsClient{internalClient: c, CallOptions: &RegionUrlMapsCallOptions{}}, nil
+	return &RegionUrlMapsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionUrlMapsRESTClientOptions() []option.ClientOption {
@@ -209,7 +227,7 @@ func (c *regionUrlMapsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionUrlMapsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -233,6 +251,7 @@ func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -293,6 +312,7 @@ func (c *regionUrlMapsRESTClient) Get(ctx context.Context, req *computepb.GetReg
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.UrlMap{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -359,6 +379,7 @@ func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -529,6 +550,7 @@ func (c *regionUrlMapsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -603,6 +625,7 @@ func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.Upd
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -670,6 +693,7 @@ func (c *regionUrlMapsRESTClient) Validate(ctx context.Context, req *computepb.V
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "url_map", url.QueryEscape(req.GetUrlMap())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Validate[0:len((*c.CallOptions).Validate):len((*c.CallOptions).Validate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.UrlMapsValidateResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

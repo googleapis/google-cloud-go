@@ -110,7 +110,7 @@ func defaultDebugger2CallOptions() *Debugger2CallOptions {
 	}
 }
 
-// internalDebugger2Client is an interface that defines the methods availaible from Stackdriver Debugger API.
+// internalDebugger2Client is an interface that defines the methods available from Stackdriver Debugger API.
 type internalDebugger2Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -162,7 +162,8 @@ func (c *Debugger2Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Debugger2Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -263,7 +264,8 @@ func NewDebugger2Client(ctx context.Context, opts ...option.ClientOption) (*Debu
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *debugger2GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

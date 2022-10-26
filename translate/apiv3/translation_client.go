@@ -125,7 +125,7 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 	}
 }
 
-// internalTranslationClient is an interface that defines the methods availaible from Cloud Translation API.
+// internalTranslationClient is an interface that defines the methods available from Cloud Translation API.
 type internalTranslationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -180,7 +180,8 @@ func (c *TranslationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TranslationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -352,7 +353,8 @@ func NewTranslationClient(ctx context.Context, opts ...option.ClientOption) (*Tr
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *translationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

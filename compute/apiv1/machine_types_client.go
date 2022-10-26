@@ -47,7 +47,15 @@ type MachineTypesCallOptions struct {
 	List           []gax.CallOption
 }
 
-// internalMachineTypesClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultMachineTypesRESTCallOptions() *MachineTypesCallOptions {
+	return &MachineTypesCallOptions{
+		AggregatedList: []gax.CallOption{},
+		Get:            []gax.CallOption{},
+		List:           []gax.CallOption{},
+	}
+}
+
+// internalMachineTypesClient is an interface that defines the methods available from Google Compute Engine API.
 type internalMachineTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -86,7 +94,8 @@ func (c *MachineTypesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MachineTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -116,6 +125,9 @@ type machineTypesRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing MachineTypesClient
+	CallOptions **MachineTypesCallOptions
 }
 
 // NewMachineTypesRESTClient creates a new machine types rest client.
@@ -128,13 +140,15 @@ func NewMachineTypesRESTClient(ctx context.Context, opts ...option.ClientOption)
 		return nil, err
 	}
 
+	callOpts := defaultMachineTypesRESTCallOptions()
 	c := &machineTypesRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &MachineTypesClient{internalClient: c, CallOptions: &MachineTypesCallOptions{}}, nil
+	return &MachineTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultMachineTypesRESTClientOptions() []option.ClientOption {
@@ -165,7 +179,7 @@ func (c *machineTypesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *machineTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -288,6 +302,7 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "machine_type", url.QueryEscape(req.GetMachineType())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.MachineType{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

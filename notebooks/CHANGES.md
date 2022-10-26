@@ -1,5 +1,46 @@
 # Changes
 
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.3.0...notebooks/v1.4.0) (2022-10-25)
+
+
+### Features
+
+* **notebooks:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.2.0...notebooks/v1.3.0) (2022-09-21)
+
+
+### Features
+
+* **notebooks:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.1.0...notebooks/v1.2.0) (2022-09-19)
+
+
+### Features
+
+* **notebooks:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.0.0...notebooks/v1.1.0) (2022-09-15)
+
+
+### Features
+
+* **notebooks/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v0.4.0...notebooks/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **notebooks:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+
+
+### Miscellaneous Chores
+
+* **notebooks:** release 1.0.0 ([1b39bf4](https://github.com/googleapis/google-cloud-go/commit/1b39bf40f7fd25c3a4a60661929ec37f6a814898))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v0.3.0...notebooks/v0.4.0) (2022-05-09)
 
 

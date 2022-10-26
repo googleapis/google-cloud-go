@@ -1,5 +1,47 @@
 # Changes
 
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.2.0...binaryauthorization/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **binaryauthorization:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.1.0...binaryauthorization/v1.2.0) (2022-09-21)
+
+
+### Features
+
+* **binaryauthorization:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.0.0...binaryauthorization/v1.1.0) (2022-09-19)
+
+
+### Features
+
+* **binaryauthorization:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.6.0...binaryauthorization/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **binaryauthorization:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+* **binaryauthorization:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+
+### Miscellaneous Chores
+
+* **binaryauthorization:** release 1.0.0 ([25c4440](https://github.com/googleapis/google-cloud-go/commit/25c4440e83a5c506b84f1063a0a3025a5876bbb0))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.5.0...binaryauthorization/v0.6.0) (2022-06-17)
+
+
+### Features
+
+* **binaryauthorization:** Adds a pod_namespace field to pod events created by Continuous Validation, to distinguish pods with the same name that run in different namespaces ([c84e111](https://github.com/googleapis/google-cloud-go/commit/c84e111db5d3f57f4e8fbb5dfff0219d052435a0))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.4.0...binaryauthorization/v0.5.0) (2022-05-09)
 
 

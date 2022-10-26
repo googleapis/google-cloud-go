@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateConnectionProfile": {
               "methods": [
                 "CreateConnectionProfile"
@@ -33,6 +38,11 @@
             "DeleteConnectionProfile": {
               "methods": [
                 "DeleteConnectionProfile"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeletePrivateConnection": {
@@ -70,6 +80,11 @@
                 "GetLocation"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPrivateConnection": {
               "methods": [
                 "GetPrivateConnection"
@@ -98,6 +113,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPrivateConnections": {

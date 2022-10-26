@@ -50,7 +50,18 @@ type FirewallsCallOptions struct {
 	Update []gax.CallOption
 }
 
-// internalFirewallsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultFirewallsRESTCallOptions() *FirewallsCallOptions {
+	return &FirewallsCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Patch:  []gax.CallOption{},
+		Update: []gax.CallOption{},
+	}
+}
+
+// internalFirewallsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalFirewallsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -92,7 +103,8 @@ func (c *FirewallsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FirewallsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -140,6 +152,9 @@ type firewallsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing FirewallsClient
+	CallOptions **FirewallsCallOptions
 }
 
 // NewFirewallsRESTClient creates a new firewalls rest client.
@@ -152,9 +167,11 @@ func NewFirewallsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		return nil, err
 	}
 
+	callOpts := defaultFirewallsRESTCallOptions()
 	c := &firewallsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -168,7 +185,7 @@ func NewFirewallsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 	}
 	c.operationClient = opC
 
-	return &FirewallsClient{internalClient: c, CallOptions: &FirewallsCallOptions{}}, nil
+	return &FirewallsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultFirewallsRESTClientOptions() []option.ClientOption {
@@ -202,7 +219,7 @@ func (c *firewallsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *firewallsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -226,6 +243,7 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall", url.QueryEscape(req.GetFirewall())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -285,6 +303,7 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall", url.QueryEscape(req.GetFirewall())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Firewall{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -351,6 +370,7 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -520,6 +540,7 @@ func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFir
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall", url.QueryEscape(req.GetFirewall())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -593,6 +614,7 @@ func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateF
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall", url.QueryEscape(req.GetFirewall())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

@@ -101,7 +101,7 @@ func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 	}
 }
 
-// internalManagedNotebookClient is an interface that defines the methods availaible from Notebooks API.
+// internalManagedNotebookClient is an interface that defines the methods available from Notebooks API.
 type internalManagedNotebookClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -159,7 +159,8 @@ func (c *ManagedNotebookClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ManagedNotebookClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -342,7 +343,8 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *managedNotebookGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

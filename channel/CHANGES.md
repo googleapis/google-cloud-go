@@ -1,5 +1,20 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.7.0...channel/v1.8.0) (2022-10-25)
+
+
+### Features
+
+* **channel:** Add CloudChannelReportsService to CloudChannel API ([caf4afa](https://github.com/googleapis/google-cloud-go/commit/caf4afa139ad7b38b6df3e3b17b8357c81e1fd6c))
+* **channel:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.6.0...channel/v1.7.0) (2022-06-29)
+
+
+### Features
+
+* **channel:** google.longrunning.Operations for Cloud Channel apis ([350e276](https://github.com/googleapis/google-cloud-go/commit/350e276a5b17483e7347a82f2e195f6619782bec))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.5.0...channel/v1.6.0) (2022-04-26)
 
 

@@ -29,6 +29,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -39,21 +40,26 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	GetDocument       []gax.CallOption
-	ListDocuments     []gax.CallOption
-	UpdateDocument    []gax.CallOption
-	DeleteDocument    []gax.CallOption
-	BatchGetDocuments []gax.CallOption
-	BeginTransaction  []gax.CallOption
-	Commit            []gax.CallOption
-	Rollback          []gax.CallOption
-	RunQuery          []gax.CallOption
-	PartitionQuery    []gax.CallOption
-	Write             []gax.CallOption
-	Listen            []gax.CallOption
-	ListCollectionIds []gax.CallOption
-	BatchWrite        []gax.CallOption
-	CreateDocument    []gax.CallOption
+	GetDocument         []gax.CallOption
+	ListDocuments       []gax.CallOption
+	UpdateDocument      []gax.CallOption
+	DeleteDocument      []gax.CallOption
+	BatchGetDocuments   []gax.CallOption
+	BeginTransaction    []gax.CallOption
+	Commit              []gax.CallOption
+	Rollback            []gax.CallOption
+	RunQuery            []gax.CallOption
+	RunAggregationQuery []gax.CallOption
+	PartitionQuery      []gax.CallOption
+	Write               []gax.CallOption
+	Listen              []gax.CallOption
+	ListCollectionIds   []gax.CallOption
+	BatchWrite          []gax.CallOption
+	CreateDocument      []gax.CallOption
+	CancelOperation     []gax.CallOption
+	DeleteOperation     []gax.CallOption
+	GetOperation        []gax.CallOption
+	ListOperations      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -192,6 +198,20 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		RunAggregationQuery: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.Internal,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		PartitionQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -260,10 +280,14 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Firestore API.
+// internalClient is an interface that defines the methods available from Cloud Firestore API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -277,12 +301,17 @@ type internalClient interface {
 	Commit(context.Context, *firestorepb.CommitRequest, ...gax.CallOption) (*firestorepb.CommitResponse, error)
 	Rollback(context.Context, *firestorepb.RollbackRequest, ...gax.CallOption) error
 	RunQuery(context.Context, *firestorepb.RunQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error)
+	RunAggregationQuery(context.Context, *firestorepb.RunAggregationQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error)
 	PartitionQuery(context.Context, *firestorepb.PartitionQueryRequest, ...gax.CallOption) *CursorIterator
 	Write(context.Context, ...gax.CallOption) (firestorepb.Firestore_WriteClient, error)
 	Listen(context.Context, ...gax.CallOption) (firestorepb.Firestore_ListenClient, error)
 	ListCollectionIds(context.Context, *firestorepb.ListCollectionIdsRequest, ...gax.CallOption) *StringIterator
 	BatchWrite(context.Context, *firestorepb.BatchWriteRequest, ...gax.CallOption) (*firestorepb.BatchWriteResponse, error)
 	CreateDocument(context.Context, *firestorepb.CreateDocumentRequest, ...gax.CallOption) (*firestorepb.Document, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // Client is a client for interacting with Cloud Firestore API.
@@ -321,7 +350,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -374,6 +404,17 @@ func (c *Client) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest,
 	return c.internalClient.RunQuery(ctx, req, opts...)
 }
 
+// RunAggregationQuery runs an aggregation query.
+//
+// Rather than producing Document results like Firestore.RunQuery,
+// this API allows running an aggregation to produce a series of
+// AggregationResult server-side.
+//
+// High-Level Example:
+func (c *Client) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
+	return c.internalClient.RunAggregationQuery(ctx, req, opts...)
+}
+
 // PartitionQuery partitions a query by returning partition cursors that can be used to run
 // the query in parallel. The returned partition cursors are split points that
 // can be used by RunQuery as starting/end points for the query results.
@@ -414,6 +455,26 @@ func (c *Client) CreateDocument(ctx context.Context, req *firestorepb.CreateDocu
 	return c.internalClient.CreateDocument(ctx, req, opts...)
 }
 
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *Client) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *Client) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Cloud Firestore API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -429,6 +490,8 @@ type gRPCClient struct {
 
 	// The gRPC API client.
 	client firestorepb.FirestoreClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -471,6 +534,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           firestorepb.NewFirestoreClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -481,7 +545,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -702,6 +767,22 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	return resp, nil
 }
 
+func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	var resp firestorepb.Firestore_RunAggregationQueryClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RunAggregationQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQueryRequest, opts ...gax.CallOption) *CursorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -866,6 +947,94 @@ func (c *gRPCClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 	return resp, nil
 }
 
+func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CursorIterator manages a stream of *firestorepb.Cursor.
 type CursorIterator struct {
 	items    []*firestorepb.Cursor
@@ -955,6 +1124,53 @@ func (it *DocumentIterator) bufLen() int {
 }
 
 func (it *DocumentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

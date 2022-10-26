@@ -15,10 +15,13 @@
 package managedwriter
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 
+	"cloud.google.com/go/bigquery/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 )
@@ -64,13 +67,24 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
-			desc:    "WithTracePrefix",
+			desc:    "WithTraceID",
 			options: []WriterOption{WithTraceID("foo")},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				ms.streamSettings.TraceID = "foo"
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s foo", internal.Version)
+				return ms
+			}(),
+		},
+		{
+			desc:    "WithoutTraceID",
+			options: []WriterOption{},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings: defaultStreamSettings(),
+				}
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s", internal.Version)
 				return ms
 			}(),
 		},
@@ -110,11 +124,23 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
+			desc:    "EnableRetries",
+			options: []WriterOption{EnableWriteRetries(true)},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings: defaultStreamSettings(),
+				}
+				ms.retry = newStatelessRetryer()
+				return ms
+			}(),
+		},
+		{
 			desc: "multiple",
 			options: []WriterOption{
 				WithType(PendingStream),
 				WithMaxInflightBytes(5),
-				WithTraceID("id"),
+				WithTraceID("traceid"),
+				EnableWriteRetries(true),
 			},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
@@ -122,7 +148,8 @@ func TestWriterOptions(t *testing.T) {
 				}
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
-				ms.streamSettings.TraceID = "id"
+				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s traceid", internal.Version)
+				ms.retry = newStatelessRetryer()
 				return ms
 			}(),
 		},
@@ -138,7 +165,8 @@ func TestWriterOptions(t *testing.T) {
 
 		if diff := cmp.Diff(got, tc.want,
 			cmp.AllowUnexported(ManagedStream{}, streamSettings{}),
-			cmp.AllowUnexported(sync.Mutex{})); diff != "" {
+			cmp.AllowUnexported(sync.Mutex{}),
+			cmpopts.IgnoreUnexported(statelessRetryer{})); diff != "" {
 			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
 		}
 	}

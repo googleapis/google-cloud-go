@@ -68,7 +68,7 @@ func defaultFirewallCallOptions() *FirewallCallOptions {
 	}
 }
 
-// internalFirewallClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalFirewallClient is an interface that defines the methods available from App Engine Admin API.
 type internalFirewallClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -119,7 +119,8 @@ func (c *FirewallClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FirewallClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -227,7 +228,8 @@ func NewFirewallClient(ctx context.Context, opts ...option.ClientOption) (*Firew
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *firewallGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

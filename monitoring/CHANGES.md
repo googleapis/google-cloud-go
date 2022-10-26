@@ -1,5 +1,19 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.6.0...monitoring/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **monitoring:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.5.0...monitoring/v1.6.0) (2022-08-09)
+
+
+### Features
+
+* **monitoring/apiv3:** Added support for evaluating missing data in AlertPolicy ([83d8e8d](https://github.com/googleapis/google-cloud-go/commit/83d8e8dde9d8601db20096fb869b50c7abf1ba7e))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.4.0...monitoring/v1.5.0) (2022-04-14)
 
 

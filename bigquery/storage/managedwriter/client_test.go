@@ -14,7 +14,9 @@
 
 package managedwriter
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestTableParentFromStreamName(t *testing.T) {
 	testCases := []struct {

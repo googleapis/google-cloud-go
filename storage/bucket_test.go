@@ -15,15 +15,14 @@
 package storage
 
 import (
-	"context"
-	"net/http"
-	"reflect"
+	"fmt"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -101,7 +100,31 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
+					AgeInDays:        10,
+					MatchesPrefix:    []string{"testPrefix"},
+					MatchesSuffix:    []string{"testSuffix"},
+					NumNewerVersions: 3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
 					Liveness: Archived,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: AbortIncompleteMPUAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 20,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
 				},
 			}},
 		},
@@ -147,7 +170,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: []string{"STANDARD"},
@@ -177,14 +200,44 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						MatchesStorageClass:     []string{"NEARLINE"},
 						NumNewerVersions:        10,
 					},
-				}, {
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:              googleapi.Int64(10),
+						MatchesPrefix:    []string{"testPrefix"},
+						MatchesSuffix:    []string{"testSuffix"},
+						NumNewerVersions: 3,
+					},
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
 					},
-				}},
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: AbortIncompleteMPUAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age: googleapi.Int64(20),
+					},
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:             googleapi.Int64(0),
+						ForceSendFields: []string{"Age"},
+					},
+				},
+			},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -329,6 +382,10 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 					Action:    LifecycleAction{Type: "Delete"},
 					Condition: LifecycleCondition{AgeInDays: 30},
 				},
+				{
+					Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+					Condition: LifecycleCondition{AgeInDays: 13},
+				},
 			},
 		},
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
@@ -366,7 +423,11 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			Rule: []*raw.BucketLifecycleRule{
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(30)},
+				},
+				{
+					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(13)},
 				},
 			},
 		},
@@ -517,98 +578,6 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 }
 
-func TestCallBuilders(t *testing.T) {
-	rc, err := raw.NewService(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	c := &Client{raw: rc}
-	const metagen = 17
-
-	b := c.Bucket("name")
-	bm := b.If(BucketConditions{MetagenerationMatch: metagen}).UserProject("p")
-
-	equal := func(x, y interface{}) bool {
-		return testutil.Equal(x, y,
-			cmp.AllowUnexported(
-				raw.BucketsGetCall{},
-				raw.BucketsDeleteCall{},
-				raw.BucketsPatchCall{},
-			),
-			cmp.FilterPath(func(p cmp.Path) bool {
-				return p[len(p)-1].Type() == reflect.TypeOf(&raw.Service{})
-			}, cmp.Ignore()),
-		)
-	}
-
-	for i, test := range []struct {
-		callFunc func(*BucketHandle) (interface{}, error)
-		want     interface {
-			Header() http.Header
-		}
-		metagenFunc func(interface{})
-	}{
-		{
-			func(b *BucketHandle) (interface{}, error) { return b.newGetCall() },
-			rc.Buckets.Get("name").Projection("full"),
-			func(req interface{}) { req.(*raw.BucketsGetCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
-			func(b *BucketHandle) (interface{}, error) { return b.newDeleteCall() },
-			rc.Buckets.Delete("name"),
-			func(req interface{}) { req.(*raw.BucketsDeleteCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
-			func(b *BucketHandle) (interface{}, error) {
-				return b.newPatchCall(&BucketAttrsToUpdate{
-					VersioningEnabled: false,
-					RequesterPays:     false,
-				})
-			},
-			rc.Buckets.Patch("name", &raw.Bucket{
-				Versioning: &raw.BucketVersioning{
-					Enabled:         false,
-					ForceSendFields: []string{"Enabled"},
-				},
-				Billing: &raw.BucketBilling{
-					RequesterPays:   false,
-					ForceSendFields: []string{"RequesterPays"},
-				},
-			}).Projection("full"),
-			func(req interface{}) { req.(*raw.BucketsPatchCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-	} {
-		got, err := test.callFunc(b)
-		if err != nil {
-			t.Fatal(err)
-		}
-		setClientHeader(test.want.Header())
-		if !equal(got, test.want) {
-			t.Errorf("#%d: got %#v, want %#v", i, got, test.want)
-		}
-		got, err = test.callFunc(bm)
-		if err != nil {
-			t.Fatal(err)
-		}
-		test.metagenFunc(test.want)
-		if !equal(got, test.want) {
-			t.Errorf("#%d:\ngot  %#v\nwant %#v", i, got, test.want)
-		}
-	}
-
-	// Error.
-	bm = b.If(BucketConditions{MetagenerationMatch: 1, MetagenerationNotMatch: 2})
-	if _, err := bm.newGetCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
-	if _, err := bm.newDeleteCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
-	if _, err := bm.newPatchCall(&BucketAttrsToUpdate{}); err == nil {
-		t.Errorf("got nil, want error")
-	}
-}
-
 func TestNewBucket(t *testing.T) {
 	labels := map[string]string{"a": "b"}
 	matchClasses := []string{"STANDARD"}
@@ -631,7 +600,7 @@ func TestNewBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: matchClasses,
@@ -811,6 +780,99 @@ func TestBucketRetryer(t *testing.T) {
 				}),
 			); diff != "" {
 				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+func TestDetectDefaultGoogleAccessID(t *testing.T) {
+	testCases := []struct {
+		name           string
+		serviceAccount string
+		creds          func(string) string
+		expectSuccess  bool
+	}{
+		{
+			name:           "impersonated creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"delegates": [],
+					"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s:generateAccessToken",
+					"source_credentials": {
+					  "client_id": "id",
+					  "client_secret": "secret",
+					  "refresh_token": "token",
+					  "type": "authorized_user"
+					},
+					"type": "impersonated_service_account"
+				  }`, sa)
+			},
+			expectSuccess: true,
+		},
+		{
+			name:           "gcloud ADC creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprint(`{
+					"client_id": "my-id.apps.googleusercontent.com",
+					"client_secret": "secret",
+					"quota_project_id": "",
+					"refresh_token": "token",
+					"type": "authorized_user"
+				}`)
+			},
+			expectSuccess: false,
+		},
+		{
+			name:           "ADC private key",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "service_account",
+					"project_id": "my-project",
+					"private_key_id": "my1",
+					"private_key": "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+					"client_email": "%s",
+					"client_id": "01",
+					"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+					"token_uri": "https://oauth2.googleapis.com/token",
+					"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+					"client_x509_cert_url": "cert"
+				}`, sa)
+			},
+			expectSuccess: true,
+		},
+		{
+			name: "no creds",
+			creds: func(_ string) string {
+				return ""
+			},
+			expectSuccess: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			bucket := BucketHandle{
+				c: &Client{
+					creds: &google.Credentials{
+						JSON: []byte(tc.creds(tc.serviceAccount)),
+					},
+				},
+				name: "my-bucket",
+			}
+
+			id, err := bucket.detectDefaultGoogleAccessID()
+			if tc.expectSuccess {
+				if err != nil {
+					t.Fatal(err)
+				}
+				if id != tc.serviceAccount {
+					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
+				}
+			} else if err == nil {
+				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
 			}
 		})
 	}

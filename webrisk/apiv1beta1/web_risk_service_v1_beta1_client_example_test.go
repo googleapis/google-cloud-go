@@ -20,12 +20,34 @@ import (
 	"context"
 
 	webrisk "cloud.google.com/go/webrisk/apiv1beta1"
-	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
+	webriskpb "cloud.google.com/go/webrisk/apiv1beta1/webriskpb"
 )
 
 func ExampleNewWebRiskServiceV1Beta1Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewWebRiskServiceV1Beta1RESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := webrisk.NewWebRiskServiceV1Beta1RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,6 +59,11 @@ func ExampleNewWebRiskServiceV1Beta1Client() {
 
 func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +72,7 @@ func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
 
 	req := &webriskpb.ComputeThreatListDiffRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#ComputeThreatListDiffRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1beta1/webriskpb#ComputeThreatListDiffRequest.
 	}
 	resp, err := c.ComputeThreatListDiff(ctx, req)
 	if err != nil {
@@ -57,6 +84,11 @@ func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
 
 func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +97,7 @@ func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
 
 	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#SearchUrisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1beta1/webriskpb#SearchUrisRequest.
 	}
 	resp, err := c.SearchUris(ctx, req)
 	if err != nil {
@@ -77,6 +109,11 @@ func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
 
 func ExampleWebRiskServiceV1Beta1Client_SearchHashes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +122,7 @@ func ExampleWebRiskServiceV1Beta1Client_SearchHashes() {
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#SearchHashesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1beta1/webriskpb#SearchHashesRequest.
 	}
 	resp, err := c.SearchHashes(ctx, req)
 	if err != nil {

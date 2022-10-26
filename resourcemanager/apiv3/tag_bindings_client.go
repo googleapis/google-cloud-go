@@ -77,7 +77,7 @@ func defaultTagBindingsCallOptions() *TagBindingsCallOptions {
 	}
 }
 
-// internalTagBindingsClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalTagBindingsClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalTagBindingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -124,7 +124,8 @@ func (c *TagBindingsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *TagBindingsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -238,7 +239,8 @@ func NewTagBindingsClient(ctx context.Context, opts ...option.ClientOption) (*Ta
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *tagBindingsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -22,11 +22,16 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1beta3"
-	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1beta3"
+	documentaipb "cloud.google.com/go/documentai/apiv1beta3/documentaipb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &documentaipb.DeleteProcessorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DeleteProcessorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3/documentaipb#DeleteProcessorRequest.
 	}
 	op, err := c.DeleteProcessor(ctx, req)
 	if err != nil {

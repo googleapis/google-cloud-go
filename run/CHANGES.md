@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/run/v0.1.2...run/v0.2.0) (2022-10-25)
+
+
+### Features
+
+* **run:** Adds Startup and Liveness probes to Cloud Run v2 API client libraries ([8b203b8](https://github.com/googleapis/google-cloud-go/commit/8b203b8aea4dada5c0846a515b14414cd8c58f78))
+* **run:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/run/v0.1.1...run/v0.1.2) (2022-09-15)
+
+
+### Documentation
+
+* **run:** Fix the main client gem name listed in the readme ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+
 ### [0.1.1](https://github.com/googleapis/google-cloud-go/compare/run/v0.1.0...run/v0.1.1) (2022-05-24)
 
 

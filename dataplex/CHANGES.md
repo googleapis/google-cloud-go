@@ -1,5 +1,39 @@
 # Changes
 
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.2.0...dataplex/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **dataplex:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.1.0...dataplex/v1.2.0) (2022-10-14)
+
+
+### Features
+
+* **dataplex:** Add support for notebook tasks ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.0.0...dataplex/v1.1.0) (2022-07-19)
+
+
+### Features
+
+* **dataplex:** Add IAM support for Explore content APIs feat: Add support for custom container for Task feat: Add support for cross project for Task feat: Add support for custom encryption key to be used for encrypt data on the PDs associated with the VMs in your Dataproc cluster for Task feat: Add support for Latest job in Task resource feat: User mode filter in Explore list sessions API feat: Support logging sampled file paths per partition to Cloud logging for Discovery event ([8b17366](https://github.com/googleapis/google-cloud-go/commit/8b17366c46bbd8a0b2adf39ec3b058eb83192933))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.4.0...dataplex/v1.0.0) (2022-06-29)
+
+
+### Features
+
+* **dataplex:** release 1.0.0 ([7678be5](https://github.com/googleapis/google-cloud-go/commit/7678be543d9130dcd8fc4147608a10b70faef44e))
+
+
+### Miscellaneous Chores
+
+* **dataplex:** release 1.0.0 ([b165e15](https://github.com/googleapis/google-cloud-go/commit/b165e15cac74ea7b5c011b35b3f92e349e99759e))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.3.0...dataplex/v0.4.0) (2022-02-23)
 
 

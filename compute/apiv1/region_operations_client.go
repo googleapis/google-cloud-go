@@ -47,7 +47,16 @@ type RegionOperationsCallOptions struct {
 	Wait   []gax.CallOption
 }
 
-// internalRegionOperationsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionOperationsRESTCallOptions() *RegionOperationsCallOptions {
+	return &RegionOperationsCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		List:   []gax.CallOption{},
+		Wait:   []gax.CallOption{},
+	}
+}
+
+// internalRegionOperationsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionOperationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -87,7 +96,8 @@ func (c *RegionOperationsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionOperationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -122,6 +132,9 @@ type regionOperationsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionOperationsClient
+	CallOptions **RegionOperationsCallOptions
 }
 
 // NewRegionOperationsRESTClient creates a new region operations rest client.
@@ -134,13 +147,15 @@ func NewRegionOperationsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		return nil, err
 	}
 
+	callOpts := defaultRegionOperationsRESTCallOptions()
 	c := &regionOperationsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &RegionOperationsClient{internalClient: c, CallOptions: &RegionOperationsCallOptions{}}, nil
+	return &RegionOperationsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionOperationsRESTClientOptions() []option.ClientOption {
@@ -171,7 +186,7 @@ func (c *regionOperationsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionOperationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -188,6 +203,7 @@ func (c *regionOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "operation", url.QueryEscape(req.GetOperation())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.DeleteRegionOperationResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -240,6 +256,7 @@ func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "operation", url.QueryEscape(req.GetOperation())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -388,6 +405,7 @@ func (c *regionOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wa
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "operation", url.QueryEscape(req.GetOperation())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Wait[0:len((*c.CallOptions).Wait):len((*c.CallOptions).Wait)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

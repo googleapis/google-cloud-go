@@ -22,11 +22,16 @@ import (
 	"context"
 
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
-	gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
+	gkehubpb "cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &gkehubpb.ValidateExclusivityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ValidateExclusivityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkehub/apiv1beta1/gkehubpb#ValidateExclusivityRequest.
 	}
 	resp, err := c.ValidateExclusivity(ctx, req)
 	if err != nil {

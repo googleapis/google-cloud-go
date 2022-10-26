@@ -26,6 +26,11 @@ import (
 
 func ExampleNewEnvironmentsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewEnvironmentsClient() {
 
 func ExampleEnvironmentsClient_CreateEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -63,6 +73,11 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 
 func ExampleEnvironmentsClient_GetEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -83,6 +98,11 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 
 func ExampleEnvironmentsClient_ListEnvironments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +129,11 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 
 func ExampleEnvironmentsClient_UpdateEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,6 +159,11 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 
 func ExampleEnvironmentsClient_DeleteEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -20,13 +20,35 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1p5beta1"
+	assetpb "cloud.google.com/go/asset/apiv1p5beta1/assetpb"
 	"google.golang.org/api/iterator"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := asset.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListAssets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleClient_ListAssets() {
 
 	req := &assetpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1#ListAssetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p5beta1/assetpb#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {

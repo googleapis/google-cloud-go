@@ -35,6 +35,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
+	firestorev1 "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -1718,5 +1719,154 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 
 	if got, want := totalCount, documentCount; got != want {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
+	}
+}
+
+func TestIntegration_BulkWriter(t *testing.T) {
+	doc := iColl.NewDoc()
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+
+	f := integrationTestMap
+	j, err := bw.Create(doc, f)
+
+	if err != nil {
+		t.Errorf("bulkwriter: error creating write to database: %v\n", err)
+	}
+
+	bw.Flush()              // This blocks
+	res, err := j.Results() // so does this
+
+	if err != nil {
+		t.Errorf("bulkwriter: error getting write results: %v\n", err)
+	}
+
+	if res == nil {
+		t.Error("bulkwriter: write attempt returned nil results")
+	}
+
+	numNewWrites := 21 // 20 is the threshold at which the bundler should start sending requests
+	var jobs []*BulkWriterJob
+
+	// Test a slew of writes sent at the BulkWriter
+	for i := 0; i < numNewWrites; i++ {
+		d := iColl.NewDoc()
+		jb, err := bw.Create(d, f)
+
+		if err != nil {
+			t.Errorf("bulkwriter: error creating write to database: %v\n", err)
+		}
+
+		jobs = append(jobs, jb)
+	}
+
+	bw.End() // This calls Flush() in the background.
+
+	for _, j := range jobs {
+		res, err = j.Results()
+		if err != nil {
+			t.Errorf("bulkwriter: error getting write results: %v\n", err)
+		}
+
+		if res == nil {
+			t.Error("bulkwriter: write attempt returned nil results")
+		}
+	}
+}
+
+func TestIntegration_CountAggregationQuery(t *testing.T) {
+	docs := []*DocumentRef{
+		iColl.NewDoc(),
+		iColl.NewDoc(),
+	}
+
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+	jobs := make([]*BulkWriterJob, 0)
+
+	// Populate the collection
+	f := integrationTestMap
+	for _, d := range docs {
+		j, err := bw.Create(d, f)
+		jobs = append(jobs, j)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	bw.End()
+
+	for _, j := range jobs {
+		_, err := j.Results()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// [START firestore_count_query]
+	alias := "twos"
+	q := iColl.Where("str", "==", "two")
+	aq := q.NewAggregationQuery()
+	ar, err := aq.WithCount(alias).Get(ctx)
+	// [END firestore_count_query]
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, ok := ar[alias]
+	if !ok {
+		t.Errorf("key %s not in response %v", alias, ar)
+	}
+	cv := count.(*firestorev1.Value)
+	if cv.GetIntegerValue() != 2 {
+		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
+	}
+}
+
+func TestIntegration_ClientReadTime(t *testing.T) {
+	docs := []*DocumentRef{
+		iColl.NewDoc(),
+		iColl.NewDoc(),
+	}
+
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+	jobs := make([]*BulkWriterJob, 0)
+
+	// Populate the collection
+	f := integrationTestMap
+	for _, d := range docs {
+		j, err := bw.Create(d, f)
+		jobs = append(jobs, j)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	bw.End()
+
+	for _, j := range jobs {
+		_, err := j.Results()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tm := time.Now()
+	c.WithReadOptions(ReadTime(tm))
+
+	ds, err := c.GetAll(ctx, docs)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
+	t.SkipNow()
+	for _, d := range ds {
+		if !tm.Equal(d.ReadTime) {
+			t.Errorf("wanted read time: %v; got: %v",
+				tm.UnixNano(), d.ReadTime.UnixNano())
+		}
 	}
 }

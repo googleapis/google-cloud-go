@@ -58,7 +58,7 @@ func defaultAuthorizedDomainsCallOptions() *AuthorizedDomainsCallOptions {
 	}
 }
 
-// internalAuthorizedDomainsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalAuthorizedDomainsClient is an interface that defines the methods available from App Engine Admin API.
 type internalAuthorizedDomainsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -97,7 +97,8 @@ func (c *AuthorizedDomainsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AuthorizedDomainsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -169,7 +170,8 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *authorizedDomainsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

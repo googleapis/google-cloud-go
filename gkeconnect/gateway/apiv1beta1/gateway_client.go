@@ -18,14 +18,20 @@ package gateway
 
 import (
 	"context"
+	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
+	"net/url"
 
+	gatewaypb "cloud.google.com/go/gkeconnect/gateway/apiv1beta1/gatewaypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
-	gatewaypb "google.golang.org/genproto/googleapis/cloud/gkeconnect/gateway/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -63,7 +69,17 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Connect Gateway API.
+func defaultRESTCallOptions() *CallOptions {
+	return &CallOptions{
+		GetResource:    []gax.CallOption{},
+		PostResource:   []gax.CallOption{},
+		DeleteResource: []gax.CallOption{},
+		PutResource:    []gax.CallOption{},
+		PatchResource:  []gax.CallOption{},
+	}
+}
+
+// internalClient is an interface that defines the methods available from Connect Gateway API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,7 +124,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -202,7 +219,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -222,6 +240,78 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type restClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+}
+
+// NewRESTClient creates a new gateway service rest client.
+//
+// Gateway service is a public API which works as a Kubernetes resource model
+// proxy between end users and registered Kubernetes clusters. Each RPC in this
+// service matches with an HTTP verb. End user will initiate kubectl commands
+// against the Gateway service, and Gateway service will forward user requests
+// to clusters.
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := append(defaultRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultRESTCallOptions()
+	c := &restClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://connectgateway.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://connectgateway.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://connectgateway.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *restClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *restClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *restClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *gRPCClient) GetResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).GetResource[0:len((*c.CallOptions).GetResource):len((*c.CallOptions).GetResource)], opts...)
@@ -293,6 +383,311 @@ func (c *gRPCClient) PatchResource(ctx context.Context, req *httpbodypb.HttpBody
 	}, opts...)
 	if err != nil {
 		return nil, err
+	}
+	return resp, nil
+}
+
+// GetResource getResource performs an HTTP GET request on the Kubernetes API Server.
+func (c *restClient) GetResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/**")
+
+	params := url.Values{}
+	if req.GetContentType() != "" {
+		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
+	}
+	if req.GetData() != nil {
+		params.Add("data", fmt.Sprintf("%v", req.GetData()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetResource[0:len((*c.CallOptions).GetResource):len((*c.CallOptions).GetResource)], opts...)
+	resp := &httpbodypb.HttpBody{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		resp.Data = buf
+		if headers := httpRsp.Header; len(headers["Content-Type"]) > 0 {
+			resp.ContentType = headers["Content-Type"][0]
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// PostResource postResource performs an HTTP POST on the Kubernetes API Server.
+func (c *restClient) PostResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/**")
+
+	params := url.Values{}
+	if req.GetContentType() != "" {
+		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
+	}
+	if req.GetData() != nil {
+		params.Add("data", fmt.Sprintf("%v", req.GetData()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).PostResource[0:len((*c.CallOptions).PostResource):len((*c.CallOptions).PostResource)], opts...)
+	resp := &httpbodypb.HttpBody{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		resp.Data = buf
+		if headers := httpRsp.Header; len(headers["Content-Type"]) > 0 {
+			resp.ContentType = headers["Content-Type"][0]
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteResource deleteResource performs an HTTP DELETE on the Kubernetes API Server.
+func (c *restClient) DeleteResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/**")
+
+	params := url.Values{}
+	if req.GetContentType() != "" {
+		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
+	}
+	if req.GetData() != nil {
+		params.Add("data", fmt.Sprintf("%v", req.GetData()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).DeleteResource[0:len((*c.CallOptions).DeleteResource):len((*c.CallOptions).DeleteResource)], opts...)
+	resp := &httpbodypb.HttpBody{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		resp.Data = buf
+		if headers := httpRsp.Header; len(headers["Content-Type"]) > 0 {
+			resp.ContentType = headers["Content-Type"][0]
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// PutResource putResource performs an HTTP PUT on the Kubernetes API Server.
+func (c *restClient) PutResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/**")
+
+	params := url.Values{}
+	if req.GetContentType() != "" {
+		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
+	}
+	if req.GetData() != nil {
+		params.Add("data", fmt.Sprintf("%v", req.GetData()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).PutResource[0:len((*c.CallOptions).PutResource):len((*c.CallOptions).PutResource)], opts...)
+	resp := &httpbodypb.HttpBody{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PUT", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		resp.Data = buf
+		if headers := httpRsp.Header; len(headers["Content-Type"]) > 0 {
+			resp.ContentType = headers["Content-Type"][0]
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// PatchResource patchResource performs an HTTP PATCH on the Kubernetes API Server.
+func (c *restClient) PatchResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/**")
+
+	params := url.Values{}
+	if req.GetContentType() != "" {
+		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
+	}
+	if req.GetData() != nil {
+		params.Add("data", fmt.Sprintf("%v", req.GetData()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).PatchResource[0:len((*c.CallOptions).PatchResource):len((*c.CallOptions).PatchResource)], opts...)
+	resp := &httpbodypb.HttpBody{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		resp.Data = buf
+		if headers := httpRsp.Header; len(headers["Content-Type"]) > 0 {
+			resp.ContentType = headers["Content-Type"][0]
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
 	return resp, nil
 }

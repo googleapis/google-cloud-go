@@ -173,7 +173,7 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 	}
 }
 
-// internalAzureClustersClient is an interface that defines the methods availaible from Anthos Multi-Cloud API.
+// internalAzureClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
 type internalAzureClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -239,7 +239,8 @@ func (c *AzureClustersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AzureClustersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -488,7 +489,8 @@ func NewAzureClustersClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *azureClustersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

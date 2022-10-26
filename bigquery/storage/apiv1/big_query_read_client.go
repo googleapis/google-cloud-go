@@ -94,7 +94,7 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 	}
 }
 
-// internalBigQueryReadClient is an interface that defines the methods availaible from BigQuery Storage API.
+// internalBigQueryReadClient is an interface that defines the methods available from BigQuery Storage API.
 type internalBigQueryReadClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -135,7 +135,8 @@ func (c *BigQueryReadClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BigQueryReadClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -252,7 +253,8 @@ func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*B
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *bigQueryReadGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

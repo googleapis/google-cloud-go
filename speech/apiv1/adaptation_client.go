@@ -76,7 +76,7 @@ func defaultAdaptationCallOptions() *AdaptationCallOptions {
 	}
 }
 
-// internalAdaptationClient is an interface that defines the methods availaible from Cloud Speech-to-Text API.
+// internalAdaptationClient is an interface that defines the methods available from Cloud Speech-to-Text API.
 type internalAdaptationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -122,7 +122,8 @@ func (c *AdaptationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AdaptationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -239,7 +240,8 @@ func NewAdaptationClient(ctx context.Context, opts ...option.ClientOption) (*Ada
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *adaptationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

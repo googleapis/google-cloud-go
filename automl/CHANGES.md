@@ -1,5 +1,33 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.6.0...automl/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **automl:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.5.0...automl/v1.6.0) (2022-09-21)
+
+
+### Features
+
+* **automl:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.4.0...automl/v1.5.0) (2022-09-19)
+
+
+### Features
+
+* **automl:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.3.0...automl/v1.4.0) (2022-06-29)
+
+
+### Features
+
+* **automl:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.2.0...automl/v1.3.0) (2022-02-23)
 
 

@@ -118,19 +118,19 @@ var (
 // Encoder is the interface implemented by a custom type that can be encoded to
 // a supported type by Spanner. A code example:
 //
-//   type customField struct {
-//       Prefix string
-//       Suffix string
-//   }
+//	type customField struct {
+//	    Prefix string
+//	    Suffix string
+//	}
 //
-//   // Convert a customField value to a string
-//   func (cf customField) EncodeSpanner() (interface{}, error) {
-//       var b bytes.Buffer
-//       b.WriteString(cf.Prefix)
-//       b.WriteString("-")
-//       b.WriteString(cf.Suffix)
-//       return b.String(), nil
-//   }
+//	// Convert a customField value to a string
+//	func (cf customField) EncodeSpanner() (interface{}, error) {
+//	    var b bytes.Buffer
+//	    b.WriteString(cf.Prefix)
+//	    b.WriteString("-")
+//	    b.WriteString(cf.Suffix)
+//	    return b.String(), nil
+//	}
 type Encoder interface {
 	EncodeSpanner() (interface{}, error)
 }
@@ -138,24 +138,24 @@ type Encoder interface {
 // Decoder is the interface implemented by a custom type that can be decoded
 // from a supported type by Spanner. A code example:
 //
-//   type customField struct {
-//       Prefix string
-//       Suffix string
-//   }
+//	type customField struct {
+//	    Prefix string
+//	    Suffix string
+//	}
 //
-//   // Convert a string to a customField value
-//   func (cf *customField) DecodeSpanner(val interface{}) (err error) {
-//       strVal, ok := val.(string)
-//       if !ok {
-//           return fmt.Errorf("failed to decode customField: %v", val)
-//       }
-//       s := strings.Split(strVal, "-")
-//       if len(s) > 1 {
-//           cf.Prefix = s[0]
-//           cf.Suffix = s[1]
-//       }
-//       return nil
-//   }
+//	// Convert a string to a customField value
+//	func (cf *customField) DecodeSpanner(val interface{}) (err error) {
+//	    strVal, ok := val.(string)
+//	    if !ok {
+//	        return fmt.Errorf("failed to decode customField: %v", val)
+//	    }
+//	    s := strings.Split(strVal, "-")
+//	    if len(s) > 1 {
+//	        cf.Prefix = s[0]
+//	        cf.Suffix = s[1]
+//	    }
+//	    return nil
+//	}
 type Decoder interface {
 	DecodeSpanner(input interface{}) error
 }
@@ -818,7 +818,7 @@ func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 	var v interface{}
 	err := json.Unmarshal(payload, &v)
 	if err != nil {
-		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %s", string(payload), err)
+		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %w", string(payload), err)
 	}
 	n.Value = v
 	n.Valid = true

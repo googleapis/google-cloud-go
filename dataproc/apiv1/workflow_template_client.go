@@ -149,7 +149,7 @@ func defaultWorkflowTemplateCallOptions() *WorkflowTemplateCallOptions {
 	}
 }
 
-// internalWorkflowTemplateClient is an interface that defines the methods availaible from Cloud Dataproc API.
+// internalWorkflowTemplateClient is an interface that defines the methods available from Cloud Dataproc API.
 type internalWorkflowTemplateClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -200,7 +200,8 @@ func (c *WorkflowTemplateClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *WorkflowTemplateClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -375,7 +376,8 @@ func NewWorkflowTemplateClient(ctx context.Context, opts ...option.ClientOption)
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *workflowTemplateGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

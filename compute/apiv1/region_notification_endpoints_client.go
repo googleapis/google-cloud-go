@@ -48,7 +48,16 @@ type RegionNotificationEndpointsCallOptions struct {
 	List   []gax.CallOption
 }
 
-// internalRegionNotificationEndpointsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionNotificationEndpointsRESTCallOptions() *RegionNotificationEndpointsCallOptions {
+	return &RegionNotificationEndpointsCallOptions{
+		Delete: []gax.CallOption{},
+		Get:    []gax.CallOption{},
+		Insert: []gax.CallOption{},
+		List:   []gax.CallOption{},
+	}
+}
+
+// internalRegionNotificationEndpointsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionNotificationEndpointsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -88,7 +97,8 @@ func (c *RegionNotificationEndpointsClient) setGoogleClientInfo(keyval ...string
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionNotificationEndpointsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -126,6 +136,9 @@ type regionNotificationEndpointsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionNotificationEndpointsClient
+	CallOptions **RegionNotificationEndpointsCallOptions
 }
 
 // NewRegionNotificationEndpointsRESTClient creates a new region notification endpoints rest client.
@@ -138,9 +151,11 @@ func NewRegionNotificationEndpointsRESTClient(ctx context.Context, opts ...optio
 		return nil, err
 	}
 
+	callOpts := defaultRegionNotificationEndpointsRESTCallOptions()
 	c := &regionNotificationEndpointsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -154,7 +169,7 @@ func NewRegionNotificationEndpointsRESTClient(ctx context.Context, opts ...optio
 	}
 	c.operationClient = opC
 
-	return &RegionNotificationEndpointsClient{internalClient: c, CallOptions: &RegionNotificationEndpointsCallOptions{}}, nil
+	return &RegionNotificationEndpointsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionNotificationEndpointsRESTClientOptions() []option.ClientOption {
@@ -188,7 +203,7 @@ func (c *regionNotificationEndpointsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionNotificationEndpointsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -212,6 +227,7 @@ func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "notification_endpoint", url.QueryEscape(req.GetNotificationEndpoint())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -272,6 +288,7 @@ func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *co
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "notification_endpoint", url.QueryEscape(req.GetNotificationEndpoint())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NotificationEndpoint{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -338,6 +355,7 @@ func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

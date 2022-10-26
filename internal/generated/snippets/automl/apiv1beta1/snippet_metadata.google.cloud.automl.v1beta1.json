@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/automl/apiv1beta1",
-    "version": "1.3.0",
+    "version": "1.6.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -558,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -604,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -650,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -658,7 +658,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_ImportData_sync",
       "title": "automl ImportData Sample",
-      "description": "ImportData imports data into a dataset.\nFor Tables this method can only be called on an empty Dataset.\n\nFor Tables: \n\n  A\n  schema_inference_version\n  parameter must be explicitly set.\n  Returns an empty response in the\n  response field when it completes.",
+      "description": "ImportData imports data into a dataset.\nFor Tables this method can only be called on an empty Dataset.\n\nFor Tables: \n\n\tA\n\tschema_inference_version\n\tparameter must be explicitly set.\n\tReturns an empty response in the\n\tresponse field when it completes.",
       "file": "Client/ImportData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -742,7 +742,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -788,7 +788,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -834,7 +834,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -880,7 +880,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -926,7 +926,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -972,7 +972,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -1018,7 +1018,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1064,7 +1064,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1110,7 +1110,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1118,7 +1118,7 @@
     {
       "regionTag": "automl_v1beta1_generated_PredictionService_BatchPredict_sync",
       "title": "automl BatchPredict Sample",
-      "description": "BatchPredict perform a batch prediction. Unlike the online Predict, batch\nprediction result won’t be immediately available in the response. Instead,\na long running operation object is returned. User can poll the operation\nresult via GetOperation\nmethod. Once the operation is done, BatchPredictResult is returned in\nthe response field.\nAvailable for following ML problems: \n\n  Image Classification\n\n  Image Object Detection\n\n  Video Classification\n\n  Video Object Tracking * Text Extraction\n\n  Tables",
+      "description": "BatchPredict perform a batch prediction. Unlike the online Predict, batch\nprediction result won’t be immediately available in the response. Instead,\na long running operation object is returned. User can poll the operation\nresult via GetOperation\nmethod. Once the operation is done, BatchPredictResult is returned in\nthe response field.\nAvailable for following ML problems: \n\n\tImage Classification\n\n\tImage Object Detection\n\n\tVideo Classification\n\n\tVideo Object Tracking * Text Extraction\n\n\tTables",
       "file": "PredictionClient/BatchPredict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1156,7 +1156,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1164,7 +1164,7 @@
     {
       "regionTag": "automl_v1beta1_generated_PredictionService_Predict_sync",
       "title": "automl Predict Sample",
-      "description": "Predict perform an online prediction. The prediction result will be directly\nreturned in the response.\nAvailable for following ML problems, and their expected request payloads: \n\n  Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes\n  up to 30MB.\n\n  Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes\n  up to 30MB.\n\n  Text Classification - TextSnippet, content up to 60,000 characters,\n  UTF-8 encoded.\n\n  Text Extraction - TextSnippet, content up to 30,000 characters,\n  UTF-8 NFC encoded.\n\n  Translation - TextSnippet, content up to 25,000 characters, UTF-8\n  encoded.\n\n  Tables - Row, with column values matching the columns of the model,\n  up to 5MB. Not available for FORECASTING\n\nprediction_type.\n\n  Text Sentiment - TextSnippet, content up 500 characters, UTF-8\n  encoded.",
+      "description": "Predict perform an online prediction. The prediction result will be directly\nreturned in the response.\nAvailable for following ML problems, and their expected request payloads: \n\n\tImage Classification - Image in .JPEG, .GIF or .PNG format, image_bytes\n\tup to 30MB.\n\n\tImage Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes\n\tup to 30MB.\n\n\tText Classification - TextSnippet, content up to 60,000 characters,\n\tUTF-8 encoded.\n\n\tText Extraction - TextSnippet, content up to 30,000 characters,\n\tUTF-8 NFC encoded.\n\n\tTranslation - TextSnippet, content up to 25,000 characters, UTF-8\n\tencoded.\n\n\tTables - Row, with column values matching the columns of the model,\n\tup to 5MB. Not available for FORECASTING\n\nprediction_type.\n\n\tText Sentiment - TextSnippet, content up 500 characters, UTF-8\n\tencoded.",
       "file": "PredictionClient/Predict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1202,7 +1202,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -201,21 +201,21 @@ type Client struct {
 //
 // This service exposes several types of comparable timestamps:
 //
-//   create_time - The time at which a document was created. Changes only
-//   when a document is deleted, then re-created. Increases in a strict
-//   monotonic fashion.
+//	create_time - The time at which a document was created. Changes only
+//	when a document is deleted, then re-created. Increases in a strict
+//	monotonic fashion.
 //
-//   update_time - The time at which a document was last updated. Changes
-//   every time a document is modified. Does not change when a write results
-//   in no modifications. Increases in a strict monotonic fashion.
+//	update_time - The time at which a document was last updated. Changes
+//	every time a document is modified. Does not change when a write results
+//	in no modifications. Increases in a strict monotonic fashion.
 //
-//   read_time - The time at which a particular state was observed. Used
-//   to denote a consistent snapshot of the database or the time at which a
-//   Document was observed to not exist.
+//	read_time - The time at which a particular state was observed. Used
+//	to denote a consistent snapshot of the database or the time at which a
+//	Document was observed to not exist.
 //
-//   commit_time - The time at which the writes in a transaction were
-//   committed. Any read with an equal or greater read_time is guaranteed
-//   to see the effects of the transaction.
+//	commit_time - The time at which the writes in a transaction were
+//	committed. Any read with an equal or greater read_time is guaranteed
+//	to see the effects of the transaction.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
