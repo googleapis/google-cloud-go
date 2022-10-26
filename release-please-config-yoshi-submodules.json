@@ -78,6 +78,9 @@
         "compute": {
             "component": "compute"
         },
+        "compute/metadata": {
+            "component": "compute/metadata"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },
