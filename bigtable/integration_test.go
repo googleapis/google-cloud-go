@@ -2579,7 +2579,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	prefix := fmt.Sprintf("%s-%s", "inst", time.Now().Format("2012-02-20"))
+	prefix := fmt.Sprintf("%s-%s", "inst", time.Now().Format(time.RFC3339)[:10])
 	diffInstanceId := uid.NewSpace(prefix, &uid.Options{Short: true})
 	diffInstance := diffInstanceId.New()
 	diffCluster := sourceCluster + "-d"
