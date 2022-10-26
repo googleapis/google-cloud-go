@@ -33,6 +33,4 @@ RUN go install honnef.co/go/tools/cmd/staticcheck@latest && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest
 
-# ENV GOCACHE="/tmp/"
-
 CMD [ "/postprocessor/post_processor"]
