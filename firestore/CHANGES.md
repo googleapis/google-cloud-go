@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.8.0...firestore/v1.8.1) (2022-10-26)
+
+
+### Documentation
+
+* **firestore:** Adds emulator snippet ([#6926](https://github.com/googleapis/google-cloud-go/issues/6926)) ([456afab](https://github.com/googleapis/google-cloud-go/commit/456afab76f078ef58b7e5b3409acc6b3f71c5b79))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.7.0...firestore/v1.8.0) (2022-10-17)
 
 
