@@ -17,9 +17,11 @@ package datastore
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
@@ -292,6 +294,110 @@ func TestPutMultiTypes(t *testing.T) {
 	}
 }
 
+func TestGetWithReadTime(t *testing.T) {
+	type ent struct {
+		A int
+	}
+	tm := time.Now()
+	k := NameKey("testKind", "testReadTime", nil)
+	e := &pb.Entity{
+		Key: keyToProto(k),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+		},
+	}
+	fakeClient := &fakeDatastoreClient{
+		lookup: func(req *pb.LookupRequest) (*pb.LookupResponse, error) {
+			if !req.ReadOptions.GetReadTime().AsTime().Equal(tm) {
+				return nil, fmt.Errorf("read time mismatch: expected %v, got %v", tm,
+					req.ReadOptions.GetReadTime())
+			}
+
+			return &pb.LookupResponse{
+				Found: []*pb.EntityResult{
+					{
+						Entity:  e,
+						Version: 1,
+					},
+				},
+			}, nil
+		},
+	}
+
+	client := &Client{
+		client:       fakeClient,
+		readSettings: &readSettings{},
+	}
+
+	ctx := context.Background()
+	client.WithReadOptions(ReadTime(tm))
+	dst := &ent{}
+	err := client.Get(ctx, k, dst)
+	if err != nil {
+		t.Fatalf("Get() with ReadTime failed: %v\n", err)
+	}
+}
+
+func TestGetMultiWithReadTime(t *testing.T) {
+	type ent struct {
+		A int
+	}
+
+	tm := time.Now()
+	k := []*Key{
+		NameKey("testKind", "testReadTime", nil),
+		NameKey("testKind", "testReadTime2", nil),
+	}
+
+	e := &pb.Entity{
+		Key: keyToProto(k[0]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+		},
+	}
+	e2 := &pb.Entity{
+		Key: keyToProto(k[1]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+		},
+	}
+
+	fakeClient := &fakeDatastoreClient{
+		lookup: func(req *pb.LookupRequest) (*pb.LookupResponse, error) {
+
+			if !req.ReadOptions.GetReadTime().AsTime().Equal(tm) {
+				return nil, fmt.Errorf("read time mismatch: expected %v, got %v", tm,
+					req.ReadOptions.GetReadTime())
+			}
+
+			return &pb.LookupResponse{
+				Found: []*pb.EntityResult{
+					{
+						Entity:  e,
+						Version: 1,
+					}, {
+						Entity:  e2,
+						Version: 1,
+					},
+				},
+			}, nil
+		},
+	}
+
+	client := &Client{
+		client:       fakeClient,
+		readSettings: &readSettings{},
+	}
+
+	ctx := context.Background()
+	client.WithReadOptions(ReadTime(tm))
+	dst := make([]*ent, len(k))
+	err := client.GetMulti(ctx, k, dst)
+	if err != nil {
+		t.Fatalf("Get() with ReadTime failed: %v\n", err)
+	}
+}
+
 func TestNoIndexOnSliceProperties(t *testing.T) {
 	// Check that ExcludeFromIndexes is set on the inner elements,
 	// rather than the top-level ArrayValue value.
@@ -500,7 +606,8 @@ func TestDeferred(t *testing.T) {
 		},
 	}
 	client := &Client{
-		client: fakeClient,
+		client:       fakeClient,
+		readSettings: &readSettings{},
 	}
 
 	ctx := context.Background()
@@ -620,7 +727,7 @@ func TestDeferredMissing(t *testing.T) {
 }
 
 func TestGetWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Get(context.Background(), nil, []Property{})
 	if err != ErrInvalidKey {
 		t.Fatalf("want ErrInvalidKey, got %v", err)
@@ -628,7 +735,7 @@ func TestGetWithNilKey(t *testing.T) {
 }
 
 func TestGetMultiWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	dest := make([]PropertyList, 1)
 	err := client.GetMulti(context.Background(), []*Key{nil}, dest)
 	if me, ok := err.(MultiError); !ok {
@@ -639,7 +746,7 @@ func TestGetMultiWithNilKey(t *testing.T) {
 }
 
 func TestGetWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Get(context.Background(), &Key{Kind: "testKind"}, []Property{})
 	if err == nil {
 		t.Fatalf("want err, got nil")
@@ -647,7 +754,7 @@ func TestGetWithIncompleteKey(t *testing.T) {
 }
 
 func TestGetMultiWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	dest := make([]PropertyList, 1)
 	err := client.GetMulti(context.Background(), []*Key{{Kind: "testKind"}}, dest)
 	if me, ok := err.(MultiError); !ok {
@@ -658,7 +765,7 @@ func TestGetMultiWithIncompleteKey(t *testing.T) {
 }
 
 func TestDeleteWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Delete(context.Background(), nil)
 	if err != ErrInvalidKey {
 		t.Fatalf("want ErrInvalidKey, got %v", err)
@@ -666,7 +773,7 @@ func TestDeleteWithNilKey(t *testing.T) {
 }
 
 func TestDeleteMultiWithNilKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.DeleteMulti(context.Background(), []*Key{nil})
 	if me, ok := err.(MultiError); !ok {
 		t.Fatalf("want MultiError, got %v", err)
@@ -676,7 +783,7 @@ func TestDeleteMultiWithNilKey(t *testing.T) {
 }
 
 func TestDeleteWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.Delete(context.Background(), &Key{Kind: "testKind"})
 	if err == nil {
 		t.Fatalf("want err, got nil")
@@ -684,7 +791,7 @@ func TestDeleteWithIncompleteKey(t *testing.T) {
 }
 
 func TestDeleteMultiWithIncompleteKey(t *testing.T) {
-	client := &Client{}
+	client := &Client{readSettings: &readSettings{}}
 	err := client.DeleteMulti(context.Background(), []*Key{{Kind: "testKind"}})
 	if me, ok := err.(MultiError); !ok {
 		t.Fatalf("want MultiError, got %v", err)
