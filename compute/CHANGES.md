@@ -1,5 +1,9 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.11.0...compute/v1.12.0) (2022-10-26)
+
+Compute metadata has been moved to its own module.
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.10.0...compute/v1.11.0) (2022-10-25)
 
 
