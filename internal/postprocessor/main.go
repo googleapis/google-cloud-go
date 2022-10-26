@@ -59,6 +59,10 @@ func run(srcPrefix, dstPrefix string) error {
 		return err
 	}
 
+	if err := gocmd.Vet("."); err != nil {
+		return err
+	}
+
 	return nil
 }
 
