@@ -131,11 +131,11 @@ func nullProto() *proto3.Value {
 	return &proto3.Value{Kind: &proto3.Value_NullValue{NullValue: proto3.NullValue_NULL_VALUE}}
 }
 
-func protoType(fqn string) *sppb.Type {
+func protoMessageType(fqn string) *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_PROTO, ProtoTypeFqn: fqn}
 }
 
-func enumType(fqn string) *sppb.Type {
+func protoEnumType(fqn string) *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_ENUM, ProtoTypeFqn: fqn}
 }
 

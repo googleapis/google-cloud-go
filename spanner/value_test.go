@@ -270,8 +270,8 @@ func TestEncodeValue(t *testing.T) {
 		tNumeric      = numericType()
 		tJSON         = jsonType()
 		tPGNumeric    = pgNumericType()
-		tProtoMessage = protoType(protoMessagefqn)
-		tProtoEnum    = enumType(protoEnumfqn)
+		tProtoMessage = protoMessageType(protoMessagefqn)
+		tProtoEnum    = protoEnumType(protoEnumfqn)
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -1815,8 +1815,8 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
 		// PROTO MESSAGE AND PROTO ENUM
-		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoType(protoMessagefqn), want: singerProtoMsg},
-		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: enumType(protoEnumfqn), want: singerEnumValue},
+		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: singerProtoMsg},
+		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()

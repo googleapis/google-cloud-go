@@ -3620,7 +3620,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
 			protoEnumfqn = string(v.Descriptor().FullName())
 		}
-		pt = enumType(protoEnumfqn)
+		pt = protoEnumType(protoEnumfqn)
 	case proto.Message:
 		var protoMessagefqn string
 		if v != nil && proto.MessageReflect(v).IsValid() {
@@ -3631,7 +3631,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
 			protoMessagefqn = string(proto.MessageReflect(v).Descriptor().FullName())
 		}
-		pt = protoType(protoMessagefqn)
+		pt = protoMessageType(protoMessagefqn)
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
