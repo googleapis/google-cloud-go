@@ -196,6 +196,17 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 	settings := newTransactionSettings(opts)
 	for n := 0; n < settings.attempts; n++ {
 		tx, err := c.newTransaction(ctx, settings)
+
+		// Ensure that any panic has a corresponding rollback
+		defer func(t *Transaction) {
+			if p := recover(); p != nil {
+				_ = tx.Rollback()
+				// Propagate the panic back up the stack or re-panic if the
+				// panic originated from a roll back
+				panic(p)
+			}
+		}(tx)
+
 		if err != nil {
 			return nil, err
 		}
