@@ -152,3 +152,20 @@ func (s *mockServer) Commit(_ context.Context, in *pb.CommitRequest) (*pb.Commit
 	}
 	return res.(*pb.CommitResponse), nil
 }
+
+func (s *mockServer) BeginTransaction(_ context.Context,
+	in *pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.BeginTransactionResponse), nil
+}
+
+func (s *mockServer) Rollback(_ context.Context, in *pb.RollbackRequest) (*pb.RollbackResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.RollbackResponse), nil
+}

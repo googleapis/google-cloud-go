@@ -18,38 +18,29 @@ import (
 	"context"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestNewTransaction(t *testing.T) {
-	var got *pb.BeginTransactionRequest
-	client := &Client{
-		dataset: "project",
-		client: &fakeDatastoreClient{
-			beginTransaction: func(req *pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
-				got = req
-				return &pb.BeginTransactionResponse{
-					Transaction: []byte("tid"),
-				}, nil
-			},
-		},
-	}
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
 	ctx := context.Background()
 	rt := timestamppb.Now()
+
 	for _, test := range []struct {
 		settings *transactionSettings
 		want     *pb.BeginTransactionRequest
 	}{
 		{
 			&transactionSettings{},
-			&pb.BeginTransactionRequest{ProjectId: "project"},
+			&pb.BeginTransactionRequest{ProjectId: "projectID"},
 		},
 		{
 			&transactionSettings{readOnly: true},
 			&pb.BeginTransactionRequest{
-				ProjectId: "project",
+				ProjectId: "projectID",
 				TransactionOptions: &pb.TransactionOptions{
 					Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 				},
@@ -58,7 +49,7 @@ func TestNewTransaction(t *testing.T) {
 		{
 			&transactionSettings{prevID: []byte("tid")},
 			&pb.BeginTransactionRequest{
-				ProjectId: "project",
+				ProjectId: "projectID",
 				TransactionOptions: &pb.TransactionOptions{
 					Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
 						PreviousTransaction: []byte("tid"),
@@ -70,7 +61,7 @@ func TestNewTransaction(t *testing.T) {
 		{
 			&transactionSettings{readOnly: true, readTime: rt},
 			&pb.BeginTransactionRequest{
-				ProjectId: "project",
+				ProjectId: "projectID",
 				TransactionOptions: &pb.TransactionOptions{
 					Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{
 						ReadTime: rt,
@@ -79,12 +70,45 @@ func TestNewTransaction(t *testing.T) {
 			},
 		},
 	} {
+		srv.addRPC(test.want, &pb.BeginTransactionResponse{
+			Transaction: []byte("tid"),
+		})
 		_, err := client.newTransaction(ctx, test.settings)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !proto.Equal(got, test.want) {
-			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.settings, got, test.want)
+	}
+}
+
+func TestTransactionRollbackOnPanic(t *testing.T) {
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	tid := []byte("tid")
+
+	isRecovered := make(chan struct{})
+	defer func(chan struct{}) {
+		if p := recover(); p != nil {
+			isRecovered <- struct{}{}
 		}
+	}(isRecovered)
+
+	srv.addRPC(&pb.BeginTransactionRequest{
+		ProjectId: "projectID",
+	}, &pb.BeginTransactionResponse{
+		Transaction: tid,
+	})
+
+	srv.addRPC(&pb.RollbackRequest{
+		ProjectId:   "projectID",
+		Transaction: tid,
+	}, &pb.RollbackResponse{})
+
+	client.RunInTransaction(context.Background(), func(t *Transaction) error {
+		panic("test panic")
+	})
+
+	if isRecovered == nil {
+		t.Errorf("datastore: expected rollback after panic in transaction")
 	}
 }
