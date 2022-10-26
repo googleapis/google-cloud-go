@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.1.0...vmmigration/v1.2.0) (2022-10-25)
+
+
+### Features
+
+* **vmmigration:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.0.0...vmmigration/v1.1.0) (2022-07-19)
 
 
