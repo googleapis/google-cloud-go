@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.17
 
 require (
-	cloud.google.com/go v0.104.0
+	cloud.google.com/go v0.105.0
 	cloud.google.com/go/accessapproval v1.3.0
 	cloud.google.com/go/accesscontextmanager v1.2.0
 	cloud.google.com/go/aiplatform v1.24.0
@@ -127,6 +127,7 @@ require (
 	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgecontainer v0.2.0
+	cloud.google.com/go/longrunning v0.1.0
 )
 
 require (
