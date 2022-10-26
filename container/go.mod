@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go v0.104.0
+	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.6.0
 	google.golang.org/api v0.99.0
 	google.golang.org/genproto v0.0.0-20221014173430-6e2ab493f96b
@@ -14,7 +15,6 @@ require (
 require (
 	cloud.google.com/go/compute v1.10.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
