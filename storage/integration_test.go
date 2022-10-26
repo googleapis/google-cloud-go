@@ -856,44 +856,43 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 }
 
 func TestIntegration_Autoclass(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	// Create a bucket with Autoclass enabled.
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{Autoclass: &Autoclass{Enabled: true}})
-	defer h.mustDeleteBucket(bkt)
+		// Create a bucket with Autoclass enabled.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{Autoclass: &Autoclass{Enabled: true}})
+		defer h.mustDeleteBucket(bkt)
 
-	// Get Autoclass configuration from bucket attrs.
-	attrs, err := bkt.Attrs(ctx)
-	if err != nil {
-		t.Fatalf("get bucket attrs failed: %v", err)
-	}
-	var toggleTime time.Time
-	if attrs != nil && attrs.Autoclass != nil {
-		if got, want := attrs.Autoclass.Enabled, true; got != want {
+		// Get Autoclass configuration from bucket attrs.
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("get bucket attrs failed: %v", err)
+		}
+		var toggleTime time.Time
+		if attrs != nil && attrs.Autoclass != nil {
+			if got, want := attrs.Autoclass.Enabled, true; got != want {
+				t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+			}
+			if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
+				t.Error("got a zero time value, want a populated value")
+			}
+		}
+
+		// Disable Autoclass on the bucket.
+		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.Autoclass.Enabled, false; got != want {
 			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
 		}
-		if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
+		latestToggleTime := attrs.Autoclass.ToggleTime
+		if latestToggleTime.IsZero() {
 			t.Error("got a zero time value, want a populated value")
 		}
-	}
-
-	// Disable Autoclass on the bucket.
-	ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
-	attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
-	if got, want := attrs.Autoclass.Enabled, false; got != want {
-		t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
-	}
-	latestToggleTime := attrs.Autoclass.ToggleTime
-	if latestToggleTime.IsZero() {
-		t.Error("got a zero time value, want a populated value")
-	}
-	if latestToggleTime.Before(toggleTime) {
-		t.Error("latestToggleTime should be newer than bucket creation toggleTime")
-	}
+		if latestToggleTime.Before(toggleTime) {
+			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
+		}
+	})
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
