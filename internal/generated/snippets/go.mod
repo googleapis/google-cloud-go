@@ -27,7 +27,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.2.0
 	cloud.google.com/go/clouddms v1.2.0
 	cloud.google.com/go/cloudtasks v1.6.0
-	cloud.google.com/go/compute v1.10.0
+	cloud.google.com/go/compute v1.12.0
 	cloud.google.com/go/contactcenterinsights v1.2.2
 	cloud.google.com/go/container v1.3.1
 	cloud.google.com/go/containeranalysis v0.6.0
@@ -130,6 +130,7 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.1.0 // indirect
 	cloud.google.com/go/recaptchaenterprise/v2 v2.3.0 // indirect
 	cloud.google.com/go/vision/v2 v2.3.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
