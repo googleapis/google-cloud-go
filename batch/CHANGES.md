@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.2.1...batch/v0.3.0) (2022-10-25)
+
+
+### Features
+
+* **batch:** Enable install_gpu_drivers flag in v1 proto docs: Refine GPU drivers installation proto description docs: Refine comments for deprecated proto fields docs: Update the API comments about the device_name ([8b203b8](https://github.com/googleapis/google-cloud-go/commit/8b203b8aea4dada5c0846a515b14414cd8c58f78))
+* **batch:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/batch/v0.2.0...batch/v0.2.1) (2022-09-08)
 
 
