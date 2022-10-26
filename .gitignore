@@ -13,5 +13,7 @@ coverage.txt
 
 
 # OwlBot Migration
-.github/.OwlBot.yaml
-.github/.OwlBot.lock.yaml
+# .github/.OwlBot.yaml
+# .github/.OwlBot.lock.yaml
+.github/temp
+
