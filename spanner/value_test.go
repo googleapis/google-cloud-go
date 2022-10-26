@@ -476,6 +476,8 @@ func TestEncodeValue(t *testing.T) {
 		// PROTO MESSAGE AND PROTO ENUM
 		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
 		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
+		{(*pb.SingerInfo)(nil), nullProto(), protoMessageType(""), "nil Proto Message"},
+		{(*pb.Genre)(nil), nullProto(), protoEnumType(""), "nil Proto Enum"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
