@@ -877,6 +877,96 @@ func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// NullProto represents a Cloud Spanner PROTO that may be NULL.
+type NullProto struct {
+	ProtoVal proto.Message // ProtoVal contains the value when it is non-NULL, and nil when NULL.
+	Valid    bool          // Valid is true if Proto is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for NullProto.
+func (n NullProto) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for NullProto.
+func (n NullProto) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	return n.ProtoVal.String()
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullProto.
+func (n NullProto) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return proto.Marshal(n.ProtoVal)
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProto.
+func (n *NullProto) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Valid = false
+		return nil
+	}
+	err := proto.Unmarshal(payload, n.ProtoVal)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to a proto message: got %v, err: %s", string(payload), err)
+	}
+	n.Valid = true
+	return nil
+}
+
+// NullEnum represents a Cloud Spanner ENUM that may be NULL.
+type NullEnum struct {
+	EnumVal protoreflect.Enum // EnumVal contains the value when it is non-NULL, and nil when NULL.
+	Valid   bool              // Valid is true if Enum is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for NullEnum.
+func (n NullEnum) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for NullEnum.
+func (n NullEnum) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	return fmt.Sprintf("%v", n.EnumVal)
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullEnum.
+func (n NullEnum) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%v", n.EnumVal)), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullEnum.
+func (n *NullEnum) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Valid = false
+		return nil
+	}
+
+	num, err := strconv.ParseInt(string(payload), 10, 64)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to Enum: got %v", string(payload))
+	}
+	reflect.ValueOf(n.EnumVal).Elem().SetInt(num)
+	n.Valid = true
+	return nil
+}
+
 // NullRow represents a Cloud Spanner STRUCT that may be NULL.
 // See also the document for Row.
 // Note that NullRow is not a valid Cloud Spanner column Type.
@@ -944,7 +1034,7 @@ func errNilArrElemType(t *sppb.Type) error {
 	return spannerErrorf(codes.FailedPrecondition, "array type %v is with nil array element type", t)
 }
 
-// errNilDst returns error for decoding into nil interface{}.
+// errNilSrcPtr returns error for a custom nil type input.
 func errNilSrcPtr(dst interface{}) error {
 	return spannerErrorf(codes.InvalidArgument, "cannot use nil type %T", dst)
 }
@@ -1877,6 +1967,33 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return errBadEncoding(v, err)
 		}
 		reflect.ValueOf(p).Elem().SetInt(y)
+	case *NullEnum:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if p.EnumVal == nil {
+			return errNilDst(p.EnumVal)
+		}
+		if reflect.ValueOf(p.EnumVal).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
+		if code != sppb.TypeCode_ENUM && code != sppb.TypeCode_INT64 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = NullEnum{}
+			break
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := strconv.ParseInt(x, 10, 64)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		reflect.ValueOf(p.EnumVal).Elem().SetInt(y)
+		p.Valid = true
 	case proto.Message:
 		if p == nil {
 			return errNilDst(p)
@@ -1899,6 +2016,33 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return errBadEncoding(v, err)
 		}
 		proto.Unmarshal(y, p)
+	case *NullProto:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if p.ProtoVal == nil {
+			return errNilDst(p.ProtoVal)
+		}
+		if reflect.ValueOf(p.ProtoVal).Kind() != reflect.Ptr {
+			return errNotAPointer(p.ProtoVal)
+		}
+		if code != sppb.TypeCode_PROTO && code != sppb.TypeCode_BYTES {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = NullProto{}
+			break
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := base64.StdEncoding.DecodeString(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		proto.Unmarshal(y, p.ProtoVal)
+		p.Valid = true
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
@@ -3631,6 +3775,11 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = protoEnumType(protoEnumfqn)
+	case NullEnum:
+		if v.Valid {
+			return encodeValue(v.EnumVal)
+		}
+		pt = protoEnumType("")
 	case proto.Message:
 		var protoMessagefqn string
 		if v != nil && proto.MessageReflect(v).IsValid() {
@@ -3644,6 +3793,11 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			return nil, nil, errNilSrcPtr(v)
 		}
 		pt = protoMessageType(protoMessagefqn)
+	case NullProto:
+		if v.Valid {
+			return encodeValue(v.ProtoVal)
+		}
+		pt = protoMessageType("")
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
@@ -3952,7 +4106,7 @@ func isSupportedMutationType(v interface{}) bool {
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
 		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,
-		GenericColumnValue, proto.Message, protoreflect.Enum:
+		GenericColumnValue, proto.Message, protoreflect.Enum, NullProto, NullEnum:
 		return true
 	default:
 		// Check if the custom type implements spanner.Encoder interface.
