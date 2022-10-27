@@ -437,7 +437,7 @@ Example code:
 
 	func printWidgets(ctx context.Context, client *datastore.Client) {
 		q := datastore.NewQuery("Widget").
-			Filter("Price <", 1000).
+			FilterField("Price", "<", 1000).
 			Order("-Price")
 
 		t := client.Run(ctx, q)
