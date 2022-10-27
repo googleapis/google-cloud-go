@@ -476,8 +476,6 @@ func TestEncodeValue(t *testing.T) {
 		// PROTO MESSAGE AND PROTO ENUM
 		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
 		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
-		{(*pb.SingerInfo)(nil), nullProto(), protoMessageType(""), "nil Proto Message"},
-		{(*pb.Genre)(nil), nullProto(), protoEnumType(""), "nil Proto Enum"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -520,6 +518,8 @@ func TestEncodeInvalidValues(t *testing.T) {
 		// CUSTOM NUMERIC
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
+		{desc: "Nil Proto Message", in: (*pb.SingerInfo)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.SingerInfo\""},
+		{desc: "Nil Proto Enum", in: (*pb.Genre)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.Genre\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {

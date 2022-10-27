@@ -944,6 +944,11 @@ func errNilArrElemType(t *sppb.Type) error {
 	return spannerErrorf(codes.FailedPrecondition, "array type %v is with nil array element type", t)
 }
 
+// errNilDst returns error for decoding into nil interface{}.
+func errNilSrcPtr(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "cannot use nil type %T", dst)
+}
+
 func errUnsupportedEmbeddedStructFields(fname string) error {
 	return spannerErrorf(codes.InvalidArgument, "Embedded field: %s. Embedded and anonymous fields are not allowed "+
 		"when converting Go structs to Cloud Spanner STRUCT values. To create a STRUCT value with an "+
@@ -3621,6 +3626,8 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			if rv.Kind() != reflect.Ptr || !rv.IsNil() {
 				pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
 				protoEnumfqn = string(v.Descriptor().FullName())
+			} else {
+				return nil, nil, errNilSrcPtr(v)
 			}
 		}
 		pt = protoEnumType(protoEnumfqn)
@@ -3633,6 +3640,8 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
 			protoMessagefqn = string(proto.MessageReflect(v).Descriptor().FullName())
+		} else {
+			return nil, nil, errNilSrcPtr(v)
 		}
 		pt = protoMessageType(protoMessagefqn)
 	default:
