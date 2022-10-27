@@ -36,6 +36,7 @@ import (
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
@@ -943,6 +944,11 @@ func errNilArrElemType(t *sppb.Type) error {
 	return spannerErrorf(codes.FailedPrecondition, "array type %v is with nil array element type", t)
 }
 
+// errNilDst returns error for decoding into nil interface{}.
+func errNilSrcPtr(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "cannot use nil type %T", dst)
+}
+
 func errUnsupportedEmbeddedStructFields(fname string) error {
 	return spannerErrorf(codes.InvalidArgument, "Embedded field: %s. Embedded and anonymous fields are not allowed "+
 		"when converting Go structs to Cloud Spanner STRUCT values. To create a STRUCT value with an "+
@@ -958,6 +964,11 @@ func errDstNotForNull(dst interface{}) error {
 // errBadEncoding returns error for decoding wrongly encoded types.
 func errBadEncoding(v *proto3.Value, err error) error {
 	return spannerErrorf(codes.FailedPrecondition, "%v wasn't correctly encoded: <%v>", v, err)
+}
+
+// errNotAPointer returns error for decoding a non pointer type.
+func errNotAPointer(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "destination %T must be a pointer", dst)
 }
 
 func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
@@ -1120,7 +1131,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_BYTES {
+		if code != sppb.TypeCode_BYTES && code != sppb.TypeCode_PROTO {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1160,7 +1171,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_INT64 {
+		if code != sppb.TypeCode_INT64 && code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1179,7 +1190,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_INT64 {
+		if code != sppb.TypeCode_INT64 && code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -1844,6 +1855,50 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		*p = y
 	case *GenericColumnValue:
 		*p = GenericColumnValue{Type: t, Value: v}
+	case protoreflect.Enum:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if reflect.ValueOf(p).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
+		if code != sppb.TypeCode_ENUM && code != sppb.TypeCode_INT64 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := strconv.ParseInt(x, 10, 64)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		reflect.ValueOf(p).Elem().SetInt(y)
+	case proto.Message:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if reflect.ValueOf(p).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
+		if code != sppb.TypeCode_PROTO && code != sppb.TypeCode_BYTES {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := base64.StdEncoding.DecodeString(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		proto.Unmarshal(y, p)
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
@@ -3564,6 +3619,31 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = proto.Clone(v.Type).(*sppb.Type)
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
+	case protoreflect.Enum:
+		var protoEnumfqn string
+		if v != nil {
+			rv := reflect.ValueOf(v)
+			if rv.Kind() != reflect.Ptr || !rv.IsNil() {
+				pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
+				protoEnumfqn = string(v.Descriptor().FullName())
+			} else {
+				return nil, nil, errNilSrcPtr(v)
+			}
+		}
+		pt = protoEnumType(protoEnumfqn)
+	case proto.Message:
+		var protoMessagefqn string
+		if v != nil && proto.MessageReflect(v).IsValid() {
+			bytes, err := proto.Marshal(v)
+			if err != nil {
+				return nil, nil, err
+			}
+			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
+			protoMessagefqn = string(proto.MessageReflect(v).Descriptor().FullName())
+		} else {
+			return nil, nil, errNilSrcPtr(v)
+		}
+		pt = protoMessageType(protoMessagefqn)
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
@@ -3872,7 +3952,7 @@ func isSupportedMutationType(v interface{}) bool {
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
 		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,
-		GenericColumnValue:
+		GenericColumnValue, proto.Message, protoreflect.Enum:
 		return true
 	default:
 		// Check if the custom type implements spanner.Encoder interface.

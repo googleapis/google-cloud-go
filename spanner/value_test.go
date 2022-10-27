@@ -27,10 +27,12 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 var (
@@ -247,17 +249,29 @@ func TestEncodeValue(t *testing.T) {
 	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
 	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
 
+	singer1ProtoEnum := pb.Genre_ROCK
+	singer1ProtoMsg := &pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singer1ProtoEnum,
+	}
+	protoMessagefqn := "spanner.examples.music.SingerInfo"
+	protoEnumfqn := "spanner.examples.music.Genre"
+
 	var (
-		tString    = stringType()
-		tInt       = intType()
-		tBool      = boolType()
-		tFloat     = floatType()
-		tBytes     = bytesType()
-		tTime      = timeType()
-		tDate      = dateType()
-		tNumeric   = numericType()
-		tJSON      = jsonType()
-		tPGNumeric = pgNumericType()
+		tString       = stringType()
+		tInt          = intType()
+		tBool         = boolType()
+		tFloat        = floatType()
+		tBytes        = bytesType()
+		tTime         = timeType()
+		tDate         = dateType()
+		tNumeric      = numericType()
+		tJSON         = jsonType()
+		tPGNumeric    = pgNumericType()
+		tProtoMessage = protoMessageType(protoMessagefqn)
+		tProtoEnum    = protoEnumType(protoEnumfqn)
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -459,6 +473,9 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
+		// PROTO MESSAGE AND PROTO ENUM
+		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
+		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -501,6 +518,8 @@ func TestEncodeInvalidValues(t *testing.T) {
 		// CUSTOM NUMERIC
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
+		{desc: "Nil Proto Message", in: (*pb.SingerInfo)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.SingerInfo\""},
+		{desc: "Nil Proto Enum", in: (*pb.Genre)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.Genre\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {
@@ -1393,6 +1412,16 @@ func TestDecodeValue(t *testing.T) {
 	var dNilPtr *civil.Date
 	d2Value := d2
 
+	singerEnumValue := pb.Genre_ROCK
+	singerProtoMsg := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerEnumValue,
+	}
+	protoMessagefqn := "spanner.examples.music.SingerInfo"
+	protoEnumfqn := "spanner.examples.music.Genre"
+
 	for _, test := range []struct {
 		desc      string
 		proto     *proto3.Value
@@ -1787,6 +1816,9 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of bool to CustomStructToNull", proto: nullProto(), protoType: listType(boolType()), want: customStructToNull{}},
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: singerProtoMsg},
+		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1820,8 +1852,15 @@ func TestDecodeValue(t *testing.T) {
 			continue
 		}
 		got := reflect.Indirect(gotp).Interface()
-		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
-			t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+		switch v.(type) {
+		case proto.Message:
+			if diff := cmp.Diff(got, test.want, protocmp.Transform()); diff != "" {
+				t.Errorf("unexpected difference in proto message :\n%v", diff)
+			}
+		default:
+			if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
+				t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+			}
 		}
 	}
 }
