@@ -28,6 +28,9 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"github.com/apache/arrow/go/v10/arrow"
+	"github.com/apache/arrow/go/v10/arrow/array"
+	"github.com/apache/arrow/go/v10/arrow/math"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
@@ -356,6 +359,90 @@ ORDER BY num`
 	}
 }
 
+func TestIntegration_StorageRawReadQuery(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := "`bigquery-public-data.usa_names.usa_1910_current`"
+	sql := fmt.Sprintf(`SELECT name, number, state FROM %s where state = "CA"`, table)
+	q := client.Query(sql)
+
+	r, err := storageReadClient.NewReader(WithMaxStreamCount(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	it, err := r.RawReadQuery(ctx, q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	records := []arrow.Record{}
+	for {
+		record, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		records = append(records, record)
+	}
+	arrowSchema := it.Schema()
+	if arrowSchema == nil {
+		t.Fatal("should have Arrow table available, but nil found")
+	}
+	var arrowTable arrow.Table
+	arrowTable = array.NewTableFromRecords(arrowSchema, records)
+	defer arrowTable.Release()
+	if arrowTable.NumRows() != int64(it.TotalRows()) {
+		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows(), arrowTable.NumRows())
+	}
+	if arrowTable.NumCols() != 3 {
+		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
+	}
+
+	// Re run query
+	it, err = r.RawReadQuery(ctx, q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	arrowTable, err = it.Table()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer arrowTable.Release()
+	if arrowTable.NumRows() != int64(it.TotalRows()) {
+		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows(), arrowTable.NumRows())
+	}
+	if arrowTable.NumCols() != 3 {
+		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
+	}
+
+	sumSQL := fmt.Sprintf(`SELECT sum(number) as total FROM %s where state = "CA"`, table)
+	sumQuery := client.Query(sumSQL)
+	sumIt, err := sumQuery.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sumValues := []bigquery.Value{}
+	err = sumIt.Next(&sumValues)
+	if err != nil {
+		t.Fatal(err)
+	}
+	totalFromSQL := sumValues[0].(int64)
+
+	tr := array.NewTableReader(arrowTable, arrowTable.NumRows())
+	var totalFromArrow int64
+	for tr.Next() {
+		rec := tr.Record()
+		vec := array.NewInt64Data(rec.Column(1).Data())
+		totalFromArrow += math.Int64.Sum(vec)
+	}
+	if totalFromArrow != totalFromSQL {
+		t.Fatalf("expected total to be %d, but with arrow we got %d", totalFromSQL, totalFromArrow)
+	}
+}
+
 func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -378,6 +465,8 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		Number int
 		State  string
 	}
+
+	var i uint64
 	for {
 		var s S
 		err := it.Next(&s)
@@ -387,19 +476,26 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to fetch via storage API: %v", err)
 		}
+		i++
 	}
+	t.Logf("%d lines read", i)
 	streamIt := it.(*streamIterator)
-	if streamIt.streamCount == 0 {
-		t.Fatalf("should use more than one stream but found %d", streamIt.streamCount)
+	if streamIt.arrowIt.streamCount == 0 {
+		t.Fatalf("should use more than one stream but found %d", streamIt.arrowIt.streamCount)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", q.Q, streamIt.streamCount)
-	t.Logf("bytes scanned for query `%s`: %d", q.Q, streamIt.bytesScanned)
+	total := streamIt.TotalRows()
+	if i != total {
+		t.Fatalf("should have read %d rows, but read %d", total, i)
+	}
+	t.Logf("number of parallel streams for query `%s`: %d", q.Q, streamIt.arrowIt.streamCount)
+	t.Logf("bytes scanned for query `%s`: %d", q.Q, streamIt.arrowIt.bytesScanned)
 
 	orderedQ := client.Query(sql + " order by name")
 	it, err = r.ReadQuery(ctx, orderedQ)
 	if err != nil {
 		t.Fatal(err)
 	}
+	i = 0
 	for {
 		var s S
 		err := it.Next(&s)
@@ -409,10 +505,16 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to fetch via storage API: %v", err)
 		}
+		i++
 	}
+	t.Logf("%d lines read", i)
 	streamIt = it.(*streamIterator)
-	if streamIt.streamCount > 1 {
-		t.Fatalf("should use just one stream as is ordered, but found %d", streamIt.streamCount)
+	if streamIt.arrowIt.streamCount > 1 {
+		t.Fatalf("should use just one stream as is ordered, but found %d", streamIt.arrowIt.streamCount)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, streamIt.streamCount)
+	total = streamIt.TotalRows()
+	if i != total {
+		t.Fatalf("should have read %d rows, but read %d", total, i)
+	}
+	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, streamIt.arrowIt.streamCount)
 }

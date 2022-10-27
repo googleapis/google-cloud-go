@@ -55,10 +55,8 @@ func newArrowParserFromSession(session *bqStoragepb.ReadSession, schema bigquery
 	return p, nil
 }
 
-// convertArrowRows converts an Arrow Record Batch into a series of Value slices.
-// schema is used to interpret the data from rows
-func (ap *arrowParser) convertArrowRows(recordBatch *bqStoragepb.ArrowRecordBatch) ([][]bigquery.Value, error) {
-	var rs [][]bigquery.Value
+// convertArrowRows parse BQ ArrowRecordBatch into a list of arrow.Record.
+func (ap *arrowParser) parseArrowRecords(recordBatch *bqStoragepb.ArrowRecordBatch) ([]arrow.Record, error) {
 	buf := bytes.NewBuffer(ap.rawArrowSchema)
 	unecoded := recordBatch.GetSerializedRecordBatch()
 	buf.Write(unecoded)
@@ -66,24 +64,31 @@ func (ap *arrowParser) convertArrowRows(recordBatch *bqStoragepb.ArrowRecordBatc
 	if err != nil {
 		return nil, err
 	}
+	records := []arrow.Record{}
 	for r.Next() {
 		rec := r.Record()
-		tmp := make([][]bigquery.Value, rec.NumRows())
-		for i := range tmp {
-			tmp[i] = make([]bigquery.Value, rec.NumCols())
-		}
-		for j, col := range rec.Columns() {
-			fs := ap.tableSchema[j]
-			ft := ap.arrowSchema.Field(j).Type
-			for i := 0; i < col.Len(); i++ {
-				v, err := convertArrowValue(col, i, ft, fs)
-				if err != nil {
-					return nil, fmt.Errorf("found arrow type %s, but could not convert value: %v", ap.arrowSchema.Field(j).Type, err)
-				}
-				tmp[i][j] = v
+		rec.Retain()
+		records = append(records, rec)
+	}
+	return records, nil
+}
+
+// convertArrowRows converts an arrow.Record into a series of Value slices.
+func (ap *arrowParser) convertArrowRecordValue(record arrow.Record) ([][]bigquery.Value, error) {
+	rs := make([][]bigquery.Value, record.NumRows())
+	for i := range rs {
+		rs[i] = make([]bigquery.Value, record.NumCols())
+	}
+	for j, col := range record.Columns() {
+		fs := ap.tableSchema[j]
+		ft := ap.arrowSchema.Field(j).Type
+		for i := 0; i < col.Len(); i++ {
+			v, err := convertArrowValue(col, i, ft, fs)
+			if err != nil {
+				return nil, fmt.Errorf("found arrow type %s, but could not convert value: %v", ap.arrowSchema.Field(j).Type, err)
 			}
+			rs[i][j] = v
 		}
-		rs = append(rs, tmp...)
 	}
 	return rs, nil
 }

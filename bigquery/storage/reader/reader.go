@@ -42,12 +42,27 @@ func (r *Reader) ReadQuery(ctx context.Context, query *bigquery.Query) (RowItera
 	return newQueryRowIterator(ctx, r, query)
 }
 
+// RawReadQuery creates an Arrow stream for a given query.
+func (r *Reader) RawReadQuery(ctx context.Context, query *bigquery.Query) (ArrowIterator, error) {
+	return newRawQueryRowIterator(ctx, r, query)
+}
+
 // ReadJobResults creates a read stream for a given job.
 func (r *Reader) ReadJobResults(ctx context.Context, job *bigquery.Job) (RowIterator, error) {
 	return newJobRowIterator(ctx, r, job)
 }
 
+// RawReadJobResults creates an Arrow stream for a given job.
+func (r *Reader) RawReadJobResults(ctx context.Context, job *bigquery.Job) (ArrowIterator, error) {
+	return newRawJobRowIterator(ctx, r, job)
+}
+
 // ReadTable creates a read stream for a given table.
 func (r *Reader) ReadTable(ctx context.Context, table *bigquery.Table) (RowIterator, error) {
 	return newTableRowIterator(ctx, r, table)
+}
+
+// RawReadTable creates an Arrow stream for a given table.
+func (r *Reader) RawReadTable(ctx context.Context, table *bigquery.Table) (ArrowIterator, error) {
+	return newRawTableRowIterator(ctx, r, table)
 }

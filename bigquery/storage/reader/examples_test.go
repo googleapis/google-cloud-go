@@ -20,6 +20,9 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/bigquery/storage/reader"
+	"github.com/apache/arrow/go/v10/arrow"
+	"github.com/apache/arrow/go/v10/arrow/array"
+	"github.com/apache/arrow/go/v10/arrow/math"
 	"google.golang.org/api/iterator"
 )
 
@@ -72,5 +75,81 @@ func ExampleReadFromSources() {
 		if err != nil {
 			// TODO: Handle error.
 		}
+	}
+}
+
+func ExampleReadRawArrow() {
+	ctx := context.Background()
+	projectID := "project-id"
+	client, err := bigquery.NewClient(ctx, projectID)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	storageReadClient, err := reader.NewClient(ctx, projectID)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	r, err := storageReadClient.NewReader()
+	if err != nil {
+		// TODO: Handle error.
+	}
+	table := "`bigquery-public-data.usa_names.usa_1910_current`"
+	sql := fmt.Sprintf(`SELECT name, number, state FROM %s where state = "CA"`, table)
+	q := client.Query(sql)
+
+	it, err := r.RawReadQuery(ctx, q)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	records := []arrow.Record{}
+	for {
+		record, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		records = append(records, record)
+	}
+	arrowSchema := it.Schema()
+	var arrowTable arrow.Table
+	arrowTable = array.NewTableFromRecords(arrowSchema, records)
+	defer arrowTable.Release()
+
+	// Re run query
+	it, err = r.RawReadQuery(ctx, q)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	arrowTable, err = it.Table()
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer arrowTable.Release()
+
+	sumSQL := fmt.Sprintf(`SELECT sum(number) as total FROM %s where state = "CA"`, table)
+	sumQuery := client.Query(sumSQL)
+	sumIt, err := sumQuery.Read(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sumValues := []bigquery.Value{}
+	err = sumIt.Next(&sumValues)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	totalFromSQL := sumValues[0].(int64)
+
+	tr := array.NewTableReader(arrowTable, arrowTable.NumRows())
+	var totalFromArrow int64
+	for tr.Next() {
+		rec := tr.Record()
+		vec := array.NewInt64Data(rec.Column(1).Data())
+		totalFromArrow += math.Int64.Sum(vec)
+	}
+	if totalFromArrow != totalFromSQL {
+		// TODO: Handle error.
 	}
 }

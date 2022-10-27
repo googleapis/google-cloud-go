@@ -73,7 +73,7 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 				}
 				sIt := it.(*streamIterator)
 				b.ReportMetric(float64(it.TotalRows()), "rows")
-				b.ReportMetric(float64(sIt.streamCount), "parallel_streams")
+				b.ReportMetric(float64(sIt.arrowIt.streamCount), "parallel_streams")
 			}
 		})
 
