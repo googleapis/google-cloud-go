@@ -1,5 +1,21 @@
 # Changes
 
+## [0.105.0](https://github.com/googleapis/google-cloud-go/compare/v0.104.0...v0.105.0) (2022-10-27)
+
+
+### Features
+
+* **debugger:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+* **internal/testutil:** Make it easier to test integration tests locally ([#6786](https://github.com/googleapis/google-cloud-go/issues/6786)) ([4a66203](https://github.com/googleapis/google-cloud-go/commit/4a66203e65e851948ac162a82eca2c1219879a71))
+
+
+### Bug Fixes
+
+* **bttest:** Reject empty regex row filters ([#6520](https://github.com/googleapis/google-cloud-go/issues/6520)) ([68caf4b](https://github.com/googleapis/google-cloud-go/commit/68caf4bdc3af09f5fe1767c5ad52dedf613f85c7))
+* **internal/gapicgen:** Add slashes to be more strict with matching ([#6672](https://github.com/googleapis/google-cloud-go/issues/6672)) ([721baec](https://github.com/googleapis/google-cloud-go/commit/721baec75f55897f0435fcf5eeb7fc91557b575c))
+* **internal/godocfx:** Make default header h2 ([#6818](https://github.com/googleapis/google-cloud-go/issues/6818)) ([3dae4a4](https://github.com/googleapis/google-cloud-go/commit/3dae4a48e348892496169014be1f6653a08cbb91))
+* **internal/godocfx:** Use default html rendering ([#6802](https://github.com/googleapis/google-cloud-go/issues/6802)) ([ec2ad2f](https://github.com/googleapis/google-cloud-go/commit/ec2ad2f13344ac0ad4b62496223a6403c2f91df6))
+
 ## [0.104.0](https://github.com/googleapis/google-cloud-go/compare/v0.103.0...v0.104.0) (2022-08-24)
 
 
