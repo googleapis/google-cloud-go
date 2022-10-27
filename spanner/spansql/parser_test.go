@@ -411,6 +411,10 @@ func TestParseExpr(t *testing.T) {
 		{`SAFE_CAST(Bar AS INT64)`, Func{Name: "SAFE_CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Int64}}}}},
 		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
 		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
+		{`DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)`, Func{Name: "DATE_ADD", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "DAY"}}}},
+		{`DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 WEEK)`, Func{Name: "DATE_SUB", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "WEEK"}}}},
+		{`TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)`, Func{Name: "TIMESTAMP_ADD", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "HOUR"}}}},
+		{`TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 MINUTE)`, Func{Name: "TIMESTAMP_SUB", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MINUTE"}}}},
 
 		// Conditional expressions
 		{

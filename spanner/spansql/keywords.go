@@ -138,6 +138,12 @@ func init() {
 	funcArgParsers["CAST"] = typedArgParser
 	funcArgParsers["SAFE_CAST"] = typedArgParser
 	funcArgParsers["EXTRACT"] = extractArgParser
+	// Spacial case of INTERVAL arg for DATE_ADD, DATE_SUB
+	funcArgParsers["DATE_ADD"] = dateIntervalArgParser
+	funcArgParsers["DATE_SUB"] = dateIntervalArgParser
+	// Spacial case of INTERVAL arg for TIMESTAMP_ADD, TIMESTAMP_SUB
+	funcArgParsers["TIMESTAMP_ADD"] = timestampIntervalArgParser
+	funcArgParsers["TIMESTAMP_SUB"] = timestampIntervalArgParser
 }
 
 var allFuncs = []string{
