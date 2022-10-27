@@ -81,7 +81,7 @@ func newMockServer(t *testing.T) (_ *mockServer, cleanup func(), _ error) {
 
 	return mock, func() {
 		if len(mock.reqItems) != 0 {
-			t.Errorf("datastore: not all requests sent: %v", mock.reqItems)
+			t.Errorf("datastore: %d requests not received: %v", len(mock.reqItems), mock.reqItems)
 		}
 		srv.Close()
 	}, nil
