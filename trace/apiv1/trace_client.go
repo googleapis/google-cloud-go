@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	tracepb "cloud.google.com/go/trace/apiv1/tracepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -102,9 +102,9 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	ListTraces(context.Context, *cloudtracepb.ListTracesRequest, ...gax.CallOption) *TraceIterator
-	GetTrace(context.Context, *cloudtracepb.GetTraceRequest, ...gax.CallOption) (*cloudtracepb.Trace, error)
-	PatchTraces(context.Context, *cloudtracepb.PatchTracesRequest, ...gax.CallOption) error
+	ListTraces(context.Context, *tracepb.ListTracesRequest, ...gax.CallOption) *TraceIterator
+	GetTrace(context.Context, *tracepb.GetTraceRequest, ...gax.CallOption) (*tracepb.Trace, error)
+	PatchTraces(context.Context, *tracepb.PatchTracesRequest, ...gax.CallOption) error
 }
 
 // Client is a client for interacting with Stackdriver Trace API.
@@ -147,12 +147,12 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // ListTraces returns of a list of traces that match the specified filter conditions.
-func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
+func (c *Client) ListTraces(ctx context.Context, req *tracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
 	return c.internalClient.ListTraces(ctx, req, opts...)
 }
 
 // GetTrace gets a single trace by its ID.
-func (c *Client) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceRequest, opts ...gax.CallOption) (*cloudtracepb.Trace, error) {
+func (c *Client) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest, opts ...gax.CallOption) (*tracepb.Trace, error) {
 	return c.internalClient.GetTrace(ctx, req, opts...)
 }
 
@@ -161,7 +161,7 @@ func (c *Client) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceRequest
 // in the existing trace and its spans are overwritten by the provided values,
 // and any new fields provided are merged with the existing trace data. If the
 // ID does not match, a new trace is created.
-func (c *Client) PatchTraces(ctx context.Context, req *cloudtracepb.PatchTracesRequest, opts ...gax.CallOption) error {
+func (c *Client) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.PatchTraces(ctx, req, opts...)
 }
 
@@ -179,7 +179,7 @@ type gRPCClient struct {
 	CallOptions **CallOptions
 
 	// The gRPC API client.
-	client cloudtracepb.TraceServiceClient
+	client tracepb.TraceServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -217,7 +217,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		client:           cloudtracepb.NewTraceServiceClient(connPool),
+		client:           tracepb.NewTraceServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -250,15 +250,15 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *gRPCClient) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
+func (c *gRPCClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTraces[0:len((*c.CallOptions).ListTraces):len((*c.CallOptions).ListTraces)], opts...)
 	it := &TraceIterator{}
-	req = proto.Clone(req).(*cloudtracepb.ListTracesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtracepb.Trace, string, error) {
-		resp := &cloudtracepb.ListTracesResponse{}
+	req = proto.Clone(req).(*tracepb.ListTracesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*tracepb.Trace, string, error) {
+		resp := &tracepb.ListTracesResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -295,7 +295,7 @@ func (c *gRPCClient) ListTraces(ctx context.Context, req *cloudtracepb.ListTrace
 	return it
 }
 
-func (c *gRPCClient) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceRequest, opts ...gax.CallOption) (*cloudtracepb.Trace, error) {
+func (c *gRPCClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest, opts ...gax.CallOption) (*tracepb.Trace, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -305,7 +305,7 @@ func (c *gRPCClient) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceReq
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTrace[0:len((*c.CallOptions).GetTrace):len((*c.CallOptions).GetTrace)], opts...)
-	var resp *cloudtracepb.Trace
+	var resp *tracepb.Trace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetTrace(ctx, req, settings.GRPC...)
@@ -317,7 +317,7 @@ func (c *gRPCClient) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceReq
 	return resp, nil
 }
 
-func (c *gRPCClient) PatchTraces(ctx context.Context, req *cloudtracepb.PatchTracesRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -335,9 +335,9 @@ func (c *gRPCClient) PatchTraces(ctx context.Context, req *cloudtracepb.PatchTra
 	return err
 }
 
-// TraceIterator manages a stream of *cloudtracepb.Trace.
+// TraceIterator manages a stream of *tracepb.Trace.
 type TraceIterator struct {
-	items    []*cloudtracepb.Trace
+	items    []*tracepb.Trace
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -352,7 +352,7 @@ type TraceIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cloudtracepb.Trace, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*tracepb.Trace, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -362,8 +362,8 @@ func (it *TraceIterator) PageInfo() *iterator.PageInfo {
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TraceIterator) Next() (*cloudtracepb.Trace, error) {
-	var item *cloudtracepb.Trace
+func (it *TraceIterator) Next() (*tracepb.Trace, error) {
+	var item *tracepb.Trace
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}

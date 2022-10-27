@@ -58,7 +58,7 @@
 //
 //	req := &clouddmspb.ListMigrationJobsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/clouddms/v1#ListMigrationJobsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/clouddms/apiv1/clouddmspb#ListMigrationJobsRequest.
 //	}
 //	it := c.ListMigrationJobs(ctx, req)
 //	for {

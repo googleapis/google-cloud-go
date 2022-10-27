@@ -58,7 +58,7 @@
 //
 //	req := &memcachepb.ListInstancesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#ListInstancesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/memcache/apiv1/memcachepb#ListInstancesRequest.
 //	}
 //	it := c.ListInstances(ctx, req)
 //	for {

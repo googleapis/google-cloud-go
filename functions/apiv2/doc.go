@@ -60,7 +60,7 @@
 //
 //	req := &functionspb.GetFunctionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#GetFunctionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#GetFunctionRequest.
 //	}
 //	resp, err := c.GetFunction(ctx, req)
 //	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/iterator"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 func ExampleNewUptimeCheckClient() {
@@ -56,7 +56,7 @@ func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
 
 	req := &monitoringpb.ListUptimeCheckConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListUptimeCheckConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListUptimeCheckConfigsRequest.
 	}
 	it := c.ListUptimeCheckConfigs(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleUptimeCheckClient_GetUptimeCheckConfig() {
 
 	req := &monitoringpb.GetUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetUptimeCheckConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetUptimeCheckConfigRequest.
 	}
 	resp, err := c.GetUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
 
 	req := &monitoringpb.CreateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateUptimeCheckConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateUptimeCheckConfigRequest.
 	}
 	resp, err := c.CreateUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleUptimeCheckClient_UpdateUptimeCheckConfig() {
 
 	req := &monitoringpb.UpdateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateUptimeCheckConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateUptimeCheckConfigRequest.
 	}
 	resp, err := c.UpdateUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleUptimeCheckClient_DeleteUptimeCheckConfig() {
 
 	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteUptimeCheckConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteUptimeCheckConfigRequest.
 	}
 	err = c.DeleteUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleUptimeCheckClient_ListUptimeCheckIps() {
 
 	req := &monitoringpb.ListUptimeCheckIpsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListUptimeCheckIpsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListUptimeCheckIpsRequest.
 	}
 	it := c.ListUptimeCheckIps(ctx, req)
 	for {

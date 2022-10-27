@@ -20,8 +20,8 @@ import (
 	"context"
 
 	channel "cloud.google.com/go/channel/apiv1"
+	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"google.golang.org/api/iterator"
-	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleCloudChannelReportsClient_RunReportJob() {
 
 	req := &channelpb.RunReportJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#RunReportJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#RunReportJobRequest.
 	}
 	op, err := c.RunReportJob(ctx, req)
 	if err != nil {
@@ -87,7 +87,7 @@ func ExampleCloudChannelReportsClient_FetchReportResults() {
 
 	req := &channelpb.FetchReportResultsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#FetchReportResultsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#FetchReportResultsRequest.
 	}
 	it := c.FetchReportResults(ctx, req)
 	for {
@@ -118,7 +118,7 @@ func ExampleCloudChannelReportsClient_ListReports() {
 
 	req := &channelpb.ListReportsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListReportsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#ListReportsRequest.
 	}
 	it := c.ListReports(ctx, req)
 	for {

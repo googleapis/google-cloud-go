@@ -20,7 +20,7 @@ import (
 	"context"
 
 	talent "cloud.google.com/go/talent/apiv4"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
+	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -56,7 +56,7 @@ func ExampleEventClient_CreateClientEvent() {
 
 	req := &talentpb.CreateClientEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CreateClientEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#CreateClientEventRequest.
 	}
 	resp, err := c.CreateClientEvent(ctx, req)
 	if err != nil {

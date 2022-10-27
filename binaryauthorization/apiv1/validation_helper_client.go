@@ -22,11 +22,11 @@ import (
 	"math"
 	"net/url"
 
+	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

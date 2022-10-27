@@ -20,8 +20,8 @@ import (
 	"context"
 
 	billing "cloud.google.com/go/billing/apiv1"
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	"google.golang.org/api/iterator"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -57,7 +57,7 @@ func ExampleCloudBillingClient_GetBillingAccount() {
 
 	req := &billingpb.GetBillingAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#GetBillingAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetBillingAccountRequest.
 	}
 	resp, err := c.GetBillingAccount(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleCloudBillingClient_ListBillingAccounts() {
 
 	req := &billingpb.ListBillingAccountsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListBillingAccountsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListBillingAccountsRequest.
 	}
 	it := c.ListBillingAccounts(ctx, req)
 	for {
@@ -113,7 +113,7 @@ func ExampleCloudBillingClient_UpdateBillingAccount() {
 
 	req := &billingpb.UpdateBillingAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#UpdateBillingAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#UpdateBillingAccountRequest.
 	}
 	resp, err := c.UpdateBillingAccount(ctx, req)
 	if err != nil {
@@ -138,7 +138,7 @@ func ExampleCloudBillingClient_CreateBillingAccount() {
 
 	req := &billingpb.CreateBillingAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#CreateBillingAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#CreateBillingAccountRequest.
 	}
 	resp, err := c.CreateBillingAccount(ctx, req)
 	if err != nil {
@@ -163,7 +163,7 @@ func ExampleCloudBillingClient_ListProjectBillingInfo() {
 
 	req := &billingpb.ListProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListProjectBillingInfoRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListProjectBillingInfoRequest.
 	}
 	it := c.ListProjectBillingInfo(ctx, req)
 	for {
@@ -194,7 +194,7 @@ func ExampleCloudBillingClient_GetProjectBillingInfo() {
 
 	req := &billingpb.GetProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#GetProjectBillingInfoRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetProjectBillingInfoRequest.
 	}
 	resp, err := c.GetProjectBillingInfo(ctx, req)
 	if err != nil {
@@ -219,7 +219,7 @@ func ExampleCloudBillingClient_UpdateProjectBillingInfo() {
 
 	req := &billingpb.UpdateProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#UpdateProjectBillingInfoRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#UpdateProjectBillingInfoRequest.
 	}
 	resp, err := c.UpdateProjectBillingInfo(ctx, req)
 	if err != nil {

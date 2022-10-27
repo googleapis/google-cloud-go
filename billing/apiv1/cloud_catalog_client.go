@@ -22,12 +22,12 @@ import (
 	"math"
 	"net/url"
 
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
