@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+// This file, and the {{.RootMod}} import, won't actually become part of
+// the resultant binary.
+//go:build modhack
+// +build modhack
 
-// Version is the current tagged release of the library.
-const Version = "0.2.1"
+package longrunning
+
+// Necessary for safely adding multi-module repo. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository
+import _ "cloud.google.com/go"
