@@ -22,6 +22,7 @@ import (
 	"context"
 
 	contactcenterinsights "cloud.google.com/go/contactcenterinsights/apiv1"
+
 	contactcenterinsightspb "google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1"
 )
 

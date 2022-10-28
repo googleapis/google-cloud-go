@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.7.0...assuredworkloads/v1.8.0) (2022-10-25)
+
+
+### Features
+
+* **assuredworkloads:** add new field for exception audit log link feat: add support of new compliance regime for regions and new partner T systems docs: fix some typos in documentation ([8b203b8](https://github.com/googleapis/google-cloud-go/commit/8b203b8aea4dada5c0846a515b14414cd8c58f78))
+* **assuredworkloads:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.6.0...assuredworkloads/v1.7.0) (2022-10-14)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.5.0...oslogin/v1.6.0) (2022-10-25)
+
+
+### Features
+
+* **oslogin:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.4.0...oslogin/v1.5.0) (2022-09-21)
 
 

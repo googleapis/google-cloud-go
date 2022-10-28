@@ -22,6 +22,7 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1"
+
 	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
 )
 

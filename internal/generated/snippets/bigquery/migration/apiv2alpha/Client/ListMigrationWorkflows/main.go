@@ -23,6 +23,7 @@ import (
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2alpha"
 	"google.golang.org/api/iterator"
+
 	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha"
 )
 

@@ -692,170 +692,168 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(bkt)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
 
-	// Insert an object with custom ACL.
-	o := bkt.Object("uniformBucketLevelAccess")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Insert an object with custom ACL.
+		o := bkt.Object("uniformBucketLevelAccess")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		aclEntity := ACLEntity("user-test@example.com")
+		err := a.Set(ctx, aclEntity, RoleReader)
+		if err != nil {
+			t.Fatalf("set ACL failed: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	aclEntity := ACLEntity("user-test@example.com")
-	err := a.Set(ctx, aclEntity, RoleReader)
-	if err != nil {
-		t.Fatalf("set ACL failed: %v", err)
-	}
 
-	// Enable UniformBucketLevelAccess.
-	ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
-	attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-	if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
-		t.Fatal("got a zero time value, want a populated value")
-	}
+		// Enable UniformBucketLevelAccess.
+		ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
+		attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
+		if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
+			t.Fatal("got a zero time value, want a populated value")
+		}
 
-	// Confirm BucketAccessControl returns error.
-	// We retry on nil to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
-	_, err = b.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected bucket ACL list to fail")
-	}
+		// Confirm BucketAccessControl returns error.
+		// We retry on nil to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
+		_, err = b.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
 
-	// Confirm ObjectAccessControl returns error.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected object ACL list to fail")
-	}
+		// Confirm ObjectAccessControl returns error.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected object ACL list to fail")
+		}
 
-	// Disable UniformBucketLevelAccess.
-	ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
-	attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
+		// Disable UniformBucketLevelAccess.
+		ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
 
-	// Check that the object ACL is the same.
-	// We retry on 400 to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-	acl, err := retryObj.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.List: object ACL list failed: %v", err)
-	}
+		// Check that the object ACL is the same.
+		// We retry on 400 to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+		acl, err := retryObj.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
 
-	if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-		t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
-	}
+		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+		}
+	})
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	// Create a bucket with PublicAccessPrevention enforced.
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
-	defer h.mustDeleteBucket(bkt)
+		// Create a bucket with PublicAccessPrevention enforced.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
+		defer h.mustDeleteBucket(bkt)
 
-	// Making bucket public should fail.
-	policy, err := bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
-	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
-		t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
-	}
-
-	// Making object public via ACL should fail.
-	o := bkt.Object("publicAccessPrevention")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Making bucket public should fail.
+		policy, err := bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
-		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
-	}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
+			t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
+		}
 
-	// Update PAP setting to inherited should work and not affect UBLA setting.
-	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
-	if err != nil {
-		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
-	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
-		t.Error("updating PublicAccessPrevention changed UBLA setting")
-	}
+		// Making object public via ACL should fail.
+		o := bkt.Object("publicAccessPrevention")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
+			t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
+		}
 
-	// Now, making object public or making bucket public should succeed. Run with
-	// retry because ACL settings may take time to propagate.
-	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || ShouldRetry(err)
-	}
+		// Update PAP setting to inherited should work and not affect UBLA setting.
+		attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
+		if err != nil {
+			t.Fatalf("updating PublicAccessPrevention failed: %v", err)
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
+		if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
+			t.Error("updating PublicAccessPrevention changed UBLA setting")
+		}
 
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		// Now, making object public or making bucket public should succeed. Run with
+		// retry because ACL settings may take time to propagate.
+		idempotentOrNilRetry := func(err error) bool {
+			return err == nil || ShouldRetry(err)
+		}
 
-	a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
-	a.Set(ctxWithTimeout, AllUsers, RoleReader)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.Set: making object public failed: %v", err)
-	}
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
 
-	policy, err = bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
+		a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
+		err = a.Set(ctxWithTimeout, AllUsers, RoleReader)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.Set: making object public failed: %v", err)
+		}
+
+		policy, err = bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
+		}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
+			t.Errorf("SetPolicy: making bucket public failed: %v", err)
+		}
+
+		// Updating UBLA should not affect PAP setting.
+		attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
+		if err != nil {
+			t.Fatalf("updating UBLA failed: %v", err)
+		}
+		if !attrs.UniformBucketLevelAccess.Enabled {
+			t.Error("updating UBLA: got UBLA not enabled, want enabled")
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
 	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
-		t.Errorf("SetPolicy: making bucket public failed: %v", err)
-	}
-
-	// Updating UBLA should not affect PAP setting.
-	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
-	if err != nil {
-		t.Fatalf("updating UBLA failed: %v", err)
-	}
-	if !attrs.UniformBucketLevelAccess.Enabled {
-		t.Error("updating UBLA: got UBLA not enabled, want enabled")
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
@@ -2156,47 +2154,47 @@ func TestIntegration_ValidObjectNames(t *testing.T) {
 }
 
 func TestIntegration_WriterContentType(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	obj := client.Bucket(bucketName).Object("content")
-	testCases := []struct {
-		content           string
-		setType, wantType string
-	}{
-		{
-			content:  "It was the best of times, it was the worst of times.",
-			wantType: "text/plain; charset=utf-8",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			wantType: "text/html; charset=utf-8",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			setType:  "text/html",
-			wantType: "text/html",
-		},
-		{
-			content:  "<html><head><title>My first page</title></head></html>",
-			setType:  "image/jpeg",
-			wantType: "image/jpeg",
-		},
-	}
-	for i, tt := range testCases {
-		if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
-			t.Errorf("writing #%d: %v", i, err)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		obj := client.Bucket(bucket).Object("content")
+		testCases := []struct {
+			content           string
+			setType, wantType string
+		}{
+			{
+				// Sniffed content type.
+				content:  "It was the best of times, it was the worst of times.",
+				wantType: "text/plain; charset=utf-8",
+			},
+			{
+				// Sniffed content type.
+				content:  "<html><head><title>My first page</title></head></html>",
+				wantType: "text/html; charset=utf-8",
+			},
+			{
+				content:  "<html><head><title>My first page</title></head></html>",
+				setType:  "text/html",
+				wantType: "text/html",
+			},
+			{
+				content:  "<html><head><title>My first page</title></head></html>",
+				setType:  "image/jpeg",
+				wantType: "image/jpeg",
+			},
 		}
-		attrs, err := obj.Attrs(ctx)
-		if err != nil {
-			t.Errorf("obj.Attrs: %v", err)
-			continue
+		for i, tt := range testCases {
+			if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
+				t.Errorf("writing #%d: %v", i, err)
+			}
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				t.Errorf("obj.Attrs: %v", err)
+				continue
+			}
+			if got := attrs.ContentType; got != tt.wantType {
+				t.Errorf("Content-Type = %q; want %q\nContent: %q\nSet Content-Type: %q", got, tt.wantType, tt.content, tt.setType)
+			}
 		}
-		if got := attrs.ContentType; got != tt.wantType {
-			t.Errorf("Content-Type = %q; want %q\nContent: %q\nSet Content-Type: %q", got, tt.wantType, tt.content, tt.setType)
-		}
-	}
+	})
 }
 
 func TestIntegration_ZeroSizedObject(t *testing.T) {
@@ -3793,109 +3791,111 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 }
 
 func TestIntegration_ServiceAccount(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	s, err := client.ServiceAccount(ctx, testutil.ProjID())
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := "@gs-project-accounts.iam.gserviceaccount.com"
-	if !strings.Contains(s, want) {
-		t.Fatalf("got %v, want to contain %v", s, want)
-	}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
+		s, err := client.ServiceAccount(ctx, testutil.ProjID())
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := "@gs-project-accounts.iam.gserviceaccount.com"
+		if !strings.Contains(s, want) {
+			t.Fatalf("got %v, want to contain %v", s, want)
+		}
+	})
 }
 
 func TestIntegration_ReaderAttrs(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	const defaultType = "text/plain"
-	obj := "some-object"
-	c := randomContents()
-	if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
-		t.Errorf("Write for %v failed with %v", obj, err)
-	}
-	oh := bkt.Object(obj)
+		const defaultType = "text/plain"
+		o := bkt.Object("reader-attrs-obj")
+		c := randomContents()
+		if err := writeObject(ctx, o, defaultType, c); err != nil {
+			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
 
-	rc, err := oh.NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+		rc, err := o.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	attrs, err := oh.Attrs(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+		attrs, err := o.Attrs(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	got := rc.Attrs
-	want := ReaderObjectAttrs{
-		Size:            attrs.Size,
-		ContentType:     attrs.ContentType,
-		ContentEncoding: attrs.ContentEncoding,
-		CacheControl:    attrs.CacheControl,
-		LastModified:    got.LastModified, // ignored, tested separately
-		Generation:      attrs.Generation,
-		Metageneration:  attrs.Metageneration,
-	}
-	if got != want {
-		t.Fatalf("got %v, wanted %v", got, want)
-	}
+		got := rc.Attrs
+		want := ReaderObjectAttrs{
+			Size:            attrs.Size,
+			ContentType:     attrs.ContentType,
+			ContentEncoding: attrs.ContentEncoding,
+			CacheControl:    attrs.CacheControl,
+			LastModified:    got.LastModified, // ignored, tested separately
+			Generation:      attrs.Generation,
+			Metageneration:  attrs.Metageneration,
+		}
+		if got != want {
+			t.Fatalf("got %v, wanted %v", got, want)
+		}
 
-	if got.LastModified.IsZero() {
-		t.Fatal("LastModified is 0, should be >0")
-	}
+		if got.LastModified.IsZero() {
+			t.Fatal("LastModified is 0, should be >0")
+		}
+	})
 }
 
 // Test that context cancellation correctly stops a download before completion.
 func TestIntegration_ReaderCancel(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("reader-cancel-obj")
 
-	bkt := client.Bucket(bucketName)
+		minObjectSize := 2500000 // 2.5 Mb
 
-	// Upload a 1MB object.
-	obj := bkt.Object("reader-cancel-obj")
-	w := obj.NewWriter(ctx)
-	c := randomContents()
-	for i := 0; i < 62500; i++ {
-		if _, err := w.Write(c); err != nil {
-			t.Fatalf("writer.Write: %v", err)
-		}
-
-	}
-	w.Close()
-
-	// Create a reader (which makes a GET request to GCS and opens the body to
-	// read the object) and then cancel the context before reading.
-	readerCtx, cancel := context.WithCancel(ctx)
-	r, err := obj.NewReader(readerCtx)
-	if err != nil {
-		t.Fatalf("obj.NewReader: %v", err)
-	}
-	defer r.Close()
-
-	cancel()
-
-	// Read the object 1KB a time. We cannot guarantee that Reads will return a
-	// context canceled error immediately, but they should always do so before we
-	// reach EOF.
-	var readErr error
-	for i := 0; i < 1000; i++ {
-		buf := make([]byte, 1000)
-		_, readErr = r.Read(buf)
-		if readErr != nil {
-			if errors.Is(readErr, context.Canceled) {
-				return
+		w := obj.NewWriter(ctx)
+		c := randomContents()
+		for written := 0; written < minObjectSize; {
+			n, err := w.Write(c)
+			if err != nil {
+				t.Fatalf("w.Write: %v", err)
 			}
-			break
+			written += n
 		}
-	}
-	t.Fatalf("Reader.Read: got %v, want context.Canceled", readErr)
+
+		if err := w.Close(); err != nil {
+			t.Fatalf("writer close: %v", err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+
+		// Create a reader (which makes a GET request to GCS and opens the body to
+		// read the object) and then cancel the context before reading.
+		readerCtx, cancel := context.WithCancel(ctx)
+		r, err := obj.NewReader(readerCtx)
+		if err != nil {
+			t.Fatalf("obj.NewReader: %v", err)
+		}
+		defer func() {
+			if err := r.Close(); err != nil {
+				log.Printf("r.Close(): %v", err)
+			}
+		}()
+
+		cancel()
+
+		_, err = io.Copy(io.Discard, r)
+		if err == nil || !errors.Is(err, context.Canceled) && !(status.Code(err) == codes.Canceled) {
+			t.Fatalf("r.Read: got error %v, want context.Canceled", err)
+		}
+	})
 }
 
 // Ensures that a file stored with a:
@@ -4150,34 +4150,77 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 
 // Verify that custom scopes passed in by the user are applied correctly.
 func TestIntegration_Scopes(t *testing.T) {
-	// A default client should be able to write objects since it has scope of
-	// FullControl
-	ctx := context.Background()
-	clientFullControl := testConfig(ctx, t)
-	defer clientFullControl.Close()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("test-scopes")
+		contents := []byte("This object should not be written.\n")
 
-	bkt := clientFullControl.Bucket(bucketName)
-	obj := "FakeObj1"
-	contents := []byte("This object should be written successfully\n")
-	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
-		t.Fatalf("writing: %v", err)
-	}
+		// A client with ReadOnly scope should be able to read bucket successfully.
+		if _, err := bkt.Attrs(ctx); err != nil {
+			t.Errorf("client with ScopeReadOnly was not able to read attrs: %v", err)
+		}
 
-	// A client with ReadOnly scope should not be able to write successfully.
-	clientReadOnly, err := NewClient(ctx, option.WithScopes(ScopeReadOnly))
-	defer clientReadOnly.Close()
-	if err != nil {
-		t.Fatalf("error creating client: %v", err)
-	}
+		// Should not be able to write successfully.
+		if err := writeObject(ctx, obj, "text/plain", contents); err == nil {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("obj.Delete: %v", err)
+			}
+			t.Error("client with ScopeReadOnly was able to write an object unexpectedly.")
+		}
 
-	bkt = clientReadOnly.Bucket(bucketName)
-	obj = "FakeObj2"
-	contents = []byte("This object should not be written.\n")
+		// Should not be able to change permissions.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{ACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}}}); err == nil {
+			t.Error("client with ScopeReadWrite was able to change unexpectedly.")
+		}
+	}, option.WithScopes(ScopeReadOnly))
 
-	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err == nil {
-		t.Fatal("client with ScopeReadOnly was able to write an object unexpectedly.")
-	}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("test-scopes")
+		contents := []byte("This object should be written.\n")
 
+		// A client with ReadWrite scope should be able to read bucket successfully.
+		if _, err := bkt.Attrs(ctx); err != nil {
+			t.Errorf("client with ScopeReadOnly was not able to read attrs: %v", err)
+		}
+
+		// Should be able to write to an object.
+		if err := writeObject(ctx, obj, "text/plain", contents); err != nil {
+			t.Errorf("client with ScopeReadWrite was not able to write: %v", err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("obj.Delete: %v", err)
+			}
+		}()
+
+		// Should not be able to change permissions.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{ACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}}}); err == nil {
+			t.Error("client with ScopeReadWrite was able to change permissions unexpectedly")
+		}
+	}, option.WithScopes(ScopeReadWrite))
+
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("test-scopes")
+		contents := []byte("This object should be written.\n")
+
+		// A client without any scopes should not be able to perform ops.
+		if _, err := bkt.Attrs(ctx); err == nil {
+			t.Errorf("client with no scopes was able to read attrs unexpectedly")
+		}
+
+		if err := writeObject(ctx, obj, "text/plain", contents); err == nil {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("obj.Delete: %v", err)
+			}
+			t.Error("client with no scopes was able to write an object unexpectedly.")
+		}
+
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{ACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}}}); err == nil {
+			t.Error("client with no scopes was able to change permissions unexpectedly")
+		}
+	}, option.WithScopes(""))
 }
 
 func TestIntegration_SignedURL_Bucket(t *testing.T) {

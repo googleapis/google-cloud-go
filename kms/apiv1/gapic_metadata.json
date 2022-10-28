@@ -25,9 +25,19 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "ListEkmConnections": {
               "methods": [
                 "ListEkmConnections"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "SetIamPolicy": {
@@ -129,6 +139,11 @@
                 "GetKeyRing"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetPublicKey": {
               "methods": [
                 "GetPublicKey"
@@ -157,6 +172,11 @@
             "ListKeyRings": {
               "methods": [
                 "ListKeyRings"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "MacSign": {

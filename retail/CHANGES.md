@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.9.0...retail/v1.10.0) (2022-10-25)
+
+
+### Features
+
+* **retail:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.8.0...retail/v1.9.0) (2022-09-21)
 
 
