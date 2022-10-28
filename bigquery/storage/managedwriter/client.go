@@ -94,9 +94,7 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 // createOpenF builds the opener function we need to access the AppendRows bidi stream.
 func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-		arc, err := streamFunc(
-			// Previously, we needed to add metadata routing headers here, but this is no longer necessary.
-			ctx, opts...)
+		arc, err := streamFunc(ctx, opts...)
 		if err != nil {
 			return nil, err
 		}
