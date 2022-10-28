@@ -2048,14 +2048,12 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		{col: "ProtoMessage", val: &singerProtoMessage, want: NullProto{&singerProtoMessage, true}},
 		{col: "ProtoMessage", val: NullProto{&singerProtoMessage, true}, want: singerProtoMessage},
 		{col: "ProtoMessage", val: NullProto{&singerProtoMessage, true}, want: NullProto{&singerProtoMessage, true}},
-		{col: "ProtoMessage", val: NullProto{&singerProtoMessage, false}, want: NullProto{}},
 		{col: "ProtoMessage", val: nil, want: NullProto{}},
 		// Proto Enum
 		{col: "ProtoEnum", val: pb.Genre_ROCK, want: singerProtoEnum},
 		{col: "ProtoEnum", val: pb.Genre_ROCK, want: NullEnum{&singerProtoEnum, true}},
 		{col: "ProtoEnum", val: NullEnum{pb.Genre_ROCK, true}, want: singerProtoEnum},
 		{col: "ProtoEnum", val: NullEnum{pb.Genre_ROCK, true}, want: NullEnum{&singerProtoEnum, true}},
-		{col: "ProtoEnum", val: NullEnum{pb.Genre_ROCK, false}, want: NullEnum{}},
 		{col: "ProtoEnum", val: nil, want: NullEnum{}},
 		// Test Compatibility between Int64 and ProtoEnum
 		{col: "Int64a", val: pb.Genre_ROCK, want: int64(3)},
@@ -2080,23 +2078,19 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		{col: "Int64a", val: NullEnum{pb.Genre_ROCK, true}, want: NullEnum{&singerProtoEnum, true}},
 		{col: "Int64a", val: NullInt64{3, true}, want: NullEnum{&singerProtoEnum, true}},
 		{col: "Int64a", val: NullInt64{3, false}, want: NullEnum{}},
-		{col: "Int64a", val: NullEnum{}, want: NullInt64{}},
 		{col: "ProtoEnum", val: NullInt64{3, true}, want: singerProtoEnum},
 		{col: "ProtoEnum", val: NullInt64{3, true}, want: NullEnum{&singerProtoEnum, true}},
 		{col: "ProtoEnum", val: NullInt64{3, true}, want: NullInt64{3, true}},
 		{col: "ProtoEnum", val: NullEnum{pb.Genre_ROCK, true}, want: NullInt64{3, true}},
-		{col: "ProtoEnum", val: NullEnum{pb.Genre_ROCK, false}, want: NullInt64{}},
 		// Test Compatibility between Bytes and NullProto
 		{col: "Bytes", val: NullProto{&singerProtoMessage, true}, want: bytesSingerProtoMessage},
 		{col: "Bytes", val: NullProto{&singerProtoMessage, true}, want: NullProto{&singerProtoMessage, true}},
 		{col: "Bytes", val: bytesSingerProtoMessage, want: NullProto{&singerProtoMessage, true}},
 		{col: "Bytes", val: bytesSingerProtoMessage},
-		{col: "Bytes", val: NullProto{}, want: []byte(nil)},
 		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: NullProto{&singerProtoMessage, true}},
 		{col: "ProtoMessage", val: []byte(nil), want: NullProto{}},
 		{col: "ProtoMessage", val: NullProto{&singerProtoMessage, true}, want: bytesSingerProtoMessage},
 		{col: "ProtoMessage", val: NullProto{&singerProtoMessage, true}, want: NullProto{&singerProtoMessage, true}},
-		{col: "ProtoMessage", val: NullProto{&singerProtoMessage, false}, want: []byte(nil)},
 	}
 
 	// Write rows into table first using DML.

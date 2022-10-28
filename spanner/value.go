@@ -1034,9 +1034,9 @@ func errNilArrElemType(t *sppb.Type) error {
 	return spannerErrorf(codes.FailedPrecondition, "array type %v is with nil array element type", t)
 }
 
-// errNilSrcPtr returns error for a custom nil type input.
-func errNilSrcPtr(dst interface{}) error {
-	return spannerErrorf(codes.InvalidArgument, "cannot use nil type %T", dst)
+// errNotValidSrc returns error is valid field is false
+func errNotValidSrc(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "cannot have valid field as false in %T", dst)
 }
 
 func errUnsupportedEmbeddedStructFields(fname string) error {
@@ -3764,40 +3764,42 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
 	case protoreflect.Enum:
-		var protoEnumfqn string
 		if v != nil {
+			var protoEnumfqn string
 			rv := reflect.ValueOf(v)
 			if rv.Kind() != reflect.Ptr || !rv.IsNil() {
 				pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
 				protoEnumfqn = string(v.Descriptor().FullName())
 			} else {
-				return nil, nil, errNilSrcPtr(v)
+				defaultType := reflect.Zero(rv.Type().Elem()).Interface().(protoreflect.Enum)
+				protoEnumfqn = string(defaultType.Descriptor().FullName())
 			}
+			pt = protoEnumType(protoEnumfqn)
 		}
-		pt = protoEnumType(protoEnumfqn)
 	case NullEnum:
 		if v.Valid {
 			return encodeValue(v.EnumVal)
-		}
-		pt = protoEnumType("")
-	case proto.Message:
-		var protoMessagefqn string
-		if v != nil && proto.MessageReflect(v).IsValid() {
-			bytes, err := proto.Marshal(v)
-			if err != nil {
-				return nil, nil, err
-			}
-			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
-			protoMessagefqn = string(proto.MessageReflect(v).Descriptor().FullName())
 		} else {
-			return nil, nil, errNilSrcPtr(v)
+			return nil, nil, errNotValidSrc(v)
 		}
-		pt = protoMessageType(protoMessagefqn)
+	case proto.Message:
+		if v != nil {
+			if proto.MessageReflect(v).IsValid() {
+				bytes, err := proto.Marshal(v)
+				if err != nil {
+					return nil, nil, err
+				}
+				pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
+			}
+			protoMessagefqn := string(proto.MessageReflect(v).Descriptor().FullName())
+			pt = protoMessageType(protoMessagefqn)
+		}
 	case NullProto:
 		if v.Valid {
 			return encodeValue(v.ProtoVal)
+		} else {
+			return nil, nil, errNotValidSrc(v)
 		}
-		pt = protoMessageType("")
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.

@@ -476,10 +476,12 @@ func TestEncodeValue(t *testing.T) {
 		// PROTO MESSAGE AND PROTO ENUM
 		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
 		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
+		{(*pb.SingerInfo)(nil), nullProto(), tProtoMessage, "Proto Message with nil"},
+		{(*pb.Genre)(nil), nullProto(), tProtoEnum, "Proto Enum with nil"},
 		{NullProto{singer1ProtoMsg, true}, protoMessageProto(singer1ProtoMsg), tProtoMessage, "NullProto with value"},
-		{NullProto{}, nullProto(), protoMessageType(""), "NullProto with null"},
 		{NullEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
-		{NullEnum{}, nullProto(), protoEnumType(""), "NullEnum with null"},
+		{NullProto{(*pb.SingerInfo)(nil), true}, nullProto(), tProtoMessage, "NullProto with value nil"},
+		{NullEnum{(*pb.Genre)(nil), true}, nullProto(), tProtoEnum, "NullEnum with value nil"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -523,10 +525,8 @@ func TestEncodeInvalidValues(t *testing.T) {
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
 		// PROTO MESSAGE AND PROTO ENUM
-		{desc: "Nil Proto Message", in: (*pb.SingerInfo)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.SingerInfo\""},
-		{desc: "Nil Proto Enum", in: (*pb.Genre)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.Genre\""},
-		{desc: "Nil Proto Message", in: NullProto{(*pb.SingerInfo)(nil), true}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.SingerInfo\""},
-		{desc: "Nil Proto Enum", in: NullEnum{(*pb.Genre)(nil), true}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.Genre\""},
+		{desc: "Invalid Null Proto", in: NullProto{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullProto\""},
+		{desc: "Invalid Null Enum", in: NullEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullEnum\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {
