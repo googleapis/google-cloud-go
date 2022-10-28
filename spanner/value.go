@@ -36,6 +36,7 @@ import (
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
@@ -876,6 +877,112 @@ func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// NullProto represents a Cloud Spanner PROTO that may be NULL.
+type NullProto struct {
+	ProtoVal proto.Message // ProtoVal contains the value when it is non-NULL, and nil when NULL.
+	Valid    bool          // Valid is true if Proto is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for NullProto.
+func (n NullProto) IsNull() bool {
+	return !n.Valid
+}
+
+// TODO: Recheck string method, when printing it is giving bytes because we are converting bytes to string
+// TODO: Instead can we do it as n.ProtoVal.String()
+// String implements Stringer.String for NullProto.
+func (n NullProto) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	return n.ProtoVal.String()
+
+	// TODO: NullJSON uses the below marshal method to print string. Thats why confused. But if we print string with below code it gives some wierd byte characters.
+	/*b, err := proto.Marshal(n.ProtoVal)
+	if err != nil {
+		return fmt.Sprintf("error: %v", err)
+	}
+	return fmt.Sprintf("%v", string(b))*/
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullProto.
+func (n NullProto) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return proto.Marshal(n.ProtoVal)
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProto.
+func (n *NullProto) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		// We can reset ProtoVal, however we need to check for nil. Instead it is fine to just set valid to false, as most methods above do the same.
+		// So removed it from main code
+		if n.ProtoVal != nil {
+			n.ProtoVal.Reset()
+		}
+		n.Valid = false
+		return nil
+	}
+	err := proto.Unmarshal(payload, n.ProtoVal)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to a proto message: got %v, err: %s", string(payload), err)
+	}
+	n.Valid = true
+	return nil
+}
+
+// NullEnum represents a Cloud Spanner ENUM that may be NULL.
+type NullEnum struct {
+	EnumVal protoreflect.Enum // EnumVal contains the value when it is non-NULL, and nil when NULL.
+	Valid   bool              // Valid is true if Enum is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for NullEnum.
+func (n NullEnum) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for NullEnum.
+func (n NullEnum) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	return fmt.Sprintf("%v", n.EnumVal)
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullEnum.
+func (n NullEnum) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return []byte(fmt.Sprintf("%v", n.EnumVal)), nil
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullEnum.
+func (n *NullEnum) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		// TODO: Do we need to set 0 or not set anything?
+		reflect.ValueOf(n.EnumVal).Elem().SetInt(0) // set 0 as default value to Enum
+		n.Valid = false
+		return nil
+	}
+
+	num, err := strconv.ParseInt(string(payload), 10, 64)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to Enum: got %v", string(payload))
+	}
+	reflect.ValueOf(n.EnumVal).Elem().SetInt(num)
+	n.Valid = true
+	return nil
+}
+
 // NullRow represents a Cloud Spanner STRUCT that may be NULL.
 // See also the document for Row.
 // Note that NullRow is not a valid Cloud Spanner column Type.
@@ -943,6 +1050,16 @@ func errNilArrElemType(t *sppb.Type) error {
 	return spannerErrorf(codes.FailedPrecondition, "array type %v is with nil array element type", t)
 }
 
+// errEmptyArrElem returns error when the input proto message or proto enum array is empty
+func errEmptyArrElem(name string, dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "array type %T is empty. Need one default instance of %s inside %T to decode", dst, name, dst)
+}
+
+// errNilArrElem returns error when the values in input array is nil
+func errNilArrElem(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "cannot have nil values inside %T.", dst)
+}
+
 func errUnsupportedEmbeddedStructFields(fname string) error {
 	return spannerErrorf(codes.InvalidArgument, "Embedded field: %s. Embedded and anonymous fields are not allowed "+
 		"when converting Go structs to Cloud Spanner STRUCT values. To create a STRUCT value with an "+
@@ -958,6 +1075,10 @@ func errDstNotForNull(dst interface{}) error {
 // errBadEncoding returns error for decoding wrongly encoded types.
 func errBadEncoding(v *proto3.Value, err error) error {
 	return spannerErrorf(codes.FailedPrecondition, "%v wasn't correctly encoded: <%v>", v, err)
+}
+
+func errNotAPointer(dst interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "destination %T must be a pointer", dst)
 }
 
 func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
@@ -1844,6 +1965,206 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		*p = y
 	case *GenericColumnValue:
 		*p = GenericColumnValue{Type: t, Value: v}
+	case protoreflect.Enum:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_ENUM {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := strconv.ParseInt(x, 10, 64)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		if reflect.ValueOf(p).Kind() != reflect.Ptr {
+			return errNotAPointer(p)
+		}
+		reflect.ValueOf(p).Elem().SetInt(y)
+	case *[]protoreflect.Enum:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_ENUM {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+
+		var enumArray = *p
+		if len(enumArray) == 0 {
+			return errEmptyArrElem("proto enum", p)
+		}
+		var enumDefaultInstance = enumArray[0]
+		if enumDefaultInstance == nil {
+			return errNilArrElem(p)
+		}
+
+		y, err := decodeProtoEnumArray(x, enumDefaultInstance)
+		if err != nil {
+			return err
+		}
+		*p = y
+	case *protoreflect.Enum:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_ENUM {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := strconv.ParseInt(x, 10, 64)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+
+		rp := *p
+		reflect.ValueOf(rp).Elem().SetInt(y)
+	case proto.Message:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_PROTO {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := base64.StdEncoding.DecodeString(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		proto.Unmarshal(y, p)
+	case *proto.Message:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_PROTO {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := base64.StdEncoding.DecodeString(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+
+		proto.Unmarshal(y, *p)
+	case *[]proto.Message:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_PROTO {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			p = nil
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+
+		var protoMsgArray = *p
+		if len(protoMsgArray) == 0 {
+			return errEmptyArrElem("proto message", p)
+		}
+		var protoMsgDefaultInstance = protoMsgArray[0]
+		if protoMsgDefaultInstance == nil {
+			return errNilArrElem(p)
+		}
+		y, err := decodeProtoMessageArray(x, protoMsgDefaultInstance)
+		if err != nil {
+			return err
+		}
+
+		*p = y
+	case *NullEnum:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_ENUM {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = NullEnum{}
+			break
+		}
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := strconv.ParseInt(x, 10, 64)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+
+		// If it is a pointer, set the int value directly.
+		if reflect.ValueOf(p.EnumVal).Kind() == reflect.Ptr {
+			reflect.ValueOf(p.EnumVal).Elem().SetInt(y)
+		} else {
+			// If it is not a pointer, then create a new pointer reference of specified type.
+			newProtoEnumInstance := reflect.New(reflect.TypeOf(p.EnumVal))
+			newProtoEnumInstance.Elem().SetInt(y)
+			protoEnum := newProtoEnumInstance.Elem().Interface().(protoreflect.Enum)
+
+			p.EnumVal = protoEnum
+		}
+		p.Valid = true
+	case *NullProto:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if reflect.ValueOf(p.ProtoVal).Kind() != reflect.Ptr {
+			return errNotAPointer(p.ProtoVal)
+		}
+		if code != sppb.TypeCode_PROTO {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = NullProto{}
+			break
+		}
+		// Here we can only pass pointer of user defined proto message. As there is no other way, we need not check for it
+		x, err := getStringValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := base64.StdEncoding.DecodeString(x)
+		if err != nil {
+			return errBadEncoding(v, err)
+		}
+		proto.Unmarshal(y, p.ProtoVal)
+		p.Valid = true
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
@@ -2974,6 +3295,43 @@ func decodeDateArray(pb *proto3.ListValue) ([]civil.Date, error) {
 	return a, nil
 }
 
+func decodeProtoEnumArray(pb *proto3.ListValue, defaultInstance protoreflect.Enum) ([]protoreflect.Enum, error) {
+	if pb == nil {
+		return nil, errNilListValue("ENUM")
+	}
+	a := make([]protoreflect.Enum, len(pb.Values))
+	for i, v := range pb.Values {
+		newProtoEnumInstance := reflect.New(reflect.TypeOf(defaultInstance))
+		x, err := getStringValue(v)
+		if err != nil {
+			return nil, err
+		}
+		y, err := strconv.ParseInt(x, 10, 64)
+		if err != nil {
+			return nil, errBadEncoding(v, err)
+		}
+		newProtoEnumInstance.Elem().SetInt(y)
+		protoEnum := newProtoEnumInstance.Elem().Interface().(protoreflect.Enum)
+		a[i] = protoEnum
+	}
+	return a, nil
+}
+
+func decodeProtoMessageArray(pb *proto3.ListValue, defaultInstance proto.Message) ([]proto.Message, error) {
+	if pb == nil {
+		return nil, errNilListValue("PROTO")
+	}
+	a := make([]proto.Message, len(pb.Values))
+	for i, v := range pb.Values {
+		newProtoInstance := proto.Clone(defaultInstance)
+		if err := decodeValue(v, protoType(), &newProtoInstance); err != nil {
+			return nil, errDecodeArrayElement(i, v, "PROTO", err)
+		}
+		a[i] = newProtoInstance
+	}
+	return a, nil
+}
+
 func errNotStructElement(i int, v *proto3.Value) error {
 	return errDecodeArrayElement(i, v, "STRUCT",
 		spannerErrorf(codes.FailedPrecondition, "%v(type: %T) doesn't encode Cloud Spanner STRUCT", v, v))
@@ -3564,6 +3922,46 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = proto.Clone(v.Type).(*sppb.Type)
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
+	case protoreflect.Enum:
+		// TODO: here nil check not needed because a enum variable always has a default value. Recheck
+		// TODO:Use this as reference to check ur code for proto col support: https://source.corp.google.com/piper///depot/google3/spanner/go/value.go;l=343?q=%22case%20proto.Message%22%20case:yes&sq=package:piper%20file:%2F%2Fdepot%2Fgoogle3%20-file:google3%2Fexperimental
+		pb.Kind = stringKind(strconv.FormatInt(int64(v.Number()), 10))
+		pt = enumType()
+	case proto.Message:
+		if v != nil {
+			bytes, err := proto.Marshal(v)
+			if err != nil {
+				return nil, nil, err
+			}
+			pb.Kind = stringKind(base64.StdEncoding.EncodeToString(bytes))
+		}
+		pt = protoType()
+	case []protoreflect.Enum:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(enumType())
+	case []proto.Message:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(protoType())
+	case NullProto:
+		if v.Valid {
+			return encodeValue(v.ProtoVal)
+		}
+		pt = protoType()
+	case NullEnum:
+		if v.Valid {
+			return encodeValue(v.EnumVal)
+		}
+		pt = enumType()
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
@@ -3872,7 +4270,8 @@ func isSupportedMutationType(v interface{}) bool {
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
 		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,
-		GenericColumnValue:
+		GenericColumnValue, proto.Message, protoreflect.Enum, []proto.Message, []protoreflect.Enum,
+		NullProto, NullEnum:
 		return true
 	default:
 		// Check if the custom type implements spanner.Encoder interface.
