@@ -1122,7 +1122,7 @@ func TestErrorOnPrepareSession(t *testing.T) {
 					WriteSessions:       0.5,
 					HealthCheckInterval: time.Millisecond,
 				},
-				logger: logger,
+				Logger: logger,
 			})
 		defer teardown()
 		// Discard logging until trying to prepare sessions has stopped.
@@ -1244,7 +1244,7 @@ func TestSessionNotFoundOnPrepareSession(t *testing.T) {
 				HealthCheckInterval:       time.Millisecond,
 				healthCheckSampleInterval: time.Millisecond,
 			},
-			logger: logger,
+			Logger: logger,
 		})
 	defer teardown()
 	// Discard logging until trying to prepare sessions has stopped.
