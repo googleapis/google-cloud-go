@@ -1267,25 +1267,29 @@ func TestKeyLoaderEndToEnd(t *testing.T) {
 		},
 	}
 
-	fakeClient := &fakeDatastoreClient{
-		lookup: func(*pb.LookupRequest) (*pb.LookupResponse, error) {
-			return &pb.LookupResponse{
-				Found: []*pb.EntityResult{
-					{
-						Entity:  entity1,
-						Version: 1,
-					},
-					{
-						Entity:  entity2,
-						Version: 1,
-					},
-				},
-			}, nil
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId:  "projectID",
+		DatabaseId: "",
+		Keys: []*pb.Key{
+			keyToProto(keys[0]),
+			keyToProto(keys[1]),
 		},
-	}
-	client := &Client{
-		client: fakeClient,
-	}
+	},
+		&pb.LookupResponse{
+			Found: []*pb.EntityResult{
+				{
+					Entity:  entity1,
+					Version: 1,
+				},
+				{
+					Entity:  entity2,
+					Version: 1,
+				},
+			},
+		})
 
 	ctx := context.Background()
 

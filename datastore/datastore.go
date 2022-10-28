@@ -21,6 +21,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
@@ -28,6 +29,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -53,9 +55,10 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	connPool gtransport.ConnPool
-	client   pb.DatastoreClient
-	dataset  string // Called dataset by the datastore API, synonym for project ID.
+	connPool     gtransport.ConnPool
+	client       pb.DatastoreClient
+	dataset      string // Called dataset by the datastore API, synonym for project ID.
+	readSettings *readSettings
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -118,9 +121,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	return &Client{
-		connPool: connPool,
-		client:   newDatastoreClient(connPool, projectID),
-		dataset:  projectID,
+		connPool:     connPool,
+		client:       newDatastoreClient(connPool, projectID),
+		dataset:      projectID,
+		readSettings: &readSettings{},
 	}, nil
 }
 
@@ -348,7 +352,18 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	if dst == nil { // get catches nil interfaces; we need to catch nil ptr here
 		return ErrInvalidEntityType
 	}
-	err = c.get(ctx, []*Key{key}, []interface{}{dst}, nil)
+
+	var opts *pb.ReadOptions
+	if !c.readSettings.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
+			},
+		}
+	}
+
+	err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -371,7 +386,17 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	return c.get(ctx, keys, dst, nil)
+	var opts *pb.ReadOptions
+	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
+			},
+		}
+	}
+
+	return c.get(ctx, keys, dst, opts)
 }
 
 func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
@@ -678,4 +703,36 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 		}
 	}
 	return ret, nil
+}
+
+// ReadTime specifies a snapshot (time) of the database to read.
+func ReadTime(t time.Time) ReadOption {
+	return docReadTime(t)
+}
+
+type docReadTime time.Time
+
+func (drt docReadTime) apply(rs *readSettings) {
+	rs.readTime = time.Time(drt)
+}
+
+// ReadOption provides specific instructions for how to access documents in the database.
+// Currently, only ReadTime is supported.
+type ReadOption interface {
+	apply(*readSettings)
+}
+
+type readSettings struct {
+	readTime time.Time
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+// The client uses this value for subsequent reads, unless additional ReadOptions
+// are provided.
+func (c *Client) WithReadOptions(ro ...ReadOption) *Client {
+	for _, r := range ro {
+		r.apply(c.readSettings)
+	}
+	return c
 }
