@@ -5,6 +5,50 @@
   "protoPackage": "google.cloud.channel.v1",
   "libraryPackage": "cloud.google.com/go/channel/apiv1",
   "services": {
+    "CloudChannelReportsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudChannelReportsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchReportResults": {
+              "methods": [
+                "FetchReportResults"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReports": {
+              "methods": [
+                "ListReports"
+              ]
+            },
+            "RunReportJob": {
+              "methods": [
+                "RunReportJob"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CloudChannelService": {
       "clients": {
         "grpc": {

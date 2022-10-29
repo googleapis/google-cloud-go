@@ -82,8 +82,8 @@ type ManagedStream struct {
 	// aspects of the stream client
 	ctx         context.Context // retained context for the stream
 	cancel      context.CancelFunc
-	callOptions []gax.CallOption                                                                                // options passed when opening an append client
-	open        func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	callOptions []gax.CallOption                                                               // options passed when opening an append client
+	open        func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
@@ -205,15 +205,12 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 	if arc != ms.arc && !forceReconnect {
 		return ms.arc, ms.pending, nil
 	}
-	if arc != ms.arc && forceReconnect && ms.arc != nil {
-		// In this case, we're forcing a close on the existing stream.
-		// This is due to either needing to reconnect to satisfy the needs of
-		// the current request (e.g. to signal a schema change), or because
-		// a previous request on the stream yielded a transient error and we
-		// want to reconnect before issuing a subsequent request.
-		//
-		// TODO: clean this up once internal issue 205756033 is resolved.
+	// We need to (re)open a connection.  Cleanup previous connection and channel if they are present.
+	if ms.arc != nil {
 		(*ms.arc).CloseSend()
+	}
+	if ms.pending != nil {
+		close(ms.pending)
 	}
 
 	ms.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
@@ -228,11 +225,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 	r := &unaryRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
-		streamID := ""
-		if ms.streamSettings != nil {
-			streamID = ms.streamSettings.streamID
-		}
-		arc, err := ms.open(streamID, ms.callOptions...)
+		arc, err := ms.open(ms.callOptions...)
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
@@ -527,7 +520,7 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.AppendRowsResponse, initialErr error) {
 	err := initialErr
 	for {
-		pause, shouldRetry := ms.retry.Retry(err, pw.attemptCount)
+		pause, shouldRetry := ms.statelessRetryer().Retry(err, pw.attemptCount)
 		if !shouldRetry {
 			// Should not attempt to re-append.
 			pw.markDone(appendResp, err, ms.fc)

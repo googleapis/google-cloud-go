@@ -1,5 +1,25 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.6.0...language/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **language:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.5.0...language/v1.6.0) (2022-09-28)
+
+
+### Features
+
+* **language:** Add support for V1 and V2 classification models for the V1 API ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **language:** Add support for V1 and V2 classification models for the V1Beta2 API ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+
+
+### Documentation
+
+* **language:** fix docstring formatting ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.4.0...language/v1.5.0) (2022-09-21)
 
 
