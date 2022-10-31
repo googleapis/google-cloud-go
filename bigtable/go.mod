@@ -3,15 +3,15 @@ module cloud.google.com/go/bigtable
 go 1.19
 
 require (
-	cloud.google.com/go v0.104.0
-	cloud.google.com/go/iam v0.5.0
+	cloud.google.com/go v0.105.0
+	cloud.google.com/go/iam v0.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.1.2
 	github.com/google/go-cmp v0.5.9
-	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20221012214650-1d7ae69b0110
+	github.com/googleapis/cloud-bigtable-clients-test 5b86a501bb0d
 	github.com/googleapis/gax-go/v2 v2.6.0
-	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
-	google.golang.org/api v0.99.0
+	golang.org/x/oauth2 v0.1.0
+	google.golang.org/api v0.101.0
 	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1

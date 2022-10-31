@@ -3,9 +3,9 @@ module cloud.google.com/go/serviceusage
 go 1.19
 
 require (
-	cloud.google.com/go v0.104.0
+	cloud.google.com/go v0.105.0
 	github.com/googleapis/gax-go/v2 v2.6.0
-	google.golang.org/api v0.99.0
+	google.golang.org/api v0.101.0
 	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1

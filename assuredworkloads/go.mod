@@ -3,10 +3,10 @@ module cloud.google.com/go/assuredworkloads
 go 1.19
 
 require (
-	cloud.google.com/go v0.104.0
+	cloud.google.com/go v0.105.0
 	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.6.0
-	google.golang.org/api v0.99.0
+	google.golang.org/api v0.101.0
 	google.golang.org/genproto v0.0.0-20221014213838-99cd37c6964a
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
