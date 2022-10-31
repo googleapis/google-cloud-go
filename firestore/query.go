@@ -297,7 +297,7 @@ func (q Query) Serialize() ([]byte, error) {
 
 // Deserialize takes a slice of bytes holding the wire-format message of RunQueryRequest,
 // the underlying proto message used by Queries. It then populates and returns a
-// Query object that can be used to execut that Query.
+// Query object that can be used to execute that Query.
 func (q Query) Deserialize(bytes []byte) (Query, error) {
 	runQueryRequest := pb.RunQueryRequest{}
 	err := proto.Unmarshal(bytes, &runQueryRequest)
