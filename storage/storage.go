@@ -27,6 +27,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/googleapis/gax-go/v2"
 	"net/http"
 	"net/url"
 	"os"
@@ -42,7 +43,6 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
-	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -535,13 +535,12 @@ func v4SanitizeHeaders(hdrs []string) []string {
 		sanitizedHeader := strings.TrimSpace(hdr)
 
 		var key, value string
-		headerMatches := strings.Split(sanitizedHeader, ":")
-		if len(headerMatches) < 2 {
+		headerMatches := canonicalHeaderRegexp.FindStringSubmatch(sanitizedHeader)
+		if len(headerMatches) == 0 {
 			continue
 		}
-
-		key = headerMatches[0]
-		value = headerMatches[1]
+		key = headerMatches[1]
+		value = headerMatches[2]
 
 		key = strings.ToLower(strings.TrimSpace(key))
 		value = strings.TrimSpace(value)

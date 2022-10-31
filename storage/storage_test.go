@@ -119,6 +119,11 @@ func TestV4HeaderSanitization(t *testing.T) {
 			in:   []string{"foo:bar        gaz"},
 			want: []string{"foo:bar gaz"},
 		},
+		{
+			desc: "date header",
+			in:   []string{"x-goog-custom-time:2022-12-12T23:20:50Z"},
+			want: []string{"x-goog-custom-time:2022-12-12T23:20:50Z"},
+		},
 	}
 	for _, test := range tests {
 		got := v4SanitizeHeaders(test.in)
