@@ -203,6 +203,12 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 var (
 	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
 	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
+	retry5xxCodes       = []int{
+		http.StatusInternalServerError,
+		http.StatusBadGateway,
+		http.StatusServiceUnavailable,
+		http.StatusGatewayTimeout,
+	}
 )
 
 // This is the correct definition of retryable according to the BigQuery team. It
@@ -237,8 +243,10 @@ func retryableError(err error, allowedReasons []string) bool {
 				}
 			}
 		}
-		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway {
-			return true
+		for _, code := range retry5xxCodes {
+			if e.Code == code {
+				return true
+			}
 		}
 	case *url.Error:
 		retryable := []string{"connection refused", "connection reset"}
