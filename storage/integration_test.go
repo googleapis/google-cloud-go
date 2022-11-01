@@ -816,7 +816,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		// Now, making object public or making bucket public should succeed. Run with
 		// retry because ACL settings may take time to propagate.
 		retrier := func(err error) bool {
-			// Once ACL settings propagate, PAP should no longer be enforced and the call will suceed.
+			// Once ACL settings propagate, PAP should no longer be enforced and the call will succeed.
 			// In the meantime, while PAP is enforced, trying to set ACL results in:
 			// 	-	FailedPrecondition for gRPC
 			// 	-	condition not met (412) for HTTP
