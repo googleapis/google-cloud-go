@@ -820,7 +820,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 			// In the meantime, while PAP is enforced, trying to set ACL results in:
 			// 	-	FailedPrecondition for gRPC
 			// 	-	condition not met (412) for HTTP
-			return ShouldRetry(err) || status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == 412
+			return ShouldRetry(err) || status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed
 		}
 
 		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
@@ -4839,7 +4839,7 @@ func skipHTTP(reason string) context.Context {
 // Extract the error code if it's a googleapi.Error
 func extractErrCode(err error) int {
 	if err == nil {
-		return 0
+		return http.StatusOK
 	}
 	var e *googleapi.Error
 	if errors.As(err, &e) {
