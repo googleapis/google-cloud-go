@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/memcache/v1.5.0...memcache/v1.6.0) (2022-10-25)
+
+
+### Features
+
+* **memcache:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/memcache/v1.4.0...memcache/v1.5.0) (2022-09-21)
 
 

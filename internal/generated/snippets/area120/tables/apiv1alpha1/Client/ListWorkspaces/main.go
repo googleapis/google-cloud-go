@@ -22,7 +22,7 @@ import (
 	"context"
 
 	tables "cloud.google.com/go/area120/tables/apiv1alpha1"
-	"cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
+	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	"google.golang.org/api/iterator"
 )
 

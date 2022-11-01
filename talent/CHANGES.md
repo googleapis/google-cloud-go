@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.2.0...talent/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **talent:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.1.0...talent/v1.2.0) (2022-09-21)
 
 

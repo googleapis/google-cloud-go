@@ -64,7 +64,7 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	for _, tc := range testCases {
 		ms := &ManagedStream{
 			ctx: context.Background(),
-			open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.errors) == 0 {
 					panic("out of errors")
 				}
@@ -122,7 +122,7 @@ func (tarc *testAppendRowsClient) CloseSend() error {
 }
 
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
-func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	sF := func(req *storagepb.AppendRowsRequest) error {
 		testARC.requests = append(testARC.requests, req)
 		return nil
@@ -143,7 +143,7 @@ func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.Append
 	testARC.closeF = func() error {
 		return nil
 	}
-	return func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 		testARC.openCount = testARC.openCount + 1
 		return testARC, nil
 	}
@@ -397,14 +397,14 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		openF := openTestArc(&testAppendRowsClient{}, nil, nil)
 		ms := &ManagedStream{
 			ctx: context.Background(),
-			open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.openErrors) == 0 {
 					panic("out of open errors")
 				}
 				curErr := tc.openErrors[0]
 				tc.openErrors = tc.openErrors[1:]
 				if curErr == nil {
-					return openF(s, opts...)
+					return openF(opts...)
 				}
 				return nil, curErr
 			},

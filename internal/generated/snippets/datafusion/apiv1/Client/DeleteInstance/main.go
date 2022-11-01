@@ -22,6 +22,7 @@ import (
 	"context"
 
 	datafusion "cloud.google.com/go/datafusion/apiv1"
+
 	datafusionpb "google.golang.org/genproto/googleapis/cloud/datafusion/v1"
 )
 
