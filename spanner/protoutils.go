@@ -81,7 +81,7 @@ func jsonType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_JSON}
 }
 
-func pgJsonBType() *sppb.Type {
+func pgJsonbType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_JSON, TypeAnnotation: sppb.TypeAnnotationCode_PG_JSONB}
 }
 

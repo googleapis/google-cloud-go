@@ -887,7 +887,7 @@ type NullRow struct {
 // PGJsonB represents a Cloud Spanner PGJsonB that may be NULL.
 type PGJsonB struct {
 	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
-	Valid   bool    // Valid is true if PGJsonB is not NULL.
+	Valid bool        // Valid is true if PGJsonB is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for PGJsonB.
@@ -1689,43 +1689,43 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		}
 		*p = y
 	case *PGJsonB:
-    if p == nil {
-      return errNilDst(p)
-    }
-    if code != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
-      return errTypeMismatch(code, acode, ptr)
-    }
-    if isNull {
-      *p = PGJsonB{}
-      break
-    }
-    x := v.GetStringValue()
-    var y interface{}
-    err := json.Unmarshal([]byte(x), &y)
-    if err != nil {
-      return err
-    }
-    *p = PGJsonB{y, true}
-  case *[]PGJsonB:
-    if p == nil {
-      return errNilDst(p)
-    }
-    if acode != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
-      return errTypeMismatch(code, acode, ptr)
-    }
-    if isNull {
-      *p = nil
-      break
-    }
-    x, err := getListValue(v)
-    if err != nil {
-      return err
-    }
-    y, err := decodePGJsonBArray(x)
-    if err != nil {
-      return err
-    }
-    *p = y
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = PGJsonB{}
+			break
+		}
+		x := v.GetStringValue()
+		var y interface{}
+		err := json.Unmarshal([]byte(x), &y)
+		if err != nil {
+			return err
+		}
+		*p = PGJsonB{y, true}
+	case *[]PGJsonB:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodePGJsonBArray(x)
+		if err != nil {
+			return err
+		}
+		*p = y
 	case *time.Time:
 		var nt NullTime
 		if isNull {
@@ -2141,7 +2141,7 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			return spannerTypePGNumeric
 		}
 		if t.ConvertibleTo(typeOfPGJsonB) {
-		  return spannerTypePGJsonB
+			return spannerTypePGJsonB
 		}
 	case reflect.Slice:
 		kind := val.Type().Elem().Kind()
@@ -2365,7 +2365,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		result = &NullJSON{y, true}
 	case spannerTypePGJsonB:
-		if code != sppb.TypeCode_JSON ||  typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
+		if code != sppb.TypeCode_JSON || typeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -2548,7 +2548,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		result = y
 	case spannerTypeArrayOfPGJsonB:
-		if acode != sppb.TypeCode_JSON || atypeAnnotation != sppb.TypeAnnotationCode_PG_JSONB{
+		if acode != sppb.TypeCode_JSON || atypeAnnotation != sppb.TypeAnnotationCode_PG_JSONB {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -2559,7 +2559,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		if err != nil {
 			return err
 		}
-		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, pgJsonBType(), "PGJSONB")
+		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, pgJsonbType(), "PGJSONB")
 		if err != nil {
 			return err
 		}
@@ -2942,13 +2942,13 @@ func decodeNullJSONArray(pb *proto3.ListValue) ([]NullJSON, error) {
 }
 
 // decodeJsonBArray decodes proto3.ListValue pb into a JsonB slice.
-func decodePGJsonBArray(pb *proto3.ListValue) ([]JsonB, error) {
+func decodePGJsonBArray(pb *proto3.ListValue) ([]PGJsonB, error) {
 	if pb == nil {
 		return nil, errNilListValue("PGJSONB")
 	}
 	a := make([]PGJsonB, len(pb.Values))
 	for i, v := range pb.Values {
-		if err := decodeValue(v, pgJsonBType(), &a[i]); err != nil {
+		if err := decodeValue(v, pgJsonbType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "PGJSONB", err)
 		}
 	}
@@ -3604,19 +3604,19 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		if v.Valid {
 			b, err := json.Marshal(v.Value)
 			if err != nil {
-        return nil, nil, err
-      }
+				return nil, nil, err
+			}
 			pb.Kind = stringKind(string(b))
 		}
-		return pb, pgJsonBType(), nil
+		return pb, pgJsonbType(), nil
 	case []PGJsonB:
 		if v != nil {
 			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
 			if err != nil {
-        return nil, nil, err
-      }
+				return nil, nil, err
+			}
 		}
-		pt = listType(pgJsonBType())
+		pt = listType(pgJsonbType())
 	case *big.Rat:
 		switch LossOfPrecisionHandling {
 		case NumericError:
