@@ -362,7 +362,7 @@ func (tc *testClient) timeout(ctx context.Context) (context.Context, context.Can
 	if tc.perOperationTimeout != nil {
 		return context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
 	}
-	return ctx, nil
+	return context.WithCancel(ctx)
 }
 
 // credentialsBundle implements credentials.Bundle interface
