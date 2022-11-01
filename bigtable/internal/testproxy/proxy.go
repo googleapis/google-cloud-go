@@ -626,7 +626,8 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 		Row: &btpb.Row{},
 	}
 
-	ctx, _ = btc.timeout(ctx)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
@@ -680,7 +681,8 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rs = bigtable.InfiniteRange("")
 	}
 
-	ctx, _ = btc.timeout(ctx)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	var c int32
 	var rowsPb []*btpb.Row
@@ -751,7 +753,8 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 		},
 	}
 
-	ctx, _ = btc.timeout(ctx)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	err := t.Apply(ctx, string(row), m)
 	if err != nil {
@@ -804,7 +807,8 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 		},
 	}
 
-	ctx, _ = btc.timeout(ctx)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	errs, err := t.ApplyBulk(ctx, keys, muts)
 	if err != nil {
@@ -875,7 +879,8 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	var matched bool
 	ao := bigtable.GetCondMutationResult(&matched)
 
-	ctx, _ = btc.timeout(ctx)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	err := t.Apply(ctx, rowKey, c, ao)
 	if err != nil {
@@ -916,7 +921,8 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 		},
 	}
 
-	ctx, _ = btc.timeout(ctx)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	t := btc.c.Open(rrq.TableName)
 	keys, err := t.SampleRowKeys(ctx)
@@ -981,7 +987,8 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 	t := btc.c.Open(rrq.TableName)
 	k := string(rrq.RowKey)
 
-	ctx, _ = btc.timeout(ctx)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
 	if err != nil {
