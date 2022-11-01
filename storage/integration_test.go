@@ -4821,7 +4821,6 @@ func retryOnNilAndTransientErrs(err error) bool {
 	return err == nil || ShouldRetry(err)
 }
 func retryOnTransient400and403(err error) bool {
-	fmt.Println("retrying")
 	var e *googleapi.Error
 	var ae *apierror.APIError
 	return ShouldRetry(err) ||
