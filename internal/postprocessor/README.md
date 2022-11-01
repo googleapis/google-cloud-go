@@ -8,9 +8,9 @@ After following these steps you should see the temporary staging directory `owl-
 
 ## Running the post-processor locally
 First, build the Docker container must be built locally and name it `postprocessor` as the `.github/.OwlBot.yaml` and `.github/.OwlBot.lock.yaml` files reference it by that name.
-  - From the `google-cloud-go/internal/postprocessor` directory run: 
+  - From the `google-cloud-go/internal` directory run: 
     ```sh
-    $ docker build . -t postprocessor
+    $ docker build . -f postprocessor/Dockerfile -t postprocessor
     ```
 - To run post-processor run:
     ```sh
