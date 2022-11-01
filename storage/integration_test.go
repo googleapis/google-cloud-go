@@ -4839,7 +4839,7 @@ func skipHTTP(reason string) context.Context {
 // Extract the error code if it's a googleapi.Error
 func extractErrCode(err error) int {
 	if err == nil {
-		return http.StatusOK
+		return 0
 	}
 	var e *googleapi.Error
 	if errors.As(err, &e) {
