@@ -910,6 +910,7 @@ func (n *NullProto) UnmarshalJSON(payload []byte) error {
 		return fmt.Errorf("payload should not be nil")
 	}
 	if bytes.Equal(payload, jsonNullBytes) {
+		n.ProtoVal = nil
 		n.Valid = false
 		return nil
 	}
@@ -954,6 +955,7 @@ func (n *NullEnum) UnmarshalJSON(payload []byte) error {
 		return fmt.Errorf("payload should not be nil")
 	}
 	if bytes.Equal(payload, jsonNullBytes) {
+		n.EnumVal = nil
 		n.Valid = false
 		return nil
 	}
