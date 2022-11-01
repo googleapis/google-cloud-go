@@ -497,6 +497,13 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 	return creds, nil
 }
 
+// parseTableID extracts a table ID from a table name.
+// For example, a table ID is in the format projects/<project>/instances/<instance>/tables/<tableID>
+func parseTableID(tableName string) (tableID string) {
+	paths := strings.Split(tableName, "/")
+	return paths[len(paths)-1]
+}
+
 // goTestProxyServer represents an instance of the test proxy server. It keeps
 // a reference to individual clients instances (stored in a testClient object).
 type goTestProxyServer struct {
@@ -616,8 +623,8 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
 
-	tName := req.TableName
-	t := btc.c.Open(tName)
+	tid := parseTableID(req.TableName)
+	t := btc.c.Open(tid)
 
 	res := &pb.RowResult{
 		Status: &statpb.Status{
@@ -669,7 +676,8 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 
 	}
 
-	t := btc.c.Open(rrq.TableName)
+	tid := parseTableID(rrq.TableName)
+	t := btc.c.Open(tid)
 
 	rowPbs := rrq.Rows
 	rs := rowSetFromProto(rowPbs)
@@ -744,7 +752,8 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	mPbs := rrq.Mutations
 	m := mutationFromProto(mPbs)
 
-	t := btc.c.Open(rrq.TableName)
+	tid := parseTableID(rrq.TableName)
+	t := btc.c.Open(tid)
 	row := rrq.RowKey
 
 	res := &pb.MutateRowResult{
@@ -785,7 +794,8 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	}
 
 	mrs := rrq.Entries
-	t := btc.c.Open(rrq.TableName)
+	tid := parseTableID(rrq.TableName)
+	t := btc.c.Open(tid)
 
 	keys := make([]string, len(mrs))
 	muts := make([]*bigtable.Mutation, len(mrs))
@@ -873,7 +883,8 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 		},
 	}
 
-	t := btc.c.Open(rrq.TableName)
+	tid := parseTableID(rrq.TableName)
+	t := btc.c.Open(tid)
 	rowKey := string(rrq.RowKey)
 
 	var matched bool
@@ -924,7 +935,8 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
-	t := btc.c.Open(rrq.TableName)
+	tid := parseTableID(rrq.TableName)
+	t := btc.c.Open(tid)
 	keys, err := t.SampleRowKeys(ctx)
 	if err != nil {
 		log.Printf("received error from Table.SampleRowKeys(): %v\n", err)
@@ -984,7 +996,8 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 		},
 	}
 
-	t := btc.c.Open(rrq.TableName)
+	tid := parseTableID(rrq.TableName)
+	t := btc.c.Open(tid)
 	k := string(rrq.RowKey)
 
 	ctx, cancel := btc.timeout(ctx)
