@@ -2,6 +2,31 @@
 
 
 
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.42.0...bigquery/v1.43.0) (2022-10-24)
+
+
+### Features
+
+* **bigquery/analyticshub:** rename nodejs analyticshub library package name ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **bigquery/storage/managedwriter:** Enable field name indirection ([#6247](https://github.com/googleapis/google-cloud-go/issues/6247)) ([1969273](https://github.com/googleapis/google-cloud-go/commit/19692735b0fbafa176d0315bda923528e1eedf6d))
+* **bigquery/storage/managedwriter:** Retry on FailedPrecondition ([#6761](https://github.com/googleapis/google-cloud-go/issues/6761)) ([d1a444d](https://github.com/googleapis/google-cloud-go/commit/d1a444d769c9578b586bef608d343b4b0abd3658))
+* **bigquery/storage/managedwriter:** Support append retries ([#6695](https://github.com/googleapis/google-cloud-go/issues/6695)) ([6ae9c67](https://github.com/googleapis/google-cloud-go/commit/6ae9c670a11d80b34872cb05fda933303b81851d))
+* **bigquery/storage/managedwriter:** Switch to opt-in retry ([#6765](https://github.com/googleapis/google-cloud-go/issues/6765)) ([a3e97a6](https://github.com/googleapis/google-cloud-go/commit/a3e97a6f15ad1989ef815b9bd5838192f9f226f1))
+* **bigquery:** Add remote function options to routine metadata ([#6702](https://github.com/googleapis/google-cloud-go/issues/6702)) ([d9a437d](https://github.com/googleapis/google-cloud-go/commit/d9a437de75a5f5151cd000d8f9a6b7fc567d8551))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Address possible resource leak ([#6775](https://github.com/googleapis/google-cloud-go/issues/6775)) ([979440b](https://github.com/googleapis/google-cloud-go/commit/979440b43573c1cfd744d3f63d0c633c7319ad46))
+* **bigquery:** Avoid stack overflow on query param with recursive types ([#6890](https://github.com/googleapis/google-cloud-go/issues/6890)) ([854ccfc](https://github.com/googleapis/google-cloud-go/commit/854ccfca259d747759d283fc0d0053893f3c8f8d)), refs [#6884](https://github.com/googleapis/google-cloud-go/issues/6884)
+* **bigquery:** Bq connection auth scopes ([#6752](https://github.com/googleapis/google-cloud-go/issues/6752)) ([8e09288](https://github.com/googleapis/google-cloud-go/commit/8e09288185f721d90288c3aa873980fc44b98613)), refs [#6744](https://github.com/googleapis/google-cloud-go/issues/6744)
+
+
+### Documentation
+
+* **bigquery/storage/managedwriter/adapt:** Typo in error string ([#6729](https://github.com/googleapis/google-cloud-go/issues/6729)) ([bb26153](https://github.com/googleapis/google-cloud-go/commit/bb26153d38475cd9784edbf241df84c368f5a166))
+* **bigquery/storage/managedwriter:** Add retry info to package docs ([#6803](https://github.com/googleapis/google-cloud-go/issues/6803)) ([81e52e5](https://github.com/googleapis/google-cloud-go/commit/81e52e59dcf3c4a44108e039fb0e3a0e2ce8284f))
+
 ## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.41.0...bigquery/v1.42.0) (2022-09-21)
 
 

@@ -23,6 +23,7 @@ import (
 
 	dataexchange "cloud.google.com/go/bigquery/dataexchange/apiv1beta1"
 	"google.golang.org/api/iterator"
+
 	dataexchangepb "google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1"
 )
 

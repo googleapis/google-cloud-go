@@ -30,8 +30,17 @@ import (
 type mockTableAdminClock struct {
 	btapb.BigtableTableAdminClient
 
+	createTableReq   *btapb.CreateTableRequest
 	updateTableReq   *btapb.UpdateTableRequest
+	createTableResp  *btapb.Table
 	updateTableError error
+}
+
+func (c *mockTableAdminClock) CreateTable(
+	ctx context.Context, in *btapb.CreateTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.createTableReq = in
+	return c.createTableResp, nil
 }
 
 func (c *mockTableAdminClock) UpdateTable(
@@ -56,7 +65,43 @@ func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminCli
 	return c
 }
 
-func TestTableAdmin_UpdateTable(t *testing.T) {
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Protected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Protected
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, true) {
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, true)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Unprotected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Unprotected
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, false) {
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, false)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithDeletionProtection(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 	deletionProtection := Protected
@@ -64,10 +109,10 @@ func TestTableAdmin_UpdateTable(t *testing.T) {
 	// Check if the deletion protection updates correctly
 	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
 	if err != nil {
-		t.Errorf("UpdateTable failed: %v", err)
+		t.Fatalf("UpdateTableWithDeletionProtection failed: %v", err)
 	}
 	updateTableReq := mock.updateTableReq
-	if !cmp.Equal(updateTableReq.Table.Name, "My-table") {
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
 		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
 	}
 	if !cmp.Equal(updateTableReq.Table.DeletionProtection, true) {
@@ -86,8 +131,8 @@ func TestTableAdmin_UpdateTable_WithError(t *testing.T) {
 	// Check if the update fails when update table returns an error
 	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
 
-	if fmt.Sprint(err) != "update table failure error" {
-		t.Errorf("UpdateTable updated by mistake: %v", err)
+	if fmt.Sprint(err) != "error from update: update table failure error" {
+		t.Fatalf("UpdateTable updated by mistake: %v", err)
 	}
 }
 
@@ -99,7 +144,7 @@ func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
 	// Check if the update fails when TableID is not provided
 	err := c.UpdateTableWithDeletionProtection(context.Background(), "", deletionProtection)
 	if fmt.Sprint(err) != "TableID is required" {
-		t.Errorf("UpdateTable failed: %v", err)
+		t.Fatalf("UpdateTable failed: %v", err)
 	}
 }
 
@@ -112,7 +157,7 @@ func TestTableAdmin_UpdateTable_DeletionProtection_NotProvided(t *testing.T) {
 	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
 
 	if fmt.Sprint(err) != "deletion protection is required" {
-		t.Errorf("UpdateTable failed: %v", err)
+		t.Fatalf("UpdateTable failed: %v", err)
 	}
 }
 

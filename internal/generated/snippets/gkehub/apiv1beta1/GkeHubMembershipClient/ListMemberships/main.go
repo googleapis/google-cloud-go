@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
-	"cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
+	gkehubpb "cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
 	"google.golang.org/api/iterator"
 )
 

@@ -1,5 +1,13 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.7.0...speech/v1.8.0) (2022-10-25)
+
+
+### Features
+
+* **speech:** Start generating apiv2 ([#6891](https://github.com/googleapis/google-cloud-go/issues/6891)) ([1c7e02f](https://github.com/googleapis/google-cloud-go/commit/1c7e02f6871d3fbd5475a549405ba5b94fd28100))
+* **speech:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.6.0...speech/v1.7.0) (2022-09-21)
 
 

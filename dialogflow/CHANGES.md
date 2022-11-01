@@ -1,5 +1,18 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.17.0...dialogflow/v1.18.0) (2022-10-25)
+
+
+### Features
+
+* **dialogflow:** Can directly set Cloud Speech model on the SpeechToTextConfig ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+* **dialogflow:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified TTL as time-to-live docs: Removed pre-GA disclaimer from Interaction Logging (has been GA for awhile) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.16.1...dialogflow/v1.17.0) (2022-10-14)
 
 

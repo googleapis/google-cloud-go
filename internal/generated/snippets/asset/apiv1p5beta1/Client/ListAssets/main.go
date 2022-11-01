@@ -22,7 +22,7 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1p5beta1"
-	"cloud.google.com/go/asset/apiv1p5beta1/assetpb"
+	assetpb "cloud.google.com/go/asset/apiv1p5beta1/assetpb"
 	"google.golang.org/api/iterator"
 )
 
