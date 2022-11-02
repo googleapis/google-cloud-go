@@ -17,7 +17,6 @@ package datastore
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -27,6 +26,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestQueryConstruction(t *testing.T) {
@@ -306,29 +306,29 @@ func TestGetWithReadTime(t *testing.T) {
 			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
 		},
 	}
-	fakeClient := &fakeDatastoreClient{
-		lookup: func(req *pb.LookupRequest) (*pb.LookupResponse, error) {
-			if !req.ReadOptions.GetReadTime().AsTime().Equal(tm) {
-				return nil, fmt.Errorf("read time mismatch: expected %v, got %v", tm,
-					req.ReadOptions.GetReadTime())
-			}
 
-			return &pb.LookupResponse{
-				Found: []*pb.EntityResult{
-					{
-						Entity:  e,
-						Version: 1,
-					},
-				},
-			}, nil
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId:  "projectID",
+		DatabaseId: "",
+		Keys: []*pb.Key{
+			keyToProto(k),
 		},
-	}
-
-	client := &Client{
-		client:       fakeClient,
-		readSettings: &readSettings{},
-	}
-
+		ReadOptions: &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+			},
+		},
+	}, &pb.LookupResponse{
+		Found: []*pb.EntityResult{
+			{
+				Entity:  e,
+				Version: 1,
+			},
+		},
+	})
 	ctx := context.Background()
 	client.WithReadOptions(ReadTime(tm))
 	dst := &ent{}
@@ -362,32 +362,32 @@ func TestGetMultiWithReadTime(t *testing.T) {
 		},
 	}
 
-	fakeClient := &fakeDatastoreClient{
-		lookup: func(req *pb.LookupRequest) (*pb.LookupResponse, error) {
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
 
-			if !req.ReadOptions.GetReadTime().AsTime().Equal(tm) {
-				return nil, fmt.Errorf("read time mismatch: expected %v, got %v", tm,
-					req.ReadOptions.GetReadTime())
-			}
-
-			return &pb.LookupResponse{
-				Found: []*pb.EntityResult{
-					{
-						Entity:  e,
-						Version: 1,
-					}, {
-						Entity:  e2,
-						Version: 1,
-					},
-				},
-			}, nil
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId:  "projectID",
+		DatabaseId: "",
+		Keys: []*pb.Key{
+			keyToProto(k[0]),
+			keyToProto(k[1]),
 		},
-	}
-
-	client := &Client{
-		client:       fakeClient,
-		readSettings: &readSettings{},
-	}
+		ReadOptions: &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+			},
+		},
+	}, &pb.LookupResponse{
+		Found: []*pb.EntityResult{
+			{
+				Entity:  e,
+				Version: 1,
+			}, {
+				Entity:  e2,
+				Version: 1,
+			},
+		},
+	})
 
 	ctx := context.Background()
 	client.WithReadOptions(ReadTime(tm))

@@ -15,3 +15,6 @@
 /errorreporting/        @googleapis/api-logging @googleapis/yoshi-go-admins
 /logging/               @googleapis/api-logging @googleapis/yoshi-go-admins
 /profiler/              @googleapis/api-profiler @googleapis/yoshi-go-admins
+
+# individual release versions manifest is unowned (to avoid notifying every team)
+.release-please-manifest-individual.json

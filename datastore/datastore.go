@@ -357,7 +357,8 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	if !c.readSettings.readTime.IsZero() {
 		opts = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
-				ReadTime: timestamppb.New(c.readSettings.readTime),
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
 			},
 		}
 	}
@@ -389,7 +390,8 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
 		opts = &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_ReadTime{
-				ReadTime: timestamppb.New(c.readSettings.readTime),
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
 			},
 		}
 	}
