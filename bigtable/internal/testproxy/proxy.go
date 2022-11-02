@@ -356,6 +356,15 @@ type testClient struct {
 	isOpen              bool               // isOpen indicates whether this client is open for new requests
 }
 
+// timeout adds a timeout setting to a context if perOperationTimeout is set on
+// the testClient object.
+func (tc *testClient) timeout(ctx context.Context) (context.Context, context.CancelFunc) {
+	if tc.perOperationTimeout != nil {
+		return context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
+	}
+	return context.WithCancel(ctx)
+}
+
 // credentialsBundle implements credentials.Bundle interface
 // [See documentation for usage](https://pkg.go.dev/google.golang.org/grpc/credentials#Bundle).
 type credentialsBundle struct {
@@ -617,10 +626,8 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 		Row: &btpb.Row{},
 	}
 
-	if btc.perOperationTimeout != nil {
-		ct, _ := context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-		ctx = ct
-	}
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
@@ -673,6 +680,9 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		// Should be lowest possible key value, an empty byte array
 		rs = bigtable.InfiniteRange("")
 	}
+
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	var c int32
 	var rowsPb []*btpb.Row
@@ -743,6 +753,9 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 		},
 	}
 
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
 	err := t.Apply(ctx, string(row), m)
 	if err != nil {
 		res.Status = statusFromError(err)
@@ -793,6 +806,9 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 			Code: int32(codes.OK),
 		},
 	}
+
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	errs, err := t.ApplyBulk(ctx, keys, muts)
 	if err != nil {
@@ -863,6 +879,9 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 	var matched bool
 	ao := bigtable.GetCondMutationResult(&matched)
 
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
 	err := t.Apply(ctx, rowKey, c, ao)
 	if err != nil {
 		log.Printf("received error from Table.Apply: %v", err)
@@ -901,6 +920,9 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 			Code: int32(codes.OK),
 		},
 	}
+
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	t := btc.c.Open(rrq.TableName)
 	keys, err := t.SampleRowKeys(ctx)
@@ -964,6 +986,10 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 
 	t := btc.c.Open(rrq.TableName)
 	k := string(rrq.RowKey)
+
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
 	if err != nil {
 		return nil, err

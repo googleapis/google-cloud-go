@@ -20,11 +20,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestBucketAttrsToRawBucket(t *testing.T) {
@@ -60,6 +62,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &Autoclass{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -163,6 +166,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &raw.BucketAutoclass{Enabled: true},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -391,6 +395,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass: "NEARLINE",
+		Autoclass:    &Autoclass{Enabled: false},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -434,6 +439,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:    "NEARLINE",
+		Autoclass:       &raw.BucketAutoclass{Enabled: false, ForceSendFields: []string{"Enabled"}},
 		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -638,6 +644,10 @@ func TestNewBucket(t *testing.T) {
 		Logging:       &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ProjectNumber: 123231313,
+		Autoclass: &raw.BucketAutoclass{
+			Enabled:    true,
+			ToggleTime: "2017-10-23T04:05:06Z",
+		},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -688,6 +698,10 @@ func TestNewBucket(t *testing.T) {
 		DefaultObjectACL: nil,
 		LocationType:     "dual-region",
 		ProjectNumber:    123231313,
+		Autoclass: &Autoclass{
+			Enabled:    true,
+			ToggleTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -695,6 +709,324 @@ func TestNewBucket(t *testing.T) {
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
+	}
+}
+
+func TestNewBucketFromProto(t *testing.T) {
+	pb := &storagepb.Bucket{
+		Name: "name",
+		Acl: []*storagepb.BucketAccessControl{
+			{Entity: "bob@example.com", Role: "OWNER"},
+		},
+		DefaultObjectAcl: []*storagepb.ObjectAccessControl{
+			{Entity: "allUsers", Role: "READER"},
+		},
+		Location:     "loc",
+		LocationType: "region",
+		StorageClass: "class",
+		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
+			RetentionPeriod: proto.Int64(int64(3)),
+			EffectiveTime:   toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+		IamConfig: &storagepb.Bucket_IamConfig{
+			UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled:  true,
+				LockTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			},
+			PublicAccessPrevention: "enforced",
+		},
+		Rpo:            rpoAsyncTurbo,
+		Metageneration: int64(39),
+		CreateTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		Labels:         map[string]string{"label": "value"},
+		Cors: []*storagepb.Bucket_Cors{
+			{
+				MaxAgeSeconds:  3600,
+				Method:         []string{"GET", "POST"},
+				Origin:         []string{"*"},
+				ResponseHeader: []string{"FOO"},
+			},
+		},
+		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
+		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
+		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))},
+		Lifecycle: &storagepb.Bucket_Lifecycle{
+			Rule: []*storagepb.Bucket_Lifecycle_Rule{
+				{
+					Action: &storagepb.Bucket_Lifecycle_Rule_Action{Type: "Delete"},
+					Condition: &storagepb.Bucket_Lifecycle_Rule_Condition{
+						AgeDays: proto.Int32(int32(10)),
+					},
+				},
+			},
+		},
+	}
+	want := &BucketAttrs{
+		Name:             "name",
+		ACL:              []ACLRule{{Entity: "bob@example.com", Role: RoleOwner}},
+		DefaultObjectACL: []ACLRule{{Entity: AllUsers, Role: RoleReader}},
+		Location:         "loc",
+		LocationType:     "region",
+		StorageClass:     "class",
+		RetentionPolicy: &RetentionPolicy{
+			RetentionPeriod: 3 * time.Second,
+			EffectiveTime:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		},
+		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		PublicAccessPrevention:   PublicAccessPreventionEnforced,
+		RPO:                      RPOAsyncTurbo,
+		MetaGeneration:           39,
+		Created:                  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		Labels:                   map[string]string{"label": "value"},
+		CORS: []CORS{
+			{
+				MaxAge:          time.Hour,
+				Methods:         []string{"GET", "POST"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"FOO"},
+			},
+		},
+		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Lifecycle: Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 10,
+				},
+			}},
+		},
+	}
+	got := newBucketFromProto(pb)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("got=-, want=+:\n%s", diff)
+	}
+}
+
+func TestBucketAttrsToProtoBucket(t *testing.T) {
+	t.Parallel()
+	attrs := &BucketAttrs{
+		Name: "name",
+		ACL:  []ACLRule{{Entity: "bob@example.com", Role: RoleOwner, Domain: "d", Email: "e"}},
+		DefaultObjectACL: []ACLRule{{Entity: AllUsers, Role: RoleReader, EntityID: "eid",
+			ProjectTeam: &ProjectTeam{ProjectNumber: "17", Team: "t"}}},
+		Location:     "loc",
+		StorageClass: "class",
+		RetentionPolicy: &RetentionPolicy{
+			RetentionPeriod: 3 * time.Second,
+		},
+		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+		PublicAccessPrevention:   PublicAccessPreventionEnforced,
+		VersioningEnabled:        false,
+		RPO:                      RPOAsyncTurbo,
+		Created:                  time.Now(),
+		Labels:                   map[string]string{"label": "value"},
+		CORS: []CORS{
+			{
+				MaxAge:          time.Hour,
+				Methods:         []string{"GET", "POST"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"FOO"},
+			},
+		},
+		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &Autoclass{Enabled: true},
+		Lifecycle: Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 10,
+				},
+			}},
+		},
+		// Below fields should be ignored.
+		MetaGeneration: 39,
+		Etag:           "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
+	}
+	got := attrs.toProtoBucket()
+	want := &storagepb.Bucket{
+		Name: "name",
+		Acl: []*storagepb.BucketAccessControl{
+			{Entity: "bob@example.com", Role: "OWNER"},
+		},
+		DefaultObjectAcl: []*storagepb.ObjectAccessControl{
+			{Entity: "allUsers", Role: "READER"},
+		},
+		Location:     "loc",
+		StorageClass: "class",
+		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
+			RetentionPeriod: proto.Int64(int64(3)),
+		},
+		IamConfig: &storagepb.Bucket_IamConfig{
+			UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled: true,
+			},
+			PublicAccessPrevention: "enforced",
+		},
+		Versioning: nil, // ignore VersioningEnabled if false
+		Rpo:        rpoAsyncTurbo,
+		Labels:     map[string]string{"label": "value"},
+		Cors: []*storagepb.Bucket_Cors{
+			{
+				MaxAgeSeconds:  3600,
+				Method:         []string{"GET", "POST"},
+				Origin:         []string{"*"},
+				ResponseHeader: []string{"FOO"},
+			},
+		},
+		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
+		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
+		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true},
+		Lifecycle: &storagepb.Bucket_Lifecycle{
+			Rule: []*storagepb.Bucket_Lifecycle_Rule{
+				{
+					Action: &storagepb.Bucket_Lifecycle_Rule_Action{Type: "Delete"},
+					Condition: &storagepb.Bucket_Lifecycle_Rule_Condition{
+						AgeDays:                 proto.Int32(int32(10)),
+						NumNewerVersions:        proto.Int32(int32(0)),
+						DaysSinceCustomTime:     proto.Int32(int32(0)),
+						DaysSinceNoncurrentTime: proto.Int32(int32(0)),
+					},
+				},
+			},
+		},
+	}
+
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Error(msg)
+	}
+
+	attrs.VersioningEnabled = true
+	attrs.RequesterPays = true
+	got = attrs.toProtoBucket()
+	want.Versioning = &storagepb.Bucket_Versioning{Enabled: true}
+	want.Billing = &storagepb.Bucket_Billing{RequesterPays: true}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Error(msg)
+	}
+
+	// Test that setting either of BucketPolicyOnly or UniformBucketLevelAccess
+	// will enable UniformBucketLevelAccess.
+	// Set UBLA.Enabled = true --> UBLA should be set to enabled in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
+	// the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{Enabled: true}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set both BucketPolicyOnly.Enabled = true and
+	// UniformBucketLevelAccess.Enabled=true --> UBLA should be set to enabled
+	// in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{Enabled: true}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
+	// should be disabled in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "unspecified" leads to the
+	// inherited setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionUnspecified
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "inherited" leads to the
+	// setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionInherited
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting RPO to default is propagated in the proto.
+	attrs.RPO = RPODefault
+	got = attrs.toProtoBucket()
+	want.Rpo = rpoDefault
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Re-enable UBLA and confirm that it does not affect the PAP setting.
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
+	// to nil in the proto.
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: false}
+	attrs.PublicAccessPrevention = PublicAccessPreventionUnknown
+	got = attrs.toProtoBucket()
+	want.IamConfig = nil
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
 	}
 }
 
