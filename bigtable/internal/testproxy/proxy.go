@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	"crypto/x509"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -346,6 +347,27 @@ func statusFromError(err error) *statpb.Status {
 	return st
 }
 
+// parseTableID extracts a table ID from a table name.
+// For example, a table ID is in the format projects/<project>/instances/<instance>/tables/<tableID>
+//
+// Note that this function does not check all variants and edge cases. It assumes
+// that the test suite used with the test proxy sends *generally* correct requests.
+func parseTableID(tableName string) (tableID string, _ error) {
+	paths := strings.Split(tableName, "/")
+
+	if len(paths) == 0 {
+		return "", errors.New("table resource name does not have the correct format")
+	}
+
+	tableID = paths[len(paths)-1]
+	var err error
+	if tableID == "" {
+		err = errors.New("cannot read tableID from table name")
+	}
+
+	return tableID, err
+}
+
 // testClient contains a bigtable.Client object, cancel functions for the calls
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
@@ -497,13 +519,6 @@ func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName strin
 	return creds, nil
 }
 
-// parseTableID extracts a table ID from a table name.
-// For example, a table ID is in the format projects/<project>/instances/<instance>/tables/<tableID>
-func parseTableID(tableName string) (tableID string) {
-	paths := strings.Split(tableName, "/")
-	return paths[len(paths)-1]
-}
-
 // goTestProxyServer represents an instance of the test proxy server. It keeps
 // a reference to individual clients instances (stored in a testClient object).
 type goTestProxyServer struct {
@@ -620,7 +635,10 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 	}
 	s.clientsLock.RUnlock()
 
-	tid := parseTableID(req.TableName)
+	tid, err := parseTableID(req.TableName)
+	if err != nil {
+		return nil, err
+	}
 	t := btc.c.Open(tid)
 
 	res := &pb.RowResult{
@@ -671,7 +689,10 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 
 	}
 
-	tid := parseTableID(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
 	t := btc.c.Open(tid)
 
 	rowPbs := rrq.Rows
@@ -746,7 +767,10 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	mPbs := rrq.Mutations
 	m := mutationFromProto(mPbs)
 
-	tid := parseTableID(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
 	t := btc.c.Open(tid)
 	row := rrq.RowKey
 
@@ -786,7 +810,10 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	}
 
 	mrs := rrq.Entries
-	tid := parseTableID(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
 	t := btc.c.Open(tid)
 
 	keys := make([]string, len(mrs))
@@ -873,7 +900,10 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 		},
 	}
 
-	tid := parseTableID(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
 	t := btc.c.Open(tid)
 	rowKey := string(rrq.RowKey)
 
@@ -923,7 +953,10 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
-	tid := parseTableID(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
 	t := btc.c.Open(tid)
 	keys, err := t.SampleRowKeys(ctx)
 	if err != nil {
@@ -982,7 +1015,10 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 		},
 	}
 
-	tid := parseTableID(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
 	t := btc.c.Open(tid)
 	k := string(rrq.RowKey)
 
