@@ -815,13 +815,16 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 
 		// Now, making object public or making bucket public should succeed. Run with
 		// retry because ACL settings may take time to propagate.
-		idempotentOrNilRetry := func(err error) bool {
-			return err == nil || ShouldRetry(err)
+		retrier := func(err error) bool {
+			// Once ACL settings propagate, PAP should no longer be enforced and the call will succeed.
+			// In the meantime, while PAP is enforced, trying to set ACL results in:
+			// 	-	FailedPrecondition for gRPC
+			// 	-	condition not met (412) for HTTP
+			return ShouldRetry(err) || status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed
 		}
 
 		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-
-		a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
+		a = o.Retryer(WithErrorFunc(retrier), WithPolicy(RetryAlways)).ACL()
 		err = a.Set(ctxWithTimeout, AllUsers, RoleReader)
 		cancelCtx()
 		if err != nil {
@@ -850,6 +853,46 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		}
 		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
 			t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
+	})
+}
+
+func TestIntegration_Autoclass(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create a bucket with Autoclass enabled.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{Autoclass: &Autoclass{Enabled: true}})
+		defer h.mustDeleteBucket(bkt)
+
+		// Get Autoclass configuration from bucket attrs.
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("get bucket attrs failed: %v", err)
+		}
+		var toggleTime time.Time
+		if attrs != nil && attrs.Autoclass != nil {
+			if got, want := attrs.Autoclass.Enabled, true; got != want {
+				t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+			}
+			if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
+				t.Error("got a zero time value, want a populated value")
+			}
+		}
+
+		// Disable Autoclass on the bucket.
+		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.Autoclass.Enabled, false; got != want {
+			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+		}
+		latestToggleTime := attrs.Autoclass.ToggleTime
+		if latestToggleTime.IsZero() {
+			t.Error("got a zero time value, want a populated value")
+		}
+		if latestToggleTime.Before(toggleTime) {
+			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
 		}
 	})
 }
@@ -4831,4 +4874,17 @@ func skipGRPC(reason string) context.Context {
 
 func skipHTTP(reason string) context.Context {
 	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
+}
+
+// Extract the error code if it's a googleapi.Error
+func extractErrCode(err error) int {
+	if err == nil {
+		return 0
+	}
+	var e *googleapi.Error
+	if errors.As(err, &e) {
+		return e.Code
+	}
+
+	return -1
 }
