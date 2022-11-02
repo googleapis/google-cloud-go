@@ -211,12 +211,13 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 	}
 
 	x0 := X{66, "99", timeNow.Truncate(time.Millisecond), "X"}
+	tm := time.Now()
 	k, err := client.Put(ctx, IncompleteKey("BasicsX", nil), &x0)
 	if err != nil {
 		t.Fatalf("client.Put: %v", err)
 	}
 	x1 := X{}
-	client.WithReadOptions(ReadTime(time.Now()))
+	client.WithReadOptions(ReadTime(tm))
 	err = client.Get(ctx, k, &x1)
 	if err != nil {
 		t.Errorf("client.Get: %v", err)
@@ -321,7 +322,7 @@ func TestIntegration_GetMulti(t *testing.T) {
 		t.Error(err)
 	}
 
-	err := client.WithReadOptions(ReadTime(time.Now())).GetMulti(ctx, dstKeys, dst)
+	err := client.GetMulti(ctx, dstKeys, dst)
 	if err == nil {
 		t.Errorf("client.GetMulti got %v, expected error", err)
 	}
