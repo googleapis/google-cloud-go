@@ -37,6 +37,7 @@ import (
 const (
 	buffer           = 1024 * 1024
 	tableName        = "projects/my-project/instances/my-instance/tables/table"
+	tableID          = "table"
 	columnFamily     = "cf"
 	testProxyClient  = "testProxyClient"
 	testProxyAddress = "localhost:9990"
@@ -70,7 +71,7 @@ func populateTable(bts *bttest.Server) error {
 	}
 	defer adminClient.Close()
 
-	if err := adminClient.CreateTable(ctx, tableName); err != nil {
+	if err := adminClient.CreateTable(ctx, tableID); err != nil {
 		return fmt.Errorf("testproxy setup: can't create table: %v", err)
 	}
 
@@ -78,7 +79,7 @@ func populateTable(bts *bttest.Server) error {
 	count := 3
 	for i := 0; i < count; i++ {
 		cfName := fmt.Sprintf("%s%d", columnFamily, i)
-		if err := adminClient.CreateColumnFamily(ctx, tableName, cfName); err != nil {
+		if err := adminClient.CreateColumnFamily(ctx, tableID, cfName); err != nil {
 			return fmt.Errorf("testproxy setup: can't create column family: %s", cfName)
 		}
 	}
@@ -90,7 +91,7 @@ func populateTable(bts *bttest.Server) error {
 	}
 	defer dataClient.Close()
 
-	t := dataClient.Open(tableName)
+	t := dataClient.Open(tableID)
 
 	for fc := 0; fc < count; fc++ {
 		for cc := count; cc > 0; cc-- {
