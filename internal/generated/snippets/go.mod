@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	cloud.google.com/go v0.104.0
-	cloud.google.com/go/accessapproval v1.3.0
 	cloud.google.com/go/accesscontextmanager v1.2.0
 	cloud.google.com/go/aiplatform v1.24.0
 	cloud.google.com/go/analytics v0.12.0

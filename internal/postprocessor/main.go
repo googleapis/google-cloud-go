@@ -27,8 +27,8 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
-	"cloud.google.com/go/internal/gapicgen/gensnippets"
 	"cloud.google.com/go/internal/gapicgen/git"
+	"cloud.google.com/go/internal/gensnippets"
 	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
 	"golang.org/x/sync/errgroup"
@@ -48,7 +48,7 @@ func main() {
 	log.Println("srcPrefix set to", srcPrefix)
 	log.Println("dstPrefix set to", dstPrefix)
 
-	if err := run(ctx, srcPrefix, dstPrefix); err != nil {
+	if err := run(ctx, *srcRoot, *dstRoot); err != nil {
 		log.Fatal(err)
 	}
 
@@ -68,7 +68,6 @@ func run(ctx context.Context, srcPrefix, dstPrefix string) error {
 		}
 
 		dstPath := filepath.Join(dstPrefix, strings.TrimPrefix(path, srcPrefix))
-
 		if err := copyFiles(path, dstPath); err != nil {
 			return err
 		}
@@ -193,12 +192,12 @@ func (s *SnippetConfs) regenSnippets() error {
 	if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames); err != nil {
 		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 	}
-	if err := replaceAllForSnippets(s.googleCloudDir, snippetDir); err != nil {
-		return err
-	}
-	if err := gocmd.ModTidy(snippetDir); err != nil {
-		return err
-	}
+	// if err := replaceAllForSnippets(s.googleCloudDir, snippetDir); err != nil {
+	// 	return err
+	// }
+	// if err := gocmd.ModTidy(snippetDir); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 

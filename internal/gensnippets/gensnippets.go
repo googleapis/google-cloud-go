@@ -42,12 +42,14 @@ import (
 
 // Generate reads all modules in rootDir and outputs their examples in outDir.
 func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
+	log.Println("HELLO!?")
 	if rootDir == "" {
-		rootDir = "."
+		rootDir = "/repo"
 	}
 	if outDir == "" {
 		outDir = "internal/generated/snippets"
 	}
+	log.Println("In gensnippets.Generate. rootDir is", rootDir, ". outDir is", outDir)
 
 	// Find all modules in rootDir.
 	dirs := []string{}
