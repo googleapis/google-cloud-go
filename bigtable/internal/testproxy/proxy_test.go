@@ -36,7 +36,7 @@ import (
 
 const (
 	buffer           = 1024 * 1024
-	tableName        = "table"
+	tableName        = "projects/my-project/instances/my-instance/tables/table"
 	columnFamily     = "cf"
 	testProxyClient  = "testProxyClient"
 	testProxyAddress = "localhost:9990"
