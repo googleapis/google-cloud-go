@@ -355,7 +355,7 @@ func statusFromError(err error) *statpb.Status {
 func parseTableID(tableName string) (tableID string, _ error) {
 	paths := strings.Split(tableName, "/")
 
-	if len(paths) == 0 {
+	if len(paths) < 6 {
 		return "", errors.New("table resource name does not have the correct format")
 	}
 
