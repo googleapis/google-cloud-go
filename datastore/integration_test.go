@@ -205,14 +205,12 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 
 	type X struct {
 		I int
-		S string
-		T time.Time
-		U interface{}
 	}
 
-	x0 := X{66, "99", timeNow.Truncate(time.Millisecond), "X"}
+	x0 := X{66}
 	tm := time.Now()
-	k, err := client.Put(ctx, IncompleteKey("BasicsXWithReadTime", nil), &x0)
+	k, err := client.Put(ctx, NameKey("X", "ReadTimeTest", nil), &x0)
+	t.Logf("key: %v", k)
 	if err != nil {
 		t.Fatalf("client.Put: %v", err)
 	}
