@@ -212,7 +212,7 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 
 	x0 := X{66, "99", timeNow.Truncate(time.Millisecond), "X"}
 	tm := time.Now()
-	k, err := client.Put(ctx, IncompleteKey("BasicsX", nil), &x0)
+	k, err := client.Put(ctx, IncompleteKey("BasicsXWithReadTime", nil), &x0)
 	if err != nil {
 		t.Fatalf("client.Put: %v", err)
 	}
