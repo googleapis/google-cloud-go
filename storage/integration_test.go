@@ -2741,7 +2741,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 //     a. The project that owns the requester-pays bucket (same as (2))
 //     b. Another project (the Firestore project).
 func TestIntegration_RequesterPaysOwner(t *testing.T) {
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("user project bug: b/254542783"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
@@ -2956,7 +2956,7 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	multiTransportTest(skipGRPC("user project bug: b/254542783 and allowlist issue: b/246634709"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("user project bug: b/254542783"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 
 		for _, test := range []struct {
