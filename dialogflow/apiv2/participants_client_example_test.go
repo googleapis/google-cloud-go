@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -58,7 +58,7 @@ func ExampleParticipantsClient_CreateParticipant() {
 
 	req := &dialogflowpb.CreateParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateParticipantRequest.
 	}
 	resp, err := c.CreateParticipant(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleParticipantsClient_GetParticipant() {
 
 	req := &dialogflowpb.GetParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetParticipantRequest.
 	}
 	resp, err := c.GetParticipant(ctx, req)
 	if err != nil {
@@ -108,7 +108,7 @@ func ExampleParticipantsClient_ListParticipants() {
 
 	req := &dialogflowpb.ListParticipantsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListParticipantsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListParticipantsRequest.
 	}
 	it := c.ListParticipants(ctx, req)
 	for {
@@ -139,7 +139,7 @@ func ExampleParticipantsClient_UpdateParticipant() {
 
 	req := &dialogflowpb.UpdateParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#UpdateParticipantRequest.
 	}
 	resp, err := c.UpdateParticipant(ctx, req)
 	if err != nil {
@@ -164,7 +164,7 @@ func ExampleParticipantsClient_AnalyzeContent() {
 
 	req := &dialogflowpb.AnalyzeContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#AnalyzeContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#AnalyzeContentRequest.
 	}
 	resp, err := c.AnalyzeContent(ctx, req)
 	if err != nil {
@@ -189,7 +189,7 @@ func ExampleParticipantsClient_SuggestArticles() {
 
 	req := &dialogflowpb.SuggestArticlesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestArticlesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SuggestArticlesRequest.
 	}
 	resp, err := c.SuggestArticles(ctx, req)
 	if err != nil {
@@ -214,7 +214,7 @@ func ExampleParticipantsClient_SuggestFaqAnswers() {
 
 	req := &dialogflowpb.SuggestFaqAnswersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestFaqAnswersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SuggestFaqAnswersRequest.
 	}
 	resp, err := c.SuggestFaqAnswers(ctx, req)
 	if err != nil {
@@ -239,7 +239,7 @@ func ExampleParticipantsClient_SuggestSmartReplies() {
 
 	req := &dialogflowpb.SuggestSmartRepliesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestSmartRepliesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SuggestSmartRepliesRequest.
 	}
 	resp, err := c.SuggestSmartReplies(ctx, req)
 	if err != nil {

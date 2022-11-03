@@ -55,7 +55,7 @@
 //
 //	req := &apigatewaypb.ListGatewaysRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListGatewaysRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#ListGatewaysRequest.
 //	}
 //	it := c.ListGateways(ctx, req)
 //	for {

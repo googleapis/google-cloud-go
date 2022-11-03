@@ -60,7 +60,7 @@
 //
 //	req := &artifactregistrypb.ListDockerImagesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1#ListDockerImagesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#ListDockerImagesRequest.
 //	}
 //	it := c.ListDockerImages(ctx, req)
 //	for {

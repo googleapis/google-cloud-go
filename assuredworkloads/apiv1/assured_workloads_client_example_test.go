@@ -20,8 +20,8 @@ import (
 	"context"
 
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1"
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb"
 	"google.golang.org/api/iterator"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleClient_CreateWorkload() {
 
 	req := &assuredworkloadspb.CreateWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#CreateWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#CreateWorkloadRequest.
 	}
 	op, err := c.CreateWorkload(ctx, req)
 	if err != nil {
@@ -87,7 +87,7 @@ func ExampleClient_UpdateWorkload() {
 
 	req := &assuredworkloadspb.UpdateWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#UpdateWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#UpdateWorkloadRequest.
 	}
 	resp, err := c.UpdateWorkload(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleClient_RestrictAllowedResources() {
 
 	req := &assuredworkloadspb.RestrictAllowedResourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#RestrictAllowedResourcesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#RestrictAllowedResourcesRequest.
 	}
 	resp, err := c.RestrictAllowedResources(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleClient_DeleteWorkload() {
 
 	req := &assuredworkloadspb.DeleteWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#DeleteWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#DeleteWorkloadRequest.
 	}
 	err = c.DeleteWorkload(ctx, req)
 	if err != nil {
@@ -160,7 +160,7 @@ func ExampleClient_GetWorkload() {
 
 	req := &assuredworkloadspb.GetWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#GetWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#GetWorkloadRequest.
 	}
 	resp, err := c.GetWorkload(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleClient_ListWorkloads() {
 
 	req := &assuredworkloadspb.ListWorkloadsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#ListWorkloadsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#ListWorkloadsRequest.
 	}
 	it := c.ListWorkloads(ctx, req)
 	for {
@@ -216,7 +216,7 @@ func ExampleClient_ListViolations() {
 
 	req := &assuredworkloadspb.ListViolationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#ListViolationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#ListViolationsRequest.
 	}
 	it := c.ListViolations(ctx, req)
 	for {
@@ -247,7 +247,7 @@ func ExampleClient_GetViolation() {
 
 	req := &assuredworkloadspb.GetViolationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#GetViolationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#GetViolationRequest.
 	}
 	resp, err := c.GetViolation(ctx, req)
 	if err != nil {
@@ -272,7 +272,7 @@ func ExampleClient_AcknowledgeViolation() {
 
 	req := &assuredworkloadspb.AcknowledgeViolationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#AcknowledgeViolationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#AcknowledgeViolationRequest.
 	}
 	resp, err := c.AcknowledgeViolation(ctx, req)
 	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	servicedirectory "cloud.google.com/go/servicedirectory/apiv1"
+	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb"
 	"google.golang.org/api/iterator"
-	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -57,7 +57,7 @@ func ExampleRegistrationClient_CreateNamespace() {
 
 	req := &servicedirectorypb.CreateNamespaceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#CreateNamespaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#CreateNamespaceRequest.
 	}
 	resp, err := c.CreateNamespace(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleRegistrationClient_ListNamespaces() {
 
 	req := &servicedirectorypb.ListNamespacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#ListNamespacesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#ListNamespacesRequest.
 	}
 	it := c.ListNamespaces(ctx, req)
 	for {
@@ -113,7 +113,7 @@ func ExampleRegistrationClient_GetNamespace() {
 
 	req := &servicedirectorypb.GetNamespaceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#GetNamespaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#GetNamespaceRequest.
 	}
 	resp, err := c.GetNamespace(ctx, req)
 	if err != nil {
@@ -138,7 +138,7 @@ func ExampleRegistrationClient_UpdateNamespace() {
 
 	req := &servicedirectorypb.UpdateNamespaceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#UpdateNamespaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#UpdateNamespaceRequest.
 	}
 	resp, err := c.UpdateNamespace(ctx, req)
 	if err != nil {
@@ -163,7 +163,7 @@ func ExampleRegistrationClient_DeleteNamespace() {
 
 	req := &servicedirectorypb.DeleteNamespaceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#DeleteNamespaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#DeleteNamespaceRequest.
 	}
 	err = c.DeleteNamespace(ctx, req)
 	if err != nil {
@@ -186,7 +186,7 @@ func ExampleRegistrationClient_CreateService() {
 
 	req := &servicedirectorypb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#CreateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#CreateServiceRequest.
 	}
 	resp, err := c.CreateService(ctx, req)
 	if err != nil {
@@ -211,7 +211,7 @@ func ExampleRegistrationClient_ListServices() {
 
 	req := &servicedirectorypb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -242,7 +242,7 @@ func ExampleRegistrationClient_GetService() {
 
 	req := &servicedirectorypb.GetServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -267,7 +267,7 @@ func ExampleRegistrationClient_UpdateService() {
 
 	req := &servicedirectorypb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#UpdateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#UpdateServiceRequest.
 	}
 	resp, err := c.UpdateService(ctx, req)
 	if err != nil {
@@ -292,7 +292,7 @@ func ExampleRegistrationClient_DeleteService() {
 
 	req := &servicedirectorypb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#DeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#DeleteServiceRequest.
 	}
 	err = c.DeleteService(ctx, req)
 	if err != nil {
@@ -315,7 +315,7 @@ func ExampleRegistrationClient_CreateEndpoint() {
 
 	req := &servicedirectorypb.CreateEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#CreateEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#CreateEndpointRequest.
 	}
 	resp, err := c.CreateEndpoint(ctx, req)
 	if err != nil {
@@ -340,7 +340,7 @@ func ExampleRegistrationClient_ListEndpoints() {
 
 	req := &servicedirectorypb.ListEndpointsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#ListEndpointsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#ListEndpointsRequest.
 	}
 	it := c.ListEndpoints(ctx, req)
 	for {
@@ -371,7 +371,7 @@ func ExampleRegistrationClient_GetEndpoint() {
 
 	req := &servicedirectorypb.GetEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#GetEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#GetEndpointRequest.
 	}
 	resp, err := c.GetEndpoint(ctx, req)
 	if err != nil {
@@ -396,7 +396,7 @@ func ExampleRegistrationClient_UpdateEndpoint() {
 
 	req := &servicedirectorypb.UpdateEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#UpdateEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#UpdateEndpointRequest.
 	}
 	resp, err := c.UpdateEndpoint(ctx, req)
 	if err != nil {
@@ -421,7 +421,7 @@ func ExampleRegistrationClient_DeleteEndpoint() {
 
 	req := &servicedirectorypb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#DeleteEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#DeleteEndpointRequest.
 	}
 	err = c.DeleteEndpoint(ctx, req)
 	if err != nil {

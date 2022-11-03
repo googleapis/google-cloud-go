@@ -21,8 +21,8 @@ import (
 	"io"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -59,7 +59,7 @@ func ExampleSessionsClient_DetectIntent() {
 
 	req := &cxpb.DetectIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DetectIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DetectIntentRequest.
 	}
 	resp, err := c.DetectIntent(ctx, req)
 	if err != nil {
@@ -124,7 +124,7 @@ func ExampleSessionsClient_MatchIntent() {
 
 	req := &cxpb.MatchIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#MatchIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#MatchIntentRequest.
 	}
 	resp, err := c.MatchIntent(ctx, req)
 	if err != nil {
@@ -149,7 +149,7 @@ func ExampleSessionsClient_FulfillIntent() {
 
 	req := &cxpb.FulfillIntentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#FulfillIntentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#FulfillIntentRequest.
 	}
 	resp, err := c.FulfillIntent(ctx, req)
 	if err != nil {

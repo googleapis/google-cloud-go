@@ -20,8 +20,8 @@ import (
 	"context"
 
 	networkmanagement "cloud.google.com/go/networkmanagement/apiv1"
+	networkmanagementpb "cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb"
 	"google.golang.org/api/iterator"
-	networkmanagementpb "google.golang.org/genproto/googleapis/cloud/networkmanagement/v1"
 )
 
 func ExampleNewReachabilityClient() {
@@ -56,7 +56,7 @@ func ExampleReachabilityClient_ListConnectivityTests() {
 
 	req := &networkmanagementpb.ListConnectivityTestsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#ListConnectivityTestsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#ListConnectivityTestsRequest.
 	}
 	it := c.ListConnectivityTests(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleReachabilityClient_GetConnectivityTest() {
 
 	req := &networkmanagementpb.GetConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#GetConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#GetConnectivityTestRequest.
 	}
 	resp, err := c.GetConnectivityTest(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleReachabilityClient_CreateConnectivityTest() {
 
 	req := &networkmanagementpb.CreateConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#CreateConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#CreateConnectivityTestRequest.
 	}
 	op, err := c.CreateConnectivityTest(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleReachabilityClient_UpdateConnectivityTest() {
 
 	req := &networkmanagementpb.UpdateConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#UpdateConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#UpdateConnectivityTestRequest.
 	}
 	op, err := c.UpdateConnectivityTest(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleReachabilityClient_RerunConnectivityTest() {
 
 	req := &networkmanagementpb.RerunConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#RerunConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#RerunConnectivityTestRequest.
 	}
 	op, err := c.RerunConnectivityTest(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleReachabilityClient_DeleteConnectivityTest() {
 
 	req := &networkmanagementpb.DeleteConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#DeleteConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#DeleteConnectivityTestRequest.
 	}
 	op, err := c.DeleteConnectivityTest(ctx, req)
 	if err != nil {

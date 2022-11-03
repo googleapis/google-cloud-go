@@ -20,8 +20,8 @@ import (
 	"context"
 
 	kms "cloud.google.com/go/kms/apiv1"
+	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	"google.golang.org/api/iterator"
-	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
@@ -58,7 +58,7 @@ func ExampleEkmClient_ListEkmConnections() {
 
 	req := &kmspb.ListEkmConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListEkmConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListEkmConnectionsRequest.
 	}
 	it := c.ListEkmConnections(ctx, req)
 	for {
@@ -89,7 +89,7 @@ func ExampleEkmClient_GetEkmConnection() {
 
 	req := &kmspb.GetEkmConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetEkmConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetEkmConnectionRequest.
 	}
 	resp, err := c.GetEkmConnection(ctx, req)
 	if err != nil {
@@ -114,7 +114,7 @@ func ExampleEkmClient_CreateEkmConnection() {
 
 	req := &kmspb.CreateEkmConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#CreateEkmConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#CreateEkmConnectionRequest.
 	}
 	resp, err := c.CreateEkmConnection(ctx, req)
 	if err != nil {
@@ -139,7 +139,7 @@ func ExampleEkmClient_UpdateEkmConnection() {
 
 	req := &kmspb.UpdateEkmConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#UpdateEkmConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateEkmConnectionRequest.
 	}
 	resp, err := c.UpdateEkmConnection(ctx, req)
 	if err != nil {

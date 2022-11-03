@@ -58,7 +58,7 @@
 //
 //	req := &servicedirectorypb.ResolveServiceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#ResolveServiceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb#ResolveServiceRequest.
 //	}
 //	resp, err := c.ResolveService(ctx, req)
 //	if err != nil {

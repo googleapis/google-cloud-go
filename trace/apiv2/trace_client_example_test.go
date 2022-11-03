@@ -20,7 +20,7 @@ import (
 	"context"
 
 	trace "cloud.google.com/go/trace/apiv2"
-	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
+	tracepb "cloud.google.com/go/trace/apiv2/tracepb"
 )
 
 func ExampleNewClient() {
@@ -53,9 +53,9 @@ func ExampleClient_BatchWriteSpans() {
 	}
 	defer c.Close()
 
-	req := &cloudtracepb.BatchWriteSpansRequest{
+	req := &tracepb.BatchWriteSpansRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v2#BatchWriteSpansRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv2/tracepb#BatchWriteSpansRequest.
 	}
 	err = c.BatchWriteSpans(ctx, req)
 	if err != nil {
@@ -76,9 +76,9 @@ func ExampleClient_CreateSpan() {
 	}
 	defer c.Close()
 
-	req := &cloudtracepb.Span{
+	req := &tracepb.Span{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v2#Span.
+		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv2/tracepb#Span.
 	}
 	resp, err := c.CreateSpan(ctx, req)
 	if err != nil {

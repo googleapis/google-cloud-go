@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dashboard "cloud.google.com/go/monitoring/dashboard/apiv1"
+	dashboardpb "cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb"
 	"google.golang.org/api/iterator"
-	dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
 )
 
 func ExampleNewDashboardsClient() {
@@ -56,7 +56,7 @@ func ExampleDashboardsClient_CreateDashboard() {
 
 	req := &dashboardpb.CreateDashboardRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#CreateDashboardRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#CreateDashboardRequest.
 	}
 	resp, err := c.CreateDashboard(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleDashboardsClient_ListDashboards() {
 
 	req := &dashboardpb.ListDashboardsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#ListDashboardsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#ListDashboardsRequest.
 	}
 	it := c.ListDashboards(ctx, req)
 	for {
@@ -112,7 +112,7 @@ func ExampleDashboardsClient_GetDashboard() {
 
 	req := &dashboardpb.GetDashboardRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#GetDashboardRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#GetDashboardRequest.
 	}
 	resp, err := c.GetDashboard(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleDashboardsClient_DeleteDashboard() {
 
 	req := &dashboardpb.DeleteDashboardRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#DeleteDashboardRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#DeleteDashboardRequest.
 	}
 	err = c.DeleteDashboard(ctx, req)
 	if err != nil {
@@ -160,7 +160,7 @@ func ExampleDashboardsClient_UpdateDashboard() {
 
 	req := &dashboardpb.UpdateDashboardRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#UpdateDashboardRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#UpdateDashboardRequest.
 	}
 	resp, err := c.UpdateDashboard(ctx, req)
 	if err != nil {
