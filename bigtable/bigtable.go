@@ -239,6 +239,14 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 					}
 				}
 			}
+
+			// Handle any incoming RequestStats. This should happen at most once.
+			if res.RequestStats != nil {
+				for _, opt := range opts {
+					opt.getRequestStatsCallback()(res.RequestStats)
+				}
+			}
+
 			if err := cr.Close(); err != nil {
 				// No need to prepare for a retry, this is an unretryable error.
 				return err
@@ -453,9 +461,13 @@ func prefixSuccessor(prefix string) string {
 	return string(ans)
 }
 
+// RequestStatsCallback describes a callback that receives a RequestStats for evaluation.
+type RequestStatsCallback func(*btpb.RequestStats)
+
 // A ReadOption is an optional argument to ReadRows.
 type ReadOption interface {
 	set(req *btpb.ReadRowsRequest)
+	getRequestStatsCallback() RequestStatsCallback
 }
 
 // RowFilter returns a ReadOption that applies f to the contents of read rows.
@@ -467,6 +479,9 @@ func RowFilter(f Filter) ReadOption { return rowFilter{f} }
 type rowFilter struct{ f Filter }
 
 func (rf rowFilter) set(req *btpb.ReadRowsRequest) { req.Filter = rf.f.proto() }
+func (rf rowFilter) getRequestStatsCallback() RequestStatsCallback {
+	return func(*btpb.RequestStats) {}
+}
 
 // LimitRows returns a ReadOption that will limit the number of rows to be read.
 func LimitRows(limit int64) ReadOption { return limitRows{limit} }
@@ -474,6 +489,20 @@ func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 type limitRows struct{ limit int64 }
 
 func (lr limitRows) set(req *btpb.ReadRowsRequest) { req.RowsLimit = lr.limit }
+func (lr limitRows) getRequestStatsCallback() RequestStatsCallback {
+	return func(*btpb.RequestStats) {}
+}
+
+// WithRequestStatsCallback returns a ReadOption that will request RequestStats
+// and invoke the given callback on the resulting RequestStats.
+func WithRequestStatsCallback(f RequestStatsCallback) ReadOption { return withRequestStatsCallback{f} }
+
+type withRequestStatsCallback struct {
+	f RequestStatsCallback
+}
+
+func (wrs withRequestStatsCallback) set(req *btpb.ReadRowsRequest) { req.RequestStatsView = btpb.ReadRowsRequest_REQUEST_STATS_FULL }
+func (wrs withRequestStatsCallback) getRequestStatsCallback() RequestStatsCallback { return wrs.f }
 
 // mutationsAreRetryable returns true if all mutations are idempotent
 // and therefore retryable. A mutation is idempotent iff all cell timestamps
