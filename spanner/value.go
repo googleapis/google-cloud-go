@@ -2694,6 +2694,7 @@ func getIntegerFromStringValue(v *proto3.Value) (int64, error) {
 	return y, nil
 }
 
+// getBytesFromStringValue returns the bytes value of the string value encoded in proto3.Value v
 func getBytesFromStringValue(v *proto3.Value) ([]byte, error) {
 	x, err := getStringValue(v)
 	if err != nil {
